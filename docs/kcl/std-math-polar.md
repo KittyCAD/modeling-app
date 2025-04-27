@@ -11,7 +11,7 @@ cartesian (x/y/z grid) coordinates.
 
 ```js
 polar(
-  angle: number(Angle),
+  angle: number(rad),
   length: number(Length),
 ): Point2d
 ```
@@ -21,7 +21,7 @@ polar(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | `number(Angle)` |  | Yes |
+| `angle` | `number(rad)` |  | Yes |
 | `length` | `number(Length)` |  | Yes |
 
 ### Returns
@@ -33,7 +33,7 @@ polar(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = polar(angle = 30, length = 5), tag = $thing)
   |> line(end = [0, 5])
   |> line(end = [segEndX(thing), 0])

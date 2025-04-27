@@ -8,7 +8,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "body",
-      "moduleId": 6
+      "moduleId": 7
     },
     "sourceRange": []
   },
@@ -142,11 +142,11 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "toRadians",
       "functionSourceRange": [
-        0,
-        0,
-        0
+        11503,
+        11552,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -178,11 +178,83 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [
+        0,
+        0,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -360,7 +432,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "antenna",
-      "moduleId": 8
+      "moduleId": 9
     },
     "sourceRange": []
   },
@@ -380,6 +452,15 @@ description: Operations executed walkie-talkie.kcl
     "unlabeledArg": null
   },
   {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -398,16 +479,7 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -460,7 +532,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "case",
-      "moduleId": 7
+      "moduleId": 8
     },
     "sourceRange": []
   },
@@ -513,11 +585,11 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "toRadians",
       "functionSourceRange": [
-        0,
-        0,
-        0
+        11503,
+        11552,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -549,11 +621,83 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
         0,
         0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [
+        0,
+        0,
+        0
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -583,7 +727,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -591,25 +735,24 @@ description: Operations executed walkie-talkie.kcl
           }
         },
         "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "tool": {
         "value": {
           "type": "Array",
           "value": [
@@ -1474,21 +1617,20 @@ description: Operations executed walkie-talkie.kcl
           ]
         },
         "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1513,7 +1655,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         69,
         977,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1525,16 +1667,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1544,10 +1677,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1572,7 +1713,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1035,
         1456,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1584,16 +1725,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1603,10 +1735,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1631,7 +1771,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1474,
         1895,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1643,16 +1783,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1662,10 +1793,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1690,7 +1829,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1035,
         1456,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1702,16 +1841,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1721,10 +1851,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1749,7 +1887,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         1474,
         1895,
-        12
+        13
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1761,16 +1899,7 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -1780,10 +1909,18 @@ description: Operations executed walkie-talkie.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -1825,7 +1962,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "talkButton",
-      "moduleId": 9
+      "moduleId": 10
     },
     "sourceRange": []
   },
@@ -1940,7 +2077,7 @@ description: Operations executed walkie-talkie.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "knob",
-      "moduleId": 10
+      "moduleId": 11
     },
     "sourceRange": []
   },
@@ -2056,7 +2193,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2169,7 +2306,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2282,7 +2419,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -2395,7 +2532,7 @@ description: Operations executed walkie-talkie.kcl
       "functionSourceRange": [
         308,
         891,
-        11
+        12
       ],
       "unlabeledArg": null,
       "labeledArgs": {}

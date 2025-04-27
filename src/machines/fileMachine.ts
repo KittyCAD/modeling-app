@@ -10,6 +10,7 @@ type FileMachineContext = {
 
 type FileMachineEvents =
   | { type: 'Open file'; data: { name: string } }
+  | { type: 'Open file in new window'; data: { name: string } }
   | {
       type: 'Rename file'
       data: { oldName: string; newName: string; isDir: boolean }
@@ -62,6 +63,7 @@ type FileMachineEvents =
     }
   | { type: 'assign'; data: { [key: string]: any } }
   | { type: 'Refresh' }
+  | { type: 'Refresh with new project'; data: { project: Project } }
 
 export const fileMachine = setup({
   types: {} as {
@@ -94,7 +96,12 @@ export const fileMachine = setup({
         )
       },
     }),
+    setProject: assign(({ event }) => {
+      if (event.type !== 'Refresh with new project') return {}
+      return { project: event.data.project }
+    }),
     navigateToFile: () => {},
+    openFileInNewWindow: () => {},
     renameToastSuccess: () => {},
     createToastSuccess: () => {},
     toastSuccess: () => {},
@@ -181,6 +188,10 @@ export const fileMachine = setup({
     },
 
     Refresh: '.Reading files',
+    'Refresh with new project': {
+      actions: ['setProject'],
+      target: '.Reading files',
+    },
   },
   states: {
     'Has no files': {
@@ -211,6 +222,10 @@ export const fileMachine = setup({
 
         'Open file': {
           target: 'Opening file',
+        },
+
+        'Open file in new window': {
+          target: 'Opening file in new window',
         },
 
         'Set selected directory': {
@@ -398,6 +413,10 @@ export const fileMachine = setup({
 
     'Opening file': {
       entry: ['navigateToFile'],
+    },
+
+    'Opening file in new window': {
+      entry: ['openFileInNewWindow'],
     },
 
     'Creating file': {

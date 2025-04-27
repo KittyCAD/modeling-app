@@ -1,5 +1,6 @@
 //! Functions for managing engine communications.
 
+pub mod async_tasks;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "engine")]
 pub mod conn;
@@ -16,10 +17,12 @@ use std::{
     },
 };
 
+pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
+#[cfg(feature = "artifact-graph")]
+use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
-    id::ModelingCmdId,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -35,9 +38,11 @@ use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, DefaultPlanes, IdGenerator, Point3d},
     SourceRange,
 };
 
@@ -74,10 +79,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
     /// Get the artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
 
     /// Get the ids of the async commands we are waiting for.
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
+
+    /// Get the async tasks we are waiting for.
+    fn async_tasks(&self) -> AsyncTasks;
 
     /// Take the batch of commands that have accumulated so far and clear them.
     async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
@@ -90,11 +99,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Clear all artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     async fn clear_artifact_commands(&self) {
         self.artifact_commands().write().await.clear();
     }
 
     /// Take the artifact commands that have accumulated so far and clear them.
+    #[cfg(feature = "artifact-graph")]
     async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
         std::mem::take(&mut *self.artifact_commands().write().await)
     }
@@ -145,6 +156,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.batch().write().await.clear();
         self.batch_end().write().await.clear();
         self.ids_of_async_commands().write().await.clear();
+        self.async_tasks().clear().await;
     }
 
     /// Send a modeling command and do not wait for the response message.
@@ -180,16 +192,13 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        // Reset to the default units.  Modules assume the engine starts in the
-        // default state.
-        self.set_units(Default::default(), source_range, id_generator).await?;
-
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
 
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
+        #[cfg(feature = "artifact-graph")]
         self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
@@ -257,6 +266,18 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             self.ensure_async_command_completed(id, Some(source_range)).await?;
         }
 
+        // Make sure we check for all async tasks as well.
+        // The reason why we ignore the error here is that, if a model fillets an edge
+        // we previously called something on, it might no longer exist. In which case,
+        // the artifact graph won't care either if its gone since you can't select it
+        // anymore anyways.
+        if let Err(err) = self.async_tasks().join_all().await {
+            crate::log::logln!("Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}", err);
+        }
+
+        // Flush the batch to make sure nothing remains.
+        self.flush_batch(true, SourceRange::default()).await?;
+
         Ok(())
     }
 
@@ -277,6 +298,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    #[cfg(feature = "artifact-graph")]
     async fn handle_artifact_command(
         &self,
         cmd: &ModelingCmd,
@@ -295,23 +317,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             range,
             command: cmd.clone(),
         });
-        Ok(())
-    }
-
-    async fn set_units(
-        &self,
-        units: crate::UnitLength,
-        source_range: SourceRange,
-        id_generator: &mut IdGenerator,
-    ) -> Result<(), crate::errors::KclError> {
-        // Before we even start executing the program, set the units.
-        self.batch_modeling_cmd(
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
-        )
-        .await?;
-
         Ok(())
     }
 
@@ -434,6 +439,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.ids_of_async_commands().write().await.insert(id, source_range);
 
         // Add to artifact commands.
+        #[cfg(feature = "artifact-graph")]
         self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
             .await?;
 
@@ -507,6 +513,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Do the artifact commands.
+        #[cfg(feature = "artifact-graph")]
         for (req, _) in orig_requests.iter() {
             match &req {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {

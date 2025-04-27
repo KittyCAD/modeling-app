@@ -1,8 +1,7 @@
 //! Types for referencing an axis or edge.
 
-use crate::std::fillet::EdgeReference;
-
 use super::args::TyF64;
+use crate::std::fillet::EdgeReference;
 
 /// A 2D axis or tagged edge.
 #[derive(Debug, Clone, PartialEq)]

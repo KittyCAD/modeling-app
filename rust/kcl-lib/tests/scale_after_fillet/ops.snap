@@ -7,6 +7,24 @@ description: Operations executed scale_after_fillet.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": "toRadians",
+      "functionSourceRange": [
+        11503,
+        11552,
+        1
+      ],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "cos",
       "functionSourceRange": [
         0,
@@ -28,7 +46,7 @@ description: Operations executed scale_after_fillet.kcl
       "name": "bolt",
       "functionSourceRange": [
         264,
-        1565,
+        1538,
         0
       ],
       "unlabeledArg": null,

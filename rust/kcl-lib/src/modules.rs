@@ -90,6 +90,7 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
+        "types" => Some(include_str!("../std/types.kcl")),
         _ => None,
     }
 }
@@ -123,7 +124,7 @@ pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
     Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
-    Foreign(PreImportedGeometry),
+    Foreign(PreImportedGeometry, Option<KclValue>),
     Dummy,
 }
 

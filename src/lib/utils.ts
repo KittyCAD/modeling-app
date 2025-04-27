@@ -9,6 +9,28 @@ import type { AsyncFn } from '@src/lib/types'
 export const uuidv4 = v4
 
 /**
+ * Refresh the browser page after reporting to Plausible.
+ */
+export async function refreshPage(method = 'UI button') {
+  if (window && 'plausible' in window) {
+    const p = window.plausible as (
+      event: string,
+      options?: { props: Record<string, string> }
+    ) => Promise<void>
+    // Send a refresh event to Plausible so we can track how often users get stuck
+    await p('Refresh', {
+      props: {
+        method,
+        // optionally add more data here
+      },
+    })
+  }
+
+  // Window may not be available in some environments
+  window?.location.reload()
+}
+
+/**
  * Get all labels for a keyword call expression.
  */
 export function allLabels(callExpression: CallExpressionKw): string[] {
@@ -417,6 +439,11 @@ export function isClockwise(points: [number, number][]): boolean {
 
   // If sum is positive, the points are in clockwise order
   return sum > 0
+}
+
+/** Capitalise a string's first character */
+export function capitaliseFC(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 /**

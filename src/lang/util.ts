@@ -15,6 +15,7 @@ import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 /**
  * Create a SourceRange for the top-level module.
@@ -203,4 +204,12 @@ export function isLiteralValueNumber(
     'suffix' in e &&
     typeof e.suffix === 'string'
   )
+}
+
+export function crossProduct(a: Point3d, b: Point3d): Point3d {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  }
 }

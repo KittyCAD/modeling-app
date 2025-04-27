@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.62"
+version = "0.1.64"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -20,7 +20,7 @@ getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
 getrandom_3 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.72"
-kcl-lib = { path = "../kcl-lib" }
+kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }

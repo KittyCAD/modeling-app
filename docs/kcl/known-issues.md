@@ -21,4 +21,6 @@ once fixed in engine will just start working here with no language changes.
 - **Chamfers**: Chamfers cannot intersect, you will get an error. Only simple
     chamfer cases work currently.
 
-- **Appearance**: Changing the appearance on a loft does not work.
+- **Appearance**: Changing the appearance on a loft does not work. 
+
+- **CSG Booleans**: Coplanar (bodies that share a plane) unions, subtractions, and intersections are not currently supported.

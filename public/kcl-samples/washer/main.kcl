@@ -14,6 +14,6 @@ thicknessMin = 0.024
 // Define the sketch of the washer
 washerSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = outerDiameter / 2)
-  |> hole(circle(center = [0, 0], radius = innerDiameter / 2), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = innerDiameter / 2))
 
 washer = extrude(washerSketch, length = thicknessNom)

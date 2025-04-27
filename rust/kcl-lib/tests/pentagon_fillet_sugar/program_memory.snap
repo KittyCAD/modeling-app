@@ -101,14 +101,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "type": "Mm"
           }
         },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -262,17 +254,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -318,7 +299,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -433,14 +415,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "type": "Mm"
           }
         },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
         "solid": {
           "type": "Solid",
           "id": "[uuid]",
@@ -594,17 +568,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -650,7 +613,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -845,17 +809,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -901,7 +854,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "plumbus0": {
@@ -1001,14 +955,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -1162,17 +1108,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1218,7 +1153,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1297,7 +1233,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "plumbus1": {
@@ -1397,14 +1334,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -1558,17 +1487,6 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1614,7 +1532,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1693,7 +1612,8 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "plumbusLen": {

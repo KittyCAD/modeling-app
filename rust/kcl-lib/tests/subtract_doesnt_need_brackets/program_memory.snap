@@ -151,17 +151,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -193,7 +182,8 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -341,17 +331,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -383,7 +362,8 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "subtractedPart": {
@@ -531,17 +511,6 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -573,7 +542,8 @@ description: Variables in memory after executing subtract_doesnt_need_brackets.k
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

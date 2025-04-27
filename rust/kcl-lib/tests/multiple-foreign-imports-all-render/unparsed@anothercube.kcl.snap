@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/multiple-foreign-imports-all-render/anothercube.kcl
+---
+import "../inputs/cube.step" as cube
+
+clone(cube)

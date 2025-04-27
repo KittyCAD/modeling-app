@@ -29,11 +29,8 @@ import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
-import { useSettings } from '@src/machines/appMachine'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 import styles from './CommandBarKclInput.module.css'
 

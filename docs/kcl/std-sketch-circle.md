@@ -46,12 +46,12 @@ example = extrude(exampleSketch, length = 5)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([-15, 0], %)
+  |> startProfile(at = [-15, 0])
   |> line(end = [30, 0])
   |> line(end = [0, 30])
   |> line(end = [-30, 0])
   |> close()
-  |> hole(circle(center = [0, 15], radius = 5), %)
+  |> subtract2d(tool = circle(center = [0, 15], radius = 5))
 
 example = extrude(exampleSketch, length = 5)
 ```

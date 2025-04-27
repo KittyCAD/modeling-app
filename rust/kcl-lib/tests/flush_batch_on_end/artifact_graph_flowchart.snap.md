@@ -11,7 +11,7 @@ flowchart LR
     7[Solid2d]
   end
   1["Plane<br>[199, 218, 0]"]
-  8["Sweep Extrusion<br>[696, 733, 0]"]
+  8["Sweep Extrusion<br>[706, 743, 0]"]
   9[Wall]
   10["Cap Start"]
   11["Cap End"]
@@ -25,6 +25,7 @@ flowchart LR
   3 --- 9
   3 --- 12
   3 --- 13
+  3 x--> 10
   5 --- 6
   5 --- 7
   8 --- 9
@@ -32,4 +33,7 @@ flowchart LR
   8 --- 11
   8 --- 12
   8 --- 13
+  12 <--x 9
+  12 <--x 11
+  13 <--x 9
 ```

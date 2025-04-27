@@ -10,46 +10,46 @@ import * from "parameters.kcl"
 // Model the housing which holds the motor, the fan, and the mounting provisions
 // Bottom mounting face
 bottomFaceSketch = startSketchOn(XY)
-  |> startProfileAt([-fanSize / 2, -fanSize / 2], %)
+  |> startProfile(at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
   |> close()
-  |> hole(circle(center = [0, 0], radius = 4), %)
-  |> hole(circle(
+  |> subtract2d(tool = circle(center = [0, 0], radius = 4))
+  |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> extrude(length = 4)
 
 // Add large openings to the bottom face to allow airflow through the fan
 airflowPattern = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfileAt([fanSize * 7 / 25, -fanSize * 9 / 25], %)
+  |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
   |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
   |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
   |> angledLine(angle = -130, length = fanSize * 8 / 25)
@@ -71,10 +71,10 @@ airflowPattern = startSketchOn(bottomFaceSketch, face = END)
 housingMiddleLength = fanSize / 3
 housingMiddleRadius = fanSize / 3 - 1
 bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfileAt([
+  |> startProfile(at = [
        housingMiddleLength / 2,
        -housingMiddleLength / 2 - housingMiddleRadius
-     ], %)
+     ])
   |> tangentialArc(radius = housingMiddleRadius, angle = 90)
   |> yLine(length = housingMiddleLength)
   |> tangentialArc(radius = housingMiddleRadius, angle = 90)
@@ -92,41 +92,41 @@ bodyFanHole = startSketchOn(bodyMiddle, face = END)
 
 // Top mounting face. Cut a hole in the face to accommodate the fan
 topFaceSketch = startSketchOn(bodyMiddle, face = END)
-topHoles = startProfileAt([-fanSize / 2, -fanSize / 2], topFaceSketch)
+topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
   |> close()
-  |> hole(circle(center = [0, 0], radius = fanSize * 23 / 50), %)
-  |> hole(circle(
+  |> subtract2d(tool = circle(center = [0, 0], radius = fanSize * 23 / 50))
+  |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          -mountingHoleSpacing / 2,
          -mountingHoleSpacing / 2
        ],
        radius = mountingHoleSize / 2,
-     ), %)
+     ))
   |> extrude(length = 4)
 
 // Create a housing for the electric motor to sit

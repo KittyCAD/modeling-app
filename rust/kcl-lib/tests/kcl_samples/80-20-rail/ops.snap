@@ -10,7 +10,7 @@ description: Operations executed 80-20-rail.kcl
       "name": "rail8020",
       "functionSourceRange": [
         239,
-        6532,
+        6542,
         0
       ],
       "unlabeledArg": null,
@@ -35,16 +35,7 @@ description: Operations executed 80-20-rail.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -54,10 +45,18 @@ description: Operations executed 80-20-rail.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {

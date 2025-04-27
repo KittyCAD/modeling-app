@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.62"
+version = "0.2.64"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -69,7 +69,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.10.8"
 tabled = { version = "0.18.0", optional = true }
-tempdir = "0.3.7"
+tempfile = "3.19"
 thiserror = "2.0.0"
 toml = "0.8.19"
 ts-rs = { version = "10.1.0", features = [
@@ -108,6 +108,7 @@ tower-lsp = { workspace = true, features = ["proposed", "default"] }
 
 [features]
 default = ["cli", "engine"]
+artifact-graph = []
 benchmark-execution = []
 cli = ["dep:clap", "kittycad/clap"]
 dhat-heap = ["dep:dhat"]

@@ -148,17 +148,6 @@ description: Variables in memory after executing lego.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -190,7 +179,8 @@ description: Variables in memory after executing lego.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bumpDiam": {
@@ -340,14 +330,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -491,17 +473,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -533,7 +504,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -568,7 +540,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -637,14 +610,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -788,17 +753,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -830,7 +784,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -865,7 +820,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -934,14 +890,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1085,17 +1033,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1127,7 +1064,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1162,7 +1100,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1231,14 +1170,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1382,17 +1313,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1424,7 +1344,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1459,7 +1380,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1528,14 +1450,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1679,17 +1593,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1721,7 +1624,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1756,7 +1660,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1825,14 +1730,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1976,17 +1873,6 @@ description: Variables in memory after executing lego.kcl
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2018,7 +1904,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2053,7 +1940,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -2222,14 +2110,6 @@ description: Variables in memory after executing lego.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -2373,17 +2253,6 @@ description: Variables in memory after executing lego.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -2415,7 +2284,8 @@ description: Variables in memory after executing lego.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2450,7 +2320,8 @@ description: Variables in memory after executing lego.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "t": {
@@ -2561,14 +2432,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2701,14 +2564,6 @@ description: Variables in memory after executing lego.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -2856,17 +2711,6 @@ description: Variables in memory after executing lego.kcl
                             "units": {
                               "type": "Mm"
                             }
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0,
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "units": {
-                            "type": "Inches"
                           }
                         },
                         "start": {
@@ -2898,7 +2742,8 @@ description: Variables in memory after executing lego.kcl
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Inches"
-                      }
+                      },
+                      "sectional": false
                     },
                     "units": {
                       "type": "Inches"
@@ -2933,7 +2778,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": null,
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2968,7 +2814,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3037,14 +2884,6 @@ description: Variables in memory after executing lego.kcl
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -3177,14 +3016,6 @@ description: Variables in memory after executing lego.kcl
                       "x": 0.0,
                       "y": 1.0,
                       "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
                       "units": {
                         "type": "Mm"
                       }
@@ -3332,17 +3163,6 @@ description: Variables in memory after executing lego.kcl
                             "units": {
                               "type": "Mm"
                             }
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0,
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "units": {
-                            "type": "Inches"
                           }
                         },
                         "start": {
@@ -3374,7 +3194,8 @@ description: Variables in memory after executing lego.kcl
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Inches"
-                      }
+                      },
+                      "sectional": false
                     },
                     "units": {
                       "type": "Inches"
@@ -3409,7 +3230,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": null,
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3444,7 +3266,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

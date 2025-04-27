@@ -10,13 +10,12 @@ use kittycad_modeling_cmds::{
     websocket::OkWebSocketResponseData,
 };
 
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
-
-use super::{args::TyF64, DEFAULT_TOLERANCE};
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -42,7 +41,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -64,7 +63,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -87,7 +86,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -192,7 +191,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -214,7 +213,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -325,7 +324,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -347,7 +346,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///
 /// fn cube(center, size) {
 ///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])

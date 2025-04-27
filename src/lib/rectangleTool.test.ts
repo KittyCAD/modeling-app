@@ -19,7 +19,7 @@ describe('library rectangleTool helper functions', () => {
     test('should update AST and source code', async () => {
       // Base source code that will be edited in place
       const sourceCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([120.37, 162.76], %)
+profile001 = startProfile(at = [120.37, 162.76])
 |> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
 |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
 |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -31,7 +31,7 @@ profile001 = startProfileAt([120.37, 162.76], %)
       let ast = structuredClone(_ast)
 
       // Find some nodes and paths to reference
-      const sketchSnippet = `startProfileAt([120.37, 162.76], %)`
+      const sketchSnippet = `startProfile(at = [120.37, 162.76])`
       const start = sourceCode.indexOf(sketchSnippet)
       expect(start).toBeGreaterThanOrEqual(0)
       const sketchRange = topLevelRange(start, start + sketchSnippet.length)
@@ -69,7 +69,7 @@ profile001 = startProfileAt([120.37, 162.76], %)
 
       // ast is edited in place from the updateCenterRectangleSketch
       const expectedSourceCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([80, 120], %)
+profile001 = startProfile(at = [80, 120])
   |> angledLine(angle = 0, length = 80, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 120, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)

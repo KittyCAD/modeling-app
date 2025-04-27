@@ -5,6 +5,7 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -14,8 +15,6 @@ use crate::{
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
-
-use super::args::TyF64;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
@@ -46,7 +45,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// chamferLength = 2
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfileAt([-width/2, -length/2], %)
+///   |> startProfile(at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
@@ -68,7 +67,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// // Sketch on the face of a chamfer.
 /// fn cube(pos, scale) {
 /// sg = startSketchOn(XY)
-///     |> startProfileAt(pos, %)
+///     |> startProfile(at = pos)
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])
 ///     |> line(end = [0, -scale])
@@ -87,7 +86,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     )  
 ///
 /// sketch001 = startSketchOn(part001, face = chamfer1)
-///     |> startProfileAt([10, 10], %)
+///     |> startProfile(at = [10, 10])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, 2])
 ///     |> line(end = [-2, 0])
@@ -137,7 +136,7 @@ async fn inner_chamfer(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(length.n),
+                radius: LengthUnit(length.to_mm()),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.
                 cut_type: CutType::Chamfer,
             }),

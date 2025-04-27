@@ -14,7 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/machines/appMachine'
+import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
 
 const subtleBorder =
@@ -76,6 +76,11 @@ const SignIn = () => {
     authActor.send({ type: 'Log in', token })
   }
 
+  const cancelSignIn = async () => {
+    authActor.send({ type: 'Log out' })
+    setUserCode('')
+  }
+
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
@@ -128,7 +133,10 @@ const SignIn = () => {
                     <p className="text-xs">
                       You should see the following code in your browser
                     </p>
-                    <p className="text-lg font-bold inline-flex gap-1">
+                    <p
+                      className="text-lg font-bold inline-flex gap-1"
+                      data-testid="sign-in-user-code"
+                    >
                       {userCode.split('').map((char, i) => (
                         <span
                           key={i}
@@ -141,6 +149,17 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    <button
+                      onClick={toSync(cancelSignIn, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="cancel-sign-in-button"
+                    >
+                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      Cancel
+                    </button>
                   </>
                 )}
               </div>
@@ -187,7 +206,7 @@ const SignIn = () => {
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                 '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
               }
-              data-testid="sign-in-button"
+              data-testid="view-sample-button"
             >
               View this sample
               <CustomIcon name="arrowRight" className="w-6 h-6" />

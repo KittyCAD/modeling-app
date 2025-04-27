@@ -33,14 +33,6 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.933386259126019,
+        "x": 125.30801098180088,
         "y": 0.0,
         "z": 0.0
       }
@@ -117,7 +109,7 @@ description: Artifact commands gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 4.933386259126019,
+        "radius": 125.30801098180088,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -160,7 +152,7 @@ description: Artifact commands gear.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 3.0,
+      "distance": 76.19999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -193,6 +185,15 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -203,10 +204,28 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -264,8 +283,8 @@ description: Artifact commands gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 5.7399134909054,
-        "y": 0.340430781396414,
+        "x": 145.79380266899716,
+        "y": 8.646941847468915,
         "z": 0.0
       }
     }
@@ -286,8 +305,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.7321,
-          "y": 0.3351,
+          "x": 145.596,
+          "y": 8.5125,
           "z": 0.0
         },
         "relative": false
@@ -303,8 +322,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.7243,
-          "y": 0.3299,
+          "x": 145.398,
+          "y": 8.3788,
           "z": 0.0
         },
         "relative": false
@@ -320,8 +339,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.7165,
-          "y": 0.3246,
+          "x": 145.1999,
+          "y": 8.2459,
           "z": 0.0
         },
         "relative": false
@@ -337,8 +356,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.7087,
-          "y": 0.3194,
+          "x": 145.0017,
+          "y": 8.1139,
           "z": 0.0
         },
         "relative": false
@@ -354,8 +373,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.7009,
-          "y": 0.3143,
+          "x": 144.8033,
+          "y": 7.9828,
           "z": 0.0
         },
         "relative": false
@@ -371,8 +390,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6931,
-          "y": 0.3091,
+          "x": 144.6048,
+          "y": 7.8524,
           "z": 0.0
         },
         "relative": false
@@ -388,8 +407,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6853,
-          "y": 0.3041,
+          "x": 144.4061,
+          "y": 7.7229,
           "z": 0.0
         },
         "relative": false
@@ -405,8 +424,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6775,
-          "y": 0.299,
+          "x": 144.2072,
+          "y": 7.5942,
           "z": 0.0
         },
         "relative": false
@@ -422,8 +441,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6696,
-          "y": 0.294,
+          "x": 144.0083,
+          "y": 7.4664,
           "z": 0.0
         },
         "relative": false
@@ -439,8 +458,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6618,
-          "y": 0.289,
+          "x": 143.8092,
+          "y": 7.3393,
           "z": 0.0
         },
         "relative": false
@@ -456,8 +475,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6539,
-          "y": 0.284,
+          "x": 143.6099,
+          "y": 7.2132,
           "z": 0.0
         },
         "relative": false
@@ -473,8 +492,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6461,
-          "y": 0.279,
+          "x": 143.4106,
+          "y": 7.0879,
           "z": 0.0
         },
         "relative": false
@@ -490,8 +509,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6382,
-          "y": 0.2741,
+          "x": 143.211,
+          "y": 6.9634,
           "z": 0.0
         },
         "relative": false
@@ -507,8 +526,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6304,
-          "y": 0.2693,
+          "x": 143.0114,
+          "y": 6.8398,
           "z": 0.0
         },
         "relative": false
@@ -524,8 +543,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6225,
-          "y": 0.2644,
+          "x": 142.8116,
+          "y": 6.717,
           "z": 0.0
         },
         "relative": false
@@ -541,8 +560,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6146,
-          "y": 0.2597,
+          "x": 142.6117,
+          "y": 6.5951,
           "z": 0.0
         },
         "relative": false
@@ -558,8 +577,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6068,
-          "y": 0.2549,
+          "x": 142.4117,
+          "y": 6.4741,
           "z": 0.0
         },
         "relative": false
@@ -575,8 +594,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5989,
-          "y": 0.2502,
+          "x": 142.2115,
+          "y": 6.3539,
           "z": 0.0
         },
         "relative": false
@@ -592,8 +611,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.591,
-          "y": 0.2455,
+          "x": 142.0113,
+          "y": 6.2346,
           "z": 0.0
         },
         "relative": false
@@ -609,8 +628,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5831,
-          "y": 0.2408,
+          "x": 141.8108,
+          "y": 6.1161,
           "z": 0.0
         },
         "relative": false
@@ -626,8 +645,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5752,
-          "y": 0.2362,
+          "x": 141.6103,
+          "y": 5.9985,
           "z": 0.0
         },
         "relative": false
@@ -643,8 +662,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5673,
-          "y": 0.2316,
+          "x": 141.4097,
+          "y": 5.8818,
           "z": 0.0
         },
         "relative": false
@@ -660,8 +679,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5594,
-          "y": 0.227,
+          "x": 141.2089,
+          "y": 5.766,
           "z": 0.0
         },
         "relative": false
@@ -677,8 +696,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5515,
-          "y": 0.2225,
+          "x": 141.008,
+          "y": 5.651,
           "z": 0.0
         },
         "relative": false
@@ -694,8 +713,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5436,
-          "y": 0.218,
+          "x": 140.807,
+          "y": 5.5369,
           "z": 0.0
         },
         "relative": false
@@ -711,8 +730,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5357,
-          "y": 0.2135,
+          "x": 140.6059,
+          "y": 5.4237,
           "z": 0.0
         },
         "relative": false
@@ -728,8 +747,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5277,
-          "y": 0.2091,
+          "x": 140.4047,
+          "y": 5.3114,
           "z": 0.0
         },
         "relative": false
@@ -745,8 +764,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5198,
-          "y": 0.2047,
+          "x": 140.2033,
+          "y": 5.2,
           "z": 0.0
         },
         "relative": false
@@ -762,8 +781,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5119,
-          "y": 0.2004,
+          "x": 140.0019,
+          "y": 5.0895,
           "z": 0.0
         },
         "relative": false
@@ -779,8 +798,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.504,
-          "y": 0.1961,
+          "x": 139.8003,
+          "y": 4.9799,
           "z": 0.0
         },
         "relative": false
@@ -796,8 +815,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.496,
-          "y": 0.1918,
+          "x": 139.5987,
+          "y": 4.8712,
           "z": 0.0
         },
         "relative": false
@@ -813,8 +832,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4881,
-          "y": 0.1875,
+          "x": 139.3969,
+          "y": 4.7634,
           "z": 0.0
         },
         "relative": false
@@ -830,8 +849,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4801,
-          "y": 0.1833,
+          "x": 139.195,
+          "y": 4.6565,
           "z": 0.0
         },
         "relative": false
@@ -847,8 +866,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4722,
-          "y": 0.1792,
+          "x": 138.9931,
+          "y": 4.5506,
           "z": 0.0
         },
         "relative": false
@@ -864,8 +883,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4642,
-          "y": 0.175,
+          "x": 138.791,
+          "y": 4.4455,
           "z": 0.0
         },
         "relative": false
@@ -881,8 +900,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4563,
-          "y": 0.1709,
+          "x": 138.5888,
+          "y": 4.3414,
           "z": 0.0
         },
         "relative": false
@@ -898,8 +917,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4483,
-          "y": 0.1669,
+          "x": 138.3866,
+          "y": 4.2382,
           "z": 0.0
         },
         "relative": false
@@ -915,8 +934,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4403,
-          "y": 0.1628,
+          "x": 138.1842,
+          "y": 4.1359,
           "z": 0.0
         },
         "relative": false
@@ -932,8 +951,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4324,
-          "y": 0.1588,
+          "x": 137.9817,
+          "y": 4.0346,
           "z": 0.0
         },
         "relative": false
@@ -949,8 +968,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4244,
-          "y": 0.1549,
+          "x": 137.7792,
+          "y": 3.9342,
           "z": 0.0
         },
         "relative": false
@@ -966,8 +985,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4164,
-          "y": 0.151,
+          "x": 137.5766,
+          "y": 3.8347,
           "z": 0.0
         },
         "relative": false
@@ -983,8 +1002,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4084,
-          "y": 0.1471,
+          "x": 137.3738,
+          "y": 3.7362,
           "z": 0.0
         },
         "relative": false
@@ -1000,8 +1019,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4004,
-          "y": 0.1433,
+          "x": 137.171,
+          "y": 3.6387,
           "z": 0.0
         },
         "relative": false
@@ -1017,8 +1036,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3924,
-          "y": 0.1395,
+          "x": 136.9681,
+          "y": 3.5421,
           "z": 0.0
         },
         "relative": false
@@ -1034,8 +1053,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3845,
-          "y": 0.1357,
+          "x": 136.7651,
+          "y": 3.4465,
           "z": 0.0
         },
         "relative": false
@@ -1051,8 +1070,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3765,
-          "y": 0.132,
+          "x": 136.562,
+          "y": 3.3519,
           "z": 0.0
         },
         "relative": false
@@ -1068,8 +1087,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3685,
-          "y": 0.1283,
+          "x": 136.3589,
+          "y": 3.2582,
           "z": 0.0
         },
         "relative": false
@@ -1085,8 +1104,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3605,
-          "y": 0.1246,
+          "x": 136.1556,
+          "y": 3.1655,
           "z": 0.0
         },
         "relative": false
@@ -1102,8 +1121,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3525,
-          "y": 0.121,
+          "x": 135.9523,
+          "y": 3.0738,
           "z": 0.0
         },
         "relative": false
@@ -1119,8 +1138,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3444,
-          "y": 0.1174,
+          "x": 135.7489,
+          "y": 2.9831,
           "z": 0.0
         },
         "relative": false
@@ -1136,8 +1155,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3364,
-          "y": 0.1139,
+          "x": 135.5454,
+          "y": 2.8934,
           "z": 0.0
         },
         "relative": false
@@ -1153,8 +1172,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3284,
-          "y": 0.1104,
+          "x": 135.3419,
+          "y": 2.8048,
           "z": 0.0
         },
         "relative": false
@@ -1170,8 +1189,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3204,
-          "y": 0.107,
+          "x": 135.1383,
+          "y": 2.7171,
           "z": 0.0
         },
         "relative": false
@@ -1187,8 +1206,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3124,
-          "y": 0.1036,
+          "x": 134.9346,
+          "y": 2.6304,
           "z": 0.0
         },
         "relative": false
@@ -1204,8 +1223,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3044,
-          "y": 0.1002,
+          "x": 134.7308,
+          "y": 2.5448,
           "z": 0.0
         },
         "relative": false
@@ -1221,8 +1240,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2963,
-          "y": 0.0969,
+          "x": 134.527,
+          "y": 2.4603,
           "z": 0.0
         },
         "relative": false
@@ -1238,8 +1257,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2883,
-          "y": 0.0936,
+          "x": 134.3231,
+          "y": 2.3767,
           "z": 0.0
         },
         "relative": false
@@ -1255,8 +1274,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2803,
-          "y": 0.0903,
+          "x": 134.1191,
+          "y": 2.2942,
           "z": 0.0
         },
         "relative": false
@@ -1272,8 +1291,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2722,
-          "y": 0.0871,
+          "x": 133.9151,
+          "y": 2.2128,
           "z": 0.0
         },
         "relative": false
@@ -1289,8 +1308,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2642,
-          "y": 0.084,
+          "x": 133.711,
+          "y": 2.1325,
           "z": 0.0
         },
         "relative": false
@@ -1306,8 +1325,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2562,
-          "y": 0.0808,
+          "x": 133.5069,
+          "y": 2.0532,
           "z": 0.0
         },
         "relative": false
@@ -1323,8 +1342,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2481,
-          "y": 0.0778,
+          "x": 133.3027,
+          "y": 1.975,
           "z": 0.0
         },
         "relative": false
@@ -1340,8 +1359,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2401,
-          "y": 0.0747,
+          "x": 133.0984,
+          "y": 1.898,
           "z": 0.0
         },
         "relative": false
@@ -1357,8 +1376,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2321,
-          "y": 0.0717,
+          "x": 132.8941,
+          "y": 1.822,
           "z": 0.0
         },
         "relative": false
@@ -1374,8 +1393,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.224,
-          "y": 0.0688,
+          "x": 132.6897,
+          "y": 1.7472,
           "z": 0.0
         },
         "relative": false
@@ -1391,8 +1410,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.216,
-          "y": 0.0659,
+          "x": 132.4853,
+          "y": 1.6735,
           "z": 0.0
         },
         "relative": false
@@ -1408,8 +1427,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2079,
-          "y": 0.063,
+          "x": 132.2808,
+          "y": 1.6009,
           "z": 0.0
         },
         "relative": false
@@ -1425,8 +1444,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1999,
-          "y": 0.0602,
+          "x": 132.0762,
+          "y": 1.5295,
           "z": 0.0
         },
         "relative": false
@@ -1442,8 +1461,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1918,
-          "y": 0.0575,
+          "x": 131.8717,
+          "y": 1.4593,
           "z": 0.0
         },
         "relative": false
@@ -1459,8 +1478,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1837,
-          "y": 0.0547,
+          "x": 131.667,
+          "y": 1.3902,
           "z": 0.0
         },
         "relative": false
@@ -1476,8 +1495,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1757,
-          "y": 0.0521,
+          "x": 131.4623,
+          "y": 1.3224,
           "z": 0.0
         },
         "relative": false
@@ -1493,8 +1512,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1676,
-          "y": 0.0494,
+          "x": 131.2576,
+          "y": 1.2557,
           "z": 0.0
         },
         "relative": false
@@ -1510,8 +1529,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1596,
-          "y": 0.0469,
+          "x": 131.0529,
+          "y": 1.1903,
           "z": 0.0
         },
         "relative": false
@@ -1527,8 +1546,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1515,
-          "y": 0.0443,
+          "x": 130.8481,
+          "y": 1.1261,
           "z": 0.0
         },
         "relative": false
@@ -1544,8 +1563,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1434,
-          "y": 0.0419,
+          "x": 130.6432,
+          "y": 1.0633,
           "z": 0.0
         },
         "relative": false
@@ -1561,8 +1580,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1354,
-          "y": 0.0394,
+          "x": 130.4383,
+          "y": 1.0016,
           "z": 0.0
         },
         "relative": false
@@ -1578,8 +1597,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1273,
-          "y": 0.0371,
+          "x": 130.2334,
+          "y": 0.9413,
           "z": 0.0
         },
         "relative": false
@@ -1595,8 +1614,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1192,
-          "y": 0.0347,
+          "x": 130.0284,
+          "y": 0.8824,
           "z": 0.0
         },
         "relative": false
@@ -1612,8 +1631,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1112,
-          "y": 0.0325,
+          "x": 129.8234,
+          "y": 0.8247,
           "z": 0.0
         },
         "relative": false
@@ -1629,8 +1648,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1031,
-          "y": 0.0303,
+          "x": 129.6184,
+          "y": 0.7685,
           "z": 0.0
         },
         "relative": false
@@ -1646,8 +1665,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.095,
-          "y": 0.0281,
+          "x": 129.4134,
+          "y": 0.7136,
           "z": 0.0
         },
         "relative": false
@@ -1663,8 +1682,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0869,
-          "y": 0.026,
+          "x": 129.2083,
+          "y": 0.6602,
           "z": 0.0
         },
         "relative": false
@@ -1680,8 +1699,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0789,
-          "y": 0.0239,
+          "x": 129.0032,
+          "y": 0.6082,
           "z": 0.0
         },
         "relative": false
@@ -1697,8 +1716,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0708,
-          "y": 0.022,
+          "x": 128.798,
+          "y": 0.5578,
           "z": 0.0
         },
         "relative": false
@@ -1714,8 +1733,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0627,
-          "y": 0.02,
+          "x": 128.5929,
+          "y": 0.5088,
           "z": 0.0
         },
         "relative": false
@@ -1731,8 +1750,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0546,
-          "y": 0.0182,
+          "x": 128.3877,
+          "y": 0.4615,
           "z": 0.0
         },
         "relative": false
@@ -1748,8 +1767,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0466,
-          "y": 0.0164,
+          "x": 128.1825,
+          "y": 0.4158,
           "z": 0.0
         },
         "relative": false
@@ -1765,8 +1784,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0385,
-          "y": 0.0146,
+          "x": 127.9772,
+          "y": 0.3717,
           "z": 0.0
         },
         "relative": false
@@ -1782,8 +1801,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0304,
-          "y": 0.013,
+          "x": 127.772,
+          "y": 0.3293,
           "z": 0.0
         },
         "relative": false
@@ -1799,8 +1818,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0223,
-          "y": 0.0114,
+          "x": 127.5667,
+          "y": 0.2888,
           "z": 0.0
         },
         "relative": false
@@ -1816,8 +1835,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0142,
-          "y": 0.0098,
+          "x": 127.3614,
+          "y": 0.2501,
           "z": 0.0
         },
         "relative": false
@@ -1833,8 +1852,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0061,
-          "y": 0.0084,
+          "x": 127.1561,
+          "y": 0.2133,
           "z": 0.0
         },
         "relative": false
@@ -1850,8 +1869,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9981,
-          "y": 0.007,
+          "x": 126.9508,
+          "y": 0.1786,
           "z": 0.0
         },
         "relative": false
@@ -1867,8 +1886,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.99,
-          "y": 0.0058,
+          "x": 126.7455,
+          "y": 0.1461,
           "z": 0.0
         },
         "relative": false
@@ -1884,8 +1903,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9819,
-          "y": 0.0046,
+          "x": 126.5402,
+          "y": 0.1158,
           "z": 0.0
         },
         "relative": false
@@ -1901,8 +1920,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9738,
-          "y": 0.0035,
+          "x": 126.3348,
+          "y": 0.088,
           "z": 0.0
         },
         "relative": false
@@ -1918,8 +1937,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9657,
-          "y": 0.0025,
+          "x": 126.1295,
+          "y": 0.0629,
           "z": 0.0
         },
         "relative": false
@@ -1935,8 +1954,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9576,
-          "y": 0.0016,
+          "x": 125.9241,
+          "y": 0.0408,
           "z": 0.0
         },
         "relative": false
@@ -1952,8 +1971,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9496,
-          "y": 0.0009,
+          "x": 125.7187,
+          "y": 0.0222,
           "z": 0.0
         },
         "relative": false
@@ -1969,8 +1988,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9415,
-          "y": 0.0003,
+          "x": 125.5134,
+          "y": 0.0078,
           "z": 0.0
         },
         "relative": false
@@ -1986,7 +2005,7 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9334,
+          "x": 125.308,
           "y": 0.0,
           "z": 0.0
         },
@@ -2006,7 +2025,7 @@ description: Artifact commands gear.kcl
           "x": -0.0,
           "y": -0.0
         },
-        "radius": 4.933386259126019,
+        "radius": 125.30801098180088,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2028,8 +2047,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8436,
-          "y": 0.9788,
+          "x": 123.0263,
+          "y": 24.8623,
           "z": 0.0
         },
         "relative": false
@@ -2045,8 +2064,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8516,
-          "y": 0.9799,
+          "x": 123.2305,
+          "y": 24.8889,
           "z": 0.0
         },
         "relative": false
@@ -2062,8 +2081,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8597,
-          "y": 0.9808,
+          "x": 123.4354,
+          "y": 24.9113,
           "z": 0.0
         },
         "relative": false
@@ -2079,8 +2098,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8678,
-          "y": 0.9815,
+          "x": 123.6411,
+          "y": 24.9304,
           "z": 0.0
         },
         "relative": false
@@ -2096,8 +2115,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8759,
-          "y": 0.9821,
+          "x": 123.8473,
+          "y": 24.9465,
           "z": 0.0
         },
         "relative": false
@@ -2113,8 +2132,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.884,
-          "y": 0.9827,
+          "x": 124.0541,
+          "y": 24.9599,
           "z": 0.0
         },
         "relative": false
@@ -2130,8 +2149,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.8922,
-          "y": 0.9831,
+          "x": 124.2614,
+          "y": 24.9709,
           "z": 0.0
         },
         "relative": false
@@ -2147,8 +2166,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9004,
-          "y": 0.9835,
+          "x": 124.4691,
+          "y": 24.9797,
           "z": 0.0
         },
         "relative": false
@@ -2164,8 +2183,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9086,
-          "y": 0.9837,
+          "x": 124.6772,
+          "y": 24.9864,
           "z": 0.0
         },
         "relative": false
@@ -2181,8 +2200,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9168,
-          "y": 0.9839,
+          "x": 124.8857,
+          "y": 24.991,
           "z": 0.0
         },
         "relative": false
@@ -2198,8 +2217,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.925,
-          "y": 0.984,
+          "x": 125.0946,
+          "y": 24.9938,
           "z": 0.0
         },
         "relative": false
@@ -2215,8 +2234,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9332,
-          "y": 0.984,
+          "x": 125.3038,
+          "y": 24.9947,
           "z": 0.0
         },
         "relative": false
@@ -2232,8 +2251,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9415,
-          "y": 0.984,
+          "x": 125.5134,
+          "y": 24.9939,
           "z": 0.0
         },
         "relative": false
@@ -2249,8 +2268,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9497,
-          "y": 0.9839,
+          "x": 125.7233,
+          "y": 24.9914,
           "z": 0.0
         },
         "relative": false
@@ -2266,8 +2285,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.958,
-          "y": 0.9837,
+          "x": 125.9335,
+          "y": 24.9872,
           "z": 0.0
         },
         "relative": false
@@ -2283,8 +2302,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9663,
-          "y": 0.9835,
+          "x": 126.144,
+          "y": 24.9814,
           "z": 0.0
         },
         "relative": false
@@ -2300,8 +2319,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9746,
-          "y": 0.9832,
+          "x": 126.3548,
+          "y": 24.9741,
           "z": 0.0
         },
         "relative": false
@@ -2317,8 +2336,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9829,
-          "y": 0.9829,
+          "x": 126.5659,
+          "y": 24.9653,
           "z": 0.0
         },
         "relative": false
@@ -2334,8 +2353,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9912,
-          "y": 0.9825,
+          "x": 126.7772,
+          "y": 24.955,
           "z": 0.0
         },
         "relative": false
@@ -2351,8 +2370,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.9996,
-          "y": 0.982,
+          "x": 126.9888,
+          "y": 24.9433,
           "z": 0.0
         },
         "relative": false
@@ -2368,8 +2387,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0079,
-          "y": 0.9815,
+          "x": 127.2007,
+          "y": 24.9302,
           "z": 0.0
         },
         "relative": false
@@ -2385,8 +2404,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0163,
-          "y": 0.9809,
+          "x": 127.4128,
+          "y": 24.9156,
           "z": 0.0
         },
         "relative": false
@@ -2402,8 +2421,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0246,
-          "y": 0.9803,
+          "x": 127.6251,
+          "y": 24.8998,
           "z": 0.0
         },
         "relative": false
@@ -2419,8 +2438,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.033,
-          "y": 0.9796,
+          "x": 127.8377,
+          "y": 24.8826,
           "z": 0.0
         },
         "relative": false
@@ -2436,8 +2455,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0414,
-          "y": 0.9789,
+          "x": 128.0505,
+          "y": 24.8641,
           "z": 0.0
         },
         "relative": false
@@ -2453,8 +2472,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0497,
-          "y": 0.9781,
+          "x": 128.2636,
+          "y": 24.8443,
           "z": 0.0
         },
         "relative": false
@@ -2470,8 +2489,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0581,
-          "y": 0.9773,
+          "x": 128.4768,
+          "y": 24.8232,
           "z": 0.0
         },
         "relative": false
@@ -2487,8 +2506,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0665,
-          "y": 0.9764,
+          "x": 128.6903,
+          "y": 24.8009,
           "z": 0.0
         },
         "relative": false
@@ -2504,8 +2523,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.075,
-          "y": 0.9755,
+          "x": 128.9039,
+          "y": 24.7774,
           "z": 0.0
         },
         "relative": false
@@ -2521,8 +2540,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0834,
-          "y": 0.9745,
+          "x": 129.1178,
+          "y": 24.7526,
           "z": 0.0
         },
         "relative": false
@@ -2538,8 +2557,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.0918,
-          "y": 0.9735,
+          "x": 129.3319,
+          "y": 24.7267,
           "z": 0.0
         },
         "relative": false
@@ -2555,8 +2574,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1002,
-          "y": 0.9724,
+          "x": 129.5461,
+          "y": 24.6995,
           "z": 0.0
         },
         "relative": false
@@ -2572,8 +2591,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1087,
-          "y": 0.9713,
+          "x": 129.7606,
+          "y": 24.6712,
           "z": 0.0
         },
         "relative": false
@@ -2589,8 +2608,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1171,
-          "y": 0.9701,
+          "x": 129.9752,
+          "y": 24.6418,
           "z": 0.0
         },
         "relative": false
@@ -2606,8 +2625,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1256,
-          "y": 0.9689,
+          "x": 130.19,
+          "y": 24.6112,
           "z": 0.0
         },
         "relative": false
@@ -2623,8 +2642,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1341,
-          "y": 0.9677,
+          "x": 130.405,
+          "y": 24.5794,
           "z": 0.0
         },
         "relative": false
@@ -2640,8 +2659,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1425,
-          "y": 0.9664,
+          "x": 130.6201,
+          "y": 24.5466,
           "z": 0.0
         },
         "relative": false
@@ -2657,8 +2676,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.151,
-          "y": 0.9651,
+          "x": 130.8355,
+          "y": 24.5126,
           "z": 0.0
         },
         "relative": false
@@ -2674,8 +2693,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1595,
-          "y": 0.9637,
+          "x": 131.051,
+          "y": 24.4775,
           "z": 0.0
         },
         "relative": false
@@ -2691,8 +2710,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.168,
-          "y": 0.9623,
+          "x": 131.2666,
+          "y": 24.4414,
           "z": 0.0
         },
         "relative": false
@@ -2708,8 +2727,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1765,
-          "y": 0.9608,
+          "x": 131.4824,
+          "y": 24.4041,
           "z": 0.0
         },
         "relative": false
@@ -2725,8 +2744,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.185,
-          "y": 0.9593,
+          "x": 131.6984,
+          "y": 24.3658,
           "z": 0.0
         },
         "relative": false
@@ -2742,8 +2761,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.1935,
-          "y": 0.9577,
+          "x": 131.9145,
+          "y": 24.3264,
           "z": 0.0
         },
         "relative": false
@@ -2759,8 +2778,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.202,
-          "y": 0.9561,
+          "x": 132.1307,
+          "y": 24.286,
           "z": 0.0
         },
         "relative": false
@@ -2776,8 +2795,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2105,
-          "y": 0.9545,
+          "x": 132.3472,
+          "y": 24.2445,
           "z": 0.0
         },
         "relative": false
@@ -2793,8 +2812,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.219,
-          "y": 0.9528,
+          "x": 132.5637,
+          "y": 24.202,
           "z": 0.0
         },
         "relative": false
@@ -2810,8 +2829,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2276,
-          "y": 0.9511,
+          "x": 132.7804,
+          "y": 24.1585,
           "z": 0.0
         },
         "relative": false
@@ -2827,8 +2846,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2361,
-          "y": 0.9494,
+          "x": 132.9972,
+          "y": 24.1139,
           "z": 0.0
         },
         "relative": false
@@ -2844,8 +2863,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2447,
-          "y": 0.9476,
+          "x": 133.2142,
+          "y": 24.0683,
           "z": 0.0
         },
         "relative": false
@@ -2861,8 +2880,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2532,
-          "y": 0.9457,
+          "x": 133.4312,
+          "y": 24.0217,
           "z": 0.0
         },
         "relative": false
@@ -2878,8 +2897,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2617,
-          "y": 0.9439,
+          "x": 133.6484,
+          "y": 23.9741,
           "z": 0.0
         },
         "relative": false
@@ -2895,8 +2914,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2703,
-          "y": 0.942,
+          "x": 133.8658,
+          "y": 23.9255,
           "z": 0.0
         },
         "relative": false
@@ -2912,8 +2931,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2789,
-          "y": 0.94,
+          "x": 134.0832,
+          "y": 23.876,
           "z": 0.0
         },
         "relative": false
@@ -2929,8 +2948,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.2874,
-          "y": 0.938,
+          "x": 134.3008,
+          "y": 23.8254,
           "z": 0.0
         },
         "relative": false
@@ -2946,8 +2965,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.296,
-          "y": 0.936,
+          "x": 134.5185,
+          "y": 23.7738,
           "z": 0.0
         },
         "relative": false
@@ -2963,8 +2982,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3046,
-          "y": 0.9339,
+          "x": 134.7363,
+          "y": 23.7213,
           "z": 0.0
         },
         "relative": false
@@ -2980,8 +2999,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3132,
-          "y": 0.9318,
+          "x": 134.9542,
+          "y": 23.6678,
           "z": 0.0
         },
         "relative": false
@@ -2997,8 +3016,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3217,
-          "y": 0.9297,
+          "x": 135.1722,
+          "y": 23.6134,
           "z": 0.0
         },
         "relative": false
@@ -3014,8 +3033,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3303,
-          "y": 0.9275,
+          "x": 135.3904,
+          "y": 23.5579,
           "z": 0.0
         },
         "relative": false
@@ -3031,8 +3050,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3389,
-          "y": 0.9253,
+          "x": 135.6086,
+          "y": 23.5016,
           "z": 0.0
         },
         "relative": false
@@ -3048,8 +3067,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3475,
-          "y": 0.923,
+          "x": 135.8269,
+          "y": 23.4443,
           "z": 0.0
         },
         "relative": false
@@ -3065,8 +3084,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3561,
-          "y": 0.9207,
+          "x": 136.0453,
+          "y": 23.386,
           "z": 0.0
         },
         "relative": false
@@ -3082,8 +3101,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3647,
-          "y": 0.9184,
+          "x": 136.2639,
+          "y": 23.3268,
           "z": 0.0
         },
         "relative": false
@@ -3099,8 +3118,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3733,
-          "y": 0.916,
+          "x": 136.4825,
+          "y": 23.2666,
           "z": 0.0
         },
         "relative": false
@@ -3116,8 +3135,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3819,
-          "y": 0.9136,
+          "x": 136.7012,
+          "y": 23.2056,
           "z": 0.0
         },
         "relative": false
@@ -3133,8 +3152,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3906,
-          "y": 0.9112,
+          "x": 136.92,
+          "y": 23.1435,
           "z": 0.0
         },
         "relative": false
@@ -3150,8 +3169,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.3992,
-          "y": 0.9087,
+          "x": 137.1389,
+          "y": 23.0806,
           "z": 0.0
         },
         "relative": false
@@ -3167,8 +3186,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4078,
-          "y": 0.9062,
+          "x": 137.3578,
+          "y": 23.0168,
           "z": 0.0
         },
         "relative": false
@@ -3184,8 +3203,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4164,
-          "y": 0.9036,
+          "x": 137.5769,
+          "y": 22.952,
           "z": 0.0
         },
         "relative": false
@@ -3201,8 +3220,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.425,
-          "y": 0.901,
+          "x": 137.796,
+          "y": 22.8863,
           "z": 0.0
         },
         "relative": false
@@ -3218,8 +3237,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4337,
-          "y": 0.8984,
+          "x": 138.0152,
+          "y": 22.8197,
           "z": 0.0
         },
         "relative": false
@@ -3235,8 +3254,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4423,
-          "y": 0.8958,
+          "x": 138.2345,
+          "y": 22.7522,
           "z": 0.0
         },
         "relative": false
@@ -3252,8 +3271,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4509,
-          "y": 0.8931,
+          "x": 138.4538,
+          "y": 22.6838,
           "z": 0.0
         },
         "relative": false
@@ -3269,8 +3288,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4596,
-          "y": 0.8903,
+          "x": 138.6732,
+          "y": 22.6145,
           "z": 0.0
         },
         "relative": false
@@ -3286,8 +3305,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4682,
-          "y": 0.8876,
+          "x": 138.8927,
+          "y": 22.5443,
           "z": 0.0
         },
         "relative": false
@@ -3303,8 +3322,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4769,
-          "y": 0.8848,
+          "x": 139.1123,
+          "y": 22.4732,
           "z": 0.0
         },
         "relative": false
@@ -3320,8 +3339,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4855,
-          "y": 0.8819,
+          "x": 139.3319,
+          "y": 22.4012,
           "z": 0.0
         },
         "relative": false
@@ -3337,8 +3356,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.4942,
-          "y": 0.8791,
+          "x": 139.5516,
+          "y": 22.3284,
           "z": 0.0
         },
         "relative": false
@@ -3354,8 +3373,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5028,
-          "y": 0.8762,
+          "x": 139.7713,
+          "y": 22.2546,
           "z": 0.0
         },
         "relative": false
@@ -3371,8 +3390,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5115,
-          "y": 0.8732,
+          "x": 139.9911,
+          "y": 22.18,
           "z": 0.0
         },
         "relative": false
@@ -3388,8 +3407,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5201,
-          "y": 0.8703,
+          "x": 140.211,
+          "y": 22.1044,
           "z": 0.0
         },
         "relative": false
@@ -3405,8 +3424,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5288,
-          "y": 0.8672,
+          "x": 140.4309,
+          "y": 22.028,
           "z": 0.0
         },
         "relative": false
@@ -3422,8 +3441,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5374,
-          "y": 0.8642,
+          "x": 140.6508,
+          "y": 21.9508,
           "z": 0.0
         },
         "relative": false
@@ -3439,8 +3458,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5461,
-          "y": 0.8611,
+          "x": 140.8708,
+          "y": 21.8726,
           "z": 0.0
         },
         "relative": false
@@ -3456,8 +3475,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5548,
-          "y": 0.858,
+          "x": 141.0909,
+          "y": 21.7936,
           "z": 0.0
         },
         "relative": false
@@ -3473,8 +3492,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5634,
-          "y": 0.8549,
+          "x": 141.311,
+          "y": 21.7137,
           "z": 0.0
         },
         "relative": false
@@ -3490,8 +3509,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5721,
-          "y": 0.8517,
+          "x": 141.5311,
+          "y": 21.633,
           "z": 0.0
         },
         "relative": false
@@ -3507,8 +3526,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5808,
-          "y": 0.8485,
+          "x": 141.7513,
+          "y": 21.5514,
           "z": 0.0
         },
         "relative": false
@@ -3524,8 +3543,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5894,
-          "y": 0.8452,
+          "x": 141.9715,
+          "y": 21.4689,
           "z": 0.0
         },
         "relative": false
@@ -3541,8 +3560,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.5981,
-          "y": 0.842,
+          "x": 142.1918,
+          "y": 21.3856,
           "z": 0.0
         },
         "relative": false
@@ -3558,8 +3577,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6068,
-          "y": 0.8386,
+          "x": 142.4121,
+          "y": 21.3014,
           "z": 0.0
         },
         "relative": false
@@ -3575,8 +3594,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6154,
-          "y": 0.8353,
+          "x": 142.6324,
+          "y": 21.2164,
           "z": 0.0
         },
         "relative": false
@@ -3592,8 +3611,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6241,
-          "y": 0.8319,
+          "x": 142.8527,
+          "y": 21.1305,
           "z": 0.0
         },
         "relative": false
@@ -3609,8 +3628,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6328,
-          "y": 0.8285,
+          "x": 143.0731,
+          "y": 21.0438,
           "z": 0.0
         },
         "relative": false
@@ -3626,8 +3645,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6415,
-          "y": 0.825,
+          "x": 143.2935,
+          "y": 20.9562,
           "z": 0.0
         },
         "relative": false
@@ -3643,8 +3662,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6502,
-          "y": 0.8216,
+          "x": 143.514,
+          "y": 20.8677,
           "z": 0.0
         },
         "relative": false
@@ -3660,8 +3679,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6588,
-          "y": 0.8181,
+          "x": 143.7344,
+          "y": 20.7785,
           "z": 0.0
         },
         "relative": false
@@ -3677,8 +3696,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6675,
-          "y": 0.8145,
+          "x": 143.9549,
+          "y": 20.6884,
           "z": 0.0
         },
         "relative": false
@@ -3694,8 +3713,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6762,
-          "y": 0.8109,
+          "x": 144.1754,
+          "y": 20.5974,
           "z": 0.0
         },
         "relative": false
@@ -3711,8 +3730,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6849,
-          "y": 0.8073,
+          "x": 144.3959,
+          "y": 20.5056,
           "z": 0.0
         },
         "relative": false
@@ -3728,8 +3747,8 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 5.6936,
-          "y": 0.8037,
+          "x": 144.6164,
+          "y": 20.413,
           "z": 0.0
         },
         "relative": false
@@ -3766,7 +3785,7 @@ description: Artifact commands gear.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 3.0,
+      "distance": 76.19999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -3842,8 +3861,8 @@ description: Artifact commands gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.9921567416492215,
-        "y": 0.125,
+        "x": 25.200781237890226,
+        "y": 3.175,
         "z": 0.0
       }
     }
@@ -3864,7 +3883,7 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.125,
+          "x": 3.175,
           "y": 0.0,
           "z": 0.0
         },
@@ -3882,7 +3901,7 @@ description: Artifact commands gear.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -0.25,
+          "y": -6.35,
           "z": 0.0
         },
         "relative": true
@@ -3898,7 +3917,7 @@ description: Artifact commands gear.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.125,
+          "x": -3.175,
           "y": 0.0,
           "z": 0.0
         },
@@ -3918,7 +3937,7 @@ description: Artifact commands gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.0,
+        "radius": 25.4,
         "start": {
           "unit": "degrees",
           "value": 352.8192442185417
@@ -3943,7 +3962,7 @@ description: Artifact commands gear.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.0,
+        "radius": 25.4,
         "start": {
           "unit": "degrees",
           "value": 180.0
@@ -3982,7 +4001,7 @@ description: Artifact commands gear.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -3.0,
+      "distance": -76.19999999999999,
       "faces": null,
       "opposite": "None"
     }
@@ -4015,20 +4034,9 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4045,10 +4053,37 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4065,10 +4100,37 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4085,6 +4147,15 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4095,24 +4166,56 @@ description: Artifact commands gear.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   }
 ]

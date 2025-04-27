@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```js
-abs(num: number): number
+abs(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ abs(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the absolute value of. | Yes |
 
 ### Returns
 
@@ -34,7 +34,7 @@ abs(num: number): number
 myAngle = -120
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [8, 0])
   |> angledLine(angle = abs(myAngle), length = 5)
   |> line(end = [-5, 0])

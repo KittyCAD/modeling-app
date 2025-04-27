@@ -40,7 +40,7 @@ tangentialArc(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 45, length = 10)
   |> tangentialArc(end = [0, -10])
   |> line(end = [-10, 0])
@@ -53,7 +53,7 @@ example = extrude(exampleSketch, length = 10)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = 10)
   |> tangentialArc(endAbsolute = [15, 15])
   |> line(end = [10, -15])
@@ -66,7 +66,7 @@ example = extrude(exampleSketch, length = 10)
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = 10)
   |> tangentialArc(radius = 10, angle = -120)
   |> angledLine(angle = -60, length = 10)

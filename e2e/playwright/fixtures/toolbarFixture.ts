@@ -46,6 +46,9 @@ export class ToolbarFixture {
   gizmo!: Locator
   gizmoDisabled!: Locator
   loadButton!: Locator
+  /** User button for the user sidebar menu */
+  userSidebarButton!: Locator
+  signOutButton!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -82,6 +85,9 @@ export class ToolbarFixture {
     // element or two different elements can represent these states.
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
+
+    this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.signOutButton = page.getByTestId('user-sidebar-sign-out')
   }
 
   get logoLink() {
@@ -167,6 +173,13 @@ export class ToolbarFixture {
    */
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
+  }
+  selectTangentialArc = async () => {
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
   }
   selectCenterRectangle = async () => {
     await this.page

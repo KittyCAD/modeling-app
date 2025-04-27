@@ -8,10 +8,10 @@ import width, thickness, talkButtonSideLength, talkButtonHeight from "parameters
 
 // Create the talk button sketch
 talkButtonSketch = startSketchOn(YZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        -talkButtonSideLength / 2,
        talkButtonSideLength / 2
-     ], %)
+     ])
   |> xLine(length = talkButtonSideLength, tag = $tag1)
   |> yLine(length = -talkButtonSideLength, tag = $tag2)
   |> xLine(length = -talkButtonSideLength, tag = $tag3)

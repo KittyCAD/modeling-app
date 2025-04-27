@@ -1,5 +1,5 @@
 const boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> tangentialArc(radius = 5, angle = 90)
     |> line(end = [5, -15])

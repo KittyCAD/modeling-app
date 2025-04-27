@@ -2,14 +2,10 @@ import fs from 'fs'
 import { join } from 'path'
 import type { Page } from '@playwright/test'
 
-import {
-  createProject,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { createProject, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
+test.describe('Text-to-CAD tests', () => {
   test('basic lego happy case', async ({ page, homePage }) => {
     const u = await getUtils(page)
 
@@ -19,7 +15,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
       await u.waitForPageLoad()
     })
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -68,7 +64,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x6 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x6 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -86,7 +82,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await expect(successToastMessage).toBeVisible({ timeout: 15000 })
 
     // Can send a new prompt from the command bar.
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -112,7 +108,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -153,29 +149,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
-    // Type the prompt.
     const randomPrompt = `aslkdfja;` + Date.now() + `FFFFEIWJF`
-    await page.keyboard.type(randomPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, randomPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -221,30 +196,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
     const badPrompt = 'akjsndladf lajbhflauweyfaaaljhr472iouafyvsssssss'
-
-    // Type the prompt.
-    await page.keyboard.type(badPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -311,30 +264,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
-
     const badPrompt = 'akjsndladflajbhflauweyf15;'
-
-    // Type the prompt.
-    await page.keyboard.type(badPrompt)
-    await page.waitForTimeout(1000)
-    await page.keyboard.press('Enter')
+    await sendPromptFromCommandBarTriggeredByButton(page, badPrompt)
 
     // Find the toast.
     // Look out for the toast message
@@ -361,7 +292,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await expect(page.getByText(`Text-to-CAD failed`)).toBeVisible()
 
     // They should be able to try again from the command bar.
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
     // Find the toast.
     // Look out for the toast message
@@ -389,23 +320,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
 
     const promptWithNewline = `a 2x4\nlego`
 
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    await expect(commandBarButton).toBeVisible()
-    // Click the command bar button
-    await commandBarButton.click()
-
-    // Wait for the command bar to appear
-    const cmdSearchBar = page.getByPlaceholder('Search commands')
-    await expect(cmdSearchBar).toBeVisible()
-
-    const textToCadCommand = page.getByRole('option', { name: 'Text-to-CAD' })
-    await expect(textToCadCommand.first()).toBeVisible()
-    // Click the Text-to-CAD command
-    await textToCadCommand.first().click()
-
-    // Enter the prompt.
-    const prompt = page.getByRole('textbox', { name: 'Prompt' })
-    await expect(prompt.first()).toBeVisible()
+    await page.getByTestId('text-to-cad').click()
 
     // Type the prompt.
     await page.keyboard.type('a 2x4')
@@ -436,93 +351,91 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   })
 
   // This will be fine once greg makes prompt at top of file deterministic
-  test(
-    'can do many at once and get many prompts back, and interact with many',
-    { tag: ['@skipWin'] },
-    async ({ page, homePage }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
-      // Let this test run longer since we've seen it timeout.
-      test.setTimeout(180_000)
+  test('can do many at once and get many prompts back, and interact with many', async ({
+    page,
+    homePage,
+  }) => {
+    // Let this test run longer since we've seen it timeout.
+    test.setTimeout(180_000)
 
-      const u = await getUtils(page)
+    const u = await getUtils(page)
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
 
-      await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
-      await sendPromptFromCommandBar(page, 'a 2x8 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x8 lego')
 
-      await sendPromptFromCommandBar(page, 'a 2x10 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x10 lego')
 
-      // Find the toast.
-      // Look out for the toast message
-      const submittingToastMessage = page.getByText(
-        `Submitting to Text-to-CAD API...`
-      )
-      await expect(submittingToastMessage.first()).toBeVisible()
+    // Find the toast.
+    // Look out for the toast message
+    const submittingToastMessage = page.getByText(
+      `Submitting to Text-to-CAD API...`
+    )
+    await expect(submittingToastMessage.first()).toBeVisible()
 
-      const generatingToastMessage = page.getByText(
-        `Generating parametric model...`
-      )
-      await expect(generatingToastMessage.first()).toBeVisible({
-        timeout: 10_000,
-      })
+    const generatingToastMessage = page.getByText(
+      `Generating parametric model...`
+    )
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10_000,
+    })
 
-      const successToastMessage = page.getByText(`Text-to-CAD successful`)
-      // We should have three success toasts.
-      await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
+    const successToastMessage = page.getByText(`Text-to-CAD successful`)
+    // We should have three success toasts.
+    await expect(successToastMessage).toHaveCount(3, { timeout: 25_000 })
 
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
-      await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-      await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x10 lego`)).toBeVisible()
 
-      // Ensure if you reject one, the others stay.
-      const rejectButton = page.getByRole('button', { name: 'Reject' })
-      await expect(rejectButton.first()).toBeVisible()
-      // Click the reject button on the first toast.
-      await rejectButton.first().click()
+    // Ensure if you reject one, the others stay.
+    const rejectButton = page.getByRole('button', { name: 'Reject' })
+    await expect(rejectButton.first()).toBeVisible()
+    // Click the reject button on the first toast.
+    await rejectButton.first().click()
 
-      // The first toast should disappear, but not the others.
-      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-      await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+    // The first toast should disappear, but not the others.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x8 lego`)).toBeVisible()
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
 
-      // Ensure you can copy the code for one of the models remaining.
-      const copyToClipboardButton = page.getByRole('button', {
-        name: 'Accept',
-      })
-      await expect(copyToClipboardButton.first()).toBeVisible()
-      // Click the button.
-      await copyToClipboardButton.first().click()
+    // Ensure you can copy the code for one of the models remaining.
+    const copyToClipboardButton = page.getByRole('button', {
+      name: 'Accept',
+    })
+    await expect(copyToClipboardButton.first()).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.first().click()
 
-      // Do NOT do AI tests like this: "Expect the code to be pasted."
-      // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
-      // general as we can for the assertion.
-      // We can use Kolmogorov complexity as a measurement of the
-      // "probably most minimal version of this program" to have a lower
-      // bound to work with. It is completely by feel because there are
-      // no proofs that any program is its smallest self.
-      const code2x8 = await page.locator('.cm-content').innerText()
-      await expect(code2x8.length).toBeGreaterThan(249)
+    // Do NOT do AI tests like this: "Expect the code to be pasted."
+    // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
+    // general as we can for the assertion.
+    // We can use Kolmogorov complexity as a measurement of the
+    // "probably most minimal version of this program" to have a lower
+    // bound to work with. It is completely by feel because there are
+    // no proofs that any program is its smallest self.
+    const code2x8 = await page.locator('.cm-content').innerText()
+    await expect(code2x8.length).toBeGreaterThan(249)
 
-      // Ensure the final toast remains.
-      await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
-      await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
-      await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
+    // Ensure the final toast remains.
+    await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
+    await expect(page.getByText(`Prompt: "a 2x8 lego`)).not.toBeVisible()
+    await expect(page.getByText(`a 2x4 lego`)).toBeVisible()
 
-      // Ensure you can copy the code for the final model.
-      await expect(copyToClipboardButton).toBeVisible()
-      // Click the button.
-      await copyToClipboardButton.click()
+    // Ensure you can copy the code for the final model.
+    await expect(copyToClipboardButton).toBeVisible()
+    // Click the button.
+    await copyToClipboardButton.click()
 
-      // Expect the code to be pasted.
-      const code2x4 = await page.locator('.cm-content').innerText()
-      await expect(code2x4.length).toBeGreaterThan(249)
-    }
-  )
+    // Expect the code to be pasted.
+    const code2x4 = await page.locator('.cm-content').innerText()
+    await expect(code2x4.length).toBeGreaterThan(249)
+  })
 
   test('can do many at once with errors, clicking dismiss error does not dismiss all', async ({
     page,
@@ -535,9 +448,12 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    await sendPromptFromCommandBar(page, 'a 2x4 lego')
+    await sendPromptFromCommandBarTriggeredByButton(page, 'a 2x4 lego')
 
-    await sendPromptFromCommandBar(page, 'alkjsdnlajshdbfjlhsbdf a;askjdnf')
+    await sendPromptFromCommandBarTriggeredByButton(
+      page,
+      'alkjsdnlajshdbfjlhsbdf a;askjdnf'
+    )
 
     // Find the toast.
     // Look out for the toast message
@@ -549,7 +465,9 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     const generatingToastMessage = page.getByText(
       `Generating parametric model...`
     )
-    await expect(generatingToastMessage.first()).toBeVisible({ timeout: 10000 })
+    await expect(generatingToastMessage.first()).toBeVisible({
+      timeout: 10000,
+    })
 
     const successToastMessage = page.getByText(`Text-to-CAD successful`)
     // We should have three success toasts.
@@ -593,7 +511,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
   })
 })
 
-async function sendPromptFromCommandBar(page: Page, promptStr: string) {
+// Added underscore if we need this for later.
+async function _sendPromptFromCommandBar(page: Page, promptStr: string) {
   await page.waitForTimeout(1000)
   await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
@@ -625,11 +544,29 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
   })
 }
 
+async function sendPromptFromCommandBarTriggeredByButton(
+  page: Page,
+  promptStr: string
+) {
+  await page.waitForTimeout(1000)
+  await test.step(`Send prompt from command bar: ${promptStr}`, async () => {
+    await page.getByTestId('text-to-cad').click()
+
+    // Enter the prompt.
+    const prompt = page.getByRole('textbox', { name: 'Prompt' })
+    await expect(prompt.first()).toBeVisible()
+
+    // Type the prompt.
+    await page.keyboard.type(promptStr)
+    await page.waitForTimeout(200)
+    await page.keyboard.press('Enter')
+  })
+}
+
 test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'
@@ -666,7 +603,7 @@ test(
     await openKclCodePanel()
 
     await test.step(`Test file creation`, async () => {
-      await sendPromptFromCommandBar(page, prompt)
+      await sendPromptFromCommandBarTriggeredByButton(page, prompt)
       // File is considered created if it shows up in the Project Files pane
       await expect(textToCadFileButton).toBeVisible({ timeout: 20_000 })
       expect(fileExists()).toBeTruthy()
@@ -696,3 +633,747 @@ test(
     })
   }
 )
+
+/**
+ * Below there are twelve (12) tests for testing the navigation and file creation
+ * logic around text to cad. The Text to CAD command is now globally available
+ * within the application and is the same command for all parts of the application.
+ * There are many new user scenarios to test because we can navigate to any project
+ * you can accept and reject the creation and everything needs to be updated properly.
+ *
+ *
+ * Gotcha: The API requests for text to CAD are mocked! The return values are
+ * from real API requests which are copied and pasted below
+ *
+ * Gotcha: The exports OBJ etc... are not in the output they are massive.
+ *
+ * Gotcha: Yes, the 3D render preview will be broken because the exported models
+ * are not included. These tests do not care about this.
+ *
+ */
+test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
+  async function mockPageTextToCAD(page: Page) {
+    await page.route(
+      'https://api.dev.zoo.dev/ai/text-to-cad/glb?kcl=true',
+      async (route) => {
+        const json = {
+          id: 'bfc0ffc0-46c6-48bc-841e-1dc08f3428ce',
+          created_at: '2025-04-24T16:50:48.857892376Z',
+          user_id: '85de7740-3e38-4e86-abb5-e5afbb8a2183',
+          status: 'queued',
+          updated_at: '2025-04-24T16:50:48.857892376Z',
+          prompt: '1x1x1 cube',
+          output_format: 'glb',
+          model_version: '',
+          kcl_version: '0.2.63',
+          model: 'kcl',
+          feedback: null,
+          mocked: true,
+        }
+        await route.fulfill({ json })
+      }
+    )
+    await page.route(
+      'https://api.dev.zoo.dev/user/text-to-cad/*',
+      async (route) => {
+        const json = {
+          mocked: true,
+          id: '6ecbb863-2766-47f0-95cb-7122ad7560ce',
+          created_at: '2025-04-24T16:52:00.360Z',
+          started_at: '2025-04-24T16:52:00.360Z',
+          completed_at: '2025-04-24T16:52:00.363Z',
+          user_id: '85de7740-3e38-4e86-abb5-e5afbb8a2183',
+          status: 'completed',
+          updated_at: '2025-04-24T16:52:00.360Z',
+          prompt: '2x2x2 cube',
+          outputs: {},
+          output_format: 'step',
+          model_version: '',
+          kcl_version: '0.2.63',
+          model: 'kcl',
+          feedback: null,
+          code: '/*\nGenerated by Text-to-CAD:\n2x2x2 cube\n*/\n@settings(defaultLengthUnit = mm)\n\n// Define the dimensions of the cube\ncubeSide = 2\n\n// Start a sketch on the XY plane\ncubeSketch = startSketchOn(XY)\n  |> startProfileAt([0, 0], %)\n  |> line(end = [cubeSide, 0])\n  |> line(end = [0, cubeSide])\n  |> line(end = [-cubeSide, 0])\n  |> close()\n\n// Extrude the sketch to create a 3D cube\ncube = extrude(cubeSketch, length = cubeSide)',
+        }
+        await route.fulfill({ json })
+      }
+    )
+  }
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Stay in home page -> Reject -> Project should be deleted',
+    { tag: '@electron' },
+    async ({ context, page }, testInfo) => {
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Expect the entire project to be deleted
+      await expect(
+        page.getByText('Successfully deleted "my-project-name"')
+      ).toBeVisible()
+      // Project DOM card has this test id
+      await expect(page.getByTestId(projectName)).not.toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Stay in home page -> Accept -> should navigate to file',
+    { tag: '@electron' },
+    async ({ context, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Reject -> should delete single file',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
+
+      await homePage.expectIsCurrentPage()
+
+      await expect(page.getByText('1 file')).toBeVisible()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await expect(page.getByRole('button', { name: 'Reject' })).toBeVisible()
+      await expect(page.getByText('2 file')).toBeVisible()
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      await expect(page.getByText('1 file')).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Stay in home page -> Accept -> should navigate to file',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
+
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Reject -> should go to home page',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      await page.getByText(projectName).click()
+
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Make sure we went back home
+      await homePage.expectIsCurrentPage()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Navigate to the project -> Accept -> should stay in same file',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      await page.getByText(projectName).click()
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Reject -> should load main.kcl',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
+
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
+      await page.getByTestId('project-title').click()
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      // Check file is deleted
+      await u.openFilePanel()
+      await expect(page.getByText('2x2x2-cube.kcl')).not.toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to the project -> Accept -> should load 2x2x2-cube.kcl',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({ name: projectName, page, returnHome: true })
+
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      // Go into the project that was created from Text to CAD
+      // This only works because there is only 1 project. Each project has the same value of `data-test-id='project-title'`
+      await page.getByTestId('project-title').click()
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      // Check file is created
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Reject -> should stay in project',
+    { tag: '@electron' },
+    async ({ homePage, page }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const unrelatedProjectName = 'unrelated-project'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
+
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await homePage.openProject(unrelatedProjectName)
+      // Check that we opened the unrelated project
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      // Check file is created
+      await u.openFilePanel()
+      // File should be deleted
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).not.toBeVisible()
+
+      await u.goToHomePageFromModeling()
+
+      // Project should be deleted
+      await expect(
+        page.getByTestId('home-section').getByText(projectName)
+      ).not.toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> New Project -> Navigate to different project -> Accept -> should go to new project',
+    { tag: '@electron' },
+    async ({ page, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const unrelatedProjectName = 'unrelated-project'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
+
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('New project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await homePage.openProject(unrelatedProjectName)
+      // Check that we opened the unrelated project
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      // Check file is created
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
+
+      await expect(
+        page.getByTestId('file-tree-item').getByText('main.kcl')
+      ).not.toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Reject -> should stay in same project',
+    { tag: '@electron' },
+    async ({ page, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const unrelatedProjectName = 'unrelated-project'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
+      await homePage.expectIsCurrentPage()
+
+      await createProject({ name: projectName, page, returnHome: true })
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await homePage.openProject(unrelatedProjectName)
+      // Check that we opened the unrelated project
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      await page.getByRole('button', { name: 'Reject' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      await u.goToHomePageFromModeling()
+
+      await expect(
+        page.getByTestId('home-section').getByText(projectName)
+      ).toBeVisible()
+
+      await expect(
+        page.getByTestId('home-section').getByText(unrelatedProjectName)
+      ).toBeVisible()
+    }
+  )
+
+  test(
+    'Home Page -> Text To CAD -> Existing Project -> Navigate to different project -> Accept -> should navigate to new project',
+    { tag: '@electron' },
+    async ({ page, homePage }, testInfo) => {
+      const u = await getUtils(page)
+      const projectName = 'my-project-name'
+      const unrelatedProjectName = 'unrelated-project'
+      const prompt = '2x2x2 cube'
+      await mockPageTextToCAD(page)
+
+      // Create and navigate to the project then come home
+      await createProject({
+        name: unrelatedProjectName,
+        page,
+        returnHome: true,
+      })
+      await homePage.expectIsCurrentPage()
+
+      await createProject({ name: projectName, page, returnHome: true })
+      await homePage.expectIsCurrentPage()
+
+      // open commands
+      await page.getByTestId('command-bar-open-button').click()
+
+      // search Text To CAD
+      await page.keyboard.type('Text To CAD')
+      await page.keyboard.press('Enter')
+
+      // new project
+      await page.keyboard.type('Existing project')
+      await page.keyboard.press('Enter')
+
+      // write name
+      await page.keyboard.type(projectName)
+      await page.keyboard.press('Enter')
+
+      // prompt
+      await page.keyboard.type(prompt)
+      await page.keyboard.press('Enter')
+
+      await homePage.openProject(unrelatedProjectName)
+      // Check that we opened the unrelated project
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        unrelatedProjectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        'main.kcl'
+      )
+
+      await page.getByRole('button', { name: 'Accept' }).click()
+
+      // Check header is populated with the project and file name
+      await expect(page.getByTestId('app-header-project-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-project-name')).toContainText(
+        projectName
+      )
+      await expect(page.getByTestId('app-header-file-name')).toBeVisible()
+      await expect(page.getByTestId('app-header-file-name')).toContainText(
+        '2x2x2-cube.kcl'
+      )
+
+      // Check file is created
+      await u.openFilePanel()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('2x2x2-cube.kcl')
+      ).toBeVisible()
+      await expect(
+        page.getByTestId('file-tree-item').getByText('main.kcl')
+      ).toBeVisible()
+    }
+  )
+})

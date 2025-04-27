@@ -31,7 +31,6 @@ import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
 import type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
-import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
@@ -101,10 +100,9 @@ import {
 import type EditorManager from '@src/editor/manager'
 import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -140,7 +138,7 @@ import {
   updateStartProfileAtArgs,
 } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
-import { topLevelRange } from '@src/lang/util'
+import { crossProduct, topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
@@ -474,7 +472,7 @@ export class SceneEntities {
       scale,
       theme: this.sceneInfra._theme,
       // default is 12, this makes the draft point pop a bit more,
-      // especially when snapping to the startProfileAt handle as it's it was the exact same size
+      // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)
@@ -1013,13 +1011,18 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const originCoords = createArrayExpression([
-            createCallExpressionStdLib('profileStartX', [
+            createCallExpressionStdLibKw(
+              'profileStartX',
               createPipeSubstitution(),
-            ]),
-            createCallExpressionStdLib('profileStartY', [
+              []
+            ),
+            createCallExpressionStdLibKw(
+              'profileStartY',
               createPipeSubstitution(),
-            ]),
+              []
+            ),
           ])
+
           modifiedAst = addCallExpressionsToPipe({
             node: this.kclManager.ast,
             variables: this.kclManager.variables,
@@ -1208,13 +1211,19 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
 
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1409,15 +1418,22 @@ export class SceneEntities {
     // first create just the variable declaration, as that's
     // all we want the user to see in the editor
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
+
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
 
@@ -2213,13 +2229,18 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
           if (intersectsProfileStart) {
             const originCoords = createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
+                []
+              ),
             ])
+
             const arcToCallExp = getNodeFromPath<CallExpression>(
               modded,
               mod.pathToNode,
@@ -3522,7 +3543,7 @@ export class SceneEntities {
     >
   }> {
     if (sketch.on.type === 'plane') {
-      const zAxis = sketch?.on.zAxis
+      const zAxis = crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
       return {
         quat: getQuaternionFromZAxis(massageFormats(zAxis)),
         sketchDetails: {
@@ -3820,7 +3841,10 @@ export function getSketchQuaternion(
     kclManager,
   })
   if (err(sketch)) return sketch
-  const zAxis = sketch?.on.zAxis || sketchNormalBackUp
+  const zAxis =
+    sketch?.on.xAxis && sketch?.on.yAxis
+      ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
+      : sketchNormalBackUp
   if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
@@ -3846,7 +3870,9 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: Vec3Array | Point3d): Vector3 {
+function massageFormats(
+  a: Vec3Array | { x: number; y: number; z: number }
+): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }
 

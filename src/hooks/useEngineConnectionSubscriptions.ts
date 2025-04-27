@@ -27,7 +27,7 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
-import { engineStreamActor } from '@src/machines/appMachine'
+import { engineStreamActor } from '@src/lib/singletons'
 import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,

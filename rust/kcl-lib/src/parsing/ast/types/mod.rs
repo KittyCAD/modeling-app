@@ -450,7 +450,6 @@ impl Program {
 
         for item in &self.body {
             let r = item.comment_range();
-            eprintln!("item {r:?}");
             if pos >= r.0 && pos < r.1 {
                 return true;
             }
@@ -820,7 +819,7 @@ pub enum Expr {
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
-    AscribedExpression(BoxNode<Ascription>),
+    AscribedExpression(BoxNode<AscribedExpression>),
     None(Node<KclNone>),
 }
 
@@ -1093,7 +1092,7 @@ impl LabelledExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct Ascription {
+pub struct AscribedExpression {
     pub expr: Expr,
     pub ty: Node<Type>,
 
@@ -1102,12 +1101,12 @@ pub struct Ascription {
     pub digest: Option<Digest>,
 }
 
-impl Ascription {
-    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<Ascription> {
+impl AscribedExpression {
+    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<AscribedExpression> {
         let start = expr.start();
         let end = ty.end;
         let module_id = expr.module_id();
-        Node::new(Ascription { expr, ty, digest: None }, start, end, module_id)
+        Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
     }
 }
 
@@ -3081,7 +3080,7 @@ impl PipeExpression {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "p_type")]
 pub enum PrimitiveType {
     /// A string type.
     String,
@@ -3625,11 +3624,11 @@ mod tests {
     #[test]
     fn test_get_lsp_folding_ranges() {
         let code = r#"const part001 = startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3664,7 +3663,7 @@ ghi("things")
     #[test]
     fn test_get_lsp_symbols() {
         let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3684,12 +3683,12 @@ fn ghi = (x) => {
 
     #[test]
     fn test_ast_in_comment() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st
 const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
+  |> startProfile(at = [50, 0])
   |> arc({
        angle_end: 360,
        angle_start: 0,
@@ -3704,12 +3703,12 @@ const cylinder = startSketchOn('-XZ')
 
     #[test]
     fn test_ast_in_comment_pipe() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st
 const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
+  |> startProfile(at = [50, 0])
   // comment
   |> arc({
        angle_end: 360,
@@ -3726,7 +3725,7 @@ const cylinder = startSketchOn('-XZ')
     #[test]
     fn test_ast_in_comment_inline() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();

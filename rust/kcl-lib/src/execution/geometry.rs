@@ -8,16 +8,15 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
 use crate::{
     errors::KclError,
-    execution::{types::NumericType, ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
+    execution::{types::NumericType, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
 
-use super::ExecutorContext;
-
-type Point2D = kcmc::shared::Point2d<f64>;
 type Point3D = kcmc::shared::Point3d<f64>;
 
 /// A geometry.
@@ -44,6 +43,29 @@ impl Geometry {
         match self {
             Geometry::Sketch(s) => s.original_id,
             Geometry::Solid(e) => e.sketch.original_id,
+        }
+    }
+}
+
+/// A geometry including an imported geometry.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(tag = "type")]
+pub enum GeometryWithImportedGeometry {
+    Sketch(Sketch),
+    Solid(Solid),
+    ImportedGeometry(Box<ImportedGeometry>),
+}
+
+impl GeometryWithImportedGeometry {
+    pub async fn id(&mut self, ctx: &ExecutorContext) -> Result<uuid::Uuid, KclError> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(s) => Ok(s.id),
+            GeometryWithImportedGeometry::Solid(e) => Ok(e.id),
+            GeometryWithImportedGeometry::ImportedGeometry(i) => {
+                let id = i.id(ctx).await?;
+                Ok(id)
+            }
         }
     }
 }
@@ -233,6 +255,7 @@ pub struct Helix {
     /// The id of the helix.
     pub value: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// Number of revolutions.
     pub revolutions: f64,
@@ -254,6 +277,7 @@ pub struct Plane {
     /// The id of the plane.
     pub id: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
@@ -263,9 +287,6 @@ pub struct Plane {
     pub x_axis: Point3d,
     /// What should the plane's Y axis be?
     pub y_axis: Point3d,
-    /// The z-axis (normal).
-    pub z_axis: Point3d,
-    pub units: UnitLen,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -287,6 +308,8 @@ impl Plane {
                             x: 1.0,
                             y: 0.0,
                             z: 0.0,
+                            // TODO axes must be normalized, so maybe these should all be count
+                            // rather than mm?
                             units: UnitLen::Mm,
                         },
                     y_axis:
@@ -294,13 +317,6 @@ impl Plane {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 0.0,
-                            z: 1.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -315,7 +331,7 @@ impl Plane {
                         },
                     x_axis:
                         Point3d {
-                            x: 1.0,
+                            x: -1.0,
                             y: 0.0,
                             z: 0.0,
                             units: UnitLen::Mm,
@@ -325,13 +341,6 @@ impl Plane {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 0.0,
-                            z: -1.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -358,13 +367,6 @@ impl Plane {
                             z: 1.0,
                             units: UnitLen::Mm,
                         },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: -1.0,
-                            z: 0.0,
-                            units: UnitLen::Mm,
-                        },
                     ..
                 } => return PlaneData::XZ,
                 Self {
@@ -377,7 +379,7 @@ impl Plane {
                         },
                     x_axis:
                         Point3d {
-                            x: 1.0,
+                            x: -1.0,
                             y: 0.0,
                             z: 0.0,
                             units: UnitLen::Mm,
@@ -387,13 +389,6 @@ impl Plane {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: 0.0,
-                            y: 1.0,
-                            z: 0.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -420,13 +415,6 @@ impl Plane {
                             z: 1.0,
                             units: UnitLen::Mm,
                         },
-                    z_axis:
-                        Point3d {
-                            x: 1.0,
-                            y: 0.0,
-                            z: 0.0,
-                            units: UnitLen::Mm,
-                        },
                     ..
                 } => return PlaneData::YZ,
                 Self {
@@ -440,7 +428,7 @@ impl Plane {
                     x_axis:
                         Point3d {
                             x: 0.0,
-                            y: 1.0,
+                            y: -1.0,
                             z: 0.0,
                             units: UnitLen::Mm,
                         },
@@ -449,13 +437,6 @@ impl Plane {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
-                        },
-                    z_axis:
-                        Point3d {
-                            x: -1.0,
-                            y: 0.0,
-                            z: 0.0,
                             units: UnitLen::Mm,
                         },
                     ..
@@ -468,7 +449,6 @@ impl Plane {
             origin: self.origin,
             x_axis: self.x_axis,
             y_axis: self.y_axis,
-            z_axis: self.z_axis,
         }
     }
 
@@ -477,86 +457,74 @@ impl Plane {
         match value {
             PlaneData::XY => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
                 value: PlaneType::XY,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegXY => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 0.0, -1.0, UnitLen::Mm),
                 value: PlaneType::XY,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::XZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegXZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 value: PlaneType::XZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::YZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
             PlaneData::NegYZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
                 y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
-                z_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
                 value: PlaneType::YZ,
-                units: exec_state.length_unit(),
                 meta: vec![],
             },
-            PlaneData::Plane {
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-            } => {
+            PlaneData::Plane { origin, x_axis, y_axis } => {
                 let id = exec_state.next_uuid();
                 Plane {
                     id,
+                    #[cfg(feature = "artifact-graph")]
                     artifact_id: id.into(),
                     origin,
                     x_axis,
                     y_axis,
-                    z_axis,
                     value: PlaneType::Custom,
-                    units: exec_state.length_unit(),
                     meta: vec![],
                 }
             }
@@ -577,6 +545,7 @@ pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
@@ -584,8 +553,6 @@ pub struct Face {
     pub x_axis: Point3d,
     /// What should the face's Y axis be?
     pub y_axis: Point3d,
-    /// The z-axis (normal).
-    pub z_axis: Point3d,
     /// The solid the face is on.
     pub solid: Box<Solid>,
     pub units: UnitLen,
@@ -632,6 +599,7 @@ pub struct Sketch {
     pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
@@ -663,7 +631,8 @@ impl Sketch {
                     adjust_camera: false,
                     planar_normal: if let SketchSurface::Plane(plane) = &self.on {
                         // We pass in the normal for the plane here.
-                        Some(plane.z_axis.into())
+                        let normal = plane.x_axis.cross(&plane.y_axis);
+                        Some(normal.into())
                     } else {
                         None
                     },
@@ -705,18 +674,6 @@ impl SketchSurface {
         match self {
             SketchSurface::Plane(plane) => plane.y_axis,
             SketchSurface::Face(face) => face.y_axis,
-        }
-    }
-    pub(crate) fn z_axis(&self) -> Point3d {
-        match self {
-            SketchSurface::Plane(plane) => plane.z_axis,
-            SketchSurface::Face(face) => face.z_axis,
-        }
-    }
-    pub(crate) fn units(&self) -> UnitLen {
-        match self {
-            SketchSurface::Plane(plane) => plane.units,
-            SketchSurface::Face(face) => face.units,
         }
     }
 }
@@ -787,7 +744,8 @@ impl Sketch {
             return Ok(Point2d::new(self.start.to[0], self.start.to[1], self.start.units));
         };
 
-        Ok(path.get_to().into())
+        let to = path.get_base().to;
+        Ok(Point2d::new(to[0], to[1], path.get_base().units))
     }
 
     pub(crate) fn get_tangential_info_from_paths(&self) -> GetTangentialInfoFromPathsResult {
@@ -805,6 +763,7 @@ pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
@@ -819,7 +778,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// The units of the solid.
     pub units: UnitLen,
+    /// Is this a sectional solid?
+    pub sectional: bool,
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
@@ -828,6 +790,10 @@ pub struct Solid {
 impl Solid {
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
         self.edge_cuts.iter().map(|foc| foc.id())
+    }
+
+    pub(crate) fn height_in_mm(&self) -> f64 {
+        self.units.adjust_to(self.height, UnitLen::Mm).0
     }
 }
 
@@ -866,10 +832,24 @@ impl EdgeCut {
         }
     }
 
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            EdgeCut::Fillet { id: ref mut i, .. } => *i = id,
+            EdgeCut::Chamfer { id: ref mut i, .. } => *i = id,
+        }
+    }
+
     pub fn edge_id(&self) -> uuid::Uuid {
         match self {
             EdgeCut::Fillet { edge_id, .. } => *edge_id,
             EdgeCut::Chamfer { edge_id, .. } => *edge_id,
+        }
+    }
+
+    pub fn set_edge_id(&mut self, id: uuid::Uuid) {
+        match self {
+            EdgeCut::Fillet { edge_id: ref mut i, .. } => *i = id,
+            EdgeCut::Chamfer { edge_id: ref mut i, .. } => *i = id,
         }
     }
 
@@ -889,28 +869,6 @@ pub struct Point2d {
     pub units: UnitLen,
 }
 
-impl From<[TyF64; 2]> for Point2d {
-    fn from(p: [TyF64; 2]) -> Self {
-        Self {
-            x: p[0].n,
-            y: p[1].n,
-            units: p[0].ty.expect_length(),
-        }
-    }
-}
-
-impl From<Point2d> for [f64; 2] {
-    fn from(p: Point2d) -> Self {
-        [p.x, p.y]
-    }
-}
-
-impl From<Point2d> for Point2D {
-    fn from(p: Point2d) -> Self {
-        Self { x: p.x, y: p.y }
-    }
-}
-
 impl Point2d {
     pub const ZERO: Self = Self {
         x: 0.0,
@@ -920,6 +878,18 @@ impl Point2d {
 
     pub fn new(x: f64, y: f64, units: UnitLen) -> Self {
         Self { x, y, units }
+    }
+
+    pub fn into_x(self) -> TyF64 {
+        TyF64::new(self.x, self.units.into())
+    }
+
+    pub fn into_y(self) -> TyF64 {
+        TyF64::new(self.y, self.units.into())
+    }
+
+    pub fn ignore_units(self) -> [f64; 2] {
+        [self.x, self.y]
     }
 }
 
@@ -947,6 +917,27 @@ impl Point3d {
     pub const fn is_zero(&self) -> bool {
         self.x == 0.0 && self.y == 0.0 && self.z == 0.0
     }
+
+    /// Calculate the cross product of this vector with another
+    pub fn cross(&self, other: &Self) -> Self {
+        let other = if other.units == self.units {
+            other
+        } else {
+            &Point3d {
+                x: self.units.adjust_to(other.x, self.units).0,
+                y: self.units.adjust_to(other.y, self.units).0,
+                z: self.units.adjust_to(other.z, self.units).0,
+                units: self.units,
+            }
+        };
+
+        Self {
+            x: self.y * other.z - self.z * other.y,
+            y: self.z * other.x - self.x * other.z,
+            z: self.x * other.y - self.y * other.x,
+            units: self.units,
+        }
+    }
 }
 
 impl From<[TyF64; 3]> for Point3d {
@@ -968,9 +959,9 @@ impl From<Point3d> for Point3D {
 impl From<Point3d> for kittycad_modeling_cmds::shared::Point3d<LengthUnit> {
     fn from(p: Point3d) -> Self {
         Self {
-            x: LengthUnit(p.x),
-            y: LengthUnit(p.y),
-            z: LengthUnit(p.z),
+            x: LengthUnit(p.units.adjust_to(p.x, UnitLen::Mm).0),
+            y: LengthUnit(p.units.adjust_to(p.y, UnitLen::Mm).0),
+            z: LengthUnit(p.units.adjust_to(p.z, UnitLen::Mm).0),
         }
     }
 }
@@ -1202,6 +1193,21 @@ impl Path {
         }
     }
 
+    pub fn set_id(&mut self, id: uuid::Uuid) {
+        match self {
+            Path::ToPoint { base } => base.geo_meta.id = id,
+            Path::Horizontal { base, .. } => base.geo_meta.id = id,
+            Path::AngledLineTo { base, .. } => base.geo_meta.id = id,
+            Path::Base { base } => base.geo_meta.id = id,
+            Path::TangentialArcTo { base, .. } => base.geo_meta.id = id,
+            Path::TangentialArc { base, .. } => base.geo_meta.id = id,
+            Path::Circle { base, .. } => base.geo_meta.id = id,
+            Path::CircleThreePoint { base, .. } => base.geo_meta.id = id,
+            Path::Arc { base, .. } => base.geo_meta.id = id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id = id,
+        }
+    }
+
     pub fn get_tag(&self) -> Option<TagNode> {
         match self {
             Path::ToPoint { base } => base.tag.clone(),
@@ -1318,9 +1324,9 @@ impl Path {
                 ccw: *ccw,
             },
             Path::ArcThreePoint { p1, p2, p3, .. } => {
-                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
                 GetTangentialInfoFromPathsResult::Arc {
-                    center: circle_center.center,
+                    center: circle.center,
                     ccw: crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0,
                 }
             }
@@ -1332,14 +1338,13 @@ impl Path {
                 radius: *radius,
             },
             Path::CircleThreePoint { p1, p2, p3, .. } => {
-                let circle_center = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
-                let radius = linear_distance(&[circle_center.center[0], circle_center.center[1]], p1);
-                let center_point = [circle_center.center[0], circle_center.center[1]];
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let center_point = [circle.center[0], circle.center[1]];
                 GetTangentialInfoFromPathsResult::Circle {
                     center: center_point,
                     // Note: a circle is always ccw regardless of the order of points
                     ccw: true,
-                    radius,
+                    radius: circle.radius,
                 }
             }
             Path::ToPoint { .. } | Path::Horizontal { .. } | Path::AngledLineTo { .. } | Path::Base { .. } => {

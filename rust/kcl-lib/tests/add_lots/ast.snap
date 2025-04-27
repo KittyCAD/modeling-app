@@ -2798,53 +2798,45 @@ description: Result of parsing add_lots.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "x",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3660",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3660.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3660",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3660.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.1,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"Big sum\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "Big sum"
               }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"Big sum\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "Big sum"
             }
           ],
           "callee": {
@@ -2854,7 +2846,7 @@ description: Result of parsing add_lots.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -2865,8 +2857,24 @@ description: Result of parsing add_lots.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "x",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",

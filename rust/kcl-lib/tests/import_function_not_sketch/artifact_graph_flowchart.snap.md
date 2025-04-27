@@ -1,19 +1,19 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[75, 101, 5]"]
-    3["Segment<br>[107, 125, 5]"]
-    4["Segment<br>[131, 150, 5]"]
-    5["Segment<br>[156, 175, 5]"]
-    6["Segment<br>[181, 200, 5]"]
-    7["Segment<br>[206, 231, 5]"]
-    8["Segment<br>[237, 258, 5]"]
-    9["Segment<br>[264, 283, 5]"]
-    10["Segment<br>[289, 296, 5]"]
+    2["Path<br>[75, 101, 6]"]
+    3["Segment<br>[107, 125, 6]"]
+    4["Segment<br>[131, 150, 6]"]
+    5["Segment<br>[156, 175, 6]"]
+    6["Segment<br>[181, 200, 6]"]
+    7["Segment<br>[206, 231, 6]"]
+    8["Segment<br>[237, 258, 6]"]
+    9["Segment<br>[264, 283, 6]"]
+    10["Segment<br>[289, 296, 6]"]
     11[Solid2d]
   end
-  1["Plane<br>[52, 69, 5]"]
-  12["Sweep Revolve<br>[302, 319, 5]"]
+  1["Plane<br>[52, 69, 6]"]
+  12["Sweep Revolve<br>[302, 319, 6]"]
   13[Wall]
   14[Wall]
   15[Wall]
@@ -79,4 +79,18 @@ flowchart LR
   12 --- 26
   12 <--x 10
   12 --- 27
+  21 <--x 13
+  21 <--x 14
+  22 <--x 15
+  22 <--x 16
+  23 <--x 16
+  23 <--x 17
+  24 <--x 17
+  24 <--x 18
+  25 <--x 18
+  25 <--x 19
+  26 <--x 19
+  26 <--x 20
+  27 <--x 20
+  27 <--x 13
 ```

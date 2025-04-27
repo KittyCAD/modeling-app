@@ -10,8 +10,8 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { authActor, settingsActor } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { authActor, settingsActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
@@ -24,7 +24,7 @@ export function modelingMenuCallbackMostActions(
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'File.New project') {
+    if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -84,7 +84,7 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
+    } else if (data.menuLabel === 'File.Share part via Zoo link') {
       copyFileShareLink({
         token: token ?? '',
         code: codeManager.code,

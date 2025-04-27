@@ -225,14 +225,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -419,17 +411,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -471,7 +452,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -506,7 +488,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleAD": {
@@ -666,14 +649,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -860,17 +835,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -912,7 +876,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -947,7 +912,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleBA": {
@@ -1107,14 +1073,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -1301,17 +1259,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1353,7 +1300,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1388,7 +1336,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleBC": {
@@ -1548,14 +1497,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -1742,17 +1683,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -1794,7 +1724,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1829,7 +1760,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleBE": {
@@ -1989,14 +1921,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -2183,17 +2107,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -2235,7 +2148,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2270,7 +2184,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleCB": {
@@ -2430,14 +2345,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -2624,17 +2531,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -2676,7 +2572,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2711,7 +2608,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleCD": {
@@ -2871,14 +2769,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -3065,17 +2955,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -3117,7 +2996,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -3152,7 +3032,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "grillHoleDepth": {
@@ -3390,14 +3271,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -3584,17 +3457,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -3636,7 +3498,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -3671,7 +3534,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitBellyButton": {
@@ -3831,14 +3695,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -4025,17 +3881,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -4077,7 +3922,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -4112,7 +3958,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitBellyButtonDepth": {
@@ -4420,17 +4267,6 @@ description: Variables in memory after executing kitt.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -4472,7 +4308,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitBodyDepth": {
@@ -4684,14 +4521,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -4843,14 +4672,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -5041,17 +4862,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -5093,7 +4903,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -5128,7 +4939,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -5163,7 +4975,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitButton2": {
@@ -5323,14 +5136,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -5482,14 +5287,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -5680,17 +5477,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -5732,7 +5518,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -5767,7 +5554,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -5802,7 +5590,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitButton3": {
@@ -5962,14 +5751,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -6121,14 +5902,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -6319,17 +6092,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -6371,7 +6133,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -6406,7 +6169,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -6441,7 +6205,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitButtonDepth": {
@@ -6968,14 +6733,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -7127,14 +6884,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -7325,17 +7074,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -7377,7 +7115,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -7412,7 +7151,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -7447,7 +7187,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitFaceDepth": {
@@ -7659,14 +7400,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -7818,14 +7551,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -8016,17 +7741,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -8068,7 +7782,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -8103,7 +7818,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -8138,7 +7854,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitFloppy2": {
@@ -8298,14 +8015,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -8457,14 +8166,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -8655,17 +8356,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -8707,7 +8397,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -8742,7 +8433,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -8777,7 +8469,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitFloppy3": {
@@ -8937,14 +8630,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -9096,14 +8781,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -9294,17 +8971,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -9346,7 +9012,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -9381,7 +9048,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -9416,7 +9084,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitFloppyDepth": {
@@ -9641,14 +9310,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -9835,17 +9496,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -9887,7 +9537,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -9922,7 +9573,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitHeadDepth": {
@@ -10147,14 +9799,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -10341,17 +9985,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -10393,7 +10026,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -10428,7 +10062,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitLeftEye1": {
@@ -10588,14 +10223,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -10959,14 +10586,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -11118,14 +10737,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -11316,17 +10927,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -11368,7 +10968,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -11403,7 +11004,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -11438,7 +11040,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -11473,7 +11076,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitLeftEye2": {
@@ -11633,14 +11237,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -12004,14 +11600,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -12163,14 +11751,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -12361,17 +11941,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -12413,7 +11982,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -12448,7 +12018,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -12483,7 +12054,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -12518,7 +12090,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitLeftEye3": {
@@ -12678,14 +12251,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -13049,14 +12614,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -13208,14 +12765,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -13406,17 +12955,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -13458,7 +12996,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -13493,7 +13032,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -13528,7 +13068,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -13563,7 +13104,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitLeftLeg": {
@@ -13730,17 +13272,6 @@ description: Variables in memory after executing kitt.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -13772,7 +13303,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitLeg": {
@@ -13948,14 +13480,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -14319,14 +13843,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -14478,14 +13994,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -14676,17 +14184,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -14728,7 +14225,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -14763,7 +14261,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -14798,7 +14297,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -14833,7 +14333,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitMouthDownRight": {
@@ -14993,14 +14494,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -15364,14 +14857,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -15523,14 +15008,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -15721,17 +15198,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -15773,7 +15239,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -15808,7 +15275,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -15843,7 +15311,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -15878,7 +15347,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitMouthHeight": {
@@ -16064,14 +15534,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -16435,14 +15897,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -16594,14 +16048,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -16792,17 +16238,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -16844,7 +16279,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -16879,7 +16315,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -16914,7 +16351,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -16949,7 +16387,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitMouthUpRight": {
@@ -17109,14 +16548,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -17480,14 +16911,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -17639,14 +17062,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -17837,17 +17252,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -17889,7 +17293,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -17924,7 +17329,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -17959,7 +17365,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -17994,7 +17401,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitNose": {
@@ -18362,14 +17770,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -18733,14 +18133,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -18892,14 +18284,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -19090,17 +18474,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -19142,7 +18515,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -19177,7 +18551,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -19212,7 +18587,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -19247,7 +18623,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitNoseElevation": {
@@ -19416,14 +18793,6 @@ description: Variables in memory after executing kitt.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -19614,17 +18983,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -19666,7 +19024,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -19701,7 +19060,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitRightEye": {
@@ -19857,14 +19217,6 @@ description: Variables in memory after executing kitt.kcl
             "x": 0.0,
             "y": 0.0,
             "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
             "units": {
               "type": "Mm"
             }
@@ -20232,14 +19584,6 @@ description: Variables in memory after executing kitt.kcl
                     "type": "Mm"
                   }
                 },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
                 "solid": {
                   "type": "Solid",
                   "id": "[uuid]",
@@ -20391,14 +19735,6 @@ description: Variables in memory after executing kitt.kcl
                         "x": 0.0,
                         "y": 0.0,
                         "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
                         "units": {
                           "type": "Mm"
                         }
@@ -20589,17 +19925,6 @@ description: Variables in memory after executing kitt.kcl
                               "units": {
                                 "type": "Mm"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -20641,7 +19966,8 @@ description: Variables in memory after executing kitt.kcl
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -20676,7 +20002,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -20711,7 +20038,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": null,
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -20746,7 +20074,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitRightLeg": {
@@ -20913,17 +20242,6 @@ description: Variables in memory after executing kitt.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -20955,7 +20273,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitShoeHeight": {
@@ -21154,14 +20473,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -21313,14 +20624,6 @@ description: Variables in memory after executing kitt.kcl
                   "x": 0.0,
                   "y": 0.0,
                   "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
                   "units": {
                     "type": "Mm"
                   }
@@ -21511,17 +20814,6 @@ description: Variables in memory after executing kitt.kcl
                         "units": {
                           "type": "Mm"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -21563,7 +20855,8 @@ description: Variables in memory after executing kitt.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -21598,7 +20891,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -21633,7 +20927,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitVHSdepth": {
@@ -21845,14 +21140,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -22039,17 +21326,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -22091,7 +21367,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -22126,7 +21403,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitVentB": {
@@ -22286,14 +21564,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -22480,17 +21750,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -22532,7 +21791,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -22567,7 +21827,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitVentC": {
@@ -22727,14 +21988,6 @@ description: Variables in memory after executing kitt.kcl
               "type": "Mm"
             }
           },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
           "solid": {
             "type": "Solid",
             "id": "[uuid]",
@@ -22921,17 +22174,6 @@ description: Variables in memory after executing kitt.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -22973,7 +22215,8 @@ description: Variables in memory after executing kitt.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -23008,7 +22251,8 @@ description: Variables in memory after executing kitt.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "kitVentElevation": {

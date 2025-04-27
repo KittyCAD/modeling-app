@@ -8,10 +8,7 @@ import {
   getSelectionCountByType,
 } from '@src/lib/selections'
 import { kclManager } from '@src/lib/singletons'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
