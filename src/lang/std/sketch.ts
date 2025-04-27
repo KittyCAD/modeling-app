@@ -3203,6 +3203,45 @@ interface CreateLineFnCallArgs {
   snaps?: addCall['snaps']
 }
 
+export function addNewSketchLn({
+  node: _node,
+  variables,
+  fnName,
+  pathToNode,
+  input: segmentInput,
+  spliceBetween = false,
+  snaps,
+}: CreateLineFnCallArgs):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  const node = structuredClone(_node)
+  const { add, updateArgs } = sketchLineHelperMapKw?.[fnName] || {}
+  if (!add || !updateArgs) {
+    return new Error(`${fnName} is not a sketch line helper`)
+  }
+
+  getNodeFromPath<Node<VariableDeclarator>>(
+    node,
+    pathToNode,
+    'VariableDeclarator'
+  )
+  getNodeFromPath<Node<PipeExpression | CallExpressionKw>>(
+    node,
+    pathToNode,
+    'PipeExpression'
+  )
+  return add({
+    node,
+    variables,
+    pathToNode,
+    segmentInput,
+    spliceBetween,
+    snaps,
+  })
+}
 export function addCallExpressionsToPipe({
   node,
   pathToNode,

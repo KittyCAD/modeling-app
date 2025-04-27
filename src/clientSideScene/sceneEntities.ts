@@ -133,6 +133,7 @@ import type { Coords2d } from '@src/lang/std/sketch'
 import {
   addCallExpressionsToPipe,
   addCloseToPipe,
+  addNewSketchLn,
   changeSketchArguments,
   updateStartProfileAtArgs,
 } from '@src/lang/std/sketch'
