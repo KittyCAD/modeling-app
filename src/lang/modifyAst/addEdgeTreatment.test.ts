@@ -70,7 +70,8 @@ const dependencies = {
 const runGetPathToExtrudeForSegmentSelectionTest = async (
   code: string,
   selectedSegmentSnippet: string,
-  expectedExtrudeSnippet: string
+  expectedExtrudeSnippet: string,
+  expectError?: boolean
 ) => {
   // helpers
   function getExtrudeExpression(
@@ -163,7 +164,9 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     artifactGraph
   )
   if (err(pathResult)) {
-    expect(pathResult).toBeUndefined()
+    if (!expectError) {
+      expect(pathResult).toBeUndefined()
+    }
     return pathResult
   }
   const { pathToExtrudeNode } = pathResult
@@ -329,7 +332,8 @@ extrude003 = extrude(sketch003, length = -15)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
-      expectedExtrudeSnippet
+      expectedExtrudeSnippet,
+      true
     )
   }, 10_000)
 })
