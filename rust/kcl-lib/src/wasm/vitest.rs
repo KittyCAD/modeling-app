@@ -30,5 +30,14 @@ fn is_vitest_by_global() -> bool {
 }
 
 pub fn running_in_vitest() -> bool {
-    is_vitest_by_env() || is_vitest_by_global()
+    let running_in_vitest = is_vitest_by_env() || is_vitest_by_global();
+
+    if running_in_vitest {
+        web_sys::console::log_1(&JsValue::from_str(&format!(
+            "running_in_vitest: {}, SOME BEHAVIOR MIGHT BE DIFFERENT THAN THE WASM IN THE APP",
+            running_in_vitest
+        )));
+    }
+
+    running_in_vitest
 }

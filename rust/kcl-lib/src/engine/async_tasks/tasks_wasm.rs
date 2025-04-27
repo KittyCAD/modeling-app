@@ -69,8 +69,6 @@ impl AsyncTasks {
             return Ok(());
         }
 
-        web_sys::console::log_1(&format!("Waiting for {total} async tasks to finish").into());
-
         let mut done = 0;
         while done < total {
             // 1) Drain whatever is already in the channel
@@ -78,7 +76,6 @@ impl AsyncTasks {
                 let mut rx = self.rx.lock().await;
                 while let Ok(res) = rx.try_recv() {
                     done += 1;
-                    web_sys::console::log_1(&format!("Task finished: {done}").into());
                     res?; // propagate first Err
                 }
             }
@@ -87,18 +84,13 @@ impl AsyncTasks {
                 break;
             }
 
-            web_sys::console::log_1(&format!("Waiting for {done}/{total} async tasks to finish").into());
             // Yield to the event loop so that we don’t block the UI thread.
             // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
             futures_lite::future::yield_now().await;
 
-            web_sys::console::log_1(&format!("AFTER TICK Waiting for {done}/{total} async tasks to finish").into());
-
             // 2) Nothing ready yet → wait for a notifier poke
             self.notifier.notified().await;
         }
-
-        web_sys::console::log_1(&"All async tasks finished".into());
 
         Ok(())
     }
