@@ -6,7 +6,7 @@ layout: manual
 
 Start a new 2-dimensional sketch on a specific plane or face.
 
-## Sketch on Face Behavior
+### Sketch on Face Behavior
 
 There are some important behaviors to understand when sketching on a face:
 
