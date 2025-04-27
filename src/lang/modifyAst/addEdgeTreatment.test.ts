@@ -57,9 +57,7 @@ beforeAll(async () => {
 }, 30_000)
 
 afterAll(() => {
-  console.log('TEAR DOWN')
   engineCommandManager.tearDown()
-  console.log('TEAR DOWN 2')
 })
 
 const dependencies = {
@@ -795,7 +793,6 @@ extrude001 = extrude(sketch001, length = -15)`
           edgeTreatmentSnippet,
           expectedCode
         )
-        console.log('YOU ARE HERE AT THE END')
       }, 10_000)
       it(`should delete a non-piped ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
