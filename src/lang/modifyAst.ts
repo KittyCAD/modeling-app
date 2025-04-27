@@ -38,7 +38,6 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
-  getConstraintInfo,
   getConstraintInfoKw,
 } from '@src/lang/std/sketch'
 import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
@@ -70,7 +69,7 @@ import type {
 } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import type { Selection } from '@src/lib/selections'
+
 import { err, trap } from '@src/lib/trap'
 import { isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
@@ -1195,22 +1194,17 @@ export function deleteSegmentFromPipeExpression(
   dependentRanges.forEach((range) => {
     const path = getNodePathFromSourceRange(_modifiedAst, range)
 
-    const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const callExp = getNodeFromPath<Node<CallExpressionKw>>(
       _modifiedAst,
       path,
-      ['CallExpression', 'CallExpressionKw'],
+      ['CallExpressionKw'],
       true
     )
     if (err(callExp)) return callExp
 
-    const constraintInfo =
-      callExp.node.type === 'CallExpression'
-        ? getConstraintInfo(callExp.node, code, path).find(({ sourceRange }) =>
-            isOverlap(sourceRange, range)
-          )
-        : getConstraintInfoKw(callExp.node, code, path).find(
-            ({ sourceRange }) => isOverlap(sourceRange, range)
-          )
+    const constraintInfo = getConstraintInfoKw(callExp.node, code, path).find(
+      ({ sourceRange }) => isOverlap(sourceRange, range)
+    )
     if (!constraintInfo) return
 
     if (!constraintInfo.argPosition) return
