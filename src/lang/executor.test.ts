@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import { KCLError } from '@src/lang/errors'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch } from '@src/lang/wasm'
 import { assertParse, sketchFromKclValue } from '@src/lang/wasm'

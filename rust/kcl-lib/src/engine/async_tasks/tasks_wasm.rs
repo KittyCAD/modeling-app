@@ -79,17 +79,28 @@ impl AsyncTasks {
                     res?; // propagate first Err
                 }
             }
-
             if done >= total {
                 break;
             }
-
-            // Yield to the event loop so that we don’t block the UI thread.
+            // Yield to the event loop so that we don't block the UI thread.
             // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
             futures_lite::future::yield_now().await;
-
-            // 2) Nothing ready yet → wait for a notifier poke
-            self.notifier.notified().await;
+            // Check again before waiting to avoid missing notifications
+            {
+                let mut rx = self.rx.lock().await;
+                while let Ok(res) = rx.try_recv() {
+                    done += 1;
+                    res?; // propagate first Err
+                    if done >= total {
+                        break;
+                    }
+                }
+            }
+            // Only wait for notification if we still need more tasks to complete
+            if done < total {
+                // 2) Nothing ready yet → wait for a notifier poke
+                self.notifier.notified().await;
+            }
         }
 
         Ok(())
