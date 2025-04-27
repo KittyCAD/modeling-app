@@ -251,6 +251,7 @@ extrude(profile001, length = 100)"#
     result.last().unwrap();
 }
 
+#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_commands() {
     let code = r#"sketch001 = startSketchOn('XY')

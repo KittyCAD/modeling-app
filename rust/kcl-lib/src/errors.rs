@@ -3,8 +3,10 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{ArtifactCommand, ArtifactGraph, Operation};
 use crate::{
-    execution::{ArtifactCommand, ArtifactGraph, DefaultPlanes, Operation},
+    execution::DefaultPlanes,
     lsp::IntoDiagnostic,
     modules::{ModulePath, ModuleSource},
     source_range::SourceRange,
@@ -126,8 +128,11 @@ impl From<KclErrorWithOutputs> for KclError {
 #[serde(rename_all = "camelCase")]
 pub struct KclErrorWithOutputs {
     pub error: KclError,
+    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
+    #[cfg(feature = "artifact-graph")]
     pub artifact_commands: Vec<ArtifactCommand>,
+    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
@@ -137,17 +142,20 @@ pub struct KclErrorWithOutputs {
 impl KclErrorWithOutputs {
     pub fn new(
         error: KclError,
-        operations: Vec<Operation>,
-        artifact_commands: Vec<ArtifactCommand>,
-        artifact_graph: ArtifactGraph,
+        #[cfg(feature = "artifact-graph")] operations: Vec<Operation>,
+        #[cfg(feature = "artifact-graph")] artifact_commands: Vec<ArtifactCommand>,
+        #[cfg(feature = "artifact-graph")] artifact_graph: ArtifactGraph,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
         default_planes: Option<DefaultPlanes>,
     ) -> Self {
         Self {
             error,
+            #[cfg(feature = "artifact-graph")]
             operations,
+            #[cfg(feature = "artifact-graph")]
             artifact_commands,
+            #[cfg(feature = "artifact-graph")]
             artifact_graph,
             filenames,
             source_files,
@@ -157,8 +165,11 @@ impl KclErrorWithOutputs {
     pub fn no_outputs(error: KclError) -> Self {
         Self {
             error,
+            #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_commands: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),

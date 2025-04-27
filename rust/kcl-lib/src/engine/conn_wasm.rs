@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::EngineStats,
+    engine::{AsyncTasks, EngineStats},
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -55,6 +55,7 @@ pub struct EngineConnection {
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
+    async_tasks: AsyncTasks,
 }
 
 #[wasm_bindgen]
@@ -128,6 +129,7 @@ impl EngineConnection {
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 
@@ -268,6 +270,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
         self.ids_of_async_commands.clone()
+    }
+
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {

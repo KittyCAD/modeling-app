@@ -1051,6 +1051,7 @@ impl KclValue {
                     let id = exec_state.mod_local.id_generator.next_uuid();
                     let plane = Plane {
                         id,
+                        #[cfg(feature = "artifact-graph")]
                         artifact_id: id.into(),
                         origin,
                         x_axis,

@@ -293,14 +293,20 @@ async fn inner_clone(
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
-            new_sketch.artifact_id = new_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                new_sketch.artifact_id = new_id.into();
+            }
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
-            new_solid.artifact_id = new_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                new_solid.artifact_id = new_id.into();
+            }
             GeometryWithImportedGeometry::Solid(new_solid)
         }
     };
@@ -343,7 +349,10 @@ async fn fix_tags_and_references(
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
-            solid.sketch.artifact_id = new_geometry_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                solid.sketch.artifact_id = new_geometry_id.into();
+            }
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
 
@@ -368,6 +377,7 @@ async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &solid.sketch,
+                #[cfg(feature = "artifact-graph")]
                 new_geometry_id.into(),
                 crate::std::args::TyF64::new(
                     solid.height,
@@ -547,8 +557,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.original_id, cloned_cube.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
         assert_eq!(cloned_cube.original_id, cloned_cube.id);
 
@@ -597,9 +609,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -711,9 +726,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -783,9 +801,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -883,9 +904,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {

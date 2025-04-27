@@ -5,6 +5,7 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -14,8 +15,6 @@ use crate::{
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},
 };
-
-use super::args::TyF64;
 
 pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 

@@ -8,11 +8,11 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactId;
 use crate::{
     errors::KclError,
-    execution::{
-        types::NumericType, ArtifactId, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen,
-    },
+    execution::{types::NumericType, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},
 };
@@ -255,6 +255,7 @@ pub struct Helix {
     /// The id of the helix.
     pub value: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// Number of revolutions.
     pub revolutions: f64,
@@ -276,6 +277,7 @@ pub struct Plane {
     /// The id of the plane.
     pub id: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
@@ -455,6 +457,7 @@ impl Plane {
         match value {
             PlaneData::XY => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
@@ -464,6 +467,7 @@ impl Plane {
             },
             PlaneData::NegXY => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
@@ -473,6 +477,7 @@ impl Plane {
             },
             PlaneData::XZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
@@ -482,6 +487,7 @@ impl Plane {
             },
             PlaneData::NegXZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
@@ -491,6 +497,7 @@ impl Plane {
             },
             PlaneData::YZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
@@ -500,6 +507,7 @@ impl Plane {
             },
             PlaneData::NegYZ => Plane {
                 id,
+                #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
                 x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
@@ -511,6 +519,7 @@ impl Plane {
                 let id = exec_state.next_uuid();
                 Plane {
                     id,
+                    #[cfg(feature = "artifact-graph")]
                     artifact_id: id.into(),
                     origin,
                     x_axis,
@@ -536,6 +545,7 @@ pub struct Face {
     /// The id of the face.
     pub id: uuid::Uuid,
     /// The artifact ID.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The tag of the face.
     pub value: String,
@@ -589,6 +599,7 @@ pub struct Sketch {
     pub tags: IndexMap<String, TagIdentifier>,
     /// The original id of the sketch. This stays the same even if the sketch is
     /// is sketched on face etc.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     #[ts(skip)]
     pub original_id: uuid::Uuid,
@@ -752,6 +763,7 @@ pub struct Solid {
     /// The id of the solid.
     pub id: uuid::Uuid,
     /// The artifact ID of the solid.  Unlike `id`, this doesn't change.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,

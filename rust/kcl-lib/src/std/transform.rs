@@ -11,13 +11,12 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
     std::Args,
 };
-
-use super::args::TyF64;
 
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
