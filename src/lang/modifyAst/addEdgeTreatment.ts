@@ -670,12 +670,6 @@ export const hasValidEdgeTreatmentSelection = ({
   return true
 }
 
-type EdgeTypes =
-  | 'baseEdge'
-  | 'getNextAdjacentEdge'
-  | 'getPreviousAdjacentEdge'
-  | 'getOppositeEdge'
-
 // Delete Edge Treatment
 export async function deleteEdgeTreatment(
   ast: Node<Program>,

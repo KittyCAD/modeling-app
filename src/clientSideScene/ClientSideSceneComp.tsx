@@ -224,13 +224,12 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints =
-    getConstraintInfoKw(
-          callExpression,
-          codeManager.code,
-          overlay.pathToNode,
-          overlay.filterValue
-        )
+  const constraints = getConstraintInfoKw(
+    callExpression,
+    codeManager.code,
+    overlay.pathToNode,
+    overlay.filterValue
+  )
 
   const offset = 20 // px
   // We could put a boolean in settings that

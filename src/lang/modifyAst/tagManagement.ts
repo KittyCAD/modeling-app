@@ -16,7 +16,6 @@
 
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   PathToNode,
@@ -312,10 +311,10 @@ function modifyAstWithTagsForEdgeSelection(
     )
     if (err(pathToSegmentNode)) return pathToSegmentNode
 
-    const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+    const segmentNode = getNodeFromPath<CallExpressionKw>(
       astClone,
       pathToSegmentNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(segmentNode)) return segmentNode
 
@@ -534,10 +533,10 @@ function modifyAstWithTagForSketchSegment(
   // Clone AST
   const astClone = structuredClone(ast)
 
-  const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
     astClone,
     pathToSegmentNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(segmentNode)) return segmentNode
 
