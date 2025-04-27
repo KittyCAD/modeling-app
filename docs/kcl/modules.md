@@ -289,7 +289,7 @@ unit of measurement is millimeters. Alternatively you may specify the unit
 by using an attribute. Likewise, you can also specify a coordinate system. E.g.,
 
 ```kcl
-@(unitLength = ft, coords = opengl)
+@(lengthUnit = ft, coords = opengl)
 import "tests/inputs/cube.obj"
 ```
 
