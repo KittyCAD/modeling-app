@@ -26,7 +26,7 @@ const config = defineConfig({
     pool: 'forks',
     poolOptions: {
       forks: {
-        maxForks: 1,
+        maxForks: 2,
         minForks: 1,
       },
     },

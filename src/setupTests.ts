@@ -3,8 +3,6 @@ import fetch from 'node-fetch'
 import { vi } from 'vitest'
 import 'vitest-webgl-canvas-mock'
 import { WebSocket } from 'ws'
-import { afterAll } from 'vitest'
-import { engineCommandManager } from '@src/lib/singletons'
 
 // @ts-ignore
 globalThis.fetch = fetch
@@ -66,6 +64,10 @@ vi.mock('three', async () => {
 })
 
 /// Cleanup the engine connection if we had one.
+/*
+import { afterAll } from 'vitest'
+import { engineCommandManager } from '@src/lib/singletons'
+
 afterEach(async () => {
   const ws = engineCommandManager.engineConnection?.websocket as any
   if (ws) {
@@ -125,4 +127,4 @@ import why from 'why-is-node-running'
 afterAll(() => {
   console.error('\n----- LIVE HANDLES -----')
   why() // prints sockets, timers, file-watchers with stacks
-})
+})*/
