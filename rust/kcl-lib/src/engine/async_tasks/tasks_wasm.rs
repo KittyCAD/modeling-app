@@ -92,6 +92,8 @@ impl AsyncTasks {
             // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
             futures_lite::future::yield_now().await;
 
+            web_sys::console::log_1(&format!("AFTER TICK Waiting for {done}/{total} async tasks to finish").into());
+
             // 2) Nothing ready yet → wait for a notifier poke
             self.notifier.notified().await;
         }

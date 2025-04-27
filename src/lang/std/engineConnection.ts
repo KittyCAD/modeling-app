@@ -1604,7 +1604,13 @@ export class EngineCommandManager extends EventTarget {
       return
     }
 
-    // In either case we want to send the response back over the wire to
+    if (message.request_id === undefined || message.request_id === null) {
+      // We only care about messages that have a request id, so we can
+      // ignore the rest.
+      return
+    }
+
+    // In either case (success / fail) we want to send the response back over the wire to
     // the rust side.
     this.rustContext?.sendResponse(message).catch((err) => {
       console.error('Error sending response to rust', err)
@@ -1614,9 +1620,11 @@ export class EngineCommandManager extends EventTarget {
 
     if (pending && !message.success) {
       // handle bad case
+      console.log('Error in response to request', JSON.stringify(message))
       pending.reject([message])
       delete this.pendingCommands[message.request_id || '']
     }
+
     if (
       !(
         pending &&
@@ -1625,8 +1633,17 @@ export class EngineCommandManager extends EventTarget {
           message.resp.type === 'modeling_batch' ||
           message.resp.type === 'export')
       )
-    )
+    ) {
+      console.log('got some other message', JSON.stringify(message))
+      if (pending) {
+        pending.reject([message])
+        delete this.pendingCommands[message.request_id || '']
+      }
       return
+    }
+
+    pending.resolve([message])
+    delete this.pendingCommands[message.request_id || '']
 
     if (message.resp.type === 'export' && message.request_id) {
       this.responseMap[message.request_id] = message.resp
@@ -1690,9 +1707,6 @@ export class EngineCommandManager extends EventTarget {
         }
       )
     }
-
-    pending.resolve([message])
-    delete this.pendingCommands[message.request_id || '']
   }
 
   handleResize({ width, height }: { width: number; height: number }) {
