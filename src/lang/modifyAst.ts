@@ -34,8 +34,6 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
@@ -49,7 +47,6 @@ import {
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
-  ArtifactGraph,
   CallExpression,
   CallExpressionKw,
   Expr,

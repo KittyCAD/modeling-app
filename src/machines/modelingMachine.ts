@@ -1808,7 +1808,7 @@ export const modelingMachine = setup({
           'CallExpressionKw'
         )
         if (err(result)) {
-          console.error('Error extracting extrude name')
+          return Promise.reject(new Error("Couldn't find node to edit"))
         } else {
           nodeToReplace = result.node
         }
@@ -1826,23 +1826,36 @@ export const modelingMachine = setup({
           return []
         }
 
-        const name = sketchVariable.node.id.name
-        if (nodeToEdit && nodeToReplace) {
-          const result = getNodeFromPath<VariableDeclarator>(
-            ast,
-            nodeToEdit,
-            'VariableDeclarator'
-          )
-          if (
-            !err(result) &&
-            result.node.type === 'VariableDeclarator' &&
-            name === result.node.id.name
-          ) {
-            return createPipeSubstitution()
+        if (sketchVariable.node.id) {
+          const name = sketchVariable.node?.id.name
+          if (nodeToEdit && nodeToReplace) {
+            const result = getNodeFromPath<VariableDeclarator>(
+              ast,
+              nodeToEdit,
+              'VariableDeclarator'
+            )
+            if (
+              !err(result) &&
+              result.node.type === 'VariableDeclarator' &&
+              name === result.node.id.name
+            ) {
+              // Pointing to same variable case
+              return createPipeSubstitution()
+            }
           }
+          // Pointing to different variable case
+          return createLocalName(name)
+        } else {
+          // No variable case
+          return createPipeSubstitution()
         }
-        return createLocalName(name)
       })
+
+      if (sketches.length === 0) {
+        return Promise.reject(
+          new Error("Couldn't map selections to program references")
+        )
+      }
 
       // 3. Add an extrude statement to the AST
       const extrudeSketchRes = addExtrude({
@@ -1851,9 +1864,11 @@ export const modelingMachine = setup({
         distance: valueOrVariable(distance),
         nodeToEdit,
       })
-      if (err(extrudeSketchRes)) return extrudeSketchRes
-      const { modifiedAst, pathToNode: pathToExtrudeArg } = extrudeSketchRes
+      if (err(extrudeSketchRes)) {
+        return Promise.reject(new Error("Couldn't add extrude statement"))
+      }
 
+      const { modifiedAst, pathToNode: pathToExtrudeArg } = extrudeSketchRes
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,

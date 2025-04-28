@@ -1,8 +1,4 @@
-import type {
-  OpKclValue,
-  OpSketch,
-  Operation,
-} from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -15,11 +11,7 @@ import {
   getSweepEdgeCodeRef,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
-import {
-  type PipeExpression,
-  Sketch,
-  sourceRangeFromRust,
-} from '@src/lang/wasm'
+import { type PipeExpression, sourceRangeFromRust } from '@src/lang/wasm'
 import type {
   HelixModes,
   ModelingCommandSchema,
