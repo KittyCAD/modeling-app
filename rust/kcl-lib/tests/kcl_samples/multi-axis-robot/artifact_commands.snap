@@ -2097,8 +2097,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -2121,8 +2121,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -2248,8 +2248,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -2475,6 +2475,36 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 2.54,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -3338,8 +3368,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -3362,8 +3392,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -3438,8 +3468,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -3530,36 +3560,6 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 2.54,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3588,8 +3588,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -3612,8 +3612,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -3747,8 +3747,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -5869,8 +5869,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -5893,8 +5893,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -6028,8 +6028,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693041,
-        "y": -0.984807753012208,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }

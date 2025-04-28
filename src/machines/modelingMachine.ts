@@ -807,8 +807,6 @@ export const modelingMachine = setup({
     }),
     'set selection filter to curves only': () => {
       ;(async () => {
-        // This definitely runs but doesn't seem to have an effect
-        console.log('>> set selection to curve only')
         await engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),

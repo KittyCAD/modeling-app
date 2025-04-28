@@ -66,7 +66,7 @@ pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -87,7 +87,7 @@ pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -107,7 +107,7 @@ pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -478,7 +478,7 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(acos(0.5)),
+///     angle = units::toDegrees(acos(0.5)),
 ///     length = 10,
 ///   )
 ///   |> line(end = [5, 0])
@@ -514,7 +514,7 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(asin(0.5)),
+///     angle = units::toDegrees(asin(0.5)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -551,7 +551,7 @@ pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(atan(1.25)),
+///     angle = units::toDegrees(atan(1.25)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -588,7 +588,7 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(atan2(y = 1.25, x = 2)),
+///     angle = units::toDegrees(atan2(y = 1.25, x = 2)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)

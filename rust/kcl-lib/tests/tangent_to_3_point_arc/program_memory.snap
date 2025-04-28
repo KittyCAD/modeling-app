@@ -103,7 +103,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -111,7 +111,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -170,7 +170,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -178,7 +178,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }

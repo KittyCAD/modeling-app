@@ -3,7 +3,7 @@ export boltLength = 2.500
 export boltHeadLength = boltDiameter
 export boltHeadDiameter = 0.938
 export boltHexDrive = 1 / 2
-export boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
+export boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 export boltThreadLength = 1.75
 
 export fn bolt() {

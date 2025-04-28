@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, OriginType, Rotation},
 };
-use schemars::JsonSchema;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -32,22 +31,6 @@ use crate::{
 };
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
-
-/// Data for a linear pattern on a 3D model.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub struct LinearPattern3dData {
-    /// The number of total instances. Must be greater than or equal to 1.
-    /// This includes the original entity. For example, if instances is 2,
-    /// there will be two copies -- the original, and one new copy.
-    /// If instances is 1, this has no effect.
-    pub instances: u32,
-    /// The distance between each repetition. This can also be referred to as spacing.
-    pub distance: TyF64,
-    /// The axis of the pattern.
-    pub axis: [TyF64; 3],
-}
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -917,8 +900,7 @@ async fn inner_pattern_linear_3d(
 }
 
 /// Data for a circular pattern on a 2D sketch.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct CircularPattern2dData {
     /// The number of total instances. Must be greater than or equal to 1.
@@ -939,10 +921,9 @@ struct CircularPattern2dData {
 }
 
 /// Data for a circular pattern on a 3D model.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
-pub struct CircularPattern3dData {
+struct CircularPattern3dData {
     /// The number of total instances. Must be greater than or equal to 1.
     /// This includes the original entity. For example, if instances is 2,
     /// there will be two copies -- the original, and one new copy.

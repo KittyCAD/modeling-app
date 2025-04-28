@@ -293,7 +293,7 @@ const newVar = myVar + 1`
     })
   })
   it('execute memberExpression', async () => {
-    const code = ["const yo = {a: {b: '123'}}", "const myVar = yo.a['b']"].join(
+    const code = ["const yo = {a: {b: '123'}}", 'const myVar = yo.a.b'].join(
       '\n'
     )
     const mem = await exe(code)

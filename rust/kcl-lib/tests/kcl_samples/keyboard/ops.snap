@@ -191,20 +191,6 @@ description: Operations executed keyboard.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
       "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
@@ -7099,20 +7085,6 @@ description: Operations executed keyboard.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
   },
   {
     "type": "GroupEnd"
