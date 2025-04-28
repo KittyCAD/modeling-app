@@ -1521,44 +1521,6 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_member_of_object_with_function_brace() {
-        let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn(XY)
-    |> startProfile(at = obj["start"])
-    |> line(end = [0, obj["l"]])
-    |> line(end = [obj["w"], 0])
-    |> line(end = [0, -obj["l"]])
-    |> close()
-    |> extrude(length = obj["h"])
-
-  return myBox
-}
-
-const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-"#;
-        parse_execute(ast).await.unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_member_of_object_with_function_mix_period_brace() {
-        let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn(XY)
-    |> startProfile(at = obj["start"])
-    |> line(end = [0, obj["l"]])
-    |> line(end = [obj["w"], 0])
-    |> line(end = [10 - obj["w"], -obj.l])
-    |> close()
-    |> extrude(length = obj["h"])
-
-  return myBox
-}
-
-const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
-"#;
-        parse_execute(ast).await.unwrap();
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
     async fn test_object_member_starting_pipeline() {
         let ast = r#"

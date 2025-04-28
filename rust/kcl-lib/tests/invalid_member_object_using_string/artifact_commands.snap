@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands property_of_object.kcl
+description: Artifact commands invalid_member_object_using_string.kcl
 ---
 [
   {
