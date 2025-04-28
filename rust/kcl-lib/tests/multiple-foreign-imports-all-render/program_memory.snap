@@ -5,11 +5,11 @@ description: Variables in memory after executing multiple-foreign-imports-all-re
 {
   "anothercube": {
     "type": "Module",
-    "value": 8
+    "value": 9
   },
   "cube": {
     "type": "Module",
-    "value": 6
+    "value": 7
   },
   "model": {
     "type": "ImportedGeometry",
@@ -20,6 +20,6 @@ description: Variables in memory after executing multiple-foreign-imports-all-re
   },
   "othercube": {
     "type": "Module",
-    "value": 7
+    "value": 8
   }
 }

@@ -913,12 +913,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_fillet() {
-        let fillet_fn: Box<dyn StdLibFn> = Box::new(crate::std::fillet::Fillet);
-        let snippet = fillet_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"fillet(${0:%}, radius = ${1:3.14}, tags = [${2:"tag_or_edge_fn"}])"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(fillet_fn) = data.into_iter().find(|d| d.name() == "fillet").unwrap() else {
+            panic!();
+        };
+        let snippet = fillet_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]

@@ -8,11 +8,7 @@ description: Operations executed sketch_in_object.kcl
     "group": {
       "type": "FunctionCall",
       "name": "test",
-      "functionSourceRange": [
-        7,
-        170,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -73,11 +69,7 @@ description: Operations executed sketch_in_object.kcl
     "group": {
       "type": "FunctionCall",
       "name": "test2",
-      "functionSourceRange": [
-        180,
-        405,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

@@ -8,11 +8,7 @@ description: Operations executed cube_with_error.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cube",
-      "functionSourceRange": [
-        7,
-        392,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

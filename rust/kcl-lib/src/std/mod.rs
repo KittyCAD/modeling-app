@@ -101,14 +101,10 @@ lazy_static! {
         Box::new(crate::std::array::Map),
         Box::new(crate::std::array::Push),
         Box::new(crate::std::array::Pop),
-        Box::new(crate::std::chamfer::Chamfer),
-        Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
         Box::new(crate::std::edge::GetCommonEdge),
-        Box::new(crate::std::shell::Shell),
-        Box::new(crate::std::shell::Hollow),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
         Box::new(crate::std::math::Acos),
@@ -211,6 +207,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
             StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
+        ("solid", "fillet") => (
+            |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
+            StdFnProps::default("std::solid::fillet").include_in_feature_tree(),
+        ),
+        ("solid", "chamfer") => (
+            |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
+            StdFnProps::default("std::solid::chamfer").include_in_feature_tree(),
+        ),
+        ("solid", "shell") => (
+            |e, a| Box::pin(crate::std::shell::shell(e, a)),
+            StdFnProps::default("std::solid::shell").include_in_feature_tree(),
+        ),
+        ("solid", "hollow") => (
+            |e, a| Box::pin(crate::std::shell::hollow(e, a)),
+            StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
         ),
         _ => unreachable!(),
     }

@@ -8,7 +8,7 @@ description: Operations executed import_foreign.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "cube",
-      "moduleId": 6
+      "moduleId": 0
     },
     "sourceRange": []
   },

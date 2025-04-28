@@ -106,6 +106,22 @@ description: Operations executed bottle.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "shell",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "faces": {
         "value": {
@@ -136,17 +152,6 @@ description: Operations executed bottle.kcl
         "sourceRange": []
       }
     },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   }
 ]

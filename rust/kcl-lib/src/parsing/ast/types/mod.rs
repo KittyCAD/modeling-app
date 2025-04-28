@@ -3129,12 +3129,13 @@ impl fmt::Display for PrimitiveType {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
     Array {
-        ty: PrimitiveType,
+        ty: Box<Type>,
         len: ArrayLen,
     },
     // Union/enum types
@@ -3784,14 +3785,14 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::String,
+                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                 len: ArrayLen::None
             }
         );
@@ -3822,7 +3823,7 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
@@ -3862,7 +3863,7 @@ const cylinder = startSketchOn('-XZ')
                         ),
                         type_: Some(Node::new(
                             Type::Array {
-                                ty: PrimitiveType::String,
+                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
                             59,
@@ -3951,7 +3952,7 @@ const cylinder = startSketchOn('-XZ')
                         ),
                         type_: Some(Node::new(
                             Type::Array {
-                                ty: PrimitiveType::String,
+                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
                             37,
