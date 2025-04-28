@@ -66,7 +66,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -74,7 +74,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -204,7 +204,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -212,7 +212,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -304,7 +304,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -312,7 +312,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -442,7 +442,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -450,7 +450,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -498,7 +498,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -506,7 +506,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }
@@ -530,7 +530,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -538,7 +538,7 @@ description: Variables in memory after executing out_of_band_sketches.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }

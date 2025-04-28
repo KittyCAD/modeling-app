@@ -2861,9 +2861,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "z": 2.54
       },
       "x_axis": {
-        "x": 1.0,
+        "x": 0.9998000599800071,
         "y": 0.0,
-        "z": 0.02
+        "z": 0.01999600119960014
       },
       "y_axis": {
         "x": 0.0,
@@ -2885,9 +2885,9 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.02,
+        "x": -0.01999600119960014,
         "y": 0.0,
-        "z": 1.0
+        "z": 0.9998000599800071
       }
     }
   },
@@ -3024,9 +3024,9 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.02,
+        "x": -0.01999600119960014,
         "y": 0.0,
-        "z": 1.0
+        "z": 0.9998000599800071
       }
     }
   },
@@ -3387,9 +3387,9 @@ description: Artifact commands car-wheel-assembly.kcl
         "z": -2.54
       },
       "x_axis": {
-        "x": 1.0,
+        "x": 0.9998000599800071,
         "y": 0.0,
-        "z": -0.02
+        "z": -0.01999600119960014
       },
       "y_axis": {
         "x": 0.0,
@@ -3411,9 +3411,9 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.02,
+        "x": 0.01999600119960014,
         "y": -0.0,
-        "z": 1.0
+        "z": 0.9998000599800071
       }
     }
   },
@@ -3550,9 +3550,9 @@ description: Artifact commands car-wheel-assembly.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.02,
+        "x": 0.01999600119960014,
         "y": -0.0,
-        "z": 1.0
+        "z": 0.9998000599800071
       }
     }
   },
