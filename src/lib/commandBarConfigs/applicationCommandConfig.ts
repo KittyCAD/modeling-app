@@ -191,7 +191,7 @@ export function createApplicationCommands({
         skip: true,
         options: isDesktop()
           ? [
-            { name: 'New project', value: 'newProject', isCurrent: true },
+              { name: 'New project', value: 'newProject', isCurrent: true },
               { name: 'Existing project', value: 'existingProject' },
             ]
           : [{ name: 'Overwrite', value: 'existingProject' }],
