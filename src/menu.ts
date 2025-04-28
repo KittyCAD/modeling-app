@@ -1,5 +1,5 @@
 import os from 'node:os'
-import { modelingDesignRole, projectDesignRole} from '@src/menu/designRole'
+import { modelingDesignRole, projectDesignRole } from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
 import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
 import { helpRole } from '@src/menu/helpRole'

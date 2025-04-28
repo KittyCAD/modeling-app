@@ -154,7 +154,6 @@ export const modelingDesignRole = (
   }
 }
 
-
 export const projectDesignRole = (
   mainWindow: BrowserWindow
 ): ZooMenuItemConstructorOptions => {
@@ -170,4 +169,6 @@ export const projectDesignRole = (
           })
         },
       },
-    ]}}
+    ],
+  }
+}

@@ -158,7 +158,7 @@ const Home = () => {
           groupId: 'application',
         },
       })
-}
+    }
   }
   useMenuListener(cb)
 
