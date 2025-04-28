@@ -49,6 +49,33 @@ pub enum Operation {
     GroupEnd,
 }
 
+/// A way for sorting the operations in the timeline.  This is used to sort
+/// operations in the timeline and to determine the order of operations.
+/// We use this for the mutli-threaded snapshotting, so that we can have deterministic
+/// output.
+impl PartialOrd for Operation {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(match (self, other) {
+            (Self::StdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::KclStdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::GroupBegin { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::GroupEnd, Self::StdLibCall { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::KclStdLibCall { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::GroupBegin { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::GroupEnd) => std::cmp::Ordering::Equal,
+        })
+    }
+}
+
 impl Operation {
     /// If the variant is `StdLibCall`, set the `is_error` field.
     pub(crate) fn set_std_lib_call_is_error(&mut self, is_err: bool) {

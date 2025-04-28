@@ -717,36 +717,8 @@ impl ExecutorContext {
         self.run_concurrent(program, exec_state, false).await
     }
 
-    /// Perform the execution of a program.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
-    ///
-    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
-    pub async fn run_single_threaded(
-        &self,
-        program: &crate::Program,
-        exec_state: &mut ExecState,
-    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-
-        #[cfg(test)]
-        {
-            exec_state.single_threaded = true;
-        }
-
-        self.eval_prelude(exec_state, SourceRange::synthetic())
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.inner_run(program, exec_state, false).await
-    }
-
-    /// Perform the execution of a program using an (experimental!) concurrent
+    /// Perform the execution of a program using a concurrent
     /// execution model. This has the same signature as [Self::run].
-    ///
-    /// For now -- do not use this unless you're willing to accept some
-    /// breakage.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
