@@ -6,8 +6,6 @@ use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
 use rgba_simple::Hex;
-use schemars::JsonSchema;
-use serde::Serialize;
 
 use super::args::TyF64;
 use crate::{
@@ -18,23 +16,6 @@ use crate::{
 
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
-}
-
-/// Data for appearance.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-struct AppearanceData {
-    /// Color of the new material, a hex string like "#ff0000".
-    #[schemars(regex(pattern = "#[0-9a-fA-F]{6}"))]
-    pub color: String,
-    /// Metalness of the new material, a percentage like 95.7.
-    #[validate(range(min = 0.0, max = 100.0))]
-    pub metalness: Option<TyF64>,
-    /// Roughness of the new material, a percentage like 95.7.
-    #[validate(range(min = 0.0, max = 100.0))]
-    pub roughness: Option<TyF64>,
-    // TODO(jess): we can also ambient occlusion here I just don't know what it is.
 }
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
@@ -48,25 +29,20 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let color: String = args.get_kw_arg("color")?;
     let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &RuntimeType::count(), exec_state)?;
     let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &RuntimeType::count(), exec_state)?;
-    let data = AppearanceData {
-        color,
-        metalness,
-        roughness,
-    };
 
     // Make sure the color if set is valid.
-    if !HEX_REGEX.is_match(&data.color) {
+    if !HEX_REGEX.is_match(&color) {
         return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid hex color (`{}`), try something like `#fff000`", data.color),
+            message: format!("Invalid hex color (`{}`), try something like `#fff000`", color),
             source_ranges: vec![args.source_range],
         }));
     }
 
     let result = inner_appearance(
         solids,
-        data.color,
-        data.metalness.map(|t| t.n),
-        data.roughness.map(|t| t.n),
+        color,
+        metalness.map(|t| t.n),
+        roughness.map(|t| t.n),
         exec_state,
         args,
     )
