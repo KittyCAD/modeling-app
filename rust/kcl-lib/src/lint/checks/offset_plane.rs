@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use anyhow::Result;
 
 use crate::{
+    errors::Suggestion,
     lint::rule::{def_finding, Discovered, Finding},
     parsing::ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
     walk::Node,
@@ -138,14 +139,25 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    let call_source_range = SourceRange::new(call.start, call.end, call.module_id);
+    let call_source_range = SourceRange::new(
+        call.arguments[0].start(),
+        call.arguments[0].end(),
+        call.arguments[0].module_id(),
+    );
+
+    let offset = get_offset(origin, x_vec, y_vec);
+    let suggestion = offset.map(|offset| Suggestion {
+        title: "use offsetPlane instead".to_owned(),
+        insert: format!("offsetPlane({}, offset = {})", plane_name, offset),
+        source_range: call_source_range,
+    });
     Ok(vec![Z0003.at(
         format!(
             "custom plane in startSketchOn; offsetPlane from {} would work here",
             plane_name
         ),
         call_source_range,
-        None,
+        suggestion,
     )])
 }
 
@@ -193,6 +205,35 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
     Some((x?, y?, z?))
 }
 
+fn get_offset(origin: (f64, f64, f64), x_axis: (f64, f64, f64), y_axis: (f64, f64, f64)) -> Option<f64> {
+    // Check which numer is not a 1 or -1, or zero.
+    // Return that back out since that is the offset.
+
+    // This is a bit of a hack, but it works for now.
+    // We can do better later.
+    if origin.0 != 1.0 && origin.0 != -1.0 && origin.0 != 0.0 {
+        return Some(origin.0);
+    } else if origin.1 != 1.0 && origin.1 != -1.0 && origin.1 != 0.0 {
+        return Some(origin.1);
+    } else if origin.2 != 1.0 && origin.2 != -1.0 && origin.2 != 0.0 {
+        return Some(origin.2);
+    } else if x_axis.0 != 1.0 && x_axis.0 != -1.0 && x_axis.0 != 0.0 {
+        return Some(x_axis.0);
+    } else if x_axis.1 != 1.0 && x_axis.1 != -1.0 && x_axis.1 != 0.0 {
+        return Some(x_axis.1);
+    } else if x_axis.2 != 1.0 && x_axis.2 != -1.0 && x_axis.2 != 0.0 {
+        return Some(x_axis.2);
+    } else if y_axis.0 != 1.0 && y_axis.0 != -1.0 && y_axis.0 != 0.0 {
+        return Some(y_axis.0);
+    } else if y_axis.1 != 1.0 && y_axis.1 != -1.0 && y_axis.1 != 0.0 {
+        return Some(y_axis.1);
+    } else if y_axis.2 != 1.0 && y_axis.2 != -1.0 && y_axis.2 != 0.0 {
+        return Some(y_axis.2);
+    }
+
+    None
+}
+
 #[cfg(test)]
 mod tests {
     use super::{lint_should_be_offset_plane, Z0003};
@@ -208,8 +249,10 @@ startSketchOn({
     xAxis = { x = 1, y = 0, z = 0 },
     yAxis = { x = 0, y = 0, z = 1 },
 })
+|> startProfile(at = [0, 0])
 ",
-        "custom plane in startSketchOn; offsetPlane from XZ would work here"
+        "custom plane in startSketchOn; offsetPlane from XZ would work here",
+        Some("offsetPlane(XZ, offset = -14.3)".to_string())
     );
 
     test_no_finding!(

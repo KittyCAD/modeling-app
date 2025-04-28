@@ -84,10 +84,34 @@ mod tests {
 
     #[tokio::test]
     async fn z0001_const() {
-        assert_finding!(lint_variables, Z0001, "const Thickness = 0.5", "found 'Thickness'");
-        assert_finding!(lint_variables, Z0001, "const THICKNESS = 0.5", "found 'THICKNESS'");
-        assert_finding!(lint_variables, Z0001, "const THICC_NES = 0.5", "found 'THICC_NES'");
-        assert_finding!(lint_variables, Z0001, "const thicc_nes = 0.5", "found 'thicc_nes'");
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const Thickness = 0.5",
+            "found 'Thickness'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const THICKNESS = 0.5",
+            "found 'THICKNESS'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const THICC_NES = 0.5",
+            "found 'THICC_NES'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const thicc_nes = 0.5",
+            "found 'thicc_nes'",
+            None
+        );
     }
 
     test_finding!(
@@ -117,7 +141,9 @@ const Part001 = startSketchOn(XY)
   |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
   |> revolve(axis = Y)
-", "found 'Part001'"
+", 
+    "found 'Part001'",
+    None
     );
 
     test_no_finding!(
@@ -157,6 +183,7 @@ const part001 = startSketchOn(XY)
         "\
 let circ = {angle_start = 0, angle_end = 360, radius = 5}
 ",
-        "found 'angle_start'"
+        "found 'angle_start'",
+        None
     );
 }

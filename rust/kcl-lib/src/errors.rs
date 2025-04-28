@@ -229,13 +229,10 @@ impl IntoDiagnostic for KclErrorWithOutputs {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.error.get_message();
         let source_ranges = self.error.source_ranges();
-        println!("self: {:?}", self);
 
         source_ranges
             .into_iter()
             .map(|source_range| {
-                println!("source_range: {:?}", source_range);
-                println!("filenames: {:?}", self.filenames);
                 let source = self
                     .source_files
                     .get(&source_range.module_id())
