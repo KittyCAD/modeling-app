@@ -5,7 +5,6 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createExpressionStatement,
   createIdentifier,
@@ -612,7 +611,7 @@ export function revolveSketch(
   if (err(_node3)) return _node3
   const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
 
-  const revolveCall = createCallExpressionStdLib('revolve', [
+  const revolveCall = createCallExpressionStdLibKw('revolve', [
     createObjectExpression({
       angle: angle,
       // TODO: hard coded 'X' axis for revolve MVP, should be changed.
