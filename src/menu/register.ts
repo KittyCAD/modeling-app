@@ -265,12 +265,14 @@ export function modelingMenuCallbackMostActions(
       const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'Text-to-CAD', groupId: 'application',
-                argDefaultValues: {
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
             method: 'existingProject',
             projectName: currentProject?.name,
           },
-              },
+        },
       })
     } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
       commandBarActor.send({

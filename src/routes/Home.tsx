@@ -142,7 +142,23 @@ const Home = () => {
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#themeColor`)
-    }
+    } else if (data.menuLabel === 'File.Add file to project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          name: 'add-kcl-file-to-project',
+          groupId: 'application',
+        },
+      })
+    } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+        },
+      })
+}
   }
   useMenuListener(cb)
 

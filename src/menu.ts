@@ -1,5 +1,5 @@
 import os from 'node:os'
-import { modelingDesignRole } from '@src/menu/designRole'
+import { modelingDesignRole, projectDesignRole} from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
 import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
 import { helpRole } from '@src/menu/helpRole'
@@ -190,6 +190,7 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
     projectFileRole(mainWindow),
     projectEditRole(mainWindow),
     projectViewRole(mainWindow),
+    projectDesignRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]

@@ -153,3 +153,21 @@ export const modelingDesignRole = (
     ],
   }
 }
+
+
+export const projectDesignRole = (
+  mainWindow: BrowserWindow
+): ZooMenuItemConstructorOptions => {
+  return {
+    label: 'Design',
+    submenu: [
+      {
+        label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Create with Zoo Text-To-CAD',
+          })
+        },
+      },
+    ]}}
