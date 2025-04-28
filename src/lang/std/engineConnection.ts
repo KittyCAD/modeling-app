@@ -216,6 +216,9 @@ export enum EngineConnectionEvents {
   // We can eventually use it for more, but one step at a time.
   ConnectionStateChanged = 'connection-state-changed', // (state: EngineConnectionState) => void
 
+  // There are various failure scenarios where we want to try a restart.
+  RestartRequest = 'restart-request',
+
   // These are used for the EngineCommandManager and were created
   // before onConnectionStateChange existed.
   ConnectionStarted = 'connection-started', // (engineConnection: EngineConnection) => void
@@ -1317,6 +1320,9 @@ export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
   EngineAvailable = 'engine-available',
 
+  // request a restart of engineConnection
+  EngineRestartRequest = 'engine-restart-request',
+
   // the whole scene is ready (settings loaded)
   SceneReady = 'scene-ready',
 }
@@ -1429,9 +1435,24 @@ export class EngineCommandManager extends EventTarget {
   kclManager: null | KclManager = null
   codeManager?: CodeManager
   rustContext?: RustContext
+  sceneInfra?: SceneInfra
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
+
+  // Dispatch to the application the engine needs a restart.
+  private onEngineConnectionRestartRequest = () => {
+    this.dispatchEvent(
+      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest, {})
+    )
+  }
+
+  private onOffline = () => {
+    console.log('Browser reported network is offline')
+    this.onEngineConnectionRestartRequest()
+  }
+
+  idleMode: boolean = false
 
   start({
     setMediaStream,
@@ -1477,6 +1498,8 @@ export class EngineCommandManager extends EventTarget {
       this.handleResize(this.streamDimensions)
       return
     }
+
+    window.addEventListener('offline', this.onOffline)
 
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
@@ -1827,6 +1850,10 @@ export class EngineCommandManager extends EventTarget {
   }
 
   tearDown(opts?: { idleMode: boolean }) {
+    this.idleMode = opts?.idleMode ?? false
+
+    window.removeEventListener('offline', this.onOffline)
+
     if (this.engineConnection) {
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([

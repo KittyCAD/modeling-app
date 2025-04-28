@@ -1,44 +1,57 @@
+import { engineCommandManager } from '@src/lib/singletons'
 import type { MutableRefObject } from 'react'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
 
 export enum EngineStreamState {
-  Off = 'off',
-  On = 'on',
-  WaitForMediaStream = 'wait-for-media-stream',
+  WaitingForDependencies = 'waiting-for-dependencies',
+  WaitingForMediaStream = 'waiting-for-media-stream',
+  WaitingToPlay = 'waiting-to-play',
   Playing = 'playing',
   Reconfiguring = 'reconfiguring',
   Paused = 'paused',
+  Stopped = 'stopped',
   // The is the state in-between Paused and Playing *specifically that order*.
   Resuming = 'resuming',
 }
 
 export enum EngineStreamTransition {
-  SetMediaStream = 'set-media-stream',
+  // This brings us back to the configuration loop
+  WaitForDependencies = 'wait-for-dependencies',
+
+  // Our dependencies to set
   SetPool = 'set-pool',
   SetAuthToken = 'set-auth-token',
+  SetVideoRef = 'set-video-ref',
+  SetCanvasRef = 'set-canvas-ref',
+  SetMediaStream = 'set-media-stream',
+
+  // Stream operations
   Play = 'play',
   Resume = 'resume',
   Pause = 'pause',
+  Stop = 'stop',
+
+  // Used to reconfigure the stream during connection
   StartOrReconfigureEngine = 'start-or-reconfigure-engine',
 }
 
 export interface EngineStreamContext {
   pool: string | null
   authToken: string | undefined
-  mediaStream: MediaStream | null
   videoRef: MutableRefObject<HTMLVideoElement | null>
   canvasRef: MutableRefObject<HTMLCanvasElement | null>
+  mediaStream: MediaStream | null
   zoomToFit: boolean
 }
 
 export const engineStreamContextCreate = (): EngineStreamContext => ({
   pool: null,
   authToken: undefined,
-  mediaStream: null,
   videoRef: { current: null },
   canvasRef: { current: null },
+  mediaStream: null,
   zoomToFit: true,
 })
 
