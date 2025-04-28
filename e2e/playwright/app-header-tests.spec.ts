@@ -20,7 +20,7 @@ test.describe('Electron app header tests', () => {
           text = 'CommandsCtrl+K'
           break
       }
-      const commandsButton = page.getByRole('button', { name: 'Commands2' })
+      const commandsButton = page.getByRole('button', { name: 'Commands' })
       await expect(commandsButton).toBeVisible()
       await expect(commandsButton).toHaveText(text)
     }
