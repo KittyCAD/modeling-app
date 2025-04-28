@@ -2331,6 +2331,7 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     expr.type === 'Name' ||
     expr.type === 'BinaryExpression' ||
     expr.type === 'CallExpression' ||
+    expr.type === 'CallExpressionKw' ||
     expr.type === 'UnaryExpression' ||
     expr.type === 'MemberExpression'
   )
