@@ -187,7 +187,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -195,7 +195,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -396,7 +396,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -404,7 +404,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -458,7 +458,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -466,7 +466,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }
@@ -787,11 +787,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             }
           },
           "xAxis": {
-            "x": 0.34202,
+            "x": 0.342019894888923,
             "y": -0.0,
-            "z": -0.939693,
+            "z": -0.9396927112094517,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -799,7 +799,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -991,11 +991,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         "artifactId": "[uuid]",
         "value": "gripEdgeTop",
         "xAxis": {
-          "x": 0.34202,
+          "x": 0.342019894888923,
           "y": -0.0,
-          "z": -0.939693,
+          "z": -0.9396927112094517,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1003,7 +1003,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -1294,11 +1294,11 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               },
               "xAxis": {
-                "x": 0.34202,
+                "x": 0.342019894888923,
                 "y": -0.0,
-                "z": -0.939693,
+                "z": -0.9396927112094517,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1306,7 +1306,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               }
             },
@@ -1612,11 +1612,11 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         },
         "xAxis": {
-          "x": 0.34202,
+          "x": 0.342019894888923,
           "y": -0.0,
-          "z": -0.939693,
+          "z": -0.9396927112094517,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1624,7 +1624,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -1674,11 +1674,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       },
       "xAxis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693,
+        "z": -0.9396927112094517,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }
@@ -1954,7 +1954,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1962,7 +1962,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -2365,7 +2365,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2373,7 +2373,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -2431,7 +2431,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -2439,7 +2439,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       }
     }
@@ -2469,11 +2469,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "artifactId": "[uuid]",
       "value": "gripEdgeTop",
       "xAxis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693,
+        "z": -0.9396927112094517,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -2481,7 +2481,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "solid": {
@@ -2772,11 +2772,11 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "xAxis": {
-              "x": 0.34202,
+              "x": 0.342019894888923,
               "y": -0.0,
-              "z": -0.939693,
+              "z": -0.9396927112094517,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -2784,7 +2784,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             }
           },
@@ -2964,7 +2964,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2972,7 +2972,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -3131,7 +3131,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3139,7 +3139,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -3298,7 +3298,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3306,7 +3306,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -3467,7 +3467,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3475,7 +3475,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },

@@ -143,7 +143,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -151,7 +151,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -314,7 +314,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -322,7 +322,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -463,7 +463,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -471,7 +471,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 }
               },
@@ -682,7 +682,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -690,7 +690,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -811,7 +811,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -819,7 +819,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -960,7 +960,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -968,7 +968,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 1.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       }
                     },
@@ -1209,7 +1209,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1217,7 +1217,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -1350,7 +1350,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -1358,7 +1358,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -1479,7 +1479,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -1487,7 +1487,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 1.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "solid": {
@@ -1628,7 +1628,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "y": 0.0,
                               "z": 0.0,
                               "units": {
-                                "type": "Mm"
+                                "type": "Unknown"
                               }
                             },
                             "yAxis": {
@@ -1636,7 +1636,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "y": 0.0,
                               "z": 1.0,
                               "units": {
-                                "type": "Mm"
+                                "type": "Unknown"
                               }
                             }
                           },
@@ -1910,7 +1910,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1918,7 +1918,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -2046,7 +2046,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2054,7 +2054,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -2195,7 +2195,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2203,7 +2203,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               }
             },
@@ -2373,7 +2373,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2381,7 +2381,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -2502,7 +2502,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2510,7 +2510,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2651,7 +2651,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2659,7 +2659,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     }
                   },
@@ -2865,7 +2865,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2873,7 +2873,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -3006,7 +3006,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3014,7 +3014,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3135,7 +3135,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3143,7 +3143,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "solid": {
@@ -3284,7 +3284,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "y": 0.0,
                             "z": 0.0,
                             "units": {
-                              "type": "Mm"
+                              "type": "Unknown"
                             }
                           },
                           "yAxis": {
@@ -3292,7 +3292,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "y": 0.0,
                             "z": 1.0,
                             "units": {
-                              "type": "Mm"
+                              "type": "Unknown"
                             }
                           }
                         },

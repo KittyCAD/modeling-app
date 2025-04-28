@@ -563,7 +563,7 @@ description: Variables in memory after executing i_shape.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -571,7 +571,7 @@ description: Variables in memory after executing i_shape.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },
@@ -1404,7 +1404,7 @@ description: Variables in memory after executing i_shape.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1412,7 +1412,7 @@ description: Variables in memory after executing i_shape.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -1678,7 +1678,7 @@ description: Variables in memory after executing i_shape.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing i_shape.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         }
       },

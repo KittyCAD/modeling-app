@@ -1368,7 +1368,7 @@ pub(crate) async fn inner_start_profile(
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                     // We pass in the normal for the plane here.
-                    let normal = plane.x_axis.cross(&plane.y_axis);
+                    let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
                     Some(normal.into())
                 } else {
                     None
