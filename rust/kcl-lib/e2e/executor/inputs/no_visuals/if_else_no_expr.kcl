@@ -1,5 +1,5 @@
-let x = if true {
-  let y = 1
+x = if true {
+  y = 1
 } else {
-  let z = 1
+  z = 1
 }

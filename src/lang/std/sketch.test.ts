@@ -246,7 +246,7 @@ ${insertCode}
 
 describe('testing getConstraintInfo', () => {
   describe('object notation', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0,0])
   |> line(end = [3, 4])
   |> angledLine(angle = 3.14, length = 3.14)
@@ -607,7 +607,7 @@ describe('testing getConstraintInfo', () => {
     })
   })
   describe('array notation', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3, 4])
     |> angledLine(angle = 3.14, length = 3.14)
@@ -763,7 +763,7 @@ describe('testing getConstraintInfo', () => {
     })
   })
   describe('constrained', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3 + 0, 4 + 0])
     |> angledLine(angle = 3.14 + 0, length = 3.14 + 0 )

@@ -1130,7 +1130,7 @@ part001 = startSketchOn(XZ)
   |> line(end = [-20.38, -10.12])
   |> line(end = [-15.79, 17.08])
 
-    fn yohey = (pos) => {
+    fn yohey(pos) {
   sketch004 = startSketchOn(XZ)
   ${extrudeAndEditBlockedInFunction}
   |> line(end = [27.55, -1.65])
