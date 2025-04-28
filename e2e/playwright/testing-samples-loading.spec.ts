@@ -102,7 +102,7 @@ test.describe('Testing loading external models', () => {
       const sampleOne = {
         file: 'parametric-bearing-pillow-block' + FILE_EXT,
         title: 'Parametric Bearing Pillow Block',
-        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT
+        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT,
       }
       const sampleTwo = {
         file: 'gear-rack' + FILE_EXT,
@@ -132,7 +132,7 @@ test.describe('Testing loading external models', () => {
           Method: 'Existing project',
           Sample: '',
           Source: 'kcl-samples',
-          ProjectName: 'bracket'
+          ProjectName: 'bracket',
         },
         highlightedHeaderArg: 'sample',
         stage: 'arguments',
@@ -220,14 +220,15 @@ test.describe('Testing loading external models', () => {
           await cmdBar.selectOption({ name: 'Local Drive' }).click()
           await cmdBar.expectState({
             commandName: 'Add file to project',
-            currentArgKey: 'source',
+            currentArgKey: 'pathOpen file',
             currentArgValue: '',
             headerArguments: {
-              Method: 'newFile',
-              Sample: '',
-              Source: '',
+              Method: 'Existing project',
+              Path: '',
+              Source: 'local',
+              ProjectName: 'testDefault'
             },
-            highlightedHeaderArg: 'source',
+            highlightedHeaderArg: 'path',
             stage: 'arguments',
           })
 
@@ -248,6 +249,8 @@ test.describe('Testing loading external models', () => {
             headerArguments: {
               Source: 'local',
               Path: modelName,
+              ProjectName: 'testDefault',
+              Method: 'Existing project'
             },
             stage: 'review',
           })
