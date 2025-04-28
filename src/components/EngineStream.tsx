@@ -5,7 +5,10 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
-import { EngineCommandManagerEvents } from '@src/lang/std/engineConnection'
+import {
+  EngineCommandManagerEvents,
+  EngineConnectionStateType,
+} from '@src/lang/std/engineConnection'
 import { btnName } from '@src/lib/cameraControls'
 import { PATHS } from '@src/lib/paths'
 import { sendSelectEventToEngine } from '@src/lib/selections'
@@ -35,16 +38,27 @@ export const EngineStream = (props: {
   authToken: string | undefined
 }) => {
   const { setAppState } = useAppState()
-  const [firstPlay, setFirstPlay] = useState(true)
-
-  const { overallState } = useNetworkContext()
   const settings = useSettings()
-
-  const engineStreamState = useSelector(engineStreamActor, (state) => state)
-
+  const { state: modelingMachineState, send: modelingMachineActorSend } =
+    useModelingContext()
+  const commandBarState = useCommandBarState()
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
+
+  const [firstPlay, setFirstPlay] = useState(true)
+  const [isRestartRequestStarting, setIsRestartRequestStarting] =
+    useState(false)
+  const [attemptTimes, setAttemptTimes] = useState<[number, number]>([0, 1000])
+
+  // These will be passed to the engineStreamActor to handle.
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // For attaching right-click menu events
   const videoWrapperRef = useRef<HTMLDivElement>(null)
+
+  const { overallState } = useNetworkContext()
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
   const settingsEngine = {
     theme: settings.app.theme.current,
@@ -54,19 +68,46 @@ export const EngineStream = (props: {
     cameraProjection: settings.modeling.cameraProjection.current,
   }
 
-  const { state: modelingMachineState, send: modelingMachineActorSend } =
-    useModelingContext()
-
   const streamIdleMode = settings.app.streamIdleMode.current
 
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetVideoRef,
+      videoRef: { current: videoRef.current },
+    })
+  }, [videoRef.current])
+
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetCanvasRef,
+      canvasRef: { current: canvasRef.current },
+    })
+  }, [canvasRef.current])
+
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetPool,
+      pool: props.pool,
+    })
+  }, [props.pool])
+
+  useEffect(() => {
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetAuthToken,
+      authToken: props.authToken,
+    })
+  }, [props.authToken])
+
+  // We have to call this here because of the dependencies:
+  // modelingMachineActorSend, setAppState, settingsEngine
+  // It's possible to pass these in earlier but I (lee) don't want to
+  // restructure this further at the moment.
   const startOrReconfigureEngine = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.StartOrReconfigureEngine,
       modelingMachineActorSend,
       settings: settingsEngine,
       setAppState,
-
-      // It's possible a reconnect happens as we drag the window :')
       onMediaStream(mediaStream: MediaStream) {
         engineStreamActor.send({
           type: EngineStreamTransition.SetMediaStream,
@@ -76,18 +117,47 @@ export const EngineStream = (props: {
     })
   }
 
-  // When the scene is ready play the stream and execute!
+  useEffect(() => {
+    if (
+      engineStreamState.value !== EngineStreamState.WaitingForDependencies &&
+      engineStreamState.value !== EngineStreamState.Stopped
+    )
+      return
+    startOrReconfigureEngine()
+  }, [engineStreamState, setAppState])
+
+  // I would inline this but it needs to be a function for removeEventListener.
   const play = () => {
     engineStreamActor.send({
       type: EngineStreamTransition.Play,
     })
+  }
 
+  useEffect(() => {
+    engineCommandManager.addEventListener(
+      EngineCommandManagerEvents.SceneReady,
+      play
+    )
+    return () => {
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.SceneReady,
+        play
+      )
+    }
+  }, [])
+
+  // When the scene is ready, execute kcl!
+  const executeKcl = () => {
+    console.log('scene is ready, execute kcl')
     const kmp = kclManager.executeCode().catch(trap)
 
     if (!firstPlay) return
-    setFirstPlay(false)
-    console.log('scene is ready, fire!')
 
+    setFirstPlay(false)
+    // Reset the restart timeouts
+    setAttemptTimes([0, 1000])
+
+    console.log('firstPlay true, zoom to fit')
     kmp
       .then(() =>
         // It makes sense to also call zoom to fit here, when a new file is
@@ -110,51 +180,59 @@ export const EngineStream = (props: {
   useEffect(() => {
     engineCommandManager.addEventListener(
       EngineCommandManagerEvents.SceneReady,
-      play
+      executeKcl
     )
     return () => {
       engineCommandManager.removeEventListener(
         EngineCommandManagerEvents.SceneReady,
-        play
+        executeKcl
       )
     }
   }, [firstPlay])
 
   useEffect(() => {
+    // We do a back-off restart, using a fibonacci sequence, since it
+    // has a nice retry time curve (somewhat quick then exponential)
+    const attemptRestartIfNecessary = () => {
+      if (isRestartRequestStarting) return
+      setIsRestartRequestStarting(true)
+      setTimeout(() => {
+        engineStreamState.context.videoRef.current?.pause()
+        engineCommandManager.tearDown()
+        startOrReconfigureEngine()
+        setFirstPlay(false)
+        setIsRestartRequestStarting(false)
+      }, attemptTimes[0] + attemptTimes[1])
+      setAttemptTimes([attemptTimes[1], attemptTimes[0] + attemptTimes[1]])
+    }
+
+    // Poll that we're connected. If not, send a reset signal.
+    // Do not restart if we're in idle mode.
+    const connectionCheckIntervalId = setInterval(() => {
+      // Don't try try to restart if we're already connected!
+      const hasEngineConnectionInst = engineCommandManager.engineConnection
+      const isDisconnected =
+        engineCommandManager.engineConnection?.state.type ===
+        EngineConnectionStateType.Disconnected
+      const inIdleMode = engineStreamState.value === EngineStreamState.Paused
+      if ((hasEngineConnectionInst && !isDisconnected) || inIdleMode) return
+
+      attemptRestartIfNecessary()
+    }, 1000)
+
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.SceneReady,
-      play
+      EngineCommandManagerEvents.EngineRestartRequest,
+      attemptRestartIfNecessary
     )
-
-    engineStreamActor.send({
-      type: EngineStreamTransition.SetPool,
-      data: { pool: props.pool },
-    })
-    engineStreamActor.send({
-      type: EngineStreamTransition.SetAuthToken,
-      data: { authToken: props.authToken },
-    })
-
     return () => {
-      engineCommandManager.tearDown()
-    }
-  }, [])
+      clearInterval(connectionCheckIntervalId)
 
-  // In the past we'd try to play immediately, but the proper thing is to way
-  // for the 'canplay' event to tell us data is ready.
-  useEffect(() => {
-    const videoRef = engineStreamState.context.videoRef.current
-    if (!videoRef) {
-      return
+      engineCommandManager.removeEventListener(
+        EngineCommandManagerEvents.EngineRestartRequest,
+        attemptRestartIfNecessary
+      )
     }
-    const play = () => {
-      videoRef.play().catch(console.error)
-    }
-    videoRef.addEventListener('canplay', play)
-    return () => {
-      videoRef.removeEventListener('canplay', play)
-    }
-  }, [engineStreamState.context.videoRef.current])
+  }, [engineStreamState, attemptTimes, isRestartRequestStarting])
 
   useEffect(() => {
     if (engineStreamState.value === EngineStreamState.Reconfiguring) return
@@ -181,25 +259,6 @@ export const EngineStream = (props: {
       })
     }).observe(document.body)
   }, [engineStreamState.value])
-
-  // When the video and canvas element references are set, start the engine.
-  useEffect(() => {
-    if (
-      engineStreamState.context.canvasRef.current &&
-      engineStreamState.context.videoRef.current
-    ) {
-      startOrReconfigureEngine()
-    }
-  }, [
-    engineStreamState.context.canvasRef.current,
-    engineStreamState.context.videoRef.current,
-  ])
-
-  // On settings change, reconfigure the engine. When paused this gets really tricky,
-  // and also requires onMediaStream to be set!
-  useEffect(() => {
-    startOrReconfigureEngine()
-  }, Object.values(settingsEngine))
 
   /**
    * Subscribe to execute code when the file changes
@@ -276,18 +335,7 @@ export const EngineStream = (props: {
       }
 
       if (engineStreamState.value === EngineStreamState.Paused) {
-        engineStreamActor.send({
-          type: EngineStreamTransition.StartOrReconfigureEngine,
-          modelingMachineActorSend,
-          settings: settingsEngine,
-          setAppState,
-          onMediaStream(mediaStream: MediaStream) {
-            engineStreamActor.send({
-              type: EngineStreamTransition.SetMediaStream,
-              mediaStream,
-            })
-          },
-        })
+        startOrReconfigureEngine()
       }
 
       timeoutStart.current = Date.now()
@@ -390,7 +438,7 @@ export const EngineStream = (props: {
         autoPlay
         muted
         key={engineStreamActor.id + 'video'}
-        ref={engineStreamState.context.videoRef}
+        ref={videoRef}
         controls={false}
         className="w-full cursor-pointer h-full"
         disablePictureInPicture
@@ -398,7 +446,7 @@ export const EngineStream = (props: {
       />
       <canvas
         key={engineStreamActor.id + 'canvas'}
-        ref={engineStreamState.context.canvasRef}
+        ref={canvasRef}
         className="cursor-pointer"
         id="freeze-frame"
       >
@@ -415,9 +463,11 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
-      {![EngineStreamState.Playing, EngineStreamState.Paused].some(
-        (s) => s === engineStreamState.value
-      ) && (
+      {![
+        EngineStreamState.Playing,
+        EngineStreamState.Paused,
+        EngineStreamState.Resuming,
+      ].some((s) => s === engineStreamState.value) && (
         <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
           Connecting to engine
         </Loading>

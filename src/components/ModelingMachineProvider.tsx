@@ -195,12 +195,13 @@ export const ModelingMachineProvider = ({
 
             sceneInfra.camControls.syncDirection = 'engineToClient'
 
+            // TODO: Re-evaluate if this pause/play logic is needed.
             store.videoElement?.pause()
 
             return kclManager
               .executeCode()
               .then(() => {
-                if (engineCommandManager.engineConnection?.idleMode) return
+                if (engineCommandManager.idleMode) return
 
                 store.videoElement?.play().catch((e) => {
                   console.warn('Video playing was prevented', e)
