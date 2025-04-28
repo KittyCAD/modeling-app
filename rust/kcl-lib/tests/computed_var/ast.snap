@@ -257,36 +257,6 @@ description: Result of parsing computed_var.kcl
           "id": {
             "commentStart": 0,
             "end": 0,
-            "name": "p",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 0,
-            "end": 0,
-            "raw": "\"foo\"",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": "foo"
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 0,
-        "declaration": {
-          "commentStart": 0,
-          "end": 0,
-          "id": {
-            "commentStart": 0,
-            "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
@@ -373,7 +343,7 @@ description: Result of parsing computed_var.kcl
           },
           "init": {
             "commentStart": 0,
-            "computed": true,
+            "computed": false,
             "end": 0,
             "object": {
               "commentStart": 0,
@@ -386,7 +356,7 @@ description: Result of parsing computed_var.kcl
             "property": {
               "commentStart": 0,
               "end": 0,
-              "name": "p",
+              "name": "foo",
               "start": 0,
               "type": "Identifier",
               "type": "Identifier"
@@ -820,6 +790,17 @@ description: Result of parsing computed_var.kcl
             }
           }
         ],
+        "5": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
         "6": [
           {
             "commentStart": 0,
@@ -832,17 +813,6 @@ description: Result of parsing computed_var.kcl
           }
         ],
         "7": [
-          {
-            "commentStart": 0,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "8": [
           {
             "commentStart": 0,
             "end": 0,

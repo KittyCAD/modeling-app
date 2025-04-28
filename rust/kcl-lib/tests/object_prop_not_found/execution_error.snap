@@ -2,9 +2,9 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing object_prop_not_found.kcl
 ---
-KCL UndefinedValue error
+KCL Semantic error
 
-  × undefined value: Property 'age' not found in object
+  × semantic: Only numbers (>= 0) can be indexes
    ╭─[2:5]
  1 │ obj = {  }
  2 │ k = obj["age"]
