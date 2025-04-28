@@ -8,11 +8,7 @@ description: Operations executed function_sketch.kcl
     "group": {
       "type": "FunctionCall",
       "name": "box",
-      "functionSourceRange": [
-        6,
-        220,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

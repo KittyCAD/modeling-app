@@ -982,7 +982,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
-/// ## Sketch on Face Behavior
+/// ### Sketch on Face Behavior
 ///
 /// There are some important behaviors to understand when sketching on a face:
 ///

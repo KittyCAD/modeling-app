@@ -23,11 +23,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -38,11 +34,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -56,11 +48,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -77,11 +65,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -92,11 +76,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -110,11 +90,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -131,11 +107,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -146,11 +118,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -164,11 +132,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -185,11 +149,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -200,11 +160,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -218,11 +174,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -239,11 +191,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -254,11 +202,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -272,11 +216,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -293,11 +233,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -308,11 +244,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -326,11 +258,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -347,11 +275,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -362,11 +286,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -380,11 +300,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -401,11 +317,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -416,11 +328,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -434,11 +342,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -455,11 +359,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -470,11 +370,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -488,11 +384,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -509,11 +401,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -524,11 +412,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -542,11 +426,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -563,11 +443,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -578,11 +454,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -596,11 +468,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -617,11 +485,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -632,11 +496,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -650,11 +510,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -671,11 +527,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -686,11 +538,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -704,11 +552,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -725,11 +569,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -740,11 +580,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -758,11 +594,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -779,11 +611,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -794,11 +622,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -812,11 +636,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -833,11 +653,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -848,11 +664,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -866,11 +678,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -887,11 +695,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -902,11 +706,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -920,11 +720,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -941,11 +737,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -956,11 +748,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -974,11 +762,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -995,11 +779,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1010,11 +790,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1028,11 +804,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1049,11 +821,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1064,11 +832,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1082,11 +846,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1103,11 +863,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1118,11 +874,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1136,11 +888,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1157,11 +905,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1172,11 +916,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1190,11 +930,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1211,11 +947,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1226,11 +958,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1244,11 +972,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1265,11 +989,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1280,11 +1000,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1298,11 +1014,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1319,11 +1031,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1334,11 +1042,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1352,11 +1056,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1373,11 +1073,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1388,11 +1084,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1406,11 +1098,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1427,11 +1115,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1442,11 +1126,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1460,11 +1140,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1481,11 +1157,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1496,11 +1168,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1514,11 +1182,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1535,11 +1199,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1550,11 +1210,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1568,11 +1224,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1589,11 +1241,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1604,11 +1252,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1622,11 +1266,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1643,11 +1283,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1658,11 +1294,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1676,11 +1308,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1697,11 +1325,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1712,11 +1336,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1730,11 +1350,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1751,11 +1367,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1766,11 +1378,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1784,11 +1392,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1805,11 +1409,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1820,11 +1420,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1838,11 +1434,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1859,11 +1451,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1874,11 +1462,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1892,11 +1476,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1913,11 +1493,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1928,11 +1504,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1946,11 +1518,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1967,11 +1535,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1982,11 +1546,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2000,11 +1560,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2021,11 +1577,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2036,11 +1588,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2054,11 +1602,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2075,11 +1619,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2090,11 +1630,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2108,11 +1644,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2129,11 +1661,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2144,11 +1672,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2162,11 +1686,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2183,11 +1703,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2198,11 +1714,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2216,11 +1728,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2237,11 +1745,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2252,11 +1756,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2270,11 +1770,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2291,11 +1787,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2306,11 +1798,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2324,11 +1812,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2345,11 +1829,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2360,11 +1840,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2378,11 +1854,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2399,11 +1871,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2414,11 +1882,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2432,11 +1896,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2453,11 +1913,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2468,11 +1924,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2486,11 +1938,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2507,11 +1955,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2522,11 +1966,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2540,11 +1980,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2561,11 +1997,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2576,11 +2008,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2594,11 +2022,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2615,11 +2039,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2630,11 +2050,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2648,11 +2064,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2669,11 +2081,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "calculatePoint",
-      "functionSourceRange": [
-        547,
-        681,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2684,11 +2092,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2702,11 +2106,7 @@ description: Operations executed loop_tag.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

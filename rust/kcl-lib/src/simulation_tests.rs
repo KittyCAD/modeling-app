@@ -299,6 +299,8 @@ fn assert_common_snapshots(
                 "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
                 "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
                 ".**.sourceRange" => Vec::new(),
+                ".**.functionSourceRange" => Vec::new(),
+                ".**.moduleId" => 0,
             });
         })
     }));
@@ -2626,6 +2628,28 @@ mod multiple_foreign_imports_all_render {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_mesh_clone {
+    const TEST_NAME: &str = "import_mesh_clone";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "turn on when katie fixes the mesh import"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }

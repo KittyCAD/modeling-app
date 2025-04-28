@@ -339,8 +339,12 @@ pub(crate) async fn do_post_extrude<'a>(
         let get_all_edge_faces_next_uuid = exec_state.next_uuid();
         #[cfg(test)]
         let single_threaded = exec_state.single_threaded;
-        #[cfg(not(test))]
+        #[cfg(all(not(test), not(target_arch = "wasm32")))]
         let single_threaded = false;
+        // When running in vitest, we need to run this in a single thread.
+        // Because their workers are complete shit.
+        #[cfg(all(target_arch = "wasm32", not(test)))]
+        let single_threaded = crate::wasm::vitest::running_in_vitest();
 
         // Get faces for original edge
         // Since this one is batched we can just run it.

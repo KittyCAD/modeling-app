@@ -38,11 +38,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        1134,
-        1477,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -282,11 +278,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        1134,
-        1477,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -614,6 +606,17 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -656,18 +659,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1546,6 +1538,17 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -1588,9 +1591,11 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "shell",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -1599,9 +1604,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "faces": {
         "value": {
@@ -1632,29 +1635,14 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
         "sourceRange": []
       }
     },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "lipFace",
-      "functionSourceRange": [
-        5273,
-        5900,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1848,11 +1836,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "group": {
       "type": "FunctionCall",
       "name": "lipFace",
-      "functionSourceRange": [
-        5273,
-        5900,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2344,11 +2328,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "group": {
       "type": "FunctionCall",
       "name": "lipFace",
-      "functionSourceRange": [
-        5273,
-        5900,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2617,11 +2597,7 @@ description: Operations executed gridfinity-bins-stacking-lip.kcl
     "group": {
       "type": "FunctionCall",
       "name": "lipFace",
-      "functionSourceRange": [
-        5273,
-        5900,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

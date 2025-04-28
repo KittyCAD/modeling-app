@@ -8,7 +8,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carRotor",
-      "moduleId": 7
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -718,7 +718,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carWheel",
-      "moduleId": 6
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -1249,11 +1249,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "spoke",
-      "functionSourceRange": [
-        2592,
-        4131,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1640,11 +1636,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "spoke",
-      "functionSourceRange": [
-        2592,
-        4131,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2135,7 +2127,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "lugNut",
-      "moduleId": 9
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -2144,11 +2136,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "FunctionCall",
       "name": "lug",
-      "functionSourceRange": [
-        637,
-        1240,
-        9
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2584,7 +2572,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "brakeCaliper",
-      "moduleId": 8
+      "moduleId": 0
     },
     "sourceRange": []
   },
@@ -2718,7 +2706,7 @@ description: Operations executed car-wheel-assembly.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "carTire",
-      "moduleId": 10
+      "moduleId": 0
     },
     "sourceRange": []
   },

@@ -8,11 +8,7 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
     "group": {
       "type": "FunctionCall",
       "name": "add",
-      "functionSourceRange": [
-        6,
-        29,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {
         "x": {

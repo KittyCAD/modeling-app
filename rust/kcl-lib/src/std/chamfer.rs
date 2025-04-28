@@ -1,7 +1,6 @@
 //! Standard library chamfers.
 
 use anyhow::Result;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
@@ -31,81 +30,6 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(KclValue::Solid { value })
 }
 
-/// Cut a straight transitional edge along a tagged path.
-///
-/// Chamfer is similar in function and use to a fillet, except
-/// a fillet will blend the transition along an edge, rather than cut
-/// a sharp, straight transitional edge.
-///
-/// ```no_run
-/// // Chamfer a mounting plate.
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// chamferLength = 2
-///
-/// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfile(at = [-width/2, -length/2])
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> chamfer(
-///     length = chamferLength,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-/// ```
-///
-/// ```no_run
-/// // Sketch on the face of a chamfer.
-/// fn cube(pos, scale) {
-/// sg = startSketchOn(XY)
-///     |> startProfile(at = pos)
-///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0])
-///     |> line(end = [0, -scale])
-///
-///     return sg
-/// }
-///
-/// part001 = cube([0,0], 20)
-///     |> close(tag = $line1)
-///     |> extrude(length = 20)
-///     // We tag the chamfer to reference it later.
-///     |> chamfer(
-///         length = 10,
-///         tags = [getOppositeEdge(line1)],
-///         tag = $chamfer1,
-///     )  
-///
-/// sketch001 = startSketchOn(part001, face = chamfer1)
-///     |> startProfile(at = [10, 10])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, 2])
-///     |> line(end = [-2, 0])
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///     |> extrude(length = 10)
-/// ```
-#[stdlib {
-    name = "chamfer",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solid = { docs = "The solid whose edges should be chamfered" },
-        length = { docs = "The length of the chamfer" },
-        tags = { docs = "The paths you want to chamfer" },
-        tag = { docs = "Create a new tag which refers to this chamfer"},
-    }
-}]
 async fn inner_chamfer(
     solid: Box<Solid>,
     length: TyF64,

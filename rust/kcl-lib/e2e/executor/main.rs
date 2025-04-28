@@ -34,7 +34,7 @@ async fn kcl_test_fillet_duplicate_tags() {
         err.message(),
         "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
     );
-    assert_eq!(err.source_ranges().len(), 2);
+    assert_eq!(err.source_ranges().len(), 3);
 }
 
 #[tokio::test(flavor = "multi_thread")]

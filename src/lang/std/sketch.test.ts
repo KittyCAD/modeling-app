@@ -3,17 +3,14 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  addCloseToPipe,
-  addNewSketchLn,
   addTagForSketchOnFace,
   changeSketchArguments,
-  getConstraintInfo,
   getConstraintInfoKw,
   getXComponent,
   getYComponent,
 } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import type { CallExpressionKw } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
@@ -137,74 +134,6 @@ describe('testing changeSketchArguments', () => {
     )
     if (err(changeSketchArgsRetVal)) return changeSketchArgsRetVal
     expect(recast(changeSketchArgsRetVal.modifiedAst)).toBe(expectedCode)
-  })
-})
-
-describe('testing addNewSketchLn', () => {
-  const lineToChange = 'line(endAbsolute = [-1.59, -1.54])'
-  test('addNewSketchLn', async () => {
-    // Enable rotations #152
-    const code = `
-mySketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  // |> rx(45, %)
-  |> line(endAbsolute = [-1.59, -1.54])
-  |> line(endAbsolute = [0.46, -5.82])`
-    const ast = assertParse(code)
-
-    const execState = await enginelessExecutor(ast)
-    const sourceStart = code.indexOf(lineToChange)
-    expect(sourceStart).toBe(87)
-    const newSketchLnRetVal = addNewSketchLn({
-      node: ast,
-      variables: execState.variables,
-      input: {
-        type: 'straight-segment',
-        from: [0, 0],
-        to: [2, 3],
-      },
-      fnName: 'lineTo',
-      pathToNode: [
-        ['body', ''],
-        [0, 'index'],
-        ['declaration', 'VariableDeclaration'],
-        ['init', 'VariableDeclarator'],
-      ],
-    })
-    if (err(newSketchLnRetVal)) return newSketchLnRetVal
-
-    // Enable rotations #152
-    let expectedCode = `mySketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  // |> rx(45, %)
-  |> line(endAbsolute = [-1.59, -1.54])
-  |> line(endAbsolute = [0.46, -5.82])
-  |> line(endAbsolute = [2, 3])
-`
-
-    const { modifiedAst } = newSketchLnRetVal
-    expect(recast(modifiedAst)).toBe(expectedCode)
-
-    const modifiedAst2 = addCloseToPipe({
-      node: ast,
-      variables: execState.variables,
-      pathToNode: [
-        ['body', ''],
-        [0, 'index'],
-        ['declaration', 'VariableDeclaration'],
-        ['init', 'VariableDeclarator'],
-      ],
-    })
-    if (err(modifiedAst2)) return modifiedAst2
-
-    expectedCode = `mySketch001 = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  // |> rx(45, %)
-  |> line(endAbsolute = [-1.59, -1.54])
-  |> line(endAbsolute = [0.46, -5.82])
-  |> close()
-`
-    expect(recast(modifiedAst2)).toBe(expectedCode)
   })
 })
 
@@ -669,16 +598,11 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
-        ast,
-        pathToNode,
-        ['CallExpression', 'CallExpressionKw']
-      )
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
+        'CallExpressionKw',
+      ])
       if (err(callExp)) return callExp
-      const result =
-        callExp.node.type === 'CallExpression'
-          ? getConstraintInfo(callExp.node, code, pathToNode)
-          : getConstraintInfoKw(callExp.node, code, pathToNode)
+      const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -830,16 +754,11 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
-        ast,
-        pathToNode,
-        ['CallExpression', 'CallExpressionKw']
-      )
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
+        'CallExpressionKw',
+      ])
       if (err(callExp)) return callExp
-      const result =
-        callExp.node.type === 'CallExpression'
-          ? getConstraintInfo(callExp.node, code, pathToNode)
-          : getConstraintInfoKw(callExp.node, code, pathToNode)
+      const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })
@@ -1193,17 +1112,12 @@ describe('testing getConstraintInfo', () => {
       const sourceRange = topLevelRange(start, start + functionName.length)
       if (err(ast)) return ast
       const pathToNode = getNodePathFromSourceRange(ast, sourceRange)
-      const callExp = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
-        ast,
-        pathToNode,
-        ['CallExpression', 'CallExpressionKw']
-      )
+      const callExp = getNodeFromPath<Node<CallExpressionKw>>(ast, pathToNode, [
+        'CallExpressionKw',
+      ])
       if (err(callExp)) return callExp
 
-      const result =
-        callExp.node.type === 'CallExpression'
-          ? getConstraintInfo(callExp.node, code, pathToNode)
-          : getConstraintInfoKw(callExp.node, code, pathToNode)
+      const result = getConstraintInfoKw(callExp.node, code, pathToNode)
       expect(result).toEqual(expected)
     })
   })

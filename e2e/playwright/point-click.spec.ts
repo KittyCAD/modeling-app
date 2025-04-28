@@ -3406,7 +3406,7 @@ profile001 = startProfile(sketch001, at = [-20, 20])
        radius = 500
      )
 sketch002 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
+    |> startProfile(at = [0, 0])
   |> xLine(length = -2000)
 sweep001 = sweep(sketch001, path = sketch002)
 `

@@ -51,6 +51,17 @@ description: Operations executed keyboard.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -95,18 +106,7 @@ description: Operations executed keyboard.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -192,11 +192,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -210,11 +206,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -228,11 +220,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -560,11 +548,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -892,11 +876,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1224,11 +1204,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1556,11 +1532,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1888,11 +1860,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2220,11 +2188,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2552,11 +2516,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -2884,11 +2844,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3216,11 +3172,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3548,11 +3500,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -3880,11 +3828,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4212,11 +4156,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4544,11 +4484,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -4876,11 +4812,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -5208,11 +5140,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -5540,11 +5468,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -5872,11 +5796,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -6204,11 +6124,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -6536,11 +6452,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -6868,11 +6780,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "keyFn",
-      "functionSourceRange": [
-        1887,
-        2977,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -7200,11 +7108,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "toRadians",
-      "functionSourceRange": [
-        11503,
-        11552,
-        1
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -7218,11 +7122,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "sin",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -7236,11 +7136,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "z",
-      "functionSourceRange": [
-        4855,
-        5834,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -7473,11 +7369,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "o",
-      "functionSourceRange": [
-        5881,
-        6826,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -7929,11 +7821,7 @@ description: Operations executed keyboard.kcl
     "group": {
       "type": "FunctionCall",
       "name": "o",
-      "functionSourceRange": [
-        5881,
-        6826,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

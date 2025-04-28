@@ -5,6 +5,6 @@ description: Variables in memory after executing module_return_using_var.kcl
 {
   "cube": {
     "type": "Module",
-    "value": 6
+    "value": 7
   }
 }

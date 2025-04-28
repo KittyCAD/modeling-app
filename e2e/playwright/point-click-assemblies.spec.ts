@@ -694,7 +694,7 @@ washer
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        washer 
+        washer
           |> rotate(roll = 90, pitch = 0, yaw = 0)
         clone001 = clone(washer)
         `,

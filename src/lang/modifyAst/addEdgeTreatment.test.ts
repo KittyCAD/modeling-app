@@ -11,7 +11,6 @@ import {
   deleteEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   hasValidEdgeTreatmentSelection,
-  isTagUsedInEdgeTreatment,
   modifyAstWithEdgeTreatmentAndTag,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -71,7 +70,8 @@ const dependencies = {
 const runGetPathToExtrudeForSegmentSelectionTest = async (
   code: string,
   selectedSegmentSnippet: string,
-  expectedExtrudeSnippet: string
+  expectedExtrudeSnippet: string,
+  expectError?: boolean
 ) => {
   // helpers
   function getExtrudeExpression(
@@ -143,6 +143,8 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
 
+  expect(kclManager.errors).toEqual([])
+
   // find artifact
   const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
     if (!('codeRef' in artifact && artifact.codeRef)) return false
@@ -161,7 +163,12 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     selection,
     artifactGraph
   )
-  if (err(pathResult)) return pathResult
+  if (err(pathResult)) {
+    if (!expectError) {
+      expect(pathResult).toBeUndefined()
+    }
+    return pathResult
+  }
   const { pathToExtrudeNode } = pathResult
   const extrudeExpression = getExtrudeExpression(ast, pathToExtrudeNode)
 
@@ -195,7 +202,7 @@ extrude001 = extrude(sketch001, length = -15)`
       selectedSegmentSnippet,
       expectedExtrudeSnippet
     )
-  }, 5_000)
+  }, 10_000)
   it('should return the correct paths when extrusion occurs within the sketch pipe', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -325,9 +332,10 @@ extrude003 = extrude(sketch003, length = -15)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
       selectedSegmentSnippet,
-      expectedExtrudeSnippet
+      expectedExtrudeSnippet,
+      true
     )
-  }, 5_000)
+  }, 10_000)
 })
 
 const runModifyAstCloneWithEdgeTreatmentAndTag = async (
@@ -352,6 +360,8 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
 
+  expect(kclManager.errors).toEqual([])
+
   const selection: Selections = {
     graphSelections: segmentRanges.map((segmentRange) => {
       const maybeArtifact = [...artifactGraph].find(([, a]) => {
@@ -374,6 +384,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
     dependencies
   )
   if (err(result)) {
+    expect(result).toContain(expectedCode)
     return result
   }
   const { modifiedAst } = result
@@ -393,6 +404,8 @@ const runDeleteEdgeTreatmentTest = async (
   // update artifact graph
   await kclManager.executeAst({ ast })
   const artifactGraph = kclManager.artifactGraph
+
+  expect(kclManager.errors).toEqual([])
 
   // define snippet range
   const edgeTreatmentRange = topLevelRange(
@@ -415,6 +428,7 @@ const runDeleteEdgeTreatmentTest = async (
   // delete edge treatment
   const result = await deleteEdgeTreatment(ast, selection)
   if (err(result)) {
+    expect(result).toContain(expectedCode)
     return result
   }
 
@@ -487,7 +501,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} to the sketch pipe`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -519,7 +533,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} to an already tagged segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -551,7 +565,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} with existing tag on other segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -583,7 +597,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add a ${edgeTreatmentType} with existing fillet on other segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -704,7 +718,7 @@ extrude001 = extrude(sketch001, length = -15, tagEnd = $capEnd001)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should add ${edgeTreatmentType}s to two bodies`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -763,10 +777,9 @@ extrude002 = extrude(sketch002, length = -25, tagEnd = $capEnd002)
           parameters,
           expectedCode
         )
-      })
+      }, 10_000)
     })
-    // Skipping since something about the vite worker is suss.
-    describe.skip(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
+    describe(`Testing deleteEdgeTreatment with ${edgeTreatmentType}s`, () => {
       // simple cases
       it(`should delete a piped ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
@@ -819,7 +832,7 @@ extrude001 = extrude(sketch001, length = -15)`
           edgeTreatmentSnippet,
           expectedCode
         )
-      })
+      }, 10_000)
       // getOppositeEdge and getNextAdjacentEdge cases
       it(`should delete a piped ${edgeTreatmentType} tagged with getOppositeEdge`, async () => {
         const code = `sketch001 = startSketchOn(XY)
@@ -846,7 +859,7 @@ extrude001 = extrude(sketch001, length = -15)`
           edgeTreatmentSnippet,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should delete a non-piped ${edgeTreatmentType} tagged with getNextAdjacentEdge`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -872,7 +885,7 @@ extrude001 = extrude(sketch001, length = -15)`
           edgeTreatmentSnippet,
           expectedCode
         )
-      })
+      }, 10_000)
       // cases with several edge treatments
       it(`should delete a piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
         const code = `sketch001 = startSketchOn(XY)
@@ -905,7 +918,7 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
           edgeTreatmentSnippet,
           expectedCode
         )
-      })
+      }, 10_000)
       it(`should delete a non-piped ${edgeTreatmentType} from a body with multiple treatments`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
@@ -937,82 +950,10 @@ chamfer001 = chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg01)])`
           edgeTreatmentSnippet,
           expectedCode
         )
-      })
+      }, 10_000)
     })
   }
 )
-
-describe('Testing isTagUsedInEdgeTreatment', () => {
-  const code = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [7.72, 4.13])
-  |> line(end = [7.11, 3.48], tag = $seg01)
-  |> line(end = [-3.29, -13.85])
-  |> line(end = [-6.37, 3.88], tag = $seg02)
-  |> close()
-extrude001 = extrude(sketch001, length = -5)
-  |> fillet(
-       radius = 1.11,
-       tags = [
-         getOppositeEdge(seg01),
-         seg01,
-         getPreviousAdjacentEdge(seg02)
-       ]
-     )
-`
-  it('should correctly identify getOppositeEdge and baseEdge edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [7.11, 3.48], tag = $seg01)`
-    const range = topLevelRange(
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length
-    )
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      pathToNode,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual(['getOppositeEdge', 'baseEdge'])
-  })
-  it('should correctly identify getPreviousAdjacentEdge edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [-6.37, 3.88], tag = $seg02)`
-    const range = topLevelRange(
-      code.indexOf(lineOfInterest),
-      code.indexOf(lineOfInterest) + lineOfInterest.length
-    )
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      pathToNode,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual(['getPreviousAdjacentEdge'])
-  })
-  it('should correctly identify no edges', () => {
-    const ast = assertParse(code)
-    const lineOfInterest = `line(end = [-3.29, -13.85])`
-    const start = code.indexOf(lineOfInterest)
-    expect(start).toBeGreaterThan(-1)
-    const range = topLevelRange(start, start + lineOfInterest.length)
-    const pathToNode = getNodePathFromSourceRange(ast, range)
-    if (err(pathToNode)) return
-    const callExp = getNodeFromPath<CallExpressionKw>(
-      ast,
-      pathToNode,
-      'CallExpression'
-    )
-    if (err(callExp)) return
-    const edges = isTagUsedInEdgeTreatment({ ast, callExp: callExp.node })
-    expect(edges).toEqual([])
-  })
-})
 
 describe('Testing button states', () => {
   const runButtonStateTest = async (
@@ -1068,19 +1009,19 @@ describe('Testing button states', () => {
   // body is missing
   it('should return false when body is missing and nothing is selected', async () => {
     await runButtonStateTest(codeWithoutBodies, '', false)
-  })
+  }, 10_000)
   it('should return false when body is missing and segment is selected', async () => {
     await runButtonStateTest(codeWithoutBodies, `line(end = [10, 0])`, false)
-  })
+  }, 10_000)
 
   // body exists
   it('should return true when body exists and nothing is selected', async () => {
     await runButtonStateTest(codeWithBody, '', true)
-  })
+  }, 10_000)
   it('should return true when body exists and segment is selected', async () => {
     await runButtonStateTest(codeWithBody, `line(end = [10, 0])`, true)
-  })
+  }, 10_000)
   it('should return false when body exists and not a segment is selected', async () => {
     await runButtonStateTest(codeWithBody, `close()`, false)
-  })
+  }, 10_000)
 })

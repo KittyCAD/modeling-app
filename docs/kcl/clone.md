@@ -6,7 +6,7 @@ layout: manual
 
 Clone a sketch or solid.
 
-This works essentially like a copy-paste operation.
+This works essentially like a copy-paste operation. It creates a perfect replica at that point in time that you can manipulate individually afterwards.
 
 This doesn't really have much utility unless you need the equivalent of a double instance pattern with zero transformations.
 

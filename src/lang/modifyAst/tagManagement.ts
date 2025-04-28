@@ -16,7 +16,6 @@
 
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   PathToNode,
@@ -35,7 +34,6 @@ import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   addTagForSketchOnFace,
-  sketchLineHelperMap,
   sketchLineHelperMapKw,
 } from '@src/lang/std/sketch'
 import { err } from '@src/lib/trap'
@@ -313,20 +311,15 @@ function modifyAstWithTagsForEdgeSelection(
     )
     if (err(pathToSegmentNode)) return pathToSegmentNode
 
-    const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+    const segmentNode = getNodeFromPath<CallExpressionKw>(
       astClone,
       pathToSegmentNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(segmentNode)) return segmentNode
 
     // Check whether selection is a valid segment
-    if (
-      !(
-        segmentNode.node.callee.name.name in sketchLineHelperMap ||
-        segmentNode.node.callee.name.name in sketchLineHelperMapKw
-      )
-    ) {
+    if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
       return new Error('Selection is not a sketch segment')
     }
 
@@ -540,20 +533,15 @@ function modifyAstWithTagForSketchSegment(
   // Clone AST
   const astClone = structuredClone(ast)
 
-  const segmentNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
     astClone,
     pathToSegmentNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
   if (err(segmentNode)) return segmentNode
 
   // Check whether selection is a valid sketch segment
-  if (
-    !(
-      segmentNode.node.callee.name.name in sketchLineHelperMap ||
-      segmentNode.node.callee.name.name in sketchLineHelperMapKw
-    )
-  ) {
+  if (!(segmentNode.node.callee.name.name in sketchLineHelperMapKw)) {
     return new Error('Selection is not a sketch segment')
   }
 

@@ -8,11 +8,7 @@ description: Operations executed riddle_small.kcl
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -26,11 +22,7 @@ description: Operations executed riddle_small.kcl
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

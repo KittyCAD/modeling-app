@@ -8,11 +8,7 @@ description: Operations executed kw_fn_too_few_args.kcl
     "group": {
       "type": "FunctionCall",
       "name": "add",
-      "functionSourceRange": [
-        6,
-        31,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {
         "x": {

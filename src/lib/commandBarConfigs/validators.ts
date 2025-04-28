@@ -1,9 +1,8 @@
 import type { Models } from '@kittycad/lib'
-import type { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 import type { Selections } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
@@ -24,7 +23,14 @@ export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
 }
 
 // Takes a callback function and wraps it around enable_dry_run and disable_dry_run
-export const dryRunWrapper = async (callback: () => Promise<any>) => {
+export const dryRunWrapper = async (
+  callback: () => Promise<
+    | Models['WebSocketResponse_type']
+    | [Models['WebSocketResponse_type']]
+    | undefined
+    | null
+  >
+): Promise<[Models['WebSocketResponse_type']] | undefined> => {
   // Gotcha: What about race conditions?
   try {
     await engineCommandManager.sendSceneCommand({
@@ -33,7 +39,15 @@ export const dryRunWrapper = async (callback: () => Promise<any>) => {
       cmd: { type: 'enable_dry_run' },
     })
     const result = await callback()
-    return result
+    if (!result) {
+      return undefined
+    }
+
+    if (isArray(result)) {
+      return result
+    }
+
+    return [result]
   } catch (e) {
     console.error(e)
   } finally {
@@ -48,13 +62,24 @@ function isSelections(selections: unknown): selections is Selections {
   )
 }
 
-export function parseEngineErrorMessage(engineError: string) {
-  const parts = engineError.split('engine error: ')
-  if (parts.length < 2) {
+export function parseEngineErrorMessage(
+  engineErrors?: [Models['WebSocketResponse_type']]
+): string | undefined {
+  if (!engineErrors) {
     return undefined
   }
 
-  const errors = JSON.parse(parts[1]) as ApiError_type[]
+  if (!engineErrors[0]) {
+    return undefined
+  }
+
+  const engineError = engineErrors[0]
+
+  if (engineError.success) {
+    return undefined
+  }
+
+  const errors = engineError.errors
   if (!errors[0]) {
     return undefined
   }
@@ -114,7 +139,7 @@ export const revolveAxisValidator = async ({
     })
   }
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -163,7 +188,7 @@ export const loftValidator = async ({
     })
   }
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -218,7 +243,7 @@ export const shellValidator = async ({
   }
 
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -280,7 +305,7 @@ export const sweepValidator = async ({
   }
 
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 

@@ -64,6 +64,14 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
 
+    pub fn face() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Face)
+    }
+
+    pub fn tag() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Tag)
+    }
+
     pub fn bool() -> Self {
         RuntimeType::Primitive(PrimitiveType::Boolean)
     }
@@ -130,7 +138,7 @@ impl RuntimeType {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
             Type::Array { ty, len } => {
-                Self::from_parsed_primitive(ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
+                Self::from_parsed(*ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
             }
             Type::Union { tys } => tys
                 .into_iter()
@@ -1138,8 +1146,12 @@ impl KclValue {
                 _ => Err(self.into()),
             },
             PrimitiveType::Tag => match value {
-                KclValue::TagDeclarator { .. } => Ok(value.clone()),
-                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
+                    Ok(value.clone())
+                }
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
+                }
                 _ => Err(self.into()),
             },
         }
@@ -1292,12 +1304,12 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
-            KclValue::Function { .. }
-            | KclValue::Module { .. }
-            | KclValue::KclNone { .. }
-            | KclValue::Type { .. }
-            | KclValue::Uuid { .. } => None,
+            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
+                Some(RuntimeType::Primitive(PrimitiveType::Tag))
+            }
+            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
+                None
+            }
         }
     }
 }

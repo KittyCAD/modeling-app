@@ -66,6 +66,17 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -108,29 +119,14 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "m25Screw",
-      "functionSourceRange": [
-        1289,
-        1527,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -216,11 +212,7 @@ description: Operations executed fillet-and-shell.kcl
     "group": {
       "type": "FunctionCall",
       "name": "m25Screw",
-      "functionSourceRange": [
-        1289,
-        1527,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -306,11 +298,7 @@ description: Operations executed fillet-and-shell.kcl
     "group": {
       "type": "FunctionCall",
       "name": "m25Screw",
-      "functionSourceRange": [
-        1289,
-        1527,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -396,11 +384,7 @@ description: Operations executed fillet-and-shell.kcl
     "group": {
       "type": "FunctionCall",
       "name": "m25Screw",
-      "functionSourceRange": [
-        1289,
-        1527,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -482,6 +466,22 @@ description: Operations executed fillet-and-shell.kcl
     "type": "GroupEnd"
   },
   {
+    "type": "KclStdLibCall",
+    "name": "shell",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "faces": {
         "value": {
@@ -512,17 +512,6 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   }
 ]
