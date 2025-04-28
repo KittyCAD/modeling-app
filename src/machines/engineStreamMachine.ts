@@ -270,6 +270,9 @@ export const engineStreamMachine = setup({
         [EngineStreamTransition.Pause]: {
           target: EngineStreamState.Paused,
         },
+        [EngineStreamTransition.Stop]: {
+          target: EngineStreamState.Stopped,
+        },
       },
     },
     [EngineStreamState.Reconfiguring]: {
