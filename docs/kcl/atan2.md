@@ -37,7 +37,7 @@ atan2(
 ```js
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = toDegrees(atan2(y = 1.25, x = 2)), length = 20)
+  |> angledLine(angle = units::toDegrees(atan2(y = 1.25, x = 2)), length = 20)
   |> yLine(endAbsolute = 0)
   |> close()
 

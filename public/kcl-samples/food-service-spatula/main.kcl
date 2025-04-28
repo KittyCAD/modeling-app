@@ -26,14 +26,14 @@ fn slot(sketch1, start, end, width) {
     }
   } else {
     if end[0] < start[0] {
-      toDegrees(atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
+      units::toDegrees(atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
     } else {
-      toDegrees(      atan((end[1] - start[1]) / (end[0] - start[0])))
+      units::toDegrees(      atan((end[1] - start[1]) / (end[0] - start[0])))
     }
   }
   dist = sqrt(pow(end[1] - start[1], exp = 2) + pow(end[0] - start[0], exp = 2))
-  xstart = width / 2 * cos(toRadians(angle - 90)) + start[0]
-  ystart = width / 2 * sin(toRadians(angle - 90)) + start[1]
+  xstart = width / 2 * cos(units::toRadians(angle - 90)) + start[0]
+  ystart = width / 2 * sin(units::toRadians(angle - 90)) + start[1]
   slotSketch = startProfile(sketch1, at = [xstart, ystart])
     |> angledLine(angle = angle, length = dist)
     |> tangentialArc(radius = width / 2, angle = 180)

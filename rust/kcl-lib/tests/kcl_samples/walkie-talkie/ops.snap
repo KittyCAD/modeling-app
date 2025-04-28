@@ -142,7 +142,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -170,63 +170,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -553,7 +497,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -581,63 +525,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
