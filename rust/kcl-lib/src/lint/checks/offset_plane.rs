@@ -206,7 +206,7 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
 }
 
 fn get_offset(origin: (f64, f64, f64), x_axis: (f64, f64, f64), y_axis: (f64, f64, f64)) -> Option<f64> {
-    // Check which numer is not a 1 or -1, or zero.
+    // Check which number is not a 1 or -1, or zero.
     // Return that back out since that is the offset.
 
     // This is a bit of a hack, but it works for now.
