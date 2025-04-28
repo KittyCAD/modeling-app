@@ -1,4 +1,3 @@
-import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
@@ -86,16 +85,9 @@ test.describe('Testing loading external models', () => {
   test(
     'Desktop: should create new file by default, creates a second file with automatic unique name',
     { tag: '@electron' },
-    async ({ editor, context, page, scene, cmdBar, toolbar }) => {
+    async ({ editor, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
       }
-      const { dir } = await context.folderSetupFn(async (dir) => {
-        const bracketDir = join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {
-          encoding: 'utf-8',
-        })
-      })
       const u = await getUtils(page)
 
       // Locators and constants
@@ -104,21 +96,10 @@ test.describe('Testing loading external models', () => {
         title: 'Parametric Bearing Pillow Block',
         file1: 'parametric-bearing-pillow-block-1' + FILE_EXT,
       }
-      const sampleTwo = {
-        file: 'gear-rack' + FILE_EXT,
-        title: '100mm Gear Rack',
-      }
       const projectCard = page.getByRole('link', { name: 'bracket' })
-      const commandMethodArgButton = page.getByRole('button', {
-        name: 'Method',
-      })
-      const commandMethodOption = page.getByRole('option', {
-        name: 'Overwrite',
-      })
       const overwriteWarning = page.getByText(
         'Overwrite current file with sample?'
       )
-      const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
         page.getByRole('listitem').filter({
