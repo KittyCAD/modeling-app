@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
@@ -228,13 +229,10 @@ impl IntoDiagnostic for KclErrorWithOutputs {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.error.get_message();
         let source_ranges = self.error.source_ranges();
-        println!("self: {:?}", self);
 
         source_ranges
             .into_iter()
             .map(|source_range| {
-                println!("source_range: {:?}", source_range);
-                println!("filenames: {:?}", self.filenames);
                 let source = self
                     .source_files
                     .get(&source_range.module_id())
@@ -658,10 +656,19 @@ pub enum Tag {
     None,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
 #[ts(export)]
 pub struct Suggestion {
     pub title: String,
     pub insert: String,
     pub source_range: SourceRange,
+}
+
+pub type LspSuggestion = (Suggestion, tower_lsp::lsp_types::Range);
+
+impl Suggestion {
+    pub fn to_lsp_edit(&self, code: &str) -> LspSuggestion {
+        let range = self.source_range.to_lsp_range(code);
+        (self.clone(), range)
+    }
 }

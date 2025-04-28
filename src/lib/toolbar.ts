@@ -585,24 +585,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [],
             isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
           },
-          {
-            id: 'arc',
-            onClick: ({ modelingState, modelingSend }) =>
-              modelingSend({
-                type: 'change tool',
-                data: {
-                  tool: !modelingState.matches({ Sketch: 'Arc tool' })
-                    ? 'arc'
-                    : 'none',
-                },
-              }),
-            icon: 'arc',
-            status: DEV ? 'available' : 'unavailable',
-            title: 'Arc',
-            description: 'Start drawing an arc',
-            links: [],
-            isActive: (state) => state.matches({ Sketch: 'Arc tool' }),
-          },
         ],
       },
       'break',

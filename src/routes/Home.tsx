@@ -307,7 +307,7 @@ const Home = () => {
                 onClick={openExternalBrowserIfDesktop('https://zoo.dev/blog')}
                 className={sidebarButtonClasses}
                 iconStart={{
-                  icon: 'sketch',
+                  icon: 'glasses',
                   bgClassName: '!bg-transparent rounded-sm',
                 }}
                 data-testid="home-blog"
