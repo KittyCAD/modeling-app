@@ -213,13 +213,15 @@ mod test {
     }
 
     macro_rules! assert_finding {
-        ( $check:expr, $finding:expr, $kcl:expr ) => {
+        ( $check:expr, $finding:expr, $kcl:expr, $output:expr ) => {
             let prog = $crate::Program::parse_no_errs($kcl).unwrap();
 
             // Ensure the code still works.
             $crate::execution::parse_execute($kcl).await.unwrap();
 
             for discovered_finding in prog.lint($check).unwrap() {
+                pretty_assertions::assert_eq!(discovered_finding.description, $output,);
+
                 if discovered_finding.finding == $finding {
                     if discovered_finding.suggestion.is_some() {
                         // Apply the suggestion to the source code.
@@ -236,10 +238,10 @@ mod test {
     }
 
     macro_rules! test_finding {
-        ( $name:ident, $check:expr, $finding:expr, $kcl:expr ) => {
+        ( $name:ident, $check:expr, $finding:expr, $kcl:expr, $output:expr ) => {
             #[tokio::test]
             async fn $name() {
-                $crate::lint::rule::assert_finding!($check, $finding, $kcl);
+                $crate::lint::rule::assert_finding!($check, $finding, $kcl, $output);
             }
         };
     }

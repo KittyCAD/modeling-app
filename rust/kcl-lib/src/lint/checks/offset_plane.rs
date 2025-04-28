@@ -208,7 +208,8 @@ startSketchOn({
     xAxis = { x = 1, y = 0, z = 0 },
     yAxis = { x = 0, y = 0, z = 1 },
 })
-"
+",
+        "custom plane in startSketchOn; offsetPlane from XZ would work here"
     );
 
     test_no_finding!(
