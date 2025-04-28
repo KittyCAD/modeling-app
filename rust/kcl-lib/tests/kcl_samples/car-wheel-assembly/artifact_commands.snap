@@ -325,7 +325,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 38.099999999999994,
+        "x": 38.1,
         "y": 0.0,
         "z": 0.0
       }
@@ -350,7 +350,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 38.099999999999994,
+        "radius": 38.1,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -632,7 +632,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 38.099999999999994,
+        "x": 38.1,
         "y": 0.0,
         "z": 0.0
       }
@@ -657,7 +657,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 38.099999999999994,
+        "radius": 38.1,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1426,7 +1426,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 65.14999999999999,
+        "x": 65.15,
         "y": 0.0,
         "z": 0.0
       }
@@ -1451,7 +1451,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "x": 57.15,
           "y": 0.0
         },
-        "radius": 7.999999999999999,
+        "radius": 8.0,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2103,7 +2103,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 38.099999999999994,
+        "x": 38.1,
         "y": 0.0,
         "z": 0.0
       }
@@ -13008,7 +13008,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "make_plane",
       "origin": {
         "x": 57.15,
-        "y": -29.999999999999996,
+        "y": -30.0,
         "z": 0.0
       },
       "x_axis": {

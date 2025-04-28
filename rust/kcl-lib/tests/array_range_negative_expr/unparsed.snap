@@ -2,5 +2,5 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing array_range_negative_expr.kcl
 ---
-xs = [int(-5) .. 5]
+xs = [-5 .. 5]
 assert(xs[0], isEqualTo = -5, error = "first element is -5")

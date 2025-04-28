@@ -313,6 +313,12 @@ impl Expr {
             }
             Expr::AscribedExpression(e) => {
                 let mut result = e.expr.recast(options, indentation_level, ctxt);
+                if matches!(
+                    e.expr,
+                    Expr::BinaryExpression(..) | Expr::PipeExpression(..) | Expr::UnaryExpression(..)
+                ) {
+                    result = format!("({result})");
+                }
                 result += ": ";
                 result += &e.ty.to_string();
                 result

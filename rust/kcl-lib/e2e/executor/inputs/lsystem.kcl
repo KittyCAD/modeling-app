@@ -25,8 +25,6 @@ fn Gte = (a, b) => { return Not(Lt(a, b)) }
 // Note: it was most concise to encode productions directly in axioms.
 // Change them as you need.
 
-deg = pi()*2 / 360
-
 fn setSketch = (state, q) => {
   return {
     depthMax: state.depthMax,
@@ -77,8 +75,8 @@ fn setLength = (state, q) => {
 
 fn Gt2 = (state) => { return setLength(state, state.currentLength * state.factor) }
 fn Lt2 = (state) => { return setLength(state, state.currentLength / state.factor) }
-fn Add = (state) => { return setAngle(state, rem(int(state.currentAngle - state.angle), divisor = 360)) }
-fn Sub = (state) => { return setAngle(state, rem(int(state.currentAngle + state.angle), divisor = 360)) }
+fn Add = (state) => { return setAngle(state, rem(state.currentAngle - state.angle, divisor = 360)) }
+fn Sub = (state) => { return setAngle(state, rem(state.currentAngle + state.angle, divisor = 360)) }
 
 // Only necessary to get around recursion limitations...
 fn F = (state, F) => {
