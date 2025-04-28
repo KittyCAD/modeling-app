@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
@@ -176,14 +177,29 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
     Ok(ret.clone())
 }
 
+/// Mutates the `out` universe with the imported modules. Returns the imports of
+/// only `repr`'s non-transitive imports.
 pub(crate) async fn import_universe(
     ctx: &ExecutorContext,
     repr: &ModuleRepr,
     out: &mut Universe,
     exec_state: &mut ExecState,
-) -> Result<(), KclError> {
+) -> Result<HashMap<PathBuf, crate::parsing::ast::types::Node<ImportStatement>>, KclError> {
     let modules = import_dependencies(repr, ctx)?;
+    let mut module_imports = HashMap::new();
     for (filename, import_stmt, module_path) in modules {
+        match &module_path {
+            ModulePath::Main => {
+                // We only care about what the root module imports.
+            }
+            ModulePath::Local { value, .. } => {
+                module_imports.insert(value.clone(), import_stmt.clone());
+            }
+            ModulePath::Std { .. } => {
+                // We don't care about std imports.
+            }
+        }
+
         if out.contains_key(&filename) {
             continue;
         }
@@ -208,7 +224,7 @@ pub(crate) async fn import_universe(
         Box::pin(import_universe(ctx, &repr, out, exec_state)).await?;
     }
 
-    Ok(())
+    Ok(module_imports)
 }
 
 #[cfg(test)]

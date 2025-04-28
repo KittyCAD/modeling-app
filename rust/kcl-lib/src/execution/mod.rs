@@ -739,7 +739,7 @@ impl ExecutorContext {
         let mut universe = std::collections::HashMap::new();
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        crate::walk::import_universe(
+        let root_imports = crate::walk::import_universe(
             self,
             &ModuleRepr::Kcl(program.ast.clone(), None),
             &mut universe,
@@ -768,8 +768,6 @@ impl ExecutorContext {
                 default_planes.clone(),
             )
         })?;
-
-        let mut root_module_id = None;
 
         for modules in crate::walk::import_graph(&universe, self)
             .map_err(|err| {
@@ -816,41 +814,29 @@ impl ExecutorContext {
                 let source_range = SourceRange::from(import_stmt);
 
                 #[cfg(feature = "artifact-graph")]
-                {
-                    let root_id = match root_module_id {
-                        None => {
-                            // The first module is the root module that's
-                            // importing everything else.
-                            root_module_id = Some(module_id);
-                            module_id
+                match &module_path {
+                    ModulePath::Main => {
+                        // This should never happen.
+                    }
+                    ModulePath::Local { value, .. } => {
+                        // We only want to display the top-level module imports in
+                        // the Feature Tree, not transitive imports.
+                        if root_imports.contains_key(value) {
+                            exec_state.global.operations.push(Operation::GroupBegin {
+                                group: Group::ModuleInstance {
+                                    name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                                    module_id,
+                                },
+                                source_range,
+                            });
+                            // Due to concurrent execution, we cannot easily
+                            // group operations by module. So we leave the
+                            // group empty and close it immediately.
+                            exec_state.global.operations.push(Operation::GroupEnd);
                         }
-                        Some(id) => id,
-                    };
-
-                    // We only want to display the top-level module imports in
-                    // the Feature Tree, not transitive imports.
-                    if module_id == root_id {
-                        match &module_path {
-                            ModulePath::Main => {
-                                // This should never happen.
-                            }
-                            ModulePath::Local { value, .. } => {
-                                exec_state.global.operations.push(Operation::GroupBegin {
-                                    group: Group::ModuleInstance {
-                                        name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
-                                        module_id,
-                                    },
-                                    source_range,
-                                });
-                                // Due to concurrent execution, we cannot easily
-                                // group operations by module. So we leave the
-                                // group empty and close it immediately.
-                                exec_state.global.operations.push(Operation::GroupEnd);
-                            }
-                            ModulePath::Std { .. } => {
-                                // We don't want to display stdlib in the Feature Tree.
-                            }
-                        }
+                    }
+                    ModulePath::Std { .. } => {
+                        // We don't want to display stdlib in the Feature Tree.
                     }
                 }
 
