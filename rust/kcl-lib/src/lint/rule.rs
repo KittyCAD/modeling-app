@@ -96,6 +96,7 @@ impl IntoDiagnostic for &Discovered {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
+        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
 
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),
@@ -107,7 +108,7 @@ impl IntoDiagnostic for &Discovered {
             message,
             related_information: None,
             tags: None,
-            data: None,
+            data: edit.map(|e| serde_json::to_value(e).unwrap()),
         }]
     }
 

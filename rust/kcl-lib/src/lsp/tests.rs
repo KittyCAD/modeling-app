@@ -7,8 +7,10 @@ use tower_lsp::{
 };
 
 use crate::{
+    errors::{LspSuggestion, Suggestion},
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
+    SourceRange,
 };
 
 #[track_caller]
@@ -3551,25 +3553,23 @@ startSketchOn(XY)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_kcl_lsp_code_actions() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let cwd = std::env::current_dir().unwrap();
-    let joined = cwd.join("tests/import_file_parse_error/");
-
-    // Change the current directory.
-    std::env::set_current_dir(joined).unwrap();
-
-    let code = std::fs::read_to_string("input.kcl").unwrap();
+async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
+    let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
     server
         .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
             text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///input.kcl".try_into().unwrap(),
+                uri: "file:///testlint.kcl".try_into().unwrap(),
                 language_id: "kcl".to_string(),
                 version: 1,
-                text: code.clone(),
+                text: r#"startSketchOn({
+    origin = { x = 0, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+})
+|> startProfile(at = [0, 0])"#
+                    .to_string(),
             },
         })
         .await;
@@ -3578,7 +3578,7 @@ async fn kcl_test_kcl_lsp_code_actions() {
     let diagnostics = server
         .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
             text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
-                uri: "file:///input.kcl".try_into().unwrap(),
+                uri: "file:///testlint.kcl".try_into().unwrap(),
             },
             partial_result_params: Default::default(),
             work_done_progress_params: Default::default(),
@@ -3592,20 +3592,28 @@ async fn kcl_test_kcl_lsp_code_actions() {
     if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
         if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
             assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
-            let item = diagnostics.full_document_diagnostic_report.items.first().unwrap();
-            assert_eq!(item.message, "syntax: Unexpected token: }");
             assert_eq!(
-                Some(vec![tower_lsp::lsp_types::DiagnosticRelatedInformation {
-                    location: tower_lsp::lsp_types::Location {
-                        uri: "file:///parse-failure.kcl".try_into().unwrap(),
-                        range: tower_lsp::lsp_types::Range {
-                            start: tower_lsp::lsp_types::Position { line: 1, character: 9 },
-                            end: tower_lsp::lsp_types::Position { line: 2, character: 1 },
-                        },
+                diagnostics.full_document_diagnostic_report.items[0].message,
+                "offsetPlane should be used to define a new plane offset from the origin"
+            );
+
+            // Make sure we get the suggestion data.
+            assert_eq!(
+                diagnostics.full_document_diagnostic_report.items[0]
+                    .data
+                    .clone()
+                    .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
+                Some((
+                    Suggestion {
+                        insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                        source_range: SourceRange::new(14, 133, Default::default()),
+                        title: "use offsetPlane instead".to_string(),
                     },
-                    message: "syntax: Unexpected token: }".to_string(),
-                }]),
-                item.related_information
+                    tower_lsp::lsp_types::Range {
+                        start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                        end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+                    }
+                ))
             );
         } else {
             panic!("Expected full diagnostics");
@@ -3614,5 +3622,5 @@ async fn kcl_test_kcl_lsp_code_actions() {
         panic!("Expected diagnostics");
     }
 
-    server.executor_ctx().await.clone().unwrap().close().await;
+    // Run a code action.
 }

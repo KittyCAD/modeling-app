@@ -41,7 +41,7 @@ use tower_lsp::{
 
 use crate::{
     docs::kcl_doc::DocData,
-    errors::Suggestion,
+    errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
     lsp::{
@@ -1458,9 +1458,10 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let (suggestion, range) = diagnostic.data.as_ref().and_then(|data| {
-                    serde_json::from_value::<(Suggestion, tower_lsp::lsp_types::Range)>(data.clone()).ok()
-                })?;
+                let (suggestion, range) = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<LspSuggestion>(data.clone()).ok())?;
                 let edit = TextEdit {
                     range,
                     new_text: suggestion.insert,

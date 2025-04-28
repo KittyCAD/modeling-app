@@ -656,10 +656,19 @@ pub enum Tag {
     None,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
 #[ts(export)]
 pub struct Suggestion {
     pub title: String,
     pub insert: String,
     pub source_range: SourceRange,
+}
+
+pub type LspSuggestion = (Suggestion, tower_lsp::lsp_types::Range);
+
+impl Suggestion {
+    pub fn to_lsp_edit(&self, code: &str) -> LspSuggestion {
+        let range = self.source_range.to_lsp_range(code);
+        (self.clone(), range)
+    }
 }
