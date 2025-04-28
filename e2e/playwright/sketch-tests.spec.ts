@@ -1334,6 +1334,63 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
   })
+
+  test('Can delete a single segment line with keyboard', async ({
+    page,
+    scene,
+    homePage,
+    cmdBar,
+    editor,
+  }) => {
+    const u = await getUtils(page)
+
+    const viewportSize = { width: 1100, height: 750 }
+    await page.setBodyDimensions(viewportSize)
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 25.0)
+  |> yLine(length = 5.0)
+  |> line(end = [-22.0, 12.0])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Enter sketch mode
+    await page.mouse.dblclick(654, 450)
+    await page.waitForTimeout(1000)
+
+    // Select the third line
+    await page.mouse.click(918, 90)
+    await page.waitForTimeout(1000)
+
+    // Delete with backspace
+    await page.keyboard.press('Delete')
+
+    // Wait for engine re-execution to complete
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+
+    // Validate the editor code no longer contains the deleted line
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 25.0)
+  |> yLine(length = 5.0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+`,
+      { shouldNormalise: true }
+    )
+  })
 })
 
 test.describe(`Sketching with offset planes`, () => {
