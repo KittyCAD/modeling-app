@@ -439,9 +439,11 @@ export function loftSketches(
   const modifiedAst = structuredClone(node)
   const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const elements = declarators.map((d) => createLocalName(d.id.name))
-  const loft = createCallExpressionStdLib('loft', [
+  const loft = createCallExpressionStdLibKw(
+    'loft',
     createArrayExpression(elements),
-  ])
+    []
+  )
   const declaration = createVariableDeclaration(name, loft)
   modifiedAst.body.push(declaration)
   const pathToNode: PathToNode = [
