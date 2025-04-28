@@ -35,7 +35,7 @@ export type string
 ///
 /// ```norun,inline
 /// startSketchOn(XZ)
-///   |> startProfileAt(origin, %)
+///   |> startProfile(at = origin)
 ///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///   |> angledLine(
 ///        angle = segAng(rectangleSegmentA001) - 90,
@@ -69,7 +69,7 @@ export type string
 /// ```norun,inline
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
-///     |> startProfileAt(origin, %)
+///     |> startProfile(at = origin)
 ///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
@@ -98,7 +98,7 @@ export type string
 /// ```norun,inline
 /// fn rect(origin) {
 ///   return startSketchOn(XZ)
-///     |> startProfileAt(origin, %)
+///     |> startProfile(at = origin)
 ///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
@@ -136,7 +136,7 @@ export type Plane
 ///
 /// ```kcl,inline
 /// mySketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -154,7 +154,7 @@ export type Plane
 /// ```kcl,inline
 /// fn createSketch() {
 ///    return startSketchOn(XY)
-///         |> startProfileAt([-12, 12], %)
+///         |> startProfile(at = [-12, 12])
 ///         |> line(end = [24, 0])
 ///         |> line(end = [0, -24])
 ///         |> line(end = [-24, 0])
@@ -180,7 +180,7 @@ export type Sketch
 ///
 /// ```kcl,inline
 /// myPart = startSketchOn('XY')
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -199,7 +199,7 @@ export type Sketch
 /// ```kcl,inline
 /// fn createPart() {
 ///    return startSketchOn('XY')
-///         |> startProfileAt([-12, 12], %)
+///         |> startProfile(at = [-12, 12])
 ///         |> line(end = [24, 0])
 ///         |> line(end = [0, -24])
 ///         |> line(end = [-24, 0])

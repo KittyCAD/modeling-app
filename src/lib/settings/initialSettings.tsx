@@ -23,7 +23,7 @@ import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
-import { isArray, toSync } from '@src/lib/utils'
+import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -441,7 +441,7 @@ export function createSettings() {
               : 'perspective',
           options: (cmdContext, settingsContext) =>
             (['perspective', 'orthographic'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
@@ -465,7 +465,7 @@ export function createSettings() {
             context.modeling.cameraOrbit.current,
           options: (cmdContext, settingsContext) =>
             (['spherical', 'trackball'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(

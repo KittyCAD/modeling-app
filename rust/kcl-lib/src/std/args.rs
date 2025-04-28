@@ -598,71 +598,6 @@ impl Args {
         Ok(TyF64::from_kcl_val(&arg.value).unwrap().n)
     }
 
-    pub(crate) fn get_number_array_with_types(&self) -> Result<Vec<TyF64>, KclError> {
-        let numbers = self
-            .args
-            .iter()
-            .map(|arg| {
-                let Some(num) = <TyF64>::from_kcl_val(&arg.value) else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        source_ranges: arg.source_ranges(),
-                        message: format!("Expected a number but found {}", arg.value.human_friendly_type()),
-                    }));
-                };
-                Ok(num)
-            })
-            .collect::<Result<_, _>>()?;
-        Ok(numbers)
-    }
-
-    pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
-        let Some(arg0) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg0.value.coerce(&RuntimeType::sketches(), exec_state).map_err(|_| {
-            KclError::Type(KclErrorDetails {
-                message: format!(
-                    "Expected an array of sketches, found {}",
-                    arg0.value.human_friendly_type()
-                ),
-                source_ranges: vec![self.source_range],
-            })
-        })?;
-        let sketches = match sarg {
-            KclValue::HomArray { value, .. } => value.iter().map(|v| v.as_sketch().unwrap().clone()).collect(),
-            _ => unreachable!(),
-        };
-
-        let Some(arg1) = self.args.get(1) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected a second sketch argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-        let sarg = arg1
-            .value
-            .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
-            .map_err(|_| {
-                KclError::Type(KclErrorDetails {
-                    message: format!("Expected a sketch, found {}", arg1.value.human_friendly_type()),
-                    source_ranges: vec![self.source_range],
-                })
-            })?;
-        let sketch = match sarg {
-            KclValue::Sketch { value } => *value,
-            _ => unreachable!(),
-        };
-
-        Ok((sketches, sketch))
-    }
-
-    pub(crate) fn get_data_and_sketch_surface(&self) -> Result<([TyF64; 2], SketchSurface, Option<TagNode>), KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
@@ -762,25 +697,6 @@ pub trait FromArgs<'a>: Sized {
 pub trait FromKclValue<'a>: Sized {
     /// Try to convert a KclValue into this type.
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self>;
-}
-
-impl<'a> FromArgs<'a> for Vec<KclValue> {
-    fn from_args(args: &'a Args, i: usize) -> Result<Self, KclError> {
-        let Some(arg) = args.args.get(i) else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Expected an argument at index {i}"),
-                source_ranges: vec![args.source_range],
-            }));
-        };
-        let KclValue::MixedArray { value: array, meta: _ } = &arg.value else {
-            let message = format!("Expected an array but found {}", arg.value.human_friendly_type());
-            return Err(KclError::Type(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
-                message,
-            }));
-        };
-        Ok(array.to_owned())
-    }
 }
 
 impl<'a, T> FromArgs<'a> for T
@@ -897,6 +813,12 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
             }
             _ => None,
         }
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<KclValue> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        arg.as_array().map(|v| v.to_vec())
     }
 }
 
@@ -1220,6 +1142,7 @@ impl_from_kcl_for_vec!(crate::execution::EdgeCut);
 impl_from_kcl_for_vec!(crate::execution::Metadata);
 impl_from_kcl_for_vec!(super::fillet::EdgeReference);
 impl_from_kcl_for_vec!(ExtrudeSurface);
+impl_from_kcl_for_vec!(TyF64);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {

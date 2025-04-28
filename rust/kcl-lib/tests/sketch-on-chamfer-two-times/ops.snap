@@ -51,6 +51,17 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -82,9 +93,11 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "chamfer",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -93,9 +106,7 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -134,9 +145,11 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -145,9 +158,7 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "length": {
         "value": {
@@ -185,18 +196,7 @@ description: Operations executed sketch-on-chamfer-two-times.kcl
         "sourceRange": []
       }
     },
-    "name": "chamfer",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {

@@ -124,14 +124,34 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
       })
 
-      await test.step('Insert kcl second part as module', async () => {
-        await insertPartIntoAssembly(
-          'bracket.kcl',
-          'bracket',
-          toolbar,
-          cmdBar,
-          page
-        )
+      await test.step('Insert a second part with the same name and expect error', async () => {
+        await toolbar.insertButton.click()
+        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'localName',
+          currentArgValue: '',
+          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
+          highlightedHeaderArg: 'localName',
+          commandName: 'Insert',
+        })
+        await page.keyboard.insertText('cylinder')
+        await cmdBar.progressCmdBar()
+        await expect(
+          page.getByText('This variable name is already in use')
+        ).toBeVisible()
+      })
+
+      await test.step('Fix the name and expect the second part inserted', async () => {
+        await cmdBar.argumentInput.clear()
+        await page.keyboard.insertText('bracket')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
+          commandName: 'Insert',
+        })
+        await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
         import "cylinder.kcl" as cylinder
@@ -144,45 +164,12 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.settled(cmdBar)
       })
 
-      await test.step('Insert a second time with the same name and expect error', async () => {
+      await test.step('Insert a second time and expect error', async () => {
         await toolbar.insertButton.click()
         await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'localName',
-          currentArgValue: '',
-          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
-          highlightedHeaderArg: 'localName',
-          commandName: 'Insert',
-        })
-        await page.keyboard.insertText('bracket')
-        await cmdBar.progressCmdBar()
         await expect(
-          page.getByText('This variable name is already in use')
+          page.getByText('This file is already imported')
         ).toBeVisible()
-      })
-
-      await test.step('Insert a second time with a different name and expect error', async () => {
-        await page.keyboard.insertText('2')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket2' },
-          commandName: 'Insert',
-        })
-        await cmdBar.progressCmdBar()
-        await editor.expectEditor.toContain(
-          `
-        import "cylinder.kcl" as cylinder
-        import "bracket.kcl" as bracket
-        import "bracket.kcl" as bracket2
-        cylinder
-        bracket
-        bracket2
-      `,
-          { shouldNormalise: true }
-        )
-        // TODO: update once we have clone() with #6209
       })
     }
   )
@@ -618,6 +605,192 @@ foreign
         // Expect pipe to take over the red cube but leave some space where the washer was
         await scene.expectPixelColor(partColor, midPoint, tolerance)
         await scene.expectPixelColor(bgColor, washerPoint, tolerance)
+      })
+    }
+  )
+
+  test(
+    'Point-and-click Clone on assembly parts',
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      toolbar,
+      cmdBar,
+      tronApp,
+      editor,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      const projectName = 'assembly'
+
+      await test.step('Setup parts and expect imported model', async () => {
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, projectName)
+          await fsp.mkdir(projectDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              path.join('public', 'kcl-samples', 'washer', 'main.kcl'),
+              path.join(projectDir, 'washer.kcl')
+            ),
+            fsp.copyFile(
+              path.join(
+                'public',
+                'kcl-samples',
+                'socket-head-cap-screw',
+                'main.kcl'
+              ),
+              path.join(projectDir, 'screw.kcl')
+            ),
+            fsp.writeFile(
+              path.join(projectDir, 'main.kcl'),
+              `
+import "washer.kcl" as washer
+import "screw.kcl" as screw
+screw
+washer
+  |> rotate(roll = 90, pitch = 0, yaw = 0)`
+            ),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Clone the part using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('washer', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: '',
+          headerArguments: {
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'variableName',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            VariableName: 'clone001',
+          },
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+        washer
+          |> rotate(roll = 90, pitch = 0, yaw = 0)
+        clone001 = clone(washer)
+        `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Set translate on clone', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'x',
+          currentArgValue: '0',
+          headerArguments: {
+            X: '',
+            Y: '',
+            Z: '',
+          },
+          highlightedHeaderArg: 'x',
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('-3')
+        await cmdBar.progressCmdBar()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '0',
+            Y: '-3',
+            Z: '0',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+          screw
+          washer
+            |> rotate(roll = 90, pitch = 0, yaw = 0)
+          clone001 = clone(washer)
+            |> translate(x = 0, y = -3, z = 0)
+        `,
+          { shouldNormalise: true }
+        )
+      })
+
+      await test.step('Clone the translated clone', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('Clone', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-clone').click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: '',
+          headerArguments: {
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'variableName',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            VariableName: 'clone002',
+          },
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+          screw
+          washer
+            |> rotate(roll = 90, pitch = 0, yaw = 0)
+          clone001 = clone(washer)
+            |> translate(x = 0, y = -3, z = 0)
+          clone002 = clone(clone001)
+        `,
+          { shouldNormalise: true }
+        )
       })
     }
   )

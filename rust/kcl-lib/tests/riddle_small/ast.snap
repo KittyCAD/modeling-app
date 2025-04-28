@@ -490,52 +490,55 @@ description: Result of parsing riddle_small.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 0,
-                    "elements": [
-                      {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "at",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "name": "ox",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "ox",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      },
-                      {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
+                        {
+                          "abs_path": false,
                           "commentStart": 0,
                           "end": 0,
-                          "name": "oy",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "oy",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
                   }
                 ],
                 "callee": {
@@ -545,7 +548,7 @@ description: Result of parsing riddle_small.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "startProfileAt",
+                    "name": "startProfile",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -556,8 +559,9 @@ description: Result of parsing riddle_small.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [

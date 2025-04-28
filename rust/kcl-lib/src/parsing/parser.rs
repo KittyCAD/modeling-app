@@ -2819,7 +2819,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = primitive_type(i)?;
+    let ty = argument_type(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2858,7 +2858,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         ArrayLen::None
     };
 
-    Ok(ty.map(|ty| Type::Array { ty, len }))
+    Ok(ty.map(|ty| Type::Array { ty: Box::new(ty), len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -3340,7 +3340,7 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;

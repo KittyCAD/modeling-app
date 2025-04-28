@@ -19,9 +19,7 @@ test('Units menu', async ({ page, homePage }) => {
   await millimetersButton.click()
 
   // Look out for the toast message
-  const toastMessage = page.getByText(
-    `Set default unit to "mm" for this project`
-  )
+  const toastMessage = page.getByText('Updated per-file units to mm')
   await expect(toastMessage).toBeVisible()
 
   // Verify that the popover has closed
@@ -50,7 +48,7 @@ totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn(-XZ)
-|> startProfileAt([0, 0], %)
+|> startProfile(at = [0, 0])
 |> yLine(length = baseHeight)
 |> xLine(length = baseLen)
 |> angledLine(
@@ -468,7 +466,7 @@ test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
       'persistCode',
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-|> startProfileAt([3.29, 7.86], %)
+|> startProfile(at = [3.29, 7.86])
 |> line(end = [2.48, 2.44])
 |> line(end = [2.66, 1.17])
 |> line(end = [3.75, 0.46])
@@ -529,7 +527,7 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
 
   await expect.poll(u.normalisedEditorCode).toContain(
     u.normalisedCode(`sketch002 = startSketchOn(extrude001, face = seg01)
-profile001 = startProfileAt([-12.34, 12.34], sketch002)
+profile001 = startProfile(sketch002, at = [-12.34, 12.34])
   |> line(end = [12.34, -12.34])
   |> line(end = [-12.34, -12.34])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -544,7 +542,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(500)
@@ -566,7 +564,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   const result = makeTemplate`sketch002 = startSketchOn(extrude001, face = seg01)
-|> startProfileAt([-12.83, 6.7], %)
+|> startProfile(at = [-12.83, 6.7])
 |> line(end = [${[2.28, 2.35]}, -${0.07}])
 |> line(end = [-3.05, -1.47])
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -579,7 +577,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
   await page.waitForTimeout(100)

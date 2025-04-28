@@ -2,20 +2,23 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+#[cfg(feature = "artifact-graph")]
 use kittycad_modeling_cmds::websocket::WebSocketResponse;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use super::types::NumericType;
+#[cfg(feature = "artifact-graph")]
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, Operation};
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
-        types, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings,
-        KclValue, Operation, UnitAngle, UnitLen,
+        types,
+        types::NumericType,
+        EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -29,6 +32,9 @@ pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
     pub(super) exec_context: Option<super::ExecutorContext>,
+    /// If we should not parallelize execution.
+    #[cfg(test)]
+    pub single_threaded: bool,
 }
 
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
@@ -42,20 +48,25 @@ pub(super) struct GlobalState {
     /// Map from module ID to module info.
     pub module_infos: ModuleInfoMap,
     /// Output map of UUIDs to artifacts.
+    #[cfg(feature = "artifact-graph")]
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Output commands to allow building the artifact graph by the caller.
     /// These are accumulated in the [`ExecutorContext`] but moved here for
     /// convenience of the execution cache.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Responses from the engine for `artifact_commands`.  We need to cache
     /// this so that we can build the artifact graph.  These are accumulated in
     /// the [`ExecutorContext`] but moved here for convenience of the execution
     /// cache.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_responses: IndexMap<Uuid, WebSocketResponse>,
     /// Output artifact graph.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
+    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     /// Module loader.
     pub mod_loader: ModuleLoader,
@@ -85,6 +96,8 @@ impl ExecState {
             global: GlobalState::new(&exec_context.settings),
             mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
+            #[cfg(test)]
+            single_threaded: false,
         }
     }
 
@@ -95,6 +108,8 @@ impl ExecState {
             global,
             mod_local: ModuleState::new(None, ProgramMemory::new(), Default::default()),
             exec_context: Some(exec_context.clone()),
+            #[cfg(test)]
+            single_threaded: false,
         };
     }
 
@@ -116,7 +131,7 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -125,8 +140,11 @@ impl ExecState {
                 .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
+            #[cfg(feature = "artifact-graph")]
             operations: self.global.operations,
+            #[cfg(feature = "artifact-graph")]
             artifact_commands: self.global.artifact_commands,
+            #[cfg(feature = "artifact-graph")]
             artifact_graph: self.global.artifact_graph,
             errors: self.global.errors,
             filenames: self
@@ -143,7 +161,7 @@ impl ExecState {
         }
     }
 
-    pub async fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_mock_exec_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -152,8 +170,11 @@ impl ExecState {
                 .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
+            #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_commands: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
             errors: self.global.errors,
             filenames: Default::default(),
@@ -181,6 +202,7 @@ impl ExecState {
         &mut self.mod_local.id_generator
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
         let id = artifact.id();
         self.global.artifacts.insert(id, artifact);
@@ -271,10 +293,15 @@ impl GlobalState {
         let mut global = GlobalState {
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifacts: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_commands: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_responses: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             artifact_graph: Default::default(),
+            #[cfg(feature = "artifact-graph")]
             operations: Default::default(),
             mod_loader: Default::default(),
             errors: Default::default(),

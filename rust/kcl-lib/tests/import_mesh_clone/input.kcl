@@ -1,0 +1,13 @@
+import "../inputs/cube.obj" as cube
+
+model = cube
+
+model2 = clone(model)
+    |> translate(
+        x = 1020,
+    )
+    |> appearance(
+        color = "#ff0000",
+        metalness = 50,
+        roughness = 50
+    )

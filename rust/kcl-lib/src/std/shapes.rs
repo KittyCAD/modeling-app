@@ -72,7 +72,7 @@ async fn inner_circle(
     let from_t = [TyF64::new(from[0], ty.clone()), TyF64::new(from[1], ty)];
 
     let sketch =
-        crate::std::sketch::inner_start_profile_at(from_t, sketch_surface, None, exec_state, args.clone()).await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from_t, None, exec_state, args.clone()).await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -189,8 +189,7 @@ async fn inner_circle_three_point(
         TyF64::new(center[1], ty.clone()),
     ];
     let sketch =
-        crate::std::sketch::inner_start_profile_at(from.clone(), sketch_surface, None, exec_state, args.clone())
-            .await?;
+        crate::std::sketch::inner_start_profile(sketch_surface, from.clone(), None, exec_state, args.clone()).await?;
 
     let angle_start = Angle::zero();
     let angle_end = Angle::turn();
@@ -366,9 +365,9 @@ async fn inner_polygon(
         })
         .collect();
 
-    let mut sketch = crate::std::sketch::inner_start_profile_at(
-        point_to_typed(vertices[0], units),
+    let mut sketch = crate::std::sketch::inner_start_profile(
         sketch_surface,
+        point_to_typed(vertices[0], units),
         None,
         exec_state,
         args.clone(),

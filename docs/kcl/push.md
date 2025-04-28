@@ -11,7 +11,7 @@ Returns a new array with the element appended.
 ```js
 push(
   array: [KclValue],
-  elem: KclValue,
+  item: KclValue,
 ): KclValue
 ```
 
@@ -20,8 +20,8 @@ push(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) |  | Yes |
-| `elem` | [`KclValue`](/docs/kcl/types/KclValue) | Any KCL value. | Yes |
+| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array which you're adding a new item to. | Yes |
+| `item` | [`KclValue`](/docs/kcl/types/KclValue) | The new item to add to the array | Yes |
 
 ### Returns
 
@@ -32,7 +32,7 @@ push(
 
 ```js
 arr = [1, 2, 3]
-new_arr = push(arr, 4)
+new_arr = push(arr, item = 4)
 assert(
   new_arr[3],
   isEqualTo = 4,

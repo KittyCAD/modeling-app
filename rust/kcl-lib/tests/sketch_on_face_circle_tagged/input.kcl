@@ -1,6 +1,6 @@
 fn cube(pos, scale) {
   sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])

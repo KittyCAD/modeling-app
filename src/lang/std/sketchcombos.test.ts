@@ -179,14 +179,14 @@ function makeSelections(
 describe('testing transformAstForSketchLines for equal length constraint', () => {
   describe(`should always reorder selections to have the base selection first`, () => {
     const inputScript = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [5, 5])
   |> line(end = [-2, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`
 
     const expectedModifiedScript = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [5, 5], tag = $seg01)
   |> angledLine(angle = 112, length = segLen(seg01))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -267,7 +267,7 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82]) // ln-should-get-tag
   |> line(endAbsolute = [2, 4]) // ln-lineTo-free should become angledLine
   |> angledLine(angle = 45, endAbsoluteX = 2.5) // ln-angledLineToX-free should become angledLine
@@ -299,7 +299,7 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
   |> angledLine(angle = 10, length = segLen(seg01)) // ln-lineTo-free should become angledLine
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-angledLineToX-free should become angledLine
@@ -307,31 +307,31 @@ part001 = startSketchOn(XY)
   |> angledLine(angle = 135, length = segLen(seg01)) // ln-angledLineToY-free should become angledLine
   |> angledLine(angle = myAng2, length = segLen(seg01)) // ln-angledLineToY-angle should become angledLine
   |> line(end = [
-       min(segLen(seg01), myVar),
+       min([segLen(seg01), myVar]),
        legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-should use legLen for y
   |> line(end = [
-       min(segLen(seg01), myVar),
+       min([segLen(seg01), myVar]),
        -legLen(hypotenuse = segLen(seg01), leg = myVar)
      ]) // ln-legLen but negative
   |> angledLine(angle = -112, length = segLen(seg01)) // ln-should become angledLine
   |> angledLine(angle = myVar, length = segLen(seg01)) // ln-use segLen for second arg
   |> angledLine(angle = 45, length = segLen(seg01)) // ln-segLen again
   |> angledLine(angle = 54, length = segLen(seg01)) // ln-should be transformed to angledLine
-  |> angledLine(angle = legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-should use legAngX to calculate angle
-  |> angledLine(angle = 180 + legAngX(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-same as above but should have + 180 to match original quadrant
+  |> angledLine(angle = legAngX(segLen(seg01), myVar), lengthX = min([segLen(seg01), myVar])) // ln-should use legAngX to calculate angle
+  |> angledLine(angle = 180 + legAngX(segLen(seg01), myVar), lengthX = min([segLen(seg01), myVar])) // ln-same as above but should have + 180 to match original quadrant
   |> line(end = [
        legLen(hypotenuse = segLen(seg01), leg = myVar),
-       min(segLen(seg01), myVar)
+       min([segLen(seg01), myVar])
      ]) // ln-legLen again but yRelative
   |> line(end = [
        -legLen(hypotenuse = segLen(seg01), leg = myVar),
-       min(segLen(seg01), myVar)
+       min([segLen(seg01), myVar])
      ]) // ln-negative legLen yRelative
   |> angledLine(angle = 58, length = segLen(seg01)) // ln-angledLineOfYLength-free should become angledLine
   |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineOfYLength-angle should become angledLine
-  |> angledLine(angle = legAngY(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-angledLineOfYLength-yRelative use legAngY
-  |> angledLine(angle = 270 + legAngY(segLen(seg01), myVar), lengthX = min(segLen(seg01), myVar)) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
+  |> angledLine(angle = legAngY(segLen(seg01), myVar), lengthX = min([segLen(seg01), myVar])) // ln-angledLineOfYLength-yRelative use legAngY
+  |> angledLine(angle = 270 + legAngY(segLen(seg01), myVar), lengthX = min([segLen(seg01), myVar])) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
   |> xLine(length = segLen(seg01)) // ln-xLine-free should sub in segLen
   |> yLine(length = segLen(seg01)) // ln-yLine-free should sub in segLen
   |> xLine(length = segLen(seg01)) // ln-xLineTo-free should convert to xLine
@@ -376,7 +376,7 @@ describe('testing transformAstForSketchLines for vertical and horizontal constra
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
   |> line(end = [-1.07, myVar]) // select for vertical constraint 1
@@ -404,7 +404,7 @@ part001 = startSketchOn(XY)
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> xLine(length = -6.28) // select for horizontal constraint 1
   |> line(end = [-1.07, myVar]) // select for vertical constraint 1
@@ -464,7 +464,7 @@ part001 = startSketchOn(XY)
 myVar2 = 12
 myVar3 = -10
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   |> line(end = [-6.28, 1.4]) // select for horizontal constraint 1
   |> yLine(length = myVar) // select for vertical constraint 1
@@ -525,7 +525,7 @@ describe('testing transformAstForSketchLines for vertical and horizontal distanc
   describe('testing setHorzDistance for line', () => {
     const inputScript = `myVar = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [0.31, 1.67]) // base selection
   |> line(end = [0.45, 1.46])
   |> line(end = [0.45, 1.46]) // free
@@ -631,7 +631,7 @@ halfHeight = totalHeight / 2
 halfArmAngle = armAngle / 2
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-0.01, -0.05], %)
+  |> startProfile(at = [-0.01, -0.05])
   |> line(end = [0.01, 0.94 + 0]) // partial
   |> xLine(length = 3.03) // partial
   |> angledLine({

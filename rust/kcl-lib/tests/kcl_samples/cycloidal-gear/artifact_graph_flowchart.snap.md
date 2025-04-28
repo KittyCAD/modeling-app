@@ -12,8 +12,8 @@ flowchart LR
     10[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[1305, 1355, 0]"]
-    12["Segment<br>[1305, 1355, 0]"]
+    11["Path<br>[1318, 1368, 0]"]
+    12["Segment<br>[1318, 1368, 0]"]
     13[Solid2d]
   end
   subgraph path15 [Path]
@@ -28,8 +28,8 @@ flowchart LR
     23[Solid2d]
   end
   subgraph path24 [Path]
-    24["Path<br>[1305, 1355, 0]"]
-    25["Segment<br>[1305, 1355, 0]"]
+    24["Path<br>[1318, 1368, 0]"]
+    25["Segment<br>[1318, 1368, 0]"]
     26[Solid2d]
   end
   subgraph path28 [Path]
@@ -38,8 +38,8 @@ flowchart LR
     36[Solid2d]
   end
   subgraph path37 [Path]
-    37["Path<br>[1305, 1355, 0]"]
-    38["Segment<br>[1305, 1355, 0]"]
+    37["Path<br>[1318, 1368, 0]"]
+    38["Segment<br>[1318, 1368, 0]"]
     39[Solid2d]
   end
   1["Plane<br>[587, 620, 0]"]
@@ -51,7 +51,7 @@ flowchart LR
   32["SweepEdge Opposite"]
   33["SweepEdge Opposite"]
   34["SweepEdge Opposite"]
-  40["Sweep Loft<br>[1485, 1574, 0]"]
+  40["Sweep Loft<br>[1495, 1584, 0]"]
   41[Wall]
   42[Wall]
   43[Wall]
@@ -83,21 +83,27 @@ flowchart LR
   3 --- 41
   3 --- 29
   3 --- 49
+  3 x--> 47
   4 --- 42
   4 --- 30
   4 --- 50
+  4 x--> 47
   5 --- 43
   5 --- 31
   5 --- 51
+  5 x--> 47
   6 --- 44
   6 --- 32
   6 --- 52
+  6 x--> 47
   7 --- 45
   7 --- 33
   7 --- 53
+  7 x--> 47
   8 --- 46
   8 --- 34
   8 --- 54
+  8 x--> 47
   11 --- 12
   11 --- 13
   14 --- 15
@@ -125,11 +131,23 @@ flowchart LR
   28 x---> 40
   28 --- 36
   40 --- 29
+  29 x--> 41
+  29 x--> 48
   40 --- 30
+  30 x--> 42
+  30 x--> 48
   40 --- 31
+  31 x--> 43
+  31 x--> 48
   40 --- 32
+  32 x--> 44
+  32 x--> 48
   40 --- 33
+  33 x--> 45
+  33 x--> 48
   40 --- 34
+  34 x--> 46
+  34 x--> 48
   37 --- 38
   37 --- 39
   40 --- 41
@@ -146,6 +164,18 @@ flowchart LR
   40 --- 52
   40 --- 53
   40 --- 54
+  49 <--x 46
+  49 <--x 41
+  50 <--x 41
+  50 <--x 42
+  51 <--x 42
+  51 <--x 43
+  52 <--x 43
+  52 <--x 44
+  53 <--x 44
+  53 <--x 45
+  54 <--x 45
+  54 <--x 46
   1 <--x 55
   14 <--x 56
   27 <--x 57

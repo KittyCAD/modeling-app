@@ -3,13 +3,12 @@
 use anyhow::Result;
 use kcl_derive_docs::stdlib;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ExecState, KclValue},
     std::Args,
 };
-
-use super::args::TyF64;
 
 async fn _assert(value: bool, message: &str, args: &Args) -> Result<(), KclError> {
     if !value {

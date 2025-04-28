@@ -4,6 +4,7 @@ use anyhow::Result;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
+use super::args::TyF64;
 use crate::{
     errors::KclError,
     execution::{
@@ -12,8 +13,6 @@ use crate::{
     },
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
-
-use super::args::TyF64;
 
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -111,6 +110,7 @@ async fn inner_helix(
 
     let helix_result = Box::new(HelixValue {
         value: id,
+        #[cfg(feature = "artifact-graph")]
         artifact_id: id.into(),
         revolutions,
         angle_start,

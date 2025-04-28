@@ -723,7 +723,7 @@ test(
 test(
   'pressing "delete" on home screen should do nothing',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
       await fsp.copyFile(
@@ -737,7 +737,7 @@ test(
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
     await expect(page.getByText('Loading your Projects...')).not.toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
 
     await page.keyboard.press('Delete')
     await page.waitForTimeout(200)
@@ -745,7 +745,7 @@ test(
 
     // expect to still be on the home page
     await expect(page.getByText('router-template-slate')).toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
   }
 )
 
@@ -1450,7 +1450,7 @@ test(
     )
 
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-87.4, 282.92], %)
+  |> startProfile(at = [-87.4, 282.92])
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
   |> line(end = [-180.04, -202.08])

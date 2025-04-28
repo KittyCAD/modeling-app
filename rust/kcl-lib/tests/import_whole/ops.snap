@@ -8,7 +8,7 @@ description: Operations executed import_whole.kcl
     "group": {
       "type": "ModuleInstance",
       "name": "foo",
-      "moduleId": 6
+      "moduleId": 0
     },
     "sourceRange": []
   },

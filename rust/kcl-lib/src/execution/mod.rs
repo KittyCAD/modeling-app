@@ -3,11 +3,13 @@
 use std::{path::PathBuf, sync::Arc};
 
 use anyhow::Result;
+#[cfg(feature = "artifact-graph")]
 pub use artifact::{
     Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane,
 };
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
+#[cfg(feature = "artifact-graph")]
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
@@ -26,11 +28,12 @@ use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 pub use state::{ExecState, MetaSettings};
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::artifact::build_artifact_graph;
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
     execution::{
-        artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
         types::{UnitAngle, UnitLen},
     },
@@ -43,8 +46,10 @@ use crate::{
 };
 
 pub(crate) mod annotations;
+#[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
+#[cfg(feature = "artifact-graph")]
 mod cad_op;
 mod exec_ast;
 mod geometry;
@@ -64,10 +69,13 @@ pub struct ExecOutcome {
     pub variables: IndexMap<String, KclValue>,
     /// Operations that have been performed in execution order, for display in
     /// the Feature Tree.
+    #[cfg(feature = "artifact-graph")]
     pub operations: Vec<Operation>,
     /// Output commands to allow building the artifact graph by the caller.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_commands: Vec<ArtifactCommand>,
     /// Output artifact graph.
+    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Non-fatal errors and warnings.
     pub errors: Vec<CompilationError>,
@@ -567,7 +575,7 @@ impl ExecutorContext {
 
         let mut mem = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
+        let outcome = exec_state.to_mock_exec_outcome(result.0).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory((mem, module_infos)).await;
@@ -635,13 +643,13 @@ impl ExecutorContext {
                         })
                         .await;
 
-                        let outcome = old_state.to_wasm_outcome(result_env).await;
+                        let outcome = old_state.to_exec_outcome(result_env).await;
                         return Ok(outcome);
                     }
                     (true, program)
                 }
                 CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_wasm_outcome(result_env).await;
+                    let outcome = old_state.to_exec_outcome(result_env).await;
                     return Ok(outcome);
                 }
             };
@@ -691,7 +699,7 @@ impl ExecutorContext {
         })
         .await;
 
-        let outcome = exec_state.to_wasm_outcome(result.0).await;
+        let outcome = exec_state.to_exec_outcome(result.0).await;
         Ok(outcome)
     }
 
@@ -721,6 +729,12 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         exec_state.add_root_module_contents(program);
+
+        #[cfg(test)]
+        {
+            exec_state.single_threaded = true;
+        }
+
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -760,6 +774,7 @@ impl ExecutorContext {
         )
         .await
         .map_err(|err| {
+            println!("Error: {err:?}");
             let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
                 .global
                 .path_to_source_id
@@ -769,8 +784,11 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 err,
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_commands.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
@@ -789,8 +807,11 @@ impl ExecutorContext {
 
                 KclErrorWithOutputs::new(
                     err,
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.operations.clone(),
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.artifact_commands.clone(),
+                    #[cfg(feature = "artifact-graph")]
                     exec_state.global.artifact_graph.clone(),
                     module_id_to_module_path,
                     exec_state.global.id_to_source.clone(),
@@ -934,8 +955,11 @@ impl ExecutorContext {
 
                         return Err(KclErrorWithOutputs::new(
                             e,
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.operations.clone(),
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.artifact_commands.clone(),
+                            #[cfg(feature = "artifact-graph")]
                             exec_state.global.artifact_graph.clone(),
                             module_id_to_module_path,
                             exec_state.global.id_to_source.clone(),
@@ -986,8 +1010,11 @@ impl ExecutorContext {
 
             KclErrorWithOutputs::new(
                 e,
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_commands.clone(),
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.artifact_graph.clone(),
                 module_id_to_module_path,
                 exec_state.global.id_to_source.clone(),
@@ -1036,31 +1063,38 @@ impl ExecutorContext {
         // and should be dropped.
         self.engine.clear_queues().await;
 
-        // Move the artifact commands and responses to simplify cache management
-        // and error creation.
-        exec_state
-            .global
-            .artifact_commands
-            .extend(self.engine.take_artifact_commands().await);
-        exec_state
-            .global
-            .artifact_responses
-            .extend(self.engine.take_responses().await);
-        // Build the artifact graph.
-        match build_artifact_graph(
-            &exec_state.global.artifact_commands,
-            &exec_state.global.artifact_responses,
-            program,
-            &exec_state.global.artifacts,
-        ) {
-            Ok(artifact_graph) => {
-                exec_state.global.artifact_graph = artifact_graph;
-                exec_result.map(|(_, env_ref, _)| env_ref)
+        #[cfg(feature = "artifact-graph")]
+        {
+            // Move the artifact commands and responses to simplify cache management
+            // and error creation.
+            exec_state
+                .global
+                .artifact_commands
+                .extend(self.engine.take_artifact_commands().await);
+            exec_state
+                .global
+                .artifact_responses
+                .extend(self.engine.take_responses().await);
+            // Build the artifact graph.
+            match build_artifact_graph(
+                &exec_state.global.artifact_commands,
+                &exec_state.global.artifact_responses,
+                program,
+                &exec_state.global.artifacts,
+            ) {
+                Ok(artifact_graph) => {
+                    exec_state.global.artifact_graph = artifact_graph;
+                    exec_result.map(|(_, env_ref, _)| env_ref)
+                }
+                Err(err) => {
+                    // Prefer the exec error.
+                    exec_result.and(Err(err))
+                }
             }
-            Err(err) => {
-                // Prefer the exec error.
-                exec_result.and(Err(err))
-            }
+        }
+        #[cfg(not(feature = "artifact-graph"))]
+        {
+            exec_result.map(|(_, env_ref, _)| env_ref)
         }
     }
 
@@ -1295,7 +1329,7 @@ yo = 5 + 6
 abc = 3
 identifierGuy = 5
 part001 = startSketchOn(XY)
-|> startProfileAt([-1.2, 4.83], %)
+|> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
 |> angledLine(angle = 100 + 100, length = 3.01)
 |> angledLine(angle = abc, length = 3.02)
@@ -1312,10 +1346,10 @@ yo2 = hmm([identifierGuy + 5])"#;
     async fn test_execute_with_pipe_substitutions_unary() {
         let ast = r#"const myVar = 3
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
-  min(segLen(seg01), myVar),
+  min([segLen(seg01), myVar]),
   -legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
@@ -1327,10 +1361,10 @@ const part001 = startSketchOn(XY)
     async fn test_execute_with_pipe_substitutions() {
         let ast = r#"const myVar = 3
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
-  min(segLen(seg01), myVar),
+  min([segLen(seg01), myVar]),
   legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
@@ -1350,7 +1384,7 @@ const arrExpShouldNotBeIncluded = [1, 2, 3]
 const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
 
 const part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 1)
   |> xLine(length = 3.84) // selection-range-7ish-before-this
 
@@ -1371,7 +1405,7 @@ fn thing = () => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing()])
@@ -1392,7 +1426,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing(8)])
@@ -1413,7 +1447,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = thing(8))
@@ -1438,7 +1472,7 @@ fn thing = (x) => {
 }
 
 const firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
   |> line(end = [0, thing(8)])
@@ -1452,7 +1486,7 @@ const firstExtrude = startSketchOn(XY)
     async fn test_execute_with_function_sketch() {
         let ast = r#"fn box = (h, l, w) => {
  const myBox = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
     |> line(end = [0, -l])
@@ -1471,7 +1505,7 @@ const fnBox = box(3, 6, 10)"#;
     async fn test_get_member_of_object_with_function_period() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj.start, %)
+    |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
     |> line(end = [0, -obj.l])
@@ -1490,7 +1524,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     async fn test_get_member_of_object_with_function_brace() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj["start"], %)
+    |> startProfile(at = obj["start"])
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
     |> line(end = [0, -obj["l"]])
@@ -1509,7 +1543,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     async fn test_get_member_of_object_with_function_mix_period_brace() {
         let ast = r#"fn box = (obj) => {
  let myBox = startSketchOn(XY)
-    |> startProfileAt(obj["start"], %)
+    |> startProfile(at = obj["start"])
     |> line(end = [0, obj["l"]])
     |> line(end = [obj["w"], 0])
     |> line(end = [10 - obj["w"], -obj.l])
@@ -1531,7 +1565,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
 fn test2 = () => {
   return {
     thing: startSketchOn(XY)
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> line(end = [0, 1])
       |> line(end = [1, 0])
       |> line(end = [0, -1])
@@ -1552,7 +1586,7 @@ x2.thing
     async fn test_execute_with_function_sketch_loop_objects() {
         let ast = r#"fn box = (obj) => {
 let myBox = startSketchOn(XY)
-    |> startProfileAt(obj.start, %)
+    |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
     |> line(end = [0, -obj.l])
@@ -1574,7 +1608,7 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     async fn test_execute_with_function_sketch_loop_array() {
         let ast = r#"fn box = (h, l, w, start) => {
  const myBox = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
     |> line(end = [0, -l])
@@ -1596,7 +1630,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
     async fn test_get_member_of_array_with_function() {
         let ast = r#"fn box = (arr) => {
  let myBox =startSketchOn(XY)
-    |> startProfileAt(arr[0], %)
+    |> startProfile(at = arr[0])
     |> line(end = [0, arr[1]])
     |> line(end = [arr[2], 0])
     |> line(end = [0, -arr[1]])
@@ -1723,7 +1757,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
-        let ast = r#"const myVar = 2 + min(100, -1 + legLen(hypotenuse = 5, leg = 3))"#;
+        let ast = r#"myVar = 2 + min([100, -1 + legLen(hypotenuse = 5, leg = 3)])"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             5.0,
@@ -1850,7 +1884,7 @@ const leg2 = 8 // inches
 fn thickness = () => { return 0.56 }
 
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness()])
@@ -2061,7 +2095,7 @@ const thickness_squared = distance * p * FOS * 6 / sigmaAllow
 const thickness = 0.56 // inches. App does not support square root function yet
 
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2095,7 +2129,7 @@ const leg2 = 8 // inches
 const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2119,7 +2153,7 @@ const leg2 = 8 // inches
 const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
 const thickness = 0.32 // inches. App does not support square root function yet
 const bracket = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
   |> line(end = [0, -thickness])
@@ -2145,7 +2179,7 @@ let w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn(XZ)
-|> startProfileAt([61.74, 206.13], %)
+|> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2172,7 +2206,7 @@ let w = f() + f()
         let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
-|> startProfileAt([62.74, 206.13], %)
+|> startProfile(at = [62.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2198,7 +2232,7 @@ let w = f() + f()
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
         let code = r#"sketch001 = startSketchOn('XZ')
-|> startProfileAt([61.74, 206.13], %)
+|> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)
 |> xLine(length = -segLen(seg01))
@@ -2267,7 +2301,7 @@ let w = f() + f()
     async fn read_tag_version() {
         let ast = r#"fn bar(t) {
   return startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> angledLine(
         angle = -60,
         length = segLen(t),
@@ -2277,7 +2311,7 @@ let w = f() + f()
 }
   
 sketch = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, 10])
   |> line(end = [10, 0], tag = $tag0)
   |> line(end = [0, 0])
@@ -2290,7 +2324,7 @@ fn foo() {
 solid = sketch |> extrude(length = 10)
 // tag0 tags a face
 sketch2 = startSketchOn(solid, face = tag0)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(end = [0, 1])
   |> line(end = [1, 0])
   |> line(end = [0, 0])

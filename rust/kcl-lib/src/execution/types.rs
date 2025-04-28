@@ -64,6 +64,14 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Plane)
     }
 
+    pub fn face() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Face)
+    }
+
+    pub fn tag() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Tag)
+    }
+
     pub fn bool() -> Self {
         RuntimeType::Primitive(PrimitiveType::Boolean)
     }
@@ -130,7 +138,7 @@ impl RuntimeType {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
             Type::Array { ty, len } => {
-                Self::from_parsed_primitive(ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
+                Self::from_parsed(*ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
             }
             Type::Union { tys } => tys
                 .into_iter()
@@ -1051,6 +1059,7 @@ impl KclValue {
                     let id = exec_state.mod_local.id_generator.next_uuid();
                     let plane = Plane {
                         id,
+                        #[cfg(feature = "artifact-graph")]
                         artifact_id: id.into(),
                         origin,
                         x_axis,
@@ -1137,8 +1146,12 @@ impl KclValue {
                 _ => Err(self.into()),
             },
             PrimitiveType::Tag => match value {
-                KclValue::TagDeclarator { .. } => Ok(value.clone()),
-                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+                KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
+                    Ok(value.clone())
+                }
+                s @ KclValue::String { value, .. } if ["start", "end", "START", "END"].contains(&&**value) => {
+                    Ok(s.clone())
+                }
                 _ => Err(self.into()),
             },
         }
@@ -1291,12 +1304,12 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
-            KclValue::Function { .. }
-            | KclValue::Module { .. }
-            | KclValue::KclNone { .. }
-            | KclValue::Type { .. }
-            | KclValue::Uuid { .. } => None,
+            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
+                Some(RuntimeType::Primitive(PrimitiveType::Tag))
+            }
+            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
+                None
+            }
         }
     }
 }
@@ -2054,10 +2067,10 @@ o = 3mm / 3
 p = 3_ / 4
 q = 4inch / 2_
 
-r = min(0, 3, 42)
-s = min(0, 3mm, -42)
-t = min(100, 3in, 142mm)
-u = min(3rad, 4in)
+r = min([0, 3, 42])
+s = min([0, 3mm, -42])
+t = min([100, 3in, 142mm])
+u = min([3rad, 4in])
 "#;
 
         let result = parse_execute(program).await.unwrap();

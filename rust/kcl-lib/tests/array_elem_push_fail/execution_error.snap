@@ -6,7 +6,7 @@ KCL UndefinedValue error
 
   × undefined value: The array doesn't have any item at index 3
    ╭─[3:8]
- 2 │ pushedArr = push(arr, 4)
+ 2 │ pushedArr = push(arr, item = 4)
  3 │ fail = arr[3]
    ·        ───┬──
    ·           ╰── tests/array_elem_push_fail/input.kcl

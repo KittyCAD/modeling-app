@@ -101,7 +101,7 @@ const filletR = 0.25
 
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line([0, wallMountL], %, $outerEdge)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)
@@ -148,7 +148,7 @@ const filletR = 0.25
 
 // Sketch the bracket and extrude with fillets
 const bracket = startSketchOn('XY')
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line([0, wallMountL], %, $outerEdge)
   |> line([-shelfMountL, 0], %)
   |> line([0, -thickness], %)

@@ -17,10 +17,10 @@ export fn bolt() {
 
   // Define the sketch of the hex pattern on the screw head and extrude into the head
   hexPatternSketch = startSketchOn(boltHead, face = START)
-    |> startProfileAt([
+    |> startProfile(at = [
          boltHexDrive / 2,
          boltHexFlatLength / 2
-       ], %)
+       ])
     |> angledLine(angle = 270, length = boltHexFlatLength)
     |> angledLine(angle = 210, length = boltHexFlatLength)
     |> angledLine(angle = 150, length = boltHexFlatLength)

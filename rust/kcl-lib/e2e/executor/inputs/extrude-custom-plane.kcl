@@ -1,6 +1,6 @@
 // create a sketch with name sketch000
 const sketch000 = startSketchOn(XY)
-  |> startProfileAt([0.0, 0.0], %)
+  |> startProfile(at = [0.0, 0.0])
   |> line(end = [1.0, 1.0], tag = $line000)
   |> line(end = [0.0, -1.0], tag = $line001)
   |> line(end = [-1.0, 0.0], tag = $line002)
@@ -18,7 +18,7 @@ const plane005 = {
 
 // create a sketch with name sketch001
 const sketch001 = startSketchOn(plane005)
-  |> startProfileAt([0.100000, 0.250000], %)
+  |> startProfile(at = [0.100000, 0.250000])
   |> line(end = [0.075545, 0.494260], tag = $line003)
   |> line(end = [0.741390, -0.113317], tag = $line004)
   |> line(end = [-0.816935, -0.380943], tag = $line005)

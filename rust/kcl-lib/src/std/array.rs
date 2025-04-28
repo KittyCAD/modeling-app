@@ -1,9 +1,6 @@
 use kcl_derive_docs::stdlib;
 
-use super::{
-    args::{Arg, FromArgs},
-    Args,
-};
+use super::{args::Arg, Args};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -16,7 +13,8 @@ use crate::{
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, f): (Vec<KclValue>, &FunctionSource) = FromArgs::from_args(&args, 0)?;
+    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
+    let f: &FunctionSource = args.get_kw_arg("f")?;
     let meta = vec![args.source_range.into()];
     let new_array = inner_map(array, f, exec_state, &args).await?;
     Ok(KclValue::MixedArray { value: new_array, meta })
@@ -38,7 +36,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // which is the return value from `map`.
 /// circles = map(
 ///   [1..3],
-///   drawCircle
+///   f = drawCircle
 /// )
 /// ```
 /// ```no_run
@@ -46,7 +44,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
 ///   [1..3],
-///   fn(id) {
+///   f = fn(id) {
 ///     return startSketchOn("XY")
 ///       |> circle( center= [id * 2 * r, 0], radius= r)
 ///   }
@@ -54,16 +52,22 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```
 #[stdlib {
     name = "map",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        array = { docs = "Input array. The output array is this input array, but every element has had the function `f` run on it." },
+        f = { docs = "A function. The output array is just the input array, but `f` has been run on every item." },
+    }
 }]
 async fn inner_map<'a>(
     array: Vec<KclValue>,
-    map_fn: &'a FunctionSource,
+    f: &'a FunctionSource,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<Vec<KclValue>, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(elem, map_fn, args.source_range, exec_state, &args.ctx).await?;
+        let new_elem = call_map_closure(elem, f, args.source_range, exec_state, &args.ctx).await?;
         new_array.push(new_elem);
     }
     Ok(new_array)
@@ -91,8 +95,10 @@ async fn call_map_closure(
 
 /// For each item in an array, update a value.
 pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (array, start, f): (Vec<KclValue>, KclValue, &FunctionSource) = FromArgs::from_args(&args, 0)?;
-    inner_reduce(array, start, f, exec_state, &args).await
+    let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
+    let f: &FunctionSource = args.get_kw_arg("f")?;
+    let initial: KclValue = args.get_kw_arg("initial")?;
+    inner_reduce(array, initial, f, exec_state, &args).await
 }
 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
@@ -104,7 +110,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
 /// // element of the `arr` parameter. The starting value is 0.
-/// fn sum(arr) { return reduce(arr, 0, add) }
+/// fn sum(arr) { return reduce(arr, initial = 0, f = add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
@@ -124,7 +130,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
 /// arr = [1, 2, 3]
-/// sum = reduce(arr, 0, (i, result_so_far) => { return i + result_so_far })
+/// sum = reduce(arr, initial = 0, f = fn (i, result_so_far) { return i + result_so_far })
 ///
 /// // We use `assert` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
@@ -138,12 +144,12 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 ///   // Start the decagon sketch at this point.
 ///   startOfDecagonSketch = startSketchOn('XY')
-///     |> startProfileAt([(cos(0)*radius), (sin(0) * radius)], %)
+///     |> startProfile(at = [(cos(0)*radius), (sin(0) * radius)])
 ///
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], startOfDecagonSketch, fn(i, partialDecagon) {
+///   fullDecagon = reduce([1..10], initial = startOfDecagonSketch, f = fn(i, partialDecagon) {
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
@@ -159,7 +165,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// fn decagon(radius):
 ///     stepAngle = (1/10) * TAU
 ///     plane = startSketchOn('XY')
-///     startOfDecagonSketch = startProfileAt([(cos(0)*radius), (sin(0) * radius)], plane)
+///     startOfDecagonSketch = startProfile(plane, at = [(cos(0)*radius), (sin(0) * radius)])
 ///
 ///     // Here's the reduce part.
 ///     partialDecagon = startOfDecagonSketch
@@ -176,17 +182,24 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 #[stdlib {
     name = "reduce",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        array = { docs = "Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run." },
+        initial = { docs = "The first time `f` is run, it will be called with the first item of `array` and this initial starting value."},
+        f = { docs = "Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`." },
+    }
 }]
 async fn inner_reduce<'a>(
     array: Vec<KclValue>,
-    start: KclValue,
-    reduce_fn: &'a FunctionSource,
+    initial: KclValue,
+    f: &'a FunctionSource,
     exec_state: &mut ExecState,
     args: &'a Args,
 ) -> Result<KclValue, KclError> {
-    let mut reduced = start;
+    let mut reduced = initial;
     for elem in array {
-        reduced = call_reduce_closure(elem, reduced, reduce_fn, args.source_range, exec_state, &args.ctx).await?;
+        reduced = call_reduce_closure(elem, reduced, f, args.source_range, exec_state, &args.ctx).await?;
     }
 
     Ok(reduced)
@@ -223,15 +236,20 @@ async fn call_reduce_closure(
 ///
 /// ```no_run
 /// arr = [1, 2, 3]
-/// new_arr = push(arr, 4)
+/// new_arr = push(arr, item = 4)
 /// assert(new_arr[3], isEqualTo = 4, tolerance = 0.1, error = "4 was added to the end of the array")
 /// ```
 #[stdlib {
     name = "push",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        array = { docs = "The array which you're adding a new item to." },
+        item = { docs = "The new item to add to the array" },
+    }
 }]
-async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Result<KclValue, KclError> {
-    // Unwrap the KclValues to JValues for manipulation
-    array.push(elem);
+async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
+    array.push(item);
     Ok(KclValue::MixedArray {
         value: array,
         meta: vec![args.source_range.into()],
@@ -240,7 +258,8 @@ async fn inner_push(mut array: Vec<KclValue>, elem: KclValue, args: &Args) -> Re
 
 pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // Extract the array and the element from the arguments
-    let (val, elem): (KclValue, KclValue) = FromArgs::from_args(&args, 0)?;
+    let val: KclValue = args.get_unlabeled_kw_arg("array")?;
+    let item = args.get_kw_arg("item")?;
 
     let meta = vec![args.source_range];
     let KclValue::MixedArray { value: array, meta: _ } = val else {
@@ -250,7 +269,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
             message: format!("You can't push to a value of type {actual_type}, only an array"),
         }));
     };
-    inner_push(array, elem, &args).await
+    inner_push(array, item, &args).await
 }
 
 /// Remove the last element from an array.
@@ -269,7 +288,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        array = { docs = "The array to pop from.  Must not be empty."},
+        array = { docs = "The array to pop from. Must not be empty."},
     }
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {

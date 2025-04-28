@@ -34,7 +34,7 @@ angleToMatchLengthY(
 
 ```js
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [1, 2], tag = $seg01)
   |> angledLine(angle = angleToMatchLengthY(seg01, 15, %), length = 5)
   |> yLine(endAbsolute = 0)

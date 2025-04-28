@@ -18,7 +18,7 @@ tabThk = 4
 // Define a rectangular shape func
 fn rectShape(pos, w, l) {
   rr = startSketchOn(XY)
-    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
     |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
@@ -37,7 +37,7 @@ bracketPlane = {
 // Build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn(bracketPlane)
-    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
     |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
@@ -73,18 +73,18 @@ tabPlane = {
 
 // Build the tabs of the mounting bracket (right side)
 tabsR = startSketchOn(tabPlane)
-  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
+  |> startProfile(at = [width / 2 + thk, length / 2 + thk])
   |> line(end = [tabWidth, -tabLength / 3], tag = $edge11)
   |> line(end = [0, -tabLength / 3 * 2], tag = $edge12)
   |> line(end = [-tabWidth, -tabLength / 3], tag = $edge13)
   |> close(tag = $edge14)
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          width / 2 + thk + tabWidth / 2,
          length / 2 + thk - (tabLength / (3 / 2))
        ],
        radius = holeDiam / 2,
-     ), %)
+     ))
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
@@ -97,18 +97,18 @@ tabsR = startSketchOn(tabPlane)
 
 // Build the tabs of the mounting bracket (left side)
 tabsL = startSketchOn(tabPlane)
-  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
+  |> startProfile(at = [-width / 2 - thk, length / 2 + thk])
   |> line(end = [-tabWidth, -tabLength / 3], tag = $edge21)
   |> line(end = [0, -tabLength / 3 * 2], tag = $edge22)
   |> line(end = [tabWidth, -tabLength / 3], tag = $edge23)
   |> close(tag = $edge24)
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          -width / 2 - thk - (tabWidth / 2),
          length / 2 + thk - (tabLength / (3 / 2))
        ],
        radius = holeDiam / 2,
-     ), %)
+     ))
   |> extrude(length = -tabThk)
   |> fillet(
        radius = holeDiam / 2,
@@ -129,7 +129,7 @@ retPlane = {
 
 // Build the retention bump in the front
 retFront = startSketchOn(retPlane)
-  |> startProfileAt([-length / 2 - thk, 0], %)
+  |> startProfile(at = [-length / 2 - thk, 0])
   |> line(end = [0, thk])
   |> line(end = [thk, -thk])
   |> close()
@@ -137,7 +137,7 @@ retFront = startSketchOn(retPlane)
 
 // Build the retention bump in the back
 retBack = startSketchOn(retPlane)
-  |> startProfileAt([length / 2 + thk, 0], %)
+  |> startProfile(at = [length / 2 + thk, 0])
   |> line(end = [0, thk])
   |> line(end = [-thk, 0])
   |> line(end = [0, -thk])

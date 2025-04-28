@@ -28,7 +28,7 @@ profileStartY(profile: Sketch): number
 
 ```js
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([5, 2], %)
+  |> startProfile(at = [5, 2])
   |> angledLine(angle = -60, length = 14)
   |> angledLine(angle = 30, endAbsoluteY = profileStartY(%))
 ```

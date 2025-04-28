@@ -4,7 +4,7 @@ description: Result of unparsing function_sketch_with_position.kcl
 ---
 fn box(p, h, l, w) {
   myBox = startSketchOn(XY)
-    |> startProfileAt(p, %)
+    |> startProfile(at = p)
     |> line(end = [0, l])
     |> line(end = [w, 0])
     |> line(end = [0, -l])

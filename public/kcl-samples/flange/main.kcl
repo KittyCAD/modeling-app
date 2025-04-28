@@ -33,7 +33,7 @@ circles = startSketchOn(XY)
 // Create the base of the flange and add the mounting holes
 flangeBase = startSketchOn(XY)
   |> circle(center = [0, 0], radius = baseDia / 2)
-  |> hole(circles, %)
+  |> subtract2d(tool = circles)
   |> extrude(length = baseThickness)
 
 // Create the extrusion on the top of the flange base

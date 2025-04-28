@@ -8,11 +8,7 @@ description: Operations executed pattern_circular_in_module.kcl
     "group": {
       "type": "FunctionCall",
       "name": "thing",
-      "functionSourceRange": [
-        15,
-        378,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -96,11 +92,7 @@ description: Operations executed pattern_circular_in_module.kcl
     "group": {
       "type": "FunctionCall",
       "name": "thing",
-      "functionSourceRange": [
-        15,
-        378,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

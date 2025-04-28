@@ -38,11 +38,7 @@ description: Operations executed gridfinity-baseplate.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        746,
-        1030,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -282,11 +278,7 @@ description: Operations executed gridfinity-baseplate.kcl
     "group": {
       "type": "FunctionCall",
       "name": "face",
-      "functionSourceRange": [
-        746,
-        1030,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

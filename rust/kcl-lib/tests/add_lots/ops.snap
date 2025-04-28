@@ -8,11 +8,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -26,11 +22,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -44,11 +36,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -62,11 +50,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -80,11 +64,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -98,11 +78,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -116,11 +92,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -134,11 +106,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -152,11 +120,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -170,11 +134,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -188,11 +148,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -206,11 +162,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -224,11 +176,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -242,11 +190,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -260,11 +204,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -278,11 +218,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -296,11 +232,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -314,11 +246,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -332,11 +260,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -350,11 +274,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -368,11 +288,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -386,11 +302,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -404,11 +316,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -422,11 +330,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -440,11 +344,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -458,11 +358,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -476,11 +372,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -494,11 +386,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -512,11 +400,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -530,11 +414,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -548,11 +428,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -566,11 +442,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -584,11 +456,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -602,11 +470,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -620,11 +484,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -638,11 +498,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -656,11 +512,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -674,11 +526,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -692,11 +540,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -710,11 +554,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -728,11 +568,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -746,11 +582,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -764,11 +596,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -782,11 +610,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -800,11 +624,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -818,11 +638,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -836,11 +652,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -854,11 +666,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -872,11 +680,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -890,11 +694,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -908,11 +708,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -926,11 +722,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -944,11 +736,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -962,11 +750,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -980,11 +764,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -998,11 +778,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1016,11 +792,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1034,11 +806,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1052,11 +820,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1070,11 +834,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -1088,11 +848,7 @@ description: Operations executed add_lots.kcl
     "group": {
       "type": "FunctionCall",
       "name": "f",
-      "functionSourceRange": [
-        4,
-        26,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

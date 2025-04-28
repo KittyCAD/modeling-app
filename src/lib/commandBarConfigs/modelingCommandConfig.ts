@@ -1,7 +1,8 @@
 import type { Models } from '@kittycad/lib'
-import { DEV } from '@src/env'
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { DEV } from '@src/env'
+import { findUniqueName } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -23,6 +24,7 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
@@ -177,6 +179,11 @@ export type ModelingCommandSchema = {
     roll: KclCommandValue
     pitch: KclCommandValue
     yaw: KclCommandValue
+  }
+  Clone: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    variableName: string
   }
   'Boolean Subtract': {
     target: Selections
@@ -551,7 +558,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Subtract': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
@@ -578,7 +584,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Union': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
@@ -595,8 +600,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
-    description: 'Subtract one solid from another.',
+    description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
     args: {
@@ -1029,9 +1033,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Translate: {
     description: 'Set translation on solid or sketch.',
-    icon: 'dimension', // TODO: likely not the best icon
+    icon: 'move',
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:
@@ -1070,9 +1073,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Rotate: {
     description: 'Set rotation on solid or sketch.',
-    icon: 'angle', // TODO: likely not the best icon
+    icon: 'rotate',
     needsReview: true,
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     args: {
       nodeToEdit: {
         description:
@@ -1106,6 +1108,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_TRANSFORM,
         required: true,
+      },
+    },
+  },
+  Clone: {
+    description: 'Clone a solid or sketch.',
+    icon: 'clone',
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      variableName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: () => {
+          return findUniqueName(
+            kclManager.ast,
+            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+          )
+        },
+        validation: async ({ data }: { data: string }) => {
+          const variableExists = kclManager.variables[data]
+          if (variableExists) {
+            return 'This variable name is already in use.'
+          }
+
+          return true
+        },
       },
     },
   },

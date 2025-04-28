@@ -28,7 +28,7 @@ segStartX(tag: TagIdentifier): number
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [20, 0], tag = $thing)
   |> line(end = [0, 5])
   |> line(end = [20 - segStartX(thing), 0])
