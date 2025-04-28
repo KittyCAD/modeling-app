@@ -2326,17 +2326,30 @@ export function isNotLiteralArrayOrStatic(
 }
 
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
-  if (
-    expr.type === 'Literal' ||
-    expr.type === 'Name' ||
-    expr.type === 'BinaryExpression' ||
-    expr.type === 'CallExpression' ||
-    expr.type === 'CallExpressionKw' ||
-    expr.type === 'UnaryExpression' ||
-    expr.type === 'MemberExpression'
-  )
-    return true
-  return false
+  switch (expr.type) {
+    case 'Literal':
+    case 'Name':
+    case 'BinaryExpression':
+    case 'CallExpression':
+    case 'CallExpressionKw':
+    case 'UnaryExpression':
+    case 'MemberExpression':
+    case 'IfExpression':
+      return true
+    case 'TagDeclarator':
+    case 'PipeSubstitution':
+    case 'ArrayExpression':
+    case 'PipeExpression':
+    case 'ObjectExpression':
+    case 'FunctionExpression':
+    case 'ArrayRangeExpression':
+    case 'LabelledExpression':
+    case 'AscribedExpression':
+      return false
+    default:
+      const _exhaustiveCheck: never = expr
+      return false // unreachable
+  }
 }
 
 function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {
