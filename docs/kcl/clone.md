@@ -6,7 +6,7 @@ layout: manual
 
 Clone a sketch or solid.
 
-This works essentially like a copy-paste operation.
+This works essentially like a copy-paste operation. It creates a perfect replica at that point in time that you can manipulate individually afterwards.
 
 This doesn't really have much utility unless you need the equivalent of a double instance pattern with zero transformations.
 
@@ -33,7 +33,7 @@ clone(geometry: GeometryWithImportedGeometry): GeometryWithImportedGeometry
 ```js
 // Clone a basic sketch and move it and extrude it.
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -52,7 +52,7 @@ clonedSketch = clone(exampleSketch)
 
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -70,7 +70,7 @@ clonedPart = clone(myPart)
 
 
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, 10], %)
+  |> startProfile(at = [-10, 10])
   |> xLine(length = 20)
   |> yLine(length = -20)
   |> xLine(length = -20)
@@ -90,7 +90,7 @@ loft([sketch001, sketch002])
 
 
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, 10], %)
+  |> startProfile(at = [-10, 10])
   |> xLine(length = 20)
   |> yLine(length = -20)
   |> xLine(length = -20, tag = $filletTag)
@@ -109,7 +109,7 @@ sketch002 = clone(sketch001)
 
 
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10], tag = $sketchingFace)
   |> line(end = [-10, 0])
@@ -120,7 +120,7 @@ sketch002 = clone(sketch001)
   |> extrude(length = 5)
 
 startSketchOn(sketch002, face = sketchingFace)
-  |> startProfileAt([1, 1], %)
+  |> startProfile(at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
@@ -140,7 +140,7 @@ thickness = 1
 filletRadius = 2
 
 mountingPlateSketch = startSketchOn(XY)
-  |> startProfileAt([-width / 2, -length / 2], %)
+  |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2], tag = $edge1)
   |> line(endAbsolute = [width / 2, length / 2], tag = $edge2)
   |> line(endAbsolute = [-width / 2, length / 2], tag = $edge3)
@@ -205,7 +205,7 @@ sketch002 = clone(sketch001)
 
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([4, 12], %)
+  |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
   |> line(end = [0, -6])
   |> line(end = [4, -6])
@@ -228,7 +228,7 @@ example001 = revolve(
 
 // Sketch on the cloned face.
 // exampleSketch002 = startSketchOn(example002, face = end01)
-// |> startProfileAt([4.5, -5], %)
+// |> startProfile(at = [4.5, -5])
 // |> line(end = [0, 5])
 // |> line(end = [5, 0])
 // |> line(end = [0, -5])

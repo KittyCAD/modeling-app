@@ -286,6 +286,11 @@ code {
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
     @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-80;
   }
+
+  .home-layout {
+    @apply grid lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-16;
+    grid-template-rows: auto 1fr;
+  }
 }
 
 @layer utilities {

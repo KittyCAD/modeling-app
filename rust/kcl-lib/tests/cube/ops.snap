@@ -8,11 +8,7 @@ description: Operations executed cube.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cube",
-      "functionSourceRange": [
-        7,
-        404,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {
         "center": {

@@ -111,7 +111,7 @@ const Loading = ({ children, className, dataTestId }: LoadingProps) => {
 
   return (
     <div
-      className={`body-bg flex flex-col items-center justify-center h-screen ${colorClass} ${className}`}
+      className={`body-bg flex flex-col items-center justify-center ${colorClass} ${className}`}
       data-testid={dataTestId ? dataTestId : 'loading'}
     >
       {isUnrecoverableError ? (

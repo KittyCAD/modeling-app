@@ -14,8 +14,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -279,9 +277,6 @@ test.describe('Onboarding tests', () => {
     if (!tronApp) {
       fail()
     }
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '/parametric-modeling',
@@ -335,7 +330,6 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -409,7 +403,6 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -469,7 +462,6 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   toolbar,
   tronApp,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   if (!tronApp) {
     fail()
   }
@@ -518,9 +510,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   })
 
   await test.step('Navigate into project', async () => {
-    await expect(
-      page.getByRole('heading', { name: 'Your Projects' })
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
     await expect(projectCard).toBeVisible()
     await projectCard.click()
     await u.waitForPageLoad()

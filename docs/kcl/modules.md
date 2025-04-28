@@ -73,7 +73,7 @@ There are two common patterns for re‑using geometry:
 ```kcl
 fn cube(center) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+    |> startProfile(at = [center[0] - 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
@@ -191,10 +191,11 @@ In `cube.kcl`, you cannot have multiple objects. It has to be a single part. If
 you have multiple objects, you will get an error. This is because the module is
 expected to return a single object that can be used as a variable.
 
-You also cannot assign that object to a variable. This is because the module is
-expected to return a single object that can be used as a variable.
+The last expression or variable definition becomes the module's return value.
+The module is expected to return a single object that can be used as a variable
+by whatever imports it.
 
-So for example, this is not allowed:
+So for example, this is allowed:
 
 ```norun
 ... a bunch of code to create cube and cube2 ...
@@ -202,7 +203,7 @@ So for example, this is not allowed:
 myUnion = union([cube, cube2])
 ```
 
-What you need to do instead is:
+You can also do this:
 
 ```norun
 ... a bunch of code to create cube and cube2 ...
@@ -210,7 +211,7 @@ What you need to do instead is:
 union([cube, cube2])
 ```
 
-That way the last line will return the union of the two objects.
+Either way, the last line will return the union of the two objects.
 
 Or what you could do instead is:
 
@@ -221,9 +222,12 @@ myUnion = union([cube, cube2])
 myUnion
 ```
 
-This will return the union of the two objects, but it will not be assigned to a
-variable. This is because the module is expected to return a single object that
-can be used as a variable.
+This will assign the union of the two objects to a variable, and then return it
+on the last statement. It's simply another way of doing the same thing.
+
+The final statement is what's important because it's the return value of the
+entire module. The module is expected to return a single object that can be used
+as a variable by the file that imports it.
 
 ---
 
@@ -285,7 +289,7 @@ unit of measurement is millimeters. Alternatively you may specify the unit
 by using an attribute. Likewise, you can also specify a coordinate system. E.g.,
 
 ```kcl
-@(unitLength = ft, coords = opengl)
+@(lengthUnit = ft, coords = opengl)
 import "tests/inputs/cube.obj"
 ```
 

@@ -10,7 +10,7 @@ dihedral = 116.565
 // Create a face template function that makes a large thin cube
 fn createFaceTemplate(dither) {
   baseSketch = startSketchOn(XY)
-    |> startProfileAt([-1000 - dither, -1000 - dither], %)
+    |> startProfile(at = [-1000 - dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, 1000 + dither])
     |> line(endAbsolute = [-1000 - dither, 1000 + dither])
@@ -49,20 +49,27 @@ faceRotations = [
 ]
 
 // Create faces by mapping over the rotations array
-dodecFaces = map(faceRotations, fn(rotation) {
-  return createFaceTemplate(rotation[3])
-    |> rotate(
-         pitch = rotation[0],
-         roll = rotation[1],
-         yaw = rotation[2],
-         global = true,
-       )
-})
+dodecFaces = map(
+  faceRotations,
+  f = fn(rotation) {
+    return createFaceTemplate(rotation[3])
+      |> rotate(
+           pitch = rotation[0],
+           roll = rotation[1],
+           yaw = rotation[2],
+           global = true,
+         )
+  },
+)
 
 fn calculateArrayLength(arr) {
-  return reduce(arr, 0, fn(item, accumulator) {
-    return accumulator + 1
-  })
+  return reduce(
+    arr,
+    initial = 0,
+    f = fn(item, accumulator) {
+      return accumulator + 1
+    },
+  )
 }
 
 fn createIntersection(solids) {
@@ -72,7 +79,7 @@ fn createIntersection(solids) {
   lastIndex = calculateArrayLength(solids) - 1
   lastSolid = solids[lastIndex]
   remainingSolids = pop(solids)
-  return reduce(remainingSolids, lastSolid, reduceIntersect)
+  return reduce(remainingSolids, initial = lastSolid, f = reduceIntersect)
 }
 
 // Apply intersection to all faces

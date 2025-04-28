@@ -1,5 +1,5 @@
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([100.0, 0.0], sketch001)
+profile001 = startProfile(sketch001, at = [100.0, 0.0])
   |> line(end = [0.0, 120.0])
   |> arc(
        interiorAbsolute = [300.0, 100.0],

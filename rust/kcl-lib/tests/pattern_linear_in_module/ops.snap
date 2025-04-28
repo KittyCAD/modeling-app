@@ -8,11 +8,7 @@ description: Operations executed pattern_linear_in_module.kcl
     "group": {
       "type": "FunctionCall",
       "name": "thing",
-      "functionSourceRange": [
-        15,
-        221,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -114,11 +110,7 @@ description: Operations executed pattern_linear_in_module.kcl
     "group": {
       "type": "FunctionCall",
       "name": "thing",
-      "functionSourceRange": [
-        15,
-        221,
-        6
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

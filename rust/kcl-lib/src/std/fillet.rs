@@ -2,7 +2,6 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 use schemars::JsonSchema;
@@ -75,75 +74,6 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     Ok(KclValue::Solid { value })
 }
 
-/// Blend a transitional edge along a tagged path, smoothing the sharp edge.
-///
-/// Fillet is similar in function and use to a chamfer, except
-/// a chamfer will cut a sharp transition along an edge while fillet
-/// will smoothly blend the transition.
-///
-/// ```no_run
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// filletRadius = 2
-///
-/// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet(
-///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-/// ```
-///
-/// ```no_run
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// filletRadius = 1
-///
-/// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet(
-///     radius = filletRadius,
-///     tolerance = 0.000001,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-/// ```
-#[stdlib {
-    name = "fillet",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solid = { docs = "The solid whose edges should be filletted" },
-        radius = { docs = "The radius of the fillet" },
-        tags = { docs = "The paths you want to fillet" },
-        tolerance = { docs = "The tolerance for this fillet" },
-        tag = { docs = "Create a new tag which refers to this fillet"},
-    }
-}]
 async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,

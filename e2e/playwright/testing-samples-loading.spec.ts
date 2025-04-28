@@ -8,7 +8,6 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   runningOnWindows,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
@@ -89,7 +88,6 @@ test.describe('Testing loading external models', () => {
     { tag: '@electron' },
     async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
       }
       const { dir } = await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')

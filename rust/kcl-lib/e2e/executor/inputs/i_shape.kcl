@@ -8,7 +8,7 @@ let corner_radius = 5.0
 // but I measured intentionally to not be symmetric,
 // because your wrist isn't a perfect cylindrical surface
 let brace_base = startSketchOn(XY)
-  |> startProfileAt([corner_radius, 0], %)
+  |> startProfile(at = [corner_radius, 0])
   |> line(end = [width - corner_radius, 0.0])
   |> tangentialArc(end = [corner_radius, corner_radius])
   |> yLine(length = 25.0 - corner_radius)
@@ -36,7 +36,7 @@ let brace_base = startSketchOn(XY)
   |> close()
 
 let inner = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = 1.0)
   |> tangentialArc(end = [corner_radius, corner_radius])
   |> yLine(length = 25.0 - (corner_radius * 2))
@@ -48,6 +48,6 @@ let inner = startSketchOn(XY)
   |> close()
 
 let final = brace_base
-  |> hole(inner, %)
+  |> subtract2d(tool = inner)
   |> extrude(length = 3.0)
 

@@ -79,7 +79,7 @@ async fn cache_test(
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
     let code = r#"part001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
+  |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
   |> line(end = [-1.02877, -6.76825])
@@ -120,7 +120,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
     let code = r#"part001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
+  |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
   |> line(end = [-1.02877, -6.76825])
@@ -161,7 +161,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_highlight_edges_changes_visual() {
     let code = r#"part001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
+  |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
   |> line(end = [-1.02877, -6.76825])
@@ -206,7 +206,7 @@ async fn kcl_test_cache_multi_file_same_code_dont_reexecute() {
 importedCube
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-134.53, -56.17], sketch001)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
   |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -220,7 +220,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)
     let other_file = (
         std::path::PathBuf::from("toBeImported.kcl"),
         r#"sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([281.54, 305.81], sketch001)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -251,10 +251,11 @@ extrude(profile001, length = 100)"#
     result.last().unwrap();
 }
 
+#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_commands() {
     let code = r#"sketch001 = startSketchOn('XY')
-  |> startProfileAt([5.5229, 5.25217], %)
+  |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
   |> line(end = [-1.02877, -6.76825])
@@ -375,7 +376,7 @@ async fn kcl_test_cache_multi_file_after_empty_with_export() {
 importedCube
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-134.53, -56.17], sketch001)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
   |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -389,7 +390,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)
     let other_file = (
         std::path::PathBuf::from("toBeImported.kcl"),
         r#"sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([281.54, 305.81], sketch001)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -428,7 +429,7 @@ async fn kcl_test_cache_multi_file_after_empty_with_woo() {
 importedCube
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-134.53, -56.17], sketch001)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
   |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -442,7 +443,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)
     let other_file = (
         std::path::PathBuf::from("toBeImported.kcl"),
         r#"sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([281.54, 305.81], sketch001)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))

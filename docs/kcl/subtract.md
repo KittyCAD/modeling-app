@@ -38,7 +38,7 @@ subtract(
 
 fn cube(center, size) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - size, center[1] - size], %)
+    |> startProfile(at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -63,7 +63,7 @@ subtractedPart = subtract([part001], tools = [part002])
 
 fn cube(center, size) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - size, center[1] - size], %)
+    |> startProfile(at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] + size])
     |> line(endAbsolute = [center[0] - size, center[1] + size])

@@ -1,7 +1,7 @@
 @settings(defaultLengthUnit = mm)
 
 export part001 = startSketchOn(XY)
-  |> startProfileAt([4, 12], %)
+  |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
   |> line(end = [0, -6])
   |> line(end = [4, -6])

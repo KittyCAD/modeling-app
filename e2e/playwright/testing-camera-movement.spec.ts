@@ -1,7 +1,7 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import { getUtils, orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Testing Camera Movement', () => {
@@ -190,7 +190,6 @@ test.describe('Testing Camera Movement', () => {
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
     // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
     // than again for sketching
@@ -235,7 +234,7 @@ test.describe('Testing Camera Movement', () => {
       x = 948
 
     await u.canvasLocator.click({ position: { x: 783, y } })
-    code += `\n  |> startProfileAt([8.12, -12.98], %)`
+    code += `\n  |> startProfile(at = [8.12, -12.98])`
     // await expect(u.codeLocator).toHaveText(code)
     await u.canvasLocator.click({ position: { x, y } })
     code += `\n  |> line(end = [11.18, 0])`

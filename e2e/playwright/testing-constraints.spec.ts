@@ -5,7 +5,6 @@ import * as fsp from 'fs/promises'
 import {
   TEST_COLORS,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -16,7 +15,7 @@ test.describe('Testing constraints', () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(length = -20)
@@ -58,7 +57,7 @@ test.describe('Testing constraints', () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -84,13 +83,13 @@ test.describe('Testing constraints', () => {
         `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfileAt([-7.54, -26.74], %)
+    |> startProfile(at = [-7.54, -26.74])
     |> line(end = [74.36, 130.4], tag = $seg01)
     |> line(end = [78.92, -120.11])
     |> angledLine(angle = segAng(seg01), length = yo)
     |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn(XZ)
-    |> startProfileAt([299.05, 120], %)
+    |> startProfile(at = [299.05, 120])
     |> xLine(length = -385.34, tag = $seg_what)
     |> yLine(length = -170.06)
     |> xLine(length = segLen(seg_what))
@@ -149,13 +148,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
         |> angledLine(angle = segAng(seg01), length = 78.33)
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -264,13 +263,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -380,13 +379,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -494,13 +493,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -597,13 +596,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -692,13 +691,13 @@ test.describe('Testing constraints', () => {
             `@settings(defaultLengthUnit = in)
 yo = 5
 part001 = startSketchOn(XZ)
-  |> startProfileAt([-7.54, -26.74], %)
+  |> startProfile(at = [-7.54, -26.74])
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
   |> line(end = [9.16, 77.79])
   |> line(end = [51.19, 48.97])
 part002 = startSketchOn(XZ)
-  |> startProfileAt([299.05, 231.45], %)
+  |> startProfile(at = [299.05, 231.45])
   |> xLine(length = -425.34, tag = $seg_what)
   |> yLine(length = -264.06)
   |> xLine(length = segLen(seg_what))
@@ -774,13 +773,13 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -876,12 +875,12 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -958,12 +957,12 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -1018,13 +1017,12 @@ part002 = startSketchOn(XZ)
     scene,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-1.05, -1.07], %)
+    |> startProfile(at = [-1.05, -1.07])
     |> line(end = [3.79, 2.68], tag = $seg01)
     |> line(end = [3.13, -2.4])`
       )
@@ -1129,7 +1127,7 @@ test.describe('Electron constraint tests', () => {
           path.join(bracketDir, 'main.kcl'),
           `@settings(defaultLengthUnit = in)
           const part001 = startSketchOn(XY)
-            |> startProfileAt([4.83, 12.56], %)
+            |> startProfile(at = [4.83, 12.56])
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
             |> line(end = [-15.17, -4.1])

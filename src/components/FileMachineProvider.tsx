@@ -100,42 +100,6 @@ export const FileMachineProvider = ({
     }
   }, [])
 
-  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
-
   useEffect(() => {
     markOnce('code/didLoadFile')
     async function fetchKclSamples() {
@@ -439,6 +403,51 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+
+    // GOTCHA: If we call navigate() while in the /file route the fileMachineProvider
+    // has a context.project of the original one that was loaded. It does not update
+    // Watch when the navigation changes, if it changes set a new Project within the fileMachine
+    // to load the latest state of the project you are in.
+    if (project) {
+      // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
+      send({ type: 'Refresh with new project', data: { project } })
+    }
+  }, [location])
 
   const cb = modelingMenuCallbackMostActions(
     settings,

@@ -75,11 +75,6 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
-}
-
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
@@ -416,6 +411,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
+    goToHomePageFromModeling: () => goToHomePageFromModeling(page),
     openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
@@ -1014,6 +1010,11 @@ export async function createProject({
       await page.getByTestId('app-logo').click()
     }
   })
+}
+
+async function goToHomePageFromModeling(page: Page) {
+  await page.getByTestId('app-logo').click()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
 }
 
 export function executorInputPath(fileName: string): string {

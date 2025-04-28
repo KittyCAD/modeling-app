@@ -12,7 +12,6 @@ import {
   TEST_COLORS,
   getMovementUtils,
   getUtils,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -27,9 +26,9 @@ test.describe('Sketch tests', () => {
     const u = await getUtils(page)
     const selectionsSnippets = {
       startProfileAt1:
-        '|> startProfileAt([-width / 4 + screwRadius, height / 2], %)',
-      startProfileAt2: '|> startProfileAt([-width / 2, 0], %)',
-      startProfileAt3: '|> startProfileAt([0, thickness], %)',
+        '|> startProfile(at = [-width / 4 + screwRadius, height / 2])',
+      startProfileAt2: '|> startProfile(at = [-width / 2, 0])',
+      startProfileAt3: '|> startProfile(at = [0, thickness])',
     }
     await context.addInitScript(
       async ({ startProfileAt1, startProfileAt2, startProfileAt3 }: any) => {
@@ -53,7 +52,7 @@ test.describe('Sketch tests', () => {
   |> yLine(length = height)
   |> xLine(length = -width * .5)
   |> close()
-  |> hole(screwHole, %)
+  |> subtract2d(tool = screwHole)
   |> extrude(length = thickness)
 
   part002 = startSketchOn(-XZ)
@@ -109,7 +108,7 @@ test.describe('Sketch tests', () => {
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([2.61, -4.01], %)
+  |> startProfile(at = [2.61, -4.01])
   |> xLine(length = 8.73)
   |> tangentialArc(endAbsolute = [8.33, -1.31])`
       )
@@ -159,7 +158,7 @@ sketch001 = startSketchOn(XZ)
 
 
 sketch002 = startSketchOn(XZ)
-sketch001 = startProfileAt([12.34, -12.34], sketch002)
+sketch001 = startProfile(sketch002, at = [12.34, -12.34])
   |> yLine(length = 12.34)
 
 `)
@@ -189,7 +188,6 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     ).toBeVisible()
   })
   test('Can edit segments by dragging their handles', () => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
@@ -203,7 +201,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         localStorage.setItem(
           'persistCode',
           `sketch001 = startSketchOn(XZ)
-      |> startProfileAt([4.61, -14.01], %)
+      |> startProfile(at = [4.61, -14.01])
       |> line(end = [12.73, -0.09])
       |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arc(interiorAbsolute = [20.18, -1.7], endAbsolute = [11.82, -1.16])
@@ -246,7 +244,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       // If we have the code pane open, we should see the code.
       if (openPanes.includes('code')) {
         await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)
-      |> startProfileAt([4.61, -14.01], %)
+      |> startProfile(at = [4.61, -14.01])
       |> line(end = [12.73, -0.09])
       |> tangentialArc(endAbsolute = [24.95, -5.38])
       |> arc(interiorAbsolute = [20.18, -1.7], endAbsolute = [11.82, -1.16])
@@ -264,7 +262,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       let prevContent = ''
 
       if (openPanes.includes('code')) {
-        await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+        await page.getByText('startProfile(at = [4.61, -14.01])').click()
       } else {
         // Wait for the render.
         await page.waitForTimeout(1000)
@@ -385,7 +383,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       await expect(
         page.locator('.cm-content')
       ).toHaveText(`sketch001 = startSketchOn(XZ)
-  |> startProfileAt([6.44, -12.07], %)
+  |> startProfile(at = [6.44, -12.07])
   |> line(end = [14.72, 1.97])
   |> tangentialArc(endAbsolute = [26.92, -3.32])
   |> arc(interiorAbsolute = [18.11, -3.73], endAbsolute = [9.77, -3.19])
@@ -552,7 +550,7 @@ sketch001 = startSketchOn(XZ)
         'persistCode',
         `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -10.01], %)
+  |> startProfile(at = [4.61, -10.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
@@ -592,7 +590,7 @@ sketch001 = startSketchOn(XZ)
 
     const dragPX = 40
 
-    await page.getByText('startProfileAt([4.61, -10.01], %)').click()
+    await page.getByText('startProfile(at = [4.61, -10.01])').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
@@ -638,7 +636,7 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([7.12, -12.68], %)
+    |> startProfile(at = [7.12, -12.68])
     |> line(end = [12.68, -1.09])
     |> tangentialArc(endAbsolute = [24.89, 0.68])
     |> close()
@@ -660,7 +658,7 @@ sketch001 = startSketchOn(XZ)
         'persistCode',
         `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -14.01], %)
+  |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()
@@ -701,7 +699,7 @@ sketch001 = startSketchOn(XZ)
 
     const dragPX = 30
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await page.getByText('startProfile(at = [4.61, -14.01])').click()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).toBeVisible()
@@ -746,7 +744,7 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([6.44, -12.07], %)
+  |> startProfile(at = [6.44, -12.07])
   |> line(end = [14.72, 1.97])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> line(end = [1.97, 2.06])
@@ -790,7 +788,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(500) // TODO detect animation ending, or disable animation
 
     await click00r(0, 0)
-    codeStr += `profile001 = startProfileAt(${toSU([0, 0])}, sketch001)`
+    codeStr += `profile001 = startProfile(sketch001, at = ${toSU([0, 0])})`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     await click00r(50, 0)
@@ -826,7 +824,7 @@ sketch001 = startSketchOn(XZ)
     await u.closeDebugPanel()
 
     await click00r(30, 0)
-    codeStr += `profile002 = startProfileAt([2.03, 0], sketch002)`
+    codeStr += `profile002 = startProfile(sketch002, at = [2.03, 0])`
     await expect(u.codeLocator).toHaveText(codeStr)
 
     // TODO: I couldn't use `toSU` here because of some rounding error causing
@@ -863,9 +861,9 @@ sketch001 = startSketchOn(XZ)
 
       const code = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(-XZ)
-profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
+profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff(
         scale * 34.8
-      )}], sketch001)
+      )}])
     |> xLine(length = ${roundOff(scale * 139.19)})
     |> yLine(length = -${roundOff(scale * 139.2)})
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -970,7 +968,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([-0.45, 0.87], %)
+    |> startProfile(at = [-0.45, 0.87])
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
@@ -1028,7 +1026,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([-0.45, 0.87], %)
+    |> startProfile(at = [-0.45, 0.87])
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
@@ -1071,7 +1069,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
 
     await expect((await u.codeLocator.innerText()).replace(/\s/g, '')).toBe(
       `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([-0.45, 0.87], %)
+    |> startProfile(at = [-0.45, 0.87])
     |> line(end = [1.32, 0.38])
     |> line(end = [1.02, -1.32], tag = $seg01)
     |> line(end = [-1.01, -0.77])
@@ -1088,7 +1086,6 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     /**
      * Tests the following things
      * 1) The the planes are there on load because the scene is empty
@@ -1124,7 +1121,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     await u.openAndClearDebugPanel()
 
     await u.codeLocator.fill(`sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> xLine(length = -20)
@@ -1163,7 +1160,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
     await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)
-    |> startProfileAt([11.8, 9.09], %)
+    |> startProfile(at = [11.8, 9.09])
     |> line(end = [3.39, -3.39])
   `)
 
@@ -1171,7 +1168,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([11.8, 9.09], %)
+    |> startProfile(at = [11.8, 9.09])
     |> line(end = [3.39, -3.39])
   `
       )
@@ -1200,7 +1197,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
 
       fn lug = (origin, length, diameter, plane) => {
         lugSketch = startSketchOn(plane)
-          |> startProfileAt([origin[0] + lugDiameter / 2, origin[1]], %)
+          |> startProfile(at = [origin[0] + lugDiameter / 2, origin[1]])
           |> angledLine(angle = 60, lengthY = lugHeadLength)
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
@@ -1270,10 +1267,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
   const railClampable = in2mm(.200)
 
   const rail = startSketchOn(XZ)
-    |> startProfileAt([
-     -railTop / 2,
-     railClampable + railBaseLength
-   ], %)
+    |> startProfile(at = [-railTop / 2, railClampable + railBaseLength])
     |> line(endAbsolute = [
      railTop / 2,
      railClampable + railBaseLength
@@ -1402,19 +1396,18 @@ test.describe('multi-profile sketching', () => {
     homePage,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // We seed the scene with a single offset plane
     await context.addInitScript(() => {
       localStorage.setItem(
         'persistCode',
         `yo = 5
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([121.52, 168.25], sketch001)
+profile001 = startProfile(sketch001, at = [121.52, 168.25])
   |> line(end = [115.04, 113.61])
   |> line(end = [130.87, -97.79])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile002 = startProfileAt([117.2, 56.08], sketch001)
+profile002 = startProfile(sketch001, at = [117.2, 56.08])
   |> line(end = [166.82, 25.89])
   |> yLine(length = -107.86)
 
@@ -1494,12 +1487,12 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
       await toolbar.rectangleBtn.click()
       await page.waitForTimeout(100)
       await cornerRectPoint1()
-      await editor.expectEditor.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.toContain('profile004 = startProfile(')
     })
 
     await test.step('equip line tool and verify corner rectangle code is removed', async () => {
       await toolbar.lineBtn.click()
-      await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.not.toContain('profile004 = startProfile(')
     })
 
     const [centerRectPoint1] = scene.makeMouseHelpers(700, 300)
@@ -1508,12 +1501,12 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
       await toolbar.selectCenterRectangle()
       await page.waitForTimeout(100)
       await centerRectPoint1()
-      await editor.expectEditor.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.toContain('profile004 = startProfile(')
     })
 
     await test.step('equip line tool and verify center rectangle code is removed', async () => {
       await toolbar.lineBtn.click()
-      await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
+      await editor.expectEditor.not.toContain('profile004 = startProfile(')
     })
 
     await test.step('continue profile002 with the three point arc tool, and then switch back to the line tool to verify it only removes the last expression in the pipe', async () => {
@@ -1544,9 +1537,9 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         `@settings(defaultLengthUnit = in)
 
 sketch001 = startSketchOn(XZ)
-profile002 = startProfileAt([40.68, 87.67], sketch001)
+profile002 = startProfile(sketch001, at = [40.68, 87.67])
   |> xLine(length = 239.17)
-profile003 = startProfileAt([206.63, -56.73], sketch001)
+profile003 = startProfile(sketch001, at = [206.63, -56.73])
   |> xLine(length = -156.32)
 `
       )
@@ -1653,7 +1646,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       .toBe('true')
 
     await startProfile1()
-    await editor.expectEditor.toContain(`profile001 = startProfileAt`)
+    await editor.expectEditor.toContain(`profile001 = startProfile`)
     await segment1Clk()
     await editor.expectEditor.toContain(`|> line(end`)
   })
@@ -1686,7 +1679,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
     await test.step('add two segments', async () => {
       await startProfile1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+        `profile001 = startProfile(sketch001, at = [4.61, 12.21])`
       )
       await segment1Clk()
       await editor.expectEditor.toContain(`|> line(end`)
@@ -1782,7 +1775,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
     await test.step('Create a close profile stopping mid profile to equip the tangential arc, then three-point arc, and then back to the line tool', async () => {
       await startProfile1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+        `profile001 = startProfile(sketch001, at = [4.61, 12.21])`
       )
 
       await endLineStartTanArc()
@@ -1851,7 +1844,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await startProfile2()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `profile002 = startProfileAt([19.12, 11.53], sketch001)`
+        `profile002 = startProfile(sketch001, at = [19.12, 11.53])`
       )
       await profile2Point2()
       await page.waitForTimeout(300)
@@ -1894,7 +1887,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       await crnRect1point1()
       await editor.expectEditor.toContain(
-        `profile005 = startProfileAt([5.63, 3.05], sketch001)`
+        `profile005 = startProfile(sketch001, at = [5.63, 3.05])`
       )
       await crnRect1point2()
       await editor.expectEditor.toContain(
@@ -1908,7 +1901,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await crnRect2point1()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `profile006 = startProfileAt([11.05, 2.37], sketch001)`
+        `profile006 = startProfile(sketch001, at = [11.05, 2.37])`
       )
       await crnRect2point2()
       await page.waitForTimeout(300)
@@ -1927,7 +1920,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect1point1()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `profile007 = startProfileAt([8.41, -9.29], sketch001)`
+        `profile007 = startProfile(sketch001, at = [8.41, -9.29])`
       )
       await cntrRect1point2()
       await page.waitForTimeout(300)
@@ -1943,7 +1936,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await cntrRect2point1()
       await page.waitForTimeout(300)
       await editor.expectEditor.toContain(
-        `profile008 = startProfileAt([19.33, -5.56], sketch001)`
+        `profile008 = startProfile(sketch001, at = [19.33, -5.56])`
       )
       await cntrRect2point2()
       await page.waitForTimeout(300)
@@ -2045,7 +2038,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
 
       // Verify the first three-point arc was created correctly
       await editor.expectEditor.toContain(
-        `profile011 = startProfileAt([13.56, -9.97], sketch001)
+        `profile011 = startProfile(sketch001, at = [13.56, -9.97])
   |> arc(interiorAbsolute = [15.19, -6.51], endAbsolute = [19.33, -11.19])`,
         { shouldNormalise: true }
       )
@@ -2093,11 +2086,11 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([6.24, 4.54], sketch001)
+profile001 = startProfile(sketch001, at = [6.24, 4.54])
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
-profile002 = startProfileAt([11.19, 5.02], sketch001)
+profile002 = startProfile(sketch001, at = [11.19, 5.02])
   |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -2205,7 +2198,7 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
       await page.waitForTimeout(100)
       await rectStart()
       await editor.expectEditor.toContain(
-        `profile005 = startProfileAt([15.68, -3.84], sketch001)`
+        `profile005 = startProfile(sketch001, at = [15.68, -3.84])`
       )
       await page.waitForTimeout(100)
       await rectEnd()
@@ -2231,11 +2224,11 @@ profile004 = circleThreePoint(sketch001, p1 = [13.44, -6.8], p2 = [13.39, -2.07]
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([6.24, 4.54], sketch001)
+profile001 = startProfile(sketch001, at = [6.24, 4.54])
   |> line(end = [-0.41, 6.99])
   |> line(end = [8.61, 0.74])
   |> line(end = [10.99, -5.22])
-profile002 = startProfileAt([11.19, 5.02], sketch001)
+profile002 = startProfile(sketch001, at = [11.19, 5.02])
   |> angledLine(angle = 0, length = 10.78, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 4.14)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -2333,14 +2326,14 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-63.43, 193.08], sketch001)
+profile001 = startProfile(sketch001, at = [-63.43, 193.08])
   |> line(end = [168.52, 149.87])
   |> line(end = [190.29, -39.18])
   |> tangentialArc(endAbsolute = [319.63, 129.65])
   |> line(end = [-217.65, -21.76])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile003 = startProfileAt([16.79, 38.24], sketch001)
+profile003 = startProfile(sketch001, at = [16.79, 38.24])
   |> angledLine(angle = 0, length = 182.82, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 105.71)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -2445,13 +2438,13 @@ extrude001 = extrude(profile003, length = 5)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([85.19, 338.59], sketch001)
+profile001 = startProfile(sketch001, at = [85.19, 338.59])
   |> line(end = [213.3, -94.52])
   |> line(end = [-230.09, -55.34])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XY)
-profile002 = startProfileAt([85.81, 52.55], sketch002)
+profile002 = startProfile(sketch002, at = [85.81, 52.55])
 
 `
       )
@@ -2465,7 +2458,7 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
 
     const [startProfileAt] = scene.makeMouseHelpers(606, 184)
     const [nextPoint] = scene.makeMouseHelpers(763, 130)
-    await page.getByText('startProfileAt([85.81, 52.55], sketch002)').click()
+    await page.getByText('startProfile(sketch002, at = [85.81, 52.55])').click()
     await toolbar.editSketch(1)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
@@ -2490,7 +2483,7 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 thePart = startSketchOn(XZ)
-  |> startProfileAt([7.53, 10.51], %)
+  |> startProfile(at = [7.53, 10.51])
   |> line(end = [12.54, 1.83])
   |> line(end = [6.65, -6.91])
   |> line(end = [-6.31, -8.69])
@@ -2520,21 +2513,21 @@ extrude001 = extrude(thePart, length = 75)
 
     await test.step('expect code to match initial conditions still', async () => {
       await editor.expectEditor.toContain(
-        `thePart = startSketchOn(XZ)  |> startProfileAt([7.53, 10.51], %)`
+        `thePart = startSketchOn(XZ)  |> startProfile(at = [7.53, 10.51])`
       )
     })
 
     await test.step('equiping the line tool should break up the pipe expression', async () => {
       await toolbar.lineBtn.click()
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)thePart = startProfileAt([7.53, 10.51], sketch001)`
+        `sketch001 = startSketchOn(XZ)thePart = startProfile(sketch001, at = [7.53, 10.51])`
       )
     })
 
     await test.step('can continue on to add a new profile to this sketch', async () => {
       await profilePoint1()
       await editor.expectEditor.toContain(
-        `profile001 = startProfileAt([19.69, -7.05], sketch001)`
+        `profile001 = startProfile(sketch001, at = [19.69, -7.05])`
       )
       await profilePoint2()
       await editor.expectEditor.toContain(`|> line(end = [18.97, -18.06])`)
@@ -2555,29 +2548,29 @@ extrude001 = extrude(thePart, length = 75)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([6.71, -3.66], sketch001)
+profile001 = startProfile(sketch001, at = [6.71, -3.66])
   |> line(end = [2.65, 9.02], tag = $seg02)
   |> line(end = [3.73, -9.36], tag = $seg01)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 20)
 sketch002 = startSketchOn(extrude001, face = seg01)
-profile002 = startProfileAt([0.75, 13.46], sketch002)
+profile002 = startProfile(sketch002, at = [0.75, 13.46])
   |> line(end = [4.52, 3.79])
   |> line(end = [5.98, -2.81])
-profile003 = startProfileAt([3.19, 13.3], sketch002)
+profile003 = startProfile(sketch002, at = [3.19, 13.3])
   |> angledLine(angle = 0, length = 6.64, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.81)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile004 = startProfileAt([3.15, 9.39], sketch002)
+profile004 = startProfile(sketch002, at = [3.15, 9.39])
   |> xLine(length = 6.92)
   |> line(end = [-7.41, -2.85])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile005 = circle(sketch002, center = [5.15, 4.34], radius = 1.66)
-profile006 = startProfileAt([9.65, 3.82], sketch002)
+profile006 = startProfile(sketch002, at = [9.65, 3.82])
   |> line(end = [2.38, 5.62])
   |> line(end = [2.13, -5.57])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -2589,15 +2582,15 @@ revolve001 = revolve(
 )
 extrude002 = extrude(profile006, length = 4)
 sketch003 = startSketchOn(-XZ)
-profile007 = startProfileAt([4.8, 7.55], sketch003)
+profile007 = startProfile(sketch003, at = [4.8, 7.55])
   |> line(end = [7.39, 2.58])
   |> line(end = [7.02, -2.85])
-profile008 = startProfileAt([5.54, 5.49], sketch003)
+profile008 = startProfile(sketch003, at = [5.54, 5.49])
   |> line(end = [6.34, 2.64])
   |> line(end = [6.33, -2.96])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile009 = startProfileAt([5.23, 1.95], sketch003)
+profile009 = startProfile(sketch003, at = [5.23, 1.95])
   |> line(end = [6.8, 2.17])
   |> line(end = [7.34, -2.75])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -2607,7 +2600,7 @@ profile010 = circle(
   center = [7.18, -2.11],
   radius = 2.67
 )
-profile011 = startProfileAt([5.07, -6.39], sketch003)
+profile011 = startProfile(sketch003, at = [5.07, -6.39])
   |> angledLine(angle = 0, length = 4.54, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 4.17)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
@@ -2719,14 +2712,14 @@ extrude003 = extrude(profile011, length = 2.5)
         'persistCode',
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([34, 42.66], sketch001)
+profile001 = startProfile(sketch001, at = [34, 42.66])
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 plane001 = offsetPlane(XZ, offset = 50)
 sketch002 = startSketchOn(plane001)
-profile002 = startProfileAt([39.43, 172.21], sketch002)
+profile002 = startProfile(sketch002, at = [39.43, 172.21])
   |> xLine(length = 183.99)
   |> line(end = [-77.95, -145.93])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -2757,7 +2750,7 @@ loft([profile001, profile002])
     await page.waitForTimeout(100)
     await rect1Crn1()
     await editor.expectEditor.toContain(
-      `profile003 = startProfileAt([50.72, -18.19], sketch001)`
+      `profile003 = startProfile(sketch001, at = [50.72, -18.19])`
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
@@ -2771,19 +2764,18 @@ loft([profile001, profile002])
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([34, 42.66], sketch001)
+profile001 = startProfile(sketch001, at = [34, 42.66])
   |> line(end = [102.65, 151.99])
   |> line(end = [76, -138.66])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 plane001 = offsetPlane(XZ, offset = 50)
 sketch002 = startSketchOn(plane001)
-profile002 = startProfileAt([39.43, 172.21], sketch002)
+profile002 = startProfile(sketch002, at = [39.43, 172.21])
   |> xLine(length = 183.99)
   |> line(end = [-77.95, -145.93])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -2827,7 +2819,7 @@ loft([profile001, profile002])
     await page.waitForTimeout(100)
     await rect1Crn1()
     await editor.expectEditor.toContain(
-      `profile003 = startProfileAt([47.76, -17.13], plane001)`
+      `profile003 = startProfile(plane001, at = [47.76, -17.13])`
     )
     await rect1Crn2()
     await editor.expectEditor.toContain(
@@ -2853,7 +2845,7 @@ test.describe(`Click based selection don't brick the app when clicked out of ran
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3.14, 3.14])
   |> arc(
        interiorAbsolute = [1, 2],
@@ -2932,7 +2924,7 @@ test.describe('Redirecting to home page and back to the original file should cle
       localStorage.setItem(
         'persistCode',
         ` sketch001 = startSketchOn(XZ)
-|> startProfileAt([256.85, 14.41], %)
+|> startProfile(at = [256.85, 14.41])
 |> line(endAbsolute = [0, 211.07])
 `
       )
@@ -3020,7 +3012,7 @@ test.describe('Redirecting to home page and back to the original file should cle
       `@settings(defaultLengthUnit = mm)
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([0, 0], sketch001)
+profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [191.39, 191.39])
   |> tangentialArc(endAbsolute = [287.08, 95.69], tag = $seg01)
   |> angledLine(angle = tangentToEnd(seg01), length = 135.34)
@@ -3045,14 +3037,14 @@ test.describe('manual edits during sketch mode', () => {
     myVar2 = 6
 
     sketch001 = startSketchOn(XZ)
-    profile001 = startProfileAt([106.68, 89.77], sketch001)
+    profile001 = startProfile(sketch001, at = [106.68, 89.77])
       |> line(end = [132.34, 157.8])
       |> line(end = [67.65, -460.55], tag = $seg01)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
     extrude001 = extrude(profile001, length = 500)
     sketch002 = startSketchOn(extrude001, face = seg01)
-    profile002 = startProfileAt([83.39, 329.15], sketch002)
+    profile002 = startProfile(sketch002, at = [83.39, 329.15])
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
       |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
@@ -3061,7 +3053,7 @@ test.describe('manual edits during sketch mode', () => {
         )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
-    profile003 = startProfileAt([-201.08, 254.17], sketch002)
+    profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       |> line(end = [103.55, 33.32])
       |> line(end = [48.8, -153.54])`
 
@@ -3181,20 +3173,20 @@ sketch003 = startSketchOn(XY)
 profile004 = circle(sketch003, center = [143.91, 136.89], radius = 71.63)
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([106.68, 89.77], sketch001)
+profile001 = startProfile(sketch001, at = [106.68, 89.77])
   |> line(end = [132.34, 157.8])
   |> line(end = [67.65, -460.55], tag = $seg01)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 500)
 sketch002 = startSketchOn(extrude001, face = seg01)
-profile002 = startProfileAt([83.39, 329.15], sketch002)
+profile002 = startProfile(sketch002, at = [83.39, 329.15])
   |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
   |> angledLine(length = 219.2, angle = -56)
   |> angledLine(angle = -151, length = 116.27)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile003 = startProfileAt([-201.08, 254.17], sketch002)
+profile003 = startProfile(sketch002, at = [-201.08, 254.17])
   |> line(end = [103.55, 33.32])
   |> line(end = [48.8, -153.54])
 `,
@@ -3220,14 +3212,14 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
     myVar2 = 6
 
     sketch001 = startSketchOn(XZ)
-    profile001 = startProfileAt([106.68, 89.77], sketch001)
+    profile001 = startProfile(sketch001, at = [106.68, 89.77])
       |> line(end = [132.34, 157.8])
       |> line(end = [67.65, -460.55], tag = $seg01)
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
     extrude001 = extrude(profile001, length = 500)
     sketch002 = startSketchOn(extrude001, face = seg01)
-    profile002 = startProfileAt([83.39, 329.15], sketch002)
+    profile002 = startProfile(sketch002, at = [83.39, 329.15])
       |> angledLine(angle = 0, length = 119.61, tag = $rectangleSegmentA001)
       |> angledLine(length = 156.54, angle = -28)
       |> angledLine(
@@ -3236,7 +3228,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
          )
       |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
       |> close()
-    profile003 = startProfileAt([-201.08, 254.17], sketch002)
+    profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       |> line(end = [103.55, 33.32])
       |> line(end = [48.8, -153.54])`
 
@@ -3308,7 +3300,7 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
         // sometimes initial click doesn't register
         await objClick()
         await editor.expectActiveLinesToBe([
-          '|> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]',
+          '|> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]',
         ])
       }).toPass({ timeout: 15_000, intervals: [500] })
     })
@@ -3356,8 +3348,8 @@ profile003 = startProfileAt([-201.08, 254.17], sketch002)
       // defends against a regression where sketch would duplicate in the scene
       // https://github.com/KittyCAD/modeling-app/issues/6345
       await editor.replaceCode(
-        'startProfileAt([75.8, 317.2',
-        'startProfileAt([75.8, 217.2'
+        'startProfile(at = [75.8, 317.2',
+        'startProfile(at = [75.8, 217.2'
       )
       // expect not white anymore
       await scene.expectPixelColorNotToBe(

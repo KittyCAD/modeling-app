@@ -11,10 +11,10 @@ import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from 
 export fn hexNut() {
   // Create the base of the hex nut
   hexNutBase = startSketchOn(XY)
-    |> startProfileAt([
+    |> startProfile(at = [
          hexNutFlatToFlat / 2,
          hexNutFlatLength / 2
-       ], %)
+       ])
     |> angledLine(angle = 270, length = hexNutFlatLength)
     |> angledLine(angle = 210, length = hexNutFlatLength)
     |> angledLine(angle = 150, length = hexNutFlatLength)

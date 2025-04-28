@@ -14,7 +14,7 @@ centerHoleDiameter = 2
 // Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
 fn rectShape(pos, w, l) {
   rr = startSketchOn(XY)
-    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
     |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
@@ -29,35 +29,35 @@ holeIndex = .75
 // Create the mounting plate extrusion, holes, and fillets
 rs = rectShape([0, 0], plateWidth, plateLength)
 part = rs
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          -plateWidth / 2 + holeIndex,
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          plateWidth / 2 - holeIndex,
          plateLength / 2 - holeIndex
        ],
        radius = holeRadius,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          -plateWidth / 2 + holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          plateWidth / 2 - holeIndex,
          -plateLength / 2 + holeIndex
        ],
        radius = holeRadius,
-     ), %)
-  |> hole(circle(center = [0, 0], radius = centerHoleDiameter), %)
+     ))
+  |> subtract2d(tool = circle(center = [0, 0], radius = centerHoleDiameter))
   |> extrude(length = plateThickness)
   |> fillet(
        radius = filletRadius,

@@ -5,10 +5,6 @@ import type { Locator, Page } from '@playwright/test'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import {
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
-} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
@@ -225,7 +221,7 @@ test.describe('Point-and-click tests', () => {
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
-          'startProfileAt([205.96, 254.59], sketch002)',
+          'startProfile(sketch002, at = [205.96, 254.59])',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
         |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
         |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
@@ -249,7 +245,7 @@ test.describe('Point-and-click tests', () => {
         afterChamferSelectSnippet:
           'sketch003 = startSketchOn(extrude001, face = seg04)',
         afterRectangle1stClickSnippet:
-          'startProfileAt([-209.64, 255.28], sketch003)',
+          'startProfile(sketch003, at = [-209.64, 255.28])',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.56,tag=$rectangleSegmentA003)
         |>angledLine(angle=segAng(rectangleSegmentA003)-90,length=106.84)
         |>angledLine(angle=segAng(rectangleSegmentA003),length=-segLen(rectangleSegmentA003))
@@ -271,7 +267,7 @@ test.describe('Point-and-click tests', () => {
         afterChamferSelectSnippet:
           'sketch004 = startSketchOn(extrude001, face = seg05)',
         afterRectangle1stClickSnippet:
-          'startProfileAt([82.57, 322.96], sketch004)',
+          'startProfile(sketch004, at = [82.57, 322.96])',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.16,tag=$rectangleSegmentA004)
         |>angledLine(angle=segAng(rectangleSegmentA004)-90,length=103.07)
         |>angledLine(angle=segAng(rectangleSegmentA004),length=-segLen(rectangleSegmentA004))
@@ -289,7 +285,7 @@ test.describe('Point-and-click tests', () => {
         afterChamferSelectSnippet:
           'sketch005 = startSketchOn(extrude001, face = seg06)',
         afterRectangle1stClickSnippet:
-          'startProfileAt([-23.43, 19.69], sketch005)',
+          'startProfile(sketch005, at = [-23.43, 19.69])',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=9.1,tag=$rectangleSegmentA005)
         |>angledLine(angle=segAng(rectangleSegmentA005)-90,length=84.07)
         |>angledLine(angle=segAng(rectangleSegmentA005),length=-segLen(rectangleSegmentA005))
@@ -301,7 +297,7 @@ test.describe('Point-and-click tests', () => {
         await editor.expectEditor.toContain(
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
+  |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
@@ -313,28 +309,28 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
 sketch005 = startSketchOn(extrude001, face = seg06)
-profile004=startProfileAt([-23.43,19.69], sketch005)
+profile004=startProfile(sketch005, at = [-23.43,19.69])
   |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
   |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
   |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(extrude001, face = seg05)
-profile003 = startProfileAt([82.57, 322.96], sketch004)
+profile003 = startProfile(sketch004, at = [82.57, 322.96])
   |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
   |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
   |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, face = seg04)
-profile002 = startProfileAt([-209.64, 255.28], sketch003)
+profile002 = startProfile(sketch003, at = [-209.64, 255.28])
   |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
   |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 106.84)
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(extrude001, face = seg03)
-profile001 = startProfileAt([205.96, 254.59], sketch002)
+profile001 = startProfile(sketch002, at = [205.96, 254.59])
   |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
@@ -388,7 +384,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         afterChamferSelectSnippet:
           'sketch002 = startSketchOn(extrude001, face = seg03)',
         afterRectangle1stClickSnippet:
-          'startProfileAt([205.96, 254.59], sketch002)',
+          'startProfile(sketch002, at = [205.96, 254.59])',
         afterRectangle2ndClickSnippet: `angledLine(angle=0,length=11.39,tag=$rectangleSegmentA002)
         |>angledLine(angle=segAng(rectangleSegmentA002)-90,length=105.26)
         |>angledLine(angle=segAng(rectangleSegmentA002),length=-segLen(rectangleSegmentA002))
@@ -398,7 +394,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       await editor.expectEditor.toContain(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([75.8, 317.2], %)
+  |> startProfile(at = [75.8, 317.2])
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $yo)
@@ -420,7 +416,7 @@ chamf = chamfer(
        ],
      )
 sketch002 = startSketchOn(extrude001, face = seg03)
-profile001 = startProfileAt([205.96, 254.59], sketch002)
+profile001 = startProfile(sketch002, at = [205.96, 254.59])
   |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
   |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
@@ -492,10 +488,10 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
 
     const expectedCodeSnippets = {
       sketchOnXzPlane: `sketch001 = startSketchOn(XZ)`,
-      pointAtOrigin: `startProfileAt([${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}], sketch001)`,
+      pointAtOrigin: `startProfile(sketch001, at = [${originSloppy.kcl[0]}, ${originSloppy.kcl[1]}])`,
       segmentOnXAxis: `xLine(length = ${xAxisSloppy.kcl[0]})`,
-      afterSegmentDraggedOffYAxis: `startProfileAt([${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}], sketch001)`,
-      afterSegmentDraggedOnYAxis: `startProfileAt([${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}], sketch001)`,
+      afterSegmentDraggedOffYAxis: `startProfile(sketch001, at = [${offYAxis.kcl[0]}, ${offYAxis.kcl[1]}])`,
+      afterSegmentDraggedOnYAxis: `startProfile(sketch001, at = [${yAxisSloppy.kcl[0]}, ${yAxisSloppy.kcl[1]}])`,
     }
 
     await test.step(`Start a sketch on the XZ plane`, async () => {
@@ -550,7 +546,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
     const initialCode = `closedSketch = startSketchOn(XZ)
   |> circle(center = [8, 5], radius = 2)
 openSketch = startSketchOn(XY)
-  |> startProfileAt([-5, 0], %)
+  |> startProfile(at = [-5, 0])
   |> line(endAbsolute = [0, 5])
   |> xLine(length = 5)
   |> tangentialArc(endAbsolute = [10, 0])
@@ -652,7 +648,7 @@ openSketch = startSketchOn(XY)
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-12, -6], %)
+    |> startProfile(at = [-12, -6])
     |> line(end = [0, 12])
     |> line(end = [24, 0])
     |> line(end = [0, -12])
@@ -820,7 +816,6 @@ openSketch = startSketchOn(XY)
     scene,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
@@ -1202,7 +1197,7 @@ openSketch = startSketchOn(XY)
       }) => {
         page.on('console', console.log)
         const initialCode = `sketch001 = startSketchOn(XZ)
-  profile001 = startProfileAt([0, 0], sketch001)
+  profile001 = startProfile(sketch001, at = [0, 0])
     |> yLine(length = 100)
     |> line(endAbsolute = [100, 0])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -1642,7 +1637,7 @@ loft001 = loft([sketch001, sketch002])
 sketch001 = startSketchOn(YZ)
 profile001 = circle(sketch001, center = [0, 0], radius = 500)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1651,14 +1646,14 @@ sketch002 = startSketchOn(XZ)
       testPoint: { x: 710, y: 255 },
       initialCode: `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(YZ)
-profile001 = startProfileAt([-400, -400], sketch001)
+profile001 = startProfile(sketch001, at = [-400, -400])
   |> angledLine(angle = 0, length = 800, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 800)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = -500)
   |> tangentialArc(endAbsolute = [-2000, 500])`,
     },
@@ -1811,7 +1806,7 @@ sketch001 = startSketchOn(YZ)
        radius = 500
      )
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = -500)
   |> line(endAbsolute = [-2000, 500])
 `
@@ -1885,7 +1880,7 @@ sketch002 = startSketchOn(XZ)
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-12, -6], %)
+  |> startProfile(at = [-12, -6])
   |> line(end = [0, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -12])
@@ -1893,9 +1888,8 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
-    const secondFilletDeclaration =
-      'fillet(radius = 5, tags = [getOppositeEdge(seg01)])'
+    const firstFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
+    const secondFilletDeclaration = `fillet(radius=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -1992,10 +1986,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstFilletDeclaration)
+      await editor.expectEditor.toContain(firstFilletDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|> fillet(radius = 5, tags = [seg01])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2044,12 +2040,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedRadius = '1'
       await editFillet(firstFilletFeatureTreeIndex, '5', editedRadius)
       await editor.expectEditor.toContain(
-        firstFilletDeclaration.replace('radius = 5', 'radius = ' + editedRadius)
+        firstFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editFillet(firstFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(firstFilletDeclaration)
+      await editor.expectEditor.toContain(firstFilletDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 2: Command bar flow without preselected edges
@@ -2123,10 +2122,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondFilletDeclaration)
+      await editor.expectEditor.toContain(secondFilletDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>fillet(radius=5,tags=[getOppositeEdge(seg01)])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2145,15 +2146,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedRadius = '2'
       await editFillet(secondFilletFeatureTreeIndex, '5', editedRadius)
       await editor.expectEditor.toContain(
-        secondFilletDeclaration.replace(
-          'radius = 5',
-          'radius = ' + editedRadius
-        )
+        secondFilletDeclaration.replace('radius=5', 'radius=' + editedRadius),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editFillet(secondFilletFeatureTreeIndex, editedRadius, '5')
-      await editor.expectEditor.toContain(secondFilletDeclaration)
+      await editor.expectEditor.toContain(secondFilletDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 3: Delete fillets
@@ -2163,7 +2164,9 @@ extrude001 = extrude(sketch001, length = -12)
         await page.waitForTimeout(500)
       })
       await test.step('Delete fillet via feature tree selection', async () => {
-        await editor.expectEditor.toContain(secondFilletDeclaration)
+        await editor.expectEditor.toContain(secondFilletDeclaration, {
+          shouldNormalise: true,
+        })
         const operationButton = await toolbar.getFeatureTreeOperation(
           'Fillet',
           1
@@ -2226,7 +2229,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-12, -6], %)
+  |> startProfile(at = [-12, -6])
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
   |> line(end = [0, -12])
@@ -2369,7 +2372,7 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
   }) => {
     // Create a cube with small edges that will cause some fillets to fail
     const initialCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfileAt([0, 0], sketch001)
+profile001 = startProfile(sketch001, at = [0, 0])
   |> yLine(length = -1)
   |> xLine(length = -10)
   |> yLine(length = 10)
@@ -2377,8 +2380,9 @@ profile001 = startProfileAt([0, 0], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 5)
 `
-    const taggedSegment = `yLine(length = -1, tag = $seg01)`
-    const filletExpression = `fillet(radius = 1000, tags = [getNextAdjacentEdge(seg01)])`
+    const taggedSegment1 = `xLine(length = -10, tag = $seg01)`
+    const taggedSegment2 = `yLine(length = -1, tag = $seg02)`
+    const filletExpression = `fillet(radius = 1000, tags = [getCommonEdge(faces = [seg01, seg02])])`
 
     // Locators
     const edgeLocation = { x: 659, y: 313 }
@@ -2466,7 +2470,8 @@ extrude001 = extrude(profile001, length = 5)
     })
 
     await test.step('Verify code is updated regardless of execution errors', async () => {
-      await editor.expectEditor.toContain(taggedSegment)
+      await editor.expectEditor.toContain(taggedSegment1)
+      await editor.expectEditor.toContain(taggedSegment2)
       await editor.expectEditor.toContain(filletExpression)
     })
   })
@@ -2483,7 +2488,7 @@ extrude001 = extrude(profile001, length = 5)
     // Code samples
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-12, -6], %)
+  |> startProfile(at = [-12, -6])
   |> line(end = [0, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -12])
@@ -2491,9 +2496,8 @@ sketch001 = startSketchOn(XY)
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstChamferDeclaration = 'chamfer(length = 5, tags = [seg01])'
-    const secondChamferDeclaration =
-      'chamfer(length = 5, tags = [getOppositeEdge(seg01)])'
+    const firstChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capEnd001])],)`
+    const secondChamferDeclaration = `chamfer(length=5,tags=[getCommonEdge(faces=[seg01,capStart001])],)`
 
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
@@ -2583,10 +2587,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(firstChamferDeclaration)
+      await editor.expectEditor.toContain(firstChamferDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>chamfer(length=5,tags=[seg01])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2639,15 +2645,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedLength = '1'
       await editChamfer(firstChamferFeatureTreeIndex, '5', editedLength)
       await editor.expectEditor.toContain(
-        firstChamferDeclaration.replace(
-          'length = 5',
-          'length = ' + editedLength
-        )
+        firstChamferDeclaration.replace('length=5', 'length=' + editedLength),
+        { shouldNormalise: true }
       )
 
       // Edit back to original radius
       await editChamfer(firstChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(firstChamferDeclaration)
+      await editor.expectEditor.toContain(firstChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 2: Command bar flow without preselected edges
@@ -2721,10 +2727,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
 
     await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(secondChamferDeclaration)
+      await editor.expectEditor.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
       await editor.expectState({
         diagnostics: [],
-        activeLines: ['|>chamfer(length=5,tags=[getOppositeEdge(seg01)])'],
+        activeLines: [')'],
         highlightedCode: '',
       })
     })
@@ -2743,15 +2751,15 @@ extrude001 = extrude(sketch001, length = -12)
       const editedLength = '2'
       await editChamfer(secondChamferFeatureTreeIndex, '5', editedLength)
       await editor.expectEditor.toContain(
-        secondChamferDeclaration.replace(
-          'length = 5',
-          'length = ' + editedLength
-        )
+        secondChamferDeclaration.replace('length=5', 'length=' + editedLength),
+        { shouldNormalise: true }
       )
 
       // Edit back to original length
       await editChamfer(secondChamferFeatureTreeIndex, editedLength, '5')
-      await editor.expectEditor.toContain(secondChamferDeclaration)
+      await editor.expectEditor.toContain(secondChamferDeclaration, {
+        shouldNormalise: true,
+      })
     })
 
     // Test 3: Delete chamfer via feature tree selection
@@ -2784,7 +2792,7 @@ extrude001 = extrude(sketch001, length = -12)
     // Code samples
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-12, -6], %)
+  |> startProfile(at = [-12, -6])
   |> line(end = [0, 12])
   |> line(end = [24, 0], tag = $seg02)
   |> line(end = [0, -12])
@@ -3078,7 +3086,7 @@ extrude001 = extrude(sketch001, length = 30)
   }) => {
     const initialCode = `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-20, 20], %)
+  |> startProfile(at = [-20, 20])
   |> xLine(length = 40)
   |> yLine(length = -60)
   |> xLine(length = -40)
@@ -3310,7 +3318,7 @@ extrude002 = extrude(sketch002, length = 50)
       cmdBar,
     }) => {
       const sketchCode = `sketch001 = startSketchOn(XY)
-profile001 = startProfileAt([-20, 20], sketch001)
+profile001 = startProfile(sketch001, at = [-20, 20])
     |> xLine(length = 40)
     |> yLine(length = -60)
     |> xLine(length = -40)
@@ -3398,7 +3406,7 @@ profile001 = startProfileAt([-20, 20], sketch001)
        radius = 500
      )
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
   |> xLine(length = -2000)
 sweep001 = sweep(sketch001, path = sketch002)
 `
@@ -3456,7 +3464,7 @@ sweep001 = sweep(sketch001, path = sketch002)
     }) => {
       const initialCode = `
 sketch001 = startSketchOn(XZ)
-|> startProfileAt([-100.0, 100.0], %)
+|> startProfile(at = [-100.0, 100.0])
 |> angledLine(angle = 0, length = 200.0, tag = $rectangleSegmentA001)
 |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 200, tag = $rectangleSegmentB001)
 |> angledLine(
@@ -3468,7 +3476,7 @@ tag=$rectangleSegmentC001,
 |> close()
 extrude001 = extrude(sketch001, length = 200)
 sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
-|> startProfileAt([-66.77, 84.81], %)
+|> startProfile(at = [-66.77, 84.81])
 |> angledLine(angle = 180, length = 27.08, tag = $rectangleSegmentA002)
 |> angledLine(
 angle=segAng(rectangleSegmentA002) - 90,
@@ -3547,11 +3555,8 @@ tag=$rectangleSegmentC002,
       toolbar,
       cmdBar,
     }) => {
-      if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
-      }
       const initialCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([-102.57, 101.72], %)
+  |> startProfile(at = [-102.57, 101.72])
   |> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 202.6, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -3636,10 +3641,10 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     }) => {
       const initialCode = `
     sketch002 = startSketchOn(XY)
-      |> startProfileAt([-2.02, 1.79], %)
+      |> startProfile(at = [-2.02, 1.79])
       |> xLine(length = 2.6)
     sketch001 = startSketchOn('-XY')
-      |> startProfileAt([-0.48, 1.25], %)
+      |> startProfile(at = [-0.48, 1.25])
       |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
       |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
       |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -4304,6 +4309,84 @@ extrude001 = extrude(profile001, length = 1)
       // No change here since the angles are super small
       await scene.expectPixelColor(bgColor, midPoint, tolerance)
       await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
+    })
+  })
+
+  test('Point-and-click Clone extrude through selection', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)
+  `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // One dumb hardcoded screen pixel value
+    const midPoint = { x: 500, y: 250 }
+    const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
+
+    await test.step('Clone through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Clone a solid or sketch')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '',
+          VariableName: '',
+        },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Clone',
+      })
+      await clickMidPoint()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'variableName',
+        currentArgValue: '',
+        headerArguments: {
+          Selection: '1 path',
+          VariableName: '',
+        },
+        highlightedHeaderArg: 'variableName',
+        commandName: 'Clone',
+      })
+      await page.keyboard.insertText('yoyoyo')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Selection: '1 path',
+          VariableName: 'yoyoyo',
+        },
+        commandName: 'Clone',
+      })
+      await cmdBar.progressCmdBar()
+
+      // Expect changes
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `
+        sketch001 = startSketchOn(XZ)
+        profile001 = circle(sketch001, center = [0, 0], radius = 1)
+        extrude001 = extrude(profile001, length = 1)
+        yoyoyo = clone(extrude001)
+          `,
+        { shouldNormalise: true }
+      )
     })
   })
 })

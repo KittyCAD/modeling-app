@@ -59,7 +59,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square and a triangle.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -67,7 +67,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> close()
 ///
 /// triangleSketch = startSketchOn(offsetPlane('XY', offset = 75))
-///     |> startProfileAt([0, 125], %)
+///     |> startProfile(at = [0, 125])
 ///     |> line(end = [-15, -30])
 ///     |> line(end = [30, 0])
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -79,7 +79,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square, a circle, and another circle.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -98,7 +98,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square, a circle, and another circle with options.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -176,6 +176,7 @@ async fn inner_loft(
     Ok(Box::new(
         do_post_extrude(
             &sketch,
+            #[cfg(feature = "artifact-graph")]
             id.into(),
             TyF64::new(0.0, NumericType::mm()),
             false,

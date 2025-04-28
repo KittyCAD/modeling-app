@@ -42,7 +42,7 @@ involuteCircular(
 a = 10
 b = 14
 startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
   |> involuteCircular(
        startRadius = a,

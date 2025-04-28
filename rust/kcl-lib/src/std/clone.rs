@@ -43,7 +43,8 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
 /// Clone a sketch or solid.
 ///
-/// This works essentially like a copy-paste operation.
+/// This works essentially like a copy-paste operation. It creates a perfect replica
+/// at that point in time that you can manipulate individually afterwards.
 ///
 /// This doesn't really have much utility unless you need the equivalent of a double
 /// instance pattern with zero transformations.
@@ -54,7 +55,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```no_run
 /// // Clone a basic sketch and move it and extrude it.
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -78,7 +79,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Clone a basic solid and move it.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10])
 ///   |> line(end = [-10, 0])
@@ -95,7 +96,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Translate and rotate a cloned sketch to create a loft.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfileAt([-10, 10], %)
+///         |> startProfile(at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -112,7 +113,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Translate a cloned solid. Fillet only the clone.
 ///
 /// sketch001 = startSketchOn(XY)
-///         |> startProfileAt([-10, 10], %)
+///         |> startProfile(at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20, tag = $filletTag)
@@ -132,7 +133,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // You can reuse the tags from the original geometry with the cloned geometry.
 ///
 /// sketch001 = startSketchOn(XY)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [0, 10], tag = $sketchingFace)
 ///   |> line(end = [-10, 0])
@@ -143,7 +144,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> extrude(length = 5)
 ///
 /// startSketchOn(sketch002, face = sketchingFace)
-///   |> startProfileAt([1, 1], %)
+///   |> startProfile(at = [1, 1])
 ///   |> line(end = [8, 0])
 ///   |> line(end = [0, 8])
 ///   |> line(end = [-8, 0])
@@ -160,7 +161,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// filletRadius = 2
 ///
 /// mountingPlateSketch = startSketchOn(XY)
-///   |> startProfileAt([-width/2, -length/2], %)
+///   |> startProfile(at = [-width/2, -length/2])
 ///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
 ///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
 ///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
@@ -222,7 +223,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // This shows the cloned geometry will have the same tags as the original geometry.
 ///
 /// exampleSketch = startSketchOn(XY)
-///   |> startProfileAt([4, 12], %)
+///   |> startProfile(at = [4, 12])
 ///   |> line(end = [2, 0])
 ///   |> line(end = [0, -6])
 ///   |> line(end = [4, -6])
@@ -239,7 +240,7 @@ pub async fn clone(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Sketch on the cloned face.
 /// // exampleSketch002 = startSketchOn(example002, face = end01)
-/// //  |> startProfileAt([4.5, -5], %)
+/// //  |> startProfile(at = [4.5, -5])
 /// //  |> line(end = [0, 5])
 /// //  |> line(end = [5, 0])
 /// //  |> line(end = [0, -5])
@@ -293,14 +294,20 @@ async fn inner_clone(
             let mut new_sketch = sketch.clone();
             new_sketch.id = new_id;
             new_sketch.original_id = new_id;
-            new_sketch.artifact_id = new_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                new_sketch.artifact_id = new_id.into();
+            }
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
-            new_solid.artifact_id = new_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                new_solid.artifact_id = new_id.into();
+            }
             GeometryWithImportedGeometry::Solid(new_solid)
         }
     };
@@ -343,7 +350,10 @@ async fn fix_tags_and_references(
             // Make the sketch id the new geometry id.
             solid.sketch.id = new_geometry_id;
             solid.sketch.original_id = new_geometry_id;
-            solid.sketch.artifact_id = new_geometry_id.into();
+            #[cfg(feature = "artifact-graph")]
+            {
+                solid.sketch.artifact_id = new_geometry_id.into();
+            }
 
             fix_sketch_tags_and_references(&mut solid.sketch, &entity_id_map, exec_state).await?;
 
@@ -368,6 +378,7 @@ async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &solid.sketch,
+                #[cfg(feature = "artifact-graph")]
                 new_geometry_id.into(),
                 crate::std::args::TyF64::new(
                     solid.height,
@@ -520,7 +531,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_sketch() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
@@ -547,8 +558,10 @@ clonedCube = clone(cube)
 
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.original_id, cloned_cube.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
         assert_eq!(cloned_cube.original_id, cloned_cube.id);
 
@@ -568,7 +581,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %)
+    |> startProfile(at = [0,0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10])
@@ -597,9 +610,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -627,7 +643,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_sketch_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -682,7 +698,7 @@ clonedCube = clone(cube)
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_clone_solid_with_tags() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -711,9 +727,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -751,7 +770,7 @@ clonedCube = clone(cube)
         let code = r#"// Clone a basic solid and move it.
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -783,9 +802,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
@@ -826,7 +848,7 @@ clonedCube = clone(cube)
     #[ignore = "this test is not working yet, need to fix the edge cut ids"]
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
-    |> startProfileAt([0,0], %) // tag this one
+    |> startProfile(at = [0,0]) // tag this one
     |> line(end = [0, 10], tag = $tag02)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
@@ -883,9 +905,12 @@ clonedCube = clone(cube)
         assert_ne!(cube.id, cloned_cube.id);
         assert_ne!(cube.sketch.id, cloned_cube.sketch.id);
         assert_ne!(cube.sketch.original_id, cloned_cube.sketch.original_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
+        #[cfg(feature = "artifact-graph")]
         assert_ne!(cube.sketch.artifact_id, cloned_cube.sketch.artifact_id);
 
+        #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {

@@ -1,0 +1,5 @@
+import 'cube.kcl'
+
+// Use the module's return value.
+cube
+  |> translate(x = 5)

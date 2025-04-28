@@ -16,7 +16,7 @@ const tabThk = 4
 // define a rectangular shape func
 fn rectShape = (pos, w, l) => {
   const rr = startSketchOn(XY)
-    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
     |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
@@ -35,7 +35,7 @@ const bracketPlane = {
 // build the bracket sketch around the body
 fn bracketSketch = (w, d, t) => {
   const s = startSketchOn(bracketPlane)
-    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
     |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
@@ -64,7 +64,7 @@ const bracketBody = bs
 
 // sketch on the face
 const retBack = startSketchOn(bs, face = bs.sketch.tags.edge4)
-  |> startProfileAt([length / 2 + thk, 0], %)
+  |> startProfile(at = [length / 2 + thk, 0])
   |> line(end = [0, thk])
   |> line(end = [-thk, 0])
   |> line(end = [0, -thk])

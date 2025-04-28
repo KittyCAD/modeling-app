@@ -48,6 +48,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
 import { deferExecution, uuidv4 } from '@src/lib/utils'
+import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -70,7 +71,6 @@ export class KclManager {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  defaultPlanesShown: boolean = false
 
   private _ast: Node<Program> = {
     body: [],
@@ -354,6 +354,15 @@ export class KclManager {
         })
       }, 200)(null)
     }
+
+    // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
+    deferExecution((a?: null) => {
+      if (this.defaultPlanes) {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph initialized',
+        })
+      }
+    }, 200)(null)
   }
 
   async safeParse(code: string): Promise<Node<Program> | null> {
@@ -702,6 +711,19 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+
+  setPlaneVisibilityByKey(
+    planeKey: keyof PlaneVisibilityMap,
+    visible: boolean
+  ) {
+    const planeId = this.defaultPlanes?.[planeKey]
+    if (!planeId) {
+      console.warn(`Plane ${planeKey} not found`)
+      return
+    }
+    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
+  }
+
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter(selectionsToRestore?: Selections) {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)

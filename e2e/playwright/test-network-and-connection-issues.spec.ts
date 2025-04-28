@@ -1,11 +1,7 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import {
-  commonPoints,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { commonPoints, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
@@ -18,7 +14,6 @@ test.describe(
       'simulate network down and network little widget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -95,7 +90,6 @@ test.describe(
       'Engine disconnect & reconnect in sketch mode',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage, toolbar, scene, cmdBar }) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
         const networkToggle = page.getByTestId('network-toggle')
 
         const u = await getUtils(page)
@@ -124,7 +118,7 @@ test.describe(
         const startXPx = 600
         await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
         await expect(page.locator('.cm-content')).toHaveText(
-          `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+          `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
         )
         await page.waitForTimeout(100)
 
@@ -133,7 +127,7 @@ test.describe(
 
         await expect(
           page.locator('.cm-content')
-        ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+        ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
       |> xLine(length = ${commonPoints.num1})`)
 
         // Expect the network to be up
@@ -182,7 +176,7 @@ test.describe(
 
         // select a line
         await page
-          .getByText(`startProfileAt(${commonPoints.startAt}, sketch001)`)
+          .getByText(`startProfile(sketch001, at = ${commonPoints.startAt})`)
           .click()
 
         // enter sketch again
@@ -226,7 +220,7 @@ test.describe(
         await expect
           .poll(u.normalisedEditorCode)
           .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
+profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
 
@@ -237,7 +231,7 @@ profile001 = startProfileAt([12.34, -12.34], sketch001)
         await expect
           .poll(u.normalisedEditorCode)
           .toBe(`sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([12.34, -12.34], sketch001)
+profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
   |> xLine(length = -12.34)

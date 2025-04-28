@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing kittycad_svg.kcl
 ---
 svg = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [2.52, -26.04]) // MoveAbsolute
   |> line(endAbsolute = [2.52, -25.2]) // VerticalLineAbsolute
   |> line(endAbsolute = [0.84, -25.2]) // HorizontalLineAbsolute

@@ -21,20 +21,17 @@ import {
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import type { EventFrom } from 'xstate'
-
 import { ActionButton } from '@src/components/ActionButton'
-import type { useFileContext } from '@src/hooks/useFileContext'
 import { base64Decode } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { codeManager, kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
-import type { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { commandBarActor } from '@src/lib/singletons'
-import type { fileMachine } from '@src/machines/fileMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -82,10 +79,16 @@ export function ToastTextToCadError({
   toastId,
   message,
   prompt,
+  method,
+  projectName,
+  newProjectName,
 }: {
   toastId: string
   message: string
   prompt: string
+  method: string
+  projectName: string
+  newProjectName: string
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -118,10 +121,13 @@ export function ToastTextToCadError({
             commandBarActor.send({
               type: 'Find and select command',
               data: {
-                groupId: 'modeling',
+                groupId: 'application',
                 name: 'Text-to-CAD',
                 argDefaultValues: {
                   prompt,
+                  method,
+                  projectName,
+                  newProjectName,
                 },
               },
             })
@@ -139,24 +145,22 @@ export function ToastTextToCadSuccess({
   toastId,
   data,
   navigate,
-  context,
   token,
-  fileMachineSend,
   settings,
+  projectName,
+  fileName,
+  isProjectNew,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
-  context: ReturnType<typeof useFileContext>['context']
   token?: string
-  fileMachineSend: (
-    event: EventFrom<typeof fileMachine>,
-    data?: unknown
-  ) => void
-  settings: {
-    theme: Themes
+  settings?: {
     highlightEdges: boolean
   }
+  projectName: string
+  fileName: string
+  isProjectNew: boolean
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -164,6 +168,7 @@ export function ToastTextToCadSuccess({
   const [hasCopied, setHasCopied] = useState(false)
   const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
+  const projectDirectoryPath = useProjectDirectoryPath()
 
   const animate = useCallback(
     ({
@@ -198,7 +203,11 @@ export function ToastTextToCadSuccess({
     if (!canvasRef.current) return
 
     const canvas = canvasRef.current
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+    const renderer = new WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
@@ -344,15 +353,30 @@ export function ToastTextToCadSuccess({
               }
               if (isDesktop()) {
                 // Delete the file from the project
-                fileMachineSend({
-                  type: 'Delete file',
-                  data: {
-                    name: data.fileName,
-                    path: `${context.project.path}${window.electron.sep}${data.fileName}`,
-                    children: null,
-                  },
-                })
+
+                if (projectName && fileName) {
+                  // You are in the new workflow for text to cad at the global application level
+                  if (isProjectNew) {
+                    // Delete the entire project if it was newly created from text to CAD
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteProject,
+                      data: {
+                        requestedProjectName: projectName,
+                      },
+                    })
+                  } else {
+                    // Only delete the file if the project was preexisting
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteKCLFile,
+                      data: {
+                        requestedProjectName: projectName,
+                        requestedFileName: fileName,
+                      },
+                    })
+                  }
+                }
               }
+
               toast.dismiss(toastId)
             }}
           >
@@ -368,11 +392,9 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                navigate(
-                  `${PATHS.FILE}/${encodeURIComponent(
-                    `${context.project.path}${window.electron.sep}${data.fileName}`
-                  )}`
-                )
+                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
+
                 toast.dismiss(toastId)
               }}
             >
@@ -426,7 +448,6 @@ function traverseSceneToStyleObjects({
 }: {
   scene: Scene
   color?: number
-  theme: Themes
   highlightEdges?: boolean
 }) {
   scene.traverse((child) => {

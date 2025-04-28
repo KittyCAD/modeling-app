@@ -2,9 +2,10 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing argument_error.kcl
 ---
-KCL Type error
+KCL Semantic error
 
-  × type: Expected an array but found Function
+  × semantic: This function expected the input argument to be of type
+  │ Vec<KclValue> but it's actually of type Function
    ╭─[5:5]
  4 │ 
  5 │ map(f, [0, 1])

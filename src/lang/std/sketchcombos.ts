@@ -42,7 +42,6 @@ import {
   getArc,
   getArgForEnd,
   getCircle,
-  getConstraintInfo,
   getConstraintInfoKw,
   getFirstArg,
   isAbsoluteLine,
@@ -452,7 +451,11 @@ const getMinAndSegLenVals = (
 ): [Expr, BinaryPart] => {
   const segLenVal = createSegLen(referenceSegName)
   return [
-    createCallExpression('min', [segLenVal, varVal]),
+    createCallExpressionStdLibKw(
+      'min',
+      createArrayExpression([segLenVal, varVal]),
+      []
+    ),
     createCallExpressionStdLibKw('legLen', null, [
       createLabeledArg('hypotenuse', segLenVal),
       createLabeledArg('leg', varVal),
@@ -465,10 +468,11 @@ const getMinAndSegAngVals = (
   varVal: Expr,
   fnName: 'legAngX' | 'legAngY' = 'legAngX'
 ): [Expr, BinaryPart] => {
-  const minVal = createCallExpression('min', [
-    createSegLen(referenceSegName),
-    varVal,
-  ])
+  const minVal = createCallExpressionStdLibKw(
+    'min',
+    createArrayExpression([createSegLen(referenceSegName), varVal]),
+    []
+  )
   const legAngle = createCallExpression(fnName, [
     createSegLen(referenceSegName),
     varVal,
@@ -1702,6 +1706,9 @@ function getTransformMapPathKw(
       }
     return false
   }
+  if (name === 'startProfile') {
+    return false
+  }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
   if (err(tooltip)) {
     return false
@@ -1988,38 +1995,14 @@ export function transformAstSketchLines({
     const getNode = getNodeFromPathCurry(node, _pathToNode)
 
     // Find `call` which could either be a positional-arg or keyword-arg call.
-    const callExp = getNode<Node<CallExpression>>('CallExpression')
-    const callExpKw = getNode<Node<CallExpressionKw>>('CallExpressionKw')
-    const call =
-      !err(callExp) && callExp.node.type === 'CallExpression'
-        ? callExp
-        : callExpKw
+    const call = getNode<Node<CallExpressionKw>>('CallExpressionKw')
     if (err(call)) return call
 
     const varDec = getNode<VariableDeclarator>('VariableDeclarator')
     if (err(varDec)) return varDec
 
-    const callBackTag = (() => {
-      switch (call.node.type) {
-        case 'CallExpression':
-          return call.node.arguments[2]
-        case 'CallExpressionKw':
-          return findKwArg(ARG_TAG, call.node)
-      }
-    })()
-    const _referencedSegmentNameVal = (() => {
-      switch (call.node.type) {
-        case 'CallExpressionKw':
-          return findKwArg('intersectTag', call.node)
-        case 'CallExpression':
-          return (
-            call.node.arguments[0]?.type === 'ObjectExpression' &&
-            call.node.arguments[0].properties?.find(
-              (prop) => prop.key.name === 'intersectTag'
-            )?.value
-          )
-      }
-    })()
+    const callBackTag = findKwArg(ARG_TAG, call.node)
+    const _referencedSegmentNameVal = findKwArg('intersectTag', call.node)
     const _referencedSegmentName =
       referenceSegName ||
       (_referencedSegmentNameVal &&
@@ -2028,14 +2011,7 @@ export function transformAstSketchLines({
       ''
     const inputs: InputArgs = []
 
-    const constraints = (() => {
-      switch (call.node.type) {
-        case 'CallExpression':
-          return getConstraintInfo(call.node, '', _pathToNode)
-        case 'CallExpressionKw':
-          return getConstraintInfoKw(call.node, '', _pathToNode)
-      }
-    })()
+    const constraints = getConstraintInfoKw(call.node, '', _pathToNode)
     constraints.forEach((a) => {
       if (
         a.type === 'tangentialWithPrevious' ||

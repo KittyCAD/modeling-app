@@ -20,7 +20,7 @@ test.describe('Import UI tests', () => {
       await fsp.writeFile(
         path.join(projectDir, 'toBeImported.kcl'),
         `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([281.54, 305.81], sketch001)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
   |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
@@ -37,7 +37,7 @@ extrude(profile001, length = 100)`
 importedCube
 
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([-134.53, -56.17], sketch001)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
   |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -73,7 +73,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
     await test.step('check code highlight works for code define in the file being edited', async () => {
       await hoverOverNonImport()
       await editor.expectState({
-        highlightedCode: 'startProfileAt([-134.53,-56.17],sketch001)',
+        highlightedCode: 'startProfile(sketch001,at = [-134.53,-56.17])',
         diagnostics: [],
         activeLines: ['import"toBeImported.kcl"asimportedCube'],
       })

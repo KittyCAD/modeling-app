@@ -2,9 +2,8 @@ use std::f64::consts::PI;
 
 use kittycad_modeling_cmds::shared::Angle;
 
-use crate::execution::types::{NumericType, UnitLen};
-
 use super::args::TyF64;
+use crate::execution::types::{NumericType, UnitLen};
 
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
     let (x, y, ty) = NumericType::combine_eq(p[0].clone(), p[1].clone());
@@ -236,9 +235,10 @@ pub fn calculate_circle_from_3_points(points: [Coords2d; 3]) -> CircleParams {
 #[cfg(test)]
 mod tests {
     // Here you can bring your functions into scope
+    use std::f64::consts::TAU;
+
     use approx::assert_relative_eq;
     use pretty_assertions::assert_eq;
-    use std::f64::consts::TAU;
 
     use super::{calculate_circle_center, get_x_component, get_y_component, Angle};
 

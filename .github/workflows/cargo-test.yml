@@ -15,8 +15,12 @@ name: cargo test
 jobs:
   cargotest:
     name: cargo test
-    runs-on: ubuntu-latest-8-cores
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
     steps:
+      - uses: runs-on/action@v1
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
@@ -81,11 +85,10 @@ jobs:
         run: |
           set -euo pipefail
           cd rust
-          cargo nextest run --workspace --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run --workspace --features artifact-graph --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
           RUST_BACKTRACE: full
-          RUST_MIN_STACK: 10485760000
       - name: Commit differences
         if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
@@ -118,16 +121,14 @@ jobs:
           # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
-          RUST_MIN_STACK: 10485760000
       - name: cargo test
         if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
         run: |-
           cd rust
-          cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
+          cargo llvm-cov nextest --workspace --features artifact-graph --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
-          RUST_MIN_STACK: 10485760000
       - name: Upload to codecov.io
         if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         uses: codecov/codecov-action@v5

@@ -20,7 +20,7 @@ row6 = row5 + keyHeight + spacing
 
 // Sketch the side profile of the keyboard base and extrude to total width
 sketch001 = startSketchOn(YZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [-0.14, 0.68], tag = $seg01)
   |> angledLine(angle = 7, length = row6 + 3 * spacing + keyHeight, tag = $seg02)
   |> line(endAbsolute = [5.13, 0], tag = $seg03)
@@ -65,7 +65,7 @@ plane001 = {
 // Create a function to build a key. Parameterize for position, width, height, number of instances, and appearance color.
 fn keyFn(originStart, keyWidth, keyHeight, repeats, color) {
   sketch002 = startSketchOn(plane001)
-  profile002 = startProfileAt([originStart[0], originStart[1]], sketch002)
+  profile002 = startProfile(sketch002, at = [originStart[0], originStart[1]])
     |> arc(angleStart = 180, angleEnd = 270, radius = 0.1)
     |> angledLine(angle = 0, length = keyWidth - .2, tag = $rectangleSegmentA001)
     |> tangentialArc(radius = 0.1, angle = 90)
@@ -131,10 +131,10 @@ plane002 = {
 // Define a function to draw the ZOO 'Z'
 fn z(origin, scale, depth) {
   z = startSketchOn(plane002)
-    |> startProfileAt([
+    |> startProfile(at = [
          0 + origin[0],
          0.15 * scale + origin[1]
-       ], %)
+       ])
     |> yLine(length = -0.15 * scale)
     |> xLine(length = 0.15 * scale)
     |> angledLine(angle = 47.15, endAbsoluteX = 0.3 * scale + origin[0], tag = $seg1)
@@ -159,10 +159,10 @@ fn z(origin, scale, depth) {
 // Define a function to draw the ZOO 'O'
 fn o(origin, scale, depth) {
   oSketch001 = startSketchOn(plane002)
-    |> startProfileAt([
+    |> startProfile(at = [
          .788 * scale + origin[0],
          .921 * scale + origin[1]
-       ], %)
+       ])
     |> arc(angleStart = 47.15 + 6, angleEnd = 47.15 - 6 + 180, radius = .525 * scale)
     |> angledLine(angle = 47.15, length = .24 * scale)
     |> arc(angleStart = 47.15 - 11 + 180, angleEnd = 47.15 + 11, radius = .288 * scale)
@@ -171,10 +171,10 @@ fn o(origin, scale, depth) {
     |> appearance(color = baseColor)
 
   o = startSketchOn(plane002)
-    |> startProfileAt([
+    |> startProfile(at = [
          .16 * scale + origin[0],
          .079 * scale + origin[1]
-       ], %)
+       ])
     |> arc(angleStart = 47.15 + 6 - 180, angleEnd = 47.15 - 6, radius = .525 * scale)
     |> angledLine(angle = 47.15, length = -.24 * scale)
     |> arc(angleStart = 47.15 - 11, angleEnd = 47.15 + 11 - 180, radius = .288 * scale)
