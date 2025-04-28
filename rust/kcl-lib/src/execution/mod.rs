@@ -9,6 +9,7 @@ pub use artifact::{
 };
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
+use cad_op::Group;
 #[cfg(feature = "artifact-graph")]
 pub use cad_op::Operation;
 pub use geometry::*;
@@ -768,6 +769,8 @@ impl ExecutorContext {
             )
         })?;
 
+        let mut root_module_id = None;
+
         for modules in crate::walk::import_graph(&universe, self)
             .map_err(|err| {
                 let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
@@ -810,11 +813,51 @@ impl ExecutorContext {
                 };
                 let module_id = *module_id;
                 let module_path = module_path.clone();
+                let source_range = SourceRange::from(import_stmt);
+
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let root_id = match root_module_id {
+                        None => {
+                            // The first module is the root module that's
+                            // importing everything else.
+                            root_module_id = Some(module_id);
+                            module_id
+                        }
+                        Some(id) => id,
+                    };
+
+                    // We only want to display the top-level module imports in
+                    // the Feature Tree, not transitive imports.
+                    if module_id == root_id {
+                        match &module_path {
+                            ModulePath::Main => {
+                                // This should never happen.
+                            }
+                            ModulePath::Local { value, .. } => {
+                                exec_state.global.operations.push(Operation::GroupBegin {
+                                    group: Group::ModuleInstance {
+                                        name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                                        module_id,
+                                    },
+                                    source_range,
+                                });
+                                // Due to concurrent execution, we cannot easily
+                                // group operations by module. So we leave the
+                                // group empty and close it immediately.
+                                exec_state.global.operations.push(Operation::GroupEnd);
+                            }
+                            ModulePath::Std { .. } => {
+                                // We don't want to display stdlib in the Feature Tree.
+                            }
+                        }
+                    }
+                }
+
                 let repr = repr.clone();
                 let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
-                let source_range = SourceRange::from(import_stmt);
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
                                          repr: &ModuleRepr,
