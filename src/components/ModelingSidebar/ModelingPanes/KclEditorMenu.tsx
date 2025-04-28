@@ -102,7 +102,7 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
               }}
               className={styles.button}
             >
-              <span>Load external model</span>
+              <span>Add file to project</span>
             </button>
           </Menu.Item>
           <Menu.Item>

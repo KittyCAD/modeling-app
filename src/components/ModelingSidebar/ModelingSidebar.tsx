@@ -80,9 +80,9 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'load-external-model',
-      title: 'Load external model',
-      sidebarName: 'Load external model',
+      id: 'add-file-to-project',
+      title: 'Add file to project',
+      sidebarName: 'Add file to project',
       icon: 'importFile',
       keybinding: 'Mod + Alt + L',
       action: () => {

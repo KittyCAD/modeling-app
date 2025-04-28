@@ -187,5 +187,3 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
-
-export const FILE_EXT_3D_MODELS = ['gltf', 'obj', 'stl', 'step', 'ply']

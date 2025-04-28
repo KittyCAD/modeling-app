@@ -42,7 +42,7 @@ test.describe('Testing loading external models', () => {
     }
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const samplesCommandOption = page.getByRole('option', {
-      name: 'Load external model',
+      name: 'Add file to project',
     })
     const commandSampleOption = page.getByRole('option', {
       name: newSample.title,
@@ -124,7 +124,7 @@ test.describe('Testing loading external models', () => {
           has: page.getByRole('button', { name }),
         })
       const defaultLoadCmdBarState: CmdBarSerialised = {
-        commandName: 'Load external model',
+        commandName: 'Add file to project',
         currentArgKey: 'source',
         currentArgValue: '',
         headerArguments: {

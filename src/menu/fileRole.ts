@@ -148,11 +148,11 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load external model',
-        id: 'File.Load external model',
+        label: 'Add file to project',
+        id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load external model',
+            menuLabel: 'File.Add file to project',
           })
         },
       },
