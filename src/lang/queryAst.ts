@@ -4,7 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
 import { ARG_TAG } from '@src/lang/constants'
-import { createLocalName } from '@src/lang/create'
+import { createLocalName, createPipeSubstitution } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -1058,4 +1058,52 @@ export const valueOrVariable = (variable: KclCommandValue) => {
   return 'variableName' in variable
     ? variable.variableIdentifierAst
     : variable.valueAst
+}
+
+export function getProfileExpressionsFromSelection(
+  selection: Selections,
+  ast: Node<Program>,
+  nodeToEdit?: PathToNode
+): Error | Expr[] {
+  const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
+    const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+    const sketchVariable = getNodeFromPath<VariableDeclarator>(
+      ast,
+      path,
+      'VariableDeclarator'
+    )
+    if (err(sketchVariable)) {
+      return []
+    }
+
+    if (sketchVariable.node.id) {
+      const name = sketchVariable.node?.id.name
+      if (nodeToEdit) {
+        const result = getNodeFromPath<VariableDeclarator>(
+          ast,
+          nodeToEdit,
+          'VariableDeclarator'
+        )
+        if (
+          !err(result) &&
+          result.node.type === 'VariableDeclarator' &&
+          name === result.node.id.name
+        ) {
+          // Pointing to same variable case
+          return createPipeSubstitution()
+        }
+      }
+      // Pointing to different variable case
+      return createLocalName(name)
+    } else {
+      // No variable case
+      return createPipeSubstitution()
+    }
+  })
+
+  if (sketches.length === 0) {
+    return new Error("Couldn't map selections to program references")
+  }
+
+  return sketches
 }

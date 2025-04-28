@@ -42,11 +42,7 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import {
-  createLiteral,
-  createLocalName,
-  createPipeSubstitution,
-} from '@src/lang/create'
+import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addClone,
@@ -88,6 +84,7 @@ import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import { setTranslate, setRotate } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
+  getProfileExpressionsFromSelection,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -1798,77 +1795,26 @@ export const modelingMachine = setup({
       if (!input) return new Error('No input provided')
       const { selection, distance, nodeToEdit } = input
       let ast = kclManager.ast
-      let nodeToReplace: CallExpressionKw | undefined = undefined
-
-      // 1. If we're editing, we want to first keep track of the existing node
-      if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
-        const result = getNodeFromPath<CallExpressionKw>(
-          ast,
-          nodeToEdit,
-          'CallExpressionKw'
-        )
-        if (err(result)) {
-          return Promise.reject(new Error("Couldn't find node to edit"))
-        } else {
-          nodeToReplace = result.node
-        }
+      const sketches = getProfileExpressionsFromSelection(
+        selection,
+        ast,
+        nodeToEdit
+      )
+      if (err(sketches)) {
+        return Promise.reject(sketches)
       }
 
-      // 2. Map the selections to program references
-      const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
-        const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
-        const sketchVariable = getNodeFromPath<VariableDeclarator>(
-          ast,
-          path,
-          'VariableDeclarator'
-        )
-        if (err(sketchVariable)) {
-          return []
-        }
-
-        if (sketchVariable.node.id) {
-          const name = sketchVariable.node?.id.name
-          if (nodeToEdit && nodeToReplace) {
-            const result = getNodeFromPath<VariableDeclarator>(
-              ast,
-              nodeToEdit,
-              'VariableDeclarator'
-            )
-            if (
-              !err(result) &&
-              result.node.type === 'VariableDeclarator' &&
-              name === result.node.id.name
-            ) {
-              // Pointing to same variable case
-              return createPipeSubstitution()
-            }
-          }
-          // Pointing to different variable case
-          return createLocalName(name)
-        } else {
-          // No variable case
-          return createPipeSubstitution()
-        }
-      })
-
-      if (sketches.length === 0) {
-        return Promise.reject(
-          new Error("Couldn't map selections to program references")
-        )
-      }
-
-      // 3. Add an extrude statement to the AST
-      const extrudeSketchRes = addExtrude({
+      const astResult = addExtrude({
         ast,
         sketches,
         distance: valueOrVariable(distance),
         nodeToEdit,
       })
-      if (err(extrudeSketchRes)) {
+      if (err(astResult)) {
         return Promise.reject(new Error("Couldn't add extrude statement"))
       }
 
-      const { modifiedAst, pathToNode: pathToExtrudeArg } = extrudeSketchRes
+      const { modifiedAst, pathToNode: pathToExtrudeArg } = astResult
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,
