@@ -226,7 +226,7 @@ test.describe('Testing loading external models', () => {
               Method: 'Existing project',
               Path: '',
               Source: 'local',
-              ProjectName: 'testDefault'
+              ProjectName: 'testDefault',
             },
             highlightedHeaderArg: 'path',
             stage: 'arguments',
@@ -250,7 +250,7 @@ test.describe('Testing loading external models', () => {
               Source: 'local',
               Path: modelName,
               ProjectName: 'testDefault',
-              Method: 'Existing project'
+              Method: 'Existing project',
             },
             stage: 'review',
           })
