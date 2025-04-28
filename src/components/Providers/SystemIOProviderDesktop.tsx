@@ -35,14 +35,14 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
-      let projectPathWithoutSpecificKCLFile =
+      const projectPathWithoutSpecificKCLFile =
         projectDirectoryPath +
         window.electron.path.sep +
         requestedProjectName.name
 
       const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
         projectPathWithoutSpecificKCLFile
-      )}`
+      )}${requestedProjectName.subRoute || ''}`
       navigate(requestedPath)
     }, [requestedProjectName])
   }

@@ -39,7 +39,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.navigateToProject
-          data: { requestedProjectName: string }
+          data: { requestedProjectName: string; subRoute?: string }
         }
       | {
           type: SystemIOMachineEvents.navigateToFile
@@ -117,7 +117,10 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.navigateToProject)
-        return { name: event.data.requestedProjectName }
+        return {
+          name: event.data.requestedProjectName,
+          subRoute: event.data.subRoute,
+        }
       },
     }),
     [SystemIOMachineActions.setRequestedFileName]: assign({

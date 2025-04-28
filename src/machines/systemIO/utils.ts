@@ -73,7 +73,7 @@ export type SystemIOContext = {
   /** has the application gone through the initialization of systemIOMachine at least once.
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
-  requestedProjectName: { name: string }
+  requestedProjectName: { name: string; subRoute?: string }
   requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
