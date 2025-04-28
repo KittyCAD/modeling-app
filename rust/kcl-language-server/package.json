@@ -123,8 +123,8 @@
     "@vscode/test-electron": "^2.4.1",
     "@vscode/vsce": "^3.3.2",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.25.2",
-    "glob": "^11.0.1",
+    "esbuild": "^0.25.3",
+    "glob": "^11.0.2",
     "mocha": "^11.1.0",
     "typescript": "^5.8.3"
   },
