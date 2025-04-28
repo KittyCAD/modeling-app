@@ -256,19 +256,6 @@ test('Basic default modeling and sketch hotkeys work', async ({
   homePage,
 }) => {
   const u = await getUtils(page)
-
-  // This test can run long if it takes a little too long to load
-  // the engine.
-  test.setTimeout(90000)
-  // This test has a weird bug on ubuntu
-  // Funny, it's flaking on Windows too :). I think there is just something
-  // actually wrong.
-  test.skip(
-    process.platform === 'linux',
-    'weird playwright bug on ubuntu https://github.com/KittyCAD/modeling-app/issues/2444'
-  )
-  // Load the app with the code pane open
-
   await test.step(`Set up test`, async () => {
     await page.addInitScript(async () => {
       localStorage.setItem(

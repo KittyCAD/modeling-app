@@ -102,8 +102,6 @@ test.describe('when using the file tree to', () => {
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
     async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
         await getUtils(page, test)
 
@@ -146,8 +144,6 @@ test.describe('when using the file tree to', () => {
     `create many new files of the same name, incrementing their names`,
     { tag: '@electron' },
     async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const { panesOpen, createNewFile } = await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1031,8 +1027,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
     `open a file, change something, open a different file, hitting undo should do nothing`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
@@ -1099,10 +1093,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
   test(
     `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
     { tag: '@electron' },
-    // Skip on windows i think the keybindings are different for redo.
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
