@@ -2125,7 +2125,7 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(toRadians(30))
+a = cos(units::toRadians(30))
 b = 3 / a
 c = cos(30deg)
 d = cos(30)
