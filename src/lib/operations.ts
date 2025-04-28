@@ -59,8 +59,6 @@ interface StdLibCallInfo {
  */
 const prepareToEditExtrude: PrepareToEditCallback =
   async function prepareToEditExtrude({ operation, artifact }) {
-    console.log('operation', operation)
-    console.log('artifact', artifact)
     const baseCommand = {
       name: 'Extrude',
       groupId: 'modeling',
@@ -879,44 +877,56 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type or artifact' }
   }
 
-  // We have to go a little roundabout to get from the original artifact
-  // to the solid2DId that we need to pass to the command.
-  const pathArtifact = getArtifactOfTypes(
-    {
-      key: artifact.pathId,
-      types: ['path'],
-    },
-    kclManager.artifactGraph
-  )
-  if (
-    err(pathArtifact) ||
-    pathArtifact.type !== 'path' ||
-    !pathArtifact.solid2dId
-  ) {
-    return { reason: "Couldn't find related path artifact" }
+  // 1. Map the unlabeled arguments to solid2d selections
+  let sketches: OpKclValue[] = []
+  if (operation.unlabeledArg?.value.type === 'Sketch') {
+    sketches = [operation.unlabeledArg.value]
+  } else if (operation.unlabeledArg?.value.type === 'Array') {
+    sketches = operation.unlabeledArg.value.value
+  } else {
+    return { reason: "Couldn't retrieve sketches" }
   }
 
-  const solid2DArtifact = getArtifactOfTypes(
-    {
-      key: pathArtifact.solid2dId,
-      types: ['solid2d'],
-    },
-    kclManager.artifactGraph
-  )
-  if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-    return { reason: "Couldn't find related solid2d artifact" }
-  }
+  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
+    // We have to go a little roundabout to get from the original artifact
+    // to the solid2DId that we need to pass to the Extrude command.
+    if (sketch.type !== 'Sketch') {
+      return []
+    }
 
-  const selection = {
-    graphSelections: [
+    const pathArtifact = getArtifactOfTypes(
       {
-        artifact: solid2DArtifact,
-        codeRef: pathArtifact.codeRef,
+        key: sketch.value.artifactId,
+        types: ['path'],
       },
-    ],
-    otherSelections: [],
-  }
+      kclManager.artifactGraph
+    )
+    if (
+      err(pathArtifact) ||
+      pathArtifact.type !== 'path' ||
+      !pathArtifact.solid2dId
+    ) {
+      return []
+    }
 
+    const solid2DArtifact = getArtifactOfTypes(
+      {
+        key: pathArtifact.solid2dId,
+        types: ['solid2d'],
+      },
+      kclManager.artifactGraph
+    )
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+      return []
+    }
+
+    return {
+      artifact: solid2DArtifact,
+      codeRef: pathArtifact.codeRef,
+    }
+  })
+
+  // 2. Prepare labeled arguments
   // axis options string arg
   if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
     return { reason: "Couldn't find axis argument" }
@@ -1016,13 +1026,17 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axisOrEdge,
     axis,
     edge,
-    selection,
+    selection: {
+      graphSelections,
+      otherSelections: [],
+    },
     angle,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
+  console.log('argDefaultValues', argDefaultValues)
   return {
     ...baseCommand,
     argDefaultValues,

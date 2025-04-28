@@ -67,7 +67,7 @@ import {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   getAxisExpressionAndIndex,
-  revolveSketch,
+  addRevolve,
 } from '@src/lang/modifyAst/addRevolve'
 import {
   applyIntersectFromTargetOperatorSelections,
@@ -1835,62 +1835,29 @@ export const modelingMachine = setup({
       if (!input) return new Error('No input provided')
       const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
       let ast = kclManager.ast
-      let variableName: string | undefined = undefined
-      let insertIndex: number | undefined = undefined
-
-      // If this is an edit flow, first we're going to remove the old extrusion
-      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-        // Extract the plane name from the node to edit
-        const nameNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          nodeToEdit,
-          'VariableDeclaration'
-        )
-        if (err(nameNode)) {
-          console.error('Error extracting plane name')
-        } else {
-          variableName = nameNode.node.declaration.id.name
-        }
-
-        // Removing the old extrusion statement
-        const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0], 1)
-        ast.body = newBody
-        insertIndex = nodeToEdit[1][0]
-      }
-
-      if (
-        'variableName' in angle &&
-        angle.variableName &&
-        angle.insertIndex !== undefined
-      ) {
-        const newBody = [...ast.body]
-        newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
-        ast.body = newBody
-        if (insertIndex) {
-          // if editing need to offset that new var
-          insertIndex += 1
-        }
-      }
-
-      // This is the selection of the sketch that will be revolved
-      const pathToNode = getNodePathFromSourceRange(
+      const sketches = getProfileExpressionsFromSelection(
+        selection,
         ast,
-        selection.graphSelections[0]?.codeRef.range
+        nodeToEdit
       )
+      if (err(sketches)) {
+        return Promise.reject(sketches)
+      }
 
-      const revolveSketchRes = revolveSketch(
+      const astResult = addRevolve({
         ast,
-        pathToNode,
-        'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
+        sketches,
+        angle: valueOrVariable(angle),
         axisOrEdge,
         axis,
         edge,
-        variableName,
-        insertIndex
-      )
-      if (trap(revolveSketchRes)) return
-      const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+        nodeToEdit,
+      })
+      if (err(astResult)) {
+        return Promise.reject(new Error("Couldn't add revolve statement"))
+      }
+
+      const { modifiedAst, pathToNode } = astResult
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,
@@ -1900,7 +1867,7 @@ export const modelingMachine = setup({
           codeManager,
         },
         {
-          focusPath: [pathToRevolveArg],
+          focusPath: [pathToNode],
         }
       )
     }),

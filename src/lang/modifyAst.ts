@@ -14,7 +14,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createObjectExpression,
   createPipeExpression,
   createVariableDeclaration,
   findUniqueName,
@@ -559,99 +558,77 @@ export function addSweep({
     pathToNode,
   }
 }
-
-export function revolveSketch(
-  node: Node<Program>,
-  pathToNode: PathToNode,
-  shouldPipe = false,
-  angle: Expr = createLiteral(4)
-):
+export function addRevolve({
+  ast,
+  sketches,
+  angle,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  sketches: Expr[]
+  angle: Expr
+  nodeToEdit?: PathToNode
+}):
   | {
       modifiedAst: Node<Program>
       pathToNode: PathToNode
-      pathToRevolveArg: PathToNode
     }
   | Error {
-  const _node = structuredClone(node)
-  const _node1 = getNodeFromPath(_node, pathToNode)
-  if (err(_node1)) return _node1
-  const { node: sketchExpression } = _node1
-
-  // determine if sketchExpression is in a pipeExpression or not
-  const _node2 = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(_node2)) return _node2
-  const { node: pipeExpression } = _node2
-
-  const isInPipeExpression = pipeExpression.type === 'PipeExpression'
-
-  const _node3 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  if (err(_node3)) return _node3
-  const { node: variableDeclarator, shallowPath: pathToDecleration } = _node3
-
-  const revolveCall = createCallExpressionStdLib('revolve', [
-    createObjectExpression({
-      angle: angle,
-      // TODO: hard coded 'X' axis for revolve MVP, should be changed.
-      axis: createLocalName('X'),
-    }),
-    createLocalName(variableDeclarator.id.name),
-  ])
-
-  if (shouldPipe) {
-    const pipeChain = createPipeExpression(
-      isInPipeExpression
-        ? [...pipeExpression.body, revolveCall]
-        : [sketchExpression as any, revolveCall]
-    )
-
-    variableDeclarator.init = pipeChain
-    const pathToRevolveArg: PathToNode = [
-      ...pathToDecleration,
-      ['init', 'VariableDeclarator'],
-      ['body', ''],
-      [pipeChain.body.length - 1, 'index'],
-      ['arguments', 'CallExpression'],
-      [0, 'index'],
-    ]
-
-    return {
-      modifiedAst: _node,
-      pathToNode,
-      pathToRevolveArg,
+  const modifiedAst = structuredClone(ast)
+  let sketchesArg: Expr | null = null
+  if (sketches.length === 1) {
+    if (sketches[0].type !== 'PipeSubstitution') {
+      sketchesArg = sketches[0]
     }
+    // Keep it null if it's a pipe substitution
+  } else {
+    sketchesArg = createArrayExpression(sketches)
+  }
+  const extrudeCall = createCallExpressionStdLibKw('revolve', sketchesArg, [
+    createLabeledArg('angle', angle),
+  ])
+  // index of the 'length' arg above. If you reorder the labeled args above,
+  // make sure to update this too.
+  const argIndex = 0
+
+  let pathToNode: PathToNode = []
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    // Replace the existing call with the new one
+    Object.assign(result.node, extrudeCall)
+    pathToNode = nodeToEdit
+  } else {
+    // We're not creating a pipe expression,
+    // but rather a separate constant for the extrusion
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE
+    )
+    const variable = createVariableDeclaration(name, extrudeCall)
+    // TODO: Check if we should instead find a good index to insert at
+    modifiedAst.body.push(variable)
+    pathToNode = [
+      ['body', ''],
+      [modifiedAst.body.length - 1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
   }
 
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
-  const VariableDeclaration = createVariableDeclaration(name, revolveCall)
-  const sketchIndexInPathToNode =
-    pathToDecleration.findIndex((a) => a[0] === 'body') + 1
-  const sketchIndexInBody = pathToDecleration[sketchIndexInPathToNode][0]
-  if (typeof sketchIndexInBody !== 'number')
-    return new Error('expected sketchIndexInBody to be a number')
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
-  const pathToRevolveArg: PathToNode = [
-    ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
-  ]
   return {
-    modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
-    pathToRevolveArg,
+    modifiedAst,
+    pathToNode,
   }
 }
 

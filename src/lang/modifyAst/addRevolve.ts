@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
@@ -12,14 +13,13 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
+  CallExpressionKw,
   Expr,
   PathToNode,
   Program,
-  VariableDeclarator,
 } from '@src/lang/wasm'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
@@ -73,70 +73,93 @@ export function getAxisExpressionAndIndex(
   }
 }
 
-export function revolveSketch(
-  ast: Node<Program>,
-  pathToSketchNode: PathToNode,
-  angle: Expr,
-  axisOrEdge: 'Axis' | 'Edge',
-  axis: string | undefined,
-  edge: Selections | undefined,
-  variableName?: string,
-  insertIndex?: number
-):
+export function addRevolve({
+  ast,
+  sketches,
+  angle,
+  axisOrEdge,
+  axis,
+  edge,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  sketches: Expr[]
+  angle: Expr
+  axisOrEdge: 'Axis' | 'Edge'
+  axis: string | undefined
+  edge: Selections | undefined
+  nodeToEdit?: PathToNode
+}):
   | {
       modifiedAst: Node<Program>
-      pathToSketchNode: PathToNode
-      pathToRevolveArg: PathToNode
+      pathToNode: PathToNode
     }
   | Error {
-  const clonedAst = structuredClone(ast)
-  const sketchVariableDeclaratorNode = getNodeFromPath<VariableDeclarator>(
-    clonedAst,
-    pathToSketchNode,
-    'VariableDeclarator'
-  )
-  if (err(sketchVariableDeclaratorNode)) return sketchVariableDeclaratorNode
-  const { node: sketchVariableDeclarator } = sketchVariableDeclaratorNode
-
+  const modifiedAst = structuredClone(ast)
   const getAxisResult = getAxisExpressionAndIndex(
     axisOrEdge,
     axis,
     edge,
-    clonedAst
+    modifiedAst
   )
   if (err(getAxisResult)) return getAxisResult
   const { generatedAxis } = getAxisResult
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
-  const revolveCall = createCallExpressionStdLibKw(
-    'revolve',
-    createLocalName(sketchVariableDeclarator.id.name),
-    [createLabeledArg('angle', angle), createLabeledArg('axis', generatedAxis)]
-  )
-
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
-  const name =
-    variableName ??
-    findUniqueName(clonedAst, KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE)
-  const variableDeclaration = createVariableDeclaration(name, revolveCall)
-  const bodyInsertIndex =
-    insertIndex ?? getSafeInsertIndex(revolveCall, clonedAst)
-  clonedAst.body.splice(bodyInsertIndex, 0, variableDeclaration)
+  let sketchesArg: Expr | null = null
+  if (sketches.length === 1) {
+    if (sketches[0].type !== 'PipeSubstitution') {
+      sketchesArg = sketches[0]
+    }
+    // Keep it null if it's a pipe substitution
+  } else {
+    sketchesArg = createArrayExpression(sketches)
+  }
+  const call = createCallExpressionStdLibKw('revolve', sketchesArg, [
+    createLabeledArg('angle', angle),
+    createLabeledArg('axis', generatedAxis),
+  ])
+  // index of the 'length' arg above. If you reorder the labeled args above,
+  // make sure to update this too.
   const argIndex = 0
-  const pathToRevolveArg: PathToNode = [
-    ['body', ''],
-    [bodyInsertIndex, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
+
+  let pathToNode: PathToNode = []
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    // Replace the existing call with the new one
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    // We're not creating a pipe expression,
+    // but rather a separate constant for the extrusion
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE
+    )
+    const variable = createVariableDeclaration(name, call)
+    // TODO: Check if we should instead find a good index to insert at
+    modifiedAst.body.push(variable)
+    pathToNode = [
+      ['body', ''],
+      [modifiedAst.body.length - 1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+  }
 
   return {
-    modifiedAst: clonedAst,
-    pathToSketchNode: [...pathToSketchNode.slice(0, -1), [-1, 'index']],
-    pathToRevolveArg,
+    modifiedAst,
+    pathToNode,
   }
 }
