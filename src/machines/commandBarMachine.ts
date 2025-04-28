@@ -345,7 +345,6 @@ export const commandBarMachine = setup({
             input.selectedCommand!.args!
           )) {
             let arg = input.argumentsToSubmit[argName]
-            console.log(argName, arg)
             let argValue = typeof arg === 'function' ? arg(input) : arg
 
             try {

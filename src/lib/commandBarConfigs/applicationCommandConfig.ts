@@ -93,7 +93,6 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
-      console.log('trying to submit', data)
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
