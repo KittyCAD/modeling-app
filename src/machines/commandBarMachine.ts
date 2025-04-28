@@ -345,6 +345,7 @@ export const commandBarMachine = setup({
             input.selectedCommand!.args!
           )) {
             let arg = input.argumentsToSubmit[argName]
+            console.log(argName, arg)
             let argValue = typeof arg === 'function' ? arg(input) : arg
 
             try {
@@ -394,8 +395,8 @@ export const commandBarMachine = setup({
 
               if (
                 hasMismatchedDefaultValueType ||
-                hasInvalidKclValue ||
-                hasInvalidOptionsValue
+                  hasInvalidKclValue ||
+                  hasInvalidOptionsValue
               ) {
                 return reject({
                   message: 'Argument payload is of the wrong type',
@@ -408,10 +409,10 @@ export const commandBarMachine = setup({
 
               if (
                 (argConfig.inputType !== 'boolean' &&
-                argConfig.inputType !== 'options'
+                  argConfig.inputType !== 'options'
                   ? !argValue
                   : argValue === undefined) &&
-                isRequired
+                  isRequired
               ) {
                 return reject({
                   message: 'Argument payload is falsy but is required',

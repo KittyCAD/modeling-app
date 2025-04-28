@@ -93,6 +93,7 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
+      console.log('trying to submit',data)
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
@@ -164,8 +165,6 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: false,
-        defaultValue: 'local',
-        hidden: !isDesktop(),
         options() {
           return [
             {
@@ -255,9 +254,14 @@ export function createApplicationCommands({
       },
       path: {
         inputType: 'path',
-        valueSummary: (value) => window.electron.path.basename(value),
+        skip: true,
+        hidden: !isDesktop(),
+        defaultValue: '',
+        valueSummary: (value) => {
+          return isDesktop() ? window.electron.path.basename(value) : ''
+        },
         required: (commandContext) =>
-          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+          isDesktop() && ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [{ name: `Imports`, extensions: relevantFileExtensions() }],
       },
     },

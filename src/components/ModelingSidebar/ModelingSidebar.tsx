@@ -96,6 +96,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
             argDefaultValues: {
               method: 'existingProject',
               projectName: currentProject?.name,
+              ...(!isDesktop()? {source:'kcl-samples'}: {})
             },
           },
         })
