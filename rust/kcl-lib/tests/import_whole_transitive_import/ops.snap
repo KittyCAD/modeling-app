@@ -7,8 +7,8 @@ description: Operations executed import_whole_transitive_import.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "bolt.kcl",
-      "moduleId": 7
+      "name": "part.kcl",
+      "moduleId": 0
     },
     "sourceRange": []
   },
