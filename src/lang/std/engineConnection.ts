@@ -110,6 +110,13 @@ export const CONNECTION_ERROR_TEXT: Record<ConnectionError, string> = {
     'An unexpected error occurred. Please report this to us.',
 }
 
+export const WEBSOCKET_READYSTATE_TEXT: Record<number, string> = {
+  [WebSocket.CONNECTING]: 'WebSocket.CONNECTING',
+  [WebSocket.OPEN]: 'WebSocket.OPEN',
+  [WebSocket.CLOSING]: 'WebSocket.CLOSING',
+  [WebSocket.CLOSED]: 'WebSocket.CLOSED',
+}
+
 export interface ErrorType {
   // The error we've encountered.
   error: ConnectionError
