@@ -198,7 +198,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="row-start-2 -row-end-1 flex flex-col justify-between">
+        <aside className="row-start-1 -row-end-1 flex flex-col justify-between">
           <ul className="flex flex-col">
             <li className="contents">
               <ActionButton
@@ -247,6 +247,34 @@ const Home = () => {
                 data-testid="home-text-to-cad"
               >
                 Generate with Text-to-CAD
+              </ActionButton>
+            </li>
+            <li className="contents">
+              <ActionButton
+                Element="button"
+                onClick={() =>
+                  commandBarActor.send({
+                    type: 'Find and select command',
+                    data: {
+                      groupId: 'application',
+                      name: 'add-kcl-file-to-project',
+                      argDefaultValues: {
+                        source:'kcl-samples',
+                        method: 'newProject',
+                        newProjectName:
+                          settings.projects.defaultProjectName.current,
+                      },
+                    },
+                  })
+                }
+                className={sidebarButtonClasses}
+                iconStart={{
+                  icon: 'importFile',
+                  bgClassName: '!bg-transparent rounded-sm',
+                }}
+                data-testid="home-create-from-sample"
+              >
+                Create from a sample
               </ActionButton>
             </li>
           </ul>

@@ -93,7 +93,7 @@ export function createApplicationCommands({
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
-      console.log('trying to submit',data)
+      console.log('trying to submit', data)
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
@@ -165,6 +165,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: false,
+        defaultValue: isDesktop() ? 'local' : 'kcl-samples',
         options() {
           return [
             {
@@ -261,8 +262,9 @@ export function createApplicationCommands({
           return isDesktop() ? window.electron.path.basename(value) : ''
         },
         required: (commandContext) =>
-          isDesktop() && ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        filters: [{ name: `Imports`, extensions: relevantFileExtensions() }],
+          isDesktop() &&
+          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+        filters: [{ name: `Imports ${relevantFileExtensions().map(f=>`.${f} `)}`, extensions: relevantFileExtensions() }],
       },
     },
   }

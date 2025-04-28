@@ -395,8 +395,8 @@ export const commandBarMachine = setup({
 
               if (
                 hasMismatchedDefaultValueType ||
-                  hasInvalidKclValue ||
-                  hasInvalidOptionsValue
+                hasInvalidKclValue ||
+                hasInvalidOptionsValue
               ) {
                 return reject({
                   message: 'Argument payload is of the wrong type',
@@ -409,10 +409,10 @@ export const commandBarMachine = setup({
 
               if (
                 (argConfig.inputType !== 'boolean' &&
-                  argConfig.inputType !== 'options'
+                argConfig.inputType !== 'options'
                   ? !argValue
                   : argValue === undefined) &&
-                  isRequired
+                isRequired
               ) {
                 return reject({
                   message: 'Argument payload is falsy but is required',
