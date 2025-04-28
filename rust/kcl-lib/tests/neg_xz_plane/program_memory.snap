@@ -112,7 +112,7 @@ description: Variables in memory after executing neg_xz_plane.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -120,7 +120,7 @@ description: Variables in memory after executing neg_xz_plane.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },

@@ -1178,8 +1178,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -1197,8 +1197,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -1389,8 +1389,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -1849,8 +1849,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -1868,8 +1868,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -2060,8 +2060,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -2579,8 +2579,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -2598,8 +2598,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -2790,8 +2790,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -3250,8 +3250,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -3269,8 +3269,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -3461,8 +3461,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -3921,8 +3921,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -3940,8 +3940,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -4132,8 +4132,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -4592,8 +4592,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -4611,8 +4611,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -4803,8 +4803,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -5263,8 +5263,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -5282,8 +5282,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -5474,8 +5474,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -5934,8 +5934,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -5953,8 +5953,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -6145,8 +6145,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -6605,8 +6605,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -6624,8 +6624,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -6816,8 +6816,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -7538,8 +7538,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -7557,8 +7557,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -7749,8 +7749,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -8209,8 +8209,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -8228,8 +8228,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -8420,8 +8420,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -8880,8 +8880,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -8899,8 +8899,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -9091,8 +9091,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -9842,8 +9842,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -9861,8 +9861,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -10053,8 +10053,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -10513,8 +10513,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -10532,8 +10532,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -10724,8 +10724,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -11184,8 +11184,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -11203,8 +11203,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -11395,8 +11395,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -12175,8 +12175,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -12194,8 +12194,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -12386,8 +12386,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -12846,8 +12846,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -12865,8 +12865,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -13057,8 +13057,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -13866,8 +13866,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -13885,8 +13885,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -14077,8 +14077,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -14537,8 +14537,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -14556,8 +14556,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -14748,8 +14748,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -15208,8 +15208,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -15227,8 +15227,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -15419,8 +15419,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -16199,8 +16199,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -16218,8 +16218,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -16410,8 +16410,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -16870,8 +16870,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -16889,8 +16889,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -17195,8 +17195,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18021,8 +18021,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -18040,8 +18040,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18158,8 +18158,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18420,8 +18420,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -18439,8 +18439,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18557,8 +18557,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18819,8 +18819,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -18838,8 +18838,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -18956,8 +18956,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -19218,8 +19218,8 @@ description: Artifact commands keyboard.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 1.0,
-        "z": 0.12186934340514748
+        "y": 0.9926556406329575,
+        "z": 0.12097429115135457
       },
       "size": 60.0,
       "clobber": false,
@@ -19237,8 +19237,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },
@@ -19355,8 +19355,8 @@ description: Artifact commands keyboard.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -0.12186934340514748,
-        "z": 1.0
+        "y": -0.12097429115135457,
+        "z": 0.9926556406329575
       }
     }
   },

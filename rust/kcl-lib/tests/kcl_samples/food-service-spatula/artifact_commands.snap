@@ -2062,9 +2062,9 @@ description: Artifact commands food-service-spatula.kcl
         "z": 75.921946
       },
       "x_axis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693
+        "z": -0.9396927112094517
       },
       "y_axis": {
         "x": 0.0,
@@ -2086,9 +2086,9 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.939693,
+        "x": 0.9396927112094517,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.342019894888923
       }
     }
   },
@@ -2305,9 +2305,9 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.939693,
+        "x": 0.9396927112094517,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.342019894888923
       }
     }
   },

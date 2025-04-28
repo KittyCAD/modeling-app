@@ -33,7 +33,7 @@ asin(input: number): number
 ```js
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> angledLine(angle = toDegrees(asin(0.5)), length = 20)
+  |> angledLine(angle = units::toDegrees(asin(0.5)), length = 20)
   |> yLine(endAbsolute = 0)
   |> close()
 

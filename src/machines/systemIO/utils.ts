@@ -37,6 +37,7 @@ export enum SystemIOMachineEvents {
   createProject = 'create project',
   renameProject = 'rename project',
   deleteProject = 'delete project',
+  done_deleteProject = donePrefix + 'delete project',
   createKCLFile = 'create kcl file',
   setDefaultProjectFolderName = 'set default project folder name',
   done_checkReadWrite = donePrefix + 'check read write',
@@ -56,6 +57,7 @@ export enum SystemIOMachineActions {
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
+  setLastProjectDeleteRequest = 'set last project delete request'
 }
 
 export const NO_PROJECT_DIRECTORY = ''
@@ -79,5 +81,8 @@ export type SystemIOContext = {
     requestedPrompt: string
     requestedProjectName: string
     isProjectNew: boolean
+  }
+  lastProjectDeleteRequest: {
+    project: string
   }
 }

@@ -308,16 +308,14 @@ impl Plane {
                             x: 1.0,
                             y: 0.0,
                             z: 0.0,
-                            // TODO axes must be normalized, so maybe these should all be count
-                            // rather than mm?
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::XY,
@@ -334,14 +332,14 @@ impl Plane {
                             x: -1.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::NegXY,
@@ -358,14 +356,14 @@ impl Plane {
                             x: 1.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::XZ,
@@ -382,14 +380,14 @@ impl Plane {
                             x: -1.0,
                             y: 0.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::NegXZ,
@@ -406,14 +404,14 @@ impl Plane {
                             x: 0.0,
                             y: 1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::YZ,
@@ -430,14 +428,14 @@ impl Plane {
                             x: 0.0,
                             y: -1.0,
                             z: 0.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     y_axis:
                         Point3d {
                             x: 0.0,
                             y: 0.0,
                             z: 1.0,
-                            units: UnitLen::Mm,
+                            units: _,
                         },
                     ..
                 } => return PlaneData::NegYZ,
@@ -460,8 +458,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
                 value: PlaneType::XY,
                 meta: vec![],
             },
@@ -470,8 +468,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
                 value: PlaneType::XY,
                 meta: vec![],
             },
@@ -480,8 +478,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
@@ -490,8 +488,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
                 value: PlaneType::XZ,
                 meta: vec![],
             },
@@ -500,8 +498,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
                 value: PlaneType::YZ,
                 meta: vec![],
             },
@@ -510,8 +508,8 @@ impl Plane {
                 #[cfg(feature = "artifact-graph")]
                 artifact_id: id.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Mm),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
                 value: PlaneType::YZ,
                 meta: vec![],
             },
@@ -631,7 +629,7 @@ impl Sketch {
                     adjust_camera: false,
                     planar_normal: if let SketchSurface::Plane(plane) = &self.on {
                         // We pass in the normal for the plane here.
-                        let normal = plane.x_axis.cross(&plane.y_axis);
+                        let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
                         Some(normal.into())
                     } else {
                         None
@@ -918,24 +916,26 @@ impl Point3d {
         self.x == 0.0 && self.y == 0.0 && self.z == 0.0
     }
 
-    /// Calculate the cross product of this vector with another
-    pub fn cross(&self, other: &Self) -> Self {
-        let other = if other.units == self.units {
-            other
-        } else {
-            &Point3d {
-                x: self.units.adjust_to(other.x, self.units).0,
-                y: self.units.adjust_to(other.y, self.units).0,
-                z: self.units.adjust_to(other.z, self.units).0,
-                units: self.units,
-            }
-        };
-
+    /// Calculate the cross product of this vector with another.
+    ///
+    /// This should only be applied to axes or other vectors which represent only a direction (and
+    /// no magnitude) since units are ignored.
+    pub fn axes_cross_product(&self, other: &Self) -> Self {
         Self {
             x: self.y * other.z - self.z * other.y,
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
-            units: self.units,
+            units: UnitLen::Unknown,
+        }
+    }
+
+    pub fn normalize(&self) -> Self {
+        let len = f64::sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+        Point3d {
+            x: self.x / len,
+            y: self.y / len,
+            z: self.z / len,
+            units: UnitLen::Unknown,
         }
     }
 }

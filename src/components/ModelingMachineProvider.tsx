@@ -1969,8 +1969,27 @@ export const ModelingMachineProvider = ({
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+
   useHotkeys(deleteKeys, () => {
-    modelingSend({ type: 'Delete selection' })
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
+    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
+    const selections =
+      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
+        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
+      )
+    selections.forEach((selection) => {
+      modelingSend({
+        type: 'Delete segment',
+        data: selection.codeRef.pathToNode,
+      })
+    })
+    if (
+      modelingState.context.selectionRanges.graphSelections.length >
+      selections.length
+    ) {
+      // Not all selection were segments -> keep the default delete behavior
+      modelingSend({ type: 'Delete selection' })
+    }
   })
 
   // Allow ctrl+alt+c to center to selection

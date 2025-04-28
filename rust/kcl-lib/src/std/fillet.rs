@@ -4,7 +4,6 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{args::TyF64, DEFAULT_TOLERANCE};
@@ -19,8 +18,7 @@ use crate::{
 };
 
 /// A tag or a uuid of an edge.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Hash)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 #[serde(untagged)]
 pub enum EdgeReference {
     /// A uuid of an edge.

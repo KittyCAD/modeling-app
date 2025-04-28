@@ -1,0 +1,6 @@
+// This tests computed properties.
+
+p = "foo"
+obj = { foo = 1, bar = 0 }
+// Try to index with a string.
+one = obj[p]

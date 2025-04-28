@@ -1310,6 +1310,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
+    // TODO: This should be an expression, not just a literal or identifier.
     let property = alt((
         literal.map(LiteralIdentifier::Literal),
         nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),

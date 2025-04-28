@@ -498,27 +498,6 @@ mod double_map_fn {
         super::execute(TEST_NAME, false).await
     }
 }
-mod property_of_object {
-    const TEST_NAME: &str = "property_of_object";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
-    }
-}
 mod index_of_array {
     const TEST_NAME: &str = "index_of_array";
 
@@ -797,6 +776,27 @@ mod invalid_member_object {
 }
 mod invalid_member_object_prop {
     const TEST_NAME: &str = "invalid_member_object_prop";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod invalid_member_object_using_string {
+    const TEST_NAME: &str = "invalid_member_object_using_string";
 
     /// Test parsing KCL.
     #[test]
