@@ -156,6 +156,10 @@ const Home = () => {
         data: {
           name: 'Text-to-CAD',
           groupId: 'application',
+          argDefaultValues: {
+            method:'newProject',
+            newProjectName: settings.projects.defaultProjectName.current,
+          }
         },
       })
     }
@@ -259,7 +263,7 @@ const Home = () => {
                       groupId: 'application',
                       name: 'add-kcl-file-to-project',
                       argDefaultValues: {
-                        source:'kcl-samples',
+                        source: 'kcl-samples',
                         method: 'newProject',
                         newProjectName:
                           settings.projects.defaultProjectName.current,

@@ -264,7 +264,12 @@ export function createApplicationCommands({
         required: (commandContext) =>
           isDesktop() &&
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        filters: [{ name: `Imports ${relevantFileExtensions().map(f=>`.${f} `)}`, extensions: relevantFileExtensions() }],
+        filters: [
+          {
+            name: `Imports ${relevantFileExtensions().map((f) => `.${f} `)}`,
+            extensions: relevantFileExtensions(),
+          },
+        ],
       },
     },
   }
