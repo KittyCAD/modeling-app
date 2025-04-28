@@ -6,6 +6,8 @@ import {
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
+  ARG_LEG,
+  ARG_HYPOTENUSE,
   ARG_END_ABSOLUTE_Y,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
@@ -473,9 +475,9 @@ const getMinAndSegAngVals = (
     createArrayExpression([createSegLen(referenceSegName), varVal]),
     []
   )
-  const legAngle = createCallExpression(fnName, [
-    createSegLen(referenceSegName),
-    varVal,
+  const legAngle = createCallExpressionStdLibKw(fnName, null, [
+    createLabeledArg(ARG_HYPOTENUSE, createSegLen(referenceSegName)),
+    createLabeledArg(ARG_LEG, varVal),
   ])
   return [minVal, legAngle]
 }
@@ -2177,26 +2179,38 @@ export function transformAstSketchLines({
 }
 
 function createSegLen(referenceSegName: string): BinaryPart {
-  return createCallExpression('segLen', [createLocalName(referenceSegName)])
+  return createCallExpressionStdLibKw(
+    'segLen',
+    createLocalName(referenceSegName),
+    []
+  )
 }
 
 function createSegAngle(referenceSegName: string): BinaryPart {
-  return createCallExpression('segAng', [createLocalName(referenceSegName)])
+  return createCallExpressionStdLibKw(
+    'segAng',
+    createLocalName(referenceSegName),
+    []
+  )
 }
 
 function createSegEnd(
   referenceSegName: string,
   isX: boolean
-): Node<CallExpression> {
-  return createCallExpression(isX ? 'segEndX' : 'segEndY', [
+): Node<CallExpressionKw> {
+  return createCallExpressionStdLibKw(
+    isX ? 'segEndX' : 'segEndY',
     createLocalName(referenceSegName),
-  ])
+    []
+  )
 }
 
-function createLastSeg(isX: boolean): Node<CallExpression> {
-  return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
+function createLastSeg(isX: boolean): Node<CallExpressionKw> {
+  return createCallExpressionStdLibKw(
+    isX ? 'lastSegX' : 'lastSegY',
     createPipeSubstitution(),
-  ])
+    []
+  )
 }
 
 export type ConstraintLevel = 'free' | 'partial' | 'full'
