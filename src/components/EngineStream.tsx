@@ -368,6 +368,30 @@ export const EngineStream = (props: {
     }
   }, [streamIdleMode, engineStreamState.value])
 
+  // On various inputs save the camera state, in case we get disconnected.
+  useEffect(() => {
+    const onInput = () => {
+      // Save the remote camera state to restore on stream restore.
+      // Fire-and-forget because we don't know when a camera movement is
+      // completed on the engine side (there are no responses to data channel
+      // mouse movements.)
+      sceneInfra.camControls.saveRemoteCameraState().catch(trap)
+    }
+
+    // These usually signal a user is done some sort of operation.
+    window.document.addEventListener('keyup', onInput)
+    window.document.addEventListener('mouseup', onInput)
+    window.document.addEventListener('scroll', onInput)
+    window.document.addEventListener('touchstop', onInput)
+
+    return () => {
+      window.document.removeEventListener('keyup', onInput)
+      window.document.removeEventListener('mouseup', onInput)
+      window.document.removeEventListener('scroll', onInput)
+      window.document.removeEventListener('touchstop', onInput)
+    }
+  }, [])
+
   const isNetworkOkay =
     overallState === NetworkHealthState.Ok ||
     overallState === NetworkHealthState.Weak
