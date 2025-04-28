@@ -12,7 +12,6 @@ use kittycad_modeling_cmds::{
     self as kcmc,
     shared::{Angle, OriginType, Rotation},
 };
-use schemars::JsonSchema;
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -901,8 +900,7 @@ async fn inner_pattern_linear_3d(
 }
 
 /// Data for a circular pattern on a 2D sketch.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(rename_all = "camelCase")]
 struct CircularPattern2dData {
     /// The number of total instances. Must be greater than or equal to 1.
