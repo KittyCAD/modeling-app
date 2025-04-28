@@ -66,7 +66,7 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     selection: Selections // & { type: 'face' } would be cool to lock that down
     // result: (typeof EXTRUSION_RESULTS)[number]
-    distance: KclCommandValue
+    length: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
@@ -396,18 +396,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      // result: {
-      //   inputType: 'options',
-      //   defaultValue: 'add',
-      //   skip: true,
-      //   required: true,
-      //   options: EXTRUSION_RESULTS.map((r) => ({
-      //     name: r,
-      //     isCurrent: r === 'add',
-      //     value: r,
-      //   })),
-      // },
-      distance: {
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,

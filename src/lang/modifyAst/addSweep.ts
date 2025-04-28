@@ -12,7 +12,7 @@ import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, valueOrVariable } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
@@ -21,9 +21,97 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+
+export function addExtrude({
+  ast,
+  sketches,
+  length,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  sketches: Expr[]
+  length: KclCommandValue
+  nodeToEdit?: PathToNode
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  const modifiedAst = structuredClone(ast)
+  let sketchesArg: Expr | null = null
+  if (sketches.length === 1) {
+    if (sketches[0].type !== 'PipeSubstitution') {
+      sketchesArg = sketches[0]
+    }
+    // Keep it null if it's a pipe substitution
+  } else {
+    sketchesArg = createArrayExpression(sketches)
+  }
+  const call = createCallExpressionStdLibKw('extrude', sketchesArg, [
+    createLabeledArg('length', valueOrVariable(length)),
+  ])
+  // index of the 'length' arg above. If you reorder the labeled args above,
+  // make sure to update this too.
+  const argIndex = 0
+
+  // Insert the length variable if the user has provided a variable name
+  if ('variableName' in length && length.variableName) {
+    const insertIndex = length.insertIndex
+    modifiedAst.body.splice(insertIndex, 0, length.variableDeclarationAst)
+    if (
+      nodeToEdit &&
+      typeof nodeToEdit[1][0] === 'number' &&
+      insertIndex <= nodeToEdit[1][0]
+    ) {
+      nodeToEdit[1][0] += 1
+    }
+  }
+
+  let pathToNode: PathToNode = []
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    // Replace the existing call with the new one
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    // We're not creating a pipe expression,
+    // but rather a separate constant for the extrusion
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE
+    )
+    const variable = createVariableDeclaration(name, call)
+    // TODO: Check if we should instead find a good index to insert at
+    modifiedAst.body.push(variable)
+    pathToNode = [
+      ['body', ''],
+      [modifiedAst.body.length - 1, 'index'],
+      ['declaration', 'VariableDeclaration'],
+      ['init', 'VariableDeclarator'],
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+    ]
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
 
 export function getAxisExpressionAndIndex(
   axisOrEdge: 'Axis' | 'Edge',
@@ -84,7 +172,7 @@ export function addRevolve({
 }: {
   ast: Node<Program>
   sketches: Expr[]
-  angle: Expr
+  angle: KclCommandValue
   axisOrEdge: 'Axis' | 'Edge'
   axis: string | undefined
   edge: Selections | undefined
@@ -116,12 +204,25 @@ export function addRevolve({
     sketchesArg = createArrayExpression(sketches)
   }
   const call = createCallExpressionStdLibKw('revolve', sketchesArg, [
-    createLabeledArg('angle', angle),
+    createLabeledArg('angle', valueOrVariable(angle)),
     createLabeledArg('axis', generatedAxis),
   ])
   // index of the 'length' arg above. If you reorder the labeled args above,
   // make sure to update this too.
   const argIndex = 0
+
+  // Insert the angle variable if the user has provided a variable name
+  if ('variableName' in angle && angle.variableName) {
+    const insertIndex = angle.insertIndex
+    modifiedAst.body.splice(insertIndex, 0, angle.variableDeclarationAst)
+    if (
+      nodeToEdit &&
+      typeof nodeToEdit[1][0] === 'number' &&
+      insertIndex <= nodeToEdit[1][0]
+    ) {
+      nodeToEdit[1][0] += 1
+    }
+  }
 
   let pathToNode: PathToNode = []
   if (nodeToEdit) {

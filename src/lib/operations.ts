@@ -121,14 +121,14 @@ const prepareToEditExtrude: PrepareToEditCallback =
     })
 
     // 2. Convert the length argument from a string to a KCL expression
-    const distanceResult = await stringToKclExpression(
+    const length = await stringToKclExpression(
       codeManager.code.slice(
         operation.labeledArgs?.['length']?.sourceRange[0],
         operation.labeledArgs?.['length']?.sourceRange[1]
       )
     )
-    if (err(distanceResult) || 'errors' in distanceResult) {
-      return baseCommand
+    if (err(length) || 'errors' in length) {
+      return { reason: "Couldn't retrive length argument" }
     }
 
     // 3. Assemble the default argument values for the Extrude command,
@@ -139,7 +139,7 @@ const prepareToEditExtrude: PrepareToEditCallback =
         graphSelections,
         otherSelections: [],
       },
-      distance: distanceResult,
+      length,
       nodeToEdit: getNodePathFromSourceRange(
         kclManager.ast,
         sourceRangeFromRust(operation.sourceRange)

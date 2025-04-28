@@ -46,7 +46,6 @@ import { createLiteral, createLocalName } from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addClone,
-  addExtrude,
   addHelix,
   addOffsetPlane,
   addShell,
@@ -66,9 +65,10 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
-  getAxisExpressionAndIndex,
+  addExtrude,
   addRevolve,
-} from '@src/lang/modifyAst/addRevolve'
+  getAxisExpressionAndIndex,
+} from '@src/lang/modifyAst/addSweep'
 import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
@@ -1793,7 +1793,7 @@ export const modelingMachine = setup({
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
       if (!input) return new Error('No input provided')
-      const { selection, distance, nodeToEdit } = input
+      const { selection, length, nodeToEdit } = input
       let ast = kclManager.ast
       const sketches = getProfileExpressionsFromSelection(
         selection,
@@ -1807,7 +1807,7 @@ export const modelingMachine = setup({
       const astResult = addExtrude({
         ast,
         sketches,
-        distance: valueOrVariable(distance),
+        length,
         nodeToEdit,
       })
       if (err(astResult)) {
@@ -1847,7 +1847,7 @@ export const modelingMachine = setup({
       const astResult = addRevolve({
         ast,
         sketches,
-        angle: valueOrVariable(angle),
+        angle,
         axisOrEdge,
         axis,
         edge,

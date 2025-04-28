@@ -75,10 +75,10 @@ test.describe('Point-and-click tests', () => {
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: '5',
-        headerArguments: { Selection: '1 face', Distance: '' },
-        highlightedHeaderArg: 'distance',
+        headerArguments: { Selection: '1 face', Length: '' },
+        highlightedHeaderArg: 'length',
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -88,7 +88,7 @@ test.describe('Point-and-click tests', () => {
 
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Selection: '1 face', Distance: '5' },
+        headerArguments: { Selection: '1 face', Length: '5' },
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
