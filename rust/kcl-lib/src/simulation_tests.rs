@@ -816,6 +816,27 @@ mod invalid_member_object_prop {
         super::execute(TEST_NAME, false).await
     }
 }
+mod invalid_member_object_using_string {
+    const TEST_NAME: &str = "invalid_member_object_using_string";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod non_string_key_of_object {
     const TEST_NAME: &str = "non_string_key_of_object";
 
