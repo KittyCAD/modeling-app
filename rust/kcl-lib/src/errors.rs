@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
@@ -658,7 +659,7 @@ pub enum Tag {
     None,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub struct Suggestion {
     pub title: String,

@@ -45,19 +45,11 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
         return Ok(vec![]);
     };
 
-    let Some(plane) = arg.inner.properties.iter().find(|v| v.key.inner.name == "plane") else {
-        return Ok(vec![]);
-    };
-
-    let Expr::ObjectExpression(ref plane) = plane.inner.value else {
-        return Ok(vec![]);
-    };
-
     let mut origin: Option<(f64, f64, f64)> = None;
     let mut x_vec: Option<(f64, f64, f64)> = None;
     let mut y_vec: Option<(f64, f64, f64)> = None;
 
-    for property in &plane.inner.properties {
+    for property in &arg.inner.properties {
         let Expr::ObjectExpression(ref point) = property.inner.value else {
             return Ok(vec![]);
         };
@@ -153,6 +145,7 @@ pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
             plane_name
         ),
         call_source_range,
+        None,
     )])
 }
 
@@ -211,12 +204,9 @@ mod tests {
         Z0003,
         "\
 startSketchOn({
-  plane: {
-    origin: { x: 0, y: -14.3, z: 0 },
-    xAxis: { x: 1, y: 0, z: 0 },
-    yAxis: { x: 0, y: 0, z: 1 },
-    zAxis: { x: 0, y: -1, z: 0 }
-  }
+    origin = { x = 0, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
 })
 "
     );
@@ -227,12 +217,9 @@ startSketchOn({
         Z0003,
         "\
 startSketchOn({
-  plane: {
-    origin: { x: 10, y: -14.3, z: 0 },
-    xAxis: { x: 1, y: 0, z: 0 },
-    yAxis: { x: 0, y: 0, z: 1 },
-    zAxis: { x: 0, y: -1, z: 0 }
-  }
+    origin = { x = 10, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
 })
 "
     );
