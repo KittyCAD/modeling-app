@@ -1016,8 +1016,8 @@ mod import_glob {
         super::execute(TEST_NAME, false).await
     }
 }
-mod import_whole {
-    const TEST_NAME: &str = "import_whole";
+mod import_whole_simple {
+    const TEST_NAME: &str = "import_whole_simple";
 
     /// Test parsing KCL.
     #[test]
