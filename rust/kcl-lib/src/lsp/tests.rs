@@ -1,8 +1,11 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{
+        CodeActionKind, CodeActionOrCommand, Diagnostic, SemanticTokenModifier, SemanticTokenType, TextEdit,
+        WorkspaceEdit,
+    },
     LanguageServer,
 };
 
@@ -3589,38 +3592,91 @@ async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
         .unwrap();
 
     // Check the diagnostics.
-    if let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics {
-        if let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics {
-            assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
-            assert_eq!(
-                diagnostics.full_document_diagnostic_report.items[0].message,
-                "offsetPlane should be used to define a new plane offset from the origin"
-            );
-
-            // Make sure we get the suggestion data.
-            assert_eq!(
-                diagnostics.full_document_diagnostic_report.items[0]
-                    .data
-                    .clone()
-                    .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
-                Some((
-                    Suggestion {
-                        insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
-                        source_range: SourceRange::new(14, 133, Default::default()),
-                        title: "use offsetPlane instead".to_string(),
-                    },
-                    tower_lsp::lsp_types::Range {
-                        start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
-                        end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
-                    }
-                ))
-            );
-        } else {
-            panic!("Expected full diagnostics");
-        }
-    } else {
+    let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics else {
         panic!("Expected diagnostics");
-    }
+    };
+
+    let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics else {
+        panic!("Expected full diagnostics");
+    };
+    assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0].message,
+        "offsetPlane should be used to define a new plane offset from the origin"
+    );
+
+    // Make sure we get the suggestion data.
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0]
+            .data
+            .clone()
+            .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
+        Some((
+            Suggestion {
+                insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                source_range: SourceRange::new(14, 133, Default::default()),
+                title: "use offsetPlane instead".to_string(),
+            },
+            tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            }
+        ))
+    );
+
+    let diagnostic = diagnostics.full_document_diagnostic_report.items[0].clone();
 
     // Run a code action.
+    let code_action = server
+        .code_action(tower_lsp::lsp_types::CodeActionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            },
+            context: tower_lsp::lsp_types::CodeActionContext {
+                diagnostics: vec![diagnostic.clone()],
+                only: None,
+                trigger_kind: Default::default(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    assert!(code_action.is_some());
+
+    let code_action = code_action.unwrap();
+
+    assert_eq!(code_action.len(), 1);
+
+    assert_eq!(
+        code_action[0],
+        CodeActionOrCommand::CodeAction(tower_lsp::lsp_types::CodeAction {
+            title: "use offsetPlane instead".to_string(),
+            kind: Some(CodeActionKind::QUICKFIX),
+            diagnostics: Some(vec![diagnostic]),
+            edit: Some(WorkspaceEdit {
+                changes: Some(HashMap::from_iter(vec![(
+                    "file:///testlint.kcl".try_into().unwrap(),
+                    vec![TextEdit {
+                        range: tower_lsp::lsp_types::Range {
+                            start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                            end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+                        },
+                        new_text: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                    }],
+                )])),
+                document_changes: None,
+                change_annotations: None,
+            }),
+            command: None,
+            is_preferred: Some(true),
+            disabled: None,
+            data: None,
+        })
+    );
 }
