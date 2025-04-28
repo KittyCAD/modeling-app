@@ -84,7 +84,7 @@ test.describe('Testing loading external models', () => {
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
   test(
-    'Desktop: should create new file by default, optionally overwrite',
+    'Desktop: should create new file by default, creates a second file with automatic unique name',
     { tag: '@electron' },
     async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
@@ -102,6 +102,7 @@ test.describe('Testing loading external models', () => {
       const sampleOne = {
         file: 'parametric-bearing-pillow-block' + FILE_EXT,
         title: 'Parametric Bearing Pillow Block',
+        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT
       }
       const sampleTwo = {
         file: 'gear-rack' + FILE_EXT,
@@ -125,14 +126,15 @@ test.describe('Testing loading external models', () => {
         })
       const defaultLoadCmdBarState: CmdBarSerialised = {
         commandName: 'Add file to project',
-        currentArgKey: 'source',
+        currentArgKey: 'sample',
         currentArgValue: '',
         headerArguments: {
-          Method: 'newFile',
+          Method: 'Existing project',
           Sample: '',
-          Source: '',
+          Source: 'kcl-samples',
+          ProjectName: 'bracket'
         },
-        highlightedHeaderArg: 'source',
+        highlightedHeaderArg: 'sample',
         stage: 'arguments',
       }
 
@@ -154,8 +156,8 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.selectOption({ name: 'KCL Samples' }).click()
         await cmdBar.expectState(defaultLoadCmdBarState)
-        await cmdBar.progressCmdBar()
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
         await cmdBar.progressCmdBar()
@@ -168,33 +170,20 @@ test.describe('Testing loading external models', () => {
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
-      await test.step(`Now overwrite the current file`, async () => {
+      await test.step(`Load a KCL sample with the command palette`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.selectOption({ name: 'KCL Samples' }).click()
         await cmdBar.expectState(defaultLoadCmdBarState)
+        await cmdBar.selectOption({ name: sampleOne.title }).click()
+        await expect(overwriteWarning).not.toBeVisible()
         await cmdBar.progressCmdBar()
-        await cmdBar.selectOption({ name: sampleTwo.title }).click()
-        await commandMethodArgButton.click()
-        await commandMethodOption.click()
-        await expect(commandMethodArgButton).toContainText('overwrite')
-        await expect(overwriteWarning).toBeVisible()
-        await confirmButton.click()
+        await page.waitForTimeout(1000)
       })
 
-      await test.step(`Ensure we overwrote the current file without navigating`, async () => {
-        await editor.expectEditor.toContain('// ' + sampleTwo.title)
-        await test.step(`Check actual file contents`, async () => {
-          await expect
-            .poll(async () => {
-              return await fsp.readFile(
-                join(dir, 'bracket', sampleOne.file),
-                'utf-8'
-              )
-            })
-            .toContain('// ' + sampleTwo.title)
-        })
-        await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
-        await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file)
+      await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
+        await editor.expectEditor.toContain('// ' + sampleOne.title)
+        await expect(newlyCreatedFile(sampleOne.file1)).toBeVisible()
+        await expect(projectMenuButton).toContainText(sampleOne.file1)
       })
     }
   )
@@ -228,8 +217,9 @@ test.describe('Testing loading external models', () => {
 
         async function loadExternalFileThroughCommandBar(tronApp: ElectronZoo) {
           await toolbar.loadButton.click()
+          await cmdBar.selectOption({ name: 'Local Drive' }).click()
           await cmdBar.expectState({
-            commandName: 'Load external model',
+            commandName: 'Add file to project',
             currentArgKey: 'source',
             currentArgValue: '',
             headerArguments: {
@@ -240,7 +230,6 @@ test.describe('Testing loading external models', () => {
             highlightedHeaderArg: 'source',
             stage: 'arguments',
           })
-          await cmdBar.selectOption({ name: 'Local Drive' }).click()
 
           // Mock the file picker selection
           const handleFile = tronApp.electron.evaluate(
@@ -255,7 +244,7 @@ test.describe('Testing loading external models', () => {
 
           await cmdBar.progressCmdBar()
           await cmdBar.expectState({
-            commandName: 'Load external model',
+            commandName: 'Add file to project',
             headerArguments: {
               Source: 'local',
               Path: modelName,
