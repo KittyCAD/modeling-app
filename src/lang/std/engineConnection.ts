@@ -331,10 +331,10 @@ class EngineConnection extends EventTarget {
   private engineCommandManager: EngineCommandManager
 
   private pingPongSpan: { ping?: number; pong?: number }
-  private pingIntervalId: ReturnType<typeof setInterval> | null = null
+  private pingIntervalId: ReturnType<typeof setInterval> | undefined = undefined
   isUsingConnectionLite: boolean = false
 
-  timeoutToForceConnectId: ReturnType<typeof setTimeout> | null = null
+  timeoutToForceConnectId: ReturnType<typeof setTimeout> | undefined = undefined
 
   constructor({
     engineCommandManager,
@@ -405,7 +405,7 @@ class EngineConnection extends EventTarget {
     this.tearDown = () => {}
     this.websocket.addEventListener('open', this.onWebSocketOpen)
 
-    this.onWebSocketMessage = (event: MessageEvent) => {
+    this.websocket?.addEventListener('message', ((event: MessageEvent) => {
       const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
       if (!('resp' in message)) return
 
@@ -1244,7 +1244,7 @@ class EngineConnection extends EventTarget {
     )
   }
   disconnectAll() {
-    if (this.websocket?.readyState < 3) {
+    if (this.websocket && this.websocket?.readyState < 3) {
       this.websocket?.close()
     }
     if (this.unreliableDataChannel?.readyState === 'open') {
