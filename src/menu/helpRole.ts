@@ -62,12 +62,14 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        label: 'Refresh and report a bug',
-        id: 'Help.Refresh and report a bug',
+        label: 'Report a bug',
+        id: 'Help.Report a bug',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Help.Refresh and report a bug',
-          })
+          shell
+            .openExternal(
+              'https://github.com/KittyCAD/modeling-app/issues/new?template=bug_report.yml'
+            )
+            .catch(reportRejection)
         },
       },
       {

@@ -5,7 +5,7 @@ description: Variables in memory after executing import_foreign.kcl
 {
   "cube": {
     "type": "Module",
-    "value": 6
+    "value": 7
   },
   "model": {
     "type": "ImportedGeometry",

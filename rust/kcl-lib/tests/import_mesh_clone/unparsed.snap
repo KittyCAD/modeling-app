@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_mesh_clone.kcl
+---
+import "../inputs/cube.obj" as cube
+
+model = cube
+
+model2 = clone(model)
+  |> translate(x = 1020)
+  |> appearance(color = "#ff0000", metalness = 50, roughness = 50)

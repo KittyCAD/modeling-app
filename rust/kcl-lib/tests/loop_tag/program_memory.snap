@@ -1,0 +1,4708 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing loop_tag.kcl
+---
+{
+  "angleIncrement": {
+    "type": "Number",
+    "value": 7.2,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "calculatePoint": {
+    "type": "Function"
+  },
+  "closedSketch": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            10.0,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            19.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            19.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            29.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            38.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            38.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            47.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            47.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            55.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            55.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            63.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            63.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            69.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            69.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            74.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            74.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            79.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            79.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            82.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            82.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            82.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            82.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            79.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            79.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            74.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            74.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            69.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            69.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            63.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            63.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            55.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            55.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            47.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            47.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            38.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            38.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            29.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            19.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            19.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            10.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            10.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.0,
+            0.0
+          ],
+          "tag": null,
+          "to": [
+            10.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        }
+      },
+      "start": {
+        "from": [
+          10.0,
+          0.0
+        ],
+        "to": [
+          10.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "problematicTag": {
+          "type": "TagIdentifier",
+          "value": "problematicTag"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "cylinder": {
+    "type": "Solid",
+    "value": {
+      "type": "Solid",
+      "id": "[uuid]",
+      "artifactId": "[uuid]",
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": null,
+          "type": "extrudePlane"
+        }
+      ],
+      "sketch": {
+        "type": "Sketch",
+        "id": "[uuid]",
+        "paths": [
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              10.0,
+              0.0
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              19.9211,
+              1.2533
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              19.9211,
+              1.2533
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              29.607,
+              3.7402
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.607,
+              3.7402
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              38.9047,
+              7.4215
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              38.9047,
+              7.4215
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              47.6678,
+              12.239
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              47.6678,
+              12.239
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              55.758,
+              18.1169
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              55.758,
+              18.1169
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              63.0477,
+              24.9623
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              63.0477,
+              24.9623
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              69.4219,
+              32.6675
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              69.4219,
+              32.6675
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              74.7802,
+              41.1107
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              74.7802,
+              41.1107
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              79.038,
+              50.159
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              79.038,
+              50.159
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              82.1281,
+              59.6696
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              82.1281,
+              59.6696
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              84.002,
+              69.4925
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              84.002,
+              69.4925
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              84.6299,
+              79.4727
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              84.6299,
+              79.4727
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              84.002,
+              89.453
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              84.002,
+              89.453
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              82.1281,
+              99.2759
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              82.1281,
+              99.2759
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              79.038,
+              108.7864
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              79.038,
+              108.7864
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              74.7802,
+              117.8347
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              74.7802,
+              117.8347
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              69.4219,
+              126.278
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              69.4219,
+              126.278
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              63.0477,
+              133.9831
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              63.0477,
+              133.9831
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              55.758,
+              140.8286
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              55.758,
+              140.8286
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              47.6678,
+              146.7064
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              47.6678,
+              146.7064
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              38.9047,
+              151.524
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              38.9047,
+              151.524
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              29.607,
+              155.2052
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              29.607,
+              155.2052
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              19.9211,
+              157.6921
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              19.9211,
+              157.6921
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              10.0,
+              158.9454
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              10.0,
+              158.9454
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -0.0,
+              158.9454
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.0,
+              158.9454
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -9.9211,
+              157.6921
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -9.9211,
+              157.6921
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -19.607,
+              155.2052
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -19.607,
+              155.2052
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -28.9047,
+              151.524
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -28.9047,
+              151.524
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -37.6678,
+              146.7064
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -37.6678,
+              146.7064
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -45.758,
+              140.8286
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -45.758,
+              140.8286
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -53.0477,
+              133.9831
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -53.0477,
+              133.9831
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -59.4219,
+              126.278
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -59.4219,
+              126.278
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -64.7802,
+              117.8347
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -64.7802,
+              117.8347
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -69.038,
+              108.7864
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -69.038,
+              108.7864
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -72.1281,
+              99.2759
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -72.1281,
+              99.2759
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.002,
+              89.453
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.002,
+              89.453
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.6299,
+              79.4727
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.6299,
+              79.4727
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.002,
+              69.4925
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.002,
+              69.4925
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -72.1281,
+              59.6696
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -72.1281,
+              59.6696
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -69.038,
+              50.159
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -69.038,
+              50.159
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -64.7802,
+              41.1107
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -64.7802,
+              41.1107
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -59.4219,
+              32.6675
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -59.4219,
+              32.6675
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -53.0477,
+              24.9623
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -53.0477,
+              24.9623
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -45.758,
+              18.1169
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -45.758,
+              18.1169
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -37.6678,
+              12.239
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -37.6678,
+              12.239
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -28.9047,
+              7.4215
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -28.9047,
+              7.4215
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -19.607,
+              3.7402
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -19.607,
+              3.7402
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -9.9211,
+              1.2533
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -9.9211,
+              1.2533
+            ],
+            "tag": {
+              "commentStart": 992,
+              "end": 1007,
+              "start": 992,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -0.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -0.0,
+              0.0
+            ],
+            "tag": null,
+            "to": [
+              10.0,
+              0.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          }
+        ],
+        "on": {
+          "type": "plane",
+          "id": "[uuid]",
+          "artifactId": "[uuid]",
+          "value": "XY",
+          "origin": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "xAxis": {
+            "x": 1.0,
+            "y": 0.0,
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "yAxis": {
+            "x": 0.0,
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
+          }
+        },
+        "start": {
+          "from": [
+            10.0,
+            0.0
+          ],
+          "to": [
+            10.0,
+            0.0
+          ],
+          "units": {
+            "type": "Mm"
+          },
+          "tag": null,
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          }
+        },
+        "tags": {
+          "problematicTag": {
+            "type": "TagIdentifier",
+            "value": "problematicTag"
+          }
+        },
+        "artifactId": "[uuid]",
+        "originalId": "[uuid]",
+        "units": {
+          "type": "Mm"
+        }
+      },
+      "height": 50.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      },
+      "sectional": false
+    }
+  },
+  "finalSketch": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            10.0,
+            0.0
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            19.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            19.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            29.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            38.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            38.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            47.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            47.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            55.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            55.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            63.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            63.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            69.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            69.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            74.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            74.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            79.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            79.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            82.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            82.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            84.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            84.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            82.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            82.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            79.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            79.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            74.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            74.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            69.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            69.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            63.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            63.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            55.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            55.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            47.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            47.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            38.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            38.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            29.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            29.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            19.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            19.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            10.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            10.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -0.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 992,
+            "end": 1007,
+            "start": 992,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
+            0.0
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        }
+      ],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        }
+      },
+      "start": {
+        "from": [
+          10.0,
+          0.0
+        ],
+        "to": [
+          10.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "problematicTag": {
+          "type": "TagIdentifier",
+          "value": "problematicTag"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "height": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "initialSketch": {
+    "type": "Sketch",
+    "value": {
+      "type": "Sketch",
+      "id": "[uuid]",
+      "paths": [],
+      "on": {
+        "type": "plane",
+        "id": "[uuid]",
+        "artifactId": "[uuid]",
+        "value": "XY",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "xAxis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        },
+        "yAxis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
+        }
+      },
+      "start": {
+        "from": [
+          10.0,
+          0.0
+        ],
+        "to": [
+          10.0,
+          0.0
+        ],
+        "units": {
+          "type": "Mm"
+        },
+        "tag": null,
+        "__geoMeta": {
+          "id": "[uuid]",
+          "sourceRange": []
+        }
+      },
+      "tags": {
+        "problematicTag": {
+          "type": "TagIdentifier",
+          "value": "problematicTag"
+        }
+      },
+      "artifactId": "[uuid]",
+      "originalId": "[uuid]",
+      "units": {
+        "type": "Mm"
+      }
+    }
+  },
+  "numSides": {
+    "type": "Number",
+    "value": 50.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "problematicTag": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "problematicTag"
+  },
+  "radius": {
+    "type": "Number",
+    "value": 10.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  }
+}

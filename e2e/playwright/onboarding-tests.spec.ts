@@ -14,8 +14,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -63,7 +61,7 @@ test.describe('Onboarding tests', () => {
     {
       tag: '@electron',
     },
-    async ({ page, tronApp }) => {
+    async ({ page, tronApp, scene }) => {
       if (!tronApp) {
         fail()
       }
@@ -72,7 +70,6 @@ test.describe('Onboarding tests', () => {
           onboarding_status: '',
         },
       })
-      const u = await getUtils(page)
 
       const viewportSize = { width: 1200, height: 500 }
       await page.setBodyDimensions(viewportSize)
@@ -80,7 +77,7 @@ test.describe('Onboarding tests', () => {
       await test.step(`Create a project and open to the onboarding`, async () => {
         await createProject({ name: 'project-link', page })
         await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
-          await u.waitForPageLoad()
+          await scene.connectionEstablished()
         })
       })
 
@@ -280,9 +277,6 @@ test.describe('Onboarding tests', () => {
     if (!tronApp) {
       fail()
     }
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '/parametric-modeling',
@@ -332,10 +326,10 @@ test.describe('Onboarding tests', () => {
   test('Avatar text updates depending on image load success', async ({
     context,
     page,
+    toolbar,
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -363,7 +357,7 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the text in this step is correct
-    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const avatarLocator = toolbar.userSidebarButton.locator('img')
     const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
       .locator('div')
@@ -405,10 +399,10 @@ test.describe('Onboarding tests', () => {
   test("Avatar text doesn't mention avatar when no avatar", async ({
     context,
     page,
+    toolbar,
     homePage,
     tronApp,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -436,7 +430,7 @@ test.describe('Onboarding tests', () => {
     await homePage.goToModelingScene()
 
     // Test that the text in this step is correct
-    const sidebar = page.getByTestId('user-sidebar-toggle')
+    const sidebar = toolbar.userSidebarButton
     const avatar = sidebar.locator('img')
     const onboardingOverlayLocator = page
       .getByTestId('onboarding-content')
@@ -465,9 +459,9 @@ test.describe('Onboarding tests', () => {
 test('Restarting onboarding on desktop takes one attempt', async ({
   context,
   page,
+  toolbar,
   tronApp,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   if (!tronApp) {
     fail()
   }
@@ -503,7 +497,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
     .filter({ hasText: 'Tutorial Project 00' })
   const tutorialModalText = page.getByText('Welcome to Design Studio!')
   const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
-  const userMenuButton = page.getByTestId('user-sidebar-toggle')
+  const userMenuButton = toolbar.userSidebarButton
   const userMenuSettingsButton = page.getByRole('button', {
     name: 'User settings',
   })
@@ -516,9 +510,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   })
 
   await test.step('Navigate into project', async () => {
-    await expect(
-      page.getByRole('heading', { name: 'Your Projects' })
-    ).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
     await expect(projectCard).toBeVisible()
     await projectCard.click()
     await u.waitForPageLoad()

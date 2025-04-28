@@ -33,14 +33,6 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -92,7 +84,7 @@ description: Artifact commands pipe.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1875,
+        "x": 30.162499999999998,
         "y": 0.0,
         "z": 0.0
       }
@@ -117,7 +109,7 @@ description: Artifact commands pipe.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1875,
+        "radius": 30.162499999999998,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -160,7 +152,7 @@ description: Artifact commands pipe.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 6.0,
+      "distance": 152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -193,6 +185,15 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -203,10 +204,28 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -235,7 +254,7 @@ description: Artifact commands pipe.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.0,
+        "x": 25.4,
         "y": 0.0,
         "z": 0.0
       }
@@ -260,7 +279,7 @@ description: Artifact commands pipe.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.0,
+        "radius": 25.4,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -299,7 +318,7 @@ description: Artifact commands pipe.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -6.0,
+      "distance": -152.39999999999998,
       "faces": null,
       "opposite": "None"
     }
@@ -332,6 +351,15 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -342,10 +370,28 @@ description: Artifact commands pipe.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -363,38 +409,6 @@ description: Artifact commands pipe.kcl
       "metalness": 0.0,
       "roughness": 0.0,
       "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

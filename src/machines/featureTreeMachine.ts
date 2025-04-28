@@ -14,13 +14,14 @@ import type { SourceRange } from '@src/lang/wasm'
 import type { EnterEditFlowProps } from '@src/lib/operations'
 import {
   enterAppearanceFlow,
+  enterCloneFlow,
   enterEditFlow,
   enterTranslateFlow,
   enterRotateFlow,
 } from '@src/lib/operations'
 import { kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 type FeatureTreeEvent =
   | {
@@ -49,6 +50,10 @@ type FeatureTreeEvent =
     }
   | {
       type: 'enterRotateFlow'
+      data: { targetSourceRange: SourceRange; currentOperation: Operation }
+    }
+  | {
+      type: 'enterCloneFlow'
       data: { targetSourceRange: SourceRange; currentOperation: Operation }
     }
   | { type: 'goToError' }
@@ -167,6 +172,29 @@ export const featureTreeMachine = setup({
         })
       }
     ),
+    prepareCloneCommand: fromPromise(
+      ({
+        input,
+      }: {
+        input: EnterEditFlowProps & {
+          commandBarSend: (typeof commandBarActor)['send']
+        }
+      }) => {
+        return new Promise((resolve, reject) => {
+          const { commandBarSend, ...editFlowProps } = input
+          enterCloneFlow(editFlowProps)
+            .then((result) => {
+              if (err(result)) {
+                reject(result)
+                return
+              }
+              input.commandBarSend(result)
+              resolve(result)
+            })
+            .catch(reject)
+        })
+      }
+    ),
     sendDeleteCommand: fromPromise(
       ({
         input,
@@ -264,6 +292,11 @@ export const featureTreeMachine = setup({
 
         enterRotateFlow: {
           target: 'enteringRotateFlow',
+          actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
+        },
+
+        enterCloneFlow: {
+          target: 'enteringCloneFlow',
           actions: ['saveTargetSourceRange', 'saveCurrentOperation'],
         },
 
@@ -504,6 +537,60 @@ export const featureTreeMachine = setup({
         prepareRotateCommand: {
           invoke: {
             src: 'prepareRotateCommand',
+            input: ({ context }) => {
+              const artifact = context.targetSourceRange
+                ? (getArtifactFromRange(
+                    context.targetSourceRange,
+                    kclManager.artifactGraph
+                  ) ?? undefined)
+                : undefined
+              return {
+                // currentOperation is guaranteed to be defined here
+                operation: context.currentOperation!,
+                artifact,
+                commandBarSend: commandBarActor.send,
+              }
+            },
+            onDone: {
+              target: 'done',
+              reenter: true,
+            },
+            onError: {
+              target: 'done',
+              reenter: true,
+              actions: ({ event }) => {
+                if ('error' in event && err(event.error)) {
+                  toast.error(event.error.message)
+                }
+              },
+            },
+          },
+        },
+      },
+
+      initial: 'selecting',
+      entry: 'sendSelectionEvent',
+      exit: ['clearContext'],
+    },
+
+    enteringCloneFlow: {
+      states: {
+        selecting: {
+          on: {
+            selected: {
+              target: 'prepareCloneCommand',
+              reenter: true,
+            },
+          },
+        },
+
+        done: {
+          always: '#featureTree.idle',
+        },
+
+        prepareCloneCommand: {
+          invoke: {
+            src: 'prepareCloneCommand',
             input: ({ context }) => {
               const artifact = context.targetSourceRange
                 ? (getArtifactFromRange(

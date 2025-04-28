@@ -263,7 +263,6 @@ const prepareToEditShell: PrepareToEditCallback =
       (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') ||
       !operation.labeledArgs ||
       !operation.unlabeledArg ||
-      operation.unlabeledArg.value.type !== 'Solid' ||
       !('thickness' in operation.labeledArgs) ||
       !('faces' in operation.labeledArgs) ||
       !operation.labeledArgs.thickness ||
@@ -273,9 +272,21 @@ const prepareToEditShell: PrepareToEditCallback =
       return baseCommand
     }
 
+    let value
+    if (operation.unlabeledArg.value.type === 'Solid') {
+      value = operation.unlabeledArg.value.value
+    } else if (
+      operation.unlabeledArg.value.type === 'Array' &&
+      operation.unlabeledArg.value.value[0].type === 'Solid'
+    ) {
+      value = operation.unlabeledArg.value.value[0].value
+    } else {
+      return baseCommand
+    }
+
     // Build an artifact map here of eligible artifacts corresponding to our current sweep
     // that we can query in another loop later
-    const sweepId = operation.unlabeledArg.value.value.artifactId
+    const sweepId = value.artifactId
     const candidates: Map<string, Selection> = new Map()
     for (const artifact of kclManager.artifactGraph.values()) {
       if (
@@ -1125,6 +1136,12 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Union',
     icon: 'booleanUnion',
   },
+  clone: {
+    label: 'Clone',
+    icon: 'clone',
+    supportsAppearance: true,
+    supportsTransform: true,
+  },
 }
 
 /**
@@ -1425,6 +1442,37 @@ export async function enterRotateFlow({
     type: 'Find and select command',
     data: {
       name: 'Rotate',
+      groupId: 'modeling',
+      argDefaultValues,
+    },
+  }
+}
+
+export async function enterCloneFlow({
+  operation,
+}: EnterEditFlowProps): Promise<Error | CommandBarMachineEvent> {
+  const isModuleImport = operation.type === 'GroupBegin'
+  const isSupportedStdLibCall =
+    (operation.type === 'KclStdLibCall' || operation.type === 'StdLibCall') &&
+    stdLibMap[operation.name]?.supportsTransform
+  if (!isModuleImport && !isSupportedStdLibCall) {
+    return new Error(
+      'Unsupported operation type. Please edit in the code editor.'
+    )
+  }
+
+  const nodeToEdit = getNodePathFromSourceRange(
+    kclManager.ast,
+    sourceRangeFromRust(operation.sourceRange)
+  )
+
+  // Won't be used since we provide nodeToEdit
+  const selection: Selections = { graphSelections: [], otherSelections: [] }
+  const argDefaultValues = { nodeToEdit, selection }
+  return {
+    type: 'Find and select command',
+    data: {
+      name: 'Clone',
       groupId: 'modeling',
       argDefaultValues,
     },

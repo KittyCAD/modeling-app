@@ -5,10 +5,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 

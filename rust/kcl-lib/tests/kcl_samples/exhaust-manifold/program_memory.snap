@@ -28,9 +28,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1771,
-            "end": 1777,
-            "start": 1771,
+            "commentStart": 1781,
+            "end": 1787,
+            "start": 1781,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -62,9 +62,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1945,
-            "end": 1951,
-            "start": 1945,
+            "commentStart": 1955,
+            "end": 1961,
+            "start": 1955,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -75,9 +75,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1994,
-            "end": 2000,
-            "start": 1994,
+            "commentStart": 2004,
+            "end": 2010,
+            "start": 2004,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -88,9 +88,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2033,
-            "end": 2039,
-            "start": 2033,
+            "commentStart": 2043,
+            "end": 2049,
+            "start": 2043,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -122,9 +122,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2217,
-            "end": 2223,
-            "start": 2217,
+            "commentStart": 2227,
+            "end": 2233,
+            "start": 2227,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -135,9 +135,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2274,
-            "end": 2280,
-            "start": 2274,
+            "commentStart": 2284,
+            "end": 2290,
+            "start": 2284,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -148,9 +148,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2324,
-            "end": 2330,
-            "start": 2324,
+            "commentStart": 2334,
+            "end": 2340,
+            "start": 2334,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -192,9 +192,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1771,
-              "end": 1777,
-              "start": 1771,
+              "commentStart": 1781,
+              "end": 1787,
+              "start": 1781,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -289,9 +289,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1945,
-              "end": 1951,
-              "start": 1945,
+              "commentStart": 1955,
+              "end": 1961,
+              "start": 1955,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -314,9 +314,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1994,
-              "end": 2000,
-              "start": 1994,
+              "commentStart": 2004,
+              "end": 2010,
+              "start": 2004,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -339,9 +339,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2033,
-              "end": 2039,
-              "start": 2033,
+              "commentStart": 2043,
+              "end": 2049,
+              "start": 2043,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -436,9 +436,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2217,
-              "end": 2223,
-              "start": 2217,
+              "commentStart": 2227,
+              "end": 2233,
+              "start": 2227,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -461,9 +461,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2274,
-              "end": 2280,
-              "start": 2274,
+              "commentStart": 2284,
+              "end": 2290,
+              "start": 2284,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -486,9 +486,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2324,
-              "end": 2330,
-              "start": 2324,
+              "commentStart": 2334,
+              "end": 2340,
+              "start": 2334,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -621,17 +621,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -767,7 +756,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "plateHeight": {

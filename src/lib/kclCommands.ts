@@ -2,7 +2,6 @@ import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import { DEV } from '@src/env'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addImportAndInsert } from '@src/lang/modifyAst'
 import {
@@ -25,7 +24,6 @@ import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 interface OnSubmitProps {
   name: string
@@ -112,7 +110,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       description: 'Insert from a file in the current project directory',
       icon: 'import',
       groupId: 'code',
-      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
+      hide: 'web',
       needsReview: true,
       reviewMessage:
         'Reminder: point-and-click insert is in development and only supports one part instance per assembly.',
@@ -121,6 +119,20 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           inputType: 'options',
           required: true,
           options: commandProps.specialPropsForInsertCommand.providedOptions,
+          validation: async ({ data }) => {
+            const importExists = kclManager.ast.body.find(
+              (n) =>
+                n.type === 'ImportStatement' &&
+                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
+                  (n.path.type === 'Foreign' && n.path.path === data.path))
+            )
+            if (importExists) {
+              return 'This file is already imported, use the Clone command instead.'
+              // TODO: see if we can transition to the clone command, see #6515
+            }
+
+            return true
+          },
         },
         localName: {
           inputType: 'string',

@@ -4,6 +4,7 @@ use anyhow::Result;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Point3d};
 
+use super::args::TyF64;
 use crate::{
     errors::KclError,
     execution::{
@@ -13,11 +14,9 @@ use crate::{
     std::{axis_or_reference::Axis3dOrEdgeReference, Args},
 };
 
-use super::args::TyF64;
-
 /// Create a helix.
 pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::angle(), exec_state)?;
+    let angle_start: TyF64 = args.get_kw_arg_typed("angleStart", &RuntimeType::degrees(), exec_state)?;
     let revolutions: TyF64 = args.get_kw_arg_typed("revolutions", &RuntimeType::count(), exec_state)?;
     let ccw = args.get_kw_arg_opt("ccw")?;
     let radius: Option<TyF64> = args.get_kw_arg_opt_typed("radius", &RuntimeType::length(), exec_state)?;
@@ -84,9 +83,9 @@ pub async fn helix(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         revolutions.n,
         angle_start.n,
         ccw,
-        radius.map(|t| t.n),
+        radius,
         axis,
-        length.map(|t| t.n),
+        length,
         cylinder,
         exec_state,
         args,
@@ -100,9 +99,9 @@ async fn inner_helix(
     revolutions: f64,
     angle_start: f64,
     ccw: Option<bool>,
-    radius: Option<f64>,
+    radius: Option<TyF64>,
     axis: Option<Axis3dOrEdgeReference>,
-    length: Option<f64>,
+    length: Option<TyF64>,
     cylinder: Option<Solid>,
     exec_state: &mut ExecState,
     args: Args,
@@ -111,6 +110,7 @@ async fn inner_helix(
 
     let helix_result = Box::new(HelixValue {
         value: id,
+        #[cfg(feature = "artifact-graph")]
         artifact_id: id.into(),
         revolutions,
         angle_start,
@@ -130,7 +130,7 @@ async fn inner_helix(
             ModelingCmd::from(mcmd::EntityMakeHelix {
                 cylinder_id: cylinder.id,
                 is_clockwise: !helix_result.ccw,
-                length: LengthUnit(length.unwrap_or(cylinder.height)),
+                length: LengthUnit(length.as_ref().map(|t| t.to_mm()).unwrap_or(cylinder.height_in_mm())),
                 revolutions,
                 start_angle: Angle::from_degrees(angle_start),
             }),
@@ -150,20 +150,20 @@ async fn inner_helix(
                 args.batch_modeling_cmd(
                     id,
                     ModelingCmd::from(mcmd::EntityMakeHelixFromParams {
-                        radius: LengthUnit(radius),
+                        radius: LengthUnit(radius.to_mm()),
                         is_clockwise: !helix_result.ccw,
-                        length: LengthUnit(length),
+                        length: LengthUnit(length.to_mm()),
                         revolutions,
                         start_angle: Angle::from_degrees(angle_start),
                         axis: Point3d {
-                            x: direction[0].n,
-                            y: direction[1].n,
-                            z: direction[2].n,
+                            x: direction[0].to_mm(),
+                            y: direction[1].to_mm(),
+                            z: direction[2].to_mm(),
                         },
                         center: Point3d {
-                            x: LengthUnit(origin[0].n),
-                            y: LengthUnit(origin[1].n),
-                            z: LengthUnit(origin[2].n),
+                            x: LengthUnit(origin[0].to_mm()),
+                            y: LengthUnit(origin[1].to_mm()),
+                            z: LengthUnit(origin[2].to_mm()),
                         },
                     }),
                 )
@@ -175,9 +175,9 @@ async fn inner_helix(
                 args.batch_modeling_cmd(
                     id,
                     ModelingCmd::from(mcmd::EntityMakeHelixFromEdge {
-                        radius: LengthUnit(radius),
+                        radius: LengthUnit(radius.to_mm()),
                         is_clockwise: !helix_result.ccw,
-                        length: length.map(LengthUnit),
+                        length: length.map(|t| LengthUnit(t.to_mm())),
                         revolutions,
                         start_angle: Angle::from_degrees(angle_start),
                         edge_id,

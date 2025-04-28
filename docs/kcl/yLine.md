@@ -36,7 +36,7 @@ yLine(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(length = 15)
   |> angledLine(angle = 30, length = 15)
   |> line(end = [8, -10])

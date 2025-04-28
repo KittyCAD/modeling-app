@@ -8,11 +8,7 @@ description: Operations executed pipe_as_arg.kcl
     "group": {
       "type": "FunctionCall",
       "name": "double",
-      "functionSourceRange": [
-        404,
-        426,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -26,11 +22,7 @@ description: Operations executed pipe_as_arg.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cube",
-      "functionSourceRange": [
-        7,
-        393,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

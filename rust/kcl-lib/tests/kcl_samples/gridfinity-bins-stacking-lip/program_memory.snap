@@ -348,17 +348,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -390,7 +379,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -583,17 +573,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -625,7 +604,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -818,17 +798,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -860,7 +829,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1053,17 +1023,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1095,7 +1054,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1288,17 +1248,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1330,7 +1279,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1523,17 +1473,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1565,7 +1504,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1758,17 +1698,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1800,7 +1729,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1993,17 +1923,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2035,7 +1954,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2228,17 +2148,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2270,7 +2179,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2463,17 +2373,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2505,7 +2404,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2698,17 +2598,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2740,7 +2629,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2933,17 +2823,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2975,7 +2854,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3168,17 +3048,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3210,7 +3079,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3403,17 +3273,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3445,7 +3304,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3638,17 +3498,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3680,7 +3529,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3873,17 +3723,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3915,7 +3754,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4108,17 +3948,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4150,7 +3979,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4343,17 +4173,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4385,7 +4204,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4578,17 +4398,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4620,7 +4429,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4813,17 +4623,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4855,7 +4654,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5048,17 +4848,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5090,7 +4879,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5283,17 +5073,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5325,7 +5104,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5518,17 +5298,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5560,7 +5329,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5753,17 +5523,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5795,7 +5554,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5996,17 +5756,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6130,7 +5879,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6326,17 +6076,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6460,7 +6199,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6656,17 +6396,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6790,7 +6519,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6986,17 +6716,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7120,7 +6839,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7316,17 +7036,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7450,7 +7159,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7646,17 +7356,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7780,7 +7479,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -8004,17 +7704,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8046,7 +7735,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8239,17 +7929,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8281,7 +7960,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8474,17 +8154,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8516,7 +8185,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8709,17 +8379,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8751,7 +8410,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8944,17 +8604,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8986,7 +8635,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9179,17 +8829,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9221,7 +8860,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9414,17 +9054,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9456,7 +9085,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9649,17 +9279,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9691,7 +9310,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9884,17 +9504,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9926,7 +9535,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10119,17 +9729,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10161,7 +9760,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10354,17 +9954,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10396,7 +9985,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10589,17 +10179,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10631,7 +10210,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10824,17 +10404,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10866,7 +10435,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11059,17 +10629,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11101,7 +10660,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11294,17 +10854,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11336,7 +10885,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11529,17 +11079,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11571,7 +11110,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11764,17 +11304,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11806,7 +11335,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11999,17 +11529,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12041,7 +11560,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12234,17 +11754,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12276,7 +11785,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12469,17 +11979,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12511,7 +12010,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12704,17 +12204,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12746,7 +12235,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12939,17 +12429,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12981,7 +12460,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13174,17 +12654,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -13216,7 +12685,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -13409,17 +12879,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -13451,7 +12910,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -13675,17 +13135,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -13809,7 +13258,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "cornerRadius": {
@@ -14018,17 +13468,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14060,7 +13499,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14253,17 +13693,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14295,7 +13724,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14488,17 +13918,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14530,7 +13949,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -14723,17 +14143,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -14765,7 +14174,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -15172,17 +14582,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15228,7 +14627,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15522,17 +14922,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15578,7 +14967,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -15877,17 +15267,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15933,7 +15312,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16227,17 +15607,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16283,7 +15652,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -16598,17 +15968,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -16654,7 +16013,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -16948,17 +16308,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -17004,7 +16353,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -17313,17 +16663,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -17369,7 +16708,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "lipSingleLengthCorner": {
@@ -17663,17 +17003,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -17719,7 +17048,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "lipSingleWidth": {
@@ -17992,7 +17322,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "value": "Custom",
           "origin": {
             "x": 0.0,
-            "y": 3.75,
+            "y": 122.25,
             "z": 11.75,
             "units": {
               "type": "Mm"
@@ -18013,17 +17343,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -18069,7 +17388,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "lipSingleWidthCorner": {
@@ -18363,17 +17683,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -18419,7 +17728,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "lipStep1": {
@@ -18760,7 +18070,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "Custom",
               "origin": {
                 "x": 0.0,
-                "y": 3.75,
+                "y": 122.25,
                 "z": 11.75,
                 "units": {
                   "type": "Mm"
@@ -18781,17 +18091,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -18837,7 +18136,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19110,7 +18410,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "value": "Custom",
               "origin": {
                 "x": 0.0,
-                "y": 3.75,
+                "y": 122.25,
                 "z": 11.75,
                 "units": {
                   "type": "Mm"
@@ -19131,17 +18431,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19187,7 +18476,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -19261,14 +18551,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -19460,17 +18742,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -19594,7 +18865,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -19629,7 +18901,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19698,14 +18971,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -19897,17 +19162,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -20031,7 +19285,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -20066,7 +19321,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20135,14 +19391,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -20334,17 +19582,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -20468,7 +19705,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -20503,7 +19741,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -20572,14 +19811,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -20771,17 +20002,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -20905,7 +20125,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -20940,7 +20161,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -21118,50 +20340,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             }
           }
         ]
-      },
-      "zAxis": {
-        "type": "MixedArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
       }
     }
   },
@@ -21186,7 +20364,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           },
           {
             "type": "Number",
-            "value": 3.75,
+            "value": 122.25,
             "ty": {
               "type": "Default",
               "len": {
@@ -21288,50 +20466,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           {
             "type": "Number",
             "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "zAxis": {
-        "type": "MixedArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -21469,50 +20603,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           {
             "type": "Number",
             "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        ]
-      },
-      "zAxis": {
-        "type": "MixedArray",
-        "value": [
-          {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Mm"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          {
-            "type": "Number",
-            "value": 0.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -21733,17 +20823,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -21775,7 +20854,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -21968,17 +21048,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -22010,7 +21079,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22203,17 +21273,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -22245,7 +21304,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -22438,17 +21498,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "units": {
                   "type": "Mm"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -22480,7 +21529,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -22678,17 +21728,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -22812,7 +21851,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleCorner": {
@@ -23005,17 +22045,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -23047,7 +22076,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleSide": {
@@ -23240,17 +22270,6 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -23282,7 +22301,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "thirdStep": {

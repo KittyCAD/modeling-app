@@ -78,7 +78,7 @@ export async function submitPromptToEditToQueue({
       if (artifact?.type === 'cap') {
         prompts.push({
           prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range most likely refers to "startProfileAt" simply because this is the start of the profile that was swept.
+The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
 If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
             artifact.subType === 'end' ? 'END' : 'START'
           } i.e. \`startSketchOn(someSweepVariable, face = ${

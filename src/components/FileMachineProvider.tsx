@@ -33,8 +33,8 @@ import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -100,42 +100,6 @@ export const FileMachineProvider = ({
     }
   }, [])
 
-  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
-
   useEffect(() => {
     markOnce('code/didLoadFile')
     async function fetchKclSamples() {
@@ -193,6 +157,14 @@ export const FileMachineProvider = ({
             // Don't navigate to newly created directories
             navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
           }
+        },
+        openFileInNewWindow: ({ event }) => {
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
+          commandBarActor.send({ type: 'Close' })
+          window.electron.openInNewWindow(event.data.name)
         },
       },
       actors: {
@@ -431,6 +403,51 @@ export const FileMachineProvider = ({
       },
     }
   )
+
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+
+    // GOTCHA: If we call navigate() while in the /file route the fileMachineProvider
+    // has a context.project of the original one that was loaded. It does not update
+    // Watch when the navigation changes, if it changes set a new Project within the fileMachine
+    // to load the latest state of the project you are in.
+    if (project) {
+      // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
+      send({ type: 'Refresh with new project', data: { project } })
+    }
+  }, [location])
 
   const cb = modelingMenuCallbackMostActions(
     settings,

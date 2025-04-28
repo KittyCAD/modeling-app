@@ -55,11 +55,7 @@ description: Operations executed gear-rack.kcl
     "group": {
       "type": "FunctionCall",
       "name": "tooth",
-      "functionSourceRange": [
-        813,
-        1294,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

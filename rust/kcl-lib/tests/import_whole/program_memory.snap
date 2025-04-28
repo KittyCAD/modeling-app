@@ -76,17 +76,6 @@ description: Variables in memory after executing import_whole.kcl
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -118,11 +107,12 @@ description: Variables in memory after executing import_whole.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "foo": {
     "type": "Module",
-    "value": 6
+    "value": 7
   }
 }

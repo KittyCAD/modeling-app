@@ -102,7 +102,7 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchOn(XY)
-    |> startProfileAt(p0, %)
+    |> startProfile(at = p0)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
     |> line(endAbsolute = p3)
@@ -117,7 +117,11 @@ fn transform(i) {
     // Move down each time.
     translate = [0, 0, -i * width],
     // Make the cube longer, wider and flatter each time.
-    scale = [pow(1.1, i), pow(1.1, i), pow(0.9, i)],
+    scale = [
+      pow(1.1, exp = i),
+      pow(1.1, exp = i),
+      pow(0.9, exp = i)
+    ],
     // Turn by 15 degrees each time.
     rotation = { angle = 15 * i, origin = "local" }
   }
@@ -140,7 +144,7 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchOn(XY)
-    |> startProfileAt(p0, %)
+    |> startProfile(at = p0)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
     |> line(endAbsolute = p3)
@@ -174,7 +178,7 @@ t = 0.005 // taper factor [0-1)
 // Defines how to modify each layer of the vase.
 // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 fn transform(replicaId) {
-  scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8))
+  scale = r * abs(1 - (t * replicaId)) * (5 + cos(replicaId / 8: number(rad)))
   return {
     translate = [0, 0, replicaId * 10],
     scale = [scale, scale, 0]
@@ -204,7 +208,7 @@ fn transform(i) {
   ]
 }
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> polygon(
        radius = 10,
        numSides = 4,

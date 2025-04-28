@@ -8,11 +8,7 @@ description: Operations executed subtract_cylinder_from_cube.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cube",
-      "functionSourceRange": [
-        7,
-        328,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

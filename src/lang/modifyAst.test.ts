@@ -14,7 +14,6 @@ import {
 } from '@src/lang/create'
 import {
   addSketchTo,
-  deleteFromSelection,
   deleteSegmentFromPipeExpression,
   moveValueIntoNewVariable,
   removeSingleConstraintInfo,
@@ -32,6 +31,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 
 beforeAll(async () => {
   await initPromise
@@ -243,7 +243,7 @@ describe('Testing addSketchTo', () => {
     )
     const str = recast(result.modifiedAst)
     expect(str).toBe(`sketch001 = startSketchOn(YZ)
-  |> startProfileAt('default', %)
+  |> startProfile(at = 'default')
   |> line(end = 'default')
 `)
   })
@@ -269,7 +269,7 @@ function giveSketchFnCallTagTestHelper(
 
 describe('Testing giveSketchFnCallTag', () => {
   const code = `part001 = startSketchOn(XY)
-|> startProfileAt([0, 0], %)
+|> startProfile(at = [0, 0])
 |> line(end = [-2.57, -0.13])
 |> line(end = [0, 0.83])
 |> line(end = [0.82, 0.34])`
@@ -321,7 +321,7 @@ const abc = 3
 const identifierGuy = 5
 yo = 5 + 6
 part001 = startSketchOn(XY)
-|> startProfileAt([-1.2, 4.83], %)
+|> startProfile(at = [-1.2, 4.83])
 |> line(end = [2.8, 0])
 |> angledLine(angle = 100 + 100, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
@@ -404,7 +404,7 @@ yo2 = hmm([identifierGuy + 5])`
 describe('testing sketchOnExtrudedFace', () => {
   test('it should be able to extrude on regular segments', async () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
   |> line(end = [8.62, -9.57])
   |> close()
@@ -434,7 +434,7 @@ describe('testing sketchOnExtrudedFace', () => {
 
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19], tag = $seg01)
   |> line(end = [8.62, -9.57])
   |> close()
@@ -443,7 +443,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
   })
   test('it should be able to extrude on close segments', async () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
   |> line(end = [8.62, -9.57])
   |> close()
@@ -472,7 +472,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
 
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
   |> line(end = [8.62, -9.57])
   |> close(tag = $seg01)
@@ -481,13 +481,13 @@ sketch001 = startSketchOn(part001, face = seg01)`)
   })
   test('it should be able to extrude on start-end caps', async () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
   |> line(end = [8.62, -9.57])
   |> close()
   |> extrude(length = 5 + 7)`
     const ast = assertParse(code)
-    const sketchSnippet = `startProfileAt([3.58, 2.06], %)`
+    const sketchSnippet = `startProfile(at = [3.58, 2.06])`
     const sketchRange = topLevelRange(
       code.indexOf(sketchSnippet),
       code.indexOf(sketchSnippet) + sketchSnippet.length
@@ -511,7 +511,7 @@ sketch001 = startSketchOn(part001, face = seg01)`)
 
     const newCode = recast(modifiedAst)
     expect(newCode).toContain(`part001 = startSketchOn(-XZ)
-  |> startProfileAt([3.58, 2.06], %)
+  |> startProfile(at = [3.58, 2.06])
   |> line(end = [9.7, 9.19])
   |> line(end = [8.62, -9.57])
   |> close()
@@ -520,7 +520,7 @@ sketch001 = startSketchOn(part001, face = END)`)
   })
   test('it should ensure that the new sketch is inserted after the extrude', async () => {
     const code = `sketch001 = startSketchOn(-XZ)
-    |> startProfileAt([3.29, 7.86], %)
+    |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> line(end = [3.75, 0.46])
@@ -562,7 +562,7 @@ sketch002 = startSketchOn(part001, face = seg01)`)
 describe('Testing deleteSegmentFromPipeExpression', () => {
   it('Should delete a segment withOUT any dependent segments', async () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([54.78, -95.91], %)
+  |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82])
   |> line(end = [306.21, 198.85], tag = $a)
   |> line(end = [306.21, 198.87])`
@@ -584,7 +584,7 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
     if (err(modifiedAst)) throw modifiedAst
     const newCode = recast(modifiedAst)
     expect(newCode).toBe(`part001 = startSketchOn(-XZ)
-  |> startProfileAt([54.78, -95.91], %)
+  |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82])
   |> line(end = [306.21, 198.87])
 `)
@@ -595,13 +595,13 @@ describe('Testing deleteSegmentFromPipeExpression', () => {
       replace1 = '',
       replace2 = ''
     ) => `part001 = startSketchOn(-XZ)
-  |> startProfileAt([54.78, -95.91], %)
+  |> startProfile(at = [54.78, -95.91])
   |> line(end = [306.21, 198.82], tag = $b)
 ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       !replace1 ? 'segLen(a)' : replace1
     })
   |> line(end = [306.21, 198.87])
-  |> angledLine(angle = 65, length = ${!replace2 ? 'segAng(a)' : replace2})
+  |> angledLine(angle = ${!replace2 ? 'segAng(a)' : replace2}, length = 300)
   |> line(end = [-963.39, -154.67])
 `
     test.each([
@@ -609,7 +609,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       [
         'lineTo',
         'line(endAbsolute = [306.21, 198.85], tag = $a)',
-        ['110.48', '119.73'],
+        ['110.48', '120'],
       ],
       ['yLine', 'yLine(length = 198.85, tag = $a)', ['198.85', '90']],
       ['xLine', 'xLine(length = 198.85, tag = $a)', ['198.85', '0']],
@@ -618,32 +618,32 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       [
         'angledLine',
         'angledLine(angle = 45.5, length = 198.85, tag = $a)',
-        ['198.85', '45.5'],
+        ['198.85', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, lengthX = 198.85, tag = $a)',
-        ['283.7', '45.5'],
+        ['283.7', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, lengthY = 198.85, tag = $a)',
-        ['278.79', '45.5'],
+        ['278.79', '46'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, endAbsoluteX = 198.85, tag = $a)',
-        ['231.33', '134.5'],
+        ['231.33', '-134'],
       ],
       [
         'angledLine',
         'angledLine(angle = 45.5, endAbsoluteY = 198.85, tag = $a)',
-        ['134.51', '45.5'],
+        ['134.51', '46'],
       ],
       [
         'angledLineThatIntersects',
         `angledLineThatIntersects(angle = 45.5, intersectTag = b, offset = 198.85, tag = $a)`,
-        ['918.4', '45.5'],
+        ['918.4', '46'],
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
@@ -672,7 +672,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
 describe('Testing removeSingleConstraintInfo', () => {
   describe('with mostly object notation', () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [3 + 0, 4 + 0])
   |> /*0*/ angledLine(angle = 3 + 0, length = 3.14 + 0)
   |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
@@ -780,7 +780,7 @@ describe('Testing removeSingleConstraintInfo', () => {
   })
   describe('with array notation', () => {
     const code = `part001 = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> /*0*/ angledLine(angle = 3.14 + 0, length = 3.14 + 0)
   |> /*1*/ angledLine(angle = 3 + 0, lengthX = 3.14 + 0)
   |> /*2*/ angledLine(angle = 30 + 0, lengthY = 3 + 0)
@@ -852,7 +852,7 @@ describe('Testing deleteFromSelection', () => {
       {
         codeBefore: `myVar = 5
 sketch003 = startSketchOn(XZ)
-  |> startProfileAt([3.82, 13.6], %)
+  |> startProfile(at = [3.82, 13.6])
   |> line(end = [-2.94, 2.7])
   |> line(end = [7.7, 0.16])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -868,7 +868,7 @@ sketch003 = startSketchOn(XZ)
     //       'delete extrude',
     //       {
     //         codeBefore: `sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([3.29, 7.86], %)
+    //   |> startProfile(at = [3.29, 7.86])
     //   |> line(end = [2.48, 2.44])
     //   |> line(end = [2.66, 1.17])
     //   |> line(end = [3.75, 0.46])
@@ -878,7 +878,7 @@ sketch003 = startSketchOn(XZ)
     //   |> close()
     // const extrude001 = extrude(sketch001, length = 10)`,
     //         codeAfter: `sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([3.29, 7.86], %)
+    //   |> startProfile(at = [3.29, 7.86])
     //   |> line(end = [2.48, 2.44])
     //   |> line(end = [2.66, 1.17])
     //   |> line(end = [3.75, 0.46])
@@ -895,7 +895,7 @@ sketch003 = startSketchOn(XZ)
     //       {
     //         codeBefore: `myVar = 5
     // sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([4.46, 5.12], %, $tag)
+    //   |> startProfile(at = [4.46, 5.12], tag = $tag)
     //   |> line(end = [0.08, myVar])
     //   |> line(end = [13.03, 2.02], tag = $seg01)
     //   |> line(end = [3.9, -7.6])
@@ -906,7 +906,7 @@ sketch003 = startSketchOn(XZ)
     //   |> close()
     // const extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
-    //   |> startProfileAt([-12.55, 2.89], %)
+    //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
     //   |> angledLine(angle = -86, length = segLen(seg02))
@@ -916,7 +916,7 @@ sketch003 = startSketchOn(XZ)
     //   |> close()`,
     //         codeAfter: `myVar = 5
     // sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([4.46, 5.12], %, $tag)
+    //   |> startProfile(at = [4.46, 5.12], tag = $tag)
     //   |> line(end = [0.08, myVar])
     //   |> line(end = [13.03, 2.02], tag = $seg01)
     //   |> line(end = [3.9, -7.6])
@@ -931,7 +931,7 @@ sketch003 = startSketchOn(XZ)
     //          yAxis = { x = 7, y = 8, z = 9 },
     //          zAxis = { x = 10, y = 11, z = 12 }
     //      })
-    //   |> startProfileAt([-12.55, 2.89], %)
+    //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
     //   |> angledLine(angle = -86, length = segLen(seg02))
@@ -949,7 +949,7 @@ sketch003 = startSketchOn(XZ)
     //       {
     //         codeBefore: `myVar = 5
     // sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([4.46, 5.12], %, $tag)
+    //   |> startProfile(at = [4.46, 5.12], tag = $tag)
     //   |> line(end = [0.08, myVar])
     //   |> line(end = [13.03, 2.02], tag = $seg01)
     //   |> line(end = [3.9, -7.6])
@@ -960,7 +960,7 @@ sketch003 = startSketchOn(XZ)
     //   |> close()
     // const extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
-    //   |> startProfileAt([-12.55, 2.89], %)
+    //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
     //   |> angledLine(angle = -86, length = segLen(seg02))
@@ -970,7 +970,7 @@ sketch003 = startSketchOn(XZ)
     //   |> close()`,
     //         codeAfter: `myVar = 5
     // sketch001 = startSketchOn(XZ)
-    //   |> startProfileAt([4.46, 5.12], %, $tag)
+    //   |> startProfile(at = [4.46, 5.12], tag = $tag)
     //   |> line(end = [0.08, myVar])
     //   |> line(end = [13.03, 2.02], tag = $seg01)
     //   |> line(end = [3.9, -7.6])
@@ -985,7 +985,7 @@ sketch003 = startSketchOn(XZ)
     //          yAxis = { x = 7, y = 8, z = 9 },
     //          zAxis = { x = 10, y = 11, z = 12 }
     //      })
-    //   |> startProfileAt([-12.55, 2.89], %)
+    //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
     //   |> line(end = [1.82, -1.49], tag = $seg02)
     //   |> angledLine(angle = -86, length = segLen(seg02))
@@ -994,7 +994,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
     // `,
-    //         lineOfInterest: 'startProfileAt([4.46, 5.12], %, $tag)',
+    //         lineOfInterest: 'startProfile(at = [4.46, 5.12], tag = $tag)',
     //         type: 'cap',
     //       },
     //     ],
@@ -1041,7 +1041,7 @@ describe('Testing splitPipedProfile', () => {
   it('should split the pipe expression correctly', () => {
     const codeBefore = `// comment 1
     part001 = startSketchOn(XZ)
-  |> startProfileAt([1, 2], %)
+  |> startProfile(at = [1, 2])
   // comment 2
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1052,7 +1052,7 @@ extrude001 = extrude(5, part001)
 
     const expectedCodeAfter = `// comment 1
 sketch001 = startSketchOn(XZ)
-part001 = startProfileAt([1, 2], sketch001)
+part001 = startProfile(sketch001, at = [1, 2])
   // comment 2
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1081,7 +1081,7 @@ extrude001 = extrude(5, part001)
   })
   it('should return error for already split pipe', () => {
     const codeBefore = `sketch001 = startSketchOn(XZ)
-part001 = startProfileAt([1, 2], sketch001)
+part001 = startProfile(sketch001, at = [1, 2])
   |> line([3, 4], %)
   |> line([5, 6], %)
   |> close(%)
@@ -1090,7 +1090,7 @@ extrude001 = extrude(5, part001)
 
     const ast = assertParse(codeBefore)
 
-    const codeOfInterest = `startProfileAt([1, 2], sketch001)`
+    const codeOfInterest = `startProfile(sketch001, at = [1, 2])`
     const range: [number, number, number] = [
       codeBefore.indexOf(codeOfInterest),
       codeBefore.indexOf(codeOfInterest) + codeOfInterest.length,

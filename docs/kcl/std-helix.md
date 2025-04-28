@@ -26,7 +26,7 @@ helix(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `revolutions` | `number(_)` | Number of revolutions. | Yes |
-| `angleStart` | `number(Angle)` | Start angle (in degrees). | Yes |
+| `angleStart` | `number(Angle)` | Start angle. | Yes |
 | `ccw` | [`bool`](/docs/kcl/types/bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | `number(Length)` | Radius of the helix. | No |
 | `axis` | `Axis3d | Edge` | Axis to use for the helix. | No |
@@ -62,7 +62,7 @@ springSketch = startSketchOn(YZ)
 ```js
 // Create a helix around an edge.
 helper001 = startSketchOn(XZ)
- |> startProfileAt([0, 0], %)
+ |> startProfile(at = [0, 0])
  |> line(end = [0, 10], tag = $edge001)
 
 helixPath = helix(

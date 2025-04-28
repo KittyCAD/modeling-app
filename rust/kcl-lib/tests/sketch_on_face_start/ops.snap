@@ -8,11 +8,7 @@ description: Operations executed sketch_on_face_start.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cube",
-      "functionSourceRange": [
-        7,
-        182,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

@@ -161,17 +161,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
             "units": {
               "type": "Mm"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -203,7 +192,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "boltHoles": {
@@ -275,14 +265,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -426,17 +408,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -468,7 +439,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -503,7 +475,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -572,14 +545,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -723,17 +688,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -765,7 +719,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -800,7 +755,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -869,14 +825,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1020,17 +968,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1062,7 +999,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1097,7 +1035,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1166,14 +1105,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1317,17 +1248,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1359,7 +1279,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1394,7 +1315,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1487,14 +1409,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
             "units": {
               "type": "Mm"
             }
@@ -1642,17 +1556,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -1684,7 +1587,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1719,7 +1623,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "counterBoreHoles": {
@@ -1791,14 +1696,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -1942,17 +1839,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1984,7 +1870,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2019,7 +1906,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2088,14 +1976,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2239,17 +2119,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2281,7 +2150,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2316,7 +2186,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2385,14 +2256,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2536,17 +2399,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2578,7 +2430,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2613,7 +2466,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2682,14 +2536,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                   "type": "Mm"
                 }
               },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
               "solid": {
                 "type": "Solid",
                 "id": "[uuid]",
@@ -2833,17 +2679,6 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                       "units": {
                         "type": "Mm"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2875,7 +2710,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2910,7 +2746,8 @@ description: Variables in memory after executing parametric-bearing-pillow-block
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]

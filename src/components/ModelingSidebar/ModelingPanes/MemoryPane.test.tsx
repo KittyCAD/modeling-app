@@ -18,13 +18,13 @@ describe('processMemory', () => {
   otherVar = myFn(5)
 
   theExtrude = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(endAbsolute = [-2.4, myVar])
     |> line(endAbsolute = [-0.76, otherVar])
     |> extrude(length = 4)
 
   theSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(endAbsolute = [-3.35, 0.17])
     |> line(endAbsolute = [0.98, 5.16])
     |> line(endAbsolute = [2.15, 4.32])

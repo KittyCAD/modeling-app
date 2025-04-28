@@ -169,7 +169,7 @@ startSketchOn(XZ)
 
 Note that we are still in the process of migrating KCL's standard library to use keyword arguments. So some
 functions are still unfortunately using positional arguments. We're moving them over, so keep checking back.
-Some functions like `angledLine`, `startProfileAt` etc are still using the old positional argument syntax.
+Some functions are still using the old positional argument syntax.
 Check the docs page for each function and look at its examples to see.
 
 ## Tags
@@ -183,7 +183,7 @@ way:
 
 ```norun
 startSketchOn(XZ)
-  |> startProfileAt(origin, %)
+  |> startProfile(at = origin)
   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
@@ -218,7 +218,7 @@ However if the code was written like this:
 ```norun
 fn rect(origin) {
   return startSketchOn(XZ)
-    |> startProfileAt(origin, %)
+    |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
@@ -248,7 +248,7 @@ For example the following code works.
 ```norun
 fn rect(origin) {
   return startSketchOn(XZ)
-    |> startProfileAt(origin, %)
+    |> startProfile(at = origin)
     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,

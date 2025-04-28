@@ -129,6 +129,8 @@ impl StdLibFnArg {
         };
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
+            || self.type_ == "Geometry"
+            || self.type_ == "GeometryWithImportedGeometry"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
@@ -502,14 +504,16 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
+        } else if self.name() == "clone" {
+            return Ok("clone(${0:part001})".to_string());
         } else if self.name() == "union" {
             return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract" {
             return Ok("subtract([${0:extrude001}], tools = [${1:extrude002}])".to_string());
         } else if self.name() == "intersect" {
             return Ok("intersect([${0:extrude001}, ${1:extrude002}])".to_string());
-        } else if self.name() == "hole" {
-            return Ok("hole(${0:holeSketch}, ${1:%})".to_string());
+        } else if self.name() == "subtract2D" {
+            return Ok("subtract2d(${0:%}, tool = ${1:%})".to_string());
         }
         let in_keyword_fn = self.keyword_arguments();
         let mut args = Vec::new();
@@ -909,12 +913,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_fillet() {
-        let fillet_fn: Box<dyn StdLibFn> = Box::new(crate::std::fillet::Fillet);
-        let snippet = fillet_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"fillet(${0:%}, radius = ${1:3.14}, tags = [${2:"tag_or_edge_fn"}])"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(fillet_fn) = data.into_iter().find(|d| d.name() == "fillet").unwrap() else {
+            panic!();
+        };
+        let snippet = fillet_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]
@@ -1011,9 +1015,9 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_hole() {
-        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
-        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})"#);
+        let f: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Subtract2D);
+        let snippet = f.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"subtract2d(${0:%}, tool = ${1:%})"#);
     }
 
     #[test]
@@ -1087,6 +1091,14 @@ mod tests {
             snippet,
             r#"rotate(${0:%}, roll = ${1:3.14}, pitch = ${2:3.14}, yaw = ${3:3.14})"#
         );
+    }
+
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_clone() {
+        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
+        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"clone(${0:part001})"#);
     }
 
     // We want to test the snippets we compile at lsp start.

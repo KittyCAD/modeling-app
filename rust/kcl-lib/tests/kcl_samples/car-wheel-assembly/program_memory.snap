@@ -31,7 +31,7 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   },
   "brakeCaliper": {
     "type": "Module",
-    "value": 8
+    "value": 9
   },
   "c1": {
     "type": "TagIdentifier",
@@ -105,15 +105,15 @@ description: Variables in memory after executing car-wheel-assembly.kcl
   },
   "carRotor": {
     "type": "Module",
-    "value": 7
+    "value": 8
   },
   "carTire": {
     "type": "Module",
-    "value": 10
+    "value": 11
   },
   "carWheel": {
     "type": "Module",
-    "value": 6
+    "value": 7
   },
   "drillAndSlotCount": {
     "type": "Number",
@@ -145,26 +145,18 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 0.9449,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugHeadLength": {
     "type": "Number",
     "value": 0.4724,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugHolePatternDia": {
@@ -184,69 +176,49 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Number",
     "value": 1.1811,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugNut": {
     "type": "Module",
-    "value": 9
+    "value": 10
   },
   "lugSpacing": {
     "type": "Number",
     "value": 4.5,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugThreadDepth": {
     "type": "Number",
     "value": 0.6811,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "lugThreadDiameter": {
     "type": "Number",
     "value": 0.4016,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "offset": {
     "type": "Number",
     "value": -1.378,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Known",
+      "type": "Length",
+      "type": "Inches"
     }
   },
   "rotorDiameter": {

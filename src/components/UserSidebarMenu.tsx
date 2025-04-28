@@ -11,7 +11,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import usePlatform from '@src/hooks/usePlatform'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { authActor } from '@src/machines/appMachine'
+import { authActor } from '@src/lib/singletons'
 
 type User = Models['User_type']
 
@@ -186,7 +186,7 @@ const UserSidebarMenu = ({ user }: { user?: User }) => {
             ) : (
               <CustomIcon
                 name="person"
-                className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
+                className="w-7 h-7 text-chalkboard-70 dark:text-chalkboard-40 bg-chalkboard-20 dark:bg-chalkboard-80"
               />
             )}
           </div>

@@ -36,7 +36,6 @@ export const headerMasks = (page: Page) => [
 ]
 
 export const networkingMasks = (page: Page) => [
-  page.getByTestId('model-state-indicator'),
   page.getByTestId('network-toggle'),
 ]
 
@@ -76,21 +75,10 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
-}
-
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(
-      page.getByTestId('model-state-indicator-playing'),
-      errorMessage
-    ).toBeAttached({
-      timeout: 20_000,
-    })
 
     await expect(
       page.getByRole('button', { name: 'sketch Start Sketch' }),
@@ -103,11 +91,6 @@ async function waitForPageLoadWithRetry(page: Page) {
 
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
-  // wait for all spinners to be gone
-  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
-    timeout: 20_000,
-  })
-
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })
@@ -428,6 +411,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
+    goToHomePageFromModeling: () => goToHomePageFromModeling(page),
     openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
@@ -1028,12 +1012,21 @@ export async function createProject({
   })
 }
 
+async function goToHomePageFromModeling(page: Page) {
+  await page.getByTestId('app-logo').click()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+}
+
 export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
 export function testsInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
+}
+
+export function kclSamplesPath(fileName: string): string {
+  return path.join('public', 'kcl-samples', fileName)
 }
 
 export async function doAndWaitForImageDiff(

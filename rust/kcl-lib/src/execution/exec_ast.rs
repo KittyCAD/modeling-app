@@ -3,27 +3,21 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
-use super::{
-    cad_op::Group,
-    kcl_value::TypeDef,
-    types::{PrimitiveType, CHECK_NUMERIC_TYPES},
-};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         annotations,
-        cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::FunctionSource,
+        kcl_value::{FunctionSource, TypeDef},
         memory,
         state::ModuleState,
-        types::{NumericType, RuntimeType},
+        types::{NumericType, PrimitiveType, RuntimeType},
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
         TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        BoxNode, CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
         ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
         ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
@@ -33,6 +27,11 @@ use crate::{
         FunctionKind,
     },
     CompilationError,
+};
+#[cfg(feature = "artifact-graph")]
+use crate::{
+    execution::cad_op::{Group, OpArg, OpKclValue, Operation},
+    parsing::ast::types::BoxNode,
 };
 
 enum StatementKind<'a> {
@@ -64,14 +63,6 @@ impl ExecutorContext {
                     if exec_state.mod_local.settings.update_from_annotation(annotation)? {
                         exec_state.mod_local.explicit_length_units = true;
                     }
-                    let new_units = exec_state.length_unit();
-                    self.engine
-                        .set_units(
-                            new_units.into(),
-                            annotation.as_source_range(),
-                            exec_state.id_generator(),
-                        )
-                        .await?;
                 } else {
                     exec_state.err(CompilationError::err(
                         annotation.as_source_range(),
@@ -290,7 +281,7 @@ impl ExecutorContext {
 
                     let annotations = &variable_declaration.outer_attrs;
 
-                    let memory_item = self
+                    let value = self
                         .execute_expr(
                             &variable_declaration.declaration.init,
                             exec_state,
@@ -301,13 +292,14 @@ impl ExecutorContext {
                         .await?;
                     exec_state
                         .mut_stack()
-                        .add(var_name.clone(), memory_item, source_range)?;
+                        .add(var_name.clone(), value.clone(), source_range)?;
 
                     // Track exports.
                     if let ItemVisibility::Export = variable_declaration.visibility {
                         exec_state.mod_local.module_exports.push(var_name);
                     }
-                    last_expr = None;
+                    // Variable declaration can be the return value of a module.
+                    last_expr = matches!(body_type, BodyType::Root).then_some(value);
                 }
                 BodyItem::TypeDeclaration(ty) => {
                     let metadata = Metadata::from(&**ty);
@@ -471,7 +463,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
-                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom));
+                exec_state.add_module(id, resolved_path, ModuleRepr::Foreign(geom, None));
                 Ok(id)
             }
             ImportPath::Std { .. } => {
@@ -513,7 +505,7 @@ impl ExecutorContext {
                     *cache = Some((val, er, items.clone()));
                     (er, items)
                 }),
-            ModuleRepr::Foreign(geom) => Err(KclError::Semantic(KclErrorDetails {
+            ModuleRepr::Foreign(geom, _) => Err(KclError::Semantic(KclErrorDetails {
                 message: "Cannot import items from foreign modules".to_owned(),
                 source_ranges: vec![geom.source_range],
             })),
@@ -527,10 +519,11 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
-        module_name: &BoxNode<Name>,
+        #[cfg(feature = "artifact-graph")] module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
+        #[cfg(feature = "artifact-graph")]
         exec_state.global.operations.push(Operation::GroupBegin {
             group: Group::ModuleInstance {
                 name: module_name.to_string(),
@@ -558,14 +551,26 @@ impl ExecutorContext {
                     Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
-                .await
-                .map(|geom| Some(KclValue::ImportedGeometry(geom))),
+            ModuleRepr::Foreign(_, Some(imported)) => Ok(Some(imported.clone())),
+            ModuleRepr::Foreign(geom, cached) => {
+                let result = super::import::send_to_engine(geom.clone(), self)
+                    .await
+                    .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+
+                match result {
+                    Ok(val) => {
+                        *cached = val.clone();
+                        Ok(val)
+                    }
+                    Err(e) => Err(e),
+                }
+            }
             ModuleRepr::Dummy => unreachable!(),
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
 
+        #[cfg(feature = "artifact-graph")]
         exec_state.global.operations.push(Operation::GroupEnd);
 
         result
@@ -619,8 +624,12 @@ impl ExecutorContext {
             Expr::Name(name) => {
                 let value = name.get_result(exec_state, self).await?.clone();
                 if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(module_id, name, exec_state,  metadata.source_range)
-                        .await?
+                    self.exec_module_for_result(
+                        module_id,
+                        #[cfg(feature = "artifact-graph")] name, 
+                        exec_state,
+                        metadata.source_range
+                        ).await?
                         .unwrap_or_else(|| {
                             exec_state.warn(CompilationError::err(
                                 metadata.source_range,
@@ -873,7 +882,10 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::MixedArray { value: arr, meta: _ }, Property::UInt(index)) => {
+            (
+                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
+                Property::UInt(index),
+            ) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -884,7 +896,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. }, p) => {
+            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1051,7 +1063,7 @@ impl Node<BinaryExpression> {
             BinaryOperator::Pow => KclValue::Number {
                 value: left.n.powf(right.n),
                 meta,
-                ty: NumericType::Unknown,
+                ty: exec_state.current_default_units(),
             },
             BinaryOperator::Neq => {
                 let (l, r, ty) = NumericType::combine_eq(left, right);
@@ -1090,7 +1102,7 @@ impl Node<BinaryExpression> {
     }
 
     fn warn_on_unknown(&self, ty: &NumericType, verb: &str, exec_state: &mut ExecState) {
-        if *CHECK_NUMERIC_TYPES && ty == &NumericType::Unknown {
+        if ty == &NumericType::Unknown {
             // TODO suggest how to fix this
             exec_state.warn(CompilationError::err(
                 self.as_source_range(),
@@ -1151,9 +1163,15 @@ impl Node<UnaryExpression> {
             }
             KclValue::Plane { value } => {
                 let mut plane = value.clone();
-                plane.z_axis.x *= -1.0;
-                plane.z_axis.y *= -1.0;
-                plane.z_axis.z *= -1.0;
+                if plane.x_axis.x != 0.0 {
+                    plane.x_axis.x *= -1.0;
+                }
+                if plane.x_axis.y != 0.0 {
+                    plane.x_axis.y *= -1.0;
+                }
+                if plane.x_axis.z != 0.0 {
+                    plane.x_axis.z *= -1.0;
+                }
 
                 plane.value = PlaneType::Uninit;
                 plane.id = exec_state.next_uuid();
@@ -1331,6 +1349,7 @@ impl Node<CallExpressionKw> {
                     ));
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = args
                         .kw_args
@@ -1380,6 +1399,7 @@ impl Node<CallExpressionKw> {
                     let result = func.std_lib_fn()(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -1389,6 +1409,7 @@ impl Node<CallExpressionKw> {
                         // so we need to build the op before the call.
                         exec_state.global.operations.push(op);
                     }
+
                     result
                 }?;
 
@@ -1417,6 +1438,7 @@ impl Node<CallExpressionKw> {
                         e.add_source_ranges(vec![callsite])
                     })?;
 
+                #[cfg(feature = "artifact-graph")]
                 if matches!(fn_src, FunctionSource::User { .. }) {
                     // Track return operation.
                     exec_state.global.operations.push(Operation::GroupEnd);
@@ -1469,6 +1491,7 @@ impl Node<CallExpression> {
                     ));
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
@@ -1505,6 +1528,7 @@ impl Node<CallExpression> {
                     let result = func.std_lib_fn()(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -1528,6 +1552,7 @@ impl Node<CallExpression> {
                 let func = fn_name.get_result(exec_state, ctx).await?.clone();
 
                 // Track call operation.
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.push(Operation::GroupBegin {
                     group: Group::FunctionCall {
                         name: Some(fn_name.to_string()),
@@ -1567,6 +1592,7 @@ impl Node<CallExpression> {
                 })?;
 
                 // Track return operation.
+                #[cfg(feature = "artifact-graph")]
                 exec_state.global.operations.push(Operation::GroupEnd);
 
                 Ok(result)
@@ -1662,7 +1688,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 let sketches_to_update: Vec<_> = exec_state
                     .stack()
                     .find_keys_in_current_env(|v| match v {
-                        KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
+                        KclValue::Sketch { value: sk } => sk.original_id == value.sketch.original_id,
                         _ => false,
                     })
                     .cloned()
@@ -1999,11 +2025,39 @@ fn assign_args_to_params(
     for (index, param) in function_expression.params.iter().enumerate() {
         if let Some(arg) = args.get(index) {
             // Argument was provided.
-            exec_state.mut_stack().add(
-                param.identifier.name.clone(),
-                arg.value.clone(),
-                (&param.identifier).into(),
-            )?;
+
+            if let Some(ty) = &param.type_ {
+                let value = arg
+                        .value
+                        .coerce(
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            exec_state,
+                        )
+                        .map_err(|e| {
+                            let mut message = format!(
+                                "Argument requires a value with type `{}`, but found {}",
+                                ty.inner,
+                                arg.value.human_friendly_type(),
+                            );
+                            if let Some(ty) = e.explicit_coercion {
+                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
+                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
+                            }
+                            KclError::Semantic(KclErrorDetails {
+                                message,
+                                source_ranges: vec![arg.source_range],
+                            })
+                        })?;
+                exec_state
+                    .mut_stack()
+                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
+            } else {
+                exec_state.mut_stack().add(
+                    param.identifier.name.clone(),
+                    arg.value.clone(),
+                    (&param.identifier).into(),
+                )?;
+            }
         } else {
             // Argument was not provided.
             if let Some(ref default_val) = param.default_value {
@@ -2354,6 +2408,7 @@ impl FunctionSource {
                     }
                 }
 
+                #[cfg(feature = "artifact-graph")]
                 let op = if props.include_in_feature_tree {
                     let op_labeled_args = args
                         .kw_args
@@ -2381,6 +2436,7 @@ impl FunctionSource {
                     let result = func(exec_state, args).await;
                     exec_state.mut_stack().pop_env();
 
+                    #[cfg(feature = "artifact-graph")]
                     if let Some(mut op) = op {
                         op.set_std_lib_call_is_error(result.is_err());
                         // Track call operation.  We do this after the call
@@ -2399,25 +2455,28 @@ impl FunctionSource {
             }
             FunctionSource::User { ast, memory, .. } => {
                 // Track call operation.
-                let op_labeled_args = args
-                    .kw_args
-                    .labeled
-                    .iter()
-                    .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
-                    .collect();
-                exec_state.global.operations.push(Operation::GroupBegin {
-                    group: Group::FunctionCall {
-                        name: fn_name.clone(),
-                        function_source_range: ast.as_source_range(),
-                        unlabeled_arg: args
-                            .kw_args
-                            .unlabeled
-                            .as_ref()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
-                        labeled_args: op_labeled_args,
-                    },
-                    source_range: callsite,
-                });
+                #[cfg(feature = "artifact-graph")]
+                {
+                    let op_labeled_args = args
+                        .kw_args
+                        .labeled
+                        .iter()
+                        .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                        .collect();
+                    exec_state.global.operations.push(Operation::GroupBegin {
+                        group: Group::FunctionCall {
+                            name: fn_name.clone(),
+                            function_source_range: ast.as_source_range(),
+                            unlabeled_arg: args
+                                .kw_args
+                                .unlabeled
+                                .as_ref()
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            labeled_args: op_labeled_args,
+                        },
+                        source_range: callsite,
+                    });
+                }
 
                 call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx).await
             }
@@ -2618,7 +2677,6 @@ p = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
-  zAxis = { x = 0, y = 0, z = 1 }
 }: Plane
 p2 = -p
 "#;
@@ -2630,7 +2688,11 @@ p2 = -p
             .get_from("p2", result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
-            KclValue::Plane { value } => assert_eq!(value.z_axis.z, -1.0),
+            KclValue::Plane { value } => {
+                assert_eq!(value.x_axis.x, -1.0);
+                assert_eq!(value.x_axis.y, 0.0);
+                assert_eq!(value.x_axis.z, 0.0);
+            }
             _ => unreachable!(),
         }
     }
@@ -2680,7 +2742,7 @@ d = b + c
             .parse_errs_as_err()
             .unwrap();
 
-        let tmpdir = tempdir::TempDir::new("zma_kcl_load_all_modules").unwrap();
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_load_all_modules").unwrap();
 
         tokio::fs::File::create(tmpdir.path().join("main.kcl"))
             .await

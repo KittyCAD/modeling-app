@@ -120,17 +120,6 @@ description: Variables in memory after executing sketch_in_object.kcl
           "units": {
             "type": "Mm"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -275,17 +264,6 @@ description: Variables in memory after executing sketch_in_object.kcl
                   "units": {
                     "type": "Mm"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {

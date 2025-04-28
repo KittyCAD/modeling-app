@@ -6,27 +6,25 @@
 export import * from "std::types"
 export import * from "std::math"
 export import * from "std::sketch"
+export import * from "std::solid"
 export import "std::turns"
 
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
-  zAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
 export XZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
-  zAxis = { x = 0, y = -1, z = 0 },
 }: Plane
 
 export YZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 0, y = 1, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
-  zAxis = { x = 1, y = 0, z = 0 },
 }: Plane
 
 export X = {
@@ -72,7 +70,7 @@ export END = 'end'
 /// ```
 /// // Create a helix around an edge.
 /// helper001 = startSketchOn(XZ)
-///  |> startProfileAt([0, 0], %)
+///  |> startProfile(at = [0, 0])
 ///  |> line(end = [0, 10], tag = $edge001)
 ///
 /// helixPath = helix(
@@ -128,7 +126,7 @@ export END = 'end'
 export fn helix(
   /// Number of revolutions.
   revolutions: number(_),
-  /// Start angle (in degrees).
+  /// Start angle.
   angleStart: number(Angle),
   /// Is the helix rotation counter clockwise? The default is `false`.
   ccw?: bool,
@@ -160,7 +158,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -184,7 +182,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -198,7 +196,7 @@ export fn helix(
 ///
 /// ```
 /// part001 = startSketchOn(XY)
-///     |> startProfileAt([4, 12], %)
+///     |> startProfile(at = [4, 12])
 ///     |> line(end = [2, 0])
 ///     |> line(end = [0, -6])
 ///     |> line(end = [4, -6])
@@ -210,7 +208,7 @@ export fn helix(
 ///     |> revolve(axis = Y, angle = 180)
 ///
 /// part002 = startSketchOn(part001, face = END)
-///     |> startProfileAt([4.5, -5], %)
+///     |> startProfile(at = [4.5, -5])
 ///     |> line(end = [0, 5])
 ///     |> line(end = [5, 0])
 ///     |> line(end = [0, -5])
@@ -220,7 +218,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20])
@@ -237,7 +235,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
@@ -254,7 +252,7 @@ export fn helix(
 ///
 /// ```
 /// box = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20])
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
@@ -272,7 +270,7 @@ export fn helix(
 ///
 /// ```
 /// sketch001 = startSketchOn(XY)
-///   |> startProfileAt([10, 0], %)
+///   |> startProfile(at = [10, 0])
 ///   |> line(end = [5, -5])
 ///   |> line(end = [5, 5])
 ///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -291,14 +289,14 @@ export fn helix(
 /// // Revolve two sketches around the same axis.
 ///
 /// sketch001 = startSketchOn(XY)
-/// profile001 = startProfileAt([4, 8], sketch001)
+/// profile001 = startProfile(sketch001, at = [4, 8])
 ///     |> xLine(length = 3)
 ///     |> yLine(length = -3)
 ///     |> xLine(length = -3)
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
-/// profile002 = startProfileAt([-5, 8], sketch001)
+/// profile002 = startProfile(sketch001, at = [-5, 8])
 ///     |> xLine(length = 3)
 ///     |> yLine(length = -3)
 ///     |> xLine(length = -3)
@@ -315,7 +313,7 @@ export fn helix(
 /// // Revolve around a path that has not been extruded.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20])
@@ -330,7 +328,7 @@ export fn helix(
 /// // Revolve around a path that has not been extruded or closed.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -343,7 +341,7 @@ export fn helix(
 /// // Symmetrically revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -356,7 +354,7 @@ export fn helix(
 /// // Bidirectional revolve around a path.
 ///
 /// profile001 = startSketchOn(XY)
-///     |> startProfileAt([0, 0], %)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, 20], tag = $revolveAxis)
 ///     |> line(end = [20, 0])
 ///
@@ -383,3 +381,159 @@ export fn revolve(
   /// A named tag for the face at the end of the revolve.
   tagEnd?: tag,
 ): Solid {}
+
+/// Convert a number to millimeters from its current units.
+export fn toMillimeters(@num: number(mm)): number(mm) {
+  return num
+}
+
+/// Convert a number to centimeters from its current units.
+export fn toCentimeters(@num: number(cm)): number(cm) {
+  return num
+}
+
+/// Convert a number to meters from its current units.
+export fn toMeters(@num: number(m)): number(m) {
+  return num
+}
+
+/// Convert a number to inches from its current units.
+export fn toInches(@num: number(in)): number(in) {
+  return num
+}
+
+/// Convert a number to feet from its current units.
+export fn toFeet(@num: number(ft)): number(ft) {
+  return num
+}
+
+/// Converts a number to yards from its current units.
+export fn toYards(@num: number(yd)): number(yd) {
+  return num
+}
+
+/// Converts a number to radians from its current units.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 50,
+///     length = 70 * cos(toRadians(45)),
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+export fn toRadians(@num: number(rad)): number(rad) {
+  return num
+}
+
+/// Converts a number to degrees from its current units.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 50,
+///     length = 70 * cos(toDegrees((PI/4): number(rad))),
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+export fn toDegrees(@num: number(deg)): number(deg) {
+  return num
+}
+
+/// Offset a plane by a distance along its normal.
+///
+/// For example, if you offset the `XZ` plane by 10, the new plane will be parallel to the `XZ`
+/// plane and 10 units away from it.
+///
+/// ```
+/// // Loft a square and a circle on the `XY` plane using offset.
+/// squareSketch = startSketchOn(XY)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = startSketchOn(offsetPlane(XY, offset = 150))
+///     |> circle( center = [0, 100], radius = 50 )
+///
+/// loft([squareSketch, circleSketch])
+/// ```
+///
+/// ```
+/// // Loft a square and a circle on the `XZ` plane using offset.
+/// squareSketch = startSketchOn(XZ)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = startSketchOn(offsetPlane(XZ, offset = 150))
+///     |> circle( center = [0, 100], radius = 50 )
+///
+/// loft([squareSketch, circleSketch])
+/// ```
+///
+/// ```
+/// // Loft a square and a circle on the `YZ` plane using offset.
+/// squareSketch = startSketchOn(YZ)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = startSketchOn(offsetPlane(YZ, offset = 150))
+///     |> circle( center = [0, 100], radius = 50 )
+///
+/// loft([squareSketch, circleSketch])
+/// ```
+///
+/// ```
+/// // Loft a square and a circle on the `-XZ` plane using offset.
+/// squareSketch = startSketchOn(-XZ)
+///     |> startProfile(at = [-100, 200])
+///     |> line(end = [200, 0])
+///     |> line(end = [0, -200])
+///     |> line(end = [-200, 0])
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = startSketchOn(offsetPlane(-XZ, offset = 150))
+///     |> circle(center = [0, 100], radius = 50)
+///
+/// loft([squareSketch, circleSketch])
+/// ```
+///
+/// ```
+/// // A circle on the XY plane
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> circle( radius = 10, center = [0, 0] )
+///
+/// // Triangle on the plane 4 units above
+/// startSketchOn(offsetPlane(XY, offset = 4))
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> close()
+/// ```
+@(impl = std_rust)
+export fn offsetPlane(
+  /// The plane (e.g. `XY`) which this new plane is created from.
+  @plane: Plane,
+  /// Distance from the standard plane this new plane will be created at.
+  offset: number(Length),
+): Plane {}

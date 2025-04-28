@@ -9,8 +9,8 @@ use crate::{
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
-        EnvironmentRef, ExecState, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch, Solid,
-        TagIdentifier,
+        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
+        Metadata, Plane, Sketch, Solid, TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
@@ -262,6 +262,7 @@ impl KclValue {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
         let KclValue::Function {
             value: FunctionSource::User { ast, .. },
@@ -608,6 +609,25 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
+        }
+    }
+}
+
+impl From<Geometry> for KclValue {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            Geometry::Solid(x) => Self::Solid { value: Box::new(x) },
+        }
+    }
+}
+
+impl From<GeometryWithImportedGeometry> for KclValue {
+    fn from(value: GeometryWithImportedGeometry) -> Self {
+        match value {
+            GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }
 }
