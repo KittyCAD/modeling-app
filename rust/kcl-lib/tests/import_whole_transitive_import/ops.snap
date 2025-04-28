@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed import_whole_transitive_import.kcl
+---
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "bolt.kcl",
+      "moduleId": 7
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  }
+]
