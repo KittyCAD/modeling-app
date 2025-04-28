@@ -193,6 +193,7 @@ export function createTagExpressions(
 
         // Modify the tag based on selectionType
         if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
+          tagCall = createCallExpressionStdLibKw('getOppositeEdge', tagCall, [])
         } else if (
           artifact.type === 'sweepEdge' &&
           artifact.subType === 'adjacent'
