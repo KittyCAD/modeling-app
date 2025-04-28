@@ -270,12 +270,12 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Extrude',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: initialInput,
         headerArguments: {
           Distance: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'length',
       })
     })
 
@@ -353,13 +353,13 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Offset plane',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: initialInput,
         headerArguments: {
           Plane: '1 plane',
           Distance: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'length',
       })
     })
 

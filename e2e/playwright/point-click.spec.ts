@@ -1002,10 +1002,10 @@ openSketch = startSketchOn(XY)
       await clickOnXzPlane()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: { Plane: '1 plane', Distance: '' },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'length',
         commandName: 'Offset plane',
       })
       await cmdBar.progressCmdBar()

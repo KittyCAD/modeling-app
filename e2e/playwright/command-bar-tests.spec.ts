@@ -275,7 +275,7 @@ test.describe('Command bar tests', () => {
 
     // Assert that we're on the distance step
     await expect(
-      page.getByRole('button', { name: 'distance', exact: false })
+      page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
@@ -296,7 +296,7 @@ test.describe('Command bar tests', () => {
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'distance', exact: false })
+      page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
