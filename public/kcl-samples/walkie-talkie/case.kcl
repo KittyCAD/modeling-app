@@ -39,21 +39,21 @@ squareHolePatternSketch = startSketchOn(XZ)
 case = startSketchOn(XZ)
   |> startProfile(at = [
        -width / 2 + offset + caseTolerance,
-       height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
+       height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(45deg))
      ])
   |> angledLine(angle = 45, endAbsoluteY = height / 2 - (offset + caseTolerance))
   |> line(endAbsolute = [
-       width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
+       width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(45deg)),
        height / 2 - (offset + caseTolerance)
      ])
   |> angledLine(angle = -45, endAbsoluteX = width / 2 - (offset + caseTolerance))
   |> line(endAbsolute = [
        width / 2 - (offset + caseTolerance),
-       -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
+       -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(45deg)))
      ])
   |> angledLine(angle = -135, endAbsoluteY = -height / 2 + offset + caseTolerance)
   |> line(endAbsolute = [
-       -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
+       -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(45deg))),
        -height / 2 + offset + caseTolerance
      ])
   |> angledLine(angle = -225, endAbsoluteX = -width / 2 + offset + caseTolerance)

@@ -311,52 +311,28 @@ description: Result of parsing exhaust-manifold.kcl
                               {
                                 "arguments": [
                                   {
-                                    "arguments": [
-                                      {
-                                        "argument": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "angle001",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "operator": "-",
-                                        "start": 0,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      }
-                                    ],
-                                    "callee": {
+                                    "argument": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "name": "toRadians",
+                                        "name": "angle001",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
                                       "path": [],
                                       "start": 0,
+                                      "type": "Name",
                                       "type": "Name"
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "operator": "-",
                                     "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
                                   }
                                 ],
                                 "callee": {
@@ -383,52 +359,28 @@ description: Result of parsing exhaust-manifold.kcl
                               {
                                 "arguments": [
                                   {
-                                    "arguments": [
-                                      {
-                                        "argument": {
-                                          "abs_path": false,
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "name": {
-                                            "commentStart": 0,
-                                            "end": 0,
-                                            "name": "angle001",
-                                            "start": 0,
-                                            "type": "Identifier"
-                                          },
-                                          "path": [],
-                                          "start": 0,
-                                          "type": "Name",
-                                          "type": "Name"
-                                        },
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "operator": "-",
-                                        "start": 0,
-                                        "type": "UnaryExpression",
-                                        "type": "UnaryExpression"
-                                      }
-                                    ],
-                                    "callee": {
+                                    "argument": {
                                       "abs_path": false,
                                       "commentStart": 0,
                                       "end": 0,
                                       "name": {
                                         "commentStart": 0,
                                         "end": 0,
-                                        "name": "toRadians",
+                                        "name": "angle001",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
                                       "path": [],
                                       "start": 0,
+                                      "type": "Name",
                                       "type": "Name"
                                     },
                                     "commentStart": 0,
                                     "end": 0,
+                                    "operator": "-",
                                     "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
                                   }
                                 ],
                                 "callee": {

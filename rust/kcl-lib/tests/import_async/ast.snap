@@ -487,7 +487,15 @@ description: Result of parsing import_async.kcl
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
+                    "path": [
+                      {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "units",
+                        "start": 0,
+                        "type": "Identifier"
+                      }
+                    ],
                     "start": 0,
                     "type": "Name"
                   },
@@ -1085,7 +1093,15 @@ description: Result of parsing import_async.kcl
                               "start": 0,
                               "type": "Identifier"
                             },
-                            "path": [],
+                            "path": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "units",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
+                            ],
                             "start": 0,
                             "type": "Name"
                           },
@@ -1239,7 +1255,15 @@ description: Result of parsing import_async.kcl
                                     "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "path": [],
+                                  "path": [
+                                    {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "units",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    }
+                                  ],
                                   "start": 0,
                                   "type": "Name"
                                 },
@@ -1302,7 +1326,15 @@ description: Result of parsing import_async.kcl
                                 "start": 0,
                                 "type": "Identifier"
                               },
-                              "path": [],
+                              "path": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "units",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
+                              ],
                               "start": 0,
                               "type": "Name"
                             },
@@ -2590,7 +2622,15 @@ description: Result of parsing import_async.kcl
                                       "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "path": [],
+                                    "path": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "units",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      }
+                                    ],
                                     "start": 0,
                                     "type": "Name"
                                   },
@@ -2616,7 +2656,15 @@ description: Result of parsing import_async.kcl
                                 "start": 0,
                                 "type": "Identifier"
                               },
-                              "path": [],
+                              "path": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "units",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
+                              ],
                               "start": 0,
                               "type": "Name"
                             },
@@ -2835,7 +2883,15 @@ description: Result of parsing import_async.kcl
                                       "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "path": [],
+                                    "path": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "units",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      }
+                                    ],
                                     "start": 0,
                                     "type": "Name"
                                   },
@@ -2861,7 +2917,15 @@ description: Result of parsing import_async.kcl
                                 "start": 0,
                                 "type": "Identifier"
                               },
-                              "path": [],
+                              "path": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "units",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                }
+                              ],
                               "start": 0,
                               "type": "Name"
                             },
@@ -4621,7 +4685,15 @@ description: Result of parsing import_async.kcl
                               "start": 0,
                               "type": "Identifier"
                             },
-                            "path": [],
+                            "path": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "units",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
+                            ],
                             "start": 0,
                             "type": "Name"
                           },
@@ -4787,7 +4859,15 @@ description: Result of parsing import_async.kcl
                           "start": 0,
                           "type": "Identifier"
                         },
-                        "path": [],
+                        "path": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "units",
+                            "start": 0,
+                            "type": "Identifier"
+                          }
+                        ],
                         "start": 0,
                         "type": "Name"
                       },

@@ -250,40 +250,16 @@ description: Result of parsing rotate_after_fillet.kcl
               "right": {
                 "arguments": [
                   {
-                    "arguments": [
-                      {
-                        "commentStart": 0,
-                        "end": 0,
-                        "raw": "30",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 30.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": "toRadians",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name"
-                    },
                     "commentStart": 0,
                     "end": 0,
+                    "raw": "30deg",
                     "start": 0,
-                    "type": "CallExpression",
-                    "type": "CallExpression"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 30.0,
+                      "suffix": "Deg"
+                    }
                   }
                 ],
                 "callee": {

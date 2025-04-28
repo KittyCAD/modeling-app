@@ -1056,14 +1056,21 @@ impl KclValue {
                         .and_then(Point3d::from_kcl_val)
                         .ok_or(CoercionError::from(self))?;
 
+                    if value.get("zAxis").is_some() {
+                        exec_state.warn(CompilationError::err(
+                            self.into(),
+                            "Object with a zAxis field is being coerced into a plane, but the zAxis is ignored.",
+                        ));
+                    }
+
                     let id = exec_state.mod_local.id_generator.next_uuid();
                     let plane = Plane {
                         id,
                         #[cfg(feature = "artifact-graph")]
                         artifact_id: id.into(),
                         origin,
-                        x_axis,
-                        y_axis,
+                        x_axis: x_axis.normalize(),
+                        y_axis: y_axis.normalize(),
                         value: super::PlaneType::Uninit,
                         meta: meta.clone(),
                     };
@@ -2118,7 +2125,7 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(toRadians(30))
+a = cos(units::toRadians(30))
 b = 3 / a
 c = cos(30deg)
 d = cos(30)

@@ -5,14 +5,14 @@
 @settings(defaultLengthUnit = in)
 
 // Create a function for the cycloidal gear
-fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle) {
+fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle: number(deg)) {
   // Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height
   fn gearSketch(gHeight) {
     helixAngleP = helixAngle * gHeight / gearHeight
     gearProfile = startSketchOn(offsetPlane(XY, offset = gHeight))
       |> startProfile(at = [
-           gearPitch * 1.55 * cos(toRadians(helixAngleP)) + gearPitch * sin(toRadians(-helixAngleP)),
-           gearPitch * 1.55 * sin(toRadians(helixAngleP)) + gearPitch * cos(toRadians(-helixAngleP))
+           gearPitch * 1.55 * cos(helixAngleP) + gearPitch * sin(-helixAngleP),
+           gearPitch * 1.55 * sin(helixAngleP) + gearPitch * cos(-helixAngleP)
          ])
       |> arc(angleStart = 90 + helixAngleP, angleEnd = -90 + helixAngleP, radius = gearPitch)
       |> tangentialArc(radius = gearPitch * 1.67, angle = 60)
