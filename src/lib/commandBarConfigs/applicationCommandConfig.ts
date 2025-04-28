@@ -266,7 +266,7 @@ export function createApplicationCommands({
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [
           {
-            name: `Imports ${relevantFileExtensions().map((f) => `.${f} `)}`,
+            name: `Import ${relevantFileExtensions().map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(),
           },
         ],

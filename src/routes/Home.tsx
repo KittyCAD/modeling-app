@@ -157,9 +157,9 @@ const Home = () => {
           name: 'Text-to-CAD',
           groupId: 'application',
           argDefaultValues: {
-            method:'newProject',
+            method: 'newProject',
             newProjectName: settings.projects.defaultProjectName.current,
-          }
+          },
         },
       })
     }
