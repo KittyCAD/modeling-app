@@ -138,3 +138,24 @@ export function parseProjectRoute(
     currentFilePath: currentFilePath,
   }
 }
+
+/**
+ * Joins any number of arguments of strings to create a Router level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * Filters out '/', ''
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ */
+export function joinRouterPaths(...parts: string[]): string {
+  return (
+    '/' +
+    parts
+      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0) // Remove empty segments
+      .join('/')
+  )
+}
+
+export function safeEncodeForRouterPaths(dynamicValue: string): string {
+  return `${encodeURIComponent(dynamicValue)}`
+}
