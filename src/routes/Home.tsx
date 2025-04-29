@@ -324,7 +324,7 @@ const Home = () => {
           sort={sort}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
-        <LowerRightControls />
+        <LowerRightControls navigate={navigate} />
       </div>
     </div>
   )

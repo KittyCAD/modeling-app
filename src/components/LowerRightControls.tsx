@@ -12,8 +12,10 @@ import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 export function LowerRightControls({
   children,
+  navigate = () => {},
 }: {
   children?: React.ReactNode
+  navigate?: (path: string) => void
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -72,7 +74,7 @@ export function LowerRightControls({
         {!location.pathname.startsWith(PATHS.HOME) && (
           <NetworkHealthIndicator />
         )}
-        <HelpMenu />
+        <HelpMenu navigate={navigate} />
       </menu>
     </section>
   )
