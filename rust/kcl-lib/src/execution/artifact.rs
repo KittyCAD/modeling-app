@@ -427,6 +427,13 @@ impl PartialOrd for Artifact {
                 }
                 Some(a.id.cmp(&b.id))
             }
+            (Artifact::EdgeCut(a), Artifact::EdgeCut(b)) => {
+                if a.code_ref.range != b.code_ref.range {
+                    return Some(a.code_ref.range.cmp(&b.code_ref.range));
+                }
+                Some(a.id.cmp(&b.id))
+            }
+            (Artifact::EdgeCutEdge(a), Artifact::EdgeCutEdge(b)) => Some(a.edge_cut_id.cmp(&b.edge_cut_id)),
             (Artifact::Sweep(a), Artifact::Sweep(b)) => {
                 if a.code_ref.range != b.code_ref.range {
                     return Some(a.code_ref.range.cmp(&b.code_ref.range));
