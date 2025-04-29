@@ -15,9 +15,6 @@ description: Operations executed kw_fn_with_defaults.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
@@ -59,6 +56,9 @@ description: Operations executed kw_fn_with_defaults.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

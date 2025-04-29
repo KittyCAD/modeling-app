@@ -15,9 +15,6 @@ description: Operations executed socket-head-cap-screw.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -266,5 +263,8 @@ description: Operations executed socket-head-cap-screw.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]
