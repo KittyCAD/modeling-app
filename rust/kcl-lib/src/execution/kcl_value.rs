@@ -19,6 +19,8 @@ use crate::{
     CompilationError, KclError, ModuleId, SourceRange,
 };
 
+use super::types::UnitType;
+
 pub type KclObjectFields = HashMap<String, KclValue>;
 
 /// Any KCL value.
@@ -299,6 +301,18 @@ impl KclValue {
             KclValue::Plane { .. } => "Plane",
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Number {
+                ty: NumericType::Unknown,
+                ..
+            } => "number(unknown units)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Length(_)),
+                ..
+            } => "number(Length)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Angle(_)),
+                ..
+            } => "number(Angle)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
             KclValue::MixedArray { .. } => "array (list)",

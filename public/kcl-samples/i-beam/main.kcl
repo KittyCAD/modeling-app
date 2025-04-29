@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in)
 
 // Define parameters
-beamLength = fromFt(6)
+beamLength = 6ft
 beamHeight = 4
 flangeWidth = 2.663
 flangeThickness = 0.293

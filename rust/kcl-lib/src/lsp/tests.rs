@@ -950,7 +950,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -3480,7 +3480,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }

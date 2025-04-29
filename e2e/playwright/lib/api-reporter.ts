@@ -12,10 +12,46 @@ class MyAPIReporter implements Reporter {
 
   async onEnd(result: FullResult): Promise<void> {
     await Promise.all(this.pendingRequests)
-    if (this.allResults.length > 0 && this.blockingResults.length === 0) {
+
+    if (this.allResults.length === 0) {
+      if (!process.env.CI) {
+        console.error('TAB API - No results to process')
+      }
+      return
+    }
+
+    if (this.blockingResults.length === 0) {
       result.status = 'passed'
       if (!process.env.CI) {
-        console.error('TAB API - Marked failures as non-blocking')
+        console.log('TAB API - Marked failures as non-blocking')
+      }
+    }
+
+    try {
+      const response = await fetch(`${process.env.TAB_API_URL}/api/share`, {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+          'X-API-Key': process.env.TAB_API_KEY || '',
+        }),
+        body: JSON.stringify({
+          project: 'https://github.com/KittyCAD/modeling-app',
+          branch:
+            process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
+          commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        if (!process.env.CI) {
+          console.error('TAB API - Failed to share results:', error)
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      if (!process.env.CI) {
+        console.error('TAB API - Unable to share results:', message)
       }
     }
   }

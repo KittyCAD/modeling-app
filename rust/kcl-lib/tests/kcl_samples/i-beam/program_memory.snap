@@ -18,11 +18,11 @@ description: Variables in memory after executing i-beam.kcl
   },
   "beamLength": {
     "type": "Number",
-    "value": 72.0,
+    "value": 6.0,
     "ty": {
       "type": "Known",
       "type": "Length",
-      "type": "Inches"
+      "type": "Feet"
     }
   },
   "flangeThickness": {

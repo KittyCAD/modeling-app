@@ -1177,6 +1177,12 @@ async fn inner_start_sketch_on(
         }
         SketchData::Plane(plane) => {
             if plane.value == crate::exec::PlaneType::Uninit {
+                if plane.origin.units == UnitLen::Unknown {
+                    return Err(KclError::Semantic(KclErrorDetails {
+                        message: "Origin of plane has unknown units".to_string(),
+                        source_ranges: vec![args.source_range],
+                    }));
+                }
                 let plane = make_sketch_plane_from_orientation(plane.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
@@ -1272,7 +1278,7 @@ async fn make_sketch_plane_from_orientation(
 pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     // let (start, sketch_surface, tag) = args.get_data_and_sketch_surface()?;
     let sketch_surface = args.get_unlabeled_kw_arg("startProfileOn")?;
-    let start: [TyF64; 2] = args.get_kw_arg("at")?;
+    let start: [TyF64; 2] = args.get_kw_arg_typed("at", &RuntimeType::point2d(), exec_state)?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
 
     let sketch = inner_start_profile(sketch_surface, start, tag, exec_state, args).await?;
