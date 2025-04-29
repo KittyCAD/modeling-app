@@ -94,6 +94,13 @@ export function formatContents(
   if (typeof contents === 'string') {
     return contents
   }
+  if (
+    typeof contents === 'object' &&
+    'language' in contents &&
+    'value' in contents
+  ) {
+    return contents.value
+  }
   return ''
 }
 
