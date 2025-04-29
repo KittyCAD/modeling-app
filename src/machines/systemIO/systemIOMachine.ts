@@ -453,7 +453,6 @@ export const systemIOMachine = setup({
             assign({
               requestedFileName: ({ context, event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
-                console.log(event.output)
                 // Gotcha: file could have an ending of .kcl...
                 const file = event.output.fileName.endsWith('.kcl')
                   ? event.output.fileName
