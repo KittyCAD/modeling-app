@@ -51,7 +51,7 @@ pub enum Operation {
 
 /// A way for sorting the operations in the timeline.  This is used to sort
 /// operations in the timeline and to determine the order of operations.
-/// We use this for the mutli-threaded snapshotting, so that we can have deterministic
+/// We use this for the multi-threaded snapshotting, so that we can have deterministic
 /// output.
 impl PartialOrd for Operation {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
