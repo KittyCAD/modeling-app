@@ -272,6 +272,7 @@ test.describe('Command bar tests', () => {
     // Select a face
     await page.mouse.move(700, 200)
     await page.mouse.click(700, 200)
+    await cmdBar.progressCmdBar()
 
     // Assert that we're on the distance step
     await expect(

@@ -130,7 +130,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     )
   )
   if (err(length) || 'errors' in length) {
-    return { reason: "Couldn't retrive length argument" }
+    return { reason: "Couldn't retrieve length argument" }
   }
 
   // 3. Assemble the default argument values for the Extrude command,

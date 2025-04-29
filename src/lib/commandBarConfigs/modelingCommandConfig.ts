@@ -427,7 +427,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'selection',
         selectionTypes: ['segment'],
         required: true,
-        skip: true,
         multiple: false,
         validation: sweepValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),

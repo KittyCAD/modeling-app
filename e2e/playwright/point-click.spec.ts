@@ -75,6 +75,14 @@ test.describe('Point-and-click tests', () => {
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
+        currentArgKey: 'selection',
+        currentArgValue: '1 face',
+        headerArguments: { Selection: '', Length: '' },
+        highlightedHeaderArg: 'selection',
+        commandName: 'Extrude',
+      })
+      await cmdBar.expectState({
+        stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
         headerArguments: { Selection: '1 face', Length: '' },
@@ -1709,6 +1717,7 @@ sketch002 = startSketchOn(XZ)
           stage: 'arguments',
         })
         await clickOnSketch1()
+        await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           commandName: 'Sweep',
           currentArgKey: 'trajectory',
@@ -1722,7 +1731,6 @@ sketch002 = startSketchOn(XZ)
           stage: 'arguments',
         })
         await clickOnSketch2()
-        await page.waitForTimeout(500)
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           commandName: 'Sweep',

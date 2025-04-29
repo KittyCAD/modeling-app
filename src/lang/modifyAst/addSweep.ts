@@ -110,7 +110,7 @@ export function addRevolve({
   | Error {
   const modifiedAst = structuredClone(ast)
 
-  // Retrive axis expression depending on mode
+  // Retrieve axis expression depending on mode
   const getAxisResult = getAxisExpressionAndIndex(
     axisOrEdge,
     axis,
