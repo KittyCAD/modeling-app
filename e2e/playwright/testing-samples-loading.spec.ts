@@ -83,7 +83,7 @@ test.describe('Testing loading external models', () => {
   test(
     'Desktop: should create new file by default, creates a second file with automatic unique name',
     { tag: '@electron' },
-    async ({ editor,context, page, scene, cmdBar, toolbar }) => {
+    async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
       }
 
@@ -147,7 +147,6 @@ test.describe('Testing loading external models', () => {
         await cmdBar.expectState(defaultLoadCmdBarState)
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
-        await cmdBar.progressCmdBar()
         await page.waitForTimeout(1000)
       })
 
@@ -163,7 +162,6 @@ test.describe('Testing loading external models', () => {
         await cmdBar.expectState(defaultLoadCmdBarState)
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
-        await cmdBar.progressCmdBar()
         await page.waitForTimeout(1000)
       })
 
