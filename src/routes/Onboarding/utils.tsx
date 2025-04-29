@@ -399,7 +399,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
             name="accept"
             onClick={onAccept}
           >
-            Overwrite my code and begin
+            Overwrite and begin
           </ActionButton>
         </div>
       </div>
