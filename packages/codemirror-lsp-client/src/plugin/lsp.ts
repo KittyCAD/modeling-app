@@ -31,7 +31,14 @@ import lspHoverExt from './hover'
 import lspIndentExt from './indent'
 import type { SemanticToken } from './semantic-tokens'
 import lspSemanticTokensExt, { addToken } from './semantic-tokens'
-import { formatMarkdownContents, posToOffset } from './util'
+import {
+  formatContents,
+  offsetToPos,
+  posToOffset,
+  posToOffsetOrZero,
+  showErrorMessage,
+} from './util'
+import { isArray } from '../lib/utils'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -42,6 +49,18 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
+
+/**
+ * Result of a definition lookup operation
+ */
+export interface DefinitionResult {
+  /** URI of the target document containing the definition */
+  uri: string
+  /** Range in the document where the definition is located */
+  range: LSP.Range
+  /** Whether the definition is in a different file than the current document */
+  isExternalDocument: boolean
+}
 
 export interface LanguageServerOptions {
   // We assume this is the main project directory, we are currently working in.
@@ -58,6 +77,9 @@ export interface LanguageServerOptions {
 
   doSemanticTokens?: boolean
   doFoldingRanges?: boolean
+
+  /** Callback triggered when a go-to-definition action is performed */
+  onGoToDefinition?: (result: DefinitionResult) => void
 }
 
 export class LanguageServerPlugin implements PluginValue {
@@ -82,6 +104,8 @@ export class LanguageServerPlugin implements PluginValue {
   // document.
   private sendScheduled: number | null = null
 
+  private onGoToDefinition: ((result: DefinitionResult) => void) | undefined
+
   constructor(
     options: LanguageServerOptions,
     private view: EditorView
@@ -103,6 +127,8 @@ export class LanguageServerPlugin implements PluginValue {
     this.client.attachPlugin(this)
 
     this.processLspNotification = options.processLspNotification
+
+    this.onGoToDefinition = options.onGoToDefinition
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.initialize({
@@ -185,8 +211,8 @@ export class LanguageServerPlugin implements PluginValue {
     dom.classList.add('documentation')
     dom.classList.add('hover-tooltip')
     dom.style.zIndex = '99999999'
-    if (this.allowHTMLContent) dom.innerHTML = formatMarkdownContents(contents)
-    else dom.textContent = formatMarkdownContents(contents)
+    if (this.allowHTMLContent) dom.innerHTML = formatContents(contents)
+    else dom.textContent = formatContents(contents)
     return { pos, end, create: (view) => ({ dom }), above: true }
   }
 
@@ -379,8 +405,7 @@ export class LanguageServerPlugin implements PluginValue {
             const deprecatedHtml = deprecated
               ? '<p><strong>Deprecated</strong></p>'
               : ''
-            const htmlString =
-              deprecatedHtml + formatMarkdownContents(documentation)
+            const htmlString = deprecatedHtml + formatContents(documentation)
             const htmlNode = document.createElement('div')
             htmlNode.style.display = 'contents'
             htmlNode.innerHTML = htmlString
@@ -404,6 +429,646 @@ export class LanguageServerPlugin implements PluginValue {
     )
 
     return completeFromList(options)(context)
+  }
+
+  async requestDefinition(
+    view: EditorView,
+    { line, character }: { line: number; character: number }
+  ) {
+    if (
+      !(
+        this.client.ready &&
+        this.client.getServerCapabilities().definitionProvider
+      )
+    ) {
+      return
+    }
+
+    const result = await this.client.textDocumentDefinition({
+      textDocument: { uri: this.getDocUri() },
+      position: { line, character },
+    })
+
+    if (!result) return
+
+    const locations = isArray(result) ? result : [result]
+    if (locations.length === 0) return
+
+    // For now just handle the first location
+    const location = locations[0]
+    if (!location) return
+    const uri = 'uri' in location ? location.uri : location.targetUri
+    const range = 'range' in location ? location.range : location.targetRange
+
+    // Check if the definition is in a different document
+    const isExternalDocument = uri !== this.getDocUri()
+
+    // Create the definition result
+    const definitionResult: DefinitionResult = {
+      uri,
+      range,
+      isExternalDocument,
+    }
+
+    // If it's the same document, update the selection
+    if (!isExternalDocument) {
+      view.dispatch(
+        view.state.update({
+          selection: {
+            anchor: posToOffsetOrZero(view.state.doc, range.start),
+            head: posToOffset(view.state.doc, range.end),
+          },
+        })
+      )
+    }
+
+    if (this.onGoToDefinition) {
+      this.onGoToDefinition(definitionResult)
+    }
+
+    return definitionResult
+  }
+
+  async requestCodeActions(
+    range: LSP.Range,
+    diagnosticCodes: string[]
+  ): Promise<(LSP.Command | LSP.CodeAction)[] | null> {
+    if (
+      !(
+        this.client.ready &&
+        this.client.getServerCapabilities().codeActionProvider
+      )
+    ) {
+      return null
+    }
+
+    return await this.client.textDocumentCodeAction({
+      textDocument: { uri: this.getDocUri() },
+      range,
+      context: {
+        diagnostics: [
+          {
+            range,
+            code: diagnosticCodes[0],
+            source: this.getLanguageId(),
+            message: '',
+          },
+        ],
+      },
+    })
+  }
+
+  async requestRename(
+    view: EditorView,
+    { line, character }: { line: number; character: number }
+  ) {
+    if (
+      !(this.client.getServerCapabilities().renameProvider && this.client.ready)
+    ) {
+      showErrorMessage(view, 'Rename not supported by language server')
+      return
+    }
+
+    try {
+      // First check if rename is possible at this position
+      const prepareResult = await this.client
+        .textDocumentPrepareRename({
+          textDocument: { uri: this.getDocUri() },
+          position: { line, character },
+        })
+        .catch(() => {
+          // In case prepareRename is not supported,
+          // we fallback to the default implementation
+          return this.prepareRenameFallback(view, {
+            line,
+            character,
+          })
+        })
+
+      if (!prepareResult || 'defaultBehavior' in prepareResult) {
+        showErrorMessage(view, 'Cannot rename this symbol')
+        return
+      }
+
+      // Create popup input
+      const popup = document.createElement('div')
+      popup.className = 'cm-rename-popup'
+      popup.style.cssText =
+        'position: absolute; padding: 4px; background: white; border: 1px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,.15); z-index: 99;'
+
+      const input = document.createElement('input')
+      input.type = 'text'
+      input.style.cssText =
+        'width: 200px; padding: 4px; border: 1px solid #ddd;'
+
+      // Get current word as default value
+      const range =
+        'range' in prepareResult ? prepareResult.range : prepareResult
+      const from = posToOffset(view.state.doc, range.start)
+      if (from == null) {
+        return
+      }
+      const to = posToOffset(view.state.doc, range.end)
+      input.value = view.state.doc.sliceString(from, to)
+
+      popup.appendChild(input)
+
+      // Position the popup near the word
+      const coords = view.coordsAtPos(from)
+      if (!coords) return
+
+      popup.style.left = `${coords.left}px`
+      popup.style.top = `${coords.bottom + 5}px`
+
+      // Handle input
+      const handleRename = async () => {
+        const newName = input.value.trim()
+        if (!newName) {
+          showErrorMessage(view, 'New name cannot be empty')
+          popup.remove()
+          return
+        }
+
+        if (newName === input.defaultValue) {
+          popup.remove()
+          return
+        }
+
+        try {
+          const edit = await this.client.textDocumentRename({
+            textDocument: { uri: this.getDocUri() },
+            position: { line, character },
+            newName,
+          })
+
+          await this.applyRenameEdit(view, edit)
+        } catch (error) {
+          showErrorMessage(
+            view,
+            `Rename failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+          )
+        } finally {
+          popup.remove()
+        }
+      }
+
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          handleRename()
+        } else if (e.key === 'Escape') {
+          popup.remove()
+        }
+        e.stopPropagation() // Prevent editor handling
+      })
+
+      // Handle clicks outside
+      const handleOutsideClick = (e: MouseEvent) => {
+        if (!popup.contains(e.target as Node)) {
+          popup.remove()
+          document.removeEventListener('mousedown', handleOutsideClick)
+        }
+      }
+      document.addEventListener('mousedown', handleOutsideClick)
+
+      // Add to DOM
+      document.body.appendChild(popup)
+      input.focus()
+      input.select()
+    } catch (error) {
+      showErrorMessage(
+        view,
+        `Rename failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  /**
+   * Request signature help from the language server
+   * @param view The editor view
+   * @param position The cursor position
+   * @returns A tooltip with the signature help information or null if not available
+   */
+  public async requestSignatureHelp(
+    view: EditorView,
+    {
+      line,
+      character,
+    }: {
+      line: number
+      character: number
+    },
+    triggerCharacter: string | undefined = undefined
+  ): Promise<Tooltip | null> {
+    // Check if signature help is enabled
+    if (
+      !(
+        this.client.ready &&
+        this.client.getServerCapabilities().signatureHelpProvider
+      )
+    ) {
+      return null
+    }
+
+    try {
+      // Request signature help
+      const result = await this.client.textDocumentSignatureHelp({
+        textDocument: { uri: this.getDocUri() },
+        position: { line, character },
+        context: {
+          isRetrigger: false,
+          triggerKind: 1, // Invoked
+          triggerCharacter,
+        },
+      })
+
+      if (!result?.signatures || result.signatures.length === 0) {
+        return null
+      }
+
+      // Create the tooltip container
+      const dom = this.createTooltipContainer()
+
+      // Get active signature
+      const activeSignatureIndex = result.activeSignature ?? 0
+      const activeSignature =
+        result.signatures[activeSignatureIndex] || result.signatures[0]
+
+      if (!activeSignature) {
+        return null
+      }
+
+      const activeParameterIndex =
+        result.activeParameter ?? activeSignature.activeParameter ?? 0
+
+      // Create and add signature display element
+      const signatureElement = this.createSignatureElement(
+        activeSignature,
+        activeParameterIndex
+      )
+      dom.appendChild(signatureElement)
+
+      // Add documentation if available
+      if (activeSignature.documentation) {
+        dom.appendChild(
+          this.createDocumentationElement(activeSignature.documentation)
+        )
+      }
+
+      // Add parameter documentation if available
+      const activeParam = activeSignature.parameters?.[activeParameterIndex]
+
+      if (activeParam?.documentation) {
+        dom.appendChild(
+          this.createParameterDocElement(activeParam.documentation)
+        )
+      }
+
+      // Position tooltip at cursor
+      const pos = posToOffset(view.state.doc, { line, character })
+      if (pos == null) {
+        return null
+      }
+
+      return {
+        pos,
+        end: pos,
+        create: (_view) => ({ dom }),
+        above: false,
+      }
+    } catch (error) {
+      console.error('Signature help error:', error)
+      return null
+    }
+  }
+
+  /**
+   * Shows a signature help tooltip at the specified position
+   */
+  public async showSignatureHelpTooltip(
+    view: EditorView,
+    pos: number,
+    triggerCharacter?: string
+  ) {
+    const tooltip = await this.requestSignatureHelp(
+      view,
+      offsetToPos(view.state.doc, pos),
+      triggerCharacter
+    )
+
+    if (tooltip) {
+      // Create and show the tooltip manually
+      const { pos: tooltipPos, create } = tooltip
+      const tooltipView = create(view)
+
+      const tooltipElement = document.createElement('div')
+      tooltipElement.className = 'cm-tooltip cm-signature-tooltip'
+      tooltipElement.style.position = 'absolute'
+
+      tooltipElement.appendChild(tooltipView.dom)
+
+      // Position the tooltip
+      const coords = view.coordsAtPos(tooltipPos)
+      if (coords) {
+        tooltipElement.style.left = `${coords.left}px`
+        tooltipElement.style.top = `${coords.bottom + 5}px`
+
+        // Add to DOM
+        document.body.appendChild(tooltipElement)
+
+        // Remove after a delay or on editor changes
+        setTimeout(() => {
+          tooltipElement.remove()
+        }, 10000) // Show for 10 seconds
+
+        // Also remove on any user input
+        const removeTooltip = () => {
+          tooltipElement.remove()
+          view.dom.removeEventListener('keydown', removeTooltip)
+          view.dom.removeEventListener('mousedown', removeTooltip)
+        }
+
+        view.dom.addEventListener('keydown', removeTooltip)
+        view.dom.addEventListener('mousedown', removeTooltip)
+      }
+    }
+  }
+
+  /**
+   * Creates the main tooltip container for signature help
+   */
+  private createTooltipContainer(): HTMLElement {
+    const dom = document.createElement('div')
+    dom.classList.add('cm-signature-help')
+    dom.style.cssText = 'padding: 6px; max-width: 400px;'
+    return dom
+  }
+
+  /**
+   * Creates the signature element with parameter highlighting
+   */
+  private createSignatureElement(
+    signature: LSP.SignatureInformation,
+    activeParameterIndex: number
+  ): HTMLElement {
+    const signatureElement = document.createElement('div')
+    signatureElement.classList.add('cm-signature')
+    signatureElement.style.cssText =
+      'font-family: monospace; margin-bottom: 4px;'
+
+    if (!signature.label || typeof signature.label !== 'string') {
+      signatureElement.textContent = 'Signature information unavailable'
+      return signatureElement
+    }
+
+    const signatureText = signature.label
+    const parameters = signature.parameters || []
+
+    // If there are no parameters or no active parameter, just show the signature text
+    if (parameters.length === 0 || !parameters[activeParameterIndex]) {
+      signatureElement.textContent = signatureText
+      return signatureElement
+    }
+
+    // Handle parameter highlighting based on the parameter label type
+    const paramLabel = parameters[activeParameterIndex].label
+
+    if (typeof paramLabel === 'string') {
+      // Simple string replacement
+      if (this.allowHTMLContent) {
+        signatureElement.innerHTML = signatureText.replace(
+          paramLabel,
+          `<strong class="cm-signature-active-param">${paramLabel}</strong>`
+        )
+      } else {
+        signatureElement.textContent = signatureText.replace(
+          paramLabel,
+          `«${paramLabel}»`
+        )
+      }
+    } else if (isArray(paramLabel) && paramLabel.length === 2) {
+      // Handle array format [startIndex, endIndex]
+      this.applyRangeHighlighting(
+        signatureElement,
+        signatureText,
+        paramLabel[0],
+        paramLabel[1]
+      )
+    } else {
+      signatureElement.textContent = signatureText
+    }
+
+    return signatureElement
+  }
+
+  /**
+   * Applies parameter highlighting using a range approach
+   */
+  private applyRangeHighlighting(
+    element: HTMLElement,
+    text: string,
+    startIndex: number,
+    endIndex: number
+  ): void {
+    // Clear any existing content
+    element.textContent = ''
+
+    // Split the text into three parts: before, parameter, after
+    const beforeParam = text.substring(0, startIndex)
+    const param = text.substring(startIndex, endIndex)
+    const afterParam = text.substring(endIndex)
+
+    // Add the parts to the element
+    element.appendChild(document.createTextNode(beforeParam))
+
+    const paramSpan = document.createElement('span')
+    paramSpan.classList.add('cm-signature-active-param')
+    paramSpan.style.cssText = 'font-weight: bold; text-decoration: underline;'
+    paramSpan.textContent = param
+    element.appendChild(paramSpan)
+
+    element.appendChild(document.createTextNode(afterParam))
+  }
+
+  /**
+   * Creates the documentation element for signatures
+   */
+  private createDocumentationElement(
+    documentation: string | LSP.MarkupContent
+  ): HTMLElement {
+    const docsElement = document.createElement('div')
+    docsElement.classList.add('cm-signature-docs')
+    docsElement.style.cssText = 'margin-top: 4px; color: #666;'
+
+    const formattedContent = formatContents(documentation)
+
+    if (this.allowHTMLContent) {
+      docsElement.innerHTML = formattedContent
+    } else {
+      docsElement.textContent = formattedContent
+    }
+
+    return docsElement
+  }
+
+  /**
+   * Creates the parameter documentation element
+   */
+  private createParameterDocElement(
+    documentation: string | LSP.MarkupContent
+  ): HTMLElement {
+    const paramDocsElement = document.createElement('div')
+    paramDocsElement.classList.add('cm-parameter-docs')
+    paramDocsElement.style.cssText =
+      'margin-top: 4px; font-style: italic; border-top: 1px solid #eee; padding-top: 4px;'
+
+    const formattedContent = formatContents(documentation)
+
+    if (this.allowHTMLContent) {
+      paramDocsElement.innerHTML = formattedContent
+    } else {
+      paramDocsElement.textContent = formattedContent
+    }
+
+    return paramDocsElement
+  }
+
+  /**
+   * Fallback implementation of prepareRename.
+   * We try to find the word at the cursor position and return the range of the word.
+   */
+  private prepareRenameFallback(
+    view: EditorView,
+    { line, character }: { line: number; character: number }
+  ): LSP.PrepareRenameResult | null {
+    const doc = view.state.doc
+    const lineText = doc.line(line + 1).text
+    const wordRegex = /\w+/g
+    let match: RegExpExecArray | null
+    let start = character
+    let end = character
+    // Find all word matches in the line
+    // biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+    while ((match = wordRegex.exec(lineText)) !== null) {
+      const matchStart = match.index
+      const matchEnd = match.index + match[0].length
+
+      // Check if cursor position is within or at the boundaries of this word
+      if (character >= matchStart && character <= matchEnd) {
+        start = matchStart
+        end = matchEnd
+        break
+      }
+    }
+
+    if (start === character && end === character) {
+      return null // No word found at cursor position
+    }
+
+    return {
+      range: {
+        start: {
+          line,
+          character: start,
+        },
+        end: {
+          line,
+          character: end,
+        },
+      },
+      placeholder: lineText.slice(start, end),
+    }
+  }
+
+  /**
+   * Apply workspace edit from rename operation
+   * @param view The editor view
+   * @param edit The workspace edit to apply
+   * @returns True if changes were applied successfully
+   */
+  protected async applyRenameEdit(
+    view: EditorView,
+    edit: LSP.WorkspaceEdit | null
+  ): Promise<boolean> {
+    if (!edit) {
+      showErrorMessage(view, 'No edit returned from language server')
+      return false
+    }
+
+    const changesMap = edit.changes ?? {}
+    const documentChanges = edit.documentChanges ?? []
+
+    if (Object.keys(changesMap).length === 0 && documentChanges.length === 0) {
+      showErrorMessage(view, 'No changes to apply')
+      return false
+    }
+
+    // Handle documentChanges (preferred) if available
+    if (documentChanges.length > 0) {
+      for (const docChange of documentChanges) {
+        if ('textDocument' in docChange) {
+          // This is a TextDocumentEdit
+          const uri = docChange.textDocument.uri
+
+          if (uri !== this.getDocUri()) {
+            showErrorMessage(view, 'Multi-file rename not supported yet')
+            continue
+          }
+
+          // Sort edits in reverse order to avoid position shifts
+          const sortedEdits = docChange.edits.sort((a, b) => {
+            const posA = posToOffset(view.state.doc, a.range.start)
+            const posB = posToOffset(view.state.doc, b.range.start)
+            return (posB ?? 0) - (posA ?? 0)
+          })
+
+          // Create a single transaction with all changes
+          const changes = sortedEdits.map((edit) => ({
+            from: posToOffset(view.state.doc, edit.range.start) ?? 0,
+            to: posToOffset(view.state.doc, edit.range.end) ?? 0,
+            insert: edit.newText,
+          }))
+
+          view.dispatch(view.state.update({ changes }))
+          return true
+        }
+
+        // This is a CreateFile, RenameFile, or DeleteFile operation
+        showErrorMessage(
+          view,
+          'File creation, deletion, or renaming operations not supported yet'
+        )
+        return false
+      }
+    }
+    // Fall back to changes if documentChanges is not available
+    else if (Object.keys(changesMap).length > 0) {
+      // Apply all changes
+      for (const [uri, changes] of Object.entries(changesMap)) {
+        if (uri !== this.getDocUri()) {
+          showErrorMessage(view, 'Multi-file rename not supported yet')
+          continue
+        }
+
+        // Sort changes in reverse order to avoid position shifts
+        const sortedChanges = changes.sort((a, b) => {
+          const posA = posToOffset(view.state.doc, a.range.start)
+          const posB = posToOffset(view.state.doc, b.range.start)
+          return (posB ?? 0) - (posA ?? 0)
+        })
+
+        // Create a single transaction with all changes
+        const changeSpecs = sortedChanges.map((change) => ({
+          from: posToOffset(view.state.doc, change.range.start) ?? 0,
+          to: posToOffset(view.state.doc, change.range.end) ?? 0,
+          insert: change.newText,
+        }))
+
+        view.dispatch(view.state.update({ changes: changeSpecs }))
+      }
+    }
+
+    return false
   }
 
   parseSemanticTokens(view: EditorView, data: number[]) {
