@@ -48,7 +48,7 @@ import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
-} from './Onboarding/utils'
+} from '@src/routes/Onboarding/utils'
 import Tooltip from '@src/components/Tooltip'
 
 type ReadWriteProjectState = {

@@ -16,24 +16,55 @@ import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  kclManager,
+  systemIOActor,
+} from '@src/lib/singletons'
 import { reportRejection, trap } from '@src/lib/trap'
 import { settingsActor } from '@src/lib/singletons'
-import { onboardingRoutes } from '@src/routes/Onboarding'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { isKclEmptyOrOnlySettings, parse, resultIsOk } from '@src/lang/wasm'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_REAL,
+  ONBOARDING_PROJECT_NAME,
+} from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import type CodeManager from '@src/lang/codeManager'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { Logo } from '@src/components/Logo'
+import {
+  readAppSettingsFile,
+  listProjects,
+  createNewProjectDirectory,
+} from '@src/lib/desktop'
+import {
+  getNextProjectIndex,
+  interpolateProjectNameWithIndex,
+} from '@src/lib/desktopFS'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
+
+export const onboardingPaths: Record<string, OnboardingStatus> = {
+  INDEX: '/',
+  CAMERA: '/camera',
+  STREAMING: '/streaming',
+  EDITOR: '/editor',
+  PARAMETRIC_MODELING: '/parametric-modeling',
+  INTERACTIVE_NUMBERS: '/interactive-numbers',
+  COMMAND_K: '/command-k',
+  USER_MENU: '/user-menu',
+  PROJECT_MENU: '/project-menu',
+  EXPORT: '/export',
+  MOVE: '/move',
+  SKETCHING: '/sketching',
+  FUTURE_WORK: '/future-work',
+} as const
 
 // Get the 1-indexed step number of the current onboarding step
 function useStepNumber(
@@ -42,8 +73,8 @@ function useStepNumber(
   return slug
     ? slug === onboardingPaths.INDEX
       ? 1
-      : onboardingRoutes.findIndex(
-          (r) => r.path === makeUrlPathRelative(slug)
+      : Object.values(onboardingPaths).findIndex(
+          (r) => r === makeUrlPathRelative(slug)
         ) + 1
     : 1
 }
@@ -131,18 +162,19 @@ export function OnboardingButtons({
   dismissClassName?: string
   onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
+  const onboardingPathsArray = Object.values(onboardingPaths)
   const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
   const previousStep =
-    !stepNumber || stepNumber <= 1 ? null : onboardingRoutes[stepNumber - 2]
+    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber - 2]
   const goToPrevious = useNextClick(
-    onboardingPaths.INDEX + (previousStep?.path ?? '')
+    onboardingPaths.INDEX + (previousStep ?? '')
   )
   const nextStep =
-    !stepNumber || stepNumber === onboardingRoutes.length
+    !stepNumber || stepNumber === onboardingPathsArray.length
       ? null
-      : onboardingRoutes[stepNumber]
-  const goToNext = useNextClick(onboardingPaths.INDEX + (nextStep?.path ?? ''))
+      : onboardingPathsArray[stepNumber]
+  const goToNext = useNextClick(onboardingPaths.INDEX + (nextStep ?? ''))
 
   return (
     <>
@@ -168,27 +200,27 @@ export function OnboardingButtons({
       >
         <ActionButton
           Element="button"
-          onClick={() => (previousStep?.path ? goToPrevious() : dismiss())}
+          onClick={() => (previousStep ? goToPrevious() : dismiss())}
           iconStart={{
-            icon: previousStep?.path ? 'arrowLeft' : 'close',
+            icon: previousStep ? 'arrowLeft' : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           }}
           className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
           data-testid="onboarding-prev"
         >
-          {previousStep?.path ? 'Back' : 'Dismiss'}
+          {previousStep ? 'Back' : 'Dismiss'}
         </ActionButton>
         {stepNumber !== undefined && (
           <p className="font-mono text-xs text-center m-0">
-            {stepNumber - 1} / {onboardingRoutes.length}
+            {stepNumber - 1} / {onboardingPathsArray.length}
           </p>
         )}
         <ActionButton
           autoFocus
           Element="button"
           onClick={() => {
-            if (nextStep?.path) {
+            if (nextStep) {
               onNextOverride ? onNextOverride() : goToNext()
             } else {
               dismiss()
@@ -223,15 +255,15 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
   if (isDesktop()) {
-    createAndOpenNewTutorialProject(deps.onboardingStatus)
-  } else {
-    const isCodeResettable = hasResetReadyCode(deps.codeManager)
-    if (isCodeResettable) {
-      resetCodeAndAdvanceOnboarding(deps)
-    } else {
-      return Promise.reject(new Error(ERROR_MUST_WARN))
-    }
+    return createAndOpenNewTutorialProject(deps.onboardingStatus)
   }
+
+  const isCodeResettable = hasResetReadyCode(deps.codeManager)
+  if (isCodeResettable) {
+    return resetCodeAndAdvanceOnboarding(deps)
+  }
+
+  return Promise.reject(new Error(ERROR_MUST_WARN))
 }
 
 /**
@@ -290,8 +322,8 @@ export function onDismissOnboardingInvite() {
 }
 
 export function TutorialRequestToast(props: OnboardingUtilDeps) {
-  async function onAccept() {
-    return acceptOnboarding(props)
+  function onAccept() {
+    acceptOnboarding(props)
       .then(() => {
         toast.dismiss(ONBOARDING_TOAST_ID)
       })
@@ -362,7 +394,7 @@ export async function catchOnboardingWarnError(
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
   function onAccept() {
     toast.dismiss(ONBOARDING_TOAST_ID)
-    resetCodeAndAdvanceOnboarding(props)
+    resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
   }
 
   return (
@@ -405,4 +437,54 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
       </div>
     </div>
   )
+}
+
+export async function createAndOpenNewTutorialProject(
+  onboardingStatus = onboardingPaths.INDEX
+) {
+  // Create a new project with the onboarding project name
+  const configuration = await readAppSettingsFile()
+  const projects = await listProjects(configuration)
+  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
+  const name = interpolateProjectNameWithIndex(
+    ONBOARDING_PROJECT_NAME,
+    nextIndex
+  )
+
+  // Delete the tutorial project if it already exists.
+  if (isDesktop()) {
+    if (configuration.settings?.project?.directory === undefined) {
+      return Promise.reject(new Error('configuration settings are undefined'))
+    }
+
+    const fullPath = window.electron.join(
+      configuration.settings.project.directory,
+      name
+    )
+    if (window.electron.exists(fullPath)) {
+      await window.electron.rm(fullPath)
+    }
+  }
+
+  const newProject = await createNewProjectDirectory(
+    name,
+    bracket,
+    configuration
+  )
+
+  const filePathAsUri = encodeURIComponent(
+    newProject.default_file.replace(newProject.path, '')
+  )
+  const subRoute = `${filePathAsUri}${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(
+    onboardingStatus
+  )}`
+  systemIOActor.send({
+    type: SystemIOMachineEvents.navigateToProject,
+    data: {
+      requestedProjectName: newProject.name,
+      subRoute,
+    },
+  })
+
+  return newProject
 }

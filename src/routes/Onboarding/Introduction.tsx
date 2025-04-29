@@ -2,9 +2,11 @@ import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { useSettings } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
-import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
+import {
+  onboardingPaths,
+  OnboardingButtons,
+  useDemoCode,
+} from '@src/routes/Onboarding/utils'
 
 export default function Introduction() {
   // Reset the code to the bracket code

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-
 import { useUser } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
-import { OnboardingButtons } from '@src/routes/Onboarding/utils'
+import {
+  onboardingPaths,
+  OnboardingButtons,
+} from '@src/routes/Onboarding/utils'
 
 export default function UserMenu() {
   const user = useUser()

@@ -2,17 +2,12 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import { settingsActor, useSettings } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
 import {
+  onboardingPaths,
   OnboardingButtons,
-  useDismiss,
-  useNextClick,
 } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
-  useDismiss()
-  useNextClick(onboardingPaths.STREAMING)
   const {
     modeling: { mouseControls },
   } = useSettings()

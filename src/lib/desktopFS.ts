@@ -1,23 +1,7 @@
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import {
-  FILE_EXT,
-  INDEX_IDENTIFIER,
-  MAX_PADDING,
-  ONBOARDING_PROJECT_NAME,
-} from '@src/lib/constants'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  readAppSettingsFile,
-} from '@src/lib/desktop'
-import { bracket } from '@src/lib/exampleKcl'
+import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import makeUrlPathRelative from './makeUrlPathRelative'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { systemIOActor } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -134,56 +118,6 @@ export async function getSettingsFolderPaths(projectPath?: string) {
     user,
     project,
   }
-}
-
-export async function createAndOpenNewTutorialProject(
-  onboardingStatus = onboardingPaths.INDEX
-) {
-  // Create a new project with the onboarding project name
-  const configuration = await readAppSettingsFile()
-  const projects = await listProjects(configuration)
-  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-  const name = interpolateProjectNameWithIndex(
-    ONBOARDING_PROJECT_NAME,
-    nextIndex
-  )
-
-  // Delete the tutorial project if it already exists.
-  if (isDesktop()) {
-    if (configuration.settings?.project?.directory === undefined) {
-      return Promise.reject(new Error('configuration settings are undefined'))
-    }
-
-    const fullPath = window.electron.join(
-      configuration.settings.project.directory,
-      name
-    )
-    if (window.electron.exists(fullPath)) {
-      await window.electron.rm(fullPath)
-    }
-  }
-
-  const newProject = await createNewProjectDirectory(
-    name,
-    bracket,
-    configuration
-  )
-
-  const filePathAsUri = encodeURIComponent(
-    newProject.default_file.replace(newProject.path, '')
-  )
-  const subRoute = `${filePathAsUri}${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(
-    onboardingStatus
-  )}`
-  systemIOActor.send({
-    type: SystemIOMachineEvents.navigateToProject,
-    data: {
-      requestedProjectName: newProject.name,
-      subRoute,
-    },
-  })
-
-  return newProject
 }
 
 /**

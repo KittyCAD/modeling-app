@@ -1,5 +1,4 @@
-import { Link, useLocation } from 'react-router-dom'
-
+import { Link, type NavigateFunction, useLocation } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { NetworkHealthIndicator } from '@src/components/NetworkHealthIndicator'
@@ -15,7 +14,7 @@ export function LowerRightControls({
   navigate = () => {},
 }: {
   children?: React.ReactNode
-  navigate?: (path: string) => void
+  navigate?: NavigateFunction
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()

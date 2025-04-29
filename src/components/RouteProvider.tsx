@@ -7,8 +7,6 @@ import {
   useRouteLoaderData,
 } from 'react-router-dom'
 
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
@@ -18,7 +16,7 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { settingsActor, useSettings } from '@src/lib/singletons'
+import { settingsActor } from '@src/lib/singletons'
 
 export const RouteProviderContext = createContext({})
 

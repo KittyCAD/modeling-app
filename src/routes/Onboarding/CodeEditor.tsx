@@ -1,6 +1,5 @@
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
 import {
+  onboardingPaths,
   OnboardingButtons,
   kbdClasses,
   useDemoCode,

@@ -14,8 +14,7 @@ import ProjectMenu from '@src/routes/Onboarding/ProjectMenu'
 import Sketching from '@src/routes/Onboarding/Sketching'
 import Streaming from '@src/routes/Onboarding/Streaming'
 import UserMenu from '@src/routes/Onboarding/UserMenu'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { useDismiss } from '@src/routes/Onboarding/utils'
+import { useDismiss, onboardingPaths } from '@src/routes/Onboarding/utils'
 
 export const onboardingRoutes = [
   {
