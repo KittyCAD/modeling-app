@@ -337,7 +337,8 @@ pub(crate) async fn do_post_extrude<'a>(
         let next_adjacent_edge_uuid = exec_state.next_uuid();
         let get_all_edge_faces_opposite_uuid = exec_state.next_uuid();
         let get_all_edge_faces_next_uuid = exec_state.next_uuid();
-        #[cfg(any(not(target_arch = "wasm32"), not(test), not(feature = "artifact-graph")))]
+        #[cfg(any(not(test), not(feature = "artifact-graph"), not(target_arch = "wasm32")))]
+        #[allow(unused_variables)]
         let single_threaded = false;
         // When running in vitest, we need to run this in a single thread.
         // Because their workers are complete shit.
