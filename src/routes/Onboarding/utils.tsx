@@ -449,9 +449,11 @@ export async function createAndOpenNewTutorialProject(
     configuration
   )
 
-  const filePathAsUri = encodeURIComponent(
-    newProject.default_file.replace(newProject.path, '')
+  const relativePath = window.electron.path.relative(
+    newProject.path,
+    newProject.default_file
   )
+  const filePathAsUri = encodeURIComponent(relativePath)
   const subRoute = `${filePathAsUri}${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(
     onboardingStatus
   )}`
