@@ -1,7 +1,9 @@
+// Global parameters for the pillow block bearing
+
 // Set units
 @settings(defaultLengthUnit = in)
 
-// Global parameters for the pillow block bearing
+// Export parameters
 export boltSpacingX = 5
 export boltSpacingY = 3
 export boltDiameter = 3 / 8
