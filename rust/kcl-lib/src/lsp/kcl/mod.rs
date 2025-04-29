@@ -1313,9 +1313,7 @@ impl LanguageServer for Backend {
                 };
                 let p2 = std::cmp::max(pos, next_space);
 
-                let Some(last_word) = current_code[..p2].split_whitespace().last() else {
-                    return None;
-                };
+                let last_word = current_code[..p2].split_whitespace().last()?;
 
                 // Get the function name.
                 return self.stdlib_signatures.get(last_word);
@@ -1324,13 +1322,9 @@ impl LanguageServer for Backend {
                 // the closest ( and try to get the signature.
 
                 // Find the last ( before the comma.
-                let Some(last_paren) = current_code[..pos].rfind('(') else {
-                    return None;
-                };
+                let last_paren = current_code[..pos].rfind('(')?;
                 // Get the string in front of the (.
-                let Some(last_word) = current_code[..last_paren].split_whitespace().last() else {
-                    return None;
-                };
+                let last_word = current_code[..last_paren].split_whitespace().last()?;
                 // Get the function name.
                 return self.stdlib_signatures.get(last_word);
             }
