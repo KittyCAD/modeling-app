@@ -6558,8 +6558,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           },
           "height": 671.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": {
             "type": "Mm"
           },
