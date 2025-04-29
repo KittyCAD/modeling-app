@@ -206,6 +206,11 @@ code {
   outline: none;
 }
 
+.cm-rename-popup {
+  /* we want to overpower anything else */
+  z-index: 99999999999 !important;
+}
+
 @keyframes blink {
   0%,
   100% {
