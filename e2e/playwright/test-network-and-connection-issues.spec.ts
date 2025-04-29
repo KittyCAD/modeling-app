@@ -1,17 +1,22 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import { commonPoints, getUtils } from '@e2e/playwright/test-utils'
+import {
+  commonPoints,
+  getUtils,
+  TEST_COLORS,
+  circleMove,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
-  'Test network and connection issues',
+  'Test network related behaviors',
   {
     tag: ['@macos', '@windows'],
   },
   () => {
     test(
-      'simulate network down and network little widget',
+      'simulate network down and network little w1dget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
         const u = await getUtils(page)
@@ -253,6 +258,101 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
         await expect(
           page.getByRole('button', { name: 'Exit Sketch' })
         ).not.toBeVisible()
+      }
+    )
+
+    test(
+      'Paused stream freezes view frame, unpause reconnect is seamless to user',
+      { tag: '@skipLocalEngine' },
+      async ({ page, homePage, scene, cmdBar, toolbar }) => {
+        const u = await getUtils(page)
+        const networkToggle = page.getByTestId('network-toggle')
+        const userSettingsTab = page.getByRole('radio', { name: 'User' })
+        const appStreamIdleModeSetting = page.getByTestId('app-streamIdleMode')
+        const settingsCloseButton = page.getByTestId('settings-close-button')
+
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [44.41, 59.65])
+  |> line(end = [205.52, 251.67])
+  |> line(end = [184.62, -219.45])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+          )
+        })
+
+        const dim = { width: 1200, height: 800 }
+        await page.setBodyDimensions(dim)
+
+        await test.step('Go to modeling scene', async () => {
+          await homePage.goToModelingScene()
+          await scene.settled(cmdBar)
+        })
+
+        // GRAB THE COORDINATES OF A POINT ON A LINE.
+        // Use the right side of the square (not covered by panes)
+        // Trigger highlight by hovering over the space
+        await circleMove(page, dim.width / 2, dim.height / 2, 20, 10)
+
+        // Double click to edit sketch.
+        await page.mouse.dblclick(dim.width / 2, dim.height / 2, { delay: 100 })
+        await toolbar.waitUntilSketchingReady()
+
+        // We need to be in sketch mode to access this data.
+        const line = await u.getBoundingBox('[data-overlay-index="0"]')
+        const angle = await u.getAngle('[data-overlay-index="0"]')
+        const midPoint = {
+          x: line.x + (Math.sin((angle / 360) * Math.PI * 2) * line.width) / 2,
+          // Different coordinate space, need to -1 to fix it up
+          y:
+            (line.y +
+              (Math.cos((angle / 360) * Math.PI * 2) * line.height) / 2) *
+            -1,
+        }
+        await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+        await test.step('Set stream idle pause time to 5s', async () => {
+          await page.getByRole('link', { name: 'Settings' }).last().click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+          await userSettingsTab.click()
+          await appStreamIdleModeSetting.click()
+          await appStreamIdleModeSetting.selectOption('5000')
+          await settingsCloseButton.click()
+          await expect(
+            page.getByText('Set stream idle mode to "5000" as a user default')
+          ).toBeVisible()
+        })
+
+        await test.step('Verify pausing behavior', async () => {
+          // Wait 5s + 1s to pause.
+          await page.waitForTimeout(6000)
+
+          // We should now be paused. To the user, it should appear we're still
+          // connected.
+          await expect(networkToggle).toContainText('Connected')
+
+          // ... and the model's still visibly there
+          console.log(midPoint)
+          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+
+          // Now move the mouse around to unpause!
+          await circleMove(page, dim.width / 2, dim.height / 2, 20, 10)
+
+          // ONCE AGAIN! Check the view area hasn't changed at all.
+          // Check the pixel a couple times as it reconnects.
+          // NOTE: Remember, idle behavior is still on at this point -
+          // if this test takes longer than 5s shit WILL go south!
+          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+          await page.waitForTimeout(1000)
+          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+
+          // Ensure we're still connected
+          await expect(networkToggle).toContainText('Connected')
+        })
       }
     )
   }
