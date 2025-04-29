@@ -229,7 +229,7 @@ test.describe('Feature Tree pane', () => {
     const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
-    const newConstantName = 'distance001'
+    const newConstantName = 'length001'
     const expectedCode = `${newConstantName} = 23
     sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
@@ -273,7 +273,7 @@ test.describe('Feature Tree pane', () => {
         currentArgKey: 'length',
         currentArgValue: initialInput,
         headerArguments: {
-          Distance: initialInput,
+          Length: initialInput,
         },
         highlightedHeaderArg: 'length',
       })
@@ -290,7 +290,7 @@ test.describe('Feature Tree pane', () => {
         stage: 'review',
         headerArguments: {
           // The calculated value is shown in the argument summary
-          Distance: initialInput,
+          Length: initialInput,
         },
         commandName: 'Extrude',
       })

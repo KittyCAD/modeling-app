@@ -1689,8 +1689,7 @@ sketch002 = startSketchOn(XZ)
         testPoint.x - 50,
         testPoint.y
       )
-      const sweepDeclaration =
-        'sweep001 = sweep(profile001, path = sketch002, sectional = false)'
+      const sweepDeclaration = 'sweep001 = sweep(profile001, path = sketch002)'
       const editedSweepDeclaration =
         'sweep001 = sweep(profile001, path = sketch002, sectional = true)'
 
@@ -1731,6 +1730,18 @@ sketch002 = startSketchOn(XZ)
           stage: 'arguments',
         })
         await clickOnSketch2()
+        await cmdBar.expectState({
+          commandName: 'Sweep',
+          currentArgKey: 'trajectory',
+          currentArgValue: '',
+          headerArguments: {
+            Sectional: '',
+            Target: '1 face',
+            Trajectory: '',
+          },
+          highlightedHeaderArg: 'trajectory',
+          stage: 'arguments',
+        })
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           commandName: 'Sweep',
@@ -1856,6 +1867,7 @@ sketch002 = startSketchOn(XZ)
         stage: 'arguments',
       })
       await clickOnSketch1()
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
         currentArgKey: 'trajectory',
@@ -1869,7 +1881,6 @@ sketch002 = startSketchOn(XZ)
         stage: 'arguments',
       })
       await clickOnSketch2()
-      await page.waitForTimeout(500)
       await cmdBar.progressCmdBar()
       await expect(
         page.getByText('Unable to sweep with the current selection. Reason:')
@@ -3517,6 +3528,7 @@ tag=$rectangleSegmentC002,
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
+      await cmdBar.progressCmdBar()
 
       const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = X)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
@@ -3589,6 +3601,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
       await toolbar.revolveButton.click()
+      await cmdBar.progressCmdBar()
       await page.getByText('Edge', { exact: true }).click()
       const lineCodeToSelection = `angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
@@ -3681,6 +3694,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       await page.waitForTimeout(1000)
       await editor.scrollToText(codeToSelection)
       await page.getByText(codeToSelection).click()
+      await cmdBar.progressCmdBar()
       await expect.poll(() => page.getByText('AxisOrEdge').count()).toBe(2)
       await page.getByText('Edge', { exact: true }).click()
       const lineCodeToSelection = `length = 2.6`

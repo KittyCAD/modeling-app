@@ -9,6 +9,8 @@ test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
+    toolbar,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -36,18 +38,34 @@ test.describe('Command bar tests', () => {
     await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
     await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Extrude' }).click()
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
+    await toolbar.extrudeButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'selection',
+      currentArgValue: '1 path',
+      headerArguments: {
+        Selection: '',
+        Length: '',
+      },
+      highlightedHeaderArg: 'selection',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Selection: '1 path',
+        Length: '5',
+      },
+    })
+    await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
       `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
     )
   })
 
-  // TODO: fix this test after the electron migration
   test('Fillet from command bar', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -283,7 +301,7 @@ test.describe('Command bar tests', () => {
     // since the default variable name is already in use (distance)
     await page.getByRole('button', { name: 'Create new variable' }).click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-      'distance001'
+      'length001'
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
@@ -306,7 +324,7 @@ test.describe('Command bar tests', () => {
     await u.waitForCmdReceive('extrude')
 
     await expect(page.locator('.cm-content')).toContainText(
-      'extrude001 = extrude(sketch001, length = distance001)'
+      'extrude001 = extrude(sketch001, length = length001)'
     )
   })
 
