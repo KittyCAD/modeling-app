@@ -649,7 +649,15 @@ description: Result of parsing computed_var.kcl
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
+              "path": [
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "math",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              ],
               "start": 0,
               "type": "Name"
             },

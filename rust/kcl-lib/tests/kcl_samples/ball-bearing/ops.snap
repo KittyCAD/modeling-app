@@ -379,7 +379,7 @@ description: Operations executed ball-bearing.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}

@@ -178,7 +178,7 @@ t = 0.005 // taper factor [0-1)
 // Defines how to modify each layer of the vase.
 // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 fn transform(replicaId) {
-  scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
+  scale = r * abs(1 - (t * replicaId)) * (5 + math::cos((replicaId / 8): number(rad)))
   return {
     translate = [0, 0, replicaId * 10],
     scale = [scale, scale, 0]

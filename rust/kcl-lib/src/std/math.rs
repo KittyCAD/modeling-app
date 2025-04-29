@@ -6,7 +6,7 @@ use kcl_derive_docs::stdlib;
 use crate::{
     errors::KclError,
     execution::{
-        types::{ArrayLen, NumericType, RuntimeType, UnitAngle, UnitType},
+        types::{ArrayLen, NumericType, RuntimeType},
         ExecState, KclValue,
     },
     std::args::{Args, TyF64},
@@ -21,7 +21,7 @@ pub async fn rem(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 
     let (n, d, ty) = NumericType::combine_div(n, d);
     if ty == NumericType::Unknown {
-        exec_state.warn(CompilationError::err(
+        exec_state.err(CompilationError::err(
             args.source_range,
             "Calling `rem` on numbers which have unknown or incompatible units.\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`"
         ));
@@ -59,61 +59,21 @@ fn inner_rem(num: f64, divisor: f64) -> f64 {
 /// Compute the cosine of a number (in radians).
 pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
-    let num = match num.ty {
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        } => {
-            exec_state.warn(CompilationError::err(
-                args.source_range,
-                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
-            ));
-            num.n
-        }
-        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
-        _ => num.n,
-    };
-
+    let num = num.to_radians();
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.cos())))
 }
 
 /// Compute the sine of a number (in radians).
 pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
-    let num = match num.ty {
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        } => {
-            exec_state.warn(CompilationError::err(
-                args.source_range,
-                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
-            ));
-            num.n
-        }
-        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
-        _ => num.n,
-    };
+    let num = num.to_radians();
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.sin())))
 }
 
 /// Compute the tangent of a number (in radians).
 pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let num: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::angle(), exec_state)?;
-    let num = match num.ty {
-        NumericType::Default {
-            angle: UnitAngle::Degrees,
-            ..
-        } => {
-            exec_state.warn(CompilationError::err(
-                args.source_range,
-                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
-            ));
-            num.n
-        }
-        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => num.n.to_radians(),
-        _ => num.n,
-    };
+    let num = num.to_radians();
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
 }
 
