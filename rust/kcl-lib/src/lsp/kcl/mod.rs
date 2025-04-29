@@ -1297,7 +1297,23 @@ impl LanguageServer for Backend {
             // and try to get the signature.
             // We do these before the ast check because we might not have a valid ast.
             if ch == '(' {
-                let Some(last_word) = current_code[..pos].split_whitespace().last() else {
+                // If the current character is not a " " then get the next space after
+                // our position so we can split on that.
+                // Find the next space after the current position.
+                let next_space = if ch != ' ' {
+                    if let Some(next_space) = current_code[pos..].find(' ') {
+                        pos + next_space
+                    } else if let Some(next_space) = current_code[pos..].find('(') {
+                        pos + next_space
+                    } else {
+                        pos
+                    }
+                } else {
+                    pos
+                };
+                let p2 = std::cmp::max(pos, next_space);
+
+                let Some(last_word) = current_code[..p2].split_whitespace().last() else {
                     return None;
                 };
 
