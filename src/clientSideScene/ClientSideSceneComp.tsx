@@ -185,8 +185,8 @@ const Overlays = () => {
   return (
     <div className="absolute inset-0 pointer-events-none z-sketchOverlayDropdown">
       {Object.entries(context.segmentOverlays)
-        .flatMap((a) =>
-          a[1].map((b) => ({ pathToNodeString: a[0], overlay: b }))
+        .flatMap(([pathToNodeString, overlays]) =>
+          overlays.map((b) => ({ pathToNodeString, overlay: b }))
         )
         .filter((a) => alwaysShowOverlays || a.overlay.visible)
         .map(({ pathToNodeString, overlay }, index) => {

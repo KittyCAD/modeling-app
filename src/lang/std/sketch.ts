@@ -1293,7 +1293,7 @@ export const circle: SketchLineHelperKw = {
           valueUsedInTransform,
         }
       }
-      return new Error('not implemented')
+      return new Error('Problem with circle')
     }
 
     // If it's not in a pipe expression, try to get variable declarator
@@ -1323,7 +1323,6 @@ export const circle: SketchLineHelperKw = {
     const radiusExp = createLiteral(roundOff(radius, 2))
     const centerArray = createArrayExpression([x, y])
 
-    console.log('replaceExistingCallback2', replaceExistingCallback)
     if (replaceExistingCallback) {
       // debugger
       const result = replaceExistingCallback([
@@ -3968,18 +3967,30 @@ export const getArc = (
   callExp: CallExpressionKw
 ):
   | {
-      val: [Expr, Expr, Expr]
+      val: [Expr, Expr, Expr] | [Expr, Expr]
       tag?: Expr
     }
   | Error => {
   const angleStart = findKwArg(ARG_ANGLE_START, callExp)
   const angleEnd = findKwArg(ARG_ANGLE_END, callExp)
   const radius = findKwArg(ARG_RADIUS, callExp)
-  if (!angleStart || !angleEnd || !radius) {
-    return new Error(`arc call needs angleStart, angleEnd, and radius args`)
+  const isMissingAnyAngleKwArgs = !angleStart || !angleEnd || !radius
+
+  const interiorAbsolute = findKwArg(ARG_INTERIOR_ABSOLUTE, callExp)
+  const endAbsolute = findKwArg(ARG_END_ABSOLUTE, callExp)
+  const isMissingAnyEndKwArgs = !interiorAbsolute || !endAbsolute
+
+  if (!isMissingAnyAngleKwArgs) {
+    const tag = findKwArg(ARG_TAG, callExp)
+    return { val: [angleStart, angleEnd, radius], tag }
+  } else if (!isMissingAnyEndKwArgs) {
+    const tag = findKwArg(ARG_TAG, callExp)
+    return { val: [interiorAbsolute, endAbsolute], tag }
   }
-  const tag = findKwArg(ARG_TAG, callExp)
-  return { val: [angleStart, angleEnd, radius], tag }
+
+  return new Error(
+    `arc call needs [angleStart, angleEnd, radius] or [interiorAbsolute, endAbsolute] args`
+  )
 }
 
 /**

@@ -171,14 +171,14 @@ export class SceneInfra {
 
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
-      type: 'add-many',
+      type: 'set-many',
       overlays: {},
     }
     callbacks.forEach((cb) => {
       const overlay = cb()
       if (overlay?.type === 'set-one') {
         segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
-      } else if (overlay?.type === 'add-many') {
+      } else if (overlay?.type === 'set-many') {
         Object.assign(segmentOverlayPayload.overlays, overlay.overlays)
       }
     })
