@@ -170,9 +170,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: nextest-archive
-          # path: rust/nextest-archive.tar.zst
       - name: Run tests
-        # if: steps.path-changes.outputs.outside-kcl-samples == 'true'
         shell: bash
         run: |-
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
