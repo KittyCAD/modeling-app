@@ -558,14 +558,6 @@ function FileTreeContextMenu({
   )
 }
 
-interface FileTreeProps {
-  className?: string
-  file?: IndexLoaderData['file']
-  onNavigateToFile: (
-    focusableElement?: HTMLElement | React.MutableRefObject<HTMLElement | null>
-  ) => void
-}
-
 export const FileTreeMenu = ({
   onCreateFile,
   onCreateFolder,
@@ -680,39 +672,6 @@ export const useFileTreeOperations = () => {
     newTreeEntry,
     openInNewWindow,
   }
-}
-
-export const FileTree = ({
-  className = '',
-  onNavigateToFile: closePanel,
-}: FileTreeProps) => {
-  const {
-    createFile,
-    createFolder,
-    cloneFileOrDir,
-    openInNewWindow,
-    newTreeEntry,
-  } = useFileTreeOperations()
-
-  return (
-    <div className={className}>
-      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
-        <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
-        <FileTreeMenu
-          onCreateFile={() => createFile({ dryRun: true })}
-          onCreateFolder={() => createFolder({ dryRun: true })}
-        />
-      </div>
-      <FileTreeInner
-        onNavigateToFile={closePanel}
-        newTreeEntry={newTreeEntry}
-        onCreateFile={(name: string) => createFile({ dryRun: false, name })}
-        onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
-        onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
-        onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
-      />
-    </div>
-  )
 }
 
 export const FileTreeInner = ({
