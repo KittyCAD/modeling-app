@@ -224,16 +224,18 @@ test.describe('Testing loading external models', () => {
           await page.getByTestId('cmd-bar-arg-file-button').click()
           await handleFile
 
-          await cmdBar.progressCmdBar()
           await cmdBar.expectState({
             commandName: 'Add file to project',
+            currentArgKey: 'pathOpen file',
+            currentArgValue: '',
             headerArguments: {
-              Source: 'local',
-              Path: modelName,
-              ProjectName: 'testDefault',
               Method: 'Existing project',
+              Path: '',
+              Source: 'local',
+              ProjectName: 'testDefault',
             },
-            stage: 'review',
+            highlightedHeaderArg: 'path',
+            stage: 'arguments',
           })
           await cmdBar.progressCmdBar()
         }
