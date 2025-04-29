@@ -43,7 +43,6 @@ jobs:
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
-      - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Install just
         uses: taiki-e/install-action@just
@@ -166,7 +165,6 @@ jobs:
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
-      - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Download archive
         uses: actions/download-artifact@v4
@@ -180,18 +178,10 @@ jobs:
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
           ls -lah
           cd rust
-          cargo llvm-cov nextest --lcov --output-path lcov.info \
+          cargo nextest run\
            --retries=2 --no-fail-fast -P ci --archive-file nextest-archive.tar.zst \
-           --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} 2>&1 | tee /tmp/github-actions.log
+           --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
+           2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
-      - name: Upload to codecov.io
-        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          fail_ci_if_error: true
-          flags: rust
-          verbose: true
-          files: lcov.info
 
