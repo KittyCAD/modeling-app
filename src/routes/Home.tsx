@@ -235,7 +235,7 @@ const Home = () => {
                     bgClassName: '!bg-primary rounded-sm',
                     iconClassName: '!text-white',
                   }}
-                  data-testid="home-tutorial"
+                  data-testid="home-tutorial-button"
                 >
                   {onboardingStatus === '' ? 'Start' : 'Continue'} tutorial
                 </ActionButton>
