@@ -131,7 +131,7 @@ jobs:
           path: rust/nextest-archive.tar.zst
 
   run-test-artifacts:
-    name: cargo test
+    name: cargo test (shard ${{ matrix.partitionIndex}})
     runs-on:
       - runs-on=${{ github.run_id }}
       - runner=32cpu-linux-x64
