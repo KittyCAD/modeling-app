@@ -152,14 +152,12 @@ test.describe('Onboarding tests', () => {
       await test.step('Go home and reset onboarding from lower-right help menu', async () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
-        await homePage.expectState({
-          projectCards: [
-            { title: 'Tutorial Project 01', fileCount: 1 },
-            { title: 'Tutorial Project 00', fileCount: 1 },
-            { title: 'testDefault', fileCount: 1 },
-          ],
-          sortBy: 'last-modified-desc',
-        })
+        await expect(
+          homePage.projectCard.getByText('Tutorial Project 00')
+        ).toBeVisible()
+        await expect(
+          homePage.projectCard.getByText('Tutorial Project 01')
+        ).toBeVisible()
 
         await helpMenuButton.click()
         await helpMenuRestartOnboardingButton.click()

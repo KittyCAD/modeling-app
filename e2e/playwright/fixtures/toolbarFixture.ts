@@ -17,8 +17,8 @@ type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 export class ToolbarFixture {
   public page: Page
 
-  projectName: Locator
-  fileName: Locator
+  projectName!: Locator
+  fileName!: Locator
   extrudeButton!: Locator
   loftButton!: Locator
   sweepButton!: Locator
