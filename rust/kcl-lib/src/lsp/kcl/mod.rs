@@ -1287,8 +1287,46 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        // Get the character at the position.
+        let Some(ch) = current_code.chars().nth(pos) else {
+            return Ok(None);
+        };
+
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
+            // If we don't have an ast, but we are on a (, then get the string in front of the (
+            // and try to get the signature.
+            if ch == '(' {
+                let Some(last_word) = current_code[..pos].split_whitespace().last() else {
+                    return Ok(None);
+                };
+
+                // Get the function name.
+                let Some(signature) = self.stdlib_signatures.get(last_word) else {
+                    return Ok(None);
+                };
+
+                return Ok(Some(signature.clone()));
+            } else if ch == ',' {
+                // If we have a comma, but we don't have an ast, then get the string in front of
+                // the closest ( and try to get the signature.
+
+                // Find the last ( before the comma.
+                let Some(last_paren) = current_code[..pos].rfind('(') else {
+                    return Ok(None);
+                };
+                // Get the string in front of the (.
+                let Some(last_word) = current_code[..last_paren].split_whitespace().last() else {
+                    return Ok(None);
+                };
+                // Get the function name.
+                let Some(signature) = self.stdlib_signatures.get(last_word) else {
+                    return Ok(None);
+                };
+
+                return Ok(Some(signature.clone()));
+            }
+
             return Ok(None);
         };
 
@@ -1590,7 +1628,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    char_position
+    std::cmp::min(char_position, code.len() - 1)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {

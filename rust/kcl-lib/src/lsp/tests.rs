@@ -1120,6 +1120,122 @@ async fn test_kcl_lsp_signature_help() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_parens_trigger() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude("
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 14 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(signature_help.signatures[0].label, "extrude");
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_comma_trigger() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 10,"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 25 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(signature_help.signatures[0].label, "extrude");
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens() {
     let server = kcl_lsp_server(false).await.unwrap();
 

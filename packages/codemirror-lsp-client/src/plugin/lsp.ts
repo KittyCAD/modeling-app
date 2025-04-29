@@ -683,6 +683,15 @@ export class LanguageServerPlugin implements PluginValue {
 
     try {
       // Request signature help
+        console.log('requestSignatureHelp', {
+        textDocument: { uri: this.getDocUri() },
+        position: { line, character },
+        context: {
+          isRetrigger: false,
+          triggerKind: 1, // Invoked
+          triggerCharacter,
+        },
+      })
       const result = await this.client.textDocumentSignatureHelp({
         textDocument: { uri: this.getDocUri() },
         position: { line, character },
@@ -692,6 +701,8 @@ export class LanguageServerPlugin implements PluginValue {
           triggerCharacter,
         },
       })
+
+        console.log('result', result)
 
       if (!result?.signatures || result.signatures.length === 0) {
         return null
@@ -767,6 +778,8 @@ export class LanguageServerPlugin implements PluginValue {
       triggerCharacter
     )
 
+      console.log('tooltip', tooltip)
+
     if (tooltip) {
       // Create and show the tooltip manually
       const { pos: tooltipPos, create } = tooltip
@@ -780,6 +793,7 @@ export class LanguageServerPlugin implements PluginValue {
 
       // Position the tooltip
       const coords = view.coordsAtPos(tooltipPos)
+        console.log('coords', coords)
       if (coords) {
         tooltipElement.style.left = `${coords.left}px`
         tooltipElement.style.top = `${coords.bottom + 5}px`
