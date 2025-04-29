@@ -1873,11 +1873,6 @@ export const ModelingMachineProvider = ({
         groupId: 'modeling',
       },
       {
-        menuLabel: 'Design.Create with Zoo Text-To-CAD',
-        commandName: 'Text-to-CAD',
-        groupId: 'modeling',
-      },
-      {
         menuLabel: 'Design.Modify with Zoo Text-To-CAD',
         commandName: 'Prompt-to-edit',
         groupId: 'modeling',
