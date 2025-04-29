@@ -1,5 +1,5 @@
 ---
-title: "std::toFeet"
+title: "std::units::toFeet"
 excerpt: "Convert a number to feet from its current units."
 layout: manual
 ---

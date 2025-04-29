@@ -1,5 +1,5 @@
 ---
-title: "std::toInches"
+title: "std::units::toInches"
 excerpt: "Convert a number to inches from its current units."
 layout: manual
 ---

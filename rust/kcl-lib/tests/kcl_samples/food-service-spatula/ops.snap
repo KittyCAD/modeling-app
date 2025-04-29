@@ -4,6 +4,215 @@ description: Operations executed food-service-spatula.kcl
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toDegrees",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toDegrees",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toDegrees",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "units::toRadians",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -33,79 +242,6 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toDegrees",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
       "name": "slot",
       "functionSourceRange": [],
       "unlabeledArg": null,
@@ -117,158 +253,12 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toDegrees",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
       "name": "slot",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toDegrees",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -426,6 +416,21 @@ description: Operations executed food-service-spatula.kcl
     "sourceRange": []
   },
   {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
     "type": "KclStdLibCall",
     "name": "offsetPlane",
     "unlabeledArg": {
@@ -454,21 +459,6 @@ description: Operations executed food-service-spatula.kcl
       }
     },
     "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -810,65 +800,6 @@ description: Operations executed food-service-spatula.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -899,5 +830,74 @@ description: Operations executed food-service-spatula.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

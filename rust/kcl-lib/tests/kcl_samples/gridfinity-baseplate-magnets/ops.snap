@@ -4,47 +4,6 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
 ---
 [
   {
-    "type": "KclStdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "face",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -60,7 +19,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupEnd"
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -93,6 +64,47 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -242,65 +254,6 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "KclStdLibCall",
-    "name": "offsetPlane",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    },
-    "labeledArgs": {
-      "offset": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "face",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "KclStdLibCall",
@@ -410,6 +363,47 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "sourceRange": []
   },
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "face",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    },
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "arcDegrees": {
         "value": {
@@ -1094,15 +1088,19 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "magnetBase",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
     },
-    "sourceRange": []
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1118,6 +1116,82 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetCenterCutout",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -1146,35 +1220,15 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetBase",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1309,6 +1363,17 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         },
         "sourceRange": []
       }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "magnetBase",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
     "sourceRange": []
   },
@@ -1343,89 +1408,6 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "magnetBase",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "magnetCenterCutout",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -1914,5 +1896,23 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

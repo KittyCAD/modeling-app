@@ -174,7 +174,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -182,7 +182,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },

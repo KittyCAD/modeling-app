@@ -33,6 +33,474 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -25.0,
+        "y": 5.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -24.833425848836807,
+        "y": 22.99722453489577,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -25.16657415116319,
+        "y": -13.002775465104229,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 4.0,
+        "y": 200.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -30.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -30.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -30.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 0.0,
+          "y": 10.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 5.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 180.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 5.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 180.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 5.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 180.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc",
+        "radius": 4.0,
+        "offset": {
+          "unit": "degrees",
+          "value": 180.0
+        }
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 30.0,
+          "y": -0.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 30.0,
+          "y": -1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": 30.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "line",
+        "end": {
+          "x": -0.0,
+          "y": -10.0,
+          "z": 0.0
+        },
+        "relative": true
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.0,
+          "y": 10.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 0.3331,
+          "y": 9.9944,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": -0.3331,
+          "y": 9.9944,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "tangential_arc_to",
+        "to": {
+          "x": 8.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "angle_snap_increment": null
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -74,13 +542,6 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -95,6 +556,13 @@ description: Artifact commands food-service-spatula.kcl
     "range": [],
     "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -185,354 +653,9 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -25.0,
-        "y": 5.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -30.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 5.0,
-        "offset": {
-          "unit": "degrees",
-          "value": 180.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 30.0,
-          "y": -0.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc_to",
-        "to": {
-          "x": 0.0,
-          "y": 10.0,
-          "z": 0.0
-        },
-        "angle_snap_increment": null
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -24.833425848836807,
-        "y": 22.99722453489577,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -30.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 5.0,
-        "offset": {
-          "unit": "degrees",
-          "value": 180.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 30.0,
-          "y": -1.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc_to",
-        "to": {
-          "x": 0.3331,
-          "y": 9.9944,
-          "z": 0.0
-        },
-        "angle_snap_increment": null
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -25.16657415116319,
-        "y": -13.002775465104229,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -30.0,
-          "y": -1.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 5.0,
-        "offset": {
-          "unit": "degrees",
-          "value": 180.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 30.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc_to",
-        "to": {
-          "x": -0.3331,
-          "y": 9.9944,
-          "z": 0.0
-        },
-        "angle_snap_increment": null
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -578,15 +701,6 @@ description: Artifact commands food-service-spatula.kcl
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
       "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -620,6 +734,14 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
     }
   },
@@ -627,8 +749,459 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -644,28 +1217,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -682,37 +1237,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -729,37 +1257,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -776,37 +1277,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -823,37 +1297,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -870,37 +1317,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -917,37 +1337,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -964,37 +1357,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1011,18 +1377,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
@@ -1039,37 +1397,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1086,37 +1417,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1133,37 +1437,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1180,37 +1457,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1227,37 +1477,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1274,37 +1497,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1321,37 +1517,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1368,37 +1537,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1415,28 +1557,24 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "radius": 5.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "radius": 5.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
@@ -1518,13 +1656,6 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -1538,7 +1669,23 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -1682,6 +1829,14 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
     }
   },
@@ -1689,8 +1844,189 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1706,28 +2042,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1744,37 +2062,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1791,37 +2082,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1838,18 +2102,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
@@ -1866,37 +2122,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1913,37 +2142,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -1960,37 +2162,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2007,28 +2182,24 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "radius": 4.0,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   },
   {
@@ -2062,9 +2233,9 @@ description: Artifact commands food-service-spatula.kcl
         "z": 75.921946
       },
       "x_axis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693
+        "z": -0.9396927112094517
       },
       "y_axis": {
         "x": 0.0,
@@ -2086,17 +2257,10 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.939693,
+        "x": 0.9396927112094517,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.342019894888923
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
     }
   },
   {
@@ -2116,7 +2280,23 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -2305,9 +2485,9 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.939693,
+        "x": 0.9396927112094517,
         "y": -0.0,
-        "z": 0.34202
+        "z": 0.342019894888923
       }
     }
   },
@@ -2326,6 +2506,14 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
     }
   },
@@ -2333,8 +2521,216 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2350,28 +2746,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2388,37 +2766,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2435,37 +2786,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2482,37 +2806,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2529,18 +2826,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
@@ -2557,37 +2846,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2604,37 +2866,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2651,43 +2886,6 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2698,142 +2896,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 4.0,
-        "y": 200.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 10.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc",
-        "radius": 4.0,
-        "offset": {
-          "unit": "degrees",
-          "value": 180.0
-        }
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": -0.0,
-          "y": -10.0,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "tangential_arc_to",
-        "to": {
-          "x": 8.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "angle_snap_increment": null
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
     }
   },
   {
@@ -2863,6 +2929,14 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
     }
   },
@@ -2870,8 +2944,108 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2887,28 +3061,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2925,37 +3081,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
     }
   },
   {
@@ -2972,18 +3101,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
@@ -3000,43 +3121,6 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3047,94 +3131,10 @@ description: Artifact commands food-service-spatula.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 5.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 5.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 4.0,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

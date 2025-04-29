@@ -1,5 +1,3 @@
-#[cfg(feature = "artifact-graph")]
-use std::collections::HashMap;
 use std::{
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
@@ -53,8 +51,11 @@ where
     settings.set_snapshot_path(Path::new("..").join(&test.output_dir));
     settings.set_prepend_module_to_snapshot(false);
     settings.set_description(format!("{operation} {}.kcl", &test.name));
-    // Sorting maps makes them easier to diff.
-    settings.set_sort_maps(true);
+    // We don't do it on the flowchart
+    if operation != "Artifact graph flowchart" {
+        // Sorting maps makes them easier to diff.
+        settings.set_sort_maps(true);
+    }
     // Replace UUIDs with the string "[uuid]", because otherwise the tests would constantly
     // be changing the UUID. This is a stopgap measure until we make the engine more deterministic.
     settings.add_filter(
@@ -157,12 +158,9 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     let ast = crate::Program::parse_no_errs(&input).unwrap();
 
     // Run the program.
-    let exec_res = crate::test_server::execute_and_snapshot_ast_single_threaded(
-        ast,
-        Some(test.input_dir.join(&test.entry_point)),
-        export_step,
-    )
-    .await;
+    let exec_res =
+        crate::test_server::execute_and_snapshot_ast(ast, Some(test.input_dir.join(&test.entry_point)), export_step)
+            .await;
     match exec_res {
         Ok((exec_state, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
@@ -259,35 +257,23 @@ fn assert_common_snapshots(
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
+    let operations = {
+        // Make the operations deterministic by sorting them by their module ID,
+        // then by their range.
+        let mut operations = operations.clone();
+        operations.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        operations
+    };
     let artifact_commands = {
         // Due to our newfound concurrency, we're going to mess with the
         // artifact_commands a bit -- we're going to maintain the order,
         // but only for a given module ID. This means the artifact_commands
         // is no longer meaningful, but it is deterministic and will hopefully
         // catch meaningful changes in behavior.
+        // We sort by the source range, like we do for the operations.
 
-        let mut artifact_commands_map = artifact_commands
-            .into_iter()
-            .map(|v| (v.range.module_id().as_usize(), v))
-            .fold(
-                HashMap::<usize, Vec<ArtifactCommand>>::new(),
-                |mut map, (module_id, el)| {
-                    let mut v = map.remove(&module_id).unwrap_or_default();
-                    v.push(el);
-                    map.insert(module_id, v);
-                    map
-                },
-            );
-
-        let mut artifact_commands_keys = artifact_commands_map.keys().cloned().collect::<Vec<_>>();
-        artifact_commands_keys.sort();
-
-        let artifact_commands: Vec<ArtifactCommand> = artifact_commands_keys
-            .iter()
-            .flat_map(|idx| artifact_commands_map.remove(idx).unwrap())
-            .collect();
-
-        assert_eq!(0, artifact_commands_map.len());
+        let mut artifact_commands = artifact_commands.clone();
+        artifact_commands.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         artifact_commands
     };
 
@@ -316,6 +302,10 @@ fn assert_common_snapshots(
     }));
     let result3 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact graph flowchart", || {
+            let mut artifact_graph = artifact_graph.clone();
+            // Sort the map by artifact where we can.
+            artifact_graph.sort();
+
             let flowchart = artifact_graph
                 .to_mermaid_flowchart()
                 .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));

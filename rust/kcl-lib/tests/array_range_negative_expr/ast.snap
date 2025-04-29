@@ -35,48 +35,24 @@ description: Result of parsing array_range_negative_expr.kcl
             "endInclusive": true,
             "start": 0,
             "startElement": {
-              "arguments": [
-                {
-                  "argument": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "5",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 5.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "operator": "-",
-                  "start": 0,
-                  "type": "UnaryExpression",
-                  "type": "UnaryExpression"
-                }
-              ],
-              "callee": {
-                "abs_path": false,
+              "argument": {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "int",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "raw": "5",
                 "start": 0,
-                "type": "Name"
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               },
               "commentStart": 0,
               "end": 0,
+              "operator": "-",
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "UnaryExpression",
+              "type": "UnaryExpression"
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"

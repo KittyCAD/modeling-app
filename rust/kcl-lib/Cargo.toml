@@ -40,7 +40,7 @@ git_rev = "0.1.0"
 gltf-json = "1.4.1"
 http = { workspace = true }
 image = { version = "0.25.6", default-features = false, features = ["png"] }
-indexmap = { workspace = true, features = ["serde"] }
+indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.13.0"
 kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }

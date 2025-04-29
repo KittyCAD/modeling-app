@@ -1,5 +1,5 @@
 ---
-title: "std::toCentimeters"
+title: "std::units::toCentimeters"
 excerpt: "Convert a number to centimeters from its current units."
 layout: manual
 ---

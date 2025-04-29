@@ -1,5 +1,5 @@
 ---
-title: "std::toYards"
+title: "std::units::toYards"
 excerpt: "Converts a number to yards from its current units."
 layout: manual
 ---

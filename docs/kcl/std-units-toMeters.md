@@ -1,5 +1,5 @@
 ---
-title: "std::toMeters"
+title: "std::units::toMeters"
 excerpt: "Convert a number to meters from its current units."
 layout: manual
 ---

@@ -7,26 +7,12 @@ description: Operations executed exhaust-manifold.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "primaryTube",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupBegin",
@@ -40,13 +26,10 @@ description: Operations executed exhaust-manifold.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "toRadians",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -54,7 +37,15 @@ description: Operations executed exhaust-manifold.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "type": "GroupBegin",
@@ -68,7 +59,37 @@ description: Operations executed exhaust-manifold.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -256,141 +277,6 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "path": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "sweep",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "primaryTube",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
           "type": "Object",
           "value": {
             "origin": {
@@ -568,141 +454,6 @@ description: Operations executed exhaust-manifold.kcl
     "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "path": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "sweep",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "primaryTube",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -890,141 +641,6 @@ description: Operations executed exhaust-manifold.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {
-      "path": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "sweep",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "primaryTube",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "sin",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cos",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
           "type": "Object",
           "value": {
             "origin": {
@@ -1076,7 +692,7 @@ description: Operations executed exhaust-manifold.kcl
               "value": [
                 {
                   "type": "Number",
-                  "value": -0.4257792915650726,
+                  "value": -0.42577929156507266,
                   "ty": {
                     "type": "Known",
                     "type": "Count"
@@ -1220,6 +836,126 @@ description: Operations executed exhaust-manifold.kcl
   },
   {
     "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
       "tool": {
         "value": {
           "type": "Sketch",
@@ -1269,7 +1005,123 @@ description: Operations executed exhaust-manifold.kcl
     }
   },
   {
-    "type": "GroupEnd"
+    "labeledArgs": {
+      "path": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "sweep",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "path": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "sweep",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "path": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "sweep",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "primaryTube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "primaryTube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "primaryTube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "primaryTube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -1613,5 +1465,41 @@ description: Operations executed exhaust-manifold.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

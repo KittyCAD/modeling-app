@@ -717,36 +717,8 @@ impl ExecutorContext {
         self.run_concurrent(program, exec_state, false).await
     }
 
-    /// Perform the execution of a program.
-    ///
-    /// You can optionally pass in some initialization memory for partial
-    /// execution.
-    ///
-    /// To access non-fatal errors and warnings, extract them from the `ExecState`.
-    pub async fn run_single_threaded(
-        &self,
-        program: &crate::Program,
-        exec_state: &mut ExecState,
-    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
-
-        #[cfg(test)]
-        {
-            exec_state.single_threaded = true;
-        }
-
-        self.eval_prelude(exec_state, SourceRange::synthetic())
-            .await
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        self.inner_run(program, exec_state, false).await
-    }
-
-    /// Perform the execution of a program using an (experimental!) concurrent
+    /// Perform the execution of a program using a concurrent
     /// execution model. This has the same signature as [Self::run].
-    ///
-    /// For now -- do not use this unless you're willing to accept some
-    /// breakage.
     ///
     /// You can optionally pass in some initialization memory for partial
     /// execution.
@@ -1296,20 +1268,6 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_warn_on_deprecated() {
-        let text = "p = pi()";
-        let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
-        assert_eq!(errs.len(), 1);
-        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
-        assert!(
-            errs[0].message.contains("`pi` is deprecated"),
-            "unexpected warning message: {}",
-            errs[0].message
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
         let ast = r#"fn def = (x) => {
   return x
@@ -1772,67 +1730,6 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         assert_eq!(
             7.4,
             mem_get_json(result.exec_state.stack(), result.mem_env, "thing")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_default() {
-        let ast = r#"const inMm = fromMm(25.4)
-const inInches = fromInches(1)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            25.4,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-        );
-        assert_eq!(
-            25.4,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_overriden() {
-        let ast = r#"@settings(defaultLengthUnit = inch)
-const inMm = fromMm(25.4)
-const inInches = fromInches(1)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-                .round()
-        );
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_overriden_in() {
-        let ast = r#"@settings(defaultLengthUnit = in)
-const inMm = fromMm(25.4)
-const inInches = fromInches(2)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-                .round()
-        );
-        assert_eq!(
-            2.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
                 .as_f64()
                 .unwrap()
         );

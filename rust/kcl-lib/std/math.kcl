@@ -9,11 +9,11 @@ import Point2d from "std::types"
 /// circumference = 70
 ///
 /// exampleSketch = startSketchOn(XZ)
-///  |> circle(center = [0, 0], radius = circumference / (2 * PI))
+///  |> circle(center = [0, 0], radius = (circumference / (2 * PI)): number(mm))
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-export PI = 3.14159265358979323846264338327950288_
+export PI = 3.14159265358979323846264338327950288_?
 
 /// The value of Euler’s number `e`.
 ///

@@ -166,13 +166,6 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -186,7 +179,23 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -204,15 +213,6 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   }
 ]

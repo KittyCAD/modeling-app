@@ -58,6 +58,10 @@ export const systemIOMachine = setup({
           data: { requestedProjectName: string }
         }
       | {
+          type: SystemIOMachineEvents.done_deleteProject
+          output: { message: string; name: string }
+        }
+      | {
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
@@ -163,6 +167,12 @@ export const systemIOMachine = setup({
       requestedTextToCadGeneration: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.generateTextToCAD)
         return event.data
+      },
+    }),
+    [SystemIOMachineActions.setLastProjectDeleteRequest]: assign({
+      lastProjectDeleteRequest: ({ event }) => {
+        assertEvent(event, SystemIOMachineEvents.done_deleteProject)
+        return { project: event.output.name }
       },
     }),
   },
@@ -274,6 +284,9 @@ export const systemIOMachine = setup({
       requestedPrompt: '',
       requestedProjectName: NO_PROJECT_DIRECTORY,
       isProjectNew: true,
+    },
+    lastProjectDeleteRequest: {
+      project: NO_PROJECT_DIRECTORY,
     },
   }),
   states: {
@@ -401,7 +414,10 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess],
+          actions: [
+            SystemIOMachineActions.toastSuccess,
+            SystemIOMachineActions.setLastProjectDeleteRequest,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
