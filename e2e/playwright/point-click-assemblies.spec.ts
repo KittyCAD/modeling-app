@@ -106,9 +106,8 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        import "cylinder.kcl" as cylinder
-        cylinder
-      `,
+          import "cylinder.kcl" as cylinder
+          `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
@@ -154,11 +153,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await cmdBar.progressCmdBar()
         await editor.expectEditor.toContain(
           `
-        import "cylinder.kcl" as cylinder
-        import "bracket.kcl" as bracket
-        cylinder
-        bracket
-      `,
+            import "cylinder.kcl" as cylinder
+            import "bracket.kcl" as bracket
+          `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
@@ -174,8 +171,7 @@ test.describe('Point-and-click assemblies tests', () => {
     }
   )
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
+  test(
     `Insert the bracket part into an assembly and transform it`,
     { tag: ['@electron'] },
     async ({
@@ -231,9 +227,8 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        import "bracket.kcl" as bracket
-        bracket
-      `,
+            import "bracket.kcl" as bracket
+          `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
@@ -287,9 +282,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        bracket
-          |> translate(x = 100, y = 0.1, z = 0.2)
-        `,
+          bracket
+            |> translate(x = 100, y = 0.1, z = 0.2)
+          `,
           { shouldNormalise: true }
         )
         // Expect translated part in the scene
@@ -336,10 +331,10 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        bracket
-          |> translate(x = 100, y = 0.1, z = 0.2)
-          |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
-        `,
+          bracket
+            |> translate(x = 100, y = 0.1, z = 0.2)
+            |> rotate(roll = 0.1, pitch = 0.2, yaw = 0.3)
+          `,
           { shouldNormalise: true }
         )
         // Expect no change in the scene as the rotations are tiny
