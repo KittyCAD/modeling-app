@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 3,
-        "end": 43,
+        "end": 49,
         "id": {
           "commentStart": 3,
           "end": 8,
@@ -21,94 +21,92 @@ expression: actual
             "body": [
               {
                 "argument": {
-                  "commentStart": 33,
-                  "end": 37,
+                  "commentStart": 39,
+                  "end": 43,
                   "raw": "true",
-                  "start": 33,
+                  "start": 39,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
                 },
-                "commentStart": 26,
-                "end": 37,
-                "start": 26,
+                "commentStart": 32,
+                "end": 43,
+                "start": 32,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
               }
             ],
-            "commentStart": 16,
-            "end": 43,
-            "start": 16
+            "commentStart": 22,
+            "end": 49,
+            "start": 22
           },
-          "commentStart": 8,
-          "end": 43,
+          "commentStart": 11,
+          "end": 49,
           "params": [
             {
               "type": "Parameter",
               "identifier": {
-                "commentStart": 9,
-                "end": 14,
+                "commentStart": 12,
+                "end": 17,
                 "name": "param",
-                "start": 9,
+                "start": 12,
                 "type": "Identifier"
               }
             }
           ],
-          "start": 8,
+          "start": 11,
           "type": "FunctionExpression",
           "type": "FunctionExpression"
         },
         "start": 3,
         "type": "VariableDeclarator"
       },
-      "end": 43,
+      "end": 49,
       "kind": "fn",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     },
     {
-      "commentStart": 48,
-      "end": 60,
+      "commentStart": 54,
+      "end": 66,
       "expression": {
-        "arguments": [
-          {
-            "commentStart": 54,
-            "end": 59,
-            "raw": "false",
-            "start": 54,
-            "type": "Literal",
-            "type": "Literal",
-            "value": false
-          }
-        ],
         "callee": {
           "abs_path": false,
-          "commentStart": 48,
-          "end": 53,
+          "commentStart": 54,
+          "end": 59,
           "name": {
-            "commentStart": 48,
-            "end": 53,
+            "commentStart": 54,
+            "end": 59,
             "name": "thing",
-            "start": 48,
+            "start": 54,
             "type": "Identifier"
           },
           "path": [],
-          "start": 48,
+          "start": 54,
           "type": "Name"
         },
-        "commentStart": 48,
-        "end": 60,
-        "start": 48,
-        "type": "CallExpression",
-        "type": "CallExpression"
+        "commentStart": 54,
+        "end": 66,
+        "start": 54,
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": {
+          "commentStart": 60,
+          "end": 65,
+          "raw": "false",
+          "start": 60,
+          "type": "Literal",
+          "type": "Literal",
+          "value": false
+        }
       },
-      "start": 48,
+      "start": 54,
       "type": "ExpressionStatement",
       "type": "ExpressionStatement"
     }
   ],
   "commentStart": 0,
-  "end": 60,
+  "end": 66,
   "start": 0
 }

@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 3,
-        "end": 52,
+        "end": 58,
         "id": {
           "commentStart": 3,
           "end": 4,
@@ -22,65 +22,65 @@ expression: actual
               {
                 "argument": {
                   "abs_path": false,
-                  "commentStart": 24,
-                  "end": 26,
+                  "commentStart": 30,
+                  "end": 32,
                   "name": {
-                    "commentStart": 24,
-                    "end": 26,
+                    "commentStart": 30,
+                    "end": 32,
                     "name": "sg",
-                    "start": 24,
+                    "start": 30,
                     "type": "Identifier"
                   },
                   "path": [],
-                  "start": 24,
+                  "start": 30,
                   "type": "Name",
                   "type": "Name"
                 },
-                "commentStart": 17,
-                "end": 26,
-                "start": 17,
+                "commentStart": 23,
+                "end": 32,
+                "start": 23,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
               },
               {
                 "argument": {
                   "abs_path": false,
-                  "commentStart": 42,
-                  "end": 44,
+                  "commentStart": 48,
+                  "end": 50,
                   "name": {
-                    "commentStart": 42,
-                    "end": 44,
+                    "commentStart": 48,
+                    "end": 50,
                     "name": "sg",
-                    "start": 42,
+                    "start": 48,
                     "type": "Identifier"
                   },
                   "path": [],
-                  "start": 42,
+                  "start": 48,
                   "type": "Name",
                   "type": "Name"
                 },
-                "commentStart": 35,
-                "end": 44,
-                "start": 35,
+                "commentStart": 41,
+                "end": 50,
+                "start": 41,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
               }
             ],
-            "commentStart": 7,
-            "end": 52,
-            "start": 7
+            "commentStart": 13,
+            "end": 58,
+            "start": 13
           },
-          "commentStart": 4,
-          "end": 52,
+          "commentStart": 7,
+          "end": 58,
           "params": [],
-          "start": 4,
+          "start": 7,
           "type": "FunctionExpression",
           "type": "FunctionExpression"
         },
         "start": 3,
         "type": "VariableDeclarator"
       },
-      "end": 52,
+      "end": 58,
       "kind": "fn",
       "start": 0,
       "type": "VariableDeclaration",
@@ -88,6 +88,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 52,
+  "end": 58,
   "start": 0
 }

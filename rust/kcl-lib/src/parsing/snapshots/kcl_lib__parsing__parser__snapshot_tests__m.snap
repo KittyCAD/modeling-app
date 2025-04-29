@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 21,
+        "end": 20,
         "id": {
           "commentStart": 0,
           "end": 3,
@@ -18,19 +18,19 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "end": 21,
+          "end": 20,
           "properties": [
             {
-              "commentStart": 7,
+              "commentStart": 8,
               "end": 12,
               "key": {
-                "commentStart": 7,
-                "end": 8,
+                "commentStart": 8,
+                "end": 9,
                 "name": "a",
-                "start": 7,
+                "start": 8,
                 "type": "Identifier"
               },
-              "start": 7,
+              "start": 8,
               "type": "ObjectProperty",
               "value": {
                 "commentStart": 11,
@@ -47,7 +47,7 @@ expression: actual
             },
             {
               "commentStart": 14,
-              "end": 19,
+              "end": 18,
               "key": {
                 "commentStart": 14,
                 "end": 15,
@@ -58,10 +58,10 @@ expression: actual
               "start": 14,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 18,
-                "end": 19,
+                "commentStart": 17,
+                "end": 18,
                 "raw": "2",
-                "start": 18,
+                "start": 17,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -78,61 +78,61 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 21,
+      "end": 20,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     },
     {
-      "commentStart": 26,
+      "commentStart": 25,
       "declaration": {
-        "commentStart": 26,
-        "end": 51,
+        "commentStart": 25,
+        "end": 50,
         "id": {
-          "commentStart": 26,
-          "end": 32,
+          "commentStart": 25,
+          "end": 31,
           "name": "height",
-          "start": 26,
+          "start": 25,
           "type": "Identifier"
         },
         "init": {
-          "commentStart": 35,
+          "commentStart": 34,
           "elements": [
             {
-              "commentStart": 36,
-              "end": 47,
+              "commentStart": 35,
+              "end": 46,
               "left": {
-                "commentStart": 36,
+                "commentStart": 35,
                 "computed": false,
-                "end": 44,
+                "end": 43,
                 "object": {
-                  "commentStart": 36,
-                  "end": 39,
+                  "commentStart": 35,
+                  "end": 38,
                   "name": "obj",
-                  "start": 36,
+                  "start": 35,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "property": {
-                  "commentStart": 40,
-                  "end": 43,
+                  "commentStart": 39,
+                  "end": 42,
                   "raw": "\"a\"",
-                  "start": 40,
+                  "start": 39,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "a"
                 },
-                "start": 36,
+                "start": 35,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "operator": "-",
               "right": {
-                "commentStart": 46,
-                "end": 47,
+                "commentStart": 45,
+                "end": 46,
                 "raw": "1",
-                "start": 46,
+                "start": 45,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -140,15 +140,15 @@ expression: actual
                   "suffix": "None"
                 }
               },
-              "start": 36,
+              "start": 35,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 49,
-              "end": 50,
+              "commentStart": 48,
+              "end": 49,
               "raw": "0",
-              "start": 49,
+              "start": 48,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -157,22 +157,22 @@ expression: actual
               }
             }
           ],
-          "end": 51,
-          "start": 35,
+          "end": 50,
+          "start": 34,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         },
-        "start": 26,
+        "start": 25,
         "type": "VariableDeclarator"
       },
-      "end": 51,
+      "end": 50,
       "kind": "const",
-      "start": 26,
+      "start": 25,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "commentStart": 0,
-  "end": 51,
+  "end": 50,
   "start": 0
 }

@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 22,
+        "end": 20,
         "id": {
           "commentStart": 0,
           "end": 3,
@@ -18,11 +18,11 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "end": 22,
+          "end": 20,
           "properties": [
             {
               "commentStart": 8,
-              "end": 13,
+              "end": 12,
               "key": {
                 "commentStart": 8,
                 "end": 9,
@@ -33,10 +33,10 @@ expression: actual
               "start": 8,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 12,
-                "end": 13,
+                "commentStart": 11,
+                "end": 12,
                 "raw": "1",
-                "start": 12,
+                "start": 11,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -46,22 +46,22 @@ expression: actual
               }
             },
             {
-              "commentStart": 15,
-              "end": 20,
+              "commentStart": 14,
+              "end": 18,
               "key": {
-                "commentStart": 15,
-                "end": 16,
+                "commentStart": 14,
+                "end": 15,
                 "name": "b",
-                "start": 15,
+                "start": 14,
                 "type": "Identifier"
               },
-              "start": 15,
+              "start": 14,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 19,
-                "end": 20,
+                "commentStart": 17,
+                "end": 18,
                 "raw": "2",
-                "start": 19,
+                "start": 17,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -78,61 +78,61 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 22,
+      "end": 20,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     },
     {
-      "commentStart": 27,
+      "commentStart": 25,
       "declaration": {
-        "commentStart": 27,
-        "end": 53,
+        "commentStart": 25,
+        "end": 51,
         "id": {
-          "commentStart": 27,
-          "end": 33,
+          "commentStart": 25,
+          "end": 31,
           "name": "height",
-          "start": 27,
+          "start": 25,
           "type": "Identifier"
         },
         "init": {
-          "commentStart": 36,
+          "commentStart": 34,
           "elements": [
             {
-              "commentStart": 37,
-              "end": 49,
+              "commentStart": 35,
+              "end": 47,
               "left": {
-                "commentStart": 37,
+                "commentStart": 35,
                 "computed": false,
-                "end": 45,
+                "end": 43,
                 "object": {
-                  "commentStart": 37,
-                  "end": 40,
+                  "commentStart": 35,
+                  "end": 38,
                   "name": "obj",
-                  "start": 37,
+                  "start": 35,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "property": {
-                  "commentStart": 41,
-                  "end": 44,
+                  "commentStart": 39,
+                  "end": 42,
                   "raw": "\"a\"",
-                  "start": 41,
+                  "start": 39,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "a"
                 },
-                "start": 37,
+                "start": 35,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "operator": "-",
               "right": {
-                "commentStart": 48,
-                "end": 49,
+                "commentStart": 46,
+                "end": 47,
                 "raw": "1",
-                "start": 48,
+                "start": 46,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -140,15 +140,15 @@ expression: actual
                   "suffix": "None"
                 }
               },
-              "start": 37,
+              "start": 35,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "commentStart": 51,
-              "end": 52,
+              "commentStart": 49,
+              "end": 50,
               "raw": "0",
-              "start": 51,
+              "start": 49,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -157,22 +157,22 @@ expression: actual
               }
             }
           ],
-          "end": 53,
-          "start": 36,
+          "end": 51,
+          "start": 34,
           "type": "ArrayExpression",
           "type": "ArrayExpression"
         },
-        "start": 27,
+        "start": 25,
         "type": "VariableDeclarator"
       },
-      "end": 53,
+      "end": 51,
       "kind": "const",
-      "start": 27,
+      "start": 25,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "commentStart": 0,
-  "end": 53,
+  "end": 51,
   "start": 0
 }
