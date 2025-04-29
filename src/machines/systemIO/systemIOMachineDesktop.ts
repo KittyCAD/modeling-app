@@ -204,7 +204,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
         return {
           message: 'File created successfully',
-          fileName: input.requestedFileName,
+          fileName: newFileName,
           projectName: newProjectName,
         }
       }

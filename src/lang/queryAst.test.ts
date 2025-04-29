@@ -3,7 +3,8 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 import {
   createArrayExpression,
   createCallExpression,
-  createCallExpressionStdLib,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createLiteral,
   createPipeSubstitution,
 } from '@src/lang/create'
@@ -28,6 +29,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 
 beforeAll(async () => {
   await initPromise
@@ -721,20 +723,23 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
       variables: {},
       pathToNode: sketchPathToNode,
       expressions: [
-        createCallExpressionStdLib(
-          'lineTo', // We are forcing lineTo!
-          [
+        createCallExpressionStdLibKw('line', null, [
+          createLabeledArg(
+            ARG_END_ABSOLUTE,
             createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
-            ]),
-            createPipeSubstitution(),
-          ]
-        ),
+                []
+              ),
+            ])
+          ),
+        ]),
       ],
     })
     if (err(modifiedAst)) throw modifiedAst
@@ -748,7 +753,7 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   |> xLine(length = -0.15)
   |> line([-0.02, 0.21], %)
   |> line([-0.08, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 `
     expect(recasted).toEqual(expectedCode)
   })

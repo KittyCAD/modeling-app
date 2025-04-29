@@ -277,7 +277,7 @@ jobs:
     timeout-minutes: 60
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
-    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}:${{ matrix.shardIndex }}:${{ matrix.shardTotal }}
+    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
     strategy:
       fail-fast: false
       matrix:
