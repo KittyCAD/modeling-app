@@ -6,7 +6,7 @@ import { keymap } from '@codemirror/view'
 import type { LanguageServerPlugin } from './lsp'
 import { offsetToPos, showErrorMessage } from './util'
 
-export default function lspAutocompleteExt(
+export default function lspGoToDefinitionExt(
   plugin: ViewPlugin<LanguageServerPlugin>
 ): Extension {
   return [

@@ -4,6 +4,7 @@ import type {
   CompletionResult,
 } from '@codemirror/autocomplete'
 import { completeFromList, snippetCompletion } from '@codemirror/autocomplete'
+import type { Action, Diagnostic } from '@codemirror/lint'
 import { linter } from '@codemirror/lint'
 import type { Extension, StateEffect } from '@codemirror/state'
 import { Facet, Transaction } from '@codemirror/state'
@@ -39,6 +40,9 @@ import {
   showErrorMessage,
 } from './util'
 import { isArray } from '../lib/utils'
+import lspGoToDefinitionExt from './go-to-definition'
+import lspRenameExt from './rename'
+import lspSignatureHelpExt from './signature-help'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -49,6 +53,13 @@ export const workspaceFolders = Facet.define<
   LSP.WorkspaceFolder[],
   LSP.WorkspaceFolder[]
 >({ combine: useLast })
+
+const severityMap: Record<DiagnosticSeverity, Diagnostic['severity']> = {
+  [DiagnosticSeverity.Error]: 'error',
+  [DiagnosticSeverity.Warning]: 'warning',
+  [DiagnosticSeverity.Information]: 'info',
+  [DiagnosticSeverity.Hint]: 'info',
+}
 
 /**
  * Result of a definition lookup operation
@@ -343,7 +354,7 @@ export class LanguageServerPlugin implements PluginValue {
       triggerCharacter,
     }: {
       triggerKind: CompletionTriggerKind
-      triggerCharacter: string | undefined
+      triggerCharacter?: string
     }
   ): Promise<CompletionResult | null> {
     if (
@@ -1174,7 +1185,7 @@ export class LanguageServerPlugin implements PluginValue {
             params
           )
           // this is sometimes slower than our actual typing.
-          this.processDiagnostics(params)
+          await this.processDiagnostics(params)
           break
         case 'window/logMessage':
           console.log(
@@ -1199,25 +1210,73 @@ export class LanguageServerPlugin implements PluginValue {
     this.processLspNotification?.(this, notification)
   }
 
-  processDiagnostics(params: PublishDiagnosticsParams) {
+  async processDiagnostics(params: PublishDiagnosticsParams) {
     if (params.uri !== this.getDocUri()) return
 
     // Commented to avoid the lint.  See TODO below.
-    // const diagnostics =
-    params.diagnostics
-      .map(({ range, message, severity }) => ({
-        from: posToOffset(this.view.state.doc, range.start)!,
-        to: posToOffset(this.view.state.doc, range.end)!,
-        severity: (
-          {
-            [DiagnosticSeverity.Error]: 'error',
-            [DiagnosticSeverity.Warning]: 'warning',
-            [DiagnosticSeverity.Information]: 'info',
-            [DiagnosticSeverity.Hint]: 'info',
-          } as const
-        )[severity!],
-        message,
-      }))
+    const rawDiagnostics = params.diagnostics.map(
+      async ({ range, message, severity, code }) => {
+        const actions = await this.requestCodeActions(range, [code as string])
+
+        const codemirrorActions = actions?.map(
+          (action): Action => ({
+            name:
+              'command' in action && typeof action.command === 'object'
+                ? action.command?.title || action.title
+                : action.title,
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            apply: async () => {
+              if ('edit' in action && action.edit?.changes) {
+                const changes = action.edit.changes[this.getDocUri()]
+
+                if (!changes) {
+                  return
+                }
+
+                // Apply workspace edit
+                for (const change of changes) {
+                  this.view.dispatch(
+                    this.view.state.update({
+                      changes: {
+                        from: posToOffsetOrZero(
+                          this.view.state.doc,
+                          change.range.start
+                        ),
+                        to: posToOffset(this.view.state.doc, change.range.end),
+                        insert: change.newText,
+                      },
+                    })
+                  )
+                }
+              }
+
+              if ('command' in action && action.command) {
+                // TODO: Implement command execution
+                // Execute command if present
+                console.warn(
+                  '[codemirror-lsp-client/processDiagnostics] executing command:',
+                  action.command
+                )
+              }
+            },
+          })
+        )
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const diagnostic: Diagnostic = {
+          from: posToOffsetOrZero(this.view.state.doc, range.start),
+          to: posToOffsetOrZero(this.view.state.doc, range.end),
+          severity: severityMap[severity ?? DiagnosticSeverity.Error],
+          source: this.getLanguageId(),
+          actions: codemirrorActions,
+          message,
+        }
+
+        return diagnostic
+      }
+    )
+
+    const diagnostics = (await Promise.all(rawDiagnostics))
       .filter(
         ({ from, to }) =>
           from !== null && to !== null && from !== undefined && to !== undefined
@@ -1246,12 +1305,15 @@ export class LanguageServerPluginSpec
 {
   provide(plugin: ViewPlugin<LanguageServerPlugin>): Extension {
     return [
+      linter(null),
       lspAutocompleteExt(plugin),
       lspFormatExt(plugin),
+      lspGoToDefinitionExt(plugin),
       lspHoverExt(plugin),
       lspIndentExt(),
+      lspRenameExt(plugin),
       lspSemanticTokensExt(),
-      linter(null),
+      lspSignatureHelpExt(plugin),
     ]
   }
 }
