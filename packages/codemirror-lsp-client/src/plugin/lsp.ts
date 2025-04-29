@@ -736,7 +736,7 @@ export class LanguageServerPlugin implements PluginValue {
       }
 
       // Position tooltip at cursor
-      let pos = posToOffset(view.state.doc, { line, character })!
+      let pos = posToOffset(view.state.doc, { line, character })
       if (pos === null) return null
 
       return {
