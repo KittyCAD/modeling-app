@@ -1026,13 +1026,15 @@ export const tangentialArc: SketchLineHelperKw = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
-          type: 'arrayItem',
+          type: 'labeledArgArrayItem',
+          key: ARG_END_ABSOLUTE,
           index: 0,
           argType: 'xAbsolute',
           expr: toX,
         },
         {
-          type: 'arrayItem',
+          type: 'labeledArgArrayItem',
+          key: ARG_END_ABSOLUTE,
           index: 1,
           argType: 'yAbsolute',
           expr: toY,
@@ -1145,28 +1147,44 @@ export const tangentialArc: SketchLineHelperKw = {
         ['arg', LABELED_ARG_FIELD],
       ]
       if (expr.type !== 'ArrayExpression' || expr.elements.length < 2) {
-        constraints.push(
-          constrainInfo(
-            'xAbsolute',
-            isNotLiteralArrayOrStatic(expr),
-            code.slice(expr.start, expr.end),
-            'tangentialArc',
-            0,
-            topLevelRange(expr.start, expr.end),
-            pathToArg
-          )
-        )
-        constraints.push(
-          constrainInfo(
-            'yAbsolute',
-            isNotLiteralArrayOrStatic(expr),
-            code.slice(expr.start, expr.end),
-            'tangentialArc',
-            1,
-            topLevelRange(expr.start, expr.end),
-            pathToArg
-          )
-        )
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'xAbsolute',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(
+            expr.start,
+            expr.end
+          ),
+          pathToNode: pathToArg,
+          value: code.slice(
+            expr.start,
+            expr.end
+          ),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 0,
+            key: ARG_END_ABSOLUTE,
+          },
+        })
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'yAbsolute',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(
+            expr.start,
+            expr.end
+          ),
+          pathToNode: pathToArg,
+          value: code.slice(
+            expr.start,
+            expr.end
+          ),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 1,
+            key: ARG_END_ABSOLUTE,
+          },
+        })
         return constraints
       }
       const pathToX: PathToNode = [
@@ -1181,28 +1199,32 @@ export const tangentialArc: SketchLineHelperKw = {
       ]
       const exprX = expr.elements[0]
       const exprY = expr.elements[1]
-      constraints.push(
-        constrainInfo(
-          'xAbsolute',
-          isNotLiteralArrayOrStatic(exprX),
-          code.slice(exprX.start, exprX.end),
-          'tangentialArc',
-          0,
-          topLevelRange(exprX.start, exprX.end),
-          pathToX
-        )
-      )
-      constraints.push(
-        constrainInfo(
-          'yAbsolute',
-          isNotLiteralArrayOrStatic(exprY),
-          code.slice(exprY.start, exprY.end),
-          'tangentialArc',
-          1,
-          topLevelRange(exprY.start, exprY.end),
-          pathToY
-        )
-      )
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(exprX),
+        sourceRange: topLevelRange(exprX.start, exprX.end),
+        pathToNode: pathToX,
+        value: code.slice(exprX.start, exprX.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 0,
+          key: ARG_END_ABSOLUTE,
+        },
+      })
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(exprY),
+        sourceRange: topLevelRange(exprY.start, exprY.end),
+        pathToNode: pathToY,
+        value: code.slice(exprY.start, exprY.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 1,
+          key: ARG_END_ABSOLUTE,
+        },
+      })
     }
     return constraints
   },
