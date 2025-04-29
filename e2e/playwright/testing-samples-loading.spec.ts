@@ -19,64 +19,62 @@ test.describe('Testing loading external models', () => {
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    */
   // We have no more web tests
-  test.skip('Web: should overwrite current code, cannot create new file', async ({
-    editor,
-    context,
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
+  test.fail(
+    'Web: should overwrite current code, cannot create new file',
+    async ({ editor, context, page, homePage }) => {
+      const u = await getUtils(page)
 
-    await test.step(`Test setup`, async () => {
-      await context.addInitScript((code) => {
-        window.localStorage.setItem('persistCode', code)
-      }, bracket)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-    })
-
-    // Locators and constants
-    const newSample = {
-      file: 'parametric-bearing-pillow-block' + FILE_EXT,
-      title: 'Parametric Bearing Pillow Block',
-    }
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    const samplesCommandOption = page.getByRole('option', {
-      name: 'Load external model',
-    })
-    const commandSampleOption = page.getByRole('option', {
-      name: newSample.title,
-      exact: true,
-    })
-    const commandMethodArgButton = page.getByRole('button', {
-      name: 'Method',
-    })
-    const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
-      page.getByRole('option', {
-        name,
+      await test.step(`Test setup`, async () => {
+        await context.addInitScript((code) => {
+          window.localStorage.setItem('persistCode', code)
+        }, bracket)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
       })
-    const warningText = page.getByText('Overwrite current file with sample?')
-    const confirmButton = page.getByRole('button', { name: 'Submit command' })
 
-    await test.step(`Precondition: check the initial code`, async () => {
-      await u.openKclCodePanel()
-      await editor.scrollToText(bracket.split('\n')[0])
-      await editor.expectEditor.toContain(bracket.split('\n')[0])
-    })
+      // Locators and constants
+      const newSample = {
+        file: 'parametric-bearing-pillow-block' + FILE_EXT,
+        title: 'Parametric Bearing Pillow Block',
+      }
+      const commandBarButton = page.getByRole('button', { name: 'Commands' })
+      const samplesCommandOption = page.getByRole('option', {
+        name: 'Load external model',
+      })
+      const commandSampleOption = page.getByRole('option', {
+        name: newSample.title,
+        exact: true,
+      })
+      const commandMethodArgButton = page.getByRole('button', {
+        name: 'Method',
+      })
+      const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
+        page.getByRole('option', {
+          name,
+        })
+      const warningText = page.getByText('Overwrite current file with sample?')
+      const confirmButton = page.getByRole('button', { name: 'Submit command' })
 
-    await test.step(`Load a KCL sample with the command palette`, async () => {
-      await commandBarButton.click()
-      await samplesCommandOption.click()
-      await commandSampleOption.click()
-      await commandMethodArgButton.click()
-      await expect(commandMethodOption('Create new file')).not.toBeVisible()
-      await commandMethodOption('Overwrite').click()
-      await expect(warningText).toBeVisible()
-      await confirmButton.click()
+      await test.step(`Precondition: check the initial code`, async () => {
+        await u.openKclCodePanel()
+        await editor.scrollToText(bracket.split('\n')[0])
+        await editor.expectEditor.toContain(bracket.split('\n')[0])
+      })
 
-      await editor.expectEditor.toContain('// ' + newSample.title)
-    })
-  })
+      await test.step(`Load a KCL sample with the command palette`, async () => {
+        await commandBarButton.click()
+        await samplesCommandOption.click()
+        await commandSampleOption.click()
+        await commandMethodArgButton.click()
+        await expect(commandMethodOption('Create new file')).not.toBeVisible()
+        await commandMethodOption('Overwrite').click()
+        await expect(warningText).toBeVisible()
+        await confirmButton.click()
+
+        await editor.expectEditor.toContain('// ' + newSample.title)
+      })
+    }
+  )
 
   /**
    * Note this test implicitly depends on the KCL samples:
