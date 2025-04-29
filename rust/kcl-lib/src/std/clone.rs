@@ -301,6 +301,9 @@ async fn inner_clone(
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
+            // Flush the fillets / chamfers for the solid.
+            args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
+
             let mut new_solid = solid.clone();
             new_solid.id = new_id;
             new_solid.sketch.original_id = new_id;
@@ -845,7 +848,6 @@ clonedCube = clone(cube)
     // references.
     // WITH TAGS AND EDGE CUTS.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore = "this test is not working yet, need to fix the edge cut ids"]
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
     |> startProfile(at = [0,0]) // tag this one
