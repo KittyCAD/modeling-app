@@ -1339,7 +1339,7 @@ impl LanguageServer for Backend {
         };
 
         if let Some(signature) = check_char(ch) {
-            return Ok(Some(signature));
+            return Ok(Some(signature.clone()));
         }
 
         // Check if we have context.
@@ -1349,7 +1349,7 @@ impl LanguageServer for Backend {
                     // Check if we are on a ( or a ,.
                     if character == '(' || character == ',' {
                         if let Some(signature) = check_char(character) {
-                            return Ok(Some(signature));
+                            return Ok(Some(signature.clone()));
                         }
                     }
                 }
