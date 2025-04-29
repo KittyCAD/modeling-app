@@ -1,11 +1,9 @@
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
 import { settingsActor, useSettings } from '@src/lib/singletons'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-} from '@src/routes/Onboarding/utils'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
   const {
@@ -61,7 +59,7 @@ export default function Units() {
           </ul>
         </SettingsSection>
         <OnboardingButtons
-          currentSlug={onboardingPaths.CAMERA}
+          currentSlug={ONBOARDING_SUBPATHS.CAMERA}
           dismissClassName="right-auto left-full"
         />
       </div>

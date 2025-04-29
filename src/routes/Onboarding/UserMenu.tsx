@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useUser } from '@src/lib/singletons'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-} from '@src/routes/Onboarding/utils'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
 
 export default function UserMenu() {
   const user = useUser()
@@ -48,7 +46,7 @@ export default function UserMenu() {
             only apply to the current project.
           </p>
         </section>
-        <OnboardingButtons currentSlug={onboardingPaths.USER_MENU} />
+        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.USER_MENU} />
       </div>
     </div>
   )

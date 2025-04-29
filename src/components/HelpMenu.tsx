@@ -13,7 +13,7 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -29,7 +29,7 @@ export function HelpMenu({
 
   const resetOnboardingWorkflow = () => {
     const props = {
-      onboardingStatus: onboardingPaths.INDEX,
+      onboardingStatus: ONBOARDING_SUBPATHS.INDEX,
       navigate,
       codeManager,
       kclManager,

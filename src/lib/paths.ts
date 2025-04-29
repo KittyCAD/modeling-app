@@ -14,7 +14,22 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
+export const ONBOARDING_SUBPATHS: Record<string, OnboardingStatus> = {
+  INDEX: '/',
+  CAMERA: '/camera',
+  STREAMING: '/streaming',
+  EDITOR: '/editor',
+  PARAMETRIC_MODELING: '/parametric-modeling',
+  INTERACTIVE_NUMBERS: '/interactive-numbers',
+  COMMAND_K: '/command-k',
+  USER_MENU: '/user-menu',
+  PROJECT_MENU: '/project-menu',
+  EXPORT: '/export',
+  SKETCHING: '/sketching',
+  FUTURE_WORK: '/future-work',
+} as const
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -27,7 +42,7 @@ const prependRoutes =
   }
 
 type OnboardingPaths = {
-  [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
+  [K in keyof typeof ONBOARDING_SUBPATHS]: `/onboarding${(typeof ONBOARDING_SUBPATHS)[K]}`
 }
 
 const SETTINGS = '/settings'
@@ -48,7 +63,9 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
+  ONBOARDING: prependRoutes(ONBOARDING_SUBPATHS)(
+    '/onboarding'
+  ) as OnboardingPaths,
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`

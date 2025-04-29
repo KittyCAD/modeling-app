@@ -25,7 +25,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS, PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 import { sceneInfra, codeManager, kclManager } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -33,7 +33,6 @@ import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
@@ -112,9 +111,10 @@ export function App() {
     toast.success('Your work is auto-saved in real-time')
   })
 
-  const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
-    (p) => p === onboardingStatus.current
-  )
+  const paneOpacity = [
+    ONBOARDING_SUBPATHS.CAMERA,
+    ONBOARDING_SUBPATHS.STREAMING,
+  ].some((p) => p === onboardingStatus.current)
     ? 'opacity-20'
     : ''
 

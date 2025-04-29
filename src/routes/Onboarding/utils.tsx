@@ -15,7 +15,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { PATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS, PATHS } from '@src/lib/paths'
 import {
   codeManager,
   editorManager,
@@ -50,33 +50,11 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
-export const onboardingPaths: Record<string, OnboardingStatus> = {
-  INDEX: '/',
-  CAMERA: '/camera',
-  STREAMING: '/streaming',
-  EDITOR: '/editor',
-  PARAMETRIC_MODELING: '/parametric-modeling',
-  INTERACTIVE_NUMBERS: '/interactive-numbers',
-  COMMAND_K: '/command-k',
-  USER_MENU: '/user-menu',
-  PROJECT_MENU: '/project-menu',
-  EXPORT: '/export',
-  MOVE: '/move',
-  SKETCHING: '/sketching',
-  FUTURE_WORK: '/future-work',
-} as const
-
 // Get the 1-indexed step number of the current onboarding step
 function useStepNumber(
-  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+  slug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
 ) {
-  return slug
-    ? slug === onboardingPaths.INDEX
-      ? 1
-      : Object.values(onboardingPaths).findIndex(
-          (r) => r === makeUrlPathRelative(slug)
-        ) + 1
-    : 1
+  return slug ? Object.values(ONBOARDING_SUBPATHS).indexOf(slug) + 1 : -1
 }
 
 export function useDemoCode() {
@@ -157,24 +135,22 @@ export function OnboardingButtons({
   onNextOverride,
   ...props
 }: {
-  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+  currentSlug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
   className?: string
   dismissClassName?: string
   onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const onboardingPathsArray = Object.values(onboardingPaths)
+  const ONBOARDING_SUBPATHSArray = Object.values(ONBOARDING_SUBPATHS)
   const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
   const previousStep =
-    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber - 2]
-  const goToPrevious = useNextClick(
-    onboardingPaths.INDEX + (previousStep ?? '')
-  )
+    !stepNumber || stepNumber <= 1 ? null : ONBOARDING_SUBPATHSArray[stepNumber]
+  const goToPrevious = useNextClick(previousStep ?? ONBOARDING_SUBPATHS.INDEX)
   const nextStep =
-    !stepNumber || stepNumber === onboardingPathsArray.length
+    !stepNumber || stepNumber === ONBOARDING_SUBPATHSArray.length
       ? null
-      : onboardingPathsArray[stepNumber]
-  const goToNext = useNextClick(onboardingPaths.INDEX + (nextStep ?? ''))
+      : ONBOARDING_SUBPATHSArray[stepNumber]
+  const goToNext = useNextClick(nextStep + ONBOARDING_SUBPATHS.INDEX)
 
   return (
     <>
@@ -213,7 +189,7 @@ export function OnboardingButtons({
         </ActionButton>
         {stepNumber !== undefined && (
           <p className="font-mono text-xs text-center m-0">
-            {stepNumber - 1} / {onboardingPathsArray.length}
+            {stepNumber} / {ONBOARDING_SUBPATHSArray.length}
           </p>
         )}
         <ActionButton
@@ -440,7 +416,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
 }
 
 export async function createAndOpenNewTutorialProject(
-  onboardingStatus = onboardingPaths.INDEX
+  onboardingStatus: OnboardingStatus = ONBOARDING_SUBPATHS.INDEX
 ) {
   // Create a new project with the onboarding project name
   const configuration = await readAppSettingsFile()

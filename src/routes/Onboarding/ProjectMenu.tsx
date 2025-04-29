@@ -1,8 +1,6 @@
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-} from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function ProjectMenu() {
   const onDesktop = isDesktop()
@@ -57,7 +55,7 @@ export default function ProjectMenu() {
             </>
           )}
         </section>
-        <OnboardingButtons currentSlug={onboardingPaths.PROJECT_MENU} />
+        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.PROJECT_MENU} />
       </div>
     </div>
   )

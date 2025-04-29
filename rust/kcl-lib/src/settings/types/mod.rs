@@ -589,9 +589,6 @@ pub enum OnboardingStatus {
     #[serde(rename = "/export")]
     #[display("/export")]
     Export,
-    #[serde(rename = "/move")]
-    #[display("/move")]
-    Move,
     #[serde(rename = "/sketching")]
     #[display("/sketching")]
     Sketching,

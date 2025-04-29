@@ -11,7 +11,7 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, ONBOARDING_SUBPATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
@@ -34,7 +34,6 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -69,7 +68,7 @@ export const AllSettingsFields = forwardRef(
 
     async function restartOnboarding() {
       const props = {
-        onboardingStatus: onboardingPaths.INDEX,
+        onboardingStatus: ONBOARDING_SUBPATHS.INDEX,
         navigate,
         codeManager,
         kclManager,

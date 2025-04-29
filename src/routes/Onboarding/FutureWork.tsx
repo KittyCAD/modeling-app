@@ -2,11 +2,8 @@ import { useEffect } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { APP_NAME } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-  useDemoCode,
-} from '@src/routes/Onboarding/utils'
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
 
 export default function FutureWork() {
   const { send } = useModelingContext()
@@ -59,7 +56,7 @@ export default function FutureWork() {
         </p>
         <p className="my-4">💚 The Zoo Team</p>
         <OnboardingButtons
-          currentSlug={onboardingPaths.FUTURE_WORK}
+          currentSlug={ONBOARDING_SUBPATHS.FUTURE_WORK}
           className="mt-6"
         />
       </div>

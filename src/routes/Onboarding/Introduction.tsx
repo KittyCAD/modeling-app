@@ -2,11 +2,8 @@ import { APP_NAME } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { useSettings } from '@src/lib/singletons'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-  useDemoCode,
-} from '@src/routes/Onboarding/utils'
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
 
 export default function Introduction() {
   // Reset the code to the bracket code
@@ -72,7 +69,7 @@ export default function Introduction() {
           </p>
         </section>
         <OnboardingButtons
-          currentSlug={onboardingPaths.WELCOME}
+          currentSlug={ONBOARDING_SUBPATHS.INDEX}
           className="mt-6"
         />
       </div>

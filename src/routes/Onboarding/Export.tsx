@@ -1,8 +1,6 @@
 import { APP_NAME } from '@src/lib/constants'
-import {
-  onboardingPaths,
-  OnboardingButtons,
-} from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Export() {
   return (
@@ -51,7 +49,7 @@ export default function Export() {
             !
           </p>
         </section>
-        <OnboardingButtons currentSlug={onboardingPaths.EXPORT} />
+        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.EXPORT} />
       </div>
     </div>
   )
