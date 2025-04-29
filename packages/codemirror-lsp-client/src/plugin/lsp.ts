@@ -717,7 +717,7 @@ export class LanguageServerPlugin implements PluginValue {
       }
 
       const activeParameterIndex =
-        result.activeParameter ?? activeSignature.activeParameter ?? 0
+        result.activeParameter || activeSignature.activeParameter
 
       // Create and add signature display element
       const signatureElement = this.createSignatureElement(
@@ -733,13 +733,20 @@ export class LanguageServerPlugin implements PluginValue {
         )
       }
 
-      // Add parameter documentation if available
-      const activeParam = activeSignature.parameters?.[activeParameterIndex]
+      if (activeParameterIndex) {
+        // Add parameter documentation if available
+        const activeParam = activeSignature.parameters?.[activeParameterIndex]
 
-      if (activeParam?.documentation) {
-        dom.appendChild(
-          this.createParameterDocElement(activeParam.documentation)
-        )
+        if (activeParam?.documentation) {
+          dom.appendChild(this.createParameterDocElement(activeParam))
+        }
+      } else {
+        // Append docs for all the parameters.
+        activeSignature.parameters?.forEach((param) => {
+          if (param.documentation) {
+            dom.appendChild(this.createParameterDocElement(param))
+          }
+        })
       }
 
       // Position tooltip at cursor
@@ -826,7 +833,7 @@ export class LanguageServerPlugin implements PluginValue {
    */
   private createSignatureElement(
     signature: LSP.SignatureInformation,
-    activeParameterIndex: number
+    activeParameterIndex?: number
   ): HTMLElement {
     const signatureElement = document.createElement('div')
     signatureElement.classList.add('cm-signature')
@@ -842,7 +849,11 @@ export class LanguageServerPlugin implements PluginValue {
     const parameters = signature.parameters || []
 
     // If there are no parameters or no active parameter, just show the signature text
-    if (parameters.length === 0 || !parameters[activeParameterIndex]) {
+    if (
+      parameters.length === 0 ||
+      !activeParameterIndex ||
+      !parameters[activeParameterIndex]
+    ) {
       signatureElement.textContent = signatureText
       return signatureElement
     }
@@ -932,14 +943,16 @@ export class LanguageServerPlugin implements PluginValue {
    * Creates the parameter documentation element
    */
   private createParameterDocElement(
-    documentation: string | LSP.MarkupContent
+    parameter: LSP.ParameterInformation
   ): HTMLElement {
     const paramDocsElement = document.createElement('div')
     paramDocsElement.classList.add('cm-parameter-docs')
     paramDocsElement.style.cssText =
       'margin-top: 4px; font-style: italic; border-top: 1px solid #eee; padding-top: 4px;'
 
-    const formattedContent = formatContents(documentation)
+    const formattedContent =
+      `<strong>${parameter.label}:</strong> ` +
+      formatContents(parameter.documentation)
 
     if (this.allowHTMLContent) {
       paramDocsElement.innerHTML = formattedContent
