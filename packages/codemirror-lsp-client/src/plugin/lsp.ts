@@ -42,7 +42,6 @@ import {
 import { isArray } from '../lib/utils'
 import lspGoToDefinitionExt from './go-to-definition'
 import lspRenameExt from './rename'
-import lspSignatureHelpExt from './signature-help'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
