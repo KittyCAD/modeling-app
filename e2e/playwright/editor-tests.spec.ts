@@ -625,6 +625,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
     await scene.connectionEstablished()
 
+    // Expect the signature help to NOT be visible
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
+
     // Click in the editor
     await page.locator('.cm-content').click()
 
@@ -642,7 +645,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     )
 
     // Make sure the tooltip goes away after a timeout.
-    await page.waitForTimeout(3000)
+    await page.waitForTimeout(12000)
 
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
   })
