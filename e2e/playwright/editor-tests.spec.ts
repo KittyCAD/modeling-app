@@ -571,7 +571,6 @@ sketch_001 = startSketchOn(XY)
 
     await scene.connectionEstablished()
 
-    // check no error to begin with
     await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
 
     // error in guter
@@ -597,6 +596,49 @@ sketch_001 = startSketchOn(XY)
   |> yLine(length = 100.0)
   |> close()
   |> extrude(length = 3.14)`.replaceAll('\n', '')
+    )
+  })
+
+  test('signature help triggered by comma', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `myVARName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVARName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 12`
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+
+    // Click in the editor
+    await page.locator('.cm-content').click()
+
+    // Go to the end of the code
+    await page.keyboard.press('ControlOrMeta+End')
+    // Type a comma
+    await page.keyboard.press(',')
+
+    // Wait for the signature help to show
+    await expect(page.locator('.cm-signature-tooltip')).toBeVisible()
+
+    // Make sure the parameters are correct
+    await expect(page.locator('.cm-signature-tooltip')).toContainText(
+      'sketches:'
     )
   })
 
