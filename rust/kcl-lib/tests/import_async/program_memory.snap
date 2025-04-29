@@ -1015,7 +1015,7 @@ description: Variables in memory after executing import_async.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1023,19 +1023,8 @@ description: Variables in memory after executing import_async.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -1067,7 +1056,8 @@ description: Variables in memory after executing import_async.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "cmo": {
@@ -2031,7 +2021,7 @@ description: Variables in memory after executing import_async.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -2039,15 +2029,7 @@ description: Variables in memory after executing import_async.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -2111,7 +2093,7 @@ description: Variables in memory after executing import_async.kcl
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -2119,19 +2101,8 @@ description: Variables in memory after executing import_async.kcl
                   "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -2163,7 +2134,8 @@ description: Variables in memory after executing import_async.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -2198,7 +2170,8 @@ description: Variables in memory after executing import_async.kcl
       "endCapId": null,
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "keywayDepth": {
@@ -3625,7 +3598,7 @@ description: Variables in memory after executing import_async.kcl
   },
   "screw": {
     "type": "Module",
-    "value": 5
+    "value": 8
   },
   "start": {
     "type": "Sketch",
@@ -3651,7 +3624,7 @@ description: Variables in memory after executing import_async.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3659,19 +3632,8 @@ description: Variables in memory after executing import_async.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3727,7 +3689,7 @@ description: Variables in memory after executing import_async.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -3735,19 +3697,8 @@ description: Variables in memory after executing import_async.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -7666,7 +7617,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7674,19 +7625,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7718,7 +7658,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11633,7 +11574,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11641,19 +11582,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11685,7 +11615,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -15600,7 +15531,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -15608,19 +15539,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -15652,7 +15572,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -19567,7 +19488,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -19575,19 +19496,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -19619,7 +19529,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -23534,7 +23445,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -23542,19 +23453,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -23586,7 +23486,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -27501,7 +27402,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -27509,19 +27410,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -27553,7 +27443,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -31468,7 +31359,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -31476,19 +31367,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -31520,7 +31400,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -35435,7 +35316,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -35443,19 +35324,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -35487,7 +35357,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -39402,7 +39273,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -39410,19 +39281,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -39454,7 +39314,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -43369,7 +43230,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -43377,19 +43238,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -43421,7 +43271,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -47336,7 +47187,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -47344,19 +47195,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -47388,7 +47228,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -51303,7 +51144,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -51311,19 +51152,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -51355,7 +51185,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -55270,7 +55101,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -55278,19 +55109,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -55322,7 +55142,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -59237,7 +59058,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -59245,19 +59066,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -59289,7 +59099,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -63204,7 +63015,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -63212,19 +63023,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -63256,7 +63056,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -67171,7 +66972,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -67179,19 +66980,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -67223,7 +67013,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -71138,7 +70929,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -71146,19 +70937,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -71190,7 +70970,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -75105,7 +74886,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -75113,19 +74894,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -75157,7 +74927,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -79072,7 +78843,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -79080,19 +78851,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -79124,7 +78884,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -83039,7 +82800,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -83047,19 +82808,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -83091,7 +82841,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -87006,7 +86757,7 @@ description: Variables in memory after executing import_async.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -87014,19 +86765,8 @@ description: Variables in memory after executing import_async.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -87058,7 +86798,8 @@ description: Variables in memory after executing import_async.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

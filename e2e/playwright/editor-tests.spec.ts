@@ -6,11 +6,10 @@ import {
   TEST_COLORS,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
+test.describe('Editor tests', () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1000, height: 500 })
@@ -22,7 +21,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -35,7 +34,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -50,7 +49,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -70,7 +69,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -123,7 +122,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -178,7 +177,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -189,7 +188,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -211,7 +210,7 @@ sketch001 = startSketchOn(XY)
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch_001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -240,7 +239,7 @@ sketch001 = startSketchOn(XY)
     await expect(page.locator('.cm-content')).toHaveText(
       `@settings(defaultLengthUnit = in)
 sketch_001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -259,7 +258,7 @@ sketch_001 = startSketchOn(XY)
 
   test('fold gutters work', async ({ page, homePage }) => {
     const fullCode = `sketch001 = startSketchOn(XY)
-   |> startProfileAt([-10, -10], %)
+   |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
@@ -268,7 +267,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-   |> startProfileAt([-10, -10], %)
+   |> startProfile(at = [-10, -10])
    |> line(end = [20, 0])
    |> line(end = [0, 20])
    |> line(end = [-20, 0])
@@ -337,7 +336,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -384,7 +383,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -412,7 +411,7 @@ sketch_001 = startSketchOn(XY)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -428,7 +427,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch_001 = startSketchOn(XY)
-    |> startProfileAt([-10, -10], %)
+    |> startProfile(at = [-10, -10])
     |> line(end = [20, 0])
     |> line(end = [0, 20])
     |> line(end = [-20, 0])
@@ -466,7 +465,7 @@ sketch_001 = startSketchOn(XY)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch_001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -537,7 +536,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([3.29, 7.86], %)
+    |> startProfile(at = [3.29, 7.86])
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
     |> close()
@@ -651,7 +650,6 @@ sketch_001 = startSketchOn(XY)
     page,
     homePage,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -663,7 +661,7 @@ sketch_001 = startSketchOn(XY)
 
     fn squareHole = (l, w) => {
   squareHoleSketch = startSketchOn(XY)
-  |> startProfileAt([-width / 2, -length / 2], %)
+  |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
   |> line(endAbsolute = [-width / 2, length / 2])
@@ -704,7 +702,7 @@ sketch_001 = startSketchOn(XY)
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center: [0, 0], radius: dia/2)
-    |> hole(squareHole(length, width, height), %)
+    |> subtract2d(tool = squareHole(length, width, height))
     |> extrude(length = height)`)
 
     // error in gutter
@@ -726,7 +724,7 @@ sketch_001 = startSketchOn(XY)
       localStorage.setItem(
         'persistCode',
         `box = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> line(end = [10, 0])
     |> line(end = [0, -10], tag = $revolveAxis)
@@ -734,7 +732,7 @@ sketch_001 = startSketchOn(XY)
     |> extrude(length = 10)
 
     sketch001 = startSketchOn(box, face = revolveAxis)
-    |> startProfileAt([5, 10], %)
+    |> startProfile(at = [5, 10])
     |> line(end = [0, -10])
     |> line(end = [2, 0])
     |> line(end = [0, -10])
@@ -795,9 +793,9 @@ sketch_001 = startSketchOn(XY)
 
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
-      await page.keyboard.type('12')
-      await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
+      await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -830,7 +828,7 @@ sketch_001 = startSketchOn(XY)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfileAt([3.14, 12], %)
+        |> startProfile(%, at = [3.14, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
 
@@ -870,9 +868,9 @@ sketch001 = startSketchOn(XZ)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
 
       await page.keyboard.press('Tab')
-      await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
+      await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -905,7 +903,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-content')).toHaveText(
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-        |> startProfileAt([3.14, 12], %)
+        |> startProfile(%, at = [3.14, 12])
         |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
       )
     })
@@ -920,7 +918,7 @@ sketch001 = startSketchOn(XZ)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -14.01], %)
+  |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`
@@ -956,7 +954,7 @@ sketch001 = startSketchOn(XZ)
     })
     await page.waitForTimeout(100)
 
-    await page.getByText('startProfileAt([4.61, -14.01], %)').click()
+    await page.getByText('startProfile(at = [4.61, -14.01])').click()
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
     await page.getByRole('button', { name: 'Extrude' }).click()
 
@@ -971,7 +969,7 @@ sketch001 = startSketchOn(XZ)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfile(at = [4.61, -14.01])  |> line(end = [12.73, -0.09])  |> tangentialArc(endAbsolute = [24.95, -5.38])  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -983,174 +981,173 @@ sketch001 = startSketchOn(XZ)
     await expect(
       page.locator('.cm-content')
     ).toHaveText(`sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -14.01], %)
+  |> startProfile(at = [4.61, -14.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
   |> close()`)
   })
 
-  test(
-    'Can undo a sketch modification with ctrl+z',
-    { tag: ['@skipWin'] },
-    async ({ page, homePage, editor }) => {
-      const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit=in)
+  test('Can undo a sketch modification with ctrl+z', async ({
+    page,
+    homePage,
+    editor,
+  }) => {
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit=in)
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([4.61, -10.01], %)
+  |> startProfile(at = [4.61, -10.01])
   |> line(end = [12.73, -0.09])
   |> tangentialArc(endAbsolute = [24.95, -0.38])
   |> close()
   |> extrude(length = 5)`
-        )
-      })
+      )
+    })
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await homePage.goToModelingScene()
-      await expect(
-        page.getByRole('button', { name: 'Start Sketch' })
-      ).not.toBeDisabled()
+    await homePage.goToModelingScene()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
 
-      await page.waitForTimeout(100)
-      await u.openAndClearDebugPanel()
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          vantage: { x: 0, y: -1250, z: 580 },
-          center: { x: 0, y: 0, z: 0 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      })
-      await page.waitForTimeout(100)
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      })
-      await page.waitForTimeout(100)
+    await page.waitForTimeout(100)
+    await u.openAndClearDebugPanel()
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        vantage: { x: 0, y: -1250, z: 580 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 },
+      },
+    })
+    await page.waitForTimeout(100)
+    await u.sendCustomCmd({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+    await page.waitForTimeout(100)
 
-      const startPX = [1200 / 2, 500 / 2]
+    const startPX = [1200 / 2, 500 / 2]
 
-      const dragPX = 40
+    const dragPX = 40
 
-      await page.getByText('startProfileAt([4.61, -10.01], %)').click()
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(400)
-      let prevContent = await page.locator('.cm-content').innerText()
+    await page.getByText('startProfile(at = [4.61, -10.01])').click()
+    await expect(
+      page.getByRole('button', { name: 'Edit Sketch' })
+    ).toBeVisible()
+    await page.getByRole('button', { name: 'Edit Sketch' }).click()
+    await page.waitForTimeout(400)
+    let prevContent = await page.locator('.cm-content').innerText()
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-      // drag startProfileAt handle
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
-        targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
-      })
-      await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
+    // drag startProfileAt handle
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: startPX[0] + 68, y: startPX[1] + 147 },
+      targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
+    })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
 
-      // drag line handle
-      // we wait so it saves the code
-      await page.waitForTimeout(800)
+    // drag line handle
+    // we wait so it saves the code
+    await page.waitForTimeout(800)
 
-      const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
-      await page.waitForTimeout(100)
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
-        targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
-      })
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
-      prevContent = await page.locator('.cm-content').innerText()
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+    await page.waitForTimeout(100)
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: lineEnd.x - 5, y: lineEnd.y },
+      targetPosition: { x: lineEnd.x + dragPX, y: lineEnd.y + dragPX },
+    })
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    prevContent = await page.locator('.cm-content').innerText()
 
-      // we wait so it saves the code
-      await page.waitForTimeout(800)
+    // we wait so it saves the code
+    await page.waitForTimeout(800)
 
-      // drag tangentialArc handle
-      const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
-      await page.dragAndDrop('#stream', '#stream', {
-        sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
-        targetPosition: {
-          x: tangentEnd.x + dragPX,
-          y: tangentEnd.y + dragPX,
-        },
-      })
-      await page.waitForTimeout(100)
-      await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+    // drag tangentialArc handle
+    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+    await page.dragAndDrop('#stream', '#stream', {
+      sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
+      targetPosition: {
+        x: tangentEnd.x + dragPX,
+        y: tangentEnd.y + dragPX,
+      },
+    })
+    await page.waitForTimeout(100)
+    await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
 
-      // expect the code to have changed
-      await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    // expect the code to have changed
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [15.4, -2.78])
     |> tangentialArc(endAbsolute = [27.6, -3.05])
     |> close()
     |> extrude(length = 5)`,
-        { shouldNormalise: true }
-      )
+      { shouldNormalise: true }
+    )
 
-      // Hit undo
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+    // Hit undo
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
 
-      await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [15.4, -2.78])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
-        { shouldNormalise: true }
-      )
+      { shouldNormalise: true }
+    )
 
-      // Hit undo again.
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+    // Hit undo again.
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
 
-      await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([2.71, -2.71], %)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+    |> startProfile(at = [2.71, -2.71])
     |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
-        { shouldNormalise: true }
-      )
+      { shouldNormalise: true }
+    )
 
-      // Hit undo again.
-      await page.keyboard.down('Control')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('Control')
+    // Hit undo again.
+    await page.keyboard.down('Control')
+    await page.keyboard.press('KeyZ')
+    await page.keyboard.up('Control')
 
-      await page.waitForTimeout(100)
-      await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([4.61, -10.01], %)
+    await page.waitForTimeout(100)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+    |> startProfile(at = [4.61, -10.01])
     |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
-        { shouldNormalise: true }
-      )
-    }
-  )
+      { shouldNormalise: true }
+    )
+  })
 
   test(
     `Can import a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -1291,7 +1288,7 @@ sketch001 = startSketchOn(XZ)
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-  profile001 = startProfileAt([100.00, 100.0], sketch001)
+  profile001 = startProfile(sketch001, at = [100.00, 100.0])
     |> yLine(length = -100.0)
     |> xLine(length = 200.0)
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])

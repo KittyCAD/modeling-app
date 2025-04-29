@@ -9,7 +9,7 @@ import * from "parameters.kcl"
 
 // Model the center of the fan
 fanCenter = startSketchOn(XZ)
-  |> startProfileAt([-0.0001, fanHeight], %)
+  |> startProfile(at = [-0.0001, fanHeight])
   |> xLine(endAbsolute = -15 + 1.5)
   |> tangentialArc(radius = 1.5, angle = 90)
   |> yLine(endAbsolute = 4.5)
@@ -33,44 +33,40 @@ fanCenter = startSketchOn(XZ)
   |> appearance(color = "#f3e2d8")
 
 // Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
-fn fanBlade(offsetHeight, startAngle) {
+fn fanBlade(offsetHeight, startAngle: number(deg)) {
   fanBlade = startSketchOn(offsetPlane(XY, offset = offsetHeight))
-    |> startProfileAt([
-         15 * cos(toRadians(startAngle)),
-         15 * sin(toRadians(startAngle))
-       ], %)
-    |> arc({
-         angleStart = startAngle,
-         angleEnd = startAngle + 14,
-         radius = 15
-       }, %)
-    |> arcTo({
-         end = [
-           fanSize * 22 / 50 * cos(toRadians(startAngle - 20)),
-           fanSize * 22 / 50 * sin(toRadians(startAngle - 20))
+    |> startProfile(at = [
+         15 * cos(startAngle),
+         15 * sin(startAngle)
+       ])
+    |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
+    |> arc(
+         endAbsolute = [
+           fanSize * 22 / 50 * cos(startAngle - 20),
+           fanSize * 22 / 50 * sin(startAngle - 20)
          ],
-         interior = [
-           fanSize * 11 / 50 * cos(toRadians(startAngle + 3)),
-           fanSize * 11 / 50 * sin(toRadians(startAngle + 3))
-         ]
-       }, %)
-    |> arcTo({
-         end = [
-           fanSize * 22 / 50 * cos(toRadians(startAngle - 24)),
-           fanSize * 22 / 50 * sin(toRadians(startAngle - 24))
+         interiorAbsolute = [
+           fanSize * 11 / 50 * cos(startAngle + 3),
+           fanSize * 11 / 50 * sin(startAngle + 3)
          ],
-         interior = [
-           fanSize * 22 / 50 * cos(toRadians(startAngle - 22)),
-           fanSize * 22 / 50 * sin(toRadians(startAngle - 22))
-         ]
-       }, %)
-    |> arcTo({
-         end = [profileStartX(%), profileStartY(%)],
-         interior = [
-           fanSize * 11 / 50 * cos(toRadians(startAngle - 5)),
-           fanSize * 11 / 50 * sin(toRadians(startAngle - 5))
-         ]
-       }, %)
+       )
+    |> arc(
+         endAbsolute = [
+           fanSize * 22 / 50 * cos(startAngle - 24),
+           fanSize * 22 / 50 * sin(startAngle - 24)
+         ],
+         interiorAbsolute = [
+           fanSize * 22 / 50 * cos(startAngle - 22),
+           fanSize * 22 / 50 * sin(startAngle - 22)
+         ],
+       )
+    |> arc(
+         endAbsolute = [profileStartX(%), profileStartY(%)],
+         interiorAbsolute = [
+           fanSize * 11 / 50 * cos(startAngle - 5),
+           fanSize * 11 / 50 * sin(startAngle - 5)
+         ],
+       )
     |> close()
   return fanBlade
 }

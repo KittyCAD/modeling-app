@@ -4,21 +4,6 @@ description: Operations executed sketch_on_face_end.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cube",
-      "functionSourceRange": [
-        7,
-        184,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -34,7 +19,15 @@ description: Operations executed sketch_on_face_end.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -122,5 +115,8 @@ description: Operations executed sketch_on_face_end.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

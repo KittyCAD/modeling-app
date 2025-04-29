@@ -816,7 +816,7 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
           if (
             (pipe.type === 'CallExpressionKw' ||
               pipe.type === 'CallExpression') &&
-            pipe.callee.name.name === 'startProfileAt'
+            pipe.callee.name.name === 'startProfile'
           ) {
             hasStartProfileAt = true
           }
@@ -964,7 +964,7 @@ export function doesSketchPipeNeedSplitting(
   if (!firstPipe || !secondPipe) return false
   if (
     isCallExprWithName(firstPipe, 'startSketchOn') &&
-    isCallExprWithName(secondPipe, 'startProfileAt')
+    isCallExprWithName(secondPipe, 'startProfile')
   )
     return true
   return false

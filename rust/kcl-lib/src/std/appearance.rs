@@ -6,39 +6,16 @@ use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc, shared::Color};
 use regex::Regex;
 use rgba_simple::Hex;
-use schemars::JsonSchema;
-use serde::Serialize;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        types::{NumericType, PrimitiveType, RuntimeType},
-        ExecState, KclValue, SolidOrImportedGeometry,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, SolidOrImportedGeometry},
     std::Args,
 };
 
-use super::args::TyF64;
-
 lazy_static::lazy_static! {
     static ref HEX_REGEX: Regex = Regex::new(r"^#[0-9a-fA-F]{6}$").unwrap();
-}
-
-/// Data for appearance.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-struct AppearanceData {
-    /// Color of the new material, a hex string like "#ff0000".
-    #[schemars(regex(pattern = "#[0-9a-fA-F]{6}"))]
-    pub color: String,
-    /// Metalness of the new material, a percentage like 95.7.
-    #[validate(range(min = 0.0, max = 100.0))]
-    pub metalness: Option<TyF64>,
-    /// Roughness of the new material, a percentage like 95.7.
-    #[validate(range(min = 0.0, max = 100.0))]
-    pub roughness: Option<TyF64>,
-    // TODO(jess): we can also ambient occlusion here I just don't know what it is.
 }
 
 /// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
@@ -50,28 +27,22 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     )?;
 
     let color: String = args.get_kw_arg("color")?;
-    let count_ty = RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()));
-    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &count_ty, exec_state)?;
-    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &count_ty, exec_state)?;
-    let data = AppearanceData {
-        color,
-        metalness,
-        roughness,
-    };
+    let metalness: Option<TyF64> = args.get_kw_arg_opt_typed("metalness", &RuntimeType::count(), exec_state)?;
+    let roughness: Option<TyF64> = args.get_kw_arg_opt_typed("roughness", &RuntimeType::count(), exec_state)?;
 
     // Make sure the color if set is valid.
-    if !HEX_REGEX.is_match(&data.color) {
+    if !HEX_REGEX.is_match(&color) {
         return Err(KclError::Semantic(KclErrorDetails {
-            message: format!("Invalid hex color (`{}`), try something like `#fff000`", data.color),
+            message: format!("Invalid hex color (`{}`), try something like `#fff000`", color),
             source_ranges: vec![args.source_range],
         }));
     }
 
     let result = inner_appearance(
         solids,
-        data.color,
-        data.metalness.map(|t| t.n),
-        data.roughness.map(|t| t.n),
+        color,
+        metalness.map(|t| t.n),
+        roughness.map(|t| t.n),
         exec_state,
         args,
     )
@@ -85,7 +56,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Add color to an extruded solid.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [10, 0])
 ///   |> line(endAbsolute = [0, 10])
 ///   |> line(endAbsolute = [-10, 0])
@@ -112,7 +83,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Add color to different solids.
 /// fn cube(center) {
 ///    return startSketchOn(XY)
-///    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+///    |> startProfile(at = [center[0] - 10, center[1] - 10])
 ///    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
 ///     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
 ///     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
@@ -132,7 +103,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _after_ the shell.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -155,7 +126,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // You can set the appearance before or after you shell it will yield the same result.
 /// // This example shows setting the appearance _before_ the shell.
 /// firstSketch = startSketchOn(XY)
-///     |> startProfileAt([-12, 12], %)
+///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
 ///     |> line(end = [-24, 0])
@@ -178,7 +149,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _before_ the pattern.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
@@ -201,7 +172,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Setting the appearance of a 3D pattern can be done _before_ or _after_ the pattern.
 /// // This example shows _after_ the pattern.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
 ///   |> line(end = [0, -4])
@@ -223,7 +194,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// ```no_run
 /// // Color the result of a 2D pattern that was extruded.
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([.5, 25], %)
+///   |> startProfile(at = [.5, 25])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [-1, 0])
 ///   |> line(end = [0, -5])
@@ -248,7 +219,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn(XZ)
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -266,7 +237,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)
 ///     |> appearance(
 ///         color = "#ff0000",
@@ -281,11 +252,11 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// import "tests/inputs/cube.sldprt" as cube
 ///
 /// cube
-/// //    |> appearance(
-/// //        color = "#ff0000",
-/// //        metalness = 50,
-/// //        roughness = 50
-/// //    )
+///    |> appearance(
+///        color = "#ff0000",
+///        metalness = 50,
+///        roughness = 50
+///    )
 /// ```
 #[stdlib {
     name = "appearance",

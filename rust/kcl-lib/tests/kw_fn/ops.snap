@@ -8,29 +8,18 @@ description: Operations executed kw_fn.kcl
     "group": {
       "type": "FunctionCall",
       "name": "increment",
-      "functionSourceRange": [
-        12,
-        35,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "add",
-      "functionSourceRange": [
-        43,
-        77,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": {
         "value": {
           "type": "Number",
@@ -67,6 +56,9 @@ description: Operations executed kw_fn.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

@@ -17,30 +17,31 @@ use tokio::sync::RwLock;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
-        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
-        DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
-        Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
-        Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
-        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
-        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
-        SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
-        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
+        CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind, CompletionOptions,
+        CompletionParams, CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
+        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
+        DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
+        FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
+        InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
+        MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
+        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens,
+        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
+        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
+        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
+        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
 
 use crate::{
     docs::kcl_doc::DocData,
-    errors::Suggestion,
+    errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
     lsp::{
@@ -837,6 +838,11 @@ impl LanguageServer for Backend {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
+                    code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
+                    resolve_provider: Some(false),
+                    work_done_progress_options: WorkDoneProgressOptions::default(),
+                })),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: Some(vec![".".to_string()]),
@@ -1452,14 +1458,18 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let (suggestion, range) = diagnostic.data.as_ref().and_then(|data| {
-                    serde_json::from_value::<(Suggestion, tower_lsp::lsp_types::Range)>(data.clone()).ok()
-                })?;
+                let (suggestion, range) = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<LspSuggestion>(data.clone()).ok())?;
                 let edit = TextEdit {
                     range,
                     new_text: suggestion.insert,
                 };
                 let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+
+                // If you add more code action kinds, make sure you add it to the server
+                // capabilities on initialization!
                 Some(CodeActionOrCommand::CodeAction(CodeAction {
                     title: suggestion.title,
                     kind: Some(CodeActionKind::QUICKFIX),

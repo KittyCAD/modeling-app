@@ -33,14 +33,6 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -82,13 +74,6 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -109,12 +94,19 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
         "type": "line",
         "end": {
-          "x": 4.6151,
+          "x": 117.2247,
           "y": 0.0,
           "z": 0.0
         },
@@ -132,7 +124,7 @@ description: Artifact commands bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 0.3849,
+          "y": 9.7753,
           "z": 0.0
         },
         "relative": true
@@ -148,7 +140,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -5.0,
+          "x": -127.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -166,7 +158,7 @@ description: Artifact commands bracket.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -2.25,
+          "y": -57.15,
           "z": 0.0
         },
         "relative": true
@@ -182,7 +174,7 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.3849,
+          "x": 9.7753,
           "y": 0.0,
           "z": 0.0
         },
@@ -237,9 +229,17 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 5.0,
+      "distance": 127.0,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -253,8 +253,162 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -270,7 +424,47 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -300,7 +494,7 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -320,7 +514,7 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -340,16 +534,6 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -360,30 +544,8 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "type": "close_path",
+      "path_id": "[uuid]"
     }
   },
   {
@@ -402,42 +564,15 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -0.75,
-        "y": 0.75,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.0,
-          "y": 0.75
+          "x": -25.4,
+          "y": 19.05
         },
-        "radius": 0.25,
+        "radius": 6.35,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -454,8 +589,27 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -19.049999999999997,
+        "y": 19.049999999999997,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -469,7 +623,7 @@ description: Artifact commands bracket.kcl
         [
           {
             "translate": {
-              "x": -2.8651438116461088,
+              "x": -72.77465281581115,
               "y": 0.0,
               "z": 0.0
             },
@@ -510,7 +664,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.5,
+              "y": 88.89999999999999,
               "z": 0.0
             },
             "scale": {
@@ -550,7 +704,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.5,
+              "y": 88.89999999999999,
               "z": 0.0
             },
             "scale": {
@@ -594,55 +748,24 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.39485618835389114,
-      "faces": null,
-      "opposite": "None"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
@@ -663,65 +786,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.39485618835389114,
+      "distance": -10.029347184188834,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -730,65 +797,9 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.39485618835389114,
+      "distance": -10.029347184188834,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -797,9 +808,52 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.39485618835389114,
+      "distance": -10.029347184188834,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -10.029347184188834,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -813,8 +867,129 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -830,7 +1005,34 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -850,39 +1052,80 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
       "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 1.375,
-        "y": 0.9375,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -894,10 +1137,10 @@ description: Artifact commands bracket.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.0625,
-          "y": 0.9375
+          "x": 26.9875,
+          "y": 23.8125
         },
-        "radius": 0.3125,
+        "radius": 7.9375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -914,8 +1157,27 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 34.925,
+        "y": 23.8125,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -930,7 +1192,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.125,
+              "y": 79.375,
               "z": 0.0
             },
             "scale": {
@@ -974,61 +1236,6 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.4848561883538911,
-      "faces": null,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
@@ -1043,9 +1250,36 @@ description: Artifact commands bracket.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.4848561883538911,
+      "distance": -12.315347184188834,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -12.315347184188834,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -1059,8 +1293,61 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1076,20 +1363,9 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1139,7 +1415,51 @@ description: Artifact commands bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.6348561883538911,
+      "radius": 16.125347184188833,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 6.35,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -1151,7 +1471,7 @@ description: Artifact commands bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.25,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -1163,7 +1483,7 @@ description: Artifact commands bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -1175,7 +1495,7 @@ description: Artifact commands bracket.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -1184,48 +1504,20 @@ description: Artifact commands bracket.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_fillet_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "face_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_fillet_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "face_id": "[uuid]"
     }
   }
 ]

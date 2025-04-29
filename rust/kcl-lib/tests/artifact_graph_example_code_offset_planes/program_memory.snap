@@ -22,7 +22,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -30,19 +30,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -65,7 +54,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -73,19 +62,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -108,7 +86,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -116,19 +94,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -176,7 +143,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -184,19 +151,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

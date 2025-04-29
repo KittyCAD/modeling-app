@@ -16,7 +16,7 @@ z = x + y`)
   })
   it(`expression with no identifiers in longer program`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
   |> angledLine(angle = 0, length = x, tag = $a)
   |> angledLine(angle = segAng(a) + 90, length = 5)
   |> angledLine(angle = segAng(a), length = -segLen(a))
@@ -41,7 +41,7 @@ z = x + y`)
   })
   it(`expression with a tag declarator add to end`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
   |> angledLine(angle = 0, length = x, tag = $a)
   |> angledLine(angle = segAng(a) + 90, length = 5)
   |> angledLine(angle = segAng(a), length = -segLen(a))
@@ -52,7 +52,7 @@ z = x + y`)
   })
   it(`expression with a tag declarator and variable in the middle`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
   |> angledLine(angle = 0, length = x, tag = $a)
   |> angledLine(angle = segAng(a) + 90, length = 5)
   |> angledLine(angle = segAng(a), length = -segLen(a))

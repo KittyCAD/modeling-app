@@ -33,14 +33,6 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -82,18 +74,11 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -7.9,
-        "y": -11.9,
+        "x": -200.66,
+        "y": -302.26,
         "z": 0.0
       }
     }
@@ -109,12 +94,19 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
         "type": "line",
         "end": {
-          "x": 15.8,
+          "x": 401.32,
           "y": 0.0,
           "z": 0.0
         },
@@ -132,7 +124,7 @@ description: Artifact commands lego.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 23.8,
+          "y": 604.52,
           "z": 0.0
         },
         "relative": true
@@ -148,7 +140,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -15.8,
+          "x": -401.32,
           "y": 0.0,
           "z": 0.0
         },
@@ -186,9 +178,17 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 3.2,
+      "distance": 81.28,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -202,8 +202,108 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -219,7 +319,27 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -249,7 +369,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -269,27 +389,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -311,18 +411,11 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -6.4,
-        "y": -10.4,
+        "x": -162.56,
+        "y": -264.15999999999997,
         "z": 0.0
       }
     }
@@ -338,12 +431,19 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
         "type": "line",
         "end": {
-          "x": 12.8,
+          "x": 325.12,
           "y": 0.0,
           "z": 0.0
         },
@@ -361,7 +461,7 @@ description: Artifact commands lego.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 20.8,
+          "y": 528.32,
           "z": 0.0
         },
         "relative": true
@@ -377,7 +477,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -12.8,
+          "x": -325.12,
           "y": 0.0,
           "z": 0.0
         },
@@ -411,9 +511,17 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.7000000000000002,
+      "distance": -43.18,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -427,8 +535,108 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -444,7 +652,27 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -474,7 +702,7 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
+      "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -494,16 +722,6 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -514,10 +732,8 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "type": "close_path",
+      "path_id": "[uuid]"
     }
   },
   {
@@ -536,42 +752,15 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -1.6,
-        "y": -8.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
         "type": "arc",
         "center": {
-          "x": -4.0,
-          "y": -8.0
+          "x": -101.6,
+          "y": -203.2
         },
-        "radius": 2.4,
+        "radius": 60.959999999999994,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -588,8 +777,27 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": -40.64,
+        "y": -203.2,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -603,7 +811,7 @@ description: Artifact commands lego.kcl
         [
           {
             "translate": {
-              "x": 8.0,
+              "x": 203.2,
               "y": 0.0,
               "z": 0.0
             },
@@ -644,7 +852,7 @@ description: Artifact commands lego.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 8.0,
+              "y": 203.2,
               "z": 0.0
             },
             "scale": {
@@ -673,7 +881,7 @@ description: Artifact commands lego.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 16.0,
+              "y": 406.4,
               "z": 0.0
             },
             "scale": {
@@ -713,7 +921,7 @@ description: Artifact commands lego.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 8.0,
+              "y": 203.2,
               "z": 0.0
             },
             "scale": {
@@ -742,7 +950,7 @@ description: Artifact commands lego.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 16.0,
+              "y": 406.4,
               "z": 0.0
             },
             "scale": {
@@ -786,55 +994,48 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 1.8,
-      "faces": null,
-      "opposite": "None"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "sketch_mode_disable"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
     }
   },
   {
@@ -855,65 +1056,9 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -922,65 +1067,9 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -989,65 +1078,9 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -1056,65 +1089,9 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": null
     }
   },
   {
@@ -1123,9 +1100,68 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 45.72,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -1139,8 +1175,197 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1156,7 +1381,52 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -1176,39 +1446,120 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
       "planar_normal": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 2.4,
-        "y": -4.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1221,9 +1572,9 @@ description: Artifact commands lego.kcl
         "type": "arc",
         "center": {
           "x": -0.0,
-          "y": -4.0
+          "y": -101.6
         },
-        "radius": 2.4,
+        "radius": 60.959999999999994,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1240,8 +1591,27 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 60.959999999999994,
+        "y": -101.6,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -1266,7 +1636,7 @@ description: Artifact commands lego.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 8.0,
+              "y": 203.2,
               "z": 0.0
             },
             "scale": {
@@ -1310,61 +1680,6 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": 1.8,
-      "faces": null,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
@@ -1379,9 +1694,36 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.8,
+      "distance": 45.72,
       "faces": null,
       "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 45.72,
+      "faces": null,
+      "opposite": "None"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
     }
   },
   {
@@ -1395,8 +1737,61 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1412,7 +1807,16 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
@@ -1432,24 +1836,20 @@ description: Artifact commands lego.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   }
 ]

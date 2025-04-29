@@ -258,7 +258,7 @@ description: Variables in memory after executing mounting-plate.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -266,19 +266,8 @@ description: Variables in memory after executing mounting-plate.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -402,7 +391,8 @@ description: Variables in memory after executing mounting-plate.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "plateLength": {
@@ -572,7 +562,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -580,19 +570,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

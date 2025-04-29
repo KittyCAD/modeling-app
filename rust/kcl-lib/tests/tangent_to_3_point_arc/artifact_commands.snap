@@ -74,13 +74,6 @@ description: Artifact commands tangent_to_3_point_arc.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -95,6 +88,13 @@ description: Artifact commands tangent_to_3_point_arc.kcl
     "range": [],
     "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -151,30 +151,6 @@ description: Artifact commands tangent_to_3_point_arc.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

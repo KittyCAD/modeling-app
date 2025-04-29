@@ -8,7 +8,6 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   runningOnWindows,
   testsInputPath,
 } from '@e2e/playwright/test-utils'
@@ -20,64 +19,61 @@ test.describe('Testing loading external models', () => {
    * its title, and its units settings. https://github.com/KittyCAD/kcl-samples/blob/main/parametric-bearing-pillow-block/main.kcl
    */
   // We have no more web tests
-  test.skip('Web: should overwrite current code, cannot create new file', async ({
-    editor,
-    context,
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-
-    await test.step(`Test setup`, async () => {
-      await context.addInitScript((code) => {
-        window.localStorage.setItem('persistCode', code)
-      }, bracket)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-    })
-
-    // Locators and constants
-    const newSample = {
-      file: 'parametric-bearing-pillow-block' + FILE_EXT,
-      title: 'Parametric Bearing Pillow Block',
-    }
-    const commandBarButton = page.getByRole('button', { name: 'Commands' })
-    const samplesCommandOption = page.getByRole('option', {
-      name: 'Load external model',
-    })
-    const commandSampleOption = page.getByRole('option', {
-      name: newSample.title,
-      exact: true,
-    })
-    const commandMethodArgButton = page.getByRole('button', {
-      name: 'Method',
-    })
-    const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
-      page.getByRole('option', {
-        name,
+  test.fail(
+    'Web: should overwrite current code, cannot create new file',
+    async ({ editor, context, page, homePage }) => {
+      const u = await getUtils(page)
+      await test.step(`Test setup`, async () => {
+        await context.addInitScript((code) => {
+          window.localStorage.setItem('persistCode', code)
+        }, bracket)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
       })
-    const warningText = page.getByText('Overwrite current file with sample?')
-    const confirmButton = page.getByRole('button', { name: 'Submit command' })
 
-    await test.step(`Precondition: check the initial code`, async () => {
-      await u.openKclCodePanel()
-      await editor.scrollToText(bracket.split('\n')[0])
-      await editor.expectEditor.toContain(bracket.split('\n')[0])
-    })
+      // Locators and constants
+      const newSample = {
+        file: 'parametric-bearing-pillow-block' + FILE_EXT,
+        title: 'Parametric Bearing Pillow Block',
+      }
+      const commandBarButton = page.getByRole('button', { name: 'Commands' })
+      const samplesCommandOption = page.getByRole('option', {
+        name: 'Load external model',
+      })
+      const commandSampleOption = page.getByRole('option', {
+        name: newSample.title,
+        exact: true,
+      })
+      const commandMethodArgButton = page.getByRole('button', {
+        name: 'Method',
+      })
+      const commandMethodOption = (name: 'Overwrite' | 'Create new file') =>
+        page.getByRole('option', {
+          name,
+        })
+      const warningText = page.getByText('Overwrite current file with sample?')
+      const confirmButton = page.getByRole('button', { name: 'Submit command' })
 
-    await test.step(`Load a KCL sample with the command palette`, async () => {
-      await commandBarButton.click()
-      await samplesCommandOption.click()
-      await commandSampleOption.click()
-      await commandMethodArgButton.click()
-      await expect(commandMethodOption('Create new file')).not.toBeVisible()
-      await commandMethodOption('Overwrite').click()
-      await expect(warningText).toBeVisible()
-      await confirmButton.click()
+      await test.step(`Precondition: check the initial code`, async () => {
+        await u.openKclCodePanel()
+        await editor.scrollToText(bracket.split('\n')[0])
+        await editor.expectEditor.toContain(bracket.split('\n')[0])
+      })
 
-      await editor.expectEditor.toContain('// ' + newSample.title)
-    })
-  })
+      await test.step(`Load a KCL sample with the command palette`, async () => {
+        await commandBarButton.click()
+        await samplesCommandOption.click()
+        await commandSampleOption.click()
+        await commandMethodArgButton.click()
+        await expect(commandMethodOption('Create new file')).not.toBeVisible()
+        await commandMethodOption('Overwrite').click()
+        await expect(warningText).toBeVisible()
+        await confirmButton.click()
+
+        await editor.expectEditor.toContain('// ' + newSample.title)
+      })
+    }
+  )
 
   /**
    * Note this test implicitly depends on the KCL samples:
@@ -85,13 +81,13 @@ test.describe('Testing loading external models', () => {
    * "gear-rack": https://github.com/KittyCAD/kcl-samples/blob/main/gear-rack/main.kcl
    */
   test(
-    'Desktop: should create new file by default, optionally overwrite',
+    'Desktop: should create new file by default, creates a second file with automatic unique name',
     { tag: '@electron' },
     async ({ editor, context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
       }
-      const { dir } = await context.folderSetupFn(async (dir) => {
+
+      await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
         await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {
@@ -104,37 +100,28 @@ test.describe('Testing loading external models', () => {
       const sampleOne = {
         file: 'parametric-bearing-pillow-block' + FILE_EXT,
         title: 'Parametric Bearing Pillow Block',
-      }
-      const sampleTwo = {
-        file: 'gear-rack' + FILE_EXT,
-        title: '100mm Gear Rack',
+        file1: 'parametric-bearing-pillow-block-1' + FILE_EXT,
       }
       const projectCard = page.getByRole('link', { name: 'bracket' })
-      const commandMethodArgButton = page.getByRole('button', {
-        name: 'Method',
-      })
-      const commandMethodOption = page.getByRole('option', {
-        name: 'Overwrite',
-      })
       const overwriteWarning = page.getByText(
         'Overwrite current file with sample?'
       )
-      const confirmButton = page.getByRole('button', { name: 'Submit command' })
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
       const newlyCreatedFile = (name: string) =>
         page.getByRole('listitem').filter({
           has: page.getByRole('button', { name }),
         })
       const defaultLoadCmdBarState: CmdBarSerialised = {
-        commandName: 'Load external model',
-        currentArgKey: 'source',
+        commandName: 'Add file to project',
+        currentArgKey: 'sample',
         currentArgValue: '',
         headerArguments: {
-          Method: 'newFile',
+          Method: 'Existing project',
           Sample: '',
-          Source: '',
+          Source: 'kcl-samples',
+          ProjectName: 'bracket',
         },
-        highlightedHeaderArg: 'source',
+        highlightedHeaderArg: 'sample',
         stage: 'arguments',
       }
 
@@ -156,11 +143,10 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Load a KCL sample with the command palette`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.selectOption({ name: 'KCL Samples' }).click()
         await cmdBar.expectState(defaultLoadCmdBarState)
-        await cmdBar.progressCmdBar()
         await cmdBar.selectOption({ name: sampleOne.title }).click()
         await expect(overwriteWarning).not.toBeVisible()
-        await cmdBar.progressCmdBar()
         await page.waitForTimeout(1000)
       })
 
@@ -170,33 +156,19 @@ test.describe('Testing loading external models', () => {
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
 
-      await test.step(`Now overwrite the current file`, async () => {
+      await test.step(`Load a KCL sample with the command palette`, async () => {
         await toolbar.loadButton.click()
+        await cmdBar.selectOption({ name: 'KCL Samples' }).click()
         await cmdBar.expectState(defaultLoadCmdBarState)
-        await cmdBar.progressCmdBar()
-        await cmdBar.selectOption({ name: sampleTwo.title }).click()
-        await commandMethodArgButton.click()
-        await commandMethodOption.click()
-        await expect(commandMethodArgButton).toContainText('overwrite')
-        await expect(overwriteWarning).toBeVisible()
-        await confirmButton.click()
+        await cmdBar.selectOption({ name: sampleOne.title }).click()
+        await expect(overwriteWarning).not.toBeVisible()
+        await page.waitForTimeout(1000)
       })
 
-      await test.step(`Ensure we overwrote the current file without navigating`, async () => {
-        await editor.expectEditor.toContain('// ' + sampleTwo.title)
-        await test.step(`Check actual file contents`, async () => {
-          await expect
-            .poll(async () => {
-              return await fsp.readFile(
-                join(dir, 'bracket', sampleOne.file),
-                'utf-8'
-              )
-            })
-            .toContain('// ' + sampleTwo.title)
-        })
-        await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
-        await expect(newlyCreatedFile(sampleTwo.file)).not.toBeVisible()
-        await expect(projectMenuButton).toContainText(sampleOne.file)
+      await test.step(`Ensure we made and opened a new file with a unique name`, async () => {
+        await editor.expectEditor.toContain('// ' + sampleOne.title)
+        await expect(newlyCreatedFile(sampleOne.file1)).toBeVisible()
+        await expect(projectMenuButton).toContainText(sampleOne.file1)
       })
     }
   )
@@ -230,19 +202,20 @@ test.describe('Testing loading external models', () => {
 
         async function loadExternalFileThroughCommandBar(tronApp: ElectronZoo) {
           await toolbar.loadButton.click()
+          await cmdBar.selectOption({ name: 'Local Drive' }).click()
           await cmdBar.expectState({
-            commandName: 'Load external model',
-            currentArgKey: 'source',
+            commandName: 'Add file to project',
+            currentArgKey: 'pathOpen file',
             currentArgValue: '',
             headerArguments: {
-              Method: 'newFile',
-              Sample: '',
-              Source: '',
+              Method: 'Existing project',
+              Path: '',
+              Source: 'local',
+              ProjectName: 'testDefault',
             },
-            highlightedHeaderArg: 'source',
+            highlightedHeaderArg: 'path',
             stage: 'arguments',
           })
-          await cmdBar.selectOption({ name: 'Local Drive' }).click()
 
           // Mock the file picker selection
           const handleFile = tronApp.electron.evaluate(
@@ -255,14 +228,18 @@ test.describe('Testing loading external models', () => {
           await page.getByTestId('cmd-bar-arg-file-button').click()
           await handleFile
 
-          await cmdBar.progressCmdBar()
           await cmdBar.expectState({
-            commandName: 'Load external model',
+            commandName: 'Add file to project',
+            currentArgKey: 'pathOpen file',
+            currentArgValue: '',
             headerArguments: {
+              Method: 'Existing project',
+              Path: '',
               Source: 'local',
-              Path: modelName,
+              ProjectName: 'testDefault',
             },
-            stage: 'review',
+            highlightedHeaderArg: 'path',
+            stage: 'arguments',
           })
           await cmdBar.progressCmdBar()
         }

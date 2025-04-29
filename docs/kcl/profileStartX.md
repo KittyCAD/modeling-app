@@ -9,7 +9,7 @@ Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 
 
 ```js
-profileStartX(sketch: Sketch): number
+profileStartX(profile: Sketch): number
 ```
 
 
@@ -17,7 +17,7 @@ profileStartX(sketch: Sketch): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
+| `profile` | [`Sketch`](/docs/kcl/types/Sketch) | Profile whose start is being used | Yes |
 
 ### Returns
 
@@ -28,7 +28,7 @@ profileStartX(sketch: Sketch): number
 
 ```js
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([5, 2], %)
+  |> startProfile(at = [5, 2])
   |> angledLine(angle = -26.6, length = 50)
   |> angledLine(angle = 90, length = 50)
   |> angledLine(angle = 30, endAbsoluteX = profileStartX(%))

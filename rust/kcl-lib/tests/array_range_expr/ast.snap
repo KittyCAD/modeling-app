@@ -64,18 +64,15 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r1",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "4",
@@ -86,12 +83,61 @@ description: Result of parsing array_range_expr.kcl
                   "value": 4.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+              }
             },
             {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"last element is included\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "last element is included"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r1",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
               "commentStart": 0,
               "end": 0,
               "raw": "4",
@@ -103,48 +149,10 @@ description: Result of parsing array_range_expr.kcl
                 "suffix": "None"
               }
             },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"last element is included\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "last element is included"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
             "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -283,18 +291,15 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r2",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "4",
@@ -305,12 +310,61 @@ description: Result of parsing array_range_expr.kcl
                   "value": 4.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+              }
             },
             {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"last element is included\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "last element is included"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r2",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
               "commentStart": 0,
               "end": 0,
               "raw": "4",
@@ -322,48 +376,10 @@ description: Result of parsing array_range_expr.kcl
                 "suffix": "None"
               }
             },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"last element is included\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "last element is included"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
             "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -382,64 +398,40 @@ description: Result of parsing array_range_expr.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "left": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "four",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                },
-                "operator": "+",
-                "right": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "1",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 1.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 0,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              }
-            ],
-            "callee": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
               "abs_path": false,
               "commentStart": 0,
               "end": 0,
               "name": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "int",
+                "name": "four",
                 "start": 0,
                 "type": "Identifier"
               },
               "path": [],
               "start": 0,
+              "type": "Name",
               "type": "Name"
             },
-            "commentStart": 0,
-            "end": 0,
+            "operator": "+",
+            "right": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -517,18 +509,15 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r3",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "4",
@@ -539,12 +528,61 @@ description: Result of parsing array_range_expr.kcl
                   "value": 4.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+              }
             },
             {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"second-to-last element is included\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "second-to-last element is included"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r3",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
               "commentStart": 0,
               "end": 0,
               "raw": "4",
@@ -556,48 +594,10 @@ description: Result of parsing array_range_expr.kcl
                 "suffix": "None"
               }
             },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"second-to-last element is included\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "second-to-last element is included"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
             "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -609,18 +609,15 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r3",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "5",
@@ -631,12 +628,61 @@ description: Result of parsing array_range_expr.kcl
                   "value": 5.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+              }
             },
             {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"last element is included\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "last element is included"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r3",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
               "commentStart": 0,
               "end": 0,
               "raw": "5",
@@ -648,48 +694,10 @@ description: Result of parsing array_range_expr.kcl
                 "suffix": "None"
               }
             },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"last element is included\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "last element is included"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
             "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -711,126 +719,78 @@ description: Result of parsing array_range_expr.kcl
             "commentStart": 0,
             "end": 0,
             "endElement": {
-              "arguments": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "left": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "five",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "operator": "-",
-                  "right": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 0,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                }
-              ],
-              "callee": {
+              "commentStart": 0,
+              "end": 0,
+              "left": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "int",
+                  "name": "five",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "path": [],
                 "start": 0,
+                "type": "Name",
                 "type": "Name"
               },
-              "commentStart": 0,
-              "end": 0,
+              "operator": "-",
+              "right": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
             "endInclusive": true,
             "start": 0,
             "startElement": {
-              "arguments": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "left": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "zero",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "operator": "+",
-                  "right": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 0,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                }
-              ],
-              "callee": {
+              "commentStart": 0,
+              "end": 0,
+              "left": {
                 "abs_path": false,
                 "commentStart": 0,
                 "end": 0,
                 "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "int",
+                  "name": "zero",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "path": [],
                 "start": 0,
+                "type": "Name",
                 "type": "Name"
               },
-              "commentStart": 0,
-              "end": 0,
+              "operator": "+",
+              "right": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
+              },
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
             },
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
@@ -850,65 +810,45 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r4",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "0",
+                "raw": "1",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 0.0,
+                  "value": 1.0,
                   "suffix": "None"
                 }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
               },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"first element is 1\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "first element is 1"
               }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"first element is 1\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "first element is 1"
             }
           ],
           "callee": {
@@ -918,7 +858,7 @@ description: Result of parsing array_range_expr.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -929,8 +869,36 @@ description: Result of parsing array_range_expr.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r4",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -942,34 +910,180 @@ description: Result of parsing array_range_expr.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": "r4",
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Identifier",
                 "type": "Identifier"
               },
-              "property": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "2",
+                "raw": "3",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
-                  "value": 2.0,
+                  "value": 3.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
+              }
             },
             {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"second-to-last element is 3\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "second-to-last element is 3"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r4",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isEqualTo",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "4",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "None"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"last element is 4\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "last element is 4"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "commentStart": 0,
+            "computed": false,
+            "end": 0,
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "r4",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
               "commentStart": 0,
               "end": 0,
               "raw": "3",
@@ -981,140 +1095,10 @@ description: Result of parsing array_range_expr.kcl
                 "suffix": "None"
               }
             },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"second-to-last element is 3\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "second-to-last element is 3"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
             "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
-        },
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
-            {
-              "commentStart": 0,
-              "computed": false,
-              "end": 0,
-              "object": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "r4",
-                "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
-              },
-              "property": {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "3",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 3.0,
-                  "suffix": "None"
-                }
-              },
-              "start": 0,
-              "type": "MemberExpression",
-              "type": "MemberExpression"
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "4",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 4.0,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0.00001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.00001,
-                "suffix": "None"
-              }
-            },
-            {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"last element is 4\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "last element is 4"
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assertEqual",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+            "type": "MemberExpression",
+            "type": "MemberExpression"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",

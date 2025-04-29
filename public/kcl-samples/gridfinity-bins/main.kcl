@@ -29,7 +29,7 @@ height = firstStep + secondStep + thirdStep
 // Define a function which builds the profile of the baseplate bin
 fn face(plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([binBaseLength + binTol, 0], %)
+    |> startProfile(at = [binBaseLength + binTol, 0])
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
     |> angledLine(angle = -45, lengthY = thirdStep)
@@ -83,10 +83,10 @@ corners = patternCircular3d(
 )
 
 singleBinFill = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        binBaseLength + binTol,
        binBaseLength + binTol
-     ], %)
+     ])
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
   |> xLine(endAbsolute = profileStartX(%), tag = $line002)
@@ -150,7 +150,7 @@ binFill = patternLinear3d(
 
 // Create the top of the bin
 binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
   |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
   |> xLine(endAbsolute = profileStartX(%), tag = $line012)

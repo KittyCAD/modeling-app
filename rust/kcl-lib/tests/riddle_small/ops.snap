@@ -8,36 +8,22 @@ description: Operations executed riddle_small.kcl
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -85,5 +71,11 @@ description: Operations executed riddle_small.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

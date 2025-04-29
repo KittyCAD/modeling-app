@@ -11,25 +11,21 @@ plateHeight = 0.125
 bendRadius = 3
 
 // Create a function to draw each primary tube with specified lengths and angles
-fn primaryTube(n, angle001, length001, length002, length003) {
+fn primaryTube(n, angle001: number(deg), length001, length002, length003) {
   // Create an index for the function
   pos001 = n * 2
 
   // Define a plane for each sweep path defined by an angle
   sweepPlane = {
     origin = [pos001, 0.0, 0],
-    xAxis = [
-      sin(toRadians(-angle001)),
-      cos(toRadians(-angle001)),
-      0.0
-    ],
+    xAxis = [sin(-angle001), cos(-angle001), 0.0],
     yAxis = [0.0, 0.0, 1.0],
     zAxis = [1.0, 0.0, 0.0]
   }
 
   // Draw a path for each sweep
   sweepPath = startSketchOn(sweepPlane)
-    |> startProfileAt([0, plateHeight], %)
+    |> startProfile(at = [0, plateHeight])
     |> line(end = [0, length001])
     |> tangentialArc(angle = -80, radius = bendRadius, tag = $arc01)
     |> angledLine(angle = tangentToEnd(arc01), length = length002)
@@ -39,7 +35,7 @@ fn primaryTube(n, angle001, length001, length002, length003) {
   // Create the cross section of each tube and sweep them
   sweepProfile = startSketchOn(XY)
     |> circle(center = [pos001, 0], radius = primaryTubeDiameter / 2)
-    |> hole(circle(center = [pos001, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
+    |> subtract2d(tool = circle(center = [pos001, 0], radius = primaryTubeDiameter / 2 - wallThickness))
     |> sweep(path = sweepPath)
 
   return {  }
@@ -53,7 +49,7 @@ primaryTube(3, 25.2, 5, 5, 3)
 
 // Create the mounting flange for the header
 flangeSketch = startSketchOn(XY)
-  |> startProfileAt([3 + 1.3, -1.25], %)
+  |> startProfile(at = [3 + 1.3, -1.25])
   |> xLine(length = -2.6, tag = $seg01)
   |> tangentialArc(radius = .3, angle = -40)
   |> tangentialArc(radius = .9, angle = 80)
@@ -73,40 +69,40 @@ flangeSketch = startSketchOn(XY)
   |> close()
 
   // Create openings in the flange to accommodate each tube
-  |> hole(circle(center = [0, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
-  |> hole(circle(center = [2, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
-  |> hole(circle(center = [4, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
-  |> hole(circle(center = [6, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
+  |> subtract2d(tool = circle(center = [0, 0], radius = primaryTubeDiameter / 2 - wallThickness))
+  |> subtract2d(tool = circle(center = [2, 0], radius = primaryTubeDiameter / 2 - wallThickness))
+  |> subtract2d(tool = circle(center = [4, 0], radius = primaryTubeDiameter / 2 - wallThickness))
+  |> subtract2d(tool = circle(center = [6, 0], radius = primaryTubeDiameter / 2 - wallThickness))
 
   // Add mounting holes to the flange
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          -primaryTubeDiameter * .6,
          -primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          primaryTubeDiameter * .6,
          primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          3 * 2 - (primaryTubeDiameter * .6),
          primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
-  |> hole(circle(
+     ))
+  |> subtract2d(tool = circle(
        center = [
          3 * 2 + primaryTubeDiameter * .6,
          -primaryTubeDiameter * .6
        ],
        radius = 0.25 / 2,
-     ), %)
+     ))
 
   // Extrude the flange and fillet the edges
   |> extrude(length = plateHeight)

@@ -84,7 +84,7 @@ description: Variables in memory after executing flange.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -92,15 +92,7 @@ description: Variables in memory after executing flange.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -164,7 +156,7 @@ description: Variables in memory after executing flange.kcl
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -172,19 +164,8 @@ description: Variables in memory after executing flange.kcl
                   "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -216,7 +197,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -251,7 +233,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bottomThickness": {
@@ -333,7 +316,7 @@ description: Variables in memory after executing flange.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -341,19 +324,8 @@ description: Variables in memory after executing flange.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -431,7 +403,7 @@ description: Variables in memory after executing flange.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -439,19 +411,8 @@ description: Variables in memory after executing flange.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -529,7 +490,7 @@ description: Variables in memory after executing flange.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -537,19 +498,8 @@ description: Variables in memory after executing flange.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -627,7 +577,7 @@ description: Variables in memory after executing flange.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -635,19 +585,8 @@ description: Variables in memory after executing flange.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "units": {
-              "type": "Inches"
             }
           },
           "start": {
@@ -740,7 +679,7 @@ description: Variables in memory after executing flange.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -748,19 +687,8 @@ description: Variables in memory after executing flange.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -792,7 +720,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "mountingHoleDia": {
@@ -902,7 +831,7 @@ description: Variables in memory after executing flange.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -910,15 +839,7 @@ description: Variables in memory after executing flange.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -974,7 +895,7 @@ description: Variables in memory after executing flange.kcl
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -982,15 +903,7 @@ description: Variables in memory after executing flange.kcl
                   "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -1054,7 +967,7 @@ description: Variables in memory after executing flange.kcl
                         "y": 0.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -1062,19 +975,8 @@ description: Variables in memory after executing flange.kcl
                         "y": 1.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": 0.0,
-                        "z": 1.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Inches"
                       }
                     },
                     "start": {
@@ -1106,7 +1008,8 @@ description: Variables in memory after executing flange.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Inches"
@@ -1141,7 +1044,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1176,7 +1080,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "topExtrusion": {
@@ -1234,7 +1139,7 @@ description: Variables in memory after executing flange.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1242,15 +1147,7 @@ description: Variables in memory after executing flange.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -1314,7 +1211,7 @@ description: Variables in memory after executing flange.kcl
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -1322,19 +1219,8 @@ description: Variables in memory after executing flange.kcl
                   "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -1366,7 +1252,8 @@ description: Variables in memory after executing flange.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -1401,7 +1288,8 @@ description: Variables in memory after executing flange.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "topTotalDiameter": {

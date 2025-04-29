@@ -84,7 +84,7 @@ import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
@@ -1551,10 +1551,10 @@ class ThreePointArcSegment implements SegmentUtils {
       overlayDetails.forEach((payload, index) => {
         if (payload?.type === 'set-one') {
           overlays[payload.pathToNodeString] = payload.seg
-          // Add filterValue: 'interior' for p2 and 'end' for p3
+          // Add filterValue: 'interiorAbsolute' for p2 and 'end' for p3
           segmentOverlays.push({
             ...payload.seg[0],
-            filterValue: index === 0 ? 'interior' : 'end',
+            filterValue: index === 0 ? 'interiorAbsolute' : 'end',
           })
         }
       })

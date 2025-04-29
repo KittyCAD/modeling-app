@@ -5,7 +5,7 @@
 
 fn cond = (bools) => {
   return (a, b) => {
-    x = min(max(-1, a-b), 1) + 1
+    x = min([max([-1, a-b]), 1]) + 1
     return bools[x]
   }
 }
@@ -24,8 +24,6 @@ fn Gte = (a, b) => { return Not(Lt(a, b)) }
 // L-system
 // Note: it was most concise to encode productions directly in axioms.
 // Change them as you need.
-
-deg = pi()*2 / 360
 
 fn setSketch = (state, q) => {
   return {
@@ -77,8 +75,8 @@ fn setLength = (state, q) => {
 
 fn Gt2 = (state) => { return setLength(state, state.currentLength * state.factor) }
 fn Lt2 = (state) => { return setLength(state, state.currentLength / state.factor) }
-fn Add = (state) => { return setAngle(state, rem(int(state.currentAngle - state.angle), divisor = 360)) }
-fn Sub = (state) => { return setAngle(state, rem(int(state.currentAngle + state.angle), divisor = 360)) }
+fn Add = (state) => { return setAngle(state, rem(state.currentAngle - state.angle, divisor = 360)) }
+fn Sub = (state) => { return setAngle(state, rem(state.currentAngle + state.angle, divisor = 360)) }
 
 // Only necessary to get around recursion limitations...
 fn F = (state, F) => {
@@ -101,7 +99,7 @@ fn F = (state, F) => {
 
 fn LSystem = (args, axioms) => {
     myThing = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
   return axioms({
     depthMax: args.iterations,
     depth: 0,

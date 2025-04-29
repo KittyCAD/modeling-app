@@ -1,23 +1,10 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { projectsMachine } from '@src/machines/projectsMachine'
-
+import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type { ActorRefFrom } from 'xstate'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 export type ProjectsCommandSchema = {
-  'Read projects': Record<string, unknown>
-  'Create project': {
-    name: string
-  }
-  'Open project': {
-    name: string
-  }
-  'Delete project': {
-    name: string
-  }
-  'Rename project': {
-    oldName: string
-    newName: string
-  }
   'Import file from URL': {
     name: string
     code?: string
@@ -26,43 +13,101 @@ export type ProjectsCommandSchema = {
   }
 }
 
-export const projectsCommandBarConfig: StateMachineCommandSetConfig<
-  typeof projectsMachine,
-  ProjectsCommandSchema
-> = {
-  'Open project': {
+export function createProjectCommands({
+  systemIOActor,
+}: {
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+}) {
+  /**
+   * Helper functions instead of importing these due to circular deps.
+   * unable to resolve this in a cleaner way at the moment.
+   * This is safe in terms of logic but visually ugly.
+   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
+   */
+  const folderSnapshot = () => {
+    const { folders } = systemIOActor.getSnapshot().context
+    return folders
+  }
+
+  const defaultProjectFolderNameSnapshot = () => {
+    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
+    return defaultProjectFolderName
+  }
+
+  const openProjectCommand: Command = {
     icon: 'arrowRight',
+    name: 'Open project',
+    displayName: `Open project`,
     description: 'Open a project',
-    status: isDesktop() ? 'active' : 'inactive',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.navigateToProject,
+          data: { requestedProjectName: record.name },
+        })
+      }
+    },
     args: {
       name: {
+        required: true,
         inputType: 'options',
-        required: true,
-        options: (_, context) =>
-          context?.projects.map((p) => ({
-            name: p.name,
-            value: p.name,
-          })) || [],
+        options: () => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
       },
     },
-  },
-  'Create project': {
-    icon: 'folderPlus',
+  }
+
+  const createProjectCommand: Command = {
+    icon: 'folder',
+    name: 'Create project',
+    displayName: `Create project`,
     description: 'Create a project',
-    status: isDesktop() ? 'active' : 'inactive',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.createProject,
+          data: { requestedProjectName: record.name },
+        })
+      }
+    },
     args: {
       name: {
-        inputType: 'string',
         required: true,
-        defaultValueFromContext: (context) => context.defaultProjectName,
+        inputType: 'string',
+        defaultValue: defaultProjectFolderNameSnapshot,
       },
     },
-  },
-  'Delete project': {
-    icon: 'close',
+  }
+
+  const deleteProjectCommand: Command = {
+    icon: 'folder',
+    name: 'Delete project',
+    displayName: `Delete project`,
     description: 'Delete a project',
-    status: isDesktop() ? 'active' : 'inactive',
+    groupId: 'projects',
     needsReview: true,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.deleteProject,
+          data: { requestedProjectName: record.name },
+        })
+      }
+    },
     reviewMessage: ({ argumentsToSubmit }) =>
       CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
@@ -72,41 +117,84 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
       name: {
         inputType: 'options',
         required: true,
-        options: (_, context) =>
-          context?.projects.map((p) => ({
-            name: p.name,
-            value: p.name,
-          })) || [],
+        options: () => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
       },
     },
-  },
-  'Rename project': {
+  }
+
+  const renameProjectCommand: Command = {
     icon: 'folder',
+    name: 'Rename project',
+    displayName: `Rename project`,
     description: 'Rename a project',
+    groupId: 'projects',
     needsReview: true,
-    status: isDesktop() ? 'active' : 'inactive',
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.renameProject,
+          data: {
+            requestedProjectName: record.newName,
+            projectName: record.oldName,
+          },
+        })
+      }
+    },
     args: {
       oldName: {
         inputType: 'options',
         required: true,
-        options: (_, context) =>
-          context?.projects.map((p) => ({
-            name: p.name,
-            value: p.name,
-          })) || [],
+        options: () => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
       },
       newName: {
         inputType: 'string',
         required: true,
-        defaultValueFromContext: (context) => context.defaultProjectName,
+        defaultValue: defaultProjectFolderNameSnapshot,
       },
     },
-  },
-  'Import file from URL': {
+  }
+
+  const importFileFromURL: Command = {
+    name: 'Import file from URL',
+    groupId: 'projects',
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
-    status: 'active',
+    hideFromSearch: true,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: record.projectName,
+            requestedCode: record.code,
+            requestedFileName: record.name,
+          },
+        })
+      }
+    },
     args: {
       method: {
         inputType: 'options',
@@ -134,11 +222,18 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, context) =>
-          context?.projects.map((p) => ({
-            name: p.name,
-            value: p.name,
-          })) || [],
+        options: (_, context) => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          folders.forEach((folder) => {
+            options.push({
+              name: folder.name,
+              value: folder.name,
+              isCurrent: false,
+            })
+          })
+          return options
+        },
       },
       name: {
         inputType: 'string',
@@ -168,5 +263,18 @@ export const projectsCommandBarConfig: StateMachineCommandSetConfig<
           }".`
         : `Will overwrite the contents of the current file with the contents from the URL.`
     },
-  },
+  }
+
+  /** No disk-writing commands are available in the browser */
+  const projectCommands = isDesktop()
+    ? [
+        openProjectCommand,
+        createProjectCommand,
+        deleteProjectCommand,
+        renameProjectCommand,
+        importFileFromURL,
+      ]
+    : [importFileFromURL]
+
+  return projectCommands
 }

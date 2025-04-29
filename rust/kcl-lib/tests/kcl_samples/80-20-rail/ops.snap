@@ -4,21 +4,6 @@ description: Operations executed 80-20-rail.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "rail8020",
-      "functionSourceRange": [
-        239,
-        7352,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -35,16 +20,7 @@ description: Operations executed 80-20-rail.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -54,10 +30,18 @@ description: Operations executed 80-20-rail.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -92,6 +76,17 @@ description: Operations executed 80-20-rail.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -182,9 +177,11 @@ description: Operations executed 80-20-rail.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -193,9 +190,7 @@ description: Operations executed 80-20-rail.kcl
         }
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -286,18 +281,18 @@ description: Operations executed 80-20-rail.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "rail8020",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"

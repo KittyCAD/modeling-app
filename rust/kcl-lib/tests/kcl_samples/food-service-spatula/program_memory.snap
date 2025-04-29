@@ -27,9 +27,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1570,
-            "end": 1579,
-            "start": 1570,
+            "commentStart": 1616,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -90,9 +90,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               -30.0
             ],
             "tag": {
-              "commentStart": 1570,
-              "end": 1579,
-              "start": 1570,
+              "commentStart": 1616,
+              "end": 1625,
+              "start": 1616,
               "type": "TagDeclarator",
               "value": "backEdge"
             },
@@ -187,7 +187,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -195,19 +195,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -245,7 +234,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "flipperFilletRadius": {
@@ -309,9 +299,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 1570,
-            "end": 1579,
-            "start": 1570,
+            "commentStart": 1616,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -406,7 +396,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -414,19 +404,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -479,7 +458,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -487,19 +466,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -583,9 +551,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4285,
-            "end": 4297,
-            "start": 4285,
+            "commentStart": 4235,
+            "end": 4247,
+            "start": 4235,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -745,9 +713,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               7.0
             ],
             "tag": {
-              "commentStart": 4285,
-              "end": 4297,
-              "start": 4285,
+              "commentStart": 4235,
+              "end": 4247,
+              "start": 4235,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -819,11 +787,11 @@ description: Variables in memory after executing food-service-spatula.kcl
             }
           },
           "xAxis": {
-            "x": 0.34202,
+            "x": 0.342019894888923,
             "y": -0.0,
-            "z": -0.939693,
+            "z": -0.9396927112094517,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -831,19 +799,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.939693,
-            "y": -0.0,
-            "z": 0.34202,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -881,7 +838,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "gripEdgeTop": {
@@ -1033,11 +991,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         "artifactId": "[uuid]",
         "value": "gripEdgeTop",
         "xAxis": {
-          "x": 0.34202,
+          "x": 0.342019894888923,
           "y": -0.0,
-          "z": -0.939693,
+          "z": -0.9396927112094517,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1045,15 +1003,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.939693,
-          "y": -0.0,
-          "z": 0.34202,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -1108,9 +1058,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4285,
-                "end": 4297,
-                "start": 4285,
+                "commentStart": 4235,
+                "end": 4247,
+                "start": 4235,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -1270,9 +1220,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                   7.0
                 ],
                 "tag": {
-                  "commentStart": 4285,
-                  "end": 4297,
-                  "start": 4285,
+                  "commentStart": 4235,
+                  "end": 4247,
+                  "start": 4235,
                   "type": "TagDeclarator",
                   "value": "gripEdgeTop"
                 },
@@ -1344,11 +1294,11 @@ description: Variables in memory after executing food-service-spatula.kcl
                 }
               },
               "xAxis": {
-                "x": 0.34202,
+                "x": 0.342019894888923,
                 "y": -0.0,
-                "z": -0.939693,
+                "z": -0.9396927112094517,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1356,19 +1306,8 @@ description: Variables in memory after executing food-service-spatula.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.939693,
-                "y": -0.0,
-                "z": 0.34202,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1406,7 +1345,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -1598,9 +1538,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             7.0
           ],
           "tag": {
-            "commentStart": 4285,
-            "end": 4297,
-            "start": 4285,
+            "commentStart": 4235,
+            "end": 4247,
+            "start": 4235,
             "type": "TagDeclarator",
             "value": "gripEdgeTop"
           },
@@ -1672,11 +1612,11 @@ description: Variables in memory after executing food-service-spatula.kcl
           }
         },
         "xAxis": {
-          "x": 0.34202,
+          "x": 0.342019894888923,
           "y": -0.0,
-          "z": -0.939693,
+          "z": -0.9396927112094517,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1684,19 +1624,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.939693,
-          "y": -0.0,
-          "z": 0.34202,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1745,11 +1674,11 @@ description: Variables in memory after executing food-service-spatula.kcl
         }
       },
       "xAxis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693,
+        "z": -0.9396927112094517,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -1757,19 +1686,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.939693,
-        "y": -0.0,
-        "z": 0.34202,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -1811,9 +1729,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2841,
-            "end": 2858,
-            "start": 2841,
+            "commentStart": 2887,
+            "end": 2904,
+            "start": 2887,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -1838,9 +1756,9 @@ description: Variables in memory after executing food-service-spatula.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2989,
-            "end": 3003,
-            "start": 2989,
+            "commentStart": 3035,
+            "end": 3049,
+            "start": 3035,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -1882,9 +1800,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               3.5
             ],
             "tag": {
-              "commentStart": 2841,
-              "end": 2858,
-              "start": 2841,
+              "commentStart": 2887,
+              "end": 2904,
+              "start": 2887,
               "type": "TagDeclarator",
               "value": "handleBottomEdge"
             },
@@ -1945,9 +1863,9 @@ description: Variables in memory after executing food-service-spatula.kcl
               91.3213
             ],
             "tag": {
-              "commentStart": 2989,
-              "end": 3003,
-              "start": 2989,
+              "commentStart": 3035,
+              "end": 3049,
+              "start": 3035,
               "type": "TagDeclarator",
               "value": "handleTopEdge"
             },
@@ -2036,7 +1954,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -2044,19 +1962,8 @@ description: Variables in memory after executing food-service-spatula.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -2098,7 +2005,8 @@ description: Variables in memory after executing food-service-spatula.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "handleBottomEdge": {
@@ -2303,9 +2211,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             3.5
           ],
           "tag": {
-            "commentStart": 2841,
-            "end": 2858,
-            "start": 2841,
+            "commentStart": 2887,
+            "end": 2904,
+            "start": 2887,
             "type": "TagDeclarator",
             "value": "handleBottomEdge"
           },
@@ -2366,9 +2274,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             91.3213
           ],
           "tag": {
-            "commentStart": 2989,
-            "end": 3003,
-            "start": 2989,
+            "commentStart": 3035,
+            "end": 3049,
+            "start": 3035,
             "type": "TagDeclarator",
             "value": "handleTopEdge"
           },
@@ -2457,7 +2365,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2465,19 +2373,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -2534,7 +2431,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -2542,19 +2439,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -2583,11 +2469,11 @@ description: Variables in memory after executing food-service-spatula.kcl
       "artifactId": "[uuid]",
       "value": "gripEdgeTop",
       "xAxis": {
-        "x": 0.34202,
+        "x": 0.342019894888923,
         "y": -0.0,
-        "z": -0.939693,
+        "z": -0.9396927112094517,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -2595,15 +2481,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
-        }
-      },
-      "zAxis": {
-        "x": 0.939693,
-        "y": -0.0,
-        "z": 0.34202,
-        "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "solid": {
@@ -2658,9 +2536,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 4285,
-              "end": 4297,
-              "start": 4285,
+              "commentStart": 4235,
+              "end": 4247,
+              "start": 4235,
               "type": "TagDeclarator",
               "value": "gripEdgeTop"
             },
@@ -2820,9 +2698,9 @@ description: Variables in memory after executing food-service-spatula.kcl
                 7.0
               ],
               "tag": {
-                "commentStart": 4285,
-                "end": 4297,
-                "start": 4285,
+                "commentStart": 4235,
+                "end": 4247,
+                "start": 4235,
                 "type": "TagDeclarator",
                 "value": "gripEdgeTop"
               },
@@ -2894,11 +2772,11 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "xAxis": {
-              "x": 0.34202,
+              "x": 0.342019894888923,
               "y": -0.0,
-              "z": -0.939693,
+              "z": -0.9396927112094517,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -2906,19 +2784,8 @@ description: Variables in memory after executing food-service-spatula.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
-            },
-            "zAxis": {
-              "x": 0.939693,
-              "y": -0.0,
-              "z": 0.34202,
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "units": {
-              "type": "Mm"
             }
           },
           "start": {
@@ -2956,7 +2823,8 @@ description: Variables in memory after executing food-service-spatula.kcl
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Mm"
@@ -3096,7 +2964,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3104,19 +2972,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3274,7 +3131,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3282,19 +3139,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3452,7 +3298,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3460,19 +3306,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -3535,9 +3370,9 @@ description: Variables in memory after executing food-service-spatula.kcl
             -30.0
           ],
           "tag": {
-            "commentStart": 1570,
-            "end": 1579,
-            "start": 1570,
+            "commentStart": 1616,
+            "end": 1625,
+            "start": 1616,
             "type": "TagDeclarator",
             "value": "backEdge"
           },
@@ -3632,7 +3467,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3640,19 +3475,8 @@ description: Variables in memory after executing food-service-spatula.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

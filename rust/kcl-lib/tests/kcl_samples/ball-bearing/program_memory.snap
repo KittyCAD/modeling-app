@@ -95,7 +95,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -103,19 +103,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -147,7 +136,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -239,7 +229,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -247,19 +237,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -291,7 +270,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -383,7 +363,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -391,19 +371,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -435,7 +404,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -527,7 +497,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -535,19 +505,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -579,7 +538,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -671,7 +631,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -679,19 +639,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -723,7 +672,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -815,7 +765,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -823,19 +773,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -867,7 +806,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -959,7 +899,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -967,19 +907,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1011,7 +940,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1103,7 +1033,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1111,19 +1041,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1155,7 +1074,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1247,7 +1167,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1255,19 +1175,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1299,7 +1208,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1391,7 +1301,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1399,19 +1309,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1443,7 +1342,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1517,7 +1417,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1525,19 +1425,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -1709,7 +1598,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1717,19 +1606,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1761,7 +1639,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1905,7 +1784,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1913,19 +1792,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -1957,7 +1825,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2101,7 +1970,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2109,19 +1978,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2153,7 +2011,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2297,7 +2156,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2305,19 +2164,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2349,7 +2197,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2493,7 +2342,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2501,19 +2350,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2545,7 +2383,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2689,7 +2528,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2697,19 +2536,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2741,7 +2569,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2885,7 +2714,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2893,19 +2722,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -2937,7 +2755,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3081,7 +2900,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3089,19 +2908,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -3133,7 +2941,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3277,7 +3086,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3285,19 +3094,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -3329,7 +3127,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3473,7 +3272,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3481,19 +3280,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -3525,7 +3313,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3637,7 +3426,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3645,19 +3434,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -3764,7 +3542,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565,
+            "z": -3.9751,
             "units": {
               "type": "Mm"
             }
@@ -3774,7 +3552,7 @@ description: Variables in memory after executing ball-bearing.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -3782,19 +3560,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -3826,7 +3593,8 @@ description: Variables in memory after executing ball-bearing.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "insideWallSketch": {
@@ -3869,7 +3637,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565,
+          "z": -3.9751,
           "units": {
             "type": "Mm"
           }
@@ -3879,7 +3647,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3887,19 +3655,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -4006,7 +3763,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4014,19 +3771,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4058,7 +3804,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4124,7 +3871,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4132,19 +3879,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4176,7 +3912,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4242,7 +3979,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4250,19 +3987,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4294,7 +4020,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4360,7 +4087,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4368,19 +4095,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4412,7 +4128,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4478,7 +4195,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4486,19 +4203,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4530,7 +4236,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4596,7 +4303,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4604,19 +4311,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4648,7 +4344,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4714,7 +4411,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4722,19 +4419,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4766,7 +4452,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4832,7 +4519,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4840,19 +4527,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -4884,7 +4560,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4950,7 +4627,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4958,19 +4635,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -5002,7 +4668,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5068,7 +4735,7 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5076,19 +4743,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -5120,7 +4776,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5175,7 +4832,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -5183,19 +4840,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -5302,7 +4948,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": -0.1565,
+            "z": -3.9751,
             "units": {
               "type": "Mm"
             }
@@ -5312,7 +4958,7 @@ description: Variables in memory after executing ball-bearing.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -5320,19 +4966,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -5364,7 +4999,8 @@ description: Variables in memory after executing ball-bearing.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "outsideWallSketch": {
@@ -5407,7 +5043,7 @@ description: Variables in memory after executing ball-bearing.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": -0.1565,
+          "z": -3.9751,
           "units": {
             "type": "Mm"
           }
@@ -5417,7 +5053,7 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -5425,19 +5061,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

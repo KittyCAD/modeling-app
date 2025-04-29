@@ -7,8 +7,6 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
@@ -17,9 +15,6 @@ test.describe('integrations tests', () => {
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
-      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -29,7 +24,7 @@ test.describe('integrations tests', () => {
         )
       })
 
-      const [clickObj] = await scene.makeMouseHelpers(726, 272)
+      const [clickObj] = scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -51,7 +46,7 @@ test.describe('integrations tests', () => {
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],
@@ -73,14 +68,14 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-        await page.waitForTimeout(1000)
+        await page.waitForTimeout(2000)
         await clickObj()
         await page.waitForTimeout(1000)
         await scene.moveNoWhere()
         await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],
@@ -107,8 +102,6 @@ test.describe('when using the file tree to', () => {
     `rename ${fromFile} to ${toFile}, and doesn't crash on reload and settings load`,
     { tag: '@electron' },
     async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const { panesOpen, pasteCodeInEditor, renameFile, editorTextMatches } =
         await getUtils(page, test)
 
@@ -151,8 +144,6 @@ test.describe('when using the file tree to', () => {
     `create many new files of the same name, incrementing their names`,
     { tag: '@electron' },
     async ({ page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const { panesOpen, createNewFile } = await getUtils(page, test)
 
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -283,7 +274,6 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -1037,8 +1027,6 @@ test.describe('Undo and redo do not keep history when navigating between files',
     `open a file, change something, open a different file, hitting undo should do nothing`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })
@@ -1105,10 +1093,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
   test(
     `open a file, change something, undo it, open a different file, hitting redo should do nothing`,
     { tag: '@electron' },
-    // Skip on windows i think the keybindings are different for redo.
     async ({ context, page }, testInfo) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       await context.folderSetupFn(async (dir) => {
         const testDir = join(dir, 'testProject')
         await fsp.mkdir(testDir, { recursive: true })

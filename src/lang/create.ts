@@ -140,23 +140,6 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
   }
 }
 
-export function createCallExpressionStdLib(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
-    arguments: args,
-  }
-}
-
 export const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }

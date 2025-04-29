@@ -13,7 +13,7 @@ import buttonWidth, buttonHeight, buttonThickness from "parameters.kcl"
 export fn button() {
   // Sketch the button profile and extrude
   buttonSketch = startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> angledLine(angle = 180, length = buttonWidth, tag = $tag1)
     |> angledLine(angle = 270, length = buttonHeight, tag = $tag2)
     |> angledLine(angle = 0, length = buttonWidth)

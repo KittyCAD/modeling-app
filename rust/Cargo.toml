@@ -31,9 +31,10 @@ async-trait = "0.1.88"
 anyhow = { version = "1" }
 bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 clap = { version = "4.5.36", features = ["derive"] }
+console_error_panic_hook = "0.1.7"
 dashmap = { version = "6.1.0" }
 http = "1"
-indexmap = "2.7.0"
+indexmap = "2.9.0"
 kittycad = { version = "0.3.36", default-features = false, features = ["js", "requests"] }
 kittycad-modeling-cmds = { version = "0.2.114", features = ["ts-rs", "websocket"] }
 lazy_static = "1.5.0"

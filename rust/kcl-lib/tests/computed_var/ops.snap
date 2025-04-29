@@ -8,11 +8,7 @@ description: Operations executed computed_var.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },

@@ -9,7 +9,7 @@ Get the previous adjacent edge to the edge given.
 
 
 ```js
-getPreviousAdjacentEdge(tag: TagIdentifier): Uuid
+getPreviousAdjacentEdge(edge: TagIdentifier): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier): Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) |  | Yes |
+| `edge` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the edge you want to find the previous adjacent edge of. | Yes |
 
 ### Returns
 
@@ -28,7 +28,7 @@ getPreviousAdjacentEdge(tag: TagIdentifier): Uuid
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> angledLine(angle = 60, length = 10)
   |> angledLine(angle = 120, length = 10)

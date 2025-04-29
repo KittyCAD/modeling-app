@@ -4,5 +4,5 @@ fn increment(i) {
 
 xs = [0..2]
 ys = xs
-  |> map(%, increment)
-  |> map(%, increment)
+  |> map(f = increment)
+  |> map(f = increment)

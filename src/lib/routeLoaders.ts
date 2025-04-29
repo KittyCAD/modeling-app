@@ -20,7 +20,7 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { settingsActor } from '@src/machines/appMachine'
+import { settingsActor } from '@src/lib/singletons'
 
 export const telemetryLoader: LoaderFunction = async ({
   params,

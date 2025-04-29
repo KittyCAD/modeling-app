@@ -17,32 +17,37 @@ flowchart LR
   13["Cap Start"]
   14["Cap End"]
   15["SweepEdge Opposite"]
-  16["SweepEdge Adjacent"]
+  16["SweepEdge Opposite"]
   17["SweepEdge Opposite"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
+  18["SweepEdge Opposite"]
+  19["SweepEdge Adjacent"]
   20["SweepEdge Adjacent"]
-  21["SweepEdge Opposite"]
+  21["SweepEdge Adjacent"]
   22["SweepEdge Adjacent"]
+  23["EdgeCut Fillet<br>[238, 294, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
-  2 ---- 8
   2 --- 7
+  2 ---- 8
   3 --- 12
-  3 --- 21
-  3 --- 22
-  4 --- 11
-  4 --- 19
+  3 x--> 13
+  3 --- 17
+  3 --- 19
+  4 --- 10
+  4 x--> 13
+  4 --- 18
   4 --- 20
-  5 --- 10
-  5 --- 17
-  5 --- 18
-  6 --- 9
-  6 --- 15
+  5 --- 9
+  5 x--> 13
+  5 --- 15
+  5 --- 22
+  6 --- 11
+  6 x--> 13
   6 --- 16
+  6 --- 21
   8 --- 9
   8 --- 10
   8 --- 11
@@ -57,4 +62,19 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  15 <--x 9
+  20 <--x 9
+  22 <--x 9
+  18 <--x 10
+  19 <--x 10
+  20 <--x 10
+  16 <--x 11
+  22 <--x 11
+  17 <--x 12
+  19 <--x 12
+  15 <--x 14
+  16 <--x 14
+  17 <--x 14
+  18 <--x 14
+  21 <--x 23
 ```

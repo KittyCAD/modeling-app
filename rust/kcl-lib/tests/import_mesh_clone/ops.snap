@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed import_mesh_clone.kcl
+---
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "cube",
+      "moduleId": 6
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "isError": true,
+    "labeledArgs": {
+      "geometry": {
+        "value": {
+          "type": "ImportedGeometry",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "clone",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  }
+]

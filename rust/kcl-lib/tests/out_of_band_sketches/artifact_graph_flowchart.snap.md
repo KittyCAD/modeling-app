@@ -1,117 +1,157 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[45, 87, 0]"]
-    3["Segment<br>[164, 187, 0]"]
-    4["Segment<br>[208, 236, 0]"]
-    9["Segment<br>[543, 567, 0]"]
-    10["Segment<br>[588, 595, 0]"]
-    11[Solid2d]
-  end
-  subgraph path6 [Path]
-    6["Path<br>[298, 339, 0]"]
-    7["Segment<br>[416, 439, 0]"]
-    8["Segment<br>[460, 489, 0]"]
-    12["Segment<br>[643, 671, 0]"]
-    13["Segment<br>[692, 699, 0]"]
+  subgraph path3 [Path]
+    3["Path<br>[45, 90, 0]"]
+    5["Segment<br>[167, 190, 0]"]
+    6["Segment<br>[211, 239, 0]"]
+    9["Segment<br>[549, 573, 0]"]
+    10["Segment<br>[594, 601, 0]"]
     14[Solid2d]
   end
+  subgraph path4 [Path]
+    4["Path<br>[301, 345, 0]"]
+    7["Segment<br>[422, 445, 0]"]
+    8["Segment<br>[466, 495, 0]"]
+    11["Segment<br>[649, 677, 0]"]
+    12["Segment<br>[698, 705, 0]"]
+    13[Solid2d]
+  end
   1["Plane<br>[12, 31, 0]"]
-  5["Plane<br>[265, 284, 0]"]
-  15["Sweep Extrusion<br>[710, 775, 0]"]
-  16[Wall]
+  2["Plane<br>[268, 287, 0]"]
+  15["Sweep Extrusion<br>[716, 781, 0]"]
+  16["Sweep Extrusion<br>[716, 781, 0]"]
   17[Wall]
   18[Wall]
   19[Wall]
-  20["Cap Start"]
-  21["Cap End"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["Sweep Extrusion<br>[710, 775, 0]"]
-  31[Wall]
-  32[Wall]
-  33[Wall]
-  34[Wall]
-  35["Cap Start"]
-  36["Cap End"]
-  37["SweepEdge Opposite"]
+  20[Wall]
+  21[Wall]
+  22[Wall]
+  23[Wall]
+  24[Wall]
+  25["Cap Start"]
+  26["Cap Start"]
+  27["Cap End"]
+  28["Cap End"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Opposite"]
+  32["SweepEdge Opposite"]
+  33["SweepEdge Opposite"]
+  34["SweepEdge Opposite"]
+  35["SweepEdge Opposite"]
+  36["SweepEdge Opposite"]
+  37["SweepEdge Adjacent"]
   38["SweepEdge Adjacent"]
-  39["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
   40["SweepEdge Adjacent"]
-  41["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
   42["SweepEdge Adjacent"]
-  43["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
   44["SweepEdge Adjacent"]
-  1 --- 2
-  2 --- 3
+  1 --- 3
   2 --- 4
-  2 --- 9
-  2 --- 10
-  2 ---- 15
-  2 --- 11
-  3 --- 19
-  3 --- 28
-  3 --- 29
-  4 --- 18
-  4 --- 26
-  4 --- 27
-  5 --- 6
-  6 --- 7
-  6 --- 8
-  6 --- 12
-  6 --- 13
-  6 ---- 30
-  6 --- 14
-  7 --- 34
-  7 --- 43
+  3 --- 5
+  3 --- 6
+  3 --- 9
+  3 --- 10
+  3 --- 14
+  3 ---- 15
+  4 --- 7
+  4 --- 8
+  4 --- 11
+  4 --- 12
+  4 --- 13
+  4 ---- 16
+  5 --- 20
+  5 x--> 25
+  5 --- 31
+  5 --- 40
+  6 --- 19
+  6 x--> 25
+  6 --- 29
+  6 --- 39
+  7 --- 23
+  7 x--> 26
+  7 --- 35
   7 --- 44
-  8 --- 33
-  8 --- 41
+  8 --- 22
+  8 x--> 26
+  8 --- 36
   8 --- 42
   9 --- 17
-  9 --- 24
-  9 --- 25
-  10 --- 16
-  10 --- 22
-  10 --- 23
-  12 --- 32
-  12 --- 39
-  12 --- 40
-  13 --- 31
-  13 --- 37
-  13 --- 38
-  15 --- 16
+  9 x--> 25
+  9 --- 32
+  9 --- 37
+  10 --- 18
+  10 x--> 25
+  10 --- 30
+  10 --- 38
+  11 --- 24
+  11 x--> 26
+  11 --- 33
+  11 --- 43
+  12 --- 21
+  12 x--> 26
+  12 --- 34
+  12 --- 41
   15 --- 17
   15 --- 18
   15 --- 19
   15 --- 20
-  15 --- 21
-  15 --- 22
-  15 --- 23
-  15 --- 24
   15 --- 25
-  15 --- 26
   15 --- 27
-  15 --- 28
   15 --- 29
-  30 --- 31
-  30 --- 32
-  30 --- 33
-  30 --- 34
-  30 --- 35
-  30 --- 36
-  30 --- 37
-  30 --- 38
-  30 --- 39
-  30 --- 40
-  30 --- 41
-  30 --- 42
-  30 --- 43
-  30 --- 44
+  15 --- 30
+  15 --- 31
+  15 --- 32
+  15 --- 37
+  15 --- 38
+  15 --- 39
+  15 --- 40
+  16 --- 21
+  16 --- 22
+  16 --- 23
+  16 --- 24
+  16 --- 26
+  16 --- 28
+  16 --- 33
+  16 --- 34
+  16 --- 35
+  16 --- 36
+  16 --- 41
+  16 --- 42
+  16 --- 43
+  16 --- 44
+  32 <--x 17
+  37 <--x 17
+  39 <--x 17
+  30 <--x 18
+  37 <--x 18
+  38 <--x 18
+  29 <--x 19
+  39 <--x 19
+  40 <--x 19
+  31 <--x 20
+  38 <--x 20
+  40 <--x 20
+  34 <--x 21
+  41 <--x 21
+  43 <--x 21
+  36 <--x 22
+  42 <--x 22
+  44 <--x 22
+  35 <--x 23
+  41 <--x 23
+  44 <--x 23
+  33 <--x 24
+  42 <--x 24
+  43 <--x 24
+  29 <--x 27
+  30 <--x 27
+  31 <--x 27
+  32 <--x 27
+  33 <--x 28
+  34 <--x 28
+  35 <--x 28
+  36 <--x 28
 ```

@@ -8,29 +8,7 @@ description: Operations executed rotate_after_fillet.kcl
     "group": {
       "type": "FunctionCall",
       "name": "cos",
-      "functionSourceRange": [
-        0,
-        0,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "bolt",
-      "functionSourceRange": [
-        264,
-        1565,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
@@ -84,6 +62,17 @@ description: Operations executed rotate_after_fillet.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -119,18 +108,7 @@ description: Operations executed rotate_after_fillet.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -243,6 +221,17 @@ description: Operations executed rotate_after_fillet.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -273,18 +262,21 @@ description: Operations executed rotate_after_fillet.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "bolt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

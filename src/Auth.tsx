@@ -1,5 +1,5 @@
 import Loading from '@src/components/Loading'
-import { useAuthState } from '@src/machines/appMachine'
+import { useAuthState } from '@src/lib/singletons'
 
 // Wrapper around protected routes, used in src/Router.tsx
 export const Auth = ({ children }: React.PropsWithChildren) => {
@@ -7,7 +7,7 @@ export const Auth = ({ children }: React.PropsWithChildren) => {
   const isLoggingIn = authState.matches('checkIfLoggedIn')
 
   return isLoggingIn ? (
-    <Loading>
+    <Loading className="h-screen">
       <span data-testid="initial-load">Loading Design Studio...</span>
     </Loading>
   ) : (

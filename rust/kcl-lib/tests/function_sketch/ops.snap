@@ -4,21 +4,6 @@ description: Operations executed function_sketch.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "box",
-      "functionSourceRange": [
-        6,
-        220,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -64,6 +49,17 @@ description: Operations executed function_sketch.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "box",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"

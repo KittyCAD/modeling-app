@@ -1,16 +1,15 @@
 use std::{
-    collections::HashMap,
     panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
 
 use insta::rounded_redaction;
 
+use crate::{errors::KclError, ModuleId};
+#[cfg(feature = "artifact-graph")]
 use crate::{
-    errors::KclError,
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
-    ModuleId,
 };
 
 mod kcl_samples;
@@ -52,8 +51,11 @@ where
     settings.set_snapshot_path(Path::new("..").join(&test.output_dir));
     settings.set_prepend_module_to_snapshot(false);
     settings.set_description(format!("{operation} {}.kcl", &test.name));
-    // Sorting maps makes them easier to diff.
-    settings.set_sort_maps(true);
+    // We don't do it on the flowchart
+    if operation != "Artifact graph flowchart" {
+        // Sorting maps makes them easier to diff.
+        settings.set_sort_maps(true);
+    }
     // Replace UUIDs with the string "[uuid]", because otherwise the tests would constantly
     // be changing the UUID. This is a stopgap measure until we make the engine more deterministic.
     settings.add_filter(
@@ -178,7 +180,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     panic!("Step data was empty");
                 }
             }
-            let outcome = exec_state.to_wasm_outcome(env_ref).await;
+            let outcome = exec_state.to_exec_outcome(env_ref).await;
 
             let mem_result = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Variables in memory after executing", || {
@@ -196,6 +198,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 })
             }));
 
+            #[cfg(feature = "artifact-graph")]
             assert_common_snapshots(
                 test,
                 outcome.operations,
@@ -230,6 +233,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                         })
                     }));
 
+                    #[cfg(feature = "artifact-graph")]
                     assert_common_snapshots(test, error.operations, error.artifact_commands, error.artifact_graph);
                     err_result.unwrap();
                 }
@@ -246,41 +250,30 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 
 /// Assert snapshots that should happen both when KCL execution succeeds and
 /// when it results in an error.
+#[cfg(feature = "artifact-graph")]
 fn assert_common_snapshots(
     test: &Test,
     operations: Vec<Operation>,
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
+    let operations = {
+        // Make the operations deterministic by sorting them by their module ID,
+        // then by their range.
+        let mut operations = operations.clone();
+        operations.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        operations
+    };
     let artifact_commands = {
         // Due to our newfound concurrency, we're going to mess with the
         // artifact_commands a bit -- we're going to maintain the order,
         // but only for a given module ID. This means the artifact_commands
         // is no longer meaningful, but it is deterministic and will hopefully
         // catch meaningful changes in behavior.
+        // We sort by the source range, like we do for the operations.
 
-        let mut artifact_commands_map = artifact_commands
-            .into_iter()
-            .map(|v| (v.range.module_id().as_usize(), v))
-            .fold(
-                HashMap::<usize, Vec<ArtifactCommand>>::new(),
-                |mut map, (module_id, el)| {
-                    let mut v = map.remove(&module_id).unwrap_or_default();
-                    v.push(el);
-                    map.insert(module_id, v);
-                    map
-                },
-            );
-
-        let mut artifact_commands_keys = artifact_commands_map.keys().cloned().collect::<Vec<_>>();
-        artifact_commands_keys.sort();
-
-        let artifact_commands: Vec<ArtifactCommand> = artifact_commands_keys
-            .iter()
-            .flat_map(|idx| artifact_commands_map.remove(idx).unwrap())
-            .collect();
-
-        assert_eq!(0, artifact_commands_map.len());
+        let mut artifact_commands = artifact_commands.clone();
+        artifact_commands.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         artifact_commands
     };
 
@@ -292,6 +285,8 @@ fn assert_common_snapshots(
                 "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
                 "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
                 ".**.sourceRange" => Vec::new(),
+                ".**.functionSourceRange" => Vec::new(),
+                ".**.moduleId" => 0,
             });
         })
     }));
@@ -307,6 +302,10 @@ fn assert_common_snapshots(
     }));
     let result3 = catch_unwind(AssertUnwindSafe(|| {
         assert_snapshot(test, "Artifact graph flowchart", || {
+            let mut artifact_graph = artifact_graph.clone();
+            // Sort the map by artifact where we can.
+            artifact_graph.sort();
+
             let flowchart = artifact_graph
                 .to_mermaid_flowchart()
                 .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
@@ -470,27 +469,6 @@ mod helix_ccw {
 }
 mod double_map_fn {
     const TEST_NAME: &str = "double_map_fn";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
-    }
-}
-mod property_of_object {
-    const TEST_NAME: &str = "property_of_object";
 
     /// Test parsing KCL.
     #[test]
@@ -788,6 +766,27 @@ mod invalid_member_object {
 }
 mod invalid_member_object_prop {
     const TEST_NAME: &str = "invalid_member_object_prop";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod invalid_member_object_using_string {
+    const TEST_NAME: &str = "invalid_member_object_using_string";
 
     /// Test parsing KCL.
     #[test]
@@ -1354,48 +1353,6 @@ mod tangential_arc {
         super::execute(TEST_NAME, true).await
     }
 }
-mod big_number_angle_to_match_length_x {
-    const TEST_NAME: &str = "big_number_angle_to_match_length_x";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
-    }
-}
-mod big_number_angle_to_match_length_y {
-    const TEST_NAME: &str = "big_number_angle_to_match_length_y";
-
-    /// Test parsing KCL.
-    #[test]
-    fn parse() {
-        super::parse(TEST_NAME)
-    }
-
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
-    }
-
-    /// Test that KCL is executed correctly.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn kcl_test_execute() {
-        super::execute(TEST_NAME, true).await
-    }
-}
 mod sketch_on_face_circle_tagged {
     const TEST_NAME: &str = "sketch_on_face_circle_tagged";
 
@@ -1602,6 +1559,7 @@ mod mike_stress_test {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "when kurt made the artifact graph lots of commands, this became super slow and sometimes the engine will just die, turn this back on when we can parallelize the simulation tests with snapshots deterministically"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -2282,6 +2240,28 @@ mod multi_transform {
     }
 }
 
+mod module_return_using_var {
+    const TEST_NAME: &str = "module_return_using_var";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
 mod import_transform {
     const TEST_NAME: &str = "import_transform";
 
@@ -2596,6 +2576,70 @@ mod import_async {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod loop_tag {
+    const TEST_NAME: &str = "loop_tag";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod multiple_foreign_imports_all_render {
+    const TEST_NAME: &str = "multiple-foreign-imports-all-render";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod import_mesh_clone {
+    const TEST_NAME: &str = "import_mesh_clone";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    #[ignore = "turn on when katie fixes the mesh import"]
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }

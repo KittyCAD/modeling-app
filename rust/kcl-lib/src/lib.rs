@@ -76,12 +76,14 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
+#[cfg(test)]
+mod variant_name;
 pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, EngineStats};
+pub use engine::{AsyncTasks, EngineManager, EngineStats};
 pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
@@ -102,7 +104,9 @@ pub use unparser::{recast_dir, walk_dir};
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
 pub mod exec {
-    pub use crate::execution::{ArtifactCommand, DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
+    #[cfg(feature = "artifact-graph")]
+    pub use crate::execution::ArtifactCommand;
+    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
 }
 
 #[cfg(target_arch = "wasm32")]

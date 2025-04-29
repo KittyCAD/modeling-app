@@ -74,13 +74,6 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
@@ -95,6 +88,13 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
     "range": [],
     "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -210,15 +210,8 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
       "planar_normal": {
         "x": 0.0,
         "y": 1.0,
-        "z": 0.0
+        "z": -0.0
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "start_path"
     }
   },
   {
@@ -239,6 +232,13 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
     "range": [],
     "command": {
       "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "start_path"
     }
   },
   {
@@ -290,30 +290,6 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
         },
         "angle_snap_increment": null
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
     }
   }
 ]

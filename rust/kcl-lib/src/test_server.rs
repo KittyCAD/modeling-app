@@ -31,6 +31,7 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
+#[cfg(test)]
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
@@ -86,7 +87,7 @@ async fn do_execute_and_snapshot(
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
     let result = ctx
-        .run_single_threaded(&program, &mut exec_state)
+        .run(&program, &mut exec_state)
         .await
         .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {

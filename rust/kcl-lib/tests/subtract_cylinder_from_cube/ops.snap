@@ -4,21 +4,6 @@ description: Operations executed subtract_cylinder_from_cube.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cube",
-      "functionSourceRange": [
-        7,
-        328,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -66,7 +51,15 @@ description: Operations executed subtract_cylinder_from_cube.kcl
     }
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -149,5 +142,8 @@ description: Operations executed subtract_cylinder_from_cube.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

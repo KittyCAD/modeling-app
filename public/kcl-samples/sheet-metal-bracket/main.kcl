@@ -32,10 +32,10 @@ flangeExtrusion = if mountingBoltPatternY > componentBoltPatternY {
 
 // Draw the extrusion profile of the sheet metal bracket
 bracketProfile = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        -mountingBoltPatternX / 2 - overhang,
        0
-     ], %)
+     ])
   |> xLine(length = flangeLength)
   |> tangentialArc(radius = exteriorBendRadius, angle = bendAngle)
   |> angledLine(angle = bendAngle, endAbsoluteY = hatHeight - thickness, tag = $seg01)

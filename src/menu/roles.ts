@@ -13,7 +13,7 @@ type HeaderLabel =
 
 type FileRoleLabel =
   | 'Open project'
-  | 'New project'
+  | 'Create project'
   | 'Import file from URL'
   | 'Preferences'
   | 'User settings'
@@ -24,9 +24,9 @@ type FileRoleLabel =
   | 'Export current part'
   | 'Create new file'
   | 'Create new folder'
-  | 'Share current part (via Zoo link)'
+  | 'Share part via Zoo link'
   | 'Project settings'
-  | 'Load external model'
+  | 'Add file to project'
   | 'User default units'
 
 type EditRoleLabel =
@@ -39,7 +39,7 @@ type EditRoleLabel =
   | 'Format code'
 
 type HelpRoleLabel =
-  | 'Refresh and report a bug'
+  | 'Report a bug'
   | 'Request a feature'
   | 'Ask the community discord'
   | 'Ask the community discourse'

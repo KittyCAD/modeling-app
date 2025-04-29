@@ -39,11 +39,12 @@ import {
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
+  isArray,
   isNonNullable,
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/machines/appMachine'
+import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
@@ -672,7 +673,7 @@ export async function sendSelectEventToEngine(
     engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
-  const res = await engineCommandManager.sendSceneCommand({
+  let res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -681,6 +682,13 @@ export async function sendSelectEventToEngine(
     },
     cmd_id: uuidv4(),
   })
+  if (!res) {
+    return Promise.reject('no response')
+  }
+
+  if (isArray(res)) {
+    res = res[0]
+  }
   if (
     res?.success &&
     res?.resp?.type === 'modeling' &&

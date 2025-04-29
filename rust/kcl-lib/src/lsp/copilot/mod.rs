@@ -264,7 +264,7 @@ impl Backend {
             completion_list.push(
                 r#"fn cube = (pos, scale) => {
   const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
+    |> startProfile(at = pos)
     |> line([0, scale], %)
     |> line([scale, 0], %)
     |> line([0, -scale], %)

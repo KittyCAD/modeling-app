@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -74,6 +74,7 @@ import {
   EngineConnectionStateType,
 } from '@src/lang/std/engineConnection'
 import {
+  crossProduct,
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
 } from '@src/lang/util'
@@ -106,12 +107,11 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
 import { err, reject, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { platform, uuidv4 } from '@src/lib/utils'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { kclEditorActor } from '@src/machines/kclEditorMachine'
 import {
   getPersistedContext,
@@ -138,11 +138,10 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { theme, allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
+    app: { allowOrbitInSketchMode },
+    modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
-  const navigate = useNavigate()
-  const { context, send: fileMachineSend } = useFileContext()
+  const { context } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
@@ -532,23 +531,6 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        'Submit to Text-to-CAD API': ({ event }) => {
-          if (event.type !== 'Text-to-CAD') return
-          const trimmedPrompt = event.data.prompt.trim()
-          if (!trimmedPrompt) return
-
-          submitAndAwaitTextToKcl({
-            trimmedPrompt,
-            fileMachineSend,
-            navigate,
-            context,
-            token,
-            settings: {
-              theme: theme.current,
-              highlightEdges: highlightEdges.current,
-            },
-          }).catch(reportRejection)
-        },
       },
       guards: {
         'has valid selection for deletion': ({
@@ -914,11 +896,12 @@ export const ModelingMachineProvider = ({
                   engineCommandManager,
                   artifact.id
                 )
+                const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
                 return {
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
                   sketchNodePaths: [],
-                  zAxis: toTuple(planeVar.zAxis),
+                  zAxis: toTuple(normal),
                   yAxis: toTuple(planeVar.yAxis),
                   origin: toTuple(planeVar.origin),
                 }
@@ -1890,11 +1873,6 @@ export const ModelingMachineProvider = ({
         groupId: 'modeling',
       },
       {
-        menuLabel: 'Design.Create with Zoo Text-To-CAD',
-        commandName: 'Text-to-CAD',
-        groupId: 'modeling',
-      },
-      {
         menuLabel: 'Design.Modify with Zoo Text-To-CAD',
         commandName: 'Prompt-to-edit',
         groupId: 'modeling',
@@ -1984,8 +1962,27 @@ export const ModelingMachineProvider = ({
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+
   useHotkeys(deleteKeys, () => {
-    modelingSend({ type: 'Delete selection' })
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
+    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
+    const selections =
+      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
+        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
+      )
+    selections.forEach((selection) => {
+      modelingSend({
+        type: 'Delete segment',
+        data: selection.codeRef.pathToNode,
+      })
+    })
+    if (
+      modelingState.context.selectionRanges.graphSelections.length >
+      selections.length
+    ) {
+      // Not all selection were segments -> keep the default delete behavior
+      modelingSend({ type: 'Delete selection' })
+    }
   })
 
   // Allow ctrl+alt+c to center to selection

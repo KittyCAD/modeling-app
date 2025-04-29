@@ -4,7 +4,7 @@
 // Pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {
   pixelBoxBody = startSketchOn(kitExtrude, face = extrudeTag)
-    |> startProfileAt([positionY, positionZ], %)
+    |> startProfile(at = [positionY, positionZ])
     |> line(end = [0, height])
     |> line(end = [width, 0])
     |> line(end = [0, -height])
@@ -21,7 +21,7 @@ kitBodyHeight = 25
 kitBodyDepth = 18
 
 kitBody = startSketchOn(XZ)
-  |> startProfileAt([-kitBodyWidth / 2, kitBodyElevation], %)
+  |> startProfile(at = [-kitBodyWidth / 2, kitBodyElevation])
   |> line(end = [0, kitBodyHeight])
   |> line(end = [kitBodyWidth, 0], tag = $seg01)
   |> line(end = [0, -kitBodyHeight], tag = $seg02)
@@ -46,7 +46,7 @@ kitFaceHeight = kitHeadElevation + kitHeadHeight - kitFaceElevation - 3
 kitFaceDepth = 2
 
 kitFace = startSketchOn(kitHead, face = END)
-  |> startProfileAt([-kitFaceWidth / 2, kitFaceElevation], %)
+  |> startProfile(at = [-kitFaceWidth / 2, kitFaceElevation])
   |> line(end = [0, 1]) // left lower corner up
   |> line(end = [-1, 0]) // left lower corner left
   |> line(end = [0, kitFaceHeight]) // left side up
@@ -79,7 +79,7 @@ kitLeftEye3 = pixelBox(kitFace, START, -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, ki
 kitRightEye = pixelBox(kitFace, START, kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
 kitNoseElevation = kitEyeHeihgt - 5
 kitNose = startSketchOn(kitFace, face = START)
-  |> startProfileAt([-2, kitNoseElevation], %) // H V
+  |> startProfile(at = [-2, kitNoseElevation]) // H V
   |> line(end = [0, 1]) // lower-left up
   |> line(end = [2, 0]) // lower-left right
   |> line(end = [0, 2]) // mid-left up
@@ -160,7 +160,7 @@ fn kitLeg(offsetFront, offsetSide) {
   kitShoeOffsetFront = kitShoeLength / 2 - (kitBodyDepth / 2) - offsetFront
 
   kitFootPrint = startSketchOn(XY)
-    |> startProfileAt([offsetSide, kitShoeOffsetFront], %)
+    |> startProfile(at = [offsetSide, kitShoeOffsetFront])
     |> line(end = [kitShoeWidth, 0])
     |> line(end = [0, -kitShoeLength])
     |> line(end = [-kitShoeWidth, 0])

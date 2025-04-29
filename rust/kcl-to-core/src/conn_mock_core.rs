@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
     exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    EngineStats, KclError,
+    AsyncTasks, EngineStats, KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -27,6 +27,7 @@ pub struct EngineConnection {
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     stats: EngineStats,
+    async_tasks: AsyncTasks,
 }
 
 impl EngineConnection {
@@ -40,6 +41,7 @@ impl EngineConnection {
             default_planes: Default::default(),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 
@@ -383,6 +385,10 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, kcl_lib::SourceRange>>> {
         self.ids_of_async_commands.clone()
+    }
+
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {

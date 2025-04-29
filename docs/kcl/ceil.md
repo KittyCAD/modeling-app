@@ -9,7 +9,7 @@ Compute the smallest integer greater than or equal to a number.
 
 
 ```js
-ceil(num: number): number
+ceil(input: number): number
 ```
 
 ### Tags
@@ -21,7 +21,7 @@ ceil(num: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to round. | Yes |
 
 ### Returns
 
@@ -32,7 +32,7 @@ ceil(num: number): number
 
 ```js
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [12, 10])
   |> line(end = [ceil(7.02986), 0])
   |> yLine(endAbsolute = 0)

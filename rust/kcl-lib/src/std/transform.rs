@@ -11,13 +11,12 @@ use kcmc::{
 };
 use kittycad_modeling_cmds as kcmc;
 
+use super::args::TyF64;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
     std::Args,
 };
-
-use super::args::TyF64;
 
 /// Scale a solid or a sketch.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -76,7 +75,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -95,7 +94,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> scale(
 ///     z = 2.5,
@@ -117,7 +116,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn('XY')
-/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///         angle = segAng(rectangleSegmentA001) - 90,
@@ -133,7 +132,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
@@ -225,16 +224,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         }));
     }
 
-    let objects = inner_translate(
-        objects,
-        translate_x.map(|t| t.n),
-        translate_y.map(|t| t.n),
-        translate_z.map(|t| t.n),
-        global,
-        exec_state,
-        args,
-    )
-    .await?;
+    let objects = inner_translate(objects, translate_x, translate_y, translate_z, global, exec_state, args).await?;
     Ok(objects.into())
 }
 
@@ -251,7 +241,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -270,7 +260,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> translate(
 ///         x = 1.0,
@@ -306,7 +296,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn('XY')
-/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///         angle = segAng(rectangleSegmentA001) - 90,
@@ -322,7 +312,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
@@ -344,7 +334,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     p3 = [l, -l]
 ///
 ///     return startSketchOn(XY)
-///         |> startProfileAt(p0, %)
+///         |> startProfile(at = p0)
 ///         |> line(endAbsolute = p1)
 ///         |> line(endAbsolute = p2)
 ///         |> line(endAbsolute = p3)
@@ -366,7 +356,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// sketch001 = startSketchOn('XY')
 ///
 /// fn square() {
-///     return  startProfileAt([-10, 10], sketch001)
+///     return  startProfile(sketch001, at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -397,9 +387,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 }]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
-    x: Option<f64>,
-    y: Option<f64>,
-    z: Option<f64>,
+    x: Option<TyF64>,
+    y: Option<TyF64>,
+    z: Option<TyF64>,
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
@@ -421,9 +411,9 @@ async fn inner_translate(
                 transforms: vec![shared::ComponentTransform {
                     translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
                         property: shared::Point3d {
-                            x: LengthUnit(x.unwrap_or_default()),
-                            y: LengthUnit(y.unwrap_or_default()),
-                            z: LengthUnit(z.unwrap_or_default()),
+                            x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+                            z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
                         },
                         set: false,
                         is_local: !global.unwrap_or(false),
@@ -451,11 +441,11 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ]),
         exec_state,
     )?;
-    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::angle(), exec_state)?;
-    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::angle(), exec_state)?;
-    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::angle(), exec_state)?;
+    let roll: Option<TyF64> = args.get_kw_arg_opt_typed("roll", &RuntimeType::degrees(), exec_state)?;
+    let pitch: Option<TyF64> = args.get_kw_arg_opt_typed("pitch", &RuntimeType::degrees(), exec_state)?;
+    let yaw: Option<TyF64> = args.get_kw_arg_opt_typed("yaw", &RuntimeType::degrees(), exec_state)?;
     let axis: Option<[TyF64; 3]> = args.get_kw_arg_opt_typed("axis", &RuntimeType::point3d(), exec_state)?;
-    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::angle(), exec_state)?;
+    let angle: Option<TyF64> = args.get_kw_arg_opt_typed("angle", &RuntimeType::degrees(), exec_state)?;
     let global = args.get_kw_arg_opt("global")?;
 
     // Check if no rotation values are provided.
@@ -544,7 +534,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         roll.map(|t| t.n),
         pitch.map(|t| t.n),
         yaw.map(|t| t.n),
-        axis.map(|p| [p[0].n, p[1].n, p[2].n]),
+        // Don't adjust axis units since the axis must be normalized and only the direction
+        // should be significant, not the magnitude.
+        axis.map(|a| [a[0].n, a[1].n, a[2].n]),
         angle.map(|t| t.n),
         global,
         exec_state,
@@ -588,7 +580,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -607,7 +599,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///         roll = 10,
@@ -621,7 +613,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -640,7 +632,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///         roll = 10,
@@ -652,7 +644,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Create a path for the sweep.
 /// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
@@ -671,7 +663,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
@@ -695,7 +687,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Sweep two sketches along the same path.
 ///
 /// sketch001 = startSketchOn('XY')
-/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
 ///         angle = segAng(rectangleSegmentA001) - 90,
@@ -711,7 +703,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
@@ -727,7 +719,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// sketch001 = startSketchOn('XY')
 ///
 /// fn square() {
-///     return  startProfileAt([-10, 10], sketch001)
+///     return  startProfile(sketch001, at = [-10, 10])
 ///         |> xLine(length = 20)
 ///         |> yLine(length = -20)
 ///         |> xLine(length = -20)
@@ -780,7 +772,7 @@ async fn inner_rotate(
     for object_id in objects.ids(&args.ctx).await? {
         let id = exec_state.next_uuid();
 
-        if let (Some(axis), Some(angle)) = (axis, angle) {
+        if let (Some(axis), Some(angle)) = (&axis, angle) {
             args.batch_modeling_cmd(
                 id,
                 ModelingCmd::from(mcmd::SetObjectTransform {
@@ -839,7 +831,7 @@ mod tests {
     use crate::execution::parse_execute;
 
     const PIPE: &str = r#"sweepPath = startSketchOn('XZ')
-    |> startProfileAt([0.05, 0.05], %)
+    |> startProfile(at = [0.05, 0.05])
     |> line(end = [0, 7])
     |> tangentialArc(angle = 90, radius = 5)
     |> line(end = [-3, 0])
@@ -857,7 +849,7 @@ sweepSketch = startSketchOn('XY')
         center = [0, 0],
         radius = 2,
         )              
-    |> hole(pipeHole, %)
+    |> subtract2d(tool = pipeHole)
     |> sweep(
         path = sweepPath,
     )"#;

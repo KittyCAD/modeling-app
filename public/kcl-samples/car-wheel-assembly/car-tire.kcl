@@ -9,7 +9,7 @@ import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWid
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)
-  |> startProfileAt([tireInnerDiameter / 2, tireDepth / 2], %)
+  |> startProfile(at = [tireInnerDiameter / 2, tireDepth / 2])
   |> line(
        endAbsolute = [
          tireOuterDiameter / 2 - bendRadius,
@@ -41,5 +41,5 @@ tireSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the sketch to create the tire
-revolve(tireSketch, axis = Y)
+carTire = revolve(tireSketch, axis = Y)
   |> appearance(color = "#0f0f0f", roughness = 80)

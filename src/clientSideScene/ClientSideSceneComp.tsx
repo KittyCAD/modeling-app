@@ -19,7 +19,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
-import { getConstraintInfo, getConstraintInfoKw } from '@src/lang/std/sketch'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type {
@@ -40,8 +40,8 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
-import type { useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import type { useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import type { SegmentOverlay } from '@src/machines/modelingMachine'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
@@ -211,10 +211,10 @@ const Overlay = ({
   // It's possible for the pathToNode to request a newer AST node
   // than what's available in the AST at the moment of query.
   // It eventually settles on being updated.
-  const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+  const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
     kclManager.ast,
     overlay.pathToNode,
-    ['CallExpression', 'CallExpressionKw']
+    ['CallExpressionKw']
   )
 
   // For that reason, to prevent console noise, we do not use err here.
@@ -224,20 +224,12 @@ const Overlay = ({
   }
   const callExpression = _node1.node
 
-  const constraints =
-    callExpression.type === 'CallExpression'
-      ? getConstraintInfo(
-          callExpression,
-          codeManager.code,
-          overlay.pathToNode,
-          overlay.filterValue
-        )
-      : getConstraintInfoKw(
-          callExpression,
-          codeManager.code,
-          overlay.pathToNode,
-          overlay.filterValue
-        )
+  const constraints = getConstraintInfoKw(
+    callExpression,
+    codeManager.code,
+    overlay.pathToNode,
+    overlay.filterValue
+  )
 
   const offset = 20 // px
   // We could put a boolean in settings that

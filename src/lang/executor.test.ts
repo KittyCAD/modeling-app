@@ -1,7 +1,6 @@
 import fs from 'node:fs'
 
 import { KCLError } from '@src/lang/errors'
-import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type { Sketch } from '@src/lang/wasm'
 import { assertParse, sketchFromKclValue } from '@src/lang/wasm'
@@ -48,7 +47,7 @@ const newVar = myVar + 1`
   })
   it('sketch declaration', async () => {
     let code = `const mySketch = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> line(endAbsolute = [0,2], tag = $myPath)
   |> line(endAbsolute = [2,3])
   |> line(endAbsolute = [5,-1], tag = $rightPath)
@@ -151,7 +150,7 @@ const newVar = myVar + 1`
     // Enable rotations #152
     const code = [
       'const mySk1 = startSketchOn(XY)',
-      '  |> startProfileAt([0,0], %)',
+      '  |> startProfile(at = [0,0])',
       '  |> line(endAbsolute = [1,1])',
       '  |> line(endAbsolute = [0, 1], tag = $myPath)',
       '  |> line(endAbsolute = [1,1])',
@@ -294,7 +293,7 @@ const newVar = myVar + 1`
     })
   })
   it('execute memberExpression', async () => {
-    const code = ["const yo = {a: {b: '123'}}", "const myVar = yo.a['b']"].join(
+    const code = ["const yo = {a: {b: '123'}}", 'const myVar = yo.a.b'].join(
       '\n'
     )
     const mem = await exe(code)
@@ -352,35 +351,35 @@ describe('testing math operators', () => {
     expect(mem['myVar']?.value).toBe(12.5)
   })
   it('with callExpression at start', async () => {
-    const code = 'const myVar = min(4, 100) + 2'
+    const code = 'myVar = min([4, 100]) + 2'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with callExpression at end', async () => {
-    const code = 'const myVar = 2 + min(4, 100)'
+    const code = 'myVar = 2 + min([4, 100])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with nested callExpression', async () => {
-    const code = 'const myVar = 2 + min(100, legLen(5, 3))'
+    const code = 'myVar = 2 + min([100, legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with unaryExpression', async () => {
-    const code = 'const myVar = -min(100, 3)'
+    const code = 'myVar = -min([100, 3])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(-3)
   })
   it('with unaryExpression in callExpression', async () => {
-    const code = 'const myVar = min(-legLen(5, 4), 5)'
-    const code2 = 'const myVar = min(5 , -legLen(5, 4))'
+    const code = 'myVar = min([-legLen(hypotenuse = 5, leg = 4), 5])'
+    const code2 = 'myVar = min([5 , -legLen(hypotenuse = 5, leg = 4)])'
     const mem = await exe(code)
     const mem2 = await exe(code2)
     expect(mem['myVar']?.value).toBe(-3)
     expect(mem['myVar']?.value).toBe(mem2['myVar']?.value)
   })
   it('with unaryExpression in ArrayExpression', async () => {
-    const code = 'const myVar = [1,-legLen(5, 4)]'
+    const code = 'const myVar = [1,-legLen(hypotenuse = 5, leg = 4)]'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toEqual([
       {
@@ -397,13 +396,13 @@ describe('testing math operators', () => {
   })
   it('with unaryExpression in ArrayExpression in CallExpression, checking nothing funny happens when used in a sketch', async () => {
     const code = [
-      'const part001 = startSketchOn(XY)',
-      '  |> startProfileAt([0, 0], %)',
-      '|> line(end = [-2.21, -legLen(5, min(3, 999))])',
+      'part001 = startSketchOn(XY)',
+      '  |> startProfile(at = [0, 0])',
+      '|> line(end = [-2.21, -legLen(hypotenuse = 5, leg = min([3, 999]))])',
     ].join('\n')
     const mem = await exe(code)
     const sketch = sketchFromKclValue(mem['part001'], 'part001')
-    // result of `-legLen(5, min(3, 999))` should be -4
+    // result of `-legLen(5, min([3, 999]))` should be -4
     const yVal = (sketch as Sketch).paths?.[0]?.to?.[1]
     expect(yVal).toBe(-4)
   })
@@ -411,11 +410,11 @@ describe('testing math operators', () => {
     const code = [
       `const myVar = 3`,
       `const part001 = startSketchOn(XY)`,
-      `  |> startProfileAt([0, 0], %)`,
+      `  |> startProfile(at = [0, 0])`,
       `  |> line(end = [3, 4], tag = $seg01)`,
       `  |> line(end = [`,
-      `  min(segLen(seg01), myVar),`,
-      `  -legLen(segLen(seg01), myVar)`,
+      `  min([segLen(seg01), myVar]),`,
+      `  -legLen(hypotenuse = segLen(seg01), leg = myVar)`,
       `])`,
       ``,
     ].join('\n')
@@ -425,8 +424,8 @@ describe('testing math operators', () => {
     expect((sketch as Sketch).paths?.[1]?.from).toEqual([3, 4])
     expect((sketch as Sketch).paths?.[1]?.to).toEqual([6, 0])
     const removedUnaryExp = code.replace(
-      `-legLen(segLen(seg01), myVar)`,
-      `legLen(segLen(seg01), myVar)`
+      `-legLen(hypotenuse = segLen(seg01), leg = myVar)`,
+      `legLen(hypotenuse = segLen(seg01), leg = myVar)`
     )
     const removedUnaryExpMem = await exe(removedUnaryExp)
     const removedUnaryExpMemSketch = sketchFromKclValue(
@@ -438,7 +437,7 @@ describe('testing math operators', () => {
     expect((removedUnaryExpMemSketch as Sketch).paths?.[1]?.to).toEqual([6, 8])
   })
   it('with nested callExpression and binaryExpression', async () => {
-    const code = 'const myVar = 2 + min(100, -1 + legLen(5, 3))'
+    const code = 'myVar = 2 + min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(5)
   })
@@ -453,7 +452,7 @@ describe('Testing Errors', () => {
   it('should throw an error when a variable is not defined', async () => {
     const code = `const myVar = 5
 const theExtrude = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [-2.4, 5])
   |> line(end = myVarZ)
   |> line(end = [5,5])
@@ -462,12 +461,12 @@ const theExtrude = startSketchOn(XY)
     await expect(exe(code)).rejects.toEqual(
       new KCLError(
         'undefined_value',
-        'memory item key `myVarZ` is not defined',
-        topLevelRange(129, 135),
-        [],
-        [],
-        defaultArtifactGraph(),
-        {},
+        '`myVarZ` is not defined',
+        topLevelRange(127, 133),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
+        expect.any(Object),
         null
       )
     )

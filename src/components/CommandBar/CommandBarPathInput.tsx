@@ -5,12 +5,10 @@ import { ActionButton } from '@src/components/ActionButton'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import { useSelector } from '@xstate/react'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+import type { OpenDialogOptions } from 'electron'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -57,10 +55,16 @@ function CommandBarPathInput({
     if (inputRef.current && inputRefVal && !isArray(inputRefVal)) {
       inputRef.current.value = inputRefVal
     } else if (inputRef.current) {
-      const newPath = await window.electron.open({
+      const configuration: OpenDialogOptions = {
         properties: ['openFile'],
         title: 'Pick a file to load into the current project',
-      })
+      }
+
+      if (arg.filters) {
+        configuration.filters = arg.filters
+      }
+
+      const newPath = await window.electron.open(configuration)
       if (newPath.canceled) return
       inputRef.current.value = newPath.filePaths[0]
     } else {

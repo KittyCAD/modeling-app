@@ -66,6 +66,17 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
+    "type": "KclStdLibCall",
+    "name": "fillet",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "radius": {
         "value": {
@@ -108,32 +119,6 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "fillet",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "m25Screw",
-      "functionSourceRange": [
-        1310,
-        1538,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
     "sourceRange": []
   },
   {
@@ -153,16 +138,52 @@ description: Operations executed fillet-and-shell.kcl
   },
   {
     "labeledArgs": {
-      "holeSketch": {
+      "planeOrSolid": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "String",
+          "value": "XY"
         },
         "sourceRange": []
-      },
-      "sketch": {
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "tool": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -172,10 +193,93 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "hole",
+    "name": "subtract2d",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -210,63 +314,36 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "m25Screw",
-      "functionSourceRange": [
-        1310,
-        1538,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
     "labeledArgs": {
-      "planeOrSolid": {
+      "length": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
         },
         "sourceRange": []
       }
     },
-    "name": "startSketchOn",
+    "name": "extrude",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
+          "artifactId": "[uuid]"
+        }
       },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -301,65 +378,6 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "m25Screw",
-      "functionSourceRange": [
-        1310,
-        1538,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XY"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -392,100 +410,66 @@ description: Operations executed fillet-and-shell.kcl
     }
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "m25Screw",
-      "functionSourceRange": [
-        1310,
-        1538,
-        0
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XY"
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "holeSketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
-    "name": "hole",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "length": {
-        "value": {
-          "type": "Number",
-          "value": 4.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "m25Screw",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
-    "name": "extrude",
-    "sourceRange": [],
-    "type": "StdLibCall",
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
+    "name": "shell",
     "unlabeledArg": {
       "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
       },
       "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
+    },
     "labeledArgs": {
       "faces": {
         "value": {
@@ -516,17 +500,18 @@ description: Operations executed fillet-and-shell.kcl
         "sourceRange": []
       }
     },
-    "name": "shell",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Solid",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

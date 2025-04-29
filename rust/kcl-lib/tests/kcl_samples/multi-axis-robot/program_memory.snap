@@ -5,18 +5,18 @@ description: Variables in memory after executing multi-axis-robot.kcl
 {
   "j2RobotArm": {
     "type": "Module",
-    "value": 7
+    "value": 11
   },
   "j3RobotArm": {
     "type": "Module",
-    "value": 8
+    "value": 12
   },
   "robotArmBase": {
     "type": "Module",
-    "value": 5
+    "value": 8
   },
   "rotatingBase": {
     "type": "Module",
-    "value": 6
+    "value": 10
   }
 }

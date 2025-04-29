@@ -5,7 +5,7 @@
 @settings(defaultLengthUnit = in)
 
 // Define parameters
-beamLength = fromFt(6)
+beamLength = 6ft
 beamHeight = 4
 flangeWidth = 2.663
 flangeThickness = 0.293
@@ -14,7 +14,7 @@ rootRadius = 0.457
 
 // Sketch a quadrant of the beam cross section, then mirror for symmetry across each axis. Extrude to the appropriate length
 iBeam = startSketchOn(-XZ)
-  |> startProfileAt([0, beamHeight / 2], %)
+  |> startProfile(at = [0, beamHeight / 2])
   |> xLine(length = flangeWidth / 2)
   |> yLine(length = -flangeThickness)
   |> xLine(endAbsolute = webThickness / 2 + rootRadius)

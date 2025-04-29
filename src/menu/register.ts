@@ -10,8 +10,8 @@ import {
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { authActor, settingsActor } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { authActor, settingsActor } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import type { NavigateFunction } from 'react-router-dom'
 
@@ -24,7 +24,7 @@ export function modelingMenuCallbackMostActions(
 ) {
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'File.New project') {
+    if (data.menuLabel === 'File.Create project') {
       commandBarActor.send({
         type: 'Find and select command',
         data: {
@@ -84,7 +84,7 @@ export function modelingMenuCallbackMostActions(
       })
     } else if (data.menuLabel === 'File.Preferences.Theme color') {
       navigate(filePath + PATHS.SETTINGS_USER + '#themeColor')
-    } else if (data.menuLabel === 'File.Share current part (via Zoo link)') {
+    } else if (data.menuLabel === 'File.Share part via Zoo link') {
       copyFileShareLink({
         token: token ?? '',
         code: codeManager.code,
@@ -92,12 +92,17 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Load external model') {
+    } else if (data.menuLabel === 'File.Add file to project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          groupId: 'code',
-          name: 'load-external-model',
+          name: 'add-kcl-file-to-project',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -257,9 +262,17 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'Text-to-CAD', groupId: 'modeling' },
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
+        },
       })
     } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
       commandBarActor.send({

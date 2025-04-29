@@ -3,18 +3,11 @@ import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import { uuidv4 } from '@src/lib/utils'
 
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
-import {
-  deg,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-  wiggleMove,
-} from '@e2e/playwright/test-utils'
+import { deg, getUtils, wiggleMove } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
-  test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
-    // TODO: fix this test on mac after the electron migration
-    test.fixme(orRunWhenFullSuiteEnabled())
+test.describe('Testing segment overlays', () => {
+  test.describe('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it', () => {
     /**
      * Clicks on an constrained element
      * @param {Page} page - The page to perform the action on
@@ -212,7 +205,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([5 + 0, 20 + 0], %)
+        |> startProfile(at = [5 + 0, 20 + 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
@@ -370,7 +363,6 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       editor,
       homePage,
     }) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -383,7 +375,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     xAbs001 = 33
     xAbs002 = 4
     part001 = startSketchOn(XZ)
-      |> startProfileAt([0, 0], %)
+      |> startProfile(at = [0, 0])
       |> line(end = [0.5, yRel001])
       |> angledLine(angle = angle001, length = len001)
       |> line(endAbsolute = [33, yAbs001])
@@ -456,7 +448,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -577,7 +569,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -705,7 +697,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(end = [0.5, -14 + 0])
         |> angledLine(angle = 3 + 0, length = 32 + 0)
         |> line(endAbsolute = [33, 11.5 + 0])
@@ -783,18 +775,14 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           'persistCode',
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([56.37, 120.33], sketch001)
+profile001 = startProfile(sketch001, at = [56.37, 120.33])
   |> line(end = [162.86, 106.48])
-  |> arcTo({
-       interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)
+  |> arc(
+       interiorAbsolute = [360.16, 231.76],
+       endAbsolute = [391.48, 131.54],
+     )
   |> yLine(-131.54, %)
-  |> arc({
-       radius = 126.46,
-       angleStart = 33.53,
-       angleEnd = -141.07
-     }, %)
+  |> arc(angleStart = 33.53, angleEnd = -141.07, radius = 126.46)
 `
         )
         localStorage.setItem('disableAxis', 'true')
@@ -820,43 +808,25 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
 
       const arcTo = await u.getBoundingBox('[data-overlay-index="1"]')
       let ang = await u.getAngle('[data-overlay-index="1"]')
-      console.log('arcTo interior x')
+      console.log('arcTo interiorAbsolute x')
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [360.16, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interiorAbsolute = [360.16, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interiorAbsolute = [360.16, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
         ang: ang,
         steps: 6,
         locator: '[data-overlay-toolbar-index="1"]',
       })
 
-      console.log('arcTo interior y')
+      console.log('arcTo interiorAbsolute y')
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, yAbs001],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interiorAbsolute = [xAbs001, yAbs001], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
         ang: ang,
         steps: 10,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -866,18 +836,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickConstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'xAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [391.48, 131.54]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectAfterUnconstrained: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [391.48, 131.54])`,
+        expectFinal: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
         ang: ang + 180,
         steps: 6,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -887,18 +848,9 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await clickUnconstrained({
         hoverPos: { x: arcTo.x, y: arcTo.y },
         constraintType: 'yAbsolute',
-        expectBeforeUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
-        expectAfterUnconstrained: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, yAbs002]
-     }, %)`,
-        expectFinal: `arcTo({
-       interior = [xAbs001, 231.76],
-       end = [xAbs002, 131.54]
-     }, %)`,
+        expectBeforeUnconstrained: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
+        expectAfterUnconstrained: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [xAbs002, yAbs002])`,
+        expectFinal: `arc(interiorAbsolute = [xAbs001, 231.76], endAbsolute = [xAbs002, 131.54])`,
         ang: ang + 180,
         steps: 10,
         locator: '[data-overlay-toolbar-index="1"]',
@@ -1031,7 +983,7 @@ part001 = startSketchOn(XZ)
           'persistCode',
           `@settings(defaultLengthUnit = in)
 part001 = startSketchOn(XZ)
-  |>startProfileAt([0, 0], %)
+  |>startProfile(at = [0, 0])
   |> line(end = [0.5, -14 + 0])
   |> angledLine(angle = 3 + 0, length = 32 + 0)
   |> line(endAbsolute = [33, 11.5 + 0])
@@ -1045,15 +997,8 @@ part001 = startSketchOn(XZ)
   |> angledLine(angle = 89, endAbsoluteY = 9.14 + 0)
   |> angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)
   |> tangentialArc(endAbsolute = [3.14 + 13, 1.14])
-  |> arcTo({
-       interior = [16.25, 5.12],
-       end = [21.61, 4.15]
-     }, %)
-  |> arc({
-       radius = 9.03,
-       angleStart = 40.27,
-       angleEnd = -38.05
-     }, %)
+  |> arc(interiorAbsolute = [16.25, 5.12], endAbsolute = [21.61, 4.15])
+  |> arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)
 
       `
         )
@@ -1087,11 +1032,7 @@ part001 = startSketchOn(XZ)
 
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `arc({
-       radius = 9.03,
-       angleStart = 40.27,
-       angleEnd = -38.05
-     }, %)`,
+        codeToBeDeleted: `arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)`,
         stdLibFnName: 'arc',
         ang: ang + 180,
         steps: 6,
@@ -1101,11 +1042,8 @@ part001 = startSketchOn(XZ)
       ang = await u.getAngle('[data-overlay-index="13"]')
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: `arcTo({
-       interior = [16.25, 5.12],
-       end = [21.61, 4.15]
-     }, %)`,
-        stdLibFnName: 'arcTo',
+        codeToBeDeleted: `arc(interiorAbsolute = [16.25, 5.12], endAbsolute = [21.61, 4.15])`,
+        stdLibFnName: 'arc',
         ang: ang,
         steps: 6,
         locator: '[data-overlay-toolbar-index="13"]',
@@ -1292,7 +1230,7 @@ part001 = startSketchOn(XZ)
                 'persistCode',
                 `@settings(defaultLengthUnit = in)
         part001 = startSketchOn(XZ)
-          |> startProfileAt([5, 6], %)
+          |> startProfile(at = [5, 6])
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
           |> angledLine(angle = -176, length = segLen(seg01))
@@ -1453,7 +1391,7 @@ part001 = startSketchOn(XZ)
               'persistCode',
               `@settings(defaultLengthUnit = in)
       part001 = startSketchOn(XZ)
-        |> startProfileAt([5, 6], %)
+        |> startProfile(at = [5, 6])
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])
         |> angledLine(angle = -176, length = segLen(seg01))`

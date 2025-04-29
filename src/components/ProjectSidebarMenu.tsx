@@ -23,8 +23,8 @@ import {
   kclManager,
 } from '@src/lib/singletons'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 
 const ProjectSidebarMenu = ({
   project,
@@ -220,7 +220,7 @@ function ProjectMenuPopover({
         {
           id: 'share-link',
           Element: 'button',
-          children: 'Share current part (via Zoo link)',
+          children: 'Share part via Zoo link',
           disabled: !findCommand(shareCommandInfo),
           onClick: async () => {
             await copyFileShareLink({
@@ -263,7 +263,10 @@ function ProjectMenuPopover({
         data-testid="project-sidebar-toggle"
       >
         <div className="flex flex-col items-start py-0.5">
-          <span className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block">
+          <span
+            className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+            data-testid="app-header-file-name"
+          >
             {isDesktop() && file?.name
               ? file.name.slice(
                   file.name.lastIndexOf(window.electron.path.sep) + 1
@@ -271,7 +274,10 @@ function ProjectMenuPopover({
               : APP_NAME}
           </span>
           {isDesktop() && project?.name && (
-            <span className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block">
+            <span
+              className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block"
+              data-testid="app-header-project-name"
+            >
               {project.name}
             </span>
           )}

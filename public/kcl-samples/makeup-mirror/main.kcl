@@ -56,20 +56,17 @@ fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD
   armBody = circle(armPlane, center = [offsetX, altitude], radius = radius)
     |> extrude(length = tiefe)
 
-  archBody = startProfileAt([offsetX - gestellR, altitude], armPlane)
+  archBody = startProfile(armPlane, at = [offsetX - gestellR, altitude])
     |> xLine(length = gestellD)
-    |> arcTo({
-         interior = [offsetX, altitude - gestellR],
-         end = [offsetX + gestellR, altitude]
-       }, %)
+    |> arc(interiorAbsolute = [offsetX, altitude - gestellR], endAbsolute = [offsetX + gestellR, altitude])
     |> xLine(length = gestellD)
-    |> arcTo({
-         interior = [
+    |> arc(
+         interiorAbsolute = [
            offsetX,
            altitude - gestellR - gestellD
          ],
-         end = [profileStartX(%), profileStartY(%)]
-       }, %)
+         endAbsolute = [profileStartX(%), profileStartY(%)],
+       )
     |> close()
     |> extrude(length = tiefe)
   return armBody

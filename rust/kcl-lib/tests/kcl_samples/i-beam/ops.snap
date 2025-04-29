@@ -23,15 +23,11 @@ description: Operations executed i-beam.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 72.0,
+          "value": 6.0,
           "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
+            "type": "Known",
+            "type": "Length",
+            "type": "Feet"
           }
         },
         "sourceRange": []

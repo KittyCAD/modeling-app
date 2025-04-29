@@ -14,7 +14,9 @@ use crate::{
 };
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(
+    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
+)]
 #[ts(export)]
 pub struct ModuleId(u32);
 
@@ -90,6 +92,9 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "math" => Some(include_str!("../std/math.kcl")),
         "sketch" => Some(include_str!("../std/sketch.kcl")),
         "turns" => Some(include_str!("../std/turns.kcl")),
+        "types" => Some(include_str!("../std/types.kcl")),
+        "solid" => Some(include_str!("../std/solid.kcl")),
+        "units" => Some(include_str!("../std/units.kcl")),
         _ => None,
     }
 }
@@ -123,7 +128,7 @@ pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
     Kcl(Node<Program>, Option<(Option<KclValue>, EnvironmentRef, Vec<String>)>),
-    Foreign(PreImportedGeometry),
+    Foreign(PreImportedGeometry, Option<KclValue>),
     Dummy,
 }
 

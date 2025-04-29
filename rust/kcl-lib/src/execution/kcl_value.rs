@@ -9,8 +9,8 @@ use crate::{
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
         types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
-        EnvironmentRef, ExecState, Face, Helix, ImportedGeometry, MetaSettings, Metadata, Plane, Sketch, Solid,
-        TagIdentifier,
+        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
+        Metadata, Plane, Sketch, Solid, TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
@@ -18,6 +18,8 @@ use crate::{
     std::{args::TyF64, StdFnProps},
     CompilationError, KclError, ModuleId, SourceRange,
 };
+
+use super::types::UnitType;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -262,6 +264,7 @@ impl KclValue {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
         let KclValue::Function {
             value: FunctionSource::User { ast, .. },
@@ -298,6 +301,18 @@ impl KclValue {
             KclValue::Plane { .. } => "Plane",
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Number {
+                ty: NumericType::Unknown,
+                ..
+            } => "number(unknown units)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Length(_)),
+                ..
+            } => "number(Length)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Angle(_)),
+                ..
+            } => "number(Angle)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
             KclValue::MixedArray { .. } => "array (list)",
@@ -608,6 +623,25 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
+        }
+    }
+}
+
+impl From<Geometry> for KclValue {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            Geometry::Solid(x) => Self::Solid { value: Box::new(x) },
+        }
+    }
+}
+
+impl From<GeometryWithImportedGeometry> for KclValue {
+    fn from(value: GeometryWithImportedGeometry) -> Self {
+        match value {
+            GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }
 }

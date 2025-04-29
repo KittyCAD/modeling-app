@@ -18,7 +18,7 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 export const RouteProviderContext = createContext({})
 

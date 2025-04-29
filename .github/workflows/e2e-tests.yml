@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - all-e2e # this bypasses `fixme()` using `orRunWhenFullSuiteEnabled()`
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -278,29 +277,42 @@ jobs:
     timeout-minutes: 60
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
-    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}:${{ matrix.shardIndex }}:${{ matrix.shardTotal }}
+    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }} (shard ${{ matrix.shardIndex }})
     strategy:
       fail-fast: false
       matrix:
         # TODO: enable namespace-profile-windows-latest once available
-        os:
-          - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
-          # TODO: renable this when macoOS runner seem more stable
-          # - namespace-profile-macos-6-cores
-          - windows-latest-8-cores
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
-        # Disable macos and windows tests on hourly e2e tests since we only care
-        # about server side changes.
-        # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
-        isScheduled:
-          - ${{ github.event_name == 'schedule' }}
-        exclude:
-          - os: namespace-profile-macos-6-cores
-            isScheduled: true
+        include:
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 1
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 2
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 3
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 4
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 5
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 6
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 7
+            shardTotal: 8
+          - os: "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+            shardIndex: 8
+            shardTotal: 8
+          - os: namespace-profile-macos-8-cores
+            shardIndex: 1
+            shardTotal: 1
           - os: windows-latest-8-cores
-            isScheduled: true
-        # TODO: add ref here for main and latest release tag
+            shardIndex: 1
+            shardTotal: 1
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

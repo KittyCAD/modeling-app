@@ -3,10 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import type { CommandArgument } from '@src/lib/commandTypes'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarTextareaInput({
   arg,

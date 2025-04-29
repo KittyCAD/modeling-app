@@ -27,7 +27,7 @@ mod tokeniser;
 pub(crate) use tokeniser::RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
-pub const NUM_SUFFIXES: [&str; 9] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad"];
+pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 #[repr(u32)]
@@ -44,6 +44,7 @@ pub enum NumericSuffix {
     Yd,
     Deg,
     Rad,
+    Unknown,
 }
 
 impl NumericSuffix {
@@ -60,6 +61,7 @@ impl NumericSuffix {
         match self {
             NumericSuffix::None => &[],
             NumericSuffix::Count => b"_",
+            NumericSuffix::Unknown => b"?",
             NumericSuffix::Length => b"Length",
             NumericSuffix::Angle => b"Angle",
             NumericSuffix::Mm => b"mm",
@@ -90,6 +92,7 @@ impl FromStr for NumericSuffix {
             "yd" | "yards" => Ok(NumericSuffix::Yd),
             "deg" | "degrees" => Ok(NumericSuffix::Deg),
             "rad" | "radians" => Ok(NumericSuffix::Rad),
+            "?" => Ok(NumericSuffix::Unknown),
             _ => Err(CompilationError::err(SourceRange::default(), "invalid unit of measure")),
         }
     }
@@ -100,6 +103,7 @@ impl fmt::Display for NumericSuffix {
         match self {
             NumericSuffix::None => Ok(()),
             NumericSuffix::Count => write!(f, "_"),
+            NumericSuffix::Unknown => write!(f, "_?"),
             NumericSuffix::Length => write!(f, "Length"),
             NumericSuffix::Angle => write!(f, "Angle"),
             NumericSuffix::Mm => write!(f, "mm"),

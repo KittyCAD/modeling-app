@@ -2,10 +2,8 @@
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
-use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
 use super::{args::TyF64, DEFAULT_TOLERANCE};
@@ -20,8 +18,7 @@ use crate::{
 };
 
 /// A tag or a uuid of an edge.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Eq, Hash)]
-#[ts(export)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash)]
 #[serde(untagged)]
 pub enum EdgeReference {
     /// A uuid of an edge.
@@ -64,91 +61,22 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::solid(), exec_state)?;
     let radius: TyF64 = args.get_kw_arg_typed("radius", &RuntimeType::length(), exec_state)?;
-    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::count(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
     // Run the function.
     validate_unique(&tags)?;
     let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_fillet(solid, radius, tags, tolerance.map(|t| t.n), tag, exec_state, args).await?;
+    let value = inner_fillet(solid, radius, tags, tolerance, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
 
-/// Blend a transitional edge along a tagged path, smoothing the sharp edge.
-///
-/// Fillet is similar in function and use to a chamfer, except
-/// a chamfer will cut a sharp transition along an edge while fillet
-/// will smoothly blend the transition.
-///
-/// ```no_run
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// filletRadius = 2
-///
-/// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet(
-///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-/// ```
-///
-/// ```no_run
-/// width = 20
-/// length = 10
-/// thickness = 1
-/// filletRadius = 1
-///
-/// mountingPlateSketch = startSketchOn("XY")
-///   |> startProfileAt([-width/2, -length/2], %)
-///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
-///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
-///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
-///   |> close(tag = $edge4)
-///
-/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
-///   |> fillet(
-///     radius = filletRadius,
-///     tolerance = 0.000001,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
-///     ],
-///   )
-/// ```
-#[stdlib {
-    name = "fillet",
-    feature_tree_operation = true,
-    keywords = true,
-    unlabeled_first = true,
-    args = {
-        solid = { docs = "The solid whose edges should be filletted" },
-        radius = { docs = "The radius of the fillet" },
-        tags = { docs = "The paths you want to fillet" },
-        tolerance = { docs = "The tolerance for this fillet" },
-        tag = { docs = "Create a new tag which refers to this fillet"},
-    }
-}]
 async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,
     tags: Vec<EdgeReference>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -163,8 +91,8 @@ async fn inner_fillet(
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
                 edge_id,
                 object_id: solid.id,
-                radius: LengthUnit(radius.n),
-                tolerance: LengthUnit(tolerance.unwrap_or(DEFAULT_TOLERANCE)),
+                radius: LengthUnit(radius.to_mm()),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
                 cut_type: CutType::Fillet,
             }),
         )

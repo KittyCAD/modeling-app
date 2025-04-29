@@ -22,9 +22,14 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
+import { settingsActor } from '@src/lib/singletons'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -75,28 +80,27 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'load-external-model',
-      title: 'Load external model',
-      sidebarName: 'Load external model',
+      id: 'add-file-to-project',
+      title: 'Add file to project',
+      sidebarName: 'Add file to project',
       icon: 'importFile',
-      keybinding: 'Ctrl + Shift + I',
-      action: () =>
+      keybinding: 'Mod + Alt + L',
+      action: () => {
+        const currentProject =
+          settingsActor.getSnapshot().context.currentProject
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'load-external-model', groupId: 'code' },
-        }),
-    },
-    {
-      id: 'share-link',
-      title: 'Create share link',
-      sidebarName: 'Create share link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
-        }),
+          data: {
+            name: 'add-kcl-file-to-project',
+            groupId: 'application',
+            argDefaultValues: {
+              method: 'existingProject',
+              projectName: currentProject?.name,
+              ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
+            },
+          },
+        })
+      },
     },
     {
       id: 'export',
@@ -128,6 +132,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
@@ -340,6 +355,7 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
@@ -379,7 +395,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>

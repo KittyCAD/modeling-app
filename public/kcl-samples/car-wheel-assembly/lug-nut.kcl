@@ -8,11 +8,7 @@
 import lugDiameter, lugHeadLength, lugThreadDiameter, lugLength, lugThreadDepth, lugSpacing from "parameters.kcl"
 
 customPlane = {
-  origin = {
-    x = lugSpacing / 2,
-    y = fromMm(-30),
-    z = 0
-  },
+  origin = { x = lugSpacing / 2, y = -30mm, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = -1, z = 0 },
   zAxis = { x = 0, y = 0, z = 1 }
@@ -20,11 +16,11 @@ customPlane = {
 
 fn lug(plane, length, diameter) {
   lugSketch = startSketchOn(customPlane)
-    |> startProfileAt([0 + diameter / 2, 0], %)
+    |> startProfile(at = [0 + diameter / 2, 0])
     |> angledLine(angle = 70, lengthY = lugHeadLength)
     |> xLine(endAbsolute = lugDiameter / 2)
     |> yLine(endAbsolute = lugLength)
-    |> tangentialArc(angle = 90, radius = fromMm(3))
+    |> tangentialArc(angle = 90, radius = 3mm)
     |> xLine(endAbsolute = 0 + .001, tag = $c1)
     |> yLine(endAbsolute = lugThreadDepth)
     |> xLine(endAbsolute = lugThreadDiameter)
@@ -35,4 +31,4 @@ fn lug(plane, length, diameter) {
   return lugSketch
 }
 
-lug(customPlane, lugLength, lugDiameter)
+lugNut = lug(customPlane, lugLength, lugDiameter)

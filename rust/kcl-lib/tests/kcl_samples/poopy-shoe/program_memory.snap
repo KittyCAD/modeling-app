@@ -150,50 +150,6 @@ description: Variables in memory after executing poopy-shoe.kcl
             }
           }
         }
-      },
-      "zAxis": {
-        "type": "Object",
-        "value": {
-          "x": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "y": {
-            "type": "Number",
-            "value": -1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "z": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        }
       }
     }
   },
@@ -262,7 +218,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "y": {
             "type": "Number",
-            "value": -1.0,
+            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -320,50 +276,6 @@ description: Variables in memory after executing poopy-shoe.kcl
           "z": {
             "type": "Number",
             "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        }
-      },
-      "zAxis": {
-        "type": "Object",
-        "value": {
-          "x": {
-            "type": "Number",
-            "value": 1.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "y": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "z": {
-            "type": "Number",
-            "value": 0.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -501,50 +413,6 @@ description: Variables in memory after executing poopy-shoe.kcl
           "z": {
             "type": "Number",
             "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          }
-        }
-      },
-      "zAxis": {
-        "type": "Object",
-        "value": {
-          "x": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "y": {
-            "type": "Number",
-            "value": 0.0,
-            "ty": {
-              "type": "Default",
-              "len": {
-                "type": "Inches"
-              },
-              "angle": {
-                "type": "Degrees"
-              }
-            }
-          },
-          "z": {
-            "type": "Number",
-            "value": 1.0,
             "ty": {
               "type": "Default",
               "len": {
@@ -989,10 +857,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
+            "y": -1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1000,19 +868,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1047,10 +904,11 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "height": 0.0,
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -1348,10 +1206,10 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "xAxis": {
           "x": 0.0,
-          "y": 1.0,
+          "y": -1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1359,19 +1217,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": -1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -1783,10 +1630,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
+            "y": -1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1794,19 +1641,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1844,7 +1680,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch003": {
@@ -1961,7 +1798,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1969,19 +1806,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -2013,7 +1839,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch004": {
@@ -2105,9 +1932,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2930,
-            "end": 2936,
-            "start": 2930,
+            "commentStart": 2894,
+            "end": 2900,
+            "start": 2894,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2347,9 +2174,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2930,
-              "end": 2936,
-              "start": 2930,
+              "commentStart": 2894,
+              "end": 2900,
+              "start": 2894,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2370,10 +2197,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "end",
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
+            "y": -1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -2381,15 +2208,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -2768,10 +2587,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "xAxis": {
                   "x": 0.0,
-                  "y": 1.0,
+                  "y": -1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -2779,19 +2598,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": -1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -2829,7 +2637,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2870,7 +2679,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch005": {
@@ -2913,9 +2723,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3562,
-            "end": 3568,
-            "start": 3562,
+            "commentStart": 3499,
+            "end": 3505,
+            "start": 3499,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2963,7 +2773,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             ],
             "tag": null,
             "to": [
-              3.0,
+              -3.0,
               5.125
             ],
             "type": "ToPoint",
@@ -2976,18 +2786,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              3.0,
+              -3.0,
               3.1241
             ],
             "from": [
-              3.0,
+              -3.0,
               5.125
             ],
             "tag": null,
             "to": [
-              5.0,
+              -5.0,
               3.0625
             ],
             "type": "TangentialArcTo",
@@ -3000,18 +2810,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              7.0,
+              -7.0,
               3.0009
             ],
             "from": [
-              5.0,
+              -5.0,
               3.0625
             ],
             "tag": null,
             "to": [
-              7.0,
+              -7.0,
               1.0
             ],
             "type": "TangentialArcTo",
@@ -3025,18 +2835,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              7.0,
+              -7.0,
               1.0
             ],
             "tag": {
-              "commentStart": 3562,
-              "end": 3568,
-              "start": 3562,
+              "commentStart": 3499,
+              "end": 3505,
+              "start": 3499,
               "type": "TagDeclarator",
               "value": "seg03"
             },
             "to": [
-              7.0,
+              -7.0,
               0.0
             ],
             "type": "ToPoint",
@@ -3050,7 +2860,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              7.0,
+              -7.0,
               0.0
             ],
             "tag": null,
@@ -3079,10 +2889,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "xAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -3090,19 +2900,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -3140,7 +2939,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -3267,10 +3067,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "seg03",
           "xAxis": {
             "x": 0.0,
-            "y": -1.0,
+            "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -3278,15 +3078,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Inches"
-            }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -3327,9 +3119,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3562,
-                  "end": 3568,
-                  "start": 3562,
+                  "commentStart": 3499,
+                  "end": 3505,
+                  "start": 3499,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -3377,7 +3169,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   ],
                   "tag": null,
                   "to": [
-                    3.0,
+                    -3.0,
                     5.125
                   ],
                   "type": "ToPoint",
@@ -3390,18 +3182,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": false,
+                  "ccw": true,
                   "center": [
-                    3.0,
+                    -3.0,
                     3.1241
                   ],
                   "from": [
-                    3.0,
+                    -3.0,
                     5.125
                   ],
                   "tag": null,
                   "to": [
-                    5.0,
+                    -5.0,
                     3.0625
                   ],
                   "type": "TangentialArcTo",
@@ -3414,18 +3206,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    7.0,
+                    -7.0,
                     3.0009
                   ],
                   "from": [
-                    5.0,
+                    -5.0,
                     3.0625
                   ],
                   "tag": null,
                   "to": [
-                    7.0,
+                    -7.0,
                     1.0
                   ],
                   "type": "TangentialArcTo",
@@ -3439,18 +3231,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.0,
+                    -7.0,
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3562,
-                    "end": 3568,
-                    "start": 3562,
+                    "commentStart": 3499,
+                    "end": 3505,
+                    "start": 3499,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
                   "to": [
-                    7.0,
+                    -7.0,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -3464,7 +3256,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.0,
+                    -7.0,
                     0.0
                   ],
                   "tag": null,
@@ -3493,10 +3285,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "xAxis": {
                   "x": 0.0,
-                  "y": -1.0,
+                  "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Inches"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -3504,19 +3296,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Inches"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "units": {
-                  "type": "Inches"
                 }
               },
               "start": {
@@ -3554,7 +3335,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -3589,7 +3371,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -3716,10 +3499,10 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "end",
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
+            "y": -1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -3727,15 +3510,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -3825,9 +3600,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2930,
-                  "end": 2936,
-                  "start": 2930,
+                  "commentStart": 2894,
+                  "end": 2900,
+                  "start": 2894,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -4067,9 +3842,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2930,
-                    "end": 2936,
-                    "start": 2930,
+                    "commentStart": 2894,
+                    "end": 2900,
+                    "start": 2894,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -4090,10 +3865,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
-                  "y": 1.0,
+                  "y": -1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -4101,15 +3876,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": -1.0,
-                  "y": 0.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -4488,10 +4255,10 @@ description: Variables in memory after executing poopy-shoe.kcl
                       },
                       "xAxis": {
                         "x": 0.0,
-                        "y": 1.0,
+                        "y": -1.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -4499,19 +4266,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                         "y": 0.0,
                         "z": 1.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
-                      },
-                      "zAxis": {
-                        "x": -1.0,
-                        "y": 0.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Inches"
                       }
                     },
                     "start": {
@@ -4549,7 +4305,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Inches"
@@ -4590,7 +4347,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -4625,7 +4383,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch008": {
@@ -4763,7 +4522,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": -1.0,
             "z": 0.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -4771,19 +4530,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Inches"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4815,7 +4563,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "wallThickness": {

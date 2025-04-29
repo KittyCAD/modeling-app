@@ -4,19 +4,19 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cube",
-      "functionSourceRange": [
-        7,
-        350,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
     },
-    "sourceRange": []
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -66,39 +66,6 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
     }
   },
   {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "cube",
-      "functionSourceRange": [
-        7,
-        350,
-        0
-      ],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
     "labeledArgs": {
       "length": {
         "value": {
@@ -131,7 +98,26 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
     }
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -157,5 +143,11 @@ description: Operations executed subtract_doesnt_need_brackets.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]
