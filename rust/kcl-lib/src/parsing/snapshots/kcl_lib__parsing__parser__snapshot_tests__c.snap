@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 29,
+        "end": 49,
         "id": {
           "commentStart": 0,
           "end": 5,
@@ -19,71 +19,112 @@ expression: actual
         "init": {
           "arguments": [
             {
-              "argument": {
-                "arguments": [
-                  {
-                    "commentStart": 20,
-                    "end": 21,
-                    "raw": "5",
-                    "start": 20,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 5.0,
-                      "suffix": "None"
-                    }
-                  },
-                  {
-                    "commentStart": 23,
-                    "end": 24,
-                    "raw": "4",
-                    "start": 23,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 4.0,
-                      "suffix": "None"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 13,
-                  "end": 19,
-                  "name": {
-                    "commentStart": 13,
-                    "end": 19,
-                    "name": "legLen",
-                    "start": 13,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 13,
-                  "type": "Name"
-                },
-                "commentStart": 13,
-                "end": 25,
-                "start": 13,
-                "type": "CallExpression",
-                "type": "CallExpression"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 12,
+                "end": 13,
+                "name": "x",
+                "start": 12,
+                "type": "Identifier"
               },
-              "commentStart": 12,
-              "end": 25,
-              "operator": "-",
-              "start": 12,
-              "type": "UnaryExpression",
-              "type": "UnaryExpression"
+              "arg": {
+                "argument": {
+                  "arguments": [
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "commentStart": 24,
+                        "end": 27,
+                        "name": "hyp",
+                        "start": 24,
+                        "type": "Identifier"
+                      },
+                      "arg": {
+                        "commentStart": 30,
+                        "end": 31,
+                        "raw": "5",
+                        "start": 30,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.0,
+                          "suffix": "None"
+                        }
+                      }
+                    },
+                    {
+                      "type": "LabeledArg",
+                      "label": {
+                        "commentStart": 33,
+                        "end": 36,
+                        "name": "pot",
+                        "start": 33,
+                        "type": "Identifier"
+                      },
+                      "arg": {
+                        "commentStart": 39,
+                        "end": 40,
+                        "raw": "4",
+                        "start": 39,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.0,
+                          "suffix": "None"
+                        }
+                      }
+                    }
+                  ],
+                  "callee": {
+                    "abs_path": false,
+                    "commentStart": 17,
+                    "end": 23,
+                    "name": {
+                      "commentStart": 17,
+                      "end": 23,
+                      "name": "legLen",
+                      "start": 17,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 17,
+                    "type": "Name"
+                  },
+                  "commentStart": 17,
+                  "end": 41,
+                  "start": 17,
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
+                },
+                "commentStart": 16,
+                "end": 41,
+                "operator": "-",
+                "start": 16,
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
+              }
             },
             {
-              "commentStart": 27,
-              "end": 28,
-              "raw": "5",
-              "start": 27,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 43,
+                "end": 44,
+                "name": "y",
+                "start": 43,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 47,
+                "end": 48,
+                "raw": "5",
+                "start": 47,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -103,15 +144,16 @@ expression: actual
             "type": "Name"
           },
           "commentStart": 8,
-          "end": 29,
+          "end": 49,
           "start": 8,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 29,
+      "end": 49,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -119,6 +161,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 29,
+  "end": 49,
   "start": 0
 }

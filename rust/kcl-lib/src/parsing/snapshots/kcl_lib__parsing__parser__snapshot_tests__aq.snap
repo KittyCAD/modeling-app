@@ -6,45 +6,53 @@ expression: actual
   "body": [
     {
       "commentStart": 0,
-      "end": 28,
+      "end": 37,
       "expression": {
         "arguments": [
           {
-            "commentStart": 4,
-            "end": 5,
-            "raw": "5",
-            "start": 4,
-            "type": "Literal",
-            "type": "Literal",
-            "value": {
-              "value": 5.0,
-              "suffix": "None"
+            "type": "LabeledArg",
+            "label": {
+              "commentStart": 7,
+              "end": 10,
+              "name": "arg",
+              "start": 7,
+              "type": "Identifier"
+            },
+            "arg": {
+              "commentStart": 11,
+              "end": 18,
+              "raw": "\"hello\"",
+              "start": 11,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "hello"
             }
           },
           {
-            "commentStart": 7,
-            "end": 14,
-            "raw": "\"hello\"",
-            "start": 7,
-            "type": "Literal",
-            "type": "Literal",
-            "value": "hello"
-          },
-          {
-            "abs_path": false,
-            "commentStart": 16,
-            "end": 27,
-            "name": {
-              "commentStart": 16,
-              "end": 27,
-              "name": "aIdentifier",
-              "start": 16,
+            "type": "LabeledArg",
+            "label": {
+              "commentStart": 20,
+              "end": 24,
+              "name": "arg2",
+              "start": 20,
               "type": "Identifier"
             },
-            "path": [],
-            "start": 16,
-            "type": "Name",
-            "type": "Name"
+            "arg": {
+              "abs_path": false,
+              "commentStart": 25,
+              "end": 36,
+              "name": {
+                "commentStart": 25,
+                "end": 36,
+                "name": "aIdentifier",
+                "start": 25,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 25,
+              "type": "Name",
+              "type": "Name"
+            }
           }
         ],
         "callee": {
@@ -63,10 +71,22 @@ expression: actual
           "type": "Name"
         },
         "commentStart": 0,
-        "end": 28,
+        "end": 37,
         "start": 0,
-        "type": "CallExpression",
-        "type": "CallExpression"
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": {
+          "commentStart": 4,
+          "end": 5,
+          "raw": "5",
+          "start": 4,
+          "type": "Literal",
+          "type": "Literal",
+          "value": {
+            "value": 5.0,
+            "suffix": "None"
+          }
+        }
       },
       "start": 0,
       "type": "ExpressionStatement",
@@ -74,6 +94,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 28,
+  "end": 37,
   "start": 0
 }

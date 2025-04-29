@@ -63,7 +63,6 @@ expression: actual
       "commentStart": 62,
       "end": 80,
       "expression": {
-        "arguments": [],
         "callee": {
           "abs_path": false,
           "commentStart": 62,
@@ -82,8 +81,9 @@ expression: actual
         "commentStart": 62,
         "end": 80,
         "start": 62,
-        "type": "CallExpression",
-        "type": "CallExpression"
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": null
       },
       "start": 62,
       "type": "ExpressionStatement",
