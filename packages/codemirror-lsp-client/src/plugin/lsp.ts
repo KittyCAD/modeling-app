@@ -1312,7 +1312,8 @@ export class LanguageServerPluginSpec
       lspIndentExt(),
       lspRenameExt(plugin),
       lspSemanticTokensExt(),
-      lspSignatureHelpExt(plugin),
+      // Don't turn on signature help for now it is way too sensitive.
+      //lspSignatureHelpExt(plugin),
     ]
   }
 }
