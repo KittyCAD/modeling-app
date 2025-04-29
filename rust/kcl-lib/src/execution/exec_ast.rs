@@ -1041,12 +1041,12 @@ impl Node<BinaryExpression> {
 
         let value = match self.operator {
             BinaryOperator::Add => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
                 self.warn_on_unknown(&ty, "Adding", exec_state);
                 KclValue::Number { value: l + r, meta, ty }
             }
             BinaryOperator::Sub => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
                 self.warn_on_unknown(&ty, "Subtracting", exec_state);
                 KclValue::Number { value: l - r, meta, ty }
             }

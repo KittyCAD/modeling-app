@@ -1296,20 +1296,6 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_warn_on_deprecated() {
-        let text = "p = pi()";
-        let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
-        assert_eq!(errs.len(), 1);
-        assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
-        assert!(
-            errs[0].message.contains("`pi` is deprecated"),
-            "unexpected warning message: {}",
-            errs[0].message
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
         let ast = r#"fn def = (x) => {
   return x
@@ -1772,67 +1758,6 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
         assert_eq!(
             7.4,
             mem_get_json(result.exec_state.stack(), result.mem_env, "thing")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_default() {
-        let ast = r#"const inMm = fromMm(25.4)
-const inInches = fromInches(1)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            25.4,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-        );
-        assert_eq!(
-            25.4,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_overriden() {
-        let ast = r#"@settings(defaultLengthUnit = inch)
-const inMm = fromMm(25.4)
-const inInches = fromInches(1)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-                .round()
-        );
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
-                .as_f64()
-                .unwrap()
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_unit_overriden_in() {
-        let ast = r#"@settings(defaultLengthUnit = in)
-const inMm = fromMm(25.4)
-const inInches = fromInches(2)"#;
-        let result = parse_execute(ast).await.unwrap();
-        assert_eq!(
-            1.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inMm")
-                .as_f64()
-                .unwrap()
-                .round()
-        );
-        assert_eq!(
-            2.0,
-            mem_get_json(result.exec_state.stack(), result.mem_env, "inInches")
                 .as_f64()
                 .unwrap()
         );

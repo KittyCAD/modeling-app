@@ -18,7 +18,7 @@ assert(result0, isGreaterThanOrEqual = 91, error = "Literal property lookup")
 // Test: computed index.
 
 
-i = int(1 + 0)
+i = 1 + 0
 result1 = arr[i]
 
 assert(result1, isLessThanOrEqual = 91, error = "Computed property lookup")

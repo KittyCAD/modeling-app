@@ -571,33 +571,6 @@ impl Args {
         )
     }
 
-    pub(crate) fn get_number_with_type(&self) -> Result<TyF64, KclError> {
-        FromArgs::from_args(self, 0)
-    }
-
-    pub(crate) fn get_number_typed(&self, ty: &RuntimeType, exec_state: &mut ExecState) -> Result<f64, KclError> {
-        let Some(arg) = self.args.first() else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: "Expected an argument".to_owned(),
-                source_ranges: vec![self.source_range],
-            }));
-        };
-
-        arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
-            let message = format!(
-                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
-                ty.human_friendly_type(),
-            );
-            KclError::Semantic(KclErrorDetails {
-                source_ranges: arg.source_ranges(),
-                message,
-            })
-        })?;
-
-        Ok(TyF64::from_kcl_val(&arg.value).unwrap().n)
-    }
-
     pub(crate) async fn get_adjacent_face_to_tag(
         &self,
         exec_state: &mut ExecState,
@@ -975,6 +948,7 @@ impl<'a> FromKclValue<'a> for crate::execution::Point3d {
             let_field_of!(obj, x, TyF64);
             let_field_of!(obj, y, TyF64);
             let_field_of!(obj, z, TyF64);
+            // TODO here and below we could use coercing combination.
             let (a, ty) = NumericType::combine_eq_array(&[x, y, z]);
             return Some(Self {
                 x: a[0],

@@ -117,34 +117,6 @@ pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
 }
 
-/// Return the value of `pi`. Archimedes’ constant (π).
-pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_pi()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(result)))
-}
-
-/// Return the value of `pi`. Archimedes’ constant (π).
-///
-/// **DEPRECATED** use the constant PI
-///
-/// ```no_run
-/// circumference = 70
-///
-/// exampleSketch = startSketchOn("XZ")
-///  |> circle( center = [0, 0], radius = circumference/ (2 * pi()) )
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "pi",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_pi() -> Result<f64, KclError> {
-    Ok(std::f64::consts::PI)
-}
-
 /// Compute the square root of a number.
 pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
@@ -745,70 +717,6 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 }]
 fn inner_ln(input: f64) -> f64 {
     input.ln()
-}
-
-/// Return the value of Euler’s number `e`.
-pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_e()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
-}
-
-/// Return the value of Euler’s number `e`.
-///
-/// **DEPRECATED** use the constant E
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfile(at = [0, 0])
-///   |> angledLine(
-///     angle = 30,
-///     length = 2 * e() ^ 2,
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///  
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "e",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_e() -> Result<f64, KclError> {
-    Ok(std::f64::consts::E)
-}
-
-/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
-pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_tau()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
-}
-
-/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
-///
-/// **DEPRECATED** use the constant TAU
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfile(at = [0, 0])
-///   |> angledLine(
-///     angle = 50,
-///     length = 10 * tau(),
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "tau",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_tau() -> Result<f64, KclError> {
-    Ok(std::f64::consts::TAU)
 }
 
 #[cfg(test)]

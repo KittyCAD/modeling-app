@@ -419,7 +419,7 @@ mod tests {
             ("1.1 abv", true),
             ("1", false),
             (".1", false),
-            ("5?", true),
+            ("5!", true),
             ("5 + 6", true),
             ("5 + a", true),
             ("5.5", false),
@@ -429,7 +429,7 @@ mod tests {
             assert_eq!(expected, remaining, "`{valid}` expected another token to be {expected}");
         }
 
-        for invalid in ["a", "?", "?5"] {
+        for invalid in ["a", "!", "!5"] {
             assert_parse_err(number, invalid);
         }
 

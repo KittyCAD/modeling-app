@@ -18,40 +18,16 @@ description: Result of parsing i-beam.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "6",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 6.0,
-                  "suffix": "None"
-                }
-              }
-            ],
-            "callee": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "fromFt",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name"
-            },
             "commentStart": 0,
             "end": 0,
+            "raw": "6ft",
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 6.0,
+              "suffix": "Ft"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
