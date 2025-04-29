@@ -32,31 +32,31 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.done_checkReadWrite
           output: { value: boolean; error: unknown }
-      }
+        }
       | {
-        type: SystemIOMachineEvents.setProjectDirectoryPath
-        data: { requestedProjectDirectoryPath: string }
-      }
+          type: SystemIOMachineEvents.setProjectDirectoryPath
+          data: { requestedProjectDirectoryPath: string }
+        }
       | {
-        type: SystemIOMachineEvents.navigateToProject
-        data: { requestedProjectName: string }
-      }
+          type: SystemIOMachineEvents.navigateToProject
+          data: { requestedProjectName: string }
+        }
       | {
-        type: SystemIOMachineEvents.navigateToFile
-        data: { requestedProjectName: string; requestedFileName: string }
-      }
+          type: SystemIOMachineEvents.navigateToFile
+          data: { requestedProjectName: string; requestedFileName: string }
+        }
       | {
-        type: SystemIOMachineEvents.createProject
-        data: { requestedProjectName: string }
-      }
+          type: SystemIOMachineEvents.createProject
+          data: { requestedProjectName: string }
+        }
       | {
-        type: SystemIOMachineEvents.renameProject
-        data: { requestedProjectName: string; projectName: string }
-      }
+          type: SystemIOMachineEvents.renameProject
+          data: { requestedProjectName: string; projectName: string }
+        }
       | {
-        type: SystemIOMachineEvents.deleteProject
-        data: { requestedProjectName: string }
-      }
+          type: SystemIOMachineEvents.deleteProject
+          data: { requestedProjectName: string }
+        }
       | {
           type: SystemIOMachineEvents.done_deleteProject
           output: { message: string; name: string }
@@ -172,7 +172,7 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setLastProjectDeleteRequest]: assign({
       lastProjectDeleteRequest: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.done_deleteProject)
-        return {project: event.output.name}
+        return { project: event.output.name }
       },
     }),
   },
@@ -286,8 +286,8 @@ export const systemIOMachine = setup({
       isProjectNew: true,
     },
     lastProjectDeleteRequest: {
-      project: NO_PROJECT_DIRECTORY
-    }
+      project: NO_PROJECT_DIRECTORY,
+    },
   }),
   states: {
     [SystemIOMachineStates.idle]: {
@@ -414,7 +414,10 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.toastSuccess, SystemIOMachineActions.setLastProjectDeleteRequest]
+          actions: [
+            SystemIOMachineActions.toastSuccess,
+            SystemIOMachineActions.setLastProjectDeleteRequest,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.idle,
