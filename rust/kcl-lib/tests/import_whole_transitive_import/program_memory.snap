@@ -66,7 +66,7 @@ description: Variables in memory after executing import_whole_transitive_import.
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -74,7 +74,7 @@ description: Variables in memory after executing import_whole_transitive_import.
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           }
         },
@@ -113,6 +113,6 @@ description: Variables in memory after executing import_whole_transitive_import.
   },
   "part": {
     "type": "Module",
-    "value": 6
+    "value": 8
   }
 }
