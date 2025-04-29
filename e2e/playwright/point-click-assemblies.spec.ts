@@ -362,8 +362,7 @@ test.describe('Point-and-click assemblies tests', () => {
     }
   )
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
+  test(
     `Insert foreign parts into assembly as whole module import`,
     { tag: ['@electron'] },
     async ({
@@ -418,9 +417,8 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        import "cube.step" as cube
-        cube
-      `,
+          import "cube.step" as cube
+        `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
@@ -460,11 +458,9 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.openPane('code')
         await editor.expectEditor.toContain(
           `
-        import "cube.step" as cube
-        import "${complexPlmFileName}" as cubeSw
-        cube
-        cubeSw
-      `,
+          import "cube.step" as cube
+          import "${complexPlmFileName}" as cubeSw
+        `,
           { shouldNormalise: true }
         )
         await scene.settled(cmdBar)
@@ -488,9 +484,8 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.closePane('code')
         await editor.expectEditor.toContain(
           `
-        import "${complexPlmFileName}" as cubeSw
-        cubeSw
-      `,
+          import "${complexPlmFileName}" as cubeSw
+        `,
           { shouldNormalise: true }
         )
         await toolbar.closePane('code')

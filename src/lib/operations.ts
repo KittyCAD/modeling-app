@@ -1,9 +1,8 @@
-import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
+import { lookAheadForPipeWithImportAlias } from '@src/lang/modifyAst/setTransform'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -1383,50 +1382,12 @@ export async function enterTranslateFlow({
     err(pipeLookupFromOperation) ||
     pipeLookupFromOperation.node.type !== 'PipeExpression'
   ) {
-    const importNode = getNodeFromPath<ImportStatement>(ast, nodeToEdit, [
-      'ImportStatement',
-    ])
-    console.log('importNode', importNode)
-    if (
-      err(importNode) ||
-      !(
-        importNode.node.type === 'ImportStatement' &&
-        importNode.node.selector.type === 'None' &&
-        importNode.node.selector.alias &&
-        importNode.node.selector.alias?.type === 'Identifier'
-      )
-    ) {
-      return new Error("Couldn't retrieve import")
-    }
-
-    const alias = importNode.node.selector.alias.name
-    for (const n of ast.body) {
-      if (
-        n.type === 'ExpressionStatement' &&
-        n.expression.type === 'PipeExpression' &&
-        n.expression.body[0].type === 'Name' &&
-        n.expression.body[0].name.name === alias
-      ) {
-        pipe = n.expression
-        break
-      }
-
-      if (
-        n.type === 'VariableDeclaration' &&
-        n.declaration.type === 'VariableDeclarator' &&
-        n.declaration.init.type === 'PipeExpression' &&
-        n.declaration.init.body[0].type === 'Name' &&
-        n.declaration.init.body[0].name.name === alias
-      ) {
-        pipe = n.declaration.init
-        break
-      }
-    }
+    const result = lookAheadForPipeWithImportAlias(ast, nodeToEdit)
+    pipe = result.pipe
   } else {
     pipe = pipeLookupFromOperation.node
   }
 
-  console.log('pipe', pipe)
   if (pipe) {
     const translate = pipe.body.find(
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
@@ -1471,13 +1432,25 @@ export async function enterRotateFlow({
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
-  const pipe = getNodeFromPath<PipeExpression>(
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
     'PipeExpression'
   )
-  if (!err(pipe) && pipe.node.body) {
-    const rotate = pipe.node.body.find(
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    const result = lookAheadForPipeWithImportAlias(ast, nodeToEdit)
+    pipe = result.pipe
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const rotate = pipe.body.find(
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
     )
     if (rotate?.type === 'CallExpressionKw') {

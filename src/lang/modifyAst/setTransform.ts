@@ -1,8 +1,11 @@
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createLabeledArg,
+  createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -139,4 +142,67 @@ function createPipeWithTransform(
   } else {
     return new Error('Unsupported operation type.')
   }
+}
+
+export function lookAheadForPipeWithImportAlias(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+) {
+  let pipe: PipeExpression | undefined
+  let pathToPipeNode: PathToNode | undefined
+  let alias: string | undefined
+  const importNode = getNodeFromPath<ImportStatement>(ast, pathToNode, [
+    'ImportStatement',
+  ])
+  if (
+    !err(importNode) &&
+    importNode.node.type === 'ImportStatement' &&
+    importNode.node.selector.type === 'None' &&
+    importNode.node.selector.alias &&
+    importNode.node.selector.alias?.type === 'Identifier'
+  ) {
+    alias = importNode.node.selector.alias.name
+    for (const [i, n] of ast.body.entries()) {
+      if (
+        n.type === 'ExpressionStatement' &&
+        n.expression.type === 'PipeExpression' &&
+        n.expression.body[0].type === 'Name' &&
+        n.expression.body[0].name.name === alias
+      ) {
+        pipe = n.expression
+        pathToPipeNode = [
+          ['body', ''],
+          [i, 'index'],
+          ['expression', 'PipeExpression'],
+        ]
+        break
+      }
+
+      if (
+        n.type === 'VariableDeclaration' &&
+        n.declaration.type === 'VariableDeclarator' &&
+        n.declaration.init.type === 'PipeExpression' &&
+        n.declaration.init.body[0].type === 'Name' &&
+        n.declaration.init.body[0].name.name === alias
+      ) {
+        pipe = n.declaration.init
+        // TODO: fix later
+        pathToPipeNode = []
+        break
+      }
+    }
+  }
+
+  return { pipe, pathToPipeNode, alias }
+}
+
+export function insertExpressionNode(ast: Node<Program>, alias: string) {
+  const expression = createExpressionStatement(createLocalName(alias))
+  ast.body.push(expression)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [ast.body.length - 1, 'index'],
+    ['expression', 'Name'],
+  ]
+  return pathToNode
 }
