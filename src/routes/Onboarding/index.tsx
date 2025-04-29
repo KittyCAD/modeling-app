@@ -15,7 +15,7 @@ import Sketching from '@src/routes/Onboarding/Sketching'
 import Streaming from '@src/routes/Onboarding/Streaming'
 import UserMenu from '@src/routes/Onboarding/UserMenu'
 import { useDismiss } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export const onboardingRoutes = [
   {

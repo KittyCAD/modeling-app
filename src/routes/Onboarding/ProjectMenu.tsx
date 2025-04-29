@@ -1,5 +1,5 @@
 import { isDesktop } from '@src/lib/isDesktop'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function ProjectMenu() {

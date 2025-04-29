@@ -4,7 +4,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { settingsActor, useSettings } from '@src/lib/singletons'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
 export default function Units() {

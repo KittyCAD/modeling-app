@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useUser } from '@src/lib/singletons'
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export default function UserMenu() {
   const user = useUser()

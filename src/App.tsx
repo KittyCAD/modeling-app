@@ -25,7 +25,7 @@ import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
-import { ONBOARDING_SUBPATHS, PATHS } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 import { sceneInfra, codeManager, kclManager } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
@@ -40,6 +40,7 @@ import {
   ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor

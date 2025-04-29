@@ -1,5 +1,5 @@
 import { bracketWidthConstantLine } from '@src/lib/exampleKcl'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import {
   OnboardingButtons,
   kbdClasses,

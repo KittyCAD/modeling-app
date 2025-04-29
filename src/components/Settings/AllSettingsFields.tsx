@@ -11,7 +11,8 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,

@@ -15,7 +15,8 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { ONBOARDING_SUBPATHS, PATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { PATHS } from '@src/lib/paths'
 import {
   codeManager,
   editorManager,

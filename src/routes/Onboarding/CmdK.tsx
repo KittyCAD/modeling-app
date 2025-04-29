@@ -1,7 +1,7 @@
 import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { OnboardingButtons, kbdClasses } from '@src/routes/Onboarding/utils'
 
 export default function CmdK() {

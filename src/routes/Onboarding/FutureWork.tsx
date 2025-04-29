@@ -3,7 +3,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { APP_NAME } from '@src/lib/constants'
 import { sceneInfra } from '@src/lib/singletons'
 import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export default function FutureWork() {
   const { send } = useModelingContext()

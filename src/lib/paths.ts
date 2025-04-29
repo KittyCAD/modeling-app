@@ -2,7 +2,7 @@ import type { PlatformPath } from 'path'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import {
   BROWSER_FILE_NAME,
@@ -14,22 +14,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-
-export const ONBOARDING_SUBPATHS: Record<string, OnboardingStatus> = {
-  INDEX: '/',
-  CAMERA: '/camera',
-  STREAMING: '/streaming',
-  EDITOR: '/editor',
-  PARAMETRIC_MODELING: '/parametric-modeling',
-  INTERACTIVE_NUMBERS: '/interactive-numbers',
-  COMMAND_K: '/command-k',
-  USER_MENU: '/user-menu',
-  PROJECT_MENU: '/project-menu',
-  EXPORT: '/export',
-  SKETCHING: '/sketching',
-  FUTURE_WORK: '/future-work',
-} as const
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
