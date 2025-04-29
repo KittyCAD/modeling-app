@@ -28,14 +28,14 @@ flowchart LR
   22["Cap End"]
   23["Cap End"]
   24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
+  25["SweepEdge Opposite"]
   26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
   28["SweepEdge Opposite"]
   29["SweepEdge Adjacent"]
-  30["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
   31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
+  32["SweepEdge Adjacent"]
   33["SweepEdge Adjacent"]
   1 --- 3
   2 --- 4
@@ -52,23 +52,23 @@ flowchart LR
   4 <--x 14
   5 --- 18
   5 x--> 20
-  5 --- 30
-  5 --- 31
+  5 --- 25
+  5 --- 29
   6 --- 16
   6 x--> 20
-  6 --- 26
-  6 --- 27
+  6 --- 24
+  6 --- 32
   7 --- 15
   7 x--> 20
-  7 --- 24
-  7 --- 25
+  7 --- 27
+  7 --- 31
   8 --- 17
   8 x--> 20
-  8 --- 28
-  8 --- 29
+  8 --- 26
+  8 --- 30
   9 --- 19
   9 x--> 21
-  9 --- 32
+  9 --- 28
   9 --- 33
   12 --- 15
   12 --- 16
@@ -80,29 +80,32 @@ flowchart LR
   12 --- 25
   12 --- 26
   12 --- 27
-  12 --- 28
   12 --- 29
   12 --- 30
   12 --- 31
+  12 --- 32
   13 --- 19
   13 --- 21
   13 --- 23
-  13 --- 32
+  13 --- 28
   13 --- 33
-  24 <--x 15
-  25 <--x 15
   27 <--x 15
-  26 <--x 16
-  27 <--x 16
-  31 <--x 16
-  25 <--x 17
-  28 <--x 17
-  29 <--x 17
+  31 <--x 15
+  32 <--x 15
+  24 <--x 16
+  29 <--x 16
+  32 <--x 16
+  26 <--x 17
+  30 <--x 17
+  31 <--x 17
+  25 <--x 18
   29 <--x 18
   30 <--x 18
-  31 <--x 18
+  28 <--x 19
+  33 <--x 19
   24 <--x 22
+  25 <--x 22
   26 <--x 22
-  28 <--x 22
-  30 <--x 22
+  27 <--x 22
+  28 <--x 23
 ```

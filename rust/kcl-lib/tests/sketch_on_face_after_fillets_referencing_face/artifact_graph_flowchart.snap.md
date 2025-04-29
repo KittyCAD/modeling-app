@@ -37,24 +37,24 @@ flowchart LR
   31["Cap End"]
   32["Cap End"]
   33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
   35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
+  36["SweepEdge Opposite"]
   37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
+  38["SweepEdge Opposite"]
   39["SweepEdge Opposite"]
-  40["SweepEdge Adjacent"]
+  40["SweepEdge Opposite"]
   41["SweepEdge Opposite"]
-  42["SweepEdge Adjacent"]
-  43["SweepEdge Opposite"]
+  42["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
   44["SweepEdge Adjacent"]
-  45["SweepEdge Opposite"]
+  45["SweepEdge Adjacent"]
   46["SweepEdge Adjacent"]
-  47["SweepEdge Opposite"]
+  47["SweepEdge Adjacent"]
   48["SweepEdge Adjacent"]
-  49["SweepEdge Opposite"]
+  49["SweepEdge Adjacent"]
   50["SweepEdge Adjacent"]
-  51["SweepEdge Opposite"]
+  51["SweepEdge Adjacent"]
   52["SweepEdge Adjacent"]
   53["EdgeCut Fillet<br>[1331, 1396, 0]"]
   54["EdgeCut Fillet<br>[1402, 1479, 0]"]
@@ -78,44 +78,44 @@ flowchart LR
   29 --- 4
   5 --- 28
   5 x--> 30
-  5 --- 51
-  5 --- 52
+  5 --- 42
+  5 --- 49
   6 --- 29
   6 x--> 30
-  6 --- 47
-  6 --- 48
+  6 --- 38
+  6 --- 52
   7 --- 26
   7 x--> 30
-  7 --- 45
-  7 --- 46
+  7 --- 40
+  7 --- 50
   8 --- 27
   8 x--> 30
-  8 --- 49
-  8 --- 50
+  8 --- 37
+  8 --- 47
   9 --- 25
   9 x--> 30
-  9 --- 43
-  9 --- 44
+  9 --- 39
+  9 --- 51
   10 --- 24
   10 x--> 30
   10 --- 41
-  10 --- 42
+  10 --- 48
   11 --- 20
   11 x--> 29
   11 --- 33
-  11 --- 34
+  11 --- 44
   12 --- 21
   12 x--> 29
   12 --- 35
-  12 --- 36
+  12 --- 46
   13 --- 22
   13 x--> 29
-  13 --- 37
-  13 --- 38
+  13 --- 34
+  13 --- 43
   14 --- 23
   14 x--> 29
-  14 --- 39
-  14 --- 40
+  14 --- 36
+  14 --- 45
   18 --- 24
   18 --- 25
   18 --- 26
@@ -124,12 +124,12 @@ flowchart LR
   18 --- 29
   18 --- 30
   18 --- 32
+  18 --- 37
+  18 --- 38
+  18 --- 39
+  18 --- 40
   18 --- 41
   18 --- 42
-  18 --- 43
-  18 --- 44
-  18 --- 45
-  18 --- 46
   18 --- 47
   18 --- 48
   18 --- 49
@@ -145,48 +145,46 @@ flowchart LR
   19 --- 34
   19 --- 35
   19 --- 36
-  19 --- 37
-  19 --- 38
-  19 --- 39
-  19 --- 40
+  19 --- 43
+  19 --- 44
+  19 --- 45
+  19 --- 46
   33 <--x 20
-  34 <--x 20
-  40 <--x 20
-  34 <--x 21
+  44 <--x 20
+  45 <--x 20
   35 <--x 21
-  36 <--x 21
-  36 <--x 22
-  37 <--x 22
-  38 <--x 22
-  38 <--x 23
-  39 <--x 23
-  40 <--x 23
+  44 <--x 21
+  46 <--x 21
+  34 <--x 22
+  43 <--x 22
+  46 <--x 22
+  36 <--x 23
+  43 <--x 23
+  45 <--x 23
   41 <--x 24
-  42 <--x 24
-  44 <--x 24
-  43 <--x 25
-  44 <--x 25
-  50 <--x 25
-  45 <--x 26
-  46 <--x 26
-  48 <--x 26
-  46 <--x 27
-  49 <--x 27
+  48 <--x 24
+  51 <--x 24
+  39 <--x 25
+  51 <--x 25
+  40 <--x 26
+  50 <--x 26
+  52 <--x 26
+  37 <--x 27
   50 <--x 27
   42 <--x 28
-  51 <--x 28
-  47 <--x 29
-  48 <--x 29
+  48 <--x 28
+  38 <--x 29
+  52 <--x 29
   33 <--x 31
+  34 <--x 31
   35 <--x 31
-  37 <--x 31
-  39 <--x 31
+  36 <--x 31
+  37 <--x 32
+  38 <--x 32
+  39 <--x 32
+  40 <--x 32
   41 <--x 32
-  43 <--x 32
-  45 <--x 32
-  47 <--x 32
-  49 <--x 32
-  51 <--x 32
-  50 <--x 53
-  52 <--x 54
+  42 <--x 32
+  47 <--x 53
+  49 <--x 54
 ```

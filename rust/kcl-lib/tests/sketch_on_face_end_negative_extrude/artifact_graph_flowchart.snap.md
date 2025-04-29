@@ -33,20 +33,20 @@ flowchart LR
   27["Cap End"]
   28["Cap End"]
   29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
+  30["SweepEdge Opposite"]
   31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
   33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
   35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
+  36["SweepEdge Opposite"]
+  37["SweepEdge Adjacent"]
   38["SweepEdge Adjacent"]
-  39["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
   40["SweepEdge Adjacent"]
-  41["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
   42["SweepEdge Adjacent"]
-  43["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
   44["SweepEdge Adjacent"]
   1 --- 3
   27 x--> 2
@@ -65,36 +65,36 @@ flowchart LR
   27 --- 4
   5 --- 20
   5 x--> 25
-  5 --- 35
-  5 --- 36
+  5 --- 31
+  5 --- 38
   6 --- 18
   6 x--> 25
-  6 --- 31
   6 --- 32
+  6 --- 39
   7 --- 17
   7 x--> 25
   7 --- 29
-  7 --- 30
+  7 --- 40
   8 --- 19
   8 x--> 25
-  8 --- 33
-  8 --- 34
+  8 --- 30
+  8 --- 37
   9 --- 23
   9 x--> 28
-  9 --- 41
-  9 --- 42
+  9 --- 35
+  9 --- 44
   10 --- 24
   10 x--> 28
-  10 --- 43
-  10 --- 44
+  10 --- 36
+  10 --- 42
   11 --- 22
   11 x--> 28
-  11 --- 39
-  11 --- 40
+  11 --- 33
+  11 --- 43
   12 --- 21
   12 x--> 28
-  12 --- 37
-  12 --- 38
+  12 --- 34
+  12 --- 41
   15 --- 17
   15 --- 18
   15 --- 19
@@ -105,38 +105,54 @@ flowchart LR
   15 --- 30
   15 --- 31
   15 --- 32
-  15 --- 33
-  15 --- 34
-  15 --- 35
-  15 --- 36
+  15 --- 37
+  15 --- 38
+  15 --- 39
+  15 --- 40
   16 --- 21
   16 --- 22
   16 --- 23
   16 --- 24
   16 --- 26
   16 --- 28
-  16 --- 37
-  16 --- 38
-  16 --- 39
-  16 --- 40
+  16 --- 33
+  16 --- 34
+  16 --- 35
+  16 --- 36
   16 --- 41
   16 --- 42
   16 --- 43
   16 --- 44
-  37 <--x 21
-  38 <--x 21
-  40 <--x 21
-  39 <--x 22
-  40 <--x 22
-  44 <--x 22
-  38 <--x 23
+  29 <--x 17
+  39 <--x 17
+  40 <--x 17
+  32 <--x 18
+  38 <--x 18
+  39 <--x 18
+  30 <--x 19
+  37 <--x 19
+  40 <--x 19
+  31 <--x 20
+  37 <--x 20
+  38 <--x 20
+  34 <--x 21
+  41 <--x 21
+  43 <--x 21
+  33 <--x 22
+  42 <--x 22
+  43 <--x 22
+  35 <--x 23
   41 <--x 23
-  42 <--x 23
+  44 <--x 23
+  36 <--x 24
   42 <--x 24
-  43 <--x 24
   44 <--x 24
-  37 <--x 26
-  39 <--x 26
-  41 <--x 26
-  43 <--x 26
+  33 <--x 26
+  34 <--x 26
+  35 <--x 26
+  36 <--x 26
+  29 <--x 27
+  30 <--x 27
+  31 <--x 27
+  32 <--x 27
 ```

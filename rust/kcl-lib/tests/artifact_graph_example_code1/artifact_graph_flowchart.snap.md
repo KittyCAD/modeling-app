@@ -32,18 +32,18 @@ flowchart LR
   26["Cap End"]
   27["Cap End"]
   28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
   30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
+  31["SweepEdge Opposite"]
   32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
+  33["SweepEdge Opposite"]
   34["SweepEdge Opposite"]
   35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
+  36["SweepEdge Adjacent"]
   37["SweepEdge Adjacent"]
-  38["SweepEdge Opposite"]
+  38["SweepEdge Adjacent"]
   39["SweepEdge Adjacent"]
-  40["SweepEdge Opposite"]
+  40["SweepEdge Adjacent"]
   41["SweepEdge Adjacent"]
   42["EdgeCut Fillet<br>[298, 332, 0]"]
   1 --- 3
@@ -64,32 +64,32 @@ flowchart LR
   21 --- 4
   5 --- 20
   5 x--> 26
-  5 --- 34
+  5 --- 29
   5 --- 35
   6 --- 18
   6 x--> 26
   6 --- 30
-  6 --- 31
+  6 --- 37
   6 --- 42
   7 --- 21
   7 x--> 26
-  7 --- 28
-  7 --- 29
+  7 --- 31
+  7 --- 36
   8 --- 19
   8 x--> 26
-  8 --- 32
-  8 --- 33
+  8 --- 28
+  8 --- 38
   10 x--> 21
   10 --- 23
-  10 --- 38
+  10 --- 33
   10 --- 39
   11 x--> 21
   11 --- 22
-  11 --- 36
-  11 --- 37
+  11 --- 32
+  11 --- 40
   12 x--> 21
   12 --- 24
-  12 --- 40
+  12 --- 34
   12 --- 41
   16 --- 18
   16 --- 19
@@ -101,46 +101,46 @@ flowchart LR
   16 --- 29
   16 --- 30
   16 --- 31
-  16 --- 32
-  16 --- 33
-  16 --- 34
   16 --- 35
+  16 --- 36
+  16 --- 37
+  16 --- 38
   17 --- 22
   17 --- 23
   17 --- 24
   17 --- 27
-  17 --- 36
-  17 --- 37
-  17 --- 38
+  17 --- 32
+  17 --- 33
+  17 --- 34
   17 --- 39
   17 --- 40
   17 --- 41
   30 <--x 18
-  31 <--x 18
   35 <--x 18
-  29 <--x 19
-  32 <--x 19
-  33 <--x 19
-  33 <--x 20
-  34 <--x 20
+  37 <--x 18
+  28 <--x 19
+  36 <--x 19
+  38 <--x 19
+  29 <--x 20
   35 <--x 20
-  28 <--x 21
-  29 <--x 21
+  38 <--x 20
   31 <--x 21
-  36 <--x 22
-  37 <--x 22
+  36 <--x 21
+  37 <--x 21
+  32 <--x 22
   39 <--x 22
-  38 <--x 23
+  40 <--x 22
+  33 <--x 23
   39 <--x 23
   41 <--x 23
-  37 <--x 24
+  34 <--x 24
   40 <--x 24
   41 <--x 24
   28 <--x 25
+  29 <--x 25
   30 <--x 25
-  32 <--x 25
-  34 <--x 25
-  36 <--x 27
-  38 <--x 27
-  40 <--x 27
+  31 <--x 25
+  32 <--x 27
+  33 <--x 27
+  34 <--x 27
 ```
