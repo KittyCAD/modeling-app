@@ -5,7 +5,11 @@ import type {
   LanguageServerClient,
   LanguageServerOptions,
 } from '@kittycad/codemirror-lsp-client'
-import { lspFormatCodeEvent, lspPlugin } from '@kittycad/codemirror-lsp-client'
+import {
+  lspFormatCodeEvent,
+  lspPlugin,
+  lspRenameEvent,
+} from '@kittycad/codemirror-lsp-client'
 import { updateOutsideEditorEvent } from '@src/editor/manager'
 import { codeManagerUpdateEvent } from '@src/lang/codeManager'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
@@ -89,6 +93,10 @@ export class KclPlugin implements PluginValue {
       } else if (tr.annotation(updateOutsideEditorEvent.type)) {
         // We want to ignore other events outside the editor.
         isRelevant = false
+        break
+      } else if (tr.annotation(lspRenameEvent.type)) {
+        // Rename does not need to trigger the world.
+        isRelevant = true
         break
       }
     }

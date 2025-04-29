@@ -18,6 +18,7 @@ export { Codec } from './client/codec/utils'
 export {
   lspDiagnosticsEvent,
   lspFormatCodeEvent,
+  lspRenameEvent,
   lspSemanticTokensEvent,
 } from './plugin/annotation'
 export {

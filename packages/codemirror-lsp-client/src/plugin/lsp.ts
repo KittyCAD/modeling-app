@@ -25,7 +25,11 @@ import { DiagnosticSeverity } from 'vscode-languageserver-protocol'
 import { URI } from 'vscode-uri'
 
 import type { LanguageServerClient } from '../client'
-import { lspFormatCodeEvent, lspSemanticTokensEvent } from './annotation'
+import {
+  lspFormatCodeEvent,
+  lspSemanticTokensEvent,
+  lspRenameEvent,
+} from './annotation'
 import lspAutocompleteExt, { CompletionItemKindMap } from './autocomplete'
 import lspFormatExt from './format'
 import lspHoverExt from './hover'
@@ -42,6 +46,7 @@ import {
 import { isArray } from '../lib/utils'
 import lspGoToDefinitionExt from './go-to-definition'
 import lspRenameExt from './rename'
+import lspSignatureHelpExt from './signature-help'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -1036,6 +1041,7 @@ export class LanguageServerPlugin implements PluginValue {
             from: posToOffset(view.state.doc, edit.range.start) ?? 0,
             to: posToOffset(view.state.doc, edit.range.end) ?? 0,
             insert: edit.newText,
+            annotations: [lspRenameEvent],
           }))
 
           view.dispatch(view.state.update({ changes }))
@@ -1311,8 +1317,7 @@ export class LanguageServerPluginSpec
       lspIndentExt(),
       lspRenameExt(plugin),
       lspSemanticTokensExt(),
-      // Don't turn on signature help for now it is way too sensitive.
-      //lspSignatureHelpExt(plugin),
+      lspSignatureHelpExt(plugin),
     ]
   }
 }

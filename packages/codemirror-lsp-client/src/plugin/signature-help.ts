@@ -34,6 +34,19 @@ export default function lspSignatureHelpExt(
     EditorView.updateListener.of(async (update) => {
       if (!(plugin && update.docChanged)) return
 
+      // Make sure this is a valid user typing event.
+      let isRelevant = false
+      for (const tr of update.transactions) {
+        if (tr.isUserEvent('input')) {
+          isRelevant = true
+        }
+      }
+
+      if (!isRelevant) {
+        // We only want signature help on user events.
+        return
+      }
+
       const value = update.view.plugin(plugin)
       if (!value) return false
 
