@@ -9,9 +9,8 @@ pub use artifact::{
 };
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
-use cad_op::Group;
 #[cfg(feature = "artifact-graph")]
-pub use cad_op::Operation;
+pub use cad_op::{Group, Operation};
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -739,6 +738,7 @@ impl ExecutorContext {
         let mut universe = std::collections::HashMap::new();
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
+        #[cfg_attr(not(feature = "artifact-graph"), expect(unused))]
         let root_imports = crate::walk::import_universe(
             self,
             &ModuleRepr::Kcl(program.ast.clone(), None),
