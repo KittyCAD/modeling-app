@@ -65,9 +65,6 @@ export default function lspSignatureHelpExt(
         }
       })
 
-        console.log('triggerPos', triggerPos)
-        console.log('shouldTrigger', shouldTrigger)
-
       if (shouldTrigger && triggerPos >= 0) {
         await value.showSignatureHelpTooltip(
           update.view,

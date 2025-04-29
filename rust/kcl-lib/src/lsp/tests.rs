@@ -1124,6 +1124,31 @@ async fn test_kcl_lsp_signature_help_on_parens_trigger() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send open file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
             text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
@@ -1182,6 +1207,31 @@ async fn test_kcl_lsp_signature_help_on_comma_trigger() {
     let server = kcl_lsp_server(false).await.unwrap();
 
     // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send update file.
     server
         .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
             text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
