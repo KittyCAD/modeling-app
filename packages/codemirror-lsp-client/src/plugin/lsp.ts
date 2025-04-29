@@ -1080,6 +1080,7 @@ export class LanguageServerPlugin implements PluginValue {
         }))
 
         view.dispatch(view.state.update({ changes: changeSpecs }))
+        return true
       }
     }
 
