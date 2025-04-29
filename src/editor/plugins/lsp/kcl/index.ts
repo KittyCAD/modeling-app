@@ -96,7 +96,8 @@ export class KclPlugin implements PluginValue {
         break
       } else if (tr.annotation(lspRenameEvent.type)) {
         // Rename does not need to trigger the world.
-        isRelevant = true
+        // It's the same ast just different variable names.
+        isRelevant = false
         break
       }
     }
