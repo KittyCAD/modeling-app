@@ -215,7 +215,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="row-start-1 -row-end-1 flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 flex flex-col justify-between">
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
