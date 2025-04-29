@@ -207,13 +207,19 @@ export async function deleteFromSelection(
               extrudeNameToDelete = dec.id.name
             }
             if (
-              // TODO: This is wrong, loft is now a CallExpressionKw.
-              dec.init.type === 'CallExpression' &&
-              dec.init.callee.name.name === 'loft' &&
-              dec.init.arguments?.[0].type === 'ArrayExpression' &&
-              dec.init.arguments?.[0].elements.some(
-                (a) => a.type === 'Name' && a.name.name === varDecName
-              )
+              (dec.init.type === 'CallExpressionKw' &&
+                dec.init.callee.name.name === 'loft' &&
+                dec.init.unlabeled !== null &&
+                dec.init.unlabeled.type === 'ArrayExpression' &&
+                dec.init.unlabeled.elements.some(
+                  (a) => a.type === 'Name' && a.name.name === varDecName
+                )) ||
+              (dec.init.type === 'CallExpression' &&
+                dec.init.callee.name.name === 'loft' &&
+                dec.init.arguments?.[0].type === 'ArrayExpression' &&
+                dec.init.arguments?.[0].elements.some(
+                  (a) => a.type === 'Name' && a.name.name === varDecName
+                ))
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name

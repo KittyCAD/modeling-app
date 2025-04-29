@@ -22,7 +22,6 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import {
-  createCallExpressionStdLib,
   createArrayExpression,
   createLocalName,
   createCallExpressionStdLibKw,
@@ -194,12 +193,16 @@ export function createTagExpressions(
 
         // Modify the tag based on selectionType
         if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
-          tagCall = createCallExpressionStdLib('getOppositeEdge', [tagCall])
+          tagCall = createCallExpressionStdLibKw('getOppositeEdge', tagCall, [])
         } else if (
           artifact.type === 'sweepEdge' &&
           artifact.subType === 'adjacent'
         ) {
-          tagCall = createCallExpressionStdLib('getNextAdjacentEdge', [tagCall])
+          tagCall = createCallExpressionStdLibKw(
+            'getNextAdjacentEdge',
+            tagCall,
+            []
+          )
         }
         return tagCall
       }
