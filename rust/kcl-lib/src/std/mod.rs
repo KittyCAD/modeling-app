@@ -7,7 +7,6 @@ pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
 pub mod clone;
-pub mod convert;
 pub mod csg;
 pub mod edge;
 pub mod extrude;
@@ -25,7 +24,6 @@ pub mod shell;
 pub mod sketch;
 pub mod sweep;
 pub mod transform;
-pub mod units;
 pub mod utils;
 
 use anyhow::Result;
@@ -59,7 +57,6 @@ lazy_static! {
         Box::new(LegAngX),
         Box::new(LegAngY),
         Box::new(crate::std::appearance::Appearance),
-        Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
@@ -111,9 +108,6 @@ lazy_static! {
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
         Box::new(crate::std::math::Atan2),
-        Box::new(crate::std::math::Pi),
-        Box::new(crate::std::math::E),
-        Box::new(crate::std::math::Tau),
         Box::new(crate::std::math::Sqrt),
         Box::new(crate::std::math::Abs),
         Box::new(crate::std::math::Rem),
@@ -127,12 +121,6 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
-        Box::new(crate::std::units::FromMm),
-        Box::new(crate::std::units::FromInches),
-        Box::new(crate::std::units::FromFt),
-        Box::new(crate::std::units::FromM),
-        Box::new(crate::std::units::FromCm),
-        Box::new(crate::std::units::FromYd),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertIs),
         Box::new(crate::std::transform::Scale),

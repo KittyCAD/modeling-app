@@ -14,5 +14,5 @@ assert(one, isEqualTo = 1, error = "oops")
 
 assert(PI, isEqualTo = 3, tolerance = 0.2, error = "oops pi")
 
-x = cos(2 * PI)
+x = cos((2 * PI): number(rad))
 assert(x, isEqualTo = 1, tolerance = 0.000001, error = "oops cos")

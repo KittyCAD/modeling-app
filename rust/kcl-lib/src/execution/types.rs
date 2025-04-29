@@ -381,7 +381,8 @@ impl fmt::Display for PrimitiveType {
         match self {
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
-            PrimitiveType::Number(_) => write!(f, "number"),
+            PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
+            PrimitiveType::Number(NumericType::Any) => write!(f, "number(any units)"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
@@ -455,7 +456,7 @@ impl NumericType {
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
     /// precise, only adjusting one number or the other when they are of known types.
     ///
-    /// This combinator function is suitable for comparisons or arithmetic where uncertainty should
+    /// This combinator function is suitable for comparisons where uncertainty should
     /// be handled by the user.
     pub fn combine_eq(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
@@ -525,7 +526,9 @@ impl NumericType {
                 continue;
             }
 
+            // The cases where we check the values for 0.0 are so we don't crash out where a conversion would always be safe
             match (&ty, &i.ty) {
+                (Any, Default { .. }) if i.n == 0.0 => {}
                 (Any, t) => {
                     ty = t.clone();
                 }
@@ -535,8 +538,8 @@ impl NumericType {
                     ty = Known(UnitType::Count);
                 }
 
-                (Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 => {}
-                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {}
+                (Known(UnitType::Length(l1)), Default { len: l2, .. }) if l1 == l2 || i.n == 0.0 => {}
+                (Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 || i.n == 0.0 => {}
 
                 (Default { len: l1, .. }, Known(UnitType::Length(l2))) if l1 == l2 => {
                     ty = Known(UnitType::Length(*l2));
@@ -547,6 +550,10 @@ impl NumericType {
 
                 _ => return (result, Unknown),
             }
+        }
+
+        if ty == Any && !input.is_empty() {
+            ty = input[0].ty.clone();
         }
 
         (result, ty)
@@ -597,6 +604,7 @@ impl NumericType {
             NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
             NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
             NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+            NumericSuffix::Unknown => NumericType::Unknown,
         }
     }
 
