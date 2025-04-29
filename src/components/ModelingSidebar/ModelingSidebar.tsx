@@ -29,6 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
+import { settingsActor } from '@src/lib/singletons'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -79,16 +80,27 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'load-external-model',
-      title: 'Load external model',
-      sidebarName: 'Load external model',
+      id: 'add-file-to-project',
+      title: 'Add file to project',
+      sidebarName: 'Add file to project',
       icon: 'importFile',
       keybinding: 'Mod + Alt + L',
-      action: () =>
+      action: () => {
+        const currentProject =
+          settingsActor.getSnapshot().context.currentProject
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'load-external-model', groupId: 'code' },
-        }),
+          data: {
+            name: 'add-kcl-file-to-project',
+            groupId: 'application',
+            argDefaultValues: {
+              method: 'existingProject',
+              projectName: currentProject?.name,
+              ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
+            },
+          },
+        })
+      },
     },
     {
       id: 'export',
