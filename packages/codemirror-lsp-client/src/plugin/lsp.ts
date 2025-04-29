@@ -698,8 +698,6 @@ export class LanguageServerPlugin implements PluginValue {
         },
       })
 
-      console.log('Signature help result:', result)
-
       if (!result?.signatures || result.signatures.length === 0) {
         return null
       }
