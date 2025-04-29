@@ -40,7 +40,7 @@ export function HelpMenu({
   }
 
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'Help.Reset onboarding') {
+    if (data.menuLabel === 'Help.Replay onboarding tutorial') {
       resetOnboardingWorkflow()
     }
   }

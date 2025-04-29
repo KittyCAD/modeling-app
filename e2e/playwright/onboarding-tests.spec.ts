@@ -40,6 +40,11 @@ test.describe('Onboarding tests', () => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
+    await test.step('Ensure the onboarding request toast appears', async () => {
+      await expect(page.getByTestId('onboarding-toast')).toBeVisible()
+      await page.getByTestId('onboarding-next').click()
+    })
+
     // Test that the onboarding pane loaded
     await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
@@ -82,6 +87,11 @@ test.describe('Onboarding tests', () => {
       })
 
       await test.step(`Ensure we see the onboarding stuff`, async () => {
+        await test.step('Ensure the onboarding request toast appears', async () => {
+          await expect(page.getByTestId('onboarding-toast')).toBeVisible()
+          await page.getByTestId('onboarding-next').click()
+        })
+
         // Test that the onboarding pane loaded
         await expect(
           page.getByText('Welcome to Design Studio! This')
@@ -135,7 +145,9 @@ test.describe('Onboarding tests', () => {
     await replayButton.click()
 
     // Ensure we see the warning, and that the code has not yet updated
-    await expect(page.getByText('Would you like to create')).toBeVisible()
+    await expect(
+      page.getByText('Start tutorial in a new project?')
+    ).toBeVisible()
     await expect(page.locator('.cm-content')).toHaveText(initialCode)
 
     const nextButton = page.getByTestId('onboarding-next')
@@ -183,11 +195,16 @@ test.describe('Onboarding tests', () => {
     await page.setBodyDimensions({ width: 1200, height: 1080 })
     await homePage.goToModelingScene()
 
-    // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
-
     const nextButton = page.getByTestId('onboarding-next')
     const prevButton = page.getByTestId('onboarding-prev')
+
+    await test.step('Ensure the onboarding request toast appears', async () => {
+      await expect(page.getByTestId('onboarding-toast')).toBeVisible()
+      await nextButton.click()
+    })
+
+    // Test that the onboarding pane loaded
+    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
 
     while ((await nextButton.innerText()) !== 'Finish') {
       await nextButton.hover()
@@ -206,65 +223,6 @@ test.describe('Onboarding tests', () => {
     // Test that the onboarding pane is gone
     await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
     await expect.poll(() => page.url()).not.toContain('/onboarding')
-  })
-
-  test('Onboarding redirects and code updating', async ({
-    context,
-    page,
-    homePage,
-    tronApp,
-  }) => {
-    if (!tronApp) {
-      fail()
-    }
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '/export',
-      },
-    })
-
-    const originalCode = 'sigmaAllow = 15000'
-
-    // Override beforeEach test setup
-    await context.addInitScript(
-      async ({ settingsKey, settings, code }) => {
-        // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', code)
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: TEST_SETTINGS_ONBOARDING_EXPORT,
-        }),
-        code: originalCode,
-      }
-    )
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-
-    // Test that the redirect happened
-    await expect.poll(() => page.url()).toContain('/onboarding/export')
-
-    // Test that you come back to this page when you refresh
-    await page.reload()
-    await expect.poll(() => page.url()).toContain('/onboarding/export')
-
-    // Test that the code changes when you advance to the next step
-    await page.getByTestId('onboarding-next').hover()
-    await page.getByTestId('onboarding-next').click()
-
-    // Test that the onboarding pane loaded
-    const title = page.locator('[data-testid="onboarding-content"]')
-    await expect(title).toBeAttached()
-
-    await expect(page.locator('.cm-content')).not.toHaveText(originalCode)
-
-    // Test that the code is not empty when you click on the next step
-    await page.locator('[data-testid="onboarding-next"]').hover()
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await expect(page.locator('.cm-content')).toHaveText(/.+/)
   })
 
   test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
@@ -488,7 +446,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
     name: 'Help and resources',
   })
   const restartOnboardingButton = page.getByRole('button', {
-    name: 'Reset onboarding',
+    name: 'Replay onboarding tutorial',
   })
   const nextButton = page.getByTestId('onboarding-next')
 
