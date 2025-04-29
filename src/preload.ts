@@ -1,17 +1,19 @@
-import { ipcRenderer, contextBridge, IpcRendererEvent } from 'electron'
-import path from 'path'
+import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
-import fsSync from 'node:fs'
-import packageJson from '../package.json'
-import { MachinesListing } from 'components/MachineManagerProvider'
+import path from 'path'
+import packageJson from '@root/package.json'
+import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
-import type { Channel } from './channels'
-import type { WebContentSendPayload } from './menu/channels'
+import type { IpcRendererEvent } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
+
+import type { Channel } from '@src/channels'
+import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
-  listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
+  listener: (event: IpcRendererEvent, ...args: any[]) => void
 ) => ipcRenderer.on(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
@@ -19,6 +21,7 @@ const resizeWindow = (width: number, height: number) =>
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const takeElectronWindowScreenshot = ({
   width,
   height,
@@ -163,7 +166,7 @@ const listMachines = async (
   })
 }
 
-const getMachineApiIp = async (): Promise<String | null> =>
+const getMachineApiIp = async (): Promise<string | null> =>
   ipcRenderer.invoke('find_machine_api')
 
 const getArgvParsed = () => {
@@ -246,6 +249,7 @@ contextBridge.exposeInMainWorld('electron', {
   save,
   // opens the URL
   openExternal,
+  openInNewWindow,
   showInFolder,
   getPath,
   packageJson,
@@ -276,6 +280,7 @@ contextBridge.exposeInMainWorld('electron', {
         'VITE_KC_SKIP_AUTH',
         'VITE_KC_CONNECTION_TIMEOUT_MS',
         'VITE_KC_DEV_TOKEN',
+
         'IS_PLAYWRIGHT',
 
         // Really we shouldn't use these and our code should use NODE_ENV

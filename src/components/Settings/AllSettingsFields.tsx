@@ -1,31 +1,36 @@
 import decamelize from 'decamelize'
-import { Setting } from 'lib/settings/initialSettings'
-import { SetEventTypes, SettingsLevel } from 'lib/settings/settingsTypes'
-import {
-  shouldHideSetting,
-  shouldShowSettingInput,
-} from 'lib/settings/settingsUtils'
-import { Fragment } from 'react/jsx-runtime'
-import { SettingsSection } from './SettingsSection'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { isDesktop } from 'lib/isDesktop'
-import { ActionButton } from 'components/ActionButton'
-import { SettingsFieldInput } from './SettingsFieldInput'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useMemo } from 'react'
 import toast from 'react-hot-toast'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from 'routes/Settings'
-import { PATHS } from 'lib/paths'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { useLspContext } from '@src/components/LspProvider'
+import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
+import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
 import {
   createAndOpenNewTutorialProject,
   getSettingsFolderPaths,
-} from 'lib/desktopFS'
-import { useDotDotSlash } from 'hooks/useDotDotSlash'
-import { ForwardedRef, forwardRef, useEffect, useMemo } from 'react'
-import { useLspContext } from 'components/LspProvider'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { settingsActor, useSettings } from 'machines/appMachine'
-import { useSelector } from '@xstate/react'
+} from '@src/lib/desktopFS'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import type { Setting } from '@src/lib/settings/initialSettings'
+import type {
+  SetEventTypes,
+  SettingsLevel,
+} from '@src/lib/settings/settingsTypes'
+import {
+  shouldHideSetting,
+  shouldShowSettingInput,
+} from '@src/lib/settings/settingsUtils'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
+import { settingsActor, useSettings } from '@src/lib/singletons'
+import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
+import { waitFor } from 'xstate'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -60,45 +65,25 @@ export const AllSettingsFields = forwardRef(
       return projectPath
     }, [location.pathname])
 
-    function restartOnboarding() {
+    async function restartOnboarding() {
       settingsActor.send({
         type: `set.app.onboardingStatus`,
         data: { level: 'user', value: '' },
       })
-    }
+      await waitFor(settingsActor, (s) => s.matches('idle'), {
+        timeout: 10_000,
+      }).catch(reportRejection)
 
-    /**
-     * A "listener" for the XState to return to "idle" state
-     * when the user resets the onboarding, using the callback above
-     */
-    const isSettingsMachineIdle = useSelector(settingsActor, (s) =>
-      s.matches('idle')
-    )
-    useEffect(() => {
-      async function navigateToOnboardingStart() {
-        if (
-          context.app.onboardingStatus.current === '' &&
-          isSettingsMachineIdle
-        ) {
-          if (isFileSettings) {
-            // If we're in a project, first navigate to the onboarding start here
-            // so we can trigger the warning screen if necessary
-            navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
-          } else {
-            // If we're in the global settings, create a new project and navigate
-            // to the onboarding start in that project
-            await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
-          }
-        }
+      if (isFileSettings) {
+        // If we're in a project, first navigate to the onboarding start here
+        // so we can trigger the warning screen if necessary
+        navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
+      } else {
+        // If we're in the global settings, create a new project and navigate
+        // to the onboarding start in that project
+        await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
       }
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      navigateToOnboardingStart()
-    }, [
-      isFileSettings,
-      navigate,
-      isSettingsMachineIdle,
-      context.app.onboardingStatus.current,
-    ])
+    }
 
     return (
       <div className="relative overflow-y-auto">
@@ -181,7 +166,9 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
-              onClick={restartOnboarding}
+              onClick={() => {
+                restartOnboarding().catch(reportRejection)
+              }}
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
@@ -245,7 +232,7 @@ export const AllSettingsFields = forwardRef(
             </div>
           </SettingsSection>
           <h2 id="settings-about" className="text-2xl mt-6 font-bold">
-            About Modeling App
+            About Design Studio
           </h2>
           <div className="text-sm mb-12">
             <p>
@@ -302,7 +289,7 @@ export const AllSettingsFields = forwardRef(
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Click here to grab Zoo Modeling App (Nightly)
+                  Click here to grab Zoo Design Studio (Nightly)
                 </a>
                 . It can be installed side-by-side with the stable version
                 you're running now. But careful there, a lot less testing is

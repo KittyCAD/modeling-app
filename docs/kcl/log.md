@@ -10,7 +10,7 @@ The result might not be correctly rounded owing to implementation details; `log2
 
 ```js
 log(
-  num: number,
+  input: number,
   base: number,
 ): number
 ```
@@ -24,8 +24,8 @@ log(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number`](/docs/kcl/types/number) |  | Yes |
-| `base` | [`number`](/docs/kcl/types/number) |  | Yes |
+| `input` | [`number`](/docs/kcl/types/number) | The number to compute the logarithm of. | Yes |
+| `base` | [`number`](/docs/kcl/types/number) | The base of the logarithm. | Yes |
 
 ### Returns
 
@@ -36,8 +36,8 @@ log(
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
-  |> line(end = [log(100, 5), 0])
+  |> startProfile(at = [0, 0])
+  |> line(end = [log(100, base = 5), 0])
   |> line(end = [5, 8])
   |> line(end = [-10, 0])
   |> close()

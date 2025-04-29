@@ -5,17 +5,21 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds::{self as kcmc};
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::KclError,
-    execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
+    execution::{
+        types::{NumericType, RuntimeType},
+        ExecState, Helix, KclValue, Sketch, Solid,
+    },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{extrude::do_post_extrude, Args},
 };
 
 /// A path to sweep along.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(untagged)]
 pub enum SweepPath {
@@ -26,9 +30,13 @@ pub enum SweepPath {
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
-    let path: SweepPath = args.get_kw_arg("path")?;
+    let path: SweepPath = args.get_kw_arg_typed(
+        "path",
+        &RuntimeType::Union(vec![RuntimeType::sketch(), RuntimeType::helix()]),
+        exec_state,
+    )?;
     let sectional = args.get_kw_arg_opt("sectional")?;
-    let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
@@ -54,33 +62,27 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Create a pipe using a sweep.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
-///     |> startProfileAt([0.05, 0.05], %)
+/// sweepPath = startSketchOn(XZ)
+///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
-///     |> tangentialArc({
-///         offset: 90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = 90, radius = 5)
 ///     |> line(end = [-3, 0])
-///     |> tangentialArc({
-///         offset: -90,
-///         radius: 5
-///     }, %)
+///     |> tangentialArc(angle = -90, radius = 5)
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
 ///         )              
-///     |> hole(pipeHole, %)
+///     |> subtract2d(tool = pipeHole)
 ///     |> sweep(path = sweepPath)   
 /// ```
 ///
@@ -94,42 +96,39 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     revolutions = 4,
 ///     length = 10,
 ///     radius = 5,
-///     axis = 'Z',
+///     axis = Z,
 ///  )
 ///
 ///
 /// // Create a spring by sweeping around the helix path.
-/// springSketch = startSketchOn('YZ')
+/// springSketch = startSketchOn(YZ)
 ///     |> circle( center = [0, 0], radius = 1)
 ///     |> sweep(path = helixPath)
 /// ```
 ///
-/// ```
+/// ```no_run
 /// // Sweep two sketches along the same path.
 ///
-/// sketch001 = startSketchOn('XY')
-/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
-///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001) - 90,
-///         50.61
-///     ], %)
-///     |> angledLine([
-///         segAng(rectangleSegmentA001),
-///         -segLen(rectangleSegmentA001)
-///     ], %)
+/// sketch001 = startSketchOn(XY)
+/// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
+///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001) - 90,
+///         length = 50.61,
+///     )
+///     |> angledLine(
+///         angle = segAng(rectangleSegmentA001),
+///         length = -segLen(rectangleSegmentA001),
+///     )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 ///
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sketch002 = startSketchOn(YZ)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep([rectangleSketch, circleSketch], path = sweepPath)
@@ -137,16 +136,13 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 /// // Sectionally sweep one sketch along the path
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
 /// sketch002 = startSketchOn('YZ')
-/// sweepPath = startProfileAt([0, 0], sketch002)
+/// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
-///     |> tangentialArc({
-///         radius = 80,
-///         offset = -90,
-///     }, %)
+///     |> tangentialArc(radius = 80, angle = -90)
 ///     |> xLine(length = 384.93)
 ///
 /// sweep(circleSketch, path = sweepPath, sectional = true)
@@ -171,7 +167,7 @@ async fn inner_sweep(
     sketches: Vec<Sketch>,
     path: SweepPath,
     sectional: Option<bool>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -191,7 +187,7 @@ async fn inner_sweep(
                 target: sketch.id.into(),
                 trajectory,
                 sectional: sectional.unwrap_or(false),
-                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             }),
         )
         .await?;
@@ -199,8 +195,9 @@ async fn inner_sweep(
         solids.push(
             do_post_extrude(
                 sketch,
+                #[cfg(feature = "artifact-graph")]
                 id.into(),
-                0.0,
+                TyF64::new(0.0, NumericType::mm()),
                 sectional.unwrap_or(false),
                 &super::extrude::NamedCapTags {
                     start: tag_start.as_ref(),
@@ -212,6 +209,16 @@ async fn inner_sweep(
             .await?,
         );
     }
+
+    // Hide the artifact from the sketch or helix.
+    args.batch_modeling_cmd(
+        exec_state.next_uuid(),
+        ModelingCmd::from(mcmd::ObjectVisible {
+            object_id: trajectory.into(),
+            hidden: true,
+        }),
+    )
+    .await?;
 
     Ok(solids)
 }

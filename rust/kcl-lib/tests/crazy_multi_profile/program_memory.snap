@@ -15,9 +15,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 122,
-            "end": 128,
-            "start": 122,
+            "commentStart": 123,
+            "end": 129,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 167,
-            "end": 173,
-            "start": 167,
+            "commentStart": 168,
+            "end": 174,
+            "start": 168,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -58,9 +58,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -3.66
             ],
             "tag": {
-              "commentStart": 122,
-              "end": 128,
-              "start": 122,
+              "commentStart": 123,
+              "end": 129,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -83,9 +83,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               5.36
             ],
             "tag": {
-              "commentStart": 167,
-              "end": 173,
-              "start": 167,
+              "commentStart": 168,
+              "end": 174,
+              "start": 168,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -145,25 +145,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -205,7 +206,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -326,17 +328,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -348,9 +351,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -361,9 +364,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -391,9 +394,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "tag": {
-                    "commentStart": 122,
-                    "end": 128,
-                    "start": 122,
+                    "commentStart": 123,
+                    "end": 129,
+                    "start": 123,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -416,9 +419,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     5.36
                   ],
                   "tag": {
-                    "commentStart": 167,
-                    "end": 173,
-                    "start": 167,
+                    "commentStart": 168,
+                    "end": 174,
+                    "start": 168,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -478,25 +481,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -538,7 +542,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -573,7 +578,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -588,9 +594,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2069,
-            "end": 2090,
-            "start": 2069,
+            "commentStart": 2117,
+            "end": 2138,
+            "start": 2117,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -632,9 +638,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "tag": {
-              "commentStart": 2069,
-              "end": 2090,
-              "start": 2069,
+              "commentStart": 2117,
+              "end": 2138,
+              "start": 2117,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -732,25 +738,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -788,7 +795,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "profile001": {
@@ -807,9 +815,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -3.66
           ],
           "tag": {
-            "commentStart": 122,
-            "end": 128,
-            "start": 122,
+            "commentStart": 123,
+            "end": 129,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -832,9 +840,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             5.36
           ],
           "tag": {
-            "commentStart": 167,
-            "end": 173,
-            "start": 167,
+            "commentStart": 168,
+            "end": 174,
+            "start": 168,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -894,25 +902,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1003,17 +1012,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1025,9 +1035,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1038,9 +1048,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1068,9 +1078,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1093,9 +1103,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.36
                 ],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1155,25 +1165,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -1215,7 +1226,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -1262,9 +1274,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             13.3
           ],
           "tag": {
-            "commentStart": 539,
-            "end": 560,
-            "start": 539,
+            "commentStart": 571,
+            "end": 592,
+            "start": 571,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1362,17 +1374,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1384,9 +1397,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1397,9 +1410,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1427,9 +1440,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1452,9 +1465,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.36
                 ],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1514,25 +1527,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -1574,7 +1588,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -1702,17 +1717,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1724,9 +1740,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1737,9 +1753,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1767,9 +1783,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1792,9 +1808,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.36
                 ],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1854,25 +1870,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -1914,7 +1931,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -1985,17 +2003,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -2007,9 +2026,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2020,9 +2039,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2050,9 +2069,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2075,9 +2094,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.36
                 ],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2137,25 +2156,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -2197,7 +2217,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -2319,17 +2340,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -2341,9 +2363,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2354,9 +2376,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2384,9 +2406,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -3.66
                 ],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2409,9 +2431,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   5.36
                 ],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2471,25 +2493,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 1.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 1.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -2531,7 +2554,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -2615,25 +2639,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2752,25 +2777,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2889,25 +2915,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -2975,25 +3002,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3037,9 +3065,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "tag": {
-            "commentStart": 2069,
-            "end": 2090,
-            "start": 2069,
+            "commentStart": 2117,
+            "end": 2138,
+            "start": 2117,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -3137,25 +3165,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -3295,17 +3324,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -3317,9 +3347,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 122,
-                  "end": 128,
-                  "start": 122,
+                  "commentStart": 123,
+                  "end": 129,
+                  "start": 123,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3330,9 +3360,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 167,
-                  "end": 173,
-                  "start": 167,
+                  "commentStart": 168,
+                  "end": 174,
+                  "start": 168,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3360,9 +3390,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     -3.66
                   ],
                   "tag": {
-                    "commentStart": 122,
-                    "end": 128,
-                    "start": 122,
+                    "commentStart": 123,
+                    "end": 129,
+                    "start": 123,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -3385,9 +3415,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     5.36
                   ],
                   "tag": {
-                    "commentStart": 167,
-                    "end": 173,
-                    "start": 167,
+                    "commentStart": 168,
+                    "end": 174,
+                    "start": 168,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -3447,25 +3477,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -3507,7 +3538,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -3542,7 +3574,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "revolve002": {
@@ -3663,25 +3696,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -3713,7 +3747,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -3735,25 +3770,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   },
@@ -3766,17 +3802,18 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       },
       "solid": {
         "type": "Solid",
@@ -3788,9 +3825,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 122,
-              "end": 128,
-              "start": 122,
+              "commentStart": 123,
+              "end": 129,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -3801,9 +3838,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "id": "[uuid]",
             "sourceRange": [],
             "tag": {
-              "commentStart": 167,
-              "end": 173,
-              "start": 167,
+              "commentStart": 168,
+              "end": 174,
+              "start": 168,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -3831,9 +3868,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 -3.66
               ],
               "tag": {
-                "commentStart": 122,
-                "end": 128,
-                "start": 122,
+                "commentStart": 123,
+                "end": 129,
+                "start": 123,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -3856,9 +3893,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 5.36
               ],
               "tag": {
-                "commentStart": 167,
-                "end": 173,
-                "start": 167,
+                "commentStart": 168,
+                "end": 174,
+                "start": 168,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -3918,25 +3955,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "origin": {
               "x": 0.0,
               "y": 0.0,
-              "z": 0.0
+              "z": 0.0,
+              "units": {
+                "type": "Mm"
+              }
             },
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
-              "z": 0.0
+              "z": 0.0,
+              "units": {
+                "type": "Unknown"
+              }
             },
             "yAxis": {
               "x": 0.0,
               "y": 0.0,
-              "z": 1.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": -1.0,
-              "z": 0.0
-            },
-            "units": {
-              "type": "Mm"
+              "z": 1.0,
+              "units": {
+                "type": "Unknown"
+              }
             }
           },
           "start": {
@@ -3978,7 +4016,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        }
+        },
+        "sectional": false
       },
       "units": {
         "type": "Mm"
@@ -3994,25 +4033,26 @@ description: Variables in memory after executing crazy_multi_profile.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Mm"
+        }
       },
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
-        "z": 0.0
+        "z": 0.0,
+        "units": {
+          "type": "Unknown"
+        }
       },
       "yAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "units": {
-        "type": "Mm"
+        "z": 1.0,
+        "units": {
+          "type": "Unknown"
+        }
       }
     }
   }

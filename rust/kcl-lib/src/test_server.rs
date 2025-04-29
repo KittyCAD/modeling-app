@@ -6,7 +6,6 @@ use crate::{
     engine::new_zoo_client,
     errors::ExecErrorWithState,
     execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
-    settings::types::UnitLength,
     ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
 };
 
@@ -19,14 +18,10 @@ pub struct RequestBody {
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot(
-    code: &str,
-    units: UnitLength,
-    current_file: Option<PathBuf>,
-) -> Result<image::DynamicImage, ExecError> {
-    let ctx = new_context(units, true, current_file).await?;
+pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> Result<image::DynamicImage, ExecError> {
+    let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program, false)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error);
@@ -36,19 +31,29 @@ pub async fn execute_and_snapshot(
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
-pub async fn execute_and_snapshot_ast(
+#[cfg(test)]
+pub async fn execute_and_snapshot_ast_single_threaded(
     ast: Program,
-    units: UnitLength,
     current_file: Option<PathBuf>,
     with_export_step: bool,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
-    let ctx = new_context(units, true, current_file).await?;
-    let (exec_state, env, img) = do_execute_and_snapshot(&ctx, ast).await?;
+    let ctx = new_context(true, current_file).await?;
+    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, true).await {
+        Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
+        Err(err) => {
+            // If there was an error executing the program, return it.
+            // Close the context to avoid any resource leaks.
+            ctx.close().await;
+            return Err(err);
+        }
+    };
     let mut step = None;
     if with_export_step {
         let files = match ctx.export_step(true).await {
             Ok(f) => f,
             Err(err) => {
+                // Close the context to avoid any resource leaks.
+                ctx.close().await;
                 return Err(ExecErrorWithState::new(
                     ExecError::BadExport(format!("Export failed: {:?}", err)),
                     exec_state.clone(),
@@ -64,12 +69,11 @@ pub async fn execute_and_snapshot_ast(
 
 pub async fn execute_and_snapshot_no_auth(
     code: &str,
-    units: UnitLength,
     current_file: Option<PathBuf>,
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
-    let ctx = new_context(units, false, current_file).await?;
+    let ctx = new_context(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program)
+    let res = do_execute_and_snapshot(&ctx, program, false)
         .await
         .map(|(_, env_ref, snap)| (snap, env_ref))
         .map_err(|err| err.error);
@@ -80,12 +84,15 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
+    single_threaded: bool,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
-    let result = ctx
-        .run(&program, &mut exec_state)
-        .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    let result = if single_threaded {
+        ctx.run_single_threaded(&program, &mut exec_state).await
+    } else {
+        ctx.run(&program, &mut exec_state).await
+    }
+    .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(
@@ -111,11 +118,7 @@ async fn do_execute_and_snapshot(
     Ok((exec_state, result.0, img))
 }
 
-pub async fn new_context(
-    units: UnitLength,
-    with_auth: bool,
-    current_file: Option<PathBuf>,
-) -> Result<ExecutorContext, ConnectionError> {
+pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
     let mut client = new_zoo_client(if with_auth { None } else { Some("bad_token".to_string()) }, None)
         .map_err(ConnectionError::CouldNotMakeClient)?;
     if !with_auth {
@@ -126,7 +129,6 @@ pub async fn new_context(
     }
 
     let mut settings = ExecutorSettings {
-        units,
         highlight_edges: true,
         enable_ssao: false,
         show_grid: false,
@@ -145,7 +147,6 @@ pub async fn new_context(
 
 pub async fn execute_and_export_step(
     code: &str,
-    units: UnitLength,
     current_file: Option<PathBuf>,
 ) -> Result<
     (
@@ -155,7 +156,7 @@ pub async fn execute_and_export_step(
     ),
     ExecErrorWithState,
 > {
-    let ctx = new_context(units, true, current_file).await?;
+    let ctx = new_context(true, current_file).await?;
     let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code)
         .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;

@@ -1,6 +1,5 @@
-import { test, expect } from './zoo-test'
-
-import { getUtils } from './test-utils'
+import { getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 function countNewlines(input: string): number {
   let count = 0
@@ -19,7 +18,7 @@ test.describe('Debug pane', () => {
     homePage,
   }) => {
     const code = `sketch001 = startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
   |> line(end = [1, 1])
   `
     const u = await getUtils(page)

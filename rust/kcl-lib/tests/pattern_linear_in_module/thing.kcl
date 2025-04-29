@@ -1,0 +1,13 @@
+export fn thing() {
+  return startSketchOn(XZ)
+    |> circle(center = [0, 0], radius = 1)
+    |> patternLinear2d(
+         axis = [1, 0],
+         instances = 7,
+         distance = 4
+       )
+    |> extrude(length = 1)
+}
+
+// This makes it run in isolated mode when the function is imported.
+thing()

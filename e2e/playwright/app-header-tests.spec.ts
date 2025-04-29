@@ -1,4 +1,4 @@
-import { test, expect } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('Electron app header tests', () => {
   test(
@@ -29,11 +29,11 @@ test.describe('Electron app header tests', () => {
   test(
     'User settings has correct shortcut',
     { tag: '@electron' },
-    async ({ page }, testInfo) => {
+    async ({ page, toolbar }, testInfo) => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       // Open the user sidebar menu.
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
 
       // No space after "User settings" since it's textContent.
       const text =

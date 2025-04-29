@@ -1,10 +1,11 @@
 import { Popover } from '@headlessui/react'
 import { useContext } from 'react'
-import Tooltip from './Tooltip'
-import { isDesktop } from 'lib/isDesktop'
-import { components } from 'lib/machine-api'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { CustomIcon } from './CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import Tooltip from '@src/components/Tooltip'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { components } from '@src/lib/machine-api'
+import { capitaliseFC } from '@src/lib/utils'
 
 export const NetworkMachineIndicator = ({
   className,
@@ -68,9 +69,7 @@ export const NetworkMachineIndicator = ({
                         </p>
                       )}
                     <p className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
-                      {`Status: ${machine.state.state
-                        .charAt(0)
-                        .toUpperCase()}${machine.state.state.slice(1)}`}
+                      {`Status: ${capitaliseFC(machine.state.state)}`}
                       {machine.state.state === 'failed' && machine.state.message
                         ? ` (${machine.state.message})`
                         : ''}

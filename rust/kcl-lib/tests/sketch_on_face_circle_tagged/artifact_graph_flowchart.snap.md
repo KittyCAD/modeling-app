@@ -9,8 +9,8 @@ flowchart LR
     7[Solid2d]
   end
   subgraph path23 [Path]
-    23["Path<br>[298, 350, 0]"]
-    24["Segment<br>[298, 350, 0]"]
+    23["Path<br>[305, 357, 0]"]
+    24["Segment<br>[305, 357, 0]"]
     25[Solid2d]
   end
   1["Plane<br>[29, 48, 0]"]
@@ -29,13 +29,13 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[356, 375, 0]"]
+  26["Sweep Extrusion<br>[363, 382, 0]"]
   27[Wall]
   28["Cap Start"]
   29["Cap End"]
   30["SweepEdge Opposite"]
   31["SweepEdge Adjacent"]
-  32["StartSketchOnFace<br>[263, 292, 0]"]
+  32["StartSketchOnFace<br>[263, 299, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -46,15 +46,19 @@ flowchart LR
   3 --- 12
   3 --- 21
   3 --- 22
+  3 x--> 13
   4 --- 11
   4 --- 19
   4 --- 20
+  4 x--> 13
   5 --- 10
   5 --- 17
   5 --- 18
+  5 x--> 13
   6 --- 9
   6 --- 15
   6 --- 16
+  6 x--> 13
   8 --- 9
   8 --- 10
   8 --- 11
@@ -70,16 +74,36 @@ flowchart LR
   8 --- 21
   8 --- 22
   14 --- 23
+  15 <--x 9
+  15 <--x 14
+  16 <--x 9
+  16 <--x 12
+  17 <--x 10
+  17 <--x 14
+  18 <--x 9
+  18 <--x 10
+  19 <--x 11
+  19 <--x 14
+  20 <--x 10
+  20 <--x 11
+  21 <--x 12
+  21 <--x 14
+  22 <--x 11
+  22 <--x 12
   23 --- 24
   23 ---- 26
   23 --- 25
   24 --- 27
   24 --- 30
   24 --- 31
+  24 x--> 28
   26 --- 27
   26 --- 28
   26 --- 29
   26 --- 30
   26 --- 31
+  30 <--x 27
+  30 <--x 29
+  31 <--x 27
   14 <--x 32
 ```

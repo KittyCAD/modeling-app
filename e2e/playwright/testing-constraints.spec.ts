@@ -1,22 +1,21 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
-import {
-  getUtils,
-  TEST_COLORS,
-  pollEditorLinesSelectedLength,
-  executorInputPath,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { XOR } from 'lib/utils'
 import path from 'node:path'
+import { XOR } from '@src/lib/utils'
+import * as fsp from 'fs/promises'
 
-test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
+import {
+  TEST_COLORS,
+  getUtils,
+  pollEditorLinesSelectedLength,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
+test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(length = -20)
@@ -58,7 +57,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine([90, length001], %)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -77,19 +76,20 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       })
       .toBe(false)
   })
-  test(`Remove constraints`, async ({ page, homePage }) => {
+  test(`Remove constraints`, async ({ page, homePage, scene, cmdBar }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `yo = 79
+        `@settings(defaultLengthUnit = in)
+  yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfileAt([-7.54, -26.74], %)
+    |> startProfile(at = [-7.54, -26.74])
     |> line(end = [74.36, 130.4], tag = $seg01)
     |> line(end = [78.92, -120.11])
-    |> angledLine([segAng(seg01), yo], %)
+    |> angledLine(angle = segAng(seg01), length = yo)
     |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn(XZ)
-    |> startProfileAt([299.05, 120], %)
+    |> startProfile(at = [299.05, 120])
     |> xLine(length = -385.34, tag = $seg_what)
     |> yLine(length = -170.06)
     |> xLine(length = segLen(seg_what))
@@ -100,7 +100,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -114,7 +114,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
     await page
       .getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       .click()
     await page.getByRole('button', { name: 'remove constraints' }).click()
@@ -141,55 +141,31 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, offset } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
-        |> angledLine([segAng(seg01), 78.33], %)
+        |> angledLine(angle = segAng(seg01), length = 78.33)
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])`
           )
-
-          const isChecked = await createNewVariableCheckbox.isChecked()
-          const addVariable = testName === 'Add variable'
-          XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-            (await createNewVariableCheckbox.click())
-
-          await page
-            .getByRole('button', { name: 'Add constraining value' })
-            .click()
-
-          // Wait for the codemod to take effect
-          await expect(page.locator('.cm-content')).toContainText(`angle: -57,`)
-          await expect(page.locator('.cm-content')).toContainText(
-            `offset: ${offset},`
-          )
-
-          await pollEditorLinesSelectedLength(page, 2)
-          const activeLinesContent = await page.locator('.cm-activeLine').all()
-          await expect(activeLinesContent[0]).toHaveText(
-            `|> line(end = [74.36, 130.4], tag = $seg01)`
-          )
-          await expect(activeLinesContent[1]).toHaveText(`}, %)`)
-
-          // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-          await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
         })
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -212,7 +188,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(100)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page
@@ -242,7 +218,9 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await expect(activeLinesContent[0]).toHaveText(
           `|> line(end = [74.36, 130.4], tag = $seg01)`
         )
-        await expect(activeLinesContent[1]).toHaveText(`}, %)`)
+        await expect(activeLinesContent[1]).toHaveText(
+          `  |> angledLineThatIntersects(angle = -57, offset = ${offset}, intersectTag = seg01)`
+        )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
         await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
@@ -273,19 +251,25 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -296,7 +280,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -316,7 +300,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByRole('button', { name: constraint }).click()
@@ -383,19 +367,25 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${constraint} - ${testName}`, async ({ page, homePage }) => {
+      test(`${constraint} - ${testName}`, async ({
+        page,
+        homePage,
+        scene,
+        cmdBar,
+      }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -406,7 +396,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -431,7 +421,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(100)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page
@@ -496,19 +486,20 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, axisSelect } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -519,7 +510,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -543,7 +534,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.keyboard.up('Shift')
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-angle').click()
@@ -562,7 +553,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         // checking activeLines assures the cursors are where they should be
         const codeAfter = [
           '|> line(end = [74.36, 130.4], tag = $seg01)',
-          `|> angledLine([${value}, 78.33], %)`,
+          `|> angledLine(angle = ${value}, length = 78.33)`,
         ]
         if (axisSelect) codeAfter.shift()
 
@@ -598,19 +589,20 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ page, homePage }) => {
+      test(`${testName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -621,7 +613,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -636,7 +628,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-' + constraint).click()
@@ -648,7 +640,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
           .getByRole('button', { name: 'Add constraining value' })
           .click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
@@ -674,7 +667,14 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       },
     ] as const
     for (const { testName, addVariable, value, constraint } of cases) {
-      test(`${testName}`, async ({ context, homePage, page, editor }) => {
+      test(`${testName}`, async ({
+        context,
+        homePage,
+        page,
+        editor,
+        scene,
+        cmdBar,
+      }) => {
         // constants and locators
         const cmdBarKclInput = page
           .getByTestId('cmd-bar-arg-value')
@@ -688,15 +688,16 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+yo = 5
 part001 = startSketchOn(XZ)
-  |> startProfileAt([-7.54, -26.74], %)
+  |> startProfile(at = [-7.54, -26.74])
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
   |> line(end = [9.16, 77.79])
   |> line(end = [51.19, 48.97])
 part002 = startSketchOn(XZ)
-  |> startProfileAt([299.05, 231.45], %)
+  |> startProfile(at = [299.05, 231.45])
   |> xLine(length = -425.34, tag = $seg_what)
   |> yLine(length = -264.06)
   |> xLine(length = segLen(seg_what))
@@ -707,7 +708,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await editor.scrollToText('line(end = [74.36, 130.4])', true)
         await page.getByText('line(end = [74.36, 130.4])').click()
@@ -720,7 +721,7 @@ part002 = startSketchOn(XZ)
         await page.mouse.click(line3.x, line3.y)
         await page
           .getByRole('button', {
-            name: 'Length: open menu',
+            name: 'constraints: open menu',
           })
           .click()
         await page.getByTestId('dropdown-constraint-' + constraint).click()
@@ -734,7 +735,8 @@ part002 = startSketchOn(XZ)
         await expect(cmdBarKclInput).toHaveText('78.33')
         await cmdBarSubmitButton.click()
 
-        const changedCode = `|> angledLine([${value}], %)`
+        const [ang, len] = value.split(', ')
+        const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await expect(page.locator('.cm-content')).toContainText(changedCode)
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
@@ -764,19 +766,20 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async (customCode) => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -787,7 +790,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -817,7 +820,7 @@ part002 = startSketchOn(XZ)
         const activeLinesContent = await page.locator('.cm-activeLine').all()
 
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page
           .getByRole('button', {
@@ -848,11 +851,11 @@ part002 = startSketchOn(XZ)
   test.describe('Two segment - no modal constraints', () => {
     const cases = [
       {
-        codeAfter: `|> angledLine([83, segLen(seg01)], %)`,
+        codeAfter: `|> angledLine(angle = 83, length = segLen(seg01))`,
         constraintName: 'Equal Length',
       },
       {
-        codeAfter: `|> angledLine([segAng(seg01), 78.33], %)`,
+        codeAfter: `|> angledLine(angle = segAng(seg01), length = 78.33)`,
         constraintName: 'Parallel',
       },
       {
@@ -865,18 +868,19 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -887,7 +891,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -904,7 +908,7 @@ part002 = startSketchOn(XZ)
         await page.mouse.click(line3.x - 3, line3.y + 20)
         await page.keyboard.up('Shift')
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -946,18 +950,19 @@ part002 = startSketchOn(XZ)
       },
     ] as const
     for (const { codeAfter, constraintName, axisClick } of cases) {
-      test(`${constraintName}`, async ({ page, homePage }) => {
+      test(`${constraintName}`, async ({ page, homePage, scene, cmdBar }) => {
         await page.addInitScript(async () => {
           localStorage.setItem(
             'persistCode',
-            `yo = 5
+            `@settings(defaultLengthUnit = in)
+      yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -968,7 +973,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await u.waitForPageLoad()
+        await scene.settled(cmdBar)
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -988,7 +993,7 @@ part002 = startSketchOn(XZ)
         await page.keyboard.up('Shift')
         await page.waitForTimeout(100)
         const constraintMenuButton = page.getByRole('button', {
-          name: 'Length: open menu',
+          name: 'constraints: open menu',
         })
         const constraintButton = page.getByRole('button', {
           name: constraintName,
@@ -1009,14 +1014,15 @@ part002 = startSketchOn(XZ)
   test('Horizontally constrained line remains selected after applying constraint', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-1.05, -1.07], %)
+    |> startProfile(at = [-1.05, -1.07])
     |> line(end = [3.79, 2.68], tag = $seg01)
     |> line(end = [3.13, -2.4])`
       )
@@ -1025,7 +1031,7 @@ part002 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
 
     await page.getByText('line(end = [3.79, 2.68], tag = $seg01)').click()
     await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeEnabled(
@@ -1053,7 +1059,7 @@ part002 = startSketchOn(XZ)
 
     await page
       .getByRole('button', {
-        name: 'Length: open menu',
+        name: 'constraints: open menu',
       })
       .click()
     await page.waitForTimeout(500)
@@ -1113,13 +1119,23 @@ test.describe('Electron constraint tests', () => {
   test(
     'Able to double click label to set constraint',
     { tag: '@electron' },
-    async ({ page, context, homePage, scene, editor, toolbar }) => {
+    async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('angled_line.kcl'),
-          path.join(bracketDir, 'main.kcl')
+        await fsp.writeFile(
+          path.join(bracketDir, 'main.kcl'),
+          `@settings(defaultLengthUnit = in)
+          const part001 = startSketchOn(XY)
+            |> startProfile(at = [4.83, 12.56])
+            |> line(end = [15.1, 2.48])
+            |> line(end = [3.15, -9.85], tag = $seg01)
+            |> line(end = [-15.17, -4.1])
+            |> angledLine(angle = segAng(seg01), length = 12.35)
+            |> line(end = [-13.02, 10.03])
+            |> close()
+            |> extrude(length = 4)`,
+          'utf-8'
         )
       })
 
@@ -1134,8 +1150,16 @@ test.describe('Electron constraint tests', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
       })
+
+      async function clickOnFirstSegmentLabel() {
+        const child = page
+          .locator('.segment-length-label-text')
+          .first()
+          .locator('xpath=..')
+        await child.dblclick()
+      }
 
       await test.step('Double click to constrain', async () => {
         // Enter sketch edit mode via feature tree
@@ -1144,21 +1168,21 @@ test.describe('Electron constraint tests', () => {
         await op.dblclick()
         await toolbar.closePane('feature-tree')
 
-        const child = page
-          .locator('.segment-length-label-text')
-          .first()
-          .locator('xpath=..')
-        await child.dblclick()
-        const cmdBarSubmitButton = page.getByRole('button', {
-          name: 'arrow right Continue',
-        })
-        await cmdBarSubmitButton.click()
-        await expect(page.locator('.cm-content')).toContainText(
-          'length001 = 15.3'
+        await clickOnFirstSegmentLabel()
+        await cmdBar.progressCmdBar()
+        await editor.expectEditor.toContain('length001 = 15.3')
+        await editor.expectEditor.toContain(
+          '|> angledLine(angle = 9, length = length001)'
         )
-        await expect(page.locator('.cm-content')).toContainText(
-          '|> angledLine([9, length001], %)'
-        )
+      })
+
+      await test.step('Double click again and expect failure', async () => {
+        await clickOnFirstSegmentLabel()
+
+        await expect(
+          page.getByText('Unable to constrain the length of this segment')
+        ).toBeVisible()
+
         await page.getByRole('button', { name: 'Exit Sketch' }).click()
       })
     }

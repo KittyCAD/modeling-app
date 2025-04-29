@@ -1,36 +1,50 @@
 import { useEffect, useRef } from 'react'
+
+import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { SegmentArtifact } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactOfTypes,
+  getCapCodeRef,
+  getCodeRefsByArtifactId,
+  getSweepFromSuspectedSweepSurface,
+  getWallCodeRef,
+} from '@src/lang/std/artifactGraph'
+import { isTopLevelModule } from '@src/lang/util'
+import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
+import type { DefaultPlaneStr } from '@src/lib/planes'
+import { getEventForSelectWithPoint } from '@src/lib/selections'
 import {
   editorManager,
   engineCommandManager,
   kclManager,
+  rustContext,
+  sceneEntitiesManager,
   sceneInfra,
-} from 'lib/singletons'
-import { useModelingContext } from './useModelingContext'
-import { getEventForSelectWithPoint } from 'lib/selections'
-import {
-  getCapCodeRef,
-  getSweepFromSuspectedSweepSurface,
-  getWallCodeRef,
-  getCodeRefsByArtifactId,
-  getArtifactOfTypes,
-  SegmentArtifact,
-} from 'lang/std/artifactGraph'
-import { err, reportRejection } from 'lib/trap'
-import { getFaceDetails } from 'clientSideScene/sceneEntities'
-import { DefaultPlaneStr } from 'lib/planes'
-import { getNodeFromPath } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
-import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
-import { rustContext } from 'lib/singletons'
+} from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/lib/singletons'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
+import type {
+  EdgeCutInfo,
+  ExtrudeFacePlane,
+} from '@src/machines/modelingMachine'
+import toast from 'react-hot-toast'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   useEffect(() => {
     if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -67,9 +81,12 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
+    if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
+
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
@@ -143,7 +160,8 @@ export function useEngineConnectionSubscriptions() {
               const artifact = kclManager.artifactGraph.get(planeOrFaceId)
 
               if (artifact?.type === 'plane') {
-                const planeInfo = await getFaceDetails(planeOrFaceId)
+                const planeInfo =
+                  await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
                   type: 'Select default plane',
                   data: {
@@ -165,7 +183,7 @@ export function useEngineConnectionSubscriptions() {
                     ].map((num) => num / sceneInfra._baseUnitMultiplier) as [
                       number,
                       number,
-                      number
+                      number,
                     ],
                     planeId: planeOrFaceId,
                     pathToNode: artifact.codeRef.pathToNode,
@@ -180,6 +198,29 @@ export function useEngineConnectionSubscriptions() {
                 faceId,
                 kclManager.artifactGraph
               )
+              if (!err(extrusion)) {
+                if (!isTopLevelModule(extrusion.codeRef.range)) {
+                  const moduleId = getModuleId(extrusion.codeRef.range)
+                  const importDetails = kclManager.execState.filenames[moduleId]
+                  if (!importDetails) {
+                    toast.error("can't sketch on this face")
+                    return
+                  }
+                  if (importDetails?.type === 'Local') {
+                    const paths = importDetails.value.split('/')
+                    const fileName = paths[paths.length - 1]
+                    showSketchOnImportToast(fileName)
+                  } else if (
+                    importDetails?.type === 'Main' ||
+                    importDetails?.type === 'Std'
+                  ) {
+                    toast.error("can't sketch on this face")
+                  } else {
+                    // force tsc error if more cases are added
+                    const _exhaustiveCheck: never = importDetails
+                  }
+                }
+              }
 
               if (
                 artifact?.type !== 'cap' &&
@@ -194,10 +235,10 @@ export function useEngineConnectionSubscriptions() {
                 artifact.type === 'cap'
                   ? getCapCodeRef(artifact, kclManager.artifactGraph)
                   : artifact.type === 'wall'
-                  ? getWallCodeRef(artifact, kclManager.artifactGraph)
-                  : artifact.codeRef
+                    ? getWallCodeRef(artifact, kclManager.artifactGraph)
+                    : artifact.codeRef
 
-              const faceInfo = await getFaceDetails(faceId)
+              const faceInfo = await sceneEntitiesManager.getFaceDetails(faceId)
               if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis)
                 return
               const { z_axis, y_axis, origin } = faceInfo
@@ -275,11 +316,11 @@ export function useEngineConnectionSubscriptions() {
               const _faceInfo: ExtrudeFacePlane['faceInfo'] = edgeCutMeta
                 ? edgeCutMeta
                 : artifact.type === 'cap'
-                ? {
-                    type: 'cap',
-                    subType: artifact.subType,
-                  }
-                : { type: 'wall' }
+                  ? {
+                      type: 'cap',
+                      subType: artifact.subType,
+                    }
+                  : { type: 'wall' }
 
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
@@ -309,5 +350,5 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-  }, [state])
+  }, [engineCommandManager, engineStreamState, state])
 }

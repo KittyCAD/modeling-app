@@ -6,11 +6,12 @@
 mod tests;
 mod unbox;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 use convert_case::Casing;
 use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
+use proc_macro2::Span;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
 use serde::Deserialize;
@@ -20,6 +21,16 @@ use syn::{
     Attribute, Signature, Visibility,
 };
 use unbox::unbox;
+
+#[proc_macro_attribute]
+pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_output(do_stdlib(attr.into(), item.into()))
+}
+
+#[proc_macro_attribute]
+pub fn for_each_std_mod(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_for_each_std_mod(item.into()).into()
+}
 
 /// Describes an argument of a stdlib function.
 #[derive(Deserialize, Debug)]
@@ -73,17 +84,37 @@ struct StdlibMetadata {
     args: HashMap<String, ArgMetadata>,
 }
 
-#[proc_macro_attribute]
-pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    do_output(do_stdlib(attr.into(), item.into()))
-}
-
 fn do_stdlib(
     attr: proc_macro2::TokenStream,
     item: proc_macro2::TokenStream,
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let metadata = from_tokenstream(&attr)?;
     do_stdlib_inner(metadata, attr, item)
+}
+
+fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
+    let mut result = proc_macro2::TokenStream::new();
+    for name in fs::read_dir("kcl-lib/std").unwrap().filter_map(|e| {
+        let e = e.unwrap();
+        let filename = e.file_name();
+        filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
+    }) {
+        let mut item = item.clone();
+        item.sig.ident = syn::Ident::new(&format!("{}_{}", item.sig.ident, name), Span::call_site());
+        let stmts = &item.block.stmts;
+        //let name = format!("\"{name}\"");
+        let block = quote! {
+            {
+                const STD_MOD_NAME: &str = #name;
+                #(#stmts)*
+            }
+        };
+        item.block = Box::new(syn::parse2(block).unwrap());
+        result.extend(Some(item.into_token_stream()));
+    }
+
+    result
 }
 
 fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
@@ -329,7 +360,7 @@ fn do_stdlib_inner(
         let camel_case_arg_name = to_camel_case(&arg_name);
         if ty_string != "ExecState" && ty_string != "Args" {
             let schema = quote! {
-                #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#ty_ident>())
+                generator.root_schema_for::<#ty_ident>()
             };
             arg_types.push(quote! {
                 #docs_crate::StdLibFnArg {
@@ -394,7 +425,7 @@ fn do_stdlib_inner(
     let return_type = if !ret_ty_string.is_empty() || ret_ty_string != "()" {
         let ret_ty_string = rust_type_to_openapi_type(&ret_ty_string);
         quote! {
-            let schema = #docs_crate::cleanup_number_tuples_root(generator.root_schema_for::<#return_type_inner>());
+            let schema = generator.root_schema_for::<#return_type_inner>();
             Some(#docs_crate::StdLibFnArg {
                 name: "".to_string(),
                 type_: #ret_ty_string.to_string(),
@@ -671,6 +702,7 @@ fn normalize_comment_string(s: String) -> Vec<String> {
 
 /// Represent an item without concern for its body which may (or may not)
 /// contain syntax errors.
+#[derive(Clone)]
 struct ItemFnForSignature {
     pub attrs: Vec<Attribute>,
     pub vis: Visibility,
@@ -764,14 +796,14 @@ fn rust_type_to_openapi_type(t: &str) -> String {
         t = format!("[{inner_type}]")
     }
 
-    if t == "f64" {
+    if t == "f64" || t == "TyF64" {
         return "number".to_string();
     } else if t == "u32" {
         return "integer".to_string();
     } else if t == "str" {
         return "string".to_string();
     } else {
-        return t.replace("f64", "number").to_string();
+        return t.replace("f64", "number").replace("TyF64", "number").to_string();
     }
 }
 
@@ -816,7 +848,7 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
         async fn #test_name() -> miette::Result<()> {
             let code = #code_block;
             // Note, `crate` must be kcl_lib
-            let result = match crate::test_server::execute_and_snapshot(code, crate::settings::types::UnitLength::Mm, None).await {
+            let result = match crate::test_server::execute_and_snapshot(code, None).await {
                 Err(crate::errors::ExecError::Kcl(e)) => {
                     return Err(miette::Report::new(crate::errors::Report {
                         error: e.error,

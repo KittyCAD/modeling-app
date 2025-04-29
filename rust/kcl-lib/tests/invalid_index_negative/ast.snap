@@ -18,10 +18,10 @@ description: Result of parsing invalid_index_negative.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 7,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing invalid_index_negative.kcl
                 }
               },
               {
-                "commentStart": 10,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing invalid_index_negative.kcl
                 }
               },
               {
-                "commentStart": 13,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -72,12 +72,12 @@ description: Result of parsing invalid_index_negative.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 16,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 16,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "name": "i",
             "start": 0,
@@ -85,7 +85,7 @@ description: Result of parsing invalid_index_negative.kcl
           },
           "init": {
             "argument": {
-              "commentStart": 21,
+              "commentStart": 0,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -96,7 +96,7 @@ description: Result of parsing invalid_index_negative.kcl
                 "suffix": "None"
               }
             },
-            "commentStart": 20,
+            "commentStart": 0,
             "end": 0,
             "operator": "-",
             "start": 0,
@@ -113,23 +113,23 @@ description: Result of parsing invalid_index_negative.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 23,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 23,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 23,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 27,
+            "commentStart": 0,
             "computed": true,
             "end": 0,
             "object": {
-              "commentStart": 27,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -137,7 +137,7 @@ description: Result of parsing invalid_index_negative.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 31,
+              "commentStart": 0,
               "end": 0,
               "name": "i",
               "start": 0,

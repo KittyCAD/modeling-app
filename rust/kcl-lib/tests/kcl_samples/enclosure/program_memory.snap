@@ -15,9 +15,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 323,
-            "end": 344,
-            "start": 323,
+            "commentStart": 362,
+            "end": 383,
+            "start": 362,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 431,
-            "end": 452,
-            "start": 431,
+            "commentStart": 467,
+            "end": 488,
+            "start": 467,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 557,
-            "end": 578,
-            "start": 557,
+            "commentStart": 590,
+            "end": 611,
+            "start": 590,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 648,
-            "end": 669,
-            "start": 648,
+            "commentStart": 681,
+            "end": 702,
+            "start": 681,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -77,9 +77,9 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 323,
-              "end": 344,
-              "start": 323,
+              "commentStart": 362,
+              "end": 383,
+              "start": 362,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -102,9 +102,9 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 431,
-              "end": 452,
-              "start": 431,
+              "commentStart": 467,
+              "end": 488,
+              "start": 467,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -127,9 +127,9 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 557,
-              "end": 578,
-              "start": 557,
+              "commentStart": 590,
+              "end": 611,
+              "start": 590,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -152,9 +152,9 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 648,
-              "end": 669,
-              "start": 648,
+              "commentStart": 681,
+              "end": 702,
+              "start": 681,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD001"
             },
@@ -195,25 +195,26 @@ description: Variables in memory after executing enclosure.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -265,35 +266,80 @@ description: Variables in memory after executing enclosure.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -308,9 +354,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2395,
-            "end": 2416,
-            "start": 2395,
+            "commentStart": 2426,
+            "end": 2447,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -321,9 +367,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2503,
-            "end": 2524,
-            "start": 2503,
+            "commentStart": 2531,
+            "end": 2552,
+            "start": 2531,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -334,9 +380,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2629,
-            "end": 2650,
-            "start": 2629,
+            "commentStart": 2654,
+            "end": 2675,
+            "start": 2654,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -347,9 +393,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2720,
-            "end": 2741,
-            "start": 2720,
+            "commentStart": 2745,
+            "end": 2766,
+            "start": 2745,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -370,9 +416,9 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2395,
-              "end": 2416,
-              "start": 2395,
+              "commentStart": 2426,
+              "end": 2447,
+              "start": 2426,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -395,9 +441,9 @@ description: Variables in memory after executing enclosure.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2503,
-              "end": 2524,
-              "start": 2503,
+              "commentStart": 2531,
+              "end": 2552,
+              "start": 2531,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -420,9 +466,9 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 2629,
-              "end": 2650,
-              "start": 2629,
+              "commentStart": 2654,
+              "end": 2675,
+              "start": 2654,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -445,9 +491,9 @@ description: Variables in memory after executing enclosure.kcl
               175.0
             ],
             "tag": {
-              "commentStart": 2720,
-              "end": 2741,
-              "start": 2720,
+              "commentStart": 2745,
+              "end": 2766,
+              "start": 2745,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD002"
             },
@@ -488,25 +534,26 @@ description: Variables in memory after executing enclosure.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -558,35 +605,80 @@ description: Variables in memory after executing enclosure.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 12.0,
+          "radius": {
+            "n": 12.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -601,9 +693,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4040,
-            "end": 4061,
-            "start": 4040,
+            "commentStart": 4128,
+            "end": 4149,
+            "start": 4128,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -614,9 +706,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4170,
-            "end": 4191,
-            "start": 4170,
+            "commentStart": 4255,
+            "end": 4276,
+            "start": 4255,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -627,9 +719,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4296,
-            "end": 4317,
-            "start": 4296,
+            "commentStart": 4378,
+            "end": 4399,
+            "start": 4378,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -640,9 +732,9 @@ description: Variables in memory after executing enclosure.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4387,
-            "end": 4408,
-            "start": 4387,
+            "commentStart": 4469,
+            "end": 4490,
+            "start": 4469,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -663,9 +755,9 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 4040,
-              "end": 4061,
-              "start": 4040,
+              "commentStart": 4128,
+              "end": 4149,
+              "start": 4128,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -688,9 +780,9 @@ description: Variables in memory after executing enclosure.kcl
               3.0
             ],
             "tag": {
-              "commentStart": 4170,
-              "end": 4191,
-              "start": 4170,
+              "commentStart": 4255,
+              "end": 4276,
+              "start": 4255,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -713,9 +805,9 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 4296,
-              "end": 4317,
-              "start": 4296,
+              "commentStart": 4378,
+              "end": 4399,
+              "start": 4378,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -738,9 +830,9 @@ description: Variables in memory after executing enclosure.kcl
               172.0
             ],
             "tag": {
-              "commentStart": 4387,
-              "end": 4408,
-              "start": 4387,
+              "commentStart": 4469,
+              "end": 4490,
+              "start": 4469,
               "type": "TagDeclarator",
               "value": "rectangleSegmentD003"
             },
@@ -781,17 +873,18 @@ description: Variables in memory after executing enclosure.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -803,9 +896,9 @@ description: Variables in memory after executing enclosure.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2395,
-                  "end": 2416,
-                  "start": 2395,
+                  "commentStart": 2426,
+                  "end": 2447,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -816,9 +909,9 @@ description: Variables in memory after executing enclosure.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2503,
-                  "end": 2524,
-                  "start": 2503,
+                  "commentStart": 2531,
+                  "end": 2552,
+                  "start": 2531,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -829,9 +922,9 @@ description: Variables in memory after executing enclosure.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2629,
-                  "end": 2650,
-                  "start": 2629,
+                  "commentStart": 2654,
+                  "end": 2675,
+                  "start": 2654,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -842,9 +935,9 @@ description: Variables in memory after executing enclosure.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2720,
-                  "end": 2741,
-                  "start": 2720,
+                  "commentStart": 2745,
+                  "end": 2766,
+                  "start": 2745,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -865,9 +958,9 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2395,
-                    "end": 2416,
-                    "start": 2395,
+                    "commentStart": 2426,
+                    "end": 2447,
+                    "start": 2426,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   },
@@ -890,9 +983,9 @@ description: Variables in memory after executing enclosure.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2503,
-                    "end": 2524,
-                    "start": 2503,
+                    "commentStart": 2531,
+                    "end": 2552,
+                    "start": 2531,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   },
@@ -915,9 +1008,9 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 2629,
-                    "end": 2650,
-                    "start": 2629,
+                    "commentStart": 2654,
+                    "end": 2675,
+                    "start": 2654,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   },
@@ -940,9 +1033,9 @@ description: Variables in memory after executing enclosure.kcl
                     175.0
                   ],
                   "tag": {
-                    "commentStart": 2720,
-                    "end": 2741,
-                    "start": 2720,
+                    "commentStart": 2745,
+                    "end": 2766,
+                    "start": 2745,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentD002"
                   },
@@ -983,25 +1076,26 @@ description: Variables in memory after executing enclosure.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -1053,35 +1147,80 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 12.0,
+                "radius": {
+                  "n": 12.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 12.0,
+                "radius": {
+                  "n": 12.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 12.0,
+                "radius": {
+                  "n": 12.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               },
               {
                 "type": "fillet",
                 "id": "[uuid]",
-                "radius": 12.0,
+                "radius": {
+                  "n": 12.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
                 "edgeId": "[uuid]",
                 "tag": null
               }
             ],
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1136,35 +1275,80 @@ description: Variables in memory after executing enclosure.kcl
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 9.0,
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 9.0,
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 9.0,
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         },
         {
           "type": "fillet",
           "id": "[uuid]",
-          "radius": 9.0,
+          "radius": {
+            "n": 9.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
           "edgeId": "[uuid]",
           "tag": null
         }
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "function001": {
@@ -1285,9 +1469,9 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 323,
-            "end": 344,
-            "start": 323,
+            "commentStart": 362,
+            "end": 383,
+            "start": 362,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1310,9 +1494,9 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 431,
-            "end": 452,
-            "start": 431,
+            "commentStart": 467,
+            "end": 488,
+            "start": 467,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1335,9 +1519,9 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 557,
-            "end": 578,
-            "start": 557,
+            "commentStart": 590,
+            "end": 611,
+            "start": 590,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1360,9 +1544,9 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 648,
-            "end": 669,
-            "start": 648,
+            "commentStart": 681,
+            "end": 702,
+            "start": 681,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD001"
           },
@@ -1403,25 +1587,26 @@ description: Variables in memory after executing enclosure.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1483,9 +1668,9 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2395,
-            "end": 2416,
-            "start": 2395,
+            "commentStart": 2426,
+            "end": 2447,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1508,9 +1693,9 @@ description: Variables in memory after executing enclosure.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 2503,
-            "end": 2524,
-            "start": 2503,
+            "commentStart": 2531,
+            "end": 2552,
+            "start": 2531,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1533,9 +1718,9 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 2629,
-            "end": 2650,
-            "start": 2629,
+            "commentStart": 2654,
+            "end": 2675,
+            "start": 2654,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1558,9 +1743,9 @@ description: Variables in memory after executing enclosure.kcl
             175.0
           ],
           "tag": {
-            "commentStart": 2720,
-            "end": 2741,
-            "start": 2720,
+            "commentStart": 2745,
+            "end": 2766,
+            "start": 2745,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD002"
           },
@@ -1601,25 +1786,26 @@ description: Variables in memory after executing enclosure.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "units": {
-          "type": "Mm"
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1681,9 +1867,9 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 4040,
-            "end": 4061,
-            "start": 4040,
+            "commentStart": 4128,
+            "end": 4149,
+            "start": 4128,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1706,9 +1892,9 @@ description: Variables in memory after executing enclosure.kcl
             3.0
           ],
           "tag": {
-            "commentStart": 4170,
-            "end": 4191,
-            "start": 4170,
+            "commentStart": 4255,
+            "end": 4276,
+            "start": 4255,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -1731,9 +1917,9 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 4296,
-            "end": 4317,
-            "start": 4296,
+            "commentStart": 4378,
+            "end": 4399,
+            "start": 4378,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -1756,9 +1942,9 @@ description: Variables in memory after executing enclosure.kcl
             172.0
           ],
           "tag": {
-            "commentStart": 4387,
-            "end": 4408,
-            "start": 4387,
+            "commentStart": 4469,
+            "end": 4490,
+            "start": 4469,
             "type": "TagDeclarator",
             "value": "rectangleSegmentD003"
           },
@@ -1799,17 +1985,18 @@ description: Variables in memory after executing enclosure.kcl
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 1.0,
-          "z": 0.0
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "solid": {
           "type": "Solid",
@@ -1821,9 +2008,9 @@ description: Variables in memory after executing enclosure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2395,
-                "end": 2416,
-                "start": 2395,
+                "commentStart": 2426,
+                "end": 2447,
+                "start": 2426,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -1834,9 +2021,9 @@ description: Variables in memory after executing enclosure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2503,
-                "end": 2524,
-                "start": 2503,
+                "commentStart": 2531,
+                "end": 2552,
+                "start": 2531,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -1847,9 +2034,9 @@ description: Variables in memory after executing enclosure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2629,
-                "end": 2650,
-                "start": 2629,
+                "commentStart": 2654,
+                "end": 2675,
+                "start": 2654,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
@@ -1860,9 +2047,9 @@ description: Variables in memory after executing enclosure.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2720,
-                "end": 2741,
-                "start": 2720,
+                "commentStart": 2745,
+                "end": 2766,
+                "start": 2745,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentD002"
               },
@@ -1883,9 +2070,9 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2395,
-                  "end": 2416,
-                  "start": 2395,
+                  "commentStart": 2426,
+                  "end": 2447,
+                  "start": 2426,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1908,9 +2095,9 @@ description: Variables in memory after executing enclosure.kcl
                   0.0
                 ],
                 "tag": {
-                  "commentStart": 2503,
-                  "end": 2524,
-                  "start": 2503,
+                  "commentStart": 2531,
+                  "end": 2552,
+                  "start": 2531,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB002"
                 },
@@ -1933,9 +2120,9 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "commentStart": 2629,
-                  "end": 2650,
-                  "start": 2629,
+                  "commentStart": 2654,
+                  "end": 2675,
+                  "start": 2654,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC002"
                 },
@@ -1958,9 +2145,9 @@ description: Variables in memory after executing enclosure.kcl
                   175.0
                 ],
                 "tag": {
-                  "commentStart": 2720,
-                  "end": 2741,
-                  "start": 2720,
+                  "commentStart": 2745,
+                  "end": 2766,
+                  "start": 2745,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentD002"
                 },
@@ -2001,25 +2188,26 @@ description: Variables in memory after executing enclosure.kcl
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Mm"
+                }
               },
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "units": {
-                "type": "Mm"
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               }
             },
             "start": {
@@ -2071,35 +2259,80 @@ description: Variables in memory after executing enclosure.kcl
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 12.0,
+              "radius": {
+                "n": 12.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 12.0,
+              "radius": {
+                "n": 12.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 12.0,
+              "radius": {
+                "n": 12.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             },
             {
               "type": "fillet",
               "id": "[uuid]",
-              "radius": 12.0,
+              "radius": {
+                "n": 12.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
               "edgeId": "[uuid]",
               "tag": null
             }
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

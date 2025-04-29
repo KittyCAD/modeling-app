@@ -323,7 +323,6 @@ impl Node<Program> {
         let rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
-            crate::lint::checks::lint_call_expressions,
             crate::lint::checks::lint_should_be_offset_plane,
         ];
 
@@ -368,6 +367,26 @@ impl Node<Program> {
         }
 
         Ok(new_program)
+    }
+
+    /// Returns true if the given KCL is empty or only contains settings that
+    /// would be auto-generated.
+    pub fn is_empty_or_only_settings(&self) -> bool {
+        if !self.body.is_empty() {
+            return false;
+        }
+
+        if self.non_code_meta.start_nodes.iter().any(|node| node.is_comment()) {
+            return false;
+        }
+
+        for item in &self.inner_attrs {
+            if item.name() != Some(annotations::SETTINGS) {
+                return false;
+            }
+        }
+
+        true
     }
 }
 
@@ -430,7 +449,6 @@ impl Program {
 
         for item in &self.body {
             let r = item.comment_range();
-            eprintln!("item {r:?}");
             if pos >= r.0 && pos < r.1 {
                 return true;
             }
@@ -800,7 +818,7 @@ pub enum Expr {
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
-    AscribedExpression(BoxNode<Ascription>),
+    AscribedExpression(BoxNode<AscribedExpression>),
     None(Node<KclNone>),
 }
 
@@ -1073,7 +1091,7 @@ impl LabelledExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct Ascription {
+pub struct AscribedExpression {
     pub expr: Expr,
     pub ty: Node<Type>,
 
@@ -1082,12 +1100,12 @@ pub struct Ascription {
     pub digest: Option<Digest>,
 }
 
-impl Ascription {
-    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<Ascription> {
+impl AscribedExpression {
+    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<AscribedExpression> {
         let start = expr.start();
         let end = ty.end;
         let module_id = expr.module_id();
-        Node::new(Ascription { expr, ty, digest: None }, start, end, module_id)
+        Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
     }
 }
 
@@ -3061,7 +3079,7 @@ impl PipeExpression {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "p_type")]
 pub enum PrimitiveType {
     /// A string type.
     String,
@@ -3110,12 +3128,13 @@ impl fmt::Display for PrimitiveType {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
     Array {
-        ty: PrimitiveType,
+        ty: Box<Type>,
         len: ArrayLen,
     },
     // Union/enum types
@@ -3564,6 +3583,37 @@ mod tests {
 
     use super::*;
 
+    #[track_caller]
+    fn parse(code: &str) -> Node<Program> {
+        crate::parsing::top_level_parse(code).unwrap()
+    }
+
+    #[test]
+    fn test_empty_or_only_settings() {
+        // Empty is empty.
+        assert!(parse("").is_empty_or_only_settings());
+
+        // Whitespace is empty.
+        assert!(parse(" ").is_empty_or_only_settings());
+
+        // Settings are empty.
+        assert!(parse(r#"@settings(defaultLengthUnit = mm)"#).is_empty_or_only_settings());
+
+        // Only comments is not empty.
+        assert!(!parse("// comment").is_empty_or_only_settings());
+
+        // Any statement is not empty.
+        assert!(!parse("5").is_empty_or_only_settings());
+
+        // Any statement is not empty, even with settings.
+        let code = r#"@settings(defaultLengthUnit = mm)
+5"#;
+        assert!(!parse(code).is_empty_or_only_settings());
+
+        // Non-settings attributes are not empty.
+        assert!(!parse("@foo").is_empty_or_only_settings());
+    }
+
     // We have this as a test so we can ensure it never panics with an unwrap in the server.
     #[test]
     fn test_variable_kind_to_completion() {
@@ -3574,11 +3624,11 @@ mod tests {
     #[test]
     fn test_get_lsp_folding_ranges() {
         let code = r#"const part001 = startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3613,7 +3663,7 @@ ghi("things")
     #[test]
     fn test_get_lsp_symbols() {
         let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
 const part002 = "part002"
@@ -3633,12 +3683,12 @@ fn ghi = (x) => {
 
     #[test]
     fn test_ast_in_comment() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st
 const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
+  |> startProfile(at = [50, 0])
   |> arc({
        angle_end: 360,
        angle_start: 0,
@@ -3653,12 +3703,12 @@ const cylinder = startSketchOn('-XZ')
 
     #[test]
     fn test_ast_in_comment_pipe() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
 const h = 30
 
 // st
 const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
+  |> startProfile(at = [50, 0])
   // comment
   |> arc({
        angle_end: 360,
@@ -3675,7 +3725,7 @@ const cylinder = startSketchOn('-XZ')
     #[test]
     fn test_ast_in_comment_inline() {
         let some_program_string = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3734,14 +3784,14 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::String,
+                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                 len: ArrayLen::None
             }
         );
@@ -3772,7 +3822,7 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
@@ -3812,7 +3862,7 @@ const cylinder = startSketchOn('-XZ')
                         ),
                         type_: Some(Node::new(
                             Type::Array {
-                                ty: PrimitiveType::String,
+                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
                             59,
@@ -3901,7 +3951,7 @@ const cylinder = startSketchOn('-XZ')
                         ),
                         type_: Some(Node::new(
                             Type::Array {
-                                ty: PrimitiveType::String,
+                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
                             37,

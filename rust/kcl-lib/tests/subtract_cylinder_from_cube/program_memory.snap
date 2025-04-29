@@ -131,25 +131,26 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -181,7 +182,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part001": {
@@ -309,25 +311,26 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -359,7 +362,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -388,18 +392,18 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
             },
             "ccw": true,
             "center": [
-              0.0,
-              0.0
+              2.0,
+              2.0
             ],
             "from": [
-              2.0,
-              0.0
+              4.0,
+              2.0
             ],
             "radius": 2.0,
             "tag": null,
             "to": [
-              2.0,
-              0.0
+              4.0,
+              2.0
             ],
             "type": "Circle",
             "units": {
@@ -415,35 +419,36 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
-            2.0,
-            0.0
+            4.0,
+            2.0
           ],
           "to": [
-            2.0,
-            0.0
+            4.0,
+            2.0
           ],
           "units": {
             "type": "Mm"
@@ -460,12 +465,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "type": "Mm"
         }
       },
-      "height": 10.0,
+      "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

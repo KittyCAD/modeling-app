@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react'
-import { ActionButton } from 'components/ActionButton'
+
+import { ActionButton } from '@src/components/ActionButton'
 
 type DeleteConfirmationDialogProps = React.PropsWithChildren<{
   title: string

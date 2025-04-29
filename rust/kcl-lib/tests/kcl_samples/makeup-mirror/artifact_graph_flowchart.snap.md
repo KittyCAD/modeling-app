@@ -1,135 +1,135 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[520, 565, 0]"]
-    3["Segment<br>[520, 565, 0]"]
+    2["Path<br>[583, 628, 0]"]
+    3["Segment<br>[583, 628, 0]"]
     4[Solid2d]
   end
   subgraph path12 [Path]
-    12["Path<br>[520, 565, 0]"]
-    13["Segment<br>[520, 565, 0]"]
+    12["Path<br>[583, 628, 0]"]
+    13["Segment<br>[583, 628, 0]"]
     14[Solid2d]
   end
   subgraph path22 [Path]
-    22["Path<br>[520, 565, 0]"]
-    23["Segment<br>[520, 565, 0]"]
+    22["Path<br>[583, 628, 0]"]
+    23["Segment<br>[583, 628, 0]"]
     24[Solid2d]
   end
   subgraph path32 [Path]
-    32["Path<br>[520, 565, 0]"]
-    33["Segment<br>[520, 565, 0]"]
+    32["Path<br>[583, 628, 0]"]
+    33["Segment<br>[583, 628, 0]"]
     34[Solid2d]
   end
   subgraph path42 [Path]
-    42["Path<br>[520, 565, 0]"]
-    43["Segment<br>[520, 565, 0]"]
+    42["Path<br>[583, 628, 0]"]
+    43["Segment<br>[583, 628, 0]"]
     44[Solid2d]
   end
   subgraph path52 [Path]
-    52["Path<br>[520, 565, 0]"]
-    53["Segment<br>[520, 565, 0]"]
+    52["Path<br>[583, 628, 0]"]
+    53["Segment<br>[583, 628, 0]"]
     54[Solid2d]
   end
   subgraph path62 [Path]
-    62["Path<br>[520, 565, 0]"]
-    63["Segment<br>[520, 565, 0]"]
+    62["Path<br>[583, 628, 0]"]
+    63["Segment<br>[583, 628, 0]"]
     64[Solid2d]
   end
   subgraph path72 [Path]
-    72["Path<br>[1136, 1191, 0]"]
-    73["Segment<br>[1136, 1191, 0]"]
+    72["Path<br>[1228, 1283, 0]"]
+    73["Segment<br>[1228, 1283, 0]"]
     74[Solid2d]
   end
   subgraph path82 [Path]
-    82["Path<br>[1136, 1191, 0]"]
-    83["Segment<br>[1136, 1191, 0]"]
+    82["Path<br>[1228, 1283, 0]"]
+    83["Segment<br>[1228, 1283, 0]"]
     84[Solid2d]
   end
   subgraph path92 [Path]
-    92["Path<br>[1555, 1618, 0]"]
-    93["Segment<br>[1555, 1618, 0]"]
+    92["Path<br>[1676, 1739, 0]"]
+    93["Segment<br>[1676, 1739, 0]"]
     94[Solid2d]
   end
   subgraph path101 [Path]
-    101["Path<br>[1664, 1720, 0]"]
-    102["Segment<br>[1728, 1752, 0]"]
-    103["Segment<br>[1760, 1878, 0]"]
-    104["Segment<br>[1886, 1910, 0]"]
-    105["Segment<br>[1918, 2086, 0]"]
-    106["Segment<br>[2094, 2101, 0]"]
+    101["Path<br>[1785, 1844, 0]"]
+    102["Segment<br>[1852, 1876, 0]"]
+    103["Segment<br>[1884, 1984, 0]"]
+    104["Segment<br>[1992, 2016, 0]"]
+    105["Segment<br>[2024, 2202, 0]"]
+    106["Segment<br>[2210, 2217, 0]"]
     107[Solid2d]
   end
-  1["Plane<br>[484, 511, 0]"]
-  5["Sweep Extrusion<br>[573, 602, 0]"]
+  1["Plane<br>[547, 574, 0]"]
+  5["Sweep Extrusion<br>[636, 665, 0]"]
   6[Wall]
   7["Cap Start"]
   8["Cap End"]
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  11["Plane<br>[484, 511, 0]"]
-  15["Sweep Extrusion<br>[573, 602, 0]"]
+  11["Plane<br>[547, 574, 0]"]
+  15["Sweep Extrusion<br>[636, 665, 0]"]
   16[Wall]
   17["Cap Start"]
   18["Cap End"]
   19["SweepEdge Opposite"]
   20["SweepEdge Adjacent"]
-  21["Plane<br>[484, 511, 0]"]
-  25["Sweep Extrusion<br>[573, 602, 0]"]
+  21["Plane<br>[547, 574, 0]"]
+  25["Sweep Extrusion<br>[636, 665, 0]"]
   26[Wall]
   27["Cap Start"]
   28["Cap End"]
   29["SweepEdge Opposite"]
   30["SweepEdge Adjacent"]
-  31["Plane<br>[484, 511, 0]"]
-  35["Sweep Extrusion<br>[573, 602, 0]"]
+  31["Plane<br>[547, 574, 0]"]
+  35["Sweep Extrusion<br>[636, 665, 0]"]
   36[Wall]
   37["Cap Start"]
   38["Cap End"]
   39["SweepEdge Opposite"]
   40["SweepEdge Adjacent"]
-  41["Plane<br>[484, 511, 0]"]
-  45["Sweep Extrusion<br>[573, 602, 0]"]
+  41["Plane<br>[547, 574, 0]"]
+  45["Sweep Extrusion<br>[636, 665, 0]"]
   46[Wall]
   47["Cap Start"]
   48["Cap End"]
   49["SweepEdge Opposite"]
   50["SweepEdge Adjacent"]
-  51["Plane<br>[484, 511, 0]"]
-  55["Sweep Extrusion<br>[573, 602, 0]"]
+  51["Plane<br>[547, 574, 0]"]
+  55["Sweep Extrusion<br>[636, 665, 0]"]
   56[Wall]
   57["Cap Start"]
   58["Cap End"]
   59["SweepEdge Opposite"]
   60["SweepEdge Adjacent"]
-  61["Plane<br>[484, 511, 0]"]
-  65["Sweep Extrusion<br>[573, 602, 0]"]
+  61["Plane<br>[547, 574, 0]"]
+  65["Sweep Extrusion<br>[636, 665, 0]"]
   66[Wall]
   67["Cap Start"]
   68["Cap End"]
   69["SweepEdge Opposite"]
   70["SweepEdge Adjacent"]
-  71["Plane<br>[1108, 1128, 0]"]
-  75["Sweep Extrusion<br>[1199, 1226, 0]"]
+  71["Plane<br>[1200, 1220, 0]"]
+  75["Sweep Extrusion<br>[1291, 1318, 0]"]
   76[Wall]
   77["Cap Start"]
   78["Cap End"]
   79["SweepEdge Opposite"]
   80["SweepEdge Adjacent"]
-  81["Plane<br>[1108, 1128, 0]"]
-  85["Sweep Extrusion<br>[1199, 1226, 0]"]
+  81["Plane<br>[1200, 1220, 0]"]
+  85["Sweep Extrusion<br>[1291, 1318, 0]"]
   86[Wall]
   87["Cap Start"]
   88["Cap End"]
   89["SweepEdge Opposite"]
   90["SweepEdge Adjacent"]
-  91["Plane<br>[1491, 1541, 0]"]
-  95["Sweep Extrusion<br>[1626, 1649, 0]"]
+  91["Plane<br>[1612, 1662, 0]"]
+  95["Sweep Extrusion<br>[1747, 1770, 0]"]
   96[Wall]
   97["Cap Start"]
   98["Cap End"]
   99["SweepEdge Opposite"]
   100["SweepEdge Adjacent"]
-  108["Sweep Extrusion<br>[2109, 2132, 0]"]
+  108["Sweep Extrusion<br>[2225, 2248, 0]"]
   109[Wall]
   110[Wall]
   111[Wall]
@@ -144,14 +144,14 @@ flowchart LR
   120["SweepEdge Adjacent"]
   121["SweepEdge Opposite"]
   122["SweepEdge Adjacent"]
-  123["StartSketchOnPlane<br>[470, 512, 0]"]
-  124["StartSketchOnPlane<br>[470, 512, 0]"]
-  125["StartSketchOnPlane<br>[470, 512, 0]"]
-  126["StartSketchOnPlane<br>[470, 512, 0]"]
-  127["StartSketchOnPlane<br>[470, 512, 0]"]
-  128["StartSketchOnPlane<br>[470, 512, 0]"]
-  129["StartSketchOnPlane<br>[470, 512, 0]"]
-  130["StartSketchOnPlane<br>[1475, 1542, 0]"]
+  123["StartSketchOnPlane<br>[533, 575, 0]"]
+  124["StartSketchOnPlane<br>[533, 575, 0]"]
+  125["StartSketchOnPlane<br>[533, 575, 0]"]
+  126["StartSketchOnPlane<br>[533, 575, 0]"]
+  127["StartSketchOnPlane<br>[533, 575, 0]"]
+  128["StartSketchOnPlane<br>[533, 575, 0]"]
+  129["StartSketchOnPlane<br>[533, 575, 0]"]
+  130["StartSketchOnPlane<br>[1596, 1663, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -159,11 +159,15 @@ flowchart LR
   3 --- 6
   3 --- 9
   3 --- 10
+  3 x--> 7
   5 --- 6
   5 --- 7
   5 --- 8
   5 --- 9
   5 --- 10
+  9 <--x 6
+  9 <--x 8
+  10 <--x 6
   11 --- 12
   12 --- 13
   12 ---- 15
@@ -171,11 +175,15 @@ flowchart LR
   13 --- 16
   13 --- 19
   13 --- 20
+  13 x--> 17
   15 --- 16
   15 --- 17
   15 --- 18
   15 --- 19
   15 --- 20
+  19 <--x 16
+  19 <--x 18
+  20 <--x 16
   21 --- 22
   22 --- 23
   22 ---- 25
@@ -183,11 +191,15 @@ flowchart LR
   23 --- 26
   23 --- 29
   23 --- 30
+  23 x--> 27
   25 --- 26
   25 --- 27
   25 --- 28
   25 --- 29
   25 --- 30
+  29 <--x 26
+  29 <--x 28
+  30 <--x 26
   31 --- 32
   32 --- 33
   32 ---- 35
@@ -195,11 +207,15 @@ flowchart LR
   33 --- 36
   33 --- 39
   33 --- 40
+  33 x--> 37
   35 --- 36
   35 --- 37
   35 --- 38
   35 --- 39
   35 --- 40
+  39 <--x 36
+  39 <--x 38
+  40 <--x 36
   41 --- 42
   42 --- 43
   42 ---- 45
@@ -207,11 +223,15 @@ flowchart LR
   43 --- 46
   43 --- 49
   43 --- 50
+  43 x--> 47
   45 --- 46
   45 --- 47
   45 --- 48
   45 --- 49
   45 --- 50
+  49 <--x 46
+  49 <--x 48
+  50 <--x 46
   51 --- 52
   52 --- 53
   52 ---- 55
@@ -219,11 +239,15 @@ flowchart LR
   53 --- 56
   53 --- 59
   53 --- 60
+  53 x--> 57
   55 --- 56
   55 --- 57
   55 --- 58
   55 --- 59
   55 --- 60
+  59 <--x 56
+  59 <--x 58
+  60 <--x 56
   61 --- 62
   62 --- 63
   62 ---- 65
@@ -231,11 +255,15 @@ flowchart LR
   63 --- 66
   63 --- 69
   63 --- 70
+  63 x--> 67
   65 --- 66
   65 --- 67
   65 --- 68
   65 --- 69
   65 --- 70
+  69 <--x 66
+  69 <--x 68
+  70 <--x 66
   71 --- 72
   72 --- 73
   72 ---- 75
@@ -243,11 +271,15 @@ flowchart LR
   73 --- 76
   73 --- 79
   73 --- 80
+  73 x--> 77
   75 --- 76
   75 --- 77
   75 --- 78
   75 --- 79
   75 --- 80
+  79 <--x 76
+  79 <--x 78
+  80 <--x 76
   81 --- 82
   82 --- 83
   82 ---- 85
@@ -255,11 +287,15 @@ flowchart LR
   83 --- 86
   83 --- 89
   83 --- 90
+  83 x--> 87
   85 --- 86
   85 --- 87
   85 --- 88
   85 --- 89
   85 --- 90
+  89 <--x 86
+  89 <--x 88
+  90 <--x 86
   91 --- 92
   91 --- 101
   92 --- 93
@@ -268,11 +304,15 @@ flowchart LR
   93 --- 96
   93 --- 99
   93 --- 100
+  93 x--> 97
   95 --- 96
   95 --- 97
   95 --- 98
   95 --- 99
   95 --- 100
+  99 <--x 96
+  99 <--x 98
+  100 <--x 96
   101 --- 102
   101 --- 103
   101 --- 104
@@ -283,15 +323,19 @@ flowchart LR
   102 --- 112
   102 --- 121
   102 --- 122
+  102 x--> 113
   103 --- 111
   103 --- 119
   103 --- 120
+  103 x--> 113
   104 --- 110
   104 --- 117
   104 --- 118
+  104 x--> 113
   105 --- 109
   105 --- 115
   105 --- 116
+  105 x--> 113
   108 --- 109
   108 --- 110
   108 --- 111
@@ -306,6 +350,22 @@ flowchart LR
   108 --- 120
   108 --- 121
   108 --- 122
+  115 <--x 109
+  115 <--x 114
+  116 <--x 109
+  116 <--x 112
+  117 <--x 110
+  117 <--x 114
+  118 <--x 109
+  118 <--x 110
+  119 <--x 111
+  119 <--x 114
+  120 <--x 110
+  120 <--x 111
+  121 <--x 112
+  121 <--x 114
+  122 <--x 111
+  122 <--x 112
   1 <--x 123
   11 <--x 124
   21 <--x 125

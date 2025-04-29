@@ -97,15 +97,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     // If the settings are different we might need to bust the cache.
     // We specifically do this before checking if they are the exact same.
     if old.settings != new.settings {
-        // If the units are different we need to re-execute the whole thing.
-        if old.settings.units != new.settings.units {
-            return CacheResult::ReExecute {
-                clear_scene: true,
-                reapply_settings: true,
-                program: new.ast.clone(),
-            };
-        }
-
         // If anything else is different we may not need to re-execute, but rather just
         // run the settings again.
         reapply_settings = true;
@@ -252,13 +243,13 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::{parse_execute, ExecTestResults};
+    use crate::execution::{parse_execute, parse_execute_with_project_dir, ExecTestResults};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -266,7 +257,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(new).await.unwrap();
 
@@ -289,7 +280,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_changed_whitespace() {
         let old = r#" // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -297,11 +288,11 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -309,7 +300,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -334,7 +325,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
         let old = r#" // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -342,11 +333,11 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -354,7 +345,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -381,7 +372,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 @bar
 // Removed the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0]) // my thing
@@ -389,13 +380,13 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25) "#;
+shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"@foo(whatever = 42)
 @baz
 // Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -403,7 +394,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
@@ -424,56 +415,12 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
         assert_eq!(result, CacheResult::NoAction(false));
     }
 
-    // Changing the units with the exact same file should bust the cache.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_units() {
-        let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
-  |> line(end = [24, 0])
-  |> line(end = [0, -24])
-  |> line(end = [-24, 0])
-  |> close()
-  |> extrude(length = 6)
-
-// Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
-
-        let ExecTestResults {
-            program, mut exec_ctxt, ..
-        } = parse_execute(new).await.unwrap();
-
-        // Change the settings to cm.
-        exec_ctxt.settings.units = crate::UnitLength::Cm;
-
-        let result = get_changed_program(
-            CacheInformation {
-                ast: &program.ast,
-                settings: &Default::default(),
-            },
-            CacheInformation {
-                ast: &program.ast,
-                settings: &exec_ctxt.settings,
-            },
-        )
-        .await;
-
-        assert_eq!(
-            result,
-            CacheResult::ReExecute {
-                clear_scene: true,
-                reapply_settings: true,
-                program: program.ast
-            }
-        );
-    }
-
     // Changing the grid settings with the exact same file should NOT bust the cache.
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_different_grid_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -481,7 +428,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults {
             program, mut exec_ctxt, ..
@@ -510,7 +457,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
     async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn('XY')
-  |> startProfileAt([-12, 12], %)
+  |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
   |> line(end = [-24, 0])
@@ -518,7 +465,7 @@ firstSketch = startSketchOn('XY')
   |> extrude(length = 6)
 
 // Remove the end face for the extrusion.
-shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
+shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
         let ExecTestResults {
             program, mut exec_ctxt, ..
@@ -614,5 +561,103 @@ startSketchOn('XY')
                 program: new_program.ast
             }
         );
+    }
+
+    // Removing the units settings using an annotation, when it was non-default
+    // units, with the exact same file should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_removed_unit_setting_using_annotation() {
+        let old_code = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let new_code = r#"
+startSketchOn('XY')
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: true,
+                program: new_program.ast
+            }
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_multi_file_no_changes_does_not_reexecute() {
+        let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+        let other_file = (
+            std::path::PathBuf::from("toBeImported.kcl"),
+            r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)"#
+                .to_string(),
+        );
+
+        let tmp_dir = std::env::temp_dir();
+        let tmp_dir = tmp_dir.join(uuid::Uuid::new_v4().to_string());
+
+        // Create a temporary file for each of the other files.
+        let tmp_file = tmp_dir.join(other_file.0);
+        std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
+        std::fs::write(tmp_file, other_file.1).unwrap();
+
+        let ExecTestResults { program, exec_ctxt, .. } =
+            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(result, CacheResult::NoAction(false));
     }
 }

@@ -1,41 +1,46 @@
+import os from 'node:os'
+import path from 'path'
 // Some of the following was taken from bits and pieces of the vite-typescript
 // template that ElectronJS provides.
+// @ts-ignore: TS1343
+import * as packageJSON from '@root/package.json'
+import type { Service } from 'bonjour-service'
+import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
-  app,
   BrowserWindow,
-  ipcMain,
-  dialog,
-  shell,
-  nativeTheme,
-  desktopCapturer,
-  systemPreferences,
   Menu,
+  app,
+  desktopCapturer,
+  dialog,
+  ipcMain,
+  nativeTheme,
   screen,
+  shell,
+  systemPreferences,
 } from 'electron'
-import path from 'path'
-import { Issuer } from 'openid-client'
-import { Bonjour, Service } from 'bonjour-service'
-// @ts-ignore: TS1343
-import * as kittycad from '@kittycad/lib/import'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
-import getCurrentProjectFile from 'lib/getCurrentProjectFile'
-import os from 'node:os'
-import { reportRejection } from 'lib/trap'
-import { ZOO_STUDIO_PROTOCOL } from 'lib/constants'
+import { Issuer } from 'openid-client'
+
 import {
   argvFromYargs,
   getPathOrUrlFromArgs,
   parseCLIArgs,
-} from './commandLineArgs'
-import * as packageJSON from '../package.json'
+} from '@src/commandLineArgs'
+import { initPromiseNode } from '@src/lang/wasmUtilsNode'
+import { ZOO_STUDIO_PROTOCOL } from '@src/lib/constants'
+import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
+import { reportRejection } from '@src/lib/trap'
 import {
   buildAndSetMenuForFallback,
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
-  enableMenu,
   disableMenu,
-} from './menu'
+  enableMenu,
+} from '@src/menu'
+
+// If we're on Windows, pull the local system TLS CAs in
+require('win-ca')
 
 let mainWindow: BrowserWindow | null = null
 
@@ -101,6 +106,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
 
   if (reuse) {
     newWindow = mainWindow
+    Menu.setApplicationMenu(null)
   }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()
@@ -277,6 +283,10 @@ ipcMain.handle('shell.openExternal', (event, data) => {
   return shell.openExternal(data)
 })
 
+ipcMain.handle('openInNewWindow', (event, data) => {
+  return createWindow(data)
+})
+
 ipcMain.handle(
   'take.screenshot',
   async (event, data: { width: number; height: number }) => {
@@ -364,15 +374,6 @@ ipcMain.handle('startDeviceFlow', async (_, host: string) => {
 
   // Return the user code so the app can display it.
   return handle.user_code
-})
-
-ipcMain.handle('kittycad', (event, data) => {
-  return data.access
-    .split('.')
-    .reduce(
-      (obj: any, prop: any) => obj[prop],
-      kittycad
-    )(data.args)
 })
 
 // Used to find other devices on the local network, e.g. 3D printers, CNC machines, etc.
@@ -509,10 +510,11 @@ app.on('ready', () => {
 const getProjectPathAtStartup = async (
   filePath?: string
 ): Promise<string | null> => {
+  await initPromiseNode
   // If we are in development mode, we don't want to load a project at
   // startup.
   // Since the args passed are always '.'
-  // aka Forge for yarn tron:start live dev or playwright tests, but not dev packaged apps
+  // aka Forge for npm run tron:start live dev or playwright tests, but not dev packaged apps
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL || IS_PLAYWRIGHT) {
     return null
   }

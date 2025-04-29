@@ -1,7 +1,9 @@
-import { Options, useHotkeys } from 'react-hotkeys-hook'
 import { useEffect } from 'react'
-import { codeManager } from './singletons'
-import { Platform } from './utils'
+import type { Options } from 'react-hotkeys-hook'
+import { useHotkeys } from 'react-hotkeys-hook'
+
+import { codeManager } from '@src/lib/singletons'
+import type { Platform } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
 // with hotkeys inside the editor.
@@ -58,6 +60,7 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     // Capitalize letters.  We want Ctrl+K, not Ctrl+k, since Shift should be
     // shown as a separate modifier.
     .split('+')
+    .map((word) => word.trim().toLocaleLowerCase())
     .map((word) => {
       if (word.length === 1 && LOWER_CASE_LETTER.test(word)) {
         return word.toUpperCase()

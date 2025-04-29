@@ -3,26 +3,130 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing car-wheel-assembly.kcl
 ---
 {
+  "backSpacing": {
+    "type": "Number",
+    "value": 6.38,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "bendRadius": {
+    "type": "Number",
+    "value": 1.6,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
   "brakeCaliper": {
     "type": "Module",
-    "value": 7
+    "value": 10
   },
   "c1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "c1"
   },
-  "carRotor": {
-    "type": "Module",
-    "value": 6
+  "caliperInnerEdgeRadius": {
+    "type": "Number",
+    "value": 0.12,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
   },
-  "carTire": {
+  "caliperOuterEdgeRadius": {
+    "type": "Number",
+    "value": 0.39,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "caliperPadLength": {
+    "type": "Number",
+    "value": 1.6,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "caliperThickness": {
+    "type": "Number",
+    "value": 0.39,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "caliperTolerance": {
+    "type": "Number",
+    "value": 0.05,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "carRotor": {
     "type": "Module",
     "value": 9
   },
+  "carTire": {
+    "type": "Module",
+    "value": 12
+  },
   "carWheel": {
     "type": "Module",
-    "value": 5
+    "value": 8
+  },
+  "drillAndSlotCount": {
+    "type": "Number",
+    "value": 5.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
   },
   "lugCount": {
     "type": "Number",
@@ -37,8 +141,370 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       }
     }
   },
+  "lugDiameter": {
+    "type": "Number",
+    "value": 24.0,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "lugHeadLength": {
+    "type": "Number",
+    "value": 12.0,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "lugHolePatternDia": {
+    "type": "Number",
+    "value": 3.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "lugLength": {
+    "type": "Number",
+    "value": 30.0,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
   "lugNut": {
     "type": "Module",
-    "value": 8
+    "value": 11
+  },
+  "lugSpacing": {
+    "type": "Number",
+    "value": 114.3,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "lugThreadDepth": {
+    "type": "Number",
+    "value": 17.3,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "lugThreadDiameter": {
+    "type": "Number",
+    "value": 10.2,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "offset": {
+    "type": "Number",
+    "value": -35.0,
+    "ty": {
+      "type": "Known",
+      "type": "Length",
+      "type": "Mm"
+    }
+  },
+  "rotorDiameter": {
+    "type": "Number",
+    "value": 12.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "rotorInnerDiameter": {
+    "type": "Number",
+    "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "rotorInnerDiameterThickness": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "rotorSinglePlateThickness": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "rotorTotalThickness": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spacerCount": {
+    "type": "Number",
+    "value": 16.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spacerDiameter": {
+    "type": "Number",
+    "value": 0.25,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spacerLength": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spacerPatternDiameter": {
+    "type": "Number",
+    "value": 11.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spokeAngle": {
+    "type": "Number",
+    "value": 0.02,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spokeCount": {
+    "type": "Number",
+    "value": 6.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spokeGap": {
+    "type": "Number",
+    "value": 0.2,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "spokeThickness": {
+    "type": "Number",
+    "value": 0.95,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireDepth": {
+    "type": "Number",
+    "value": 11.02,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireInnerDiameter": {
+    "type": "Number",
+    "value": 19.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireOuterDiameter": {
+    "type": "Number",
+    "value": 24.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireTreadDepth": {
+    "type": "Number",
+    "value": 0.39,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireTreadOffset": {
+    "type": "Number",
+    "value": 3.15,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "tireTreadWidth": {
+    "type": "Number",
+    "value": 0.39,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "wheelDiameter": {
+    "type": "Number",
+    "value": 19.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "wheelWidth": {
+    "type": "Number",
+    "value": 9.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "yAxisOffset": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
   }
 }

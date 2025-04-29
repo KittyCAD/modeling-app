@@ -1,21 +1,23 @@
-import { test, expect } from './zoo-test'
-import { secrets } from './secrets'
+import { spawn } from 'child_process'
+import path from 'path'
+import type { Models } from '@kittycad/lib'
+import { KCL_DEFAULT_LENGTH } from '@src/lib/constants'
+import fsp from 'fs/promises'
+import JSZip from 'jszip'
+
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import { secrets } from '@e2e/playwright/secrets'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import type { Paths } from '@e2e/playwright/test-utils'
 import {
-  Paths,
   doExport,
   getUtils,
+  headerMasks,
+  networkingMasks,
   settingsToToml,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { Models } from '@kittycad/lib'
-import fsp from 'fs/promises'
-import { spawn } from 'child_process'
-import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import JSZip from 'jszip'
-import path from 'path'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
-import { SceneFixture } from './fixtures/sceneFixture'
-import { CmdBarFixture } from './fixtures/cmdBarFixture'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.beforeEach(async ({ page, context }) => {
   // Make the user avatar image always 404
@@ -44,9 +46,8 @@ test.setTimeout(60_000)
 // up with another PR if we want this back.
 test(
   'exports of each format should work',
-  { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
+  { tag: ['@snapshot'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     if (!tronApp) {
       fail()
     }
@@ -66,33 +67,27 @@ totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn(-XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(length = baseHeight)
   |> xLine(length = baseLen)
-  |> angledLineToY({
+  |> angledLine(
         angle = topAng,
-        to = totalHeightHalf,
-      }, %, $seg04)
+        endAbsoluteY = totalHeightHalf,
+        tag = $seg04,
+     )
   |> xLine(endAbsolute = totalLen, tag = $seg03)
   |> yLine(length = -armThick, tag = $seg01)
-  |> angledLineThatIntersects({
-        angle = turns::HALF_TURN,
-        offset = -armThick,
-        intersectTag = seg04
-      }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, turns::ZERO], %)
-  |> angledLineToY({
+  |> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg04)
+  |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
+  |> angledLine(
         angle = -bottomAng,
-        to = -totalHeightHalf - armThick,
-      }, %, $seg02)
+        endAbsoluteY = -totalHeightHalf - armThick,
+        tag = $seg02,
+     )
   |> xLine(length = endAbsolute = segEndX(seg03) + 0)
   |> yLine(length = -segLen(seg01, %))
-  |> angledLineThatIntersects({
-        angle = turns::HALF_TURN,
-        offset = -armThick,
-        intersectTag = seg02
-      }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg02)
+  |> angledLine(angle = segAng(seg02, %) + 180, endAbsoluteY = -baseHeight)
   |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`
@@ -102,7 +97,6 @@ part001 = startSketchOn(-XZ)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     const axisDirectionPair: Models['AxisDirectionPair_type'] = {
@@ -323,7 +317,7 @@ const extrudeDefaultPlane = async (
   plane: string
 ) => {
   const code = `part001 = startSketchOn(${plane})
-  |> startProfileAt([7.00, 4.40], %)
+  |> startProfile(at = [7.00, 4.40])
   |> line(end = [6.60, -0.20])
   |> line(end = [2.80, 5.00])
   |> line(end = [-5.60, 4.40])
@@ -345,10 +339,12 @@ const extrudeDefaultPlane = async (
           app: {
             onboarding_status: 'dismissed',
             show_debug_panel: true,
-            theme: 'dark',
+            appearance: {
+              theme: 'dark',
+            },
           },
           project: {
-            default_project_name: 'project-$nnn',
+            default_project_name: 'untitled',
           },
           text_editor: {
             text_wrapping: true,
@@ -366,12 +362,11 @@ const extrudeDefaultPlane = async (
   await page.setViewportSize({ width: 1200, height: 500 })
 
   await u.waitForAuthSkipAppStart()
-  await scene.connectionEstablished()
   await scene.settled(cmdBar)
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
-    mask: [page.getByTestId('model-state-indicator')],
+    mask: networkingMasks(page),
   })
   await u.openKclCodePanel()
 }
@@ -380,9 +375,6 @@ test.describe(
   'extrude on default planes should be stable',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     test('XY', async ({ page, context, cmdBar, scene }) => {
       await extrudeDefaultPlane(context, page, cmdBar, scene, 'XY')
     })
@@ -418,8 +410,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
-
     const startXPx = 600
     const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
       startXPx + PUR * 30,
@@ -452,7 +442,7 @@ test(
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-    code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+    code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
     await expect(page.locator('.cm-content')).toHaveText(code)
     await page.waitForTimeout(100)
 
@@ -461,7 +451,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
 
     const lineEndClick = () =>
@@ -470,12 +460,10 @@ test(
     await page.waitForTimeout(500)
 
     code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
-    await page
-      .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-      .click()
+    await toolbar.selectTangentialArc()
 
     // click on the end of the profile to continue it
     await page.waitForTimeout(500)
@@ -490,7 +478,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
     await endOfTangentClk()
 
@@ -500,7 +488,7 @@ test(
     await threePointArcMidPointMv()
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
     await threePointArcMidPointClk()
     await page.waitForTimeout(100)
@@ -509,7 +497,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
 
     await threePointArcEndPointClk()
@@ -529,7 +517,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
     await arcEndClk()
   }
@@ -539,16 +527,11 @@ test(
   'Draft rectangles should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
     await u.waitForAuthSkipAppStart()
-
-    await scene.connectionEstablished()
 
     // click on "Start Sketch" button
     await u.doAndWaitForImageDiff(
@@ -581,7 +564,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   }
 )
@@ -594,8 +577,6 @@ test(
     const PUR = 400 / 37.5 //pixeltoUnitRatio
 
     await u.waitForAuthSkipAppStart()
-
-    await scene.connectionEstablished()
 
     await u.doAndWaitForImageDiff(
       () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -625,10 +606,10 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [14.44, -2.44], radius = 1)`
+      `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
     )
   }
 )
@@ -637,17 +618,12 @@ test.describe(
   'Client side scene scale should match engine scale',
   { tag: '@snapshot' },
   () => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
-    test('Inch scale', async ({ page, cmdBar, scene }) => {
+    test('Inch scale', async ({ page, cmdBar, scene, toolbar }) => {
       const u = await getUtils(page)
       await page.setViewportSize({ width: 1200, height: 500 })
       const PUR = 400 / 37.5 //pixeltoUnitRatio
 
       await u.waitForAuthSkipAppStart()
-
-      await scene.connectionEstablished()
 
       await u.doAndWaitForImageDiff(
         () => page.getByRole('button', { name: 'Start Sketch' }).click(),
@@ -665,7 +641,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
+      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -673,12 +649,10 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(length = 7.25)`
+  |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.selectTangentialArc()
       await page.waitForTimeout(100)
 
       // click to continue profile
@@ -688,19 +662,18 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([21.7, -2.44], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
       // click tangential arc tool again to unequip it
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      // it will be available directly in the toolbar since it was last equipped
+      await toolbar.tangentialArcBtn.click()
       await page.waitForTimeout(100)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       })
 
       await u.doAndWaitForImageDiff(
@@ -713,11 +686,17 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: [page.getByTestId('model-state-indicator')],
+        mask: networkingMasks(page),
       })
     })
 
-    test('Millimeter scale', async ({ page, context, cmdBar, scene }) => {
+    test('Millimeter scale', async ({
+      page,
+      context,
+      cmdBar,
+      scene,
+      toolbar,
+    }) => {
       await context.addInitScript(
         async ({ settingsKey, settings }) => {
           localStorage.setItem(settingsKey, settings)
@@ -741,7 +720,6 @@ test.describe(
 
       await u.waitForAuthSkipAppStart()
 
-      await scene.connectionEstablished()
       await scene.settled(cmdBar)
 
       await u.doAndWaitForImageDiff(
@@ -760,7 +738,7 @@ test.describe(
 
       const startXPx = 600
       await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
-      code += `profile001 = startProfileAt([182.59, -246.32], sketch001)`
+      code += `profile001 = startProfile(sketch001, at = [182.59, -246.32])`
       await expect(u.codeLocator).toHaveText(code)
       await page.waitForTimeout(100)
 
@@ -771,9 +749,7 @@ test.describe(
   |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.selectTangentialArc()
       await page.waitForTimeout(100)
 
       // click to continue profile
@@ -783,17 +759,16 @@ test.describe(
       await page.mouse.click(startXPx + PUR * 30, 500 - PUR * 20)
 
       code += `
-  |> tangentialArcTo([551.2, -62.01], %)`
+  |> tangentialArc(endAbsolute = [551.2, -62.01])`
       await expect(u.codeLocator).toHaveText(code)
 
-      await page
-        .getByRole('button', { name: 'arc Tangential Arc', exact: true })
-        .click()
+      await toolbar.tangentialArcBtn.click()
       await page.waitForTimeout(100)
 
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: networkingMasks(page),
       })
 
       // exit sketch
@@ -807,6 +782,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
+        mask: networkingMasks(page),
       })
     })
   }
@@ -816,21 +792,18 @@ test(
   'Sketch on face with none z-up',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async (KCL_DEFAULT_LENGTH) => {
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(-XZ)
-  |> startProfileAt([1.4, 2.47], %)
+  |> startProfile(at = [1.4, 2.47])
   |> line(end = [9.31, 10.55], tag = $seg01)
   |> line(end = [11.91, -10.42])
   |> close()
   |> extrude(length = ${KCL_DEFAULT_LENGTH})
-part002 = startSketchOn(part001, seg01)
-  |> startProfileAt([8, 8], %)
+part002 = startSketchOn(part001, face = seg01)
+  |> startProfile(at = [8, 8])
   |> line(end = [4.68, 3.05])
   |> line(end = [0, -7.79])
   |> close()
@@ -843,7 +816,6 @@ part002 = startSketchOn(part001, seg01)
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -869,7 +841,7 @@ part002 = startSketchOn(part001, seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   }
 )
@@ -878,15 +850,12 @@ test(
   'Zoom to fit on load - solid 2d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -899,7 +868,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -909,7 +877,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   }
 )
@@ -918,15 +886,12 @@ test(
   'Zoom to fit on load - solid 3d',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -940,7 +905,6 @@ test(
 
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     // Wait for the second extrusion to appear
@@ -950,7 +914,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   }
 )
@@ -963,17 +927,11 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   }) => {
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1021,24 +979,18 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 
   test('Grid turned off', async ({ page, cmdBar, scene }) => {
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1048,7 +1000,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 
@@ -1073,17 +1025,11 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     const u = await getUtils(page)
     const stream = page.getByTestId('stream')
-    const mask = [
-      page.locator('#app-header'),
-      page.locator('#sidebar-top-ribbon'),
-      page.locator('#sidebar-bottom-ribbon'),
-    ]
 
     await page.setViewportSize({ width: 1200, height: 500 })
     await page.goto('/')
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await u.closeKclCodePanel()
@@ -1093,19 +1039,18 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask,
+      mask: [...headerMasks(page), ...networkingMasks(page)],
     })
   })
 })
 
 test('theme persists', async ({ page, context }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
       `part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -1162,6 +1107,7 @@ test('theme persists', async ({ page, context }) => {
 
   await expect(page, 'expect screenshot to have light theme').toHaveScreenshot({
     maxDiffPixels: 100,
+    mask: networkingMasks(page),
   })
 })
 
@@ -1175,20 +1121,16 @@ test.describe('code color goober', { tag: '@snapshot' }, () => {
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
-  |> startProfileAt([0.05, 0.05], %)
+  |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc({ offset = 90, radius = 5 }, %)
+  |> tangentialArc(angle = 90, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc({ offset = -90, radius = 5 }, %)
+  |> tangentialArc(angle = -90, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
-  |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> startProfile(at = [2, 0])
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -1202,12 +1144,11 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   })
 
@@ -1225,20 +1166,16 @@ sweepSketch = startSketchOn(XY)
 
 // Create a path for the sweep.
 sweepPath = startSketchOn(XZ)
-  |> startProfileAt([0.05, 0.05], %)
+  |> startProfile(at = [0.05, 0.05])
   |> line(end = [0, 7])
-  |> tangentialArc({ offset = 90, radius = 5 }, %)
+  |> tangentialArc(angle = 90, radius = 5)
   |> line(end = [-3, 0])
-  |> tangentialArc({ offset = -90, radius = 5 }, %)
+  |> tangentialArc(angle = -90, radius = 5)
   |> line(end = [0, 7])
 
 sweepSketch = startSketchOn(XY)
-  |> startProfileAt([2, 0], %)
-  |> arc({
-       angleEnd = 360,
-       angleStart = 0,
-       radius = 2
-     }, %)
+  |> startProfile(at = [2, 0])
+  |> arc(angleStart = 0, angleEnd = 360, radius = 2)
   |> sweep(path = sweepPath)
   |> appearance(
        color = "#bb00ff",
@@ -1252,7 +1189,6 @@ sweepSketch = startSketchOn(XY)
     await page.setViewportSize({ width: 1200, height: 1000 })
     await u.waitForAuthSkipAppStart()
 
-    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     await expect(page.locator('.cm-css-color-picker-wrapper')).toBeVisible()
@@ -1265,7 +1201,7 @@ sweepSketch = startSketchOn(XY)
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [page.getByTestId('model-state-indicator')],
+      mask: networkingMasks(page),
     })
   })
 })

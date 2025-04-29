@@ -1,14 +1,19 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{
+        CodeActionKind, CodeActionOrCommand, Diagnostic, SemanticTokenModifier, SemanticTokenType, TextEdit,
+        WorkspaceEdit,
+    },
     LanguageServer,
 };
 
 use crate::{
+    errors::{LspSuggestion, Suggestion},
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
+    SourceRange,
 };
 
 #[track_caller]
@@ -727,7 +732,7 @@ async fn test_kcl_lsp_completions_tags() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([11.19, 28.35], %)
+  |> startProfile(at = [11.19, 28.35])
   |> line(end = [28.67, -13.25], tag = $here)
   |> line(end = [-4.12, -22.81])
   |> line(end = [-33.24, 14.55])
@@ -897,7 +902,7 @@ fn bar(x: string): string {
 bar("an arg")
 
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
 "#
@@ -945,7 +950,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -1219,7 +1224,7 @@ async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0])
@@ -1521,7 +1526,7 @@ async fn test_kcl_lsp_document_symbol_tag() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([11.19, 28.35], %)
+  |> startProfile(at = [11.19, 28.35])
   |> line(end = [28.67, -13.25], tag = $here)
   |> line(end = [-4.12, -22.81])
   |> line(end = [-33.24, 14.55])
@@ -1567,7 +1572,7 @@ async fn test_kcl_lsp_formatting() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"startSketchOn(XY)
-                    |> startProfileAt([0,0], %)"#
+                    |> startProfile(at = [0,0])"#
                     .to_string(),
             },
         })
@@ -1598,7 +1603,7 @@ async fn test_kcl_lsp_formatting() {
     assert_eq!(
         formatting[0].new_text,
         r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)"#
+    |> startProfile(at = [0, 0])"#
     );
 }
 
@@ -1624,7 +1629,7 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
   |> line(end = [0, thickness + sphereDia / 2])
   |> line(end = [overHangLength, 0])
   |> line(end = [0, -thickness])
@@ -1634,22 +1639,15 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
-       0.05 + insideDia / 2 + thickness,
-       0 - 0.05
-     ], %)
+  |> startProfile(at = [0.05 + insideDia / 2 + thickness, 0 - 0.05])
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis: 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1660,10 +1658,7 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
-       insideDia / 2 + thickness + sphereDia,
-       0
-     ], %)
+  |> startProfile(at = [insideDia / 2 + thickness + sphereDia, 0])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
   |> line(end = [0, thickness])
@@ -1673,7 +1668,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis: 'y' }, %)"#
+  |> revolve({ axis = Y }, %)"#
                     .to_string(),
             },
         })
@@ -1706,8 +1701,8 @@ outsideRevolve = startSketchOn(XZ)
         tower_lsp::lsp_types::Range {
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
-                line: 60,
-                character: 30
+                line: 50,
+                character: 29
             }
         }
     );
@@ -1724,7 +1719,7 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
   |> line(end = [0, thickness + sphereDia / 2])
   |> line(end = [overHangLength, 0])
   |> line(end = [0, -thickness])
@@ -1734,22 +1729,18 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve({ axis = Y }, %)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
-     ], %)
+     ])
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start = 0,
-       angle_end = -180,
-       radius = sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = 'x' }, %)
+  |> revolve({ axis = X }, %)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1760,10 +1751,10 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        insideDia / 2 + thickness + sphereDia,
        0
-     ], %)
+     ])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
   |> line(end = [0, thickness])
@@ -1773,7 +1764,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = 'y' }, %)"#
+  |> revolve({ axis = Y }, %)"#
     );
 }
 
@@ -2010,7 +2001,7 @@ async fn test_copilot_lsp_completions_raw() {
         .get_completions(
             "kcl".to_string(),
             r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   "#
             .to_string(),
             r#"  |> close()
@@ -2029,7 +2020,7 @@ async fn test_copilot_lsp_completions_raw() {
         .get_completions(
             "kcl".to_string(),
             r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   "#
             .to_string(),
             r#"  |> close()
@@ -2069,7 +2060,7 @@ async fn test_copilot_lsp_completions() {
             position: crate::lsp::copilot::types::CopilotPosition { line: 3, character: 3 },
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   
   |> close()
   |> extrude(length = 10)
@@ -2324,80 +2315,6 @@ async fn kcl_test_kcl_lsp_on_change_update_memory() {
     server.executor_ctx().await.clone().unwrap().close().await;
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 10)]
-async fn kcl_test_kcl_lsp_update_units() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let same_text = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
-    |> line(end = [0, scale])
-    |> line(end = [scale, 0])
-    |> line(end = [0, -scale])
-
-  return sg
-}
-part001 = cube([0,0], 20)
-    |> close()
-    |> extrude(length = 20)"#
-        .to_string();
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: same_text.clone(),
-            },
-        })
-        .await;
-
-    // Get the tokens.
-    let tokens = server.token_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(tokens.as_slice().len(), 123);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert_eq!(ast.ast.body.len(), 2);
-
-    // Send change file.
-    server
-        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
-            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                version: 1,
-            },
-            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
-                range: None,
-                range_length: None,
-                text: same_text.clone(),
-            }],
-        })
-        .await;
-
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::M,
-            text: same_text.clone(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::M);
-
-    server.executor_ctx().await.clone().unwrap().close().await;
-}
-
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_kcl_lsp_empty_file_execute_ok() {
     let server = kcl_lsp_server(true).await.unwrap();
@@ -2467,7 +2384,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2484,11 +2401,11 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     // TODO warnings being stomped by execution errors?
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 
     // Update the text.
     let new_text = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2528,7 +2445,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2573,7 +2490,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2661,7 +2578,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2734,150 +2651,11 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_diagnostics_reexecute_on_unit_change() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 3.14)"#;
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: code.to_string(),
-            },
-        })
-        .await;
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Add some fake diagnostics.
-    server.diagnostics_map.insert(
-        "file:///test.kcl".to_string(),
-        vec![tower_lsp::lsp_types::Diagnostic {
-            range: tower_lsp::lsp_types::Range {
-                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-                end: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-            },
-            message: "fake diagnostic".to_string(),
-            severity: Some(tower_lsp::lsp_types::DiagnosticSeverity::ERROR),
-            code: None,
-            source: None,
-            related_information: None,
-            tags: None,
-            data: None,
-            code_description: None,
-        }],
-    );
-    // Assure we have one diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units to the _same_ units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    server.executor_ctx().await.clone().unwrap().close().await;
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_kcl_lsp_code_and_ast_units_unchanged_but_has_memory_reexecute_on_unit_change() {
-    let server = kcl_lsp_server(true).await.unwrap();
-
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()
-  |> extrude(length = 3.14)"#;
-
-    // Send open file.
-    server
-        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
-            text_document: tower_lsp::lsp_types::TextDocumentItem {
-                uri: "file:///test.kcl".try_into().unwrap(),
-                language_id: "kcl".to_string(),
-                version: 1,
-                text: code.to_string(),
-            },
-        })
-        .await;
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Update the units to the _same_ units.
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
-    // Get the ast.
-    let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
-    assert!(ast.ast != Node::<Program>::default());
-
-    // Assure we have no diagnostics.
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    server.executor_ctx().await.clone().unwrap().close().await;
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_kcl_lsp_cant_execute_set() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2902,23 +2680,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
 
     // Assure we have no diagnostics.
     assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 0);
-
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -2936,23 +2697,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
         .unwrap();
     assert_eq!(server.can_execute().await, false);
 
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-
     let mut default_hashed = Node::<Program>::default();
     default_hashed.compute_digest();
 
@@ -2969,23 +2713,6 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
         .await
         .unwrap();
     assert_eq!(server.can_execute().await, true);
-
-    // Update the units to the _same_ units.
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
-    server
-        .update_units(crate::lsp::kcl::custom_notifications::UpdateUnitsParams {
-            text_document: crate::lsp::kcl::custom_notifications::TextDocumentIdentifier {
-                uri: "file:///test.kcl".try_into().unwrap(),
-            },
-            units: crate::settings::types::UnitLength::Mm,
-            text: code.to_string(),
-        })
-        .await
-        .unwrap();
-
-    let units = server.executor_ctx.read().await.clone().unwrap().settings.units;
-    assert_eq!(units, crate::settings::types::UnitLength::Mm);
 
     // Get the ast.
     let ast = server.ast_map.get("file:///test.kcl").unwrap().clone();
@@ -3009,7 +2736,7 @@ async fn test_kcl_lsp_folding() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"startSketchOn(XY)
-                    |> startProfileAt([0,0], %)"#
+                    |> startProfile(at = [0,0])"#
                     .to_string(),
             },
         })
@@ -3048,7 +2775,7 @@ async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagno
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3103,7 +2830,7 @@ async fn kcl_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_r
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3157,7 +2884,7 @@ async fn kcl_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_h
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3212,7 +2939,7 @@ async fn kcl_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexec
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3273,7 +3000,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_new_lint() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3312,7 +3039,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3342,7 +3069,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3381,7 +3108,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> ^^^^startProfileAt([-10, -10], %)
+  |> ^^^^startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3411,7 +3138,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3458,7 +3185,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> ^^^^startProfileAt([-10, -10], %)
+  |> ^^^^startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3496,7 +3223,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3548,7 +3275,7 @@ part001 = startSketchOn(XY)
                 range_length: None,
                 text: r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0], tag = $seg01)
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0])
@@ -3681,4 +3408,275 @@ async fn kcl_test_kcl_lsp_multi_file_error() {
     }
 
     server.executor_ctx().await.clone().unwrap().close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
+    let server = kcl_lsp_server(true).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "untitled:Untitled-1".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn(XY)
+foo = 42
+foo
+
+fn bar(x: string): string {
+  return x
+}
+
+bar("an arg")
+
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> line(end = [0, 10])
+"#
+                .to_string(),
+            },
+        })
+        .await;
+
+    // Std lib call
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("startSketchOn"));
+            assert!(value.contains(": SketchSurface"));
+            assert!(value.contains("Start a new 2-dimensional sketch on a specific"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable use
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 2, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("foo: number(default units) = 42"));
+        }
+        _ => unreachable!(),
+    }
+
+    // User-defined function call.
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 8, character: 1 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("bar(x: string): string"));
+        }
+        _ => unreachable!(),
+    }
+
+    // Variable inside a function
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 5, character: 9 },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("x: string"));
+        }
+        _ => unreachable!(),
+    }
+
+    // std function KwArg
+    let hover = server
+        .hover(tower_lsp::lsp_types::HoverParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "untitled:Untitled-1".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position {
+                    line: 12,
+                    character: 11,
+                },
+            },
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    match hover.unwrap().contents {
+        tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
+            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
+        }
+        _ => unreachable!(),
+    }
+
+    server.executor_ctx().await.clone().unwrap().close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn({
+    origin = { x = 0, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+})
+|> startProfile(at = [0, 0])"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics else {
+        panic!("Expected diagnostics");
+    };
+
+    let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics else {
+        panic!("Expected full diagnostics");
+    };
+    assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0].message,
+        "offsetPlane should be used to define a new plane offset from the origin"
+    );
+
+    // Make sure we get the suggestion data.
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0]
+            .data
+            .clone()
+            .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
+        Some((
+            Suggestion {
+                insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                source_range: SourceRange::new(14, 133, Default::default()),
+                title: "use offsetPlane instead".to_string(),
+            },
+            tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            }
+        ))
+    );
+
+    let diagnostic = diagnostics.full_document_diagnostic_report.items[0].clone();
+
+    // Run a code action.
+    let code_action = server
+        .code_action(tower_lsp::lsp_types::CodeActionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            },
+            context: tower_lsp::lsp_types::CodeActionContext {
+                diagnostics: vec![diagnostic.clone()],
+                only: None,
+                trigger_kind: Default::default(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    assert!(code_action.is_some());
+
+    let code_action = code_action.unwrap();
+
+    assert_eq!(code_action.len(), 1);
+
+    assert_eq!(
+        code_action[0],
+        CodeActionOrCommand::CodeAction(tower_lsp::lsp_types::CodeAction {
+            title: "use offsetPlane instead".to_string(),
+            kind: Some(CodeActionKind::QUICKFIX),
+            diagnostics: Some(vec![diagnostic]),
+            edit: Some(WorkspaceEdit {
+                changes: Some(HashMap::from_iter(vec![(
+                    "file:///testlint.kcl".try_into().unwrap(),
+                    vec![TextEdit {
+                        range: tower_lsp::lsp_types::Range {
+                            start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                            end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+                        },
+                        new_text: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                    }],
+                )])),
+                document_changes: None,
+                change_annotations: None,
+            }),
+            command: None,
+            is_preferred: Some(true),
+            disabled: None,
+            data: None,
+        })
+    );
 }

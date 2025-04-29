@@ -8,10 +8,10 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "a-parametric-bearing-pillow-block/main.kcl",
-    "multipleFiles": false,
-    "title": "A Parametric Bearing Pillow Block",
-    "description": "A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads."
+    "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
+    "multipleFiles": true,
+    "title": "PC Fan",
+    "description": "A small axial fan, used to push or draw airflow over components to remove excess heat"
   },
   {
     "file": "main.kcl",
@@ -26,6 +26,13 @@
     "multipleFiles": true,
     "title": "Bench",
     "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
+    "multipleFiles": false,
+    "title": "Bottle",
+    "description": "A simple bottle with a hollow, watertight interior"
   },
   {
     "file": "main.kcl",
@@ -59,8 +66,8 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "dodecahedron/main.kcl",
     "multipleFiles": false,
-    "title": "Hollow Dodecahedron",
-    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards."
+    "title": "Dodecahedron",
+    "description": "A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects."
   },
   {
     "file": "main.kcl",
@@ -157,7 +164,7 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
-    "title": "Hex nut",
+    "title": "Hex Nut",
     "description": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware."
   },
   {
@@ -211,10 +218,17 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "parametric-bearing-pillow-block/main.kcl",
+    "multipleFiles": false,
+    "title": "Parametric Bearing Pillow Block",
+    "description": "A bearing pillow block, also known as a plummer block or pillow block bearing, is a pedestal used to provide support for a rotating shaft with the help of compatible bearings and various accessories. Housing a bearing, the pillow block provides a secure and stable foundation that allows the shaft to rotate smoothly within its machinery setup. These components are essential in a wide range of mechanical systems and machinery, playing a key role in reducing friction and supporting radial and axial loads."
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe/main.kcl",
     "multipleFiles": false,
     "title": "Pipe",
-    "description": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow."
+    "description": "Piping for the pipe flange assembly"
   },
   {
     "file": "main.kcl",
@@ -248,7 +262,7 @@
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "router-template-slate/main.kcl",
     "multipleFiles": false,
-    "title": "Router template for a slate",
+    "title": "Router Template for a Slate",
     "description": "A guide for routing a slate for a cross bar."
   },
   {

@@ -118,6 +118,30 @@ impl CodeRef {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
+pub struct CompositeSolid {
+    pub id: ArtifactId,
+    pub sub_type: CompositeSolidSubType,
+    /// Constituent solids of the composite solid.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub solid_ids: Vec<ArtifactId>,
+    /// Tool solids used for asymmetric operations like subtract.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tool_ids: Vec<ArtifactId>,
+    pub code_ref: CodeRef,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
+pub enum CompositeSolidSubType {
+    Intersect,
+    Subtract,
+    Union,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export_to = "Artifact.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct Plane {
     pub id: ArtifactId,
     pub path_ids: Vec<ArtifactId>,
@@ -151,6 +175,8 @@ pub struct Segment {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub edge_cut_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 /// A sweep is a more generic term for extrude, revolve, loft, and sweep.
@@ -253,6 +279,8 @@ pub struct SweepEdge {
     pub sub_type: SweepEdgeSubType,
     pub seg_id: ArtifactId,
     pub sweep_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub common_surface_ids: Vec<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -318,6 +346,7 @@ pub struct Helix {
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
+    CompositeSolid(CompositeSolid),
     Plane(Plane),
     Path(Path),
     Segment(Segment),
@@ -336,6 +365,7 @@ pub enum Artifact {
 impl Artifact {
     pub(crate) fn id(&self) -> ArtifactId {
         match self {
+            Artifact::CompositeSolid(a) => a.id,
             Artifact::Plane(a) => a.id,
             Artifact::Path(a) => a.id,
             Artifact::Segment(a) => a.id,
@@ -355,6 +385,7 @@ impl Artifact {
     #[expect(dead_code)]
     pub(crate) fn code_ref(&self) -> Option<&CodeRef> {
         match self {
+            Artifact::CompositeSolid(a) => Some(&a.code_ref),
             Artifact::Plane(a) => Some(&a.code_ref),
             Artifact::Path(a) => Some(&a.code_ref),
             Artifact::Segment(a) => Some(&a.code_ref),
@@ -375,6 +406,7 @@ impl Artifact {
     /// type, return the new artifact which should be used as a replacement.
     fn merge(&mut self, new: Artifact) -> Option<Artifact> {
         match self {
+            Artifact::CompositeSolid(a) => a.merge(new),
             Artifact::Plane(a) => a.merge(new),
             Artifact::Path(a) => a.merge(new),
             Artifact::Segment(a) => a.merge(new),
@@ -389,6 +421,18 @@ impl Artifact {
             Artifact::EdgeCutEdge(_) => Some(new),
             Artifact::Helix(_) => Some(new),
         }
+    }
+}
+
+impl CompositeSolid {
+    fn merge(&mut self, new: Artifact) -> Option<Artifact> {
+        let Artifact::CompositeSolid(new) = new else {
+            return Some(new);
+        };
+        merge_ids(&mut self.solid_ids, new.solid_ids);
+        merge_ids(&mut self.tool_ids, new.tool_ids);
+
+        None
     }
 }
 
@@ -424,6 +468,7 @@ impl Segment {
         merge_opt_id(&mut self.surface_id, new.surface_id);
         merge_ids(&mut self.edge_ids, new.edge_ids);
         merge_opt_id(&mut self.edge_cut_id, new.edge_cut_id);
+        merge_ids(&mut self.common_surface_ids, new.common_surface_ids);
 
         None
     }
@@ -752,6 +797,7 @@ fn artifacts_to_update(
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
                 code_ref: CodeRef { range, path_to_node },
+                common_surface_ids: Vec::new(),
             }));
             let path = artifacts.get(&path_id);
             if let Some(Artifact::Path(path)) = path {
@@ -999,6 +1045,7 @@ fn artifacts_to_update(
                 sub_type,
                 seg_id: edge_id,
                 sweep_id: sweep.id,
+                common_surface_ids: Vec::new(),
             }));
             let mut new_segment = segment.clone();
             new_segment.edge_ids = vec![response_edge_id];
@@ -1006,6 +1053,31 @@ fn artifacts_to_update(
             let mut new_sweep = sweep.clone();
             new_sweep.edge_ids = vec![response_edge_id];
             return_arr.push(Artifact::Sweep(new_sweep));
+            return Ok(return_arr);
+        }
+        ModelingCmd::Solid3dGetAllEdgeFaces(kcmc::Solid3dGetAllEdgeFaces { edge_id, .. }) => {
+            let OkModelingCmdResponse::Solid3dGetAllEdgeFaces(faces) = response else {
+                return Ok(Vec::new());
+            };
+            let edge_id = ArtifactId::new(*edge_id);
+            let Some(artifact) = artifacts.get(&edge_id) else {
+                return Ok(Vec::new());
+            };
+            let mut return_arr = Vec::new();
+            match artifact {
+                Artifact::Segment(segment) => {
+                    let mut new_segment = segment.clone();
+                    new_segment.common_surface_ids = faces.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                    return_arr.push(Artifact::Segment(new_segment));
+                }
+                Artifact::SweepEdge(sweep_edge) => {
+                    let mut new_sweep_edge = sweep_edge.clone();
+                    new_sweep_edge.common_surface_ids = faces.faces.iter().map(|face| ArtifactId::new(*face)).collect();
+                    return_arr.push(Artifact::SweepEdge(new_sweep_edge));
+                }
+                _ => {}
+            };
+
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
@@ -1045,6 +1117,89 @@ fn artifacts_to_update(
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
+            return Ok(return_arr);
+        }
+        ModelingCmd::BooleanIntersection(_) | ModelingCmd::BooleanSubtract(_) | ModelingCmd::BooleanUnion(_) => {
+            let (sub_type, solid_ids, tool_ids) = match cmd {
+                ModelingCmd::BooleanIntersection(intersection) => {
+                    let solid_ids = intersection
+                        .solid_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Intersect, solid_ids, Vec::new())
+                }
+                ModelingCmd::BooleanSubtract(subtract) => {
+                    let solid_ids = subtract
+                        .target_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    let tool_ids = subtract
+                        .tool_ids
+                        .iter()
+                        .copied()
+                        .map(ArtifactId::new)
+                        .collect::<Vec<_>>();
+                    (CompositeSolidSubType::Subtract, solid_ids, tool_ids)
+                }
+                ModelingCmd::BooleanUnion(union) => {
+                    let solid_ids = union.solid_ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>();
+                    (CompositeSolidSubType::Union, solid_ids, Vec::new())
+                }
+                _ => unreachable!(),
+            };
+
+            let mut new_solid_ids = vec![id];
+
+            // Make sure we don't ever create a duplicate ID since merge_ids
+            // can't handle it.
+            let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
+
+            match response {
+                OkModelingCmdResponse::BooleanIntersection(intersection) => intersection
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanSubtract(subtract) => subtract
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                OkModelingCmdResponse::BooleanUnion(union) => union
+                    .extra_solid_ids
+                    .iter()
+                    .copied()
+                    .map(ArtifactId::new)
+                    .filter(not_cmd_id)
+                    .for_each(|id| new_solid_ids.push(id)),
+                _ => {}
+            }
+            let return_arr = new_solid_ids
+                .into_iter()
+                .map(|solid_id| {
+                    Artifact::CompositeSolid(CompositeSolid {
+                        id: solid_id,
+                        sub_type,
+                        solid_ids: solid_ids.clone(),
+                        tool_ids: tool_ids.clone(),
+                        code_ref: CodeRef {
+                            range,
+                            path_to_node: path_to_node.clone(),
+                        },
+                    })
+                })
+                .collect::<Vec<_>>();
+
+            // TODO: Should we add the reverse graph edges?
+
             return Ok(return_arr);
         }
         _ => {}

@@ -1,30 +1,38 @@
-import type { IndexLoaderData } from 'lib/types'
-import { PATHS } from 'lib/paths'
-import { ActionButton } from './ActionButton'
-import Tooltip from './Tooltip'
-import { Dispatch, useCallback, useRef, useState } from 'react'
-import { useNavigate, useRouteLoaderData } from 'react-router-dom'
-import { Disclosure } from '@headlessui/react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronRight, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useFileContext } from 'hooks/useFileContext'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { Disclosure } from '@headlessui/react'
+import type { Dispatch } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
+
+import { ActionButton } from '@src/components/ActionButton'
+import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { useLspContext } from '@src/components/LspProvider'
+import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import Tooltip from '@src/components/Tooltip'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import usePlatform from '@src/hooks/usePlatform'
+import { useKclContext } from '@src/lang/KclProvider'
+import type { KCLError } from '@src/lang/errors'
+import { kclErrorsByFilename } from '@src/lang/errors'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
+import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { sortFilesAndDirectories } from '@src/lib/desktopFS'
+import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { PATHS } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
+import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+
+import { ToastInsert } from '@src/components/ToastInsert'
+import { commandBarActor } from '@src/lib/singletons'
+import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
-import { sortFilesAndDirectories } from 'lib/desktopFS'
-import { FILE_EXT } from 'lib/constants'
-import { CustomIcon } from './CustomIcon'
-import { codeManager, kclManager } from 'lib/singletons'
-import { useLspContext } from './LspProvider'
-import useHotkeyWrapper from 'lib/hotkeyWrapper'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { DeleteConfirmationDialog } from './ProjectCard/DeleteProjectDialog'
-import { ContextMenu, ContextMenuItem } from './ContextMenu'
-import usePlatform from 'hooks/usePlatform'
-import { FileEntry } from 'lib/project'
-import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
-import { normalizeLineEndings } from 'lib/codeEditor'
-import { reportRejection } from 'lib/trap'
-import { useKclContext } from 'lang/KclProvider'
-import { kclErrorsByFilename, KCLError } from 'lang/errors'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -156,6 +164,7 @@ const FileTreeItem = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
   level = 0,
   treeSelection,
@@ -176,6 +185,7 @@ const FileTreeItem = ({
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   level?: number
   treeSelection: FileEntry | undefined
@@ -205,10 +215,25 @@ const FileTreeItem = ({
         return
       }
 
+      // TODO: make this not just name based but sub path instead
+      const isImportedInCurrentFile = kclManager.ast.body.some(
+        (n) =>
+          n.type === 'ImportStatement' &&
+          ((n.path.type === 'Kcl' &&
+            n.path.filename.includes(fileOrDir.name)) ||
+            (n.path.type === 'Foreign' && n.path.path.includes(fileOrDir.name)))
+      )
+
       if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
+      } else if (isImportedInCurrentFile && eventType === 'change') {
+        await rustContext.clearSceneAndBustCache(
+          { settings: await jsAppSettings() },
+          codeManager?.currentFilePath || undefined
+        )
+        await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
     },
@@ -260,16 +285,26 @@ const FileTreeItem = ({
     if (fileOrDir.children !== null) return // Don't open directories
 
     if (fileOrDir.name?.endsWith(FILE_EXT) === false && project?.path) {
-      // Import non-kcl files
-      // We want to update both the state and editor here.
-      codeManager.updateCodeStateEditor(
-        `import("${fileOrDir.path.replace(project.path, '.')}")\n` +
-          codeManager.code
+      toast.custom(
+        ToastInsert({
+          onInsert: () => {
+            const relativeFilePath = fileOrDir.path.replace(
+              project.path + window.electron.sep,
+              ''
+            )
+            commandBarActor.send({
+              type: 'Find and select command',
+              data: {
+                name: 'Insert',
+                groupId: 'code',
+                argDefaultValues: { path: relativeFilePath },
+              },
+            })
+            toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+          },
+        }),
+        { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
       )
-      await codeManager.writeToFile()
-
-      // Prevent seeing the model built one piece at a time when changing files
-      await kclManager.executeCode(true)
     } else {
       // Let the lsp servers know we closed a file.
       onFileClose(currentFile?.path || null, project?.path || null)
@@ -422,6 +457,7 @@ const FileTreeItem = ({
                         onCreateFile={onCreateFile}
                         onCreateFolder={onCreateFolder}
                         onCloneFileOrFolder={onCloneFileOrFolder}
+                        onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
                         lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
@@ -462,6 +498,7 @@ const FileTreeItem = ({
         onRename={addCurrentItemToRenaming}
         onDelete={() => setIsConfirmingDelete(true)}
         onClone={() => onCloneFileOrFolder(fileOrDir.path)}
+        onOpenInNewWindow={() => onOpenInNewWindow(fileOrDir.path)}
       />
     </div>
   )
@@ -472,6 +509,7 @@ interface FileTreeContextMenuProps {
   onRename: () => void
   onDelete: () => void
   onClone: () => void
+  onOpenInNewWindow: () => void
 }
 
 function FileTreeContextMenu({
@@ -479,6 +517,7 @@ function FileTreeContextMenu({
   onRename,
   onDelete,
   onClone,
+  onOpenInNewWindow,
 }: FileTreeContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
@@ -507,6 +546,12 @@ function FileTreeContextMenu({
           hotkey=""
         >
           Clone
+        </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-open-in-new-window"
+          onClick={onOpenInNewWindow}
+        >
+          Open in new window
         </ContextMenuItem>,
       ]}
     />
@@ -619,11 +664,21 @@ export const useFileTreeOperations = () => {
     })
   }
 
+  function openInNewWindow(args: { path: string }) {
+    send({
+      type: 'Open file in new window',
+      data: {
+        name: args.path,
+      },
+    })
+  }
+
   return {
     createFile,
     createFolder,
     cloneFileOrDir,
     newTreeEntry,
+    openInNewWindow,
   }
 }
 
@@ -631,8 +686,13 @@ export const FileTree = ({
   className = '',
   onNavigateToFile: closePanel,
 }: FileTreeProps) => {
-  const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
-    useFileTreeOperations()
+  const {
+    createFile,
+    createFolder,
+    cloneFileOrDir,
+    openInNewWindow,
+    newTreeEntry,
+  } = useFileTreeOperations()
 
   return (
     <div className={className}>
@@ -649,6 +709,7 @@ export const FileTree = ({
         onCreateFile={(name: string) => createFile({ dryRun: false, name })}
         onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
         onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
+        onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
       />
     </div>
   )
@@ -659,11 +720,13 @@ export const FileTreeInner = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
 }: {
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
@@ -775,6 +838,7 @@ export const FileTreeInner = ({
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
                 onCloneFileOrFolder={onCloneFileOrFolder}
+                onOpenInNewWindow={onOpenInNewWindow}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}

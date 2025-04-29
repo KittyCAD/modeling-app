@@ -17,9 +17,7 @@
     "cad",
     "manufacturing"
   ],
-  "categories": [
-    "Programming Languages"
-  ],
+  "categories": ["Programming Languages"],
   "repository": {
     "url": "https://github.com/kittycad/modeling-app.git",
     "type": "git"
@@ -28,17 +26,13 @@
     "vscode": "^1.97.0"
   },
   "enabledApiProposals": [],
-  "activationEvents": [
-    "onLanguage:kcl"
-  ],
+  "activationEvents": ["onLanguage:kcl"],
   "main": "./dist/main.js",
   "contributes": {
     "languages": [
       {
         "id": "kcl",
-        "extensions": [
-          ".kcl"
-        ]
+        "extensions": [".kcl"]
       }
     ],
     "configuration": {
@@ -46,10 +40,7 @@
       "title": "kcl-language-server",
       "properties": {
         "kcl-language-server.server.path": {
-          "type": [
-            "null",
-            "string"
-          ],
+          "type": ["null", "string"],
           "scope": "machine-overridable",
           "default": null,
           "markdownDescription": "Path to kcl-language-server executable (points to bundled binary by default)."
@@ -57,16 +48,8 @@
         "kcl-language-server.trace.server": {
           "type": "string",
           "scope": "window",
-          "enum": [
-            "off",
-            "messages",
-            "verbose"
-          ],
-          "enumDescriptions": [
-            "No traces",
-            "Error only",
-            "Full log"
-          ],
+          "enum": ["off", "messages", "verbose"],
+          "enumDescriptions": ["No traces", "Error only", "Full log"],
           "default": "off",
           "description": "Trace requests to the kcl-language-server (this is usually overly verbose and not recommended for regular users)."
         },
@@ -118,14 +101,14 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "yarn run build-base -- --minify",
-    "deploy": "vsce publish --yarn",
+    "vscode:prepublish": "npm run build-base -- --minify",
+    "deploy": "vsce publish --npm",
     "build-base": "esbuild ./client/src/main.ts --bundle --outfile=dist/main.js --external:vscode --format=cjs --platform=node --target=node16",
     "test-compile": "tsc -p ./",
     "compile": "cross-env NODE_ENV=production tsc -b",
-    "build": "yarn run build-base -- --sourcemap",
-    "watch": "yarn run build-base -- --sourcemap --watch",
-    "pretest": "yarn run build && yarn test-compile",
+    "build": "npm run build-base -- --sourcemap",
+    "watch": "npm run build-base -- --sourcemap --watch",
+    "pretest": "npm run build && npm run test-compile",
     "test": "node ./dist/client/src/test/runTest.js",
     "package": "vsce package -o kcl-language-server.vsix"
   },
@@ -133,17 +116,17 @@
     "@tsconfig/strictest": "^2.0.5",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^22.13.10",
+    "@types/node": "^22.14.1",
     "@types/vscode": "^1.97.0",
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
     "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.3.0",
+    "@vscode/vsce": "^3.3.2",
     "cross-env": "^7.0.3",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.25.2",
     "glob": "^11.0.1",
     "mocha": "^11.1.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

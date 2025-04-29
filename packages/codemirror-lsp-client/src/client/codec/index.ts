@@ -1,8 +1,7 @@
-import * as jsrpc from 'json-rpc-2.0'
-import * as vsrpc from 'vscode-jsonrpc'
+import type * as vsrpc from 'vscode-jsonrpc'
 
-import Bytes from './bytes'
 import StreamDemuxer from './demuxer'
+import { decoder } from './encode-decode'
 import Headers from './headers'
 import Queue from './queue'
 import Tracer from './tracer'
@@ -12,36 +11,17 @@ export enum LspWorkerEventType {
   Call = 'call',
 }
 
-export const encoder = new TextEncoder()
-export const decoder = new TextDecoder()
-
-export class Codec {
-  static encode(
-    json: jsrpc.JSONRPCRequest | jsrpc.JSONRPCResponse
-  ): Uint8Array {
-    const message = JSON.stringify(json)
-    const delimited = Headers.add(message)
-    return Bytes.encode(delimited)
-  }
-
-  static decode<T>(data: Uint8Array): T {
-    const delimited = Bytes.decode(data)
-    const message = Headers.remove(delimited)
-    return JSON.parse(message) as T
-  }
-}
-
 // FIXME: tracing efficiency
 export class IntoServer
   extends Queue<Uint8Array>
   implements AsyncGenerator<Uint8Array, never, void>
 {
   private worker: Worker | null = null
-  private type_: String | null = null
+  private type_: string | null = null
 
   private trace: boolean = false
 
-  constructor(type_?: String, worker?: Worker, trace?: boolean) {
+  constructor(type_?: string, worker?: Worker, trace?: boolean) {
     super()
     if (worker && type_) {
       this.worker = worker

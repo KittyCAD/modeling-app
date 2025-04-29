@@ -20,9 +20,9 @@ description: Variables in memory after executing sketch_on_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 108,
-            "end": 113,
-            "start": 108,
+            "commentStart": 106,
+            "end": 111,
+            "start": 106,
             "type": "TagDeclarator",
             "value": "here"
           },
@@ -64,9 +64,9 @@ description: Variables in memory after executing sketch_on_face.kcl
               28.35
             ],
             "tag": {
-              "commentStart": 108,
-              "end": 113,
-              "start": 108,
+              "commentStart": 106,
+              "end": 111,
+              "start": 106,
               "type": "TagDeclarator",
               "value": "here"
             },
@@ -145,25 +145,26 @@ description: Variables in memory after executing sketch_on_face.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Mm"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -201,7 +202,8 @@ description: Variables in memory after executing sketch_on_face.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "part002": {
@@ -329,17 +331,18 @@ description: Variables in memory after executing sketch_on_face.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -351,9 +354,9 @@ description: Variables in memory after executing sketch_on_face.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 108,
-                  "end": 113,
-                  "start": 108,
+                  "commentStart": 106,
+                  "end": 111,
+                  "start": 106,
                   "type": "TagDeclarator",
                   "value": "here"
                 },
@@ -395,9 +398,9 @@ description: Variables in memory after executing sketch_on_face.kcl
                     28.35
                   ],
                   "tag": {
-                    "commentStart": 108,
-                    "end": 113,
-                    "start": 108,
+                    "commentStart": 106,
+                    "end": 111,
+                    "start": 106,
                     "type": "TagDeclarator",
                     "value": "here"
                   },
@@ -476,25 +479,26 @@ description: Variables in memory after executing sketch_on_face.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Mm"
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -532,7 +536,8 @@ description: Variables in memory after executing sketch_on_face.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -567,7 +572,8 @@ description: Variables in memory after executing sketch_on_face.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   }
 }

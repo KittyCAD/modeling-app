@@ -32,6 +32,7 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator) -> Result<Vec<Discovered
         findings.push(Z0001.at(
             format!("found '{}'", name),
             SourceRange::new(ident.start, ident.end, ident.module_id),
+            None,
         ));
         return Ok(findings);
     }
@@ -48,6 +49,7 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty) -> Result<Vec<Discovere
         findings.push(Z0001.at(
             format!("found '{}'", name),
             SourceRange::new(ident.start, ident.end, ident.module_id),
+            None,
         ));
         return Ok(findings);
     }
@@ -80,12 +82,36 @@ mod tests {
     use super::{lint_object_properties, lint_variables, Z0001};
     use crate::lint::rule::{assert_finding, test_finding, test_no_finding};
 
-    #[test]
-    fn z0001_const() {
-        assert_finding!(lint_variables, Z0001, "const Thickness = 0.5");
-        assert_finding!(lint_variables, Z0001, "const THICKNESS = 0.5");
-        assert_finding!(lint_variables, Z0001, "const THICC_NES = 0.5");
-        assert_finding!(lint_variables, Z0001, "const thicc_nes = 0.5");
+    #[tokio::test]
+    async fn z0001_const() {
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const Thickness = 0.5",
+            "found 'Thickness'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const THICKNESS = 0.5",
+            "found 'THICKNESS'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const THICC_NES = 0.5",
+            "found 'THICC_NES'",
+            None
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "const thicc_nes = 0.5",
+            "found 'thicc_nes'",
+            None
+        );
     }
 
     test_finding!(
@@ -100,28 +126,24 @@ const pipeLargeDia = 20
 const thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const Part001 = startSketchOn('XY')
-  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
-  |> line([thickness, 0], %)
-  |> line([0, -1], %)
-  |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
-     }, %)
-  |> line([0, -pipeLength], %)
-  |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
-     }, %)
-  |> line([0, -1], %)
-  |> line([-thickness, 0], %)
-  |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
-  |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+const Part001 = startSketchOn(XY)
+  |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
+  |> line(end = [thickness, 0])
+  |> line(end = [0, -1])
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
+  |> line(end = [0, -pipeLength])
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
+  |> line(end = [0, -1])
+  |> line(end = [-thickness, 0])
+  |> line(end = [0, 1])
+  |> angledLine(angle = 120, endAbsoluteX = pipeSmallDia)
+  |> line(end = [0, pipeLength])
+  |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
-  |> revolve({ axis: 'y' }, %)
-"
+  |> revolve(axis = Y)
+", 
+    "found 'Part001'",
+    None
     );
 
     test_no_finding!(
@@ -136,27 +158,21 @@ const pipeLargeDia = 20
 const thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const part001 = startSketchOn('XY')
-  |> startProfileAt([pipeLargeDia - (thickness / 2), 38], %)
-  |> line([thickness, 0], %)
-  |> line([0, -1], %)
-  |> angledLineToX({
-       angle: 60,
-       to: pipeSmallDia + thickness
-     }, %)
-  |> line([0, -pipeLength], %)
-  |> angledLineToX({
-       angle: -60,
-       to: pipeLargeDia + thickness
-     }, %)
-  |> line([0, -1], %)
-  |> line([-thickness, 0], %)
-  |> line([0, 1], %)
-  |> angledLineToX({ angle: 120, to: pipeSmallDia }, %)
-  |> line([0, pipeLength], %)
-  |> angledLineToX({ angle: 60, to: pipeLargeDia }, %)
+const part001 = startSketchOn(XY)
+  |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
+  |> line(end = [thickness, 0])
+  |> line(end = [0, -1])
+  |> angledLine(angle = 60, endAbsoluteX = pipeSmallDia + thickness)
+  |> line(end = [0, -pipeLength])
+  |> angledLine(angle = -60, endAbsoluteX = pipeLargeDia + thickness)
+  |> line(end = [0, -1])
+  |> line(end = [-thickness, 0])
+  |> line(end = [0, 1])
+  |> angledLine(angle = 120, endAbsoluteX = pipeSmallDia)
+  |> line(end = [0, pipeLength])
+  |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
-  |> revolve({ axis: 'y' }, %)
+  |> revolve(axis = Y)
 "
     );
 
@@ -165,7 +181,9 @@ const part001 = startSketchOn('XY')
         lint_object_properties,
         Z0001,
         "\
-let circ = {angle_start: 0, angle_end: 360, radius: radius}
-"
+let circ = {angle_start = 0, angle_end = 360, radius = 5}
+",
+        "found 'angle_start'",
+        None
     );
 }

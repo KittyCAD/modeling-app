@@ -15,14 +15,6 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -35,22 +27,6 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -108,8 +84,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -5.0,
-        "y": -5.0,
+        "x": -127.0,
+        "y": -127.0,
         "z": 0.0
       }
     }
@@ -130,7 +106,7 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 10.0,
+          "x": 254.0,
           "y": 0.0,
           "z": 0.0
         },
@@ -148,7 +124,7 @@ description: Artifact commands multi-axis-robot.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 10.0,
+          "y": 254.0,
           "z": 0.0
         },
         "relative": true
@@ -164,7 +140,7 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -10.0,
+          "x": -254.0,
           "y": -0.0,
           "z": 0.0
         },
@@ -181,8 +157,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -5.0,
-          "y": -5.0,
+          "x": -127.0,
+          "y": -127.0,
           "z": 0.0
         },
         "relative": false
@@ -219,8 +195,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.5,
-      "faces": null
+      "distance": 12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -251,20 +228,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -281,10 +247,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -301,10 +294,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -321,10 +341,75 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -374,7 +459,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 2.0,
+      "radius": 50.8,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -386,7 +471,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 2.0,
+      "radius": 50.8,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -398,7 +483,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 2.0,
+      "radius": 50.8,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -410,7 +495,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 2.0,
+      "radius": 50.8,
       "tolerance": 0.0000001,
       "cut_type": "chamfer"
     }
@@ -441,7 +526,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.0,
+        "x": 101.6,
         "y": 0.0,
         "z": 0.0
       }
@@ -466,7 +551,7 @@ description: Artifact commands multi-axis-robot.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 4.0,
+        "radius": 101.6,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -505,8 +590,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 3.0,
-      "faces": null
+      "distance": 76.19999999999999,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -537,6 +623,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -547,10 +642,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -570,7 +683,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -601,7 +714,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.5,
+        "x": 12.7,
         "y": 0.0,
         "z": 0.0
       }
@@ -626,7 +739,7 @@ description: Artifact commands multi-axis-robot.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.5,
+        "radius": 12.7,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -665,8 +778,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
-      "faces": null
+      "distance": 25.4,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -697,6 +811,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -707,10 +830,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -739,8 +880,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -3.6,
-        "y": -2.5,
+        "x": -91.44,
+        "y": -63.5,
         "z": 0.0
       }
     }
@@ -761,10 +902,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -4.0,
-          "y": -2.5
+          "x": -101.6,
+          "y": -63.5
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -824,8 +965,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -856,6 +998,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -866,10 +1017,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -890,8 +1059,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -922,6 +1092,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -932,10 +1111,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -956,8 +1153,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -988,6 +1186,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -998,10 +1205,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1022,8 +1247,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1054,6 +1280,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -1064,10 +1299,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1096,8 +1349,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -2.1,
-        "y": -4.0,
+        "x": -53.339999999999996,
+        "y": -101.6,
         "z": 0.0
       }
     }
@@ -1118,10 +1371,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -2.5,
-          "y": -4.0
+          "x": -63.5,
+          "y": -101.6
         },
-        "radius": 0.4,
+        "radius": 10.16,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1181,8 +1434,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1213,6 +1467,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -1223,10 +1486,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1247,8 +1528,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1279,6 +1561,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -1289,10 +1580,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1313,8 +1622,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1345,6 +1655,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -1355,10 +1674,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1379,8 +1716,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1411,10 +1749,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1431,17 +1787,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_set_material_params_pbr",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "color": {
-        "r": 0.45882353,
-        "g": 0.25490198,
-        "b": 0.0627451,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1499,8 +1847,17 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.45882353,
+        "g": 0.25490198,
+        "b": 0.0627451,
+        "a": 100.0
+      },
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
     }
   },
   {
@@ -1511,7 +1868,7 @@ description: Artifact commands multi-axis-robot.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 3.6
+        "z": 91.44
       },
       "x_axis": {
         "x": 1.0,
@@ -1558,7 +1915,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.9,
+        "x": 99.05999999999999,
         "y": 0.0,
         "z": 0.0
       }
@@ -1583,7 +1940,7 @@ description: Artifact commands multi-axis-robot.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 3.9,
+        "radius": 99.05999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -1626,8 +1983,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.4,
-      "faces": null
+      "distance": 35.559999999999995,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1658,6 +2016,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -1668,10 +2035,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1712,8 +2097,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -1736,8 +2121,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -1756,8 +2141,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.5,
-        "y": 5.0,
+        "x": 88.89999999999999,
+        "y": 127.0,
         "z": 0.0
       }
     }
@@ -1778,8 +2163,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.875,
-          "y": 1.5155,
+          "x": 22.225,
+          "y": 38.4948,
           "z": 0.0
         },
         "relative": true
@@ -1795,10 +2180,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.7769,
-          "y": 8.0155
+          "x": 45.1339,
+          "y": 203.5948
         },
-        "radius": 3.0,
+        "radius": 76.19999999999999,
         "start": {
           "unit": "degrees",
           "value": -30.0
@@ -1820,8 +2205,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -3.4282,
-          "y": 5.0,
+          "x": -87.0764,
+          "y": 127.0,
           "z": 0.0
         },
         "relative": false
@@ -1837,8 +2222,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.5,
-          "y": 5.0,
+          "x": 88.9,
+          "y": 127.0,
           "z": 0.0
         },
         "relative": false
@@ -1863,8 +2248,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -1875,8 +2260,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
-      "faces": null
+      "distance": 25.4,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -1907,20 +2293,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1937,10 +2312,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1957,10 +2359,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -1977,10 +2406,105 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 2.54,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {
@@ -2009,8 +2533,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 4.5,
-        "y": 8.0,
+        "x": 114.3,
+        "y": 203.2,
         "z": 0.0
       }
     }
@@ -2031,10 +2555,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
-          "y": 8.0
+          "x": 44.45,
+          "y": 203.2
         },
-        "radius": 2.75,
+        "radius": 69.85,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2073,8 +2597,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.5,
-      "faces": null
+      "distance": 38.099999999999994,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2105,6 +2630,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2115,10 +2649,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2138,7 +2690,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -2169,8 +2721,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.9499999999999997,
-        "y": 6.75,
+        "x": 49.52999999999999,
+        "y": 171.45,
         "z": 0.0
       }
     }
@@ -2191,10 +2743,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
-          "y": 6.75
+          "x": 44.45,
+          "y": 171.45
         },
-        "radius": 0.2,
+        "radius": 5.08,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2227,8 +2779,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": 1.7499999999999998,
-        "y": 8.0,
+        "x": 44.44999999999999,
+        "y": 203.2,
         "z": 0.0
       },
       "num_repetitions": 3,
@@ -2254,8 +2806,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.2,
-      "faces": null
+      "distance": 5.08,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2286,6 +2839,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2296,10 +2858,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2320,8 +2900,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.2,
-      "faces": null
+      "distance": 5.08,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2352,6 +2933,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2362,10 +2952,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2386,8 +2994,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.2,
-      "faces": null
+      "distance": 5.08,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2418,6 +3027,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2428,10 +3046,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2452,8 +3088,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.2,
-      "faces": null
+      "distance": 5.08,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2484,6 +3121,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2494,10 +3140,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2526,8 +3190,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.25,
-        "y": 8.0,
+        "x": 57.15,
+        "y": 203.2,
         "z": 0.0
       }
     }
@@ -2548,10 +3212,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
-          "y": 8.0
+          "x": 44.45,
+          "y": 203.2
         },
-        "radius": 0.5,
+        "radius": 12.7,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2590,8 +3254,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2622,6 +3287,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -2632,10 +3306,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2676,8 +3368,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -2700,8 +3392,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -2720,8 +3412,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.05,
-        "y": 8.0,
+        "x": 52.06999999999999,
+        "y": 203.2,
         "z": 0.0
       }
     }
@@ -2742,10 +3434,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
-          "y": 8.0
+          "x": 44.45,
+          "y": 203.2
         },
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -2776,8 +3468,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -2788,8 +3480,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.0,
-      "faces": null
+      "distance": -25.4,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -2820,10 +3513,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2840,9 +3551,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "object_visible",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "hidden": true
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -2852,7 +3563,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -2864,35 +3575,6 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.1,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -2901,13 +3583,13 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -0.1,
+        "x": -2.54,
         "y": 0.0,
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -2930,8 +3612,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -2950,8 +3632,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.12938524157181686,
-        "y": 7.315959713348662,
+        "x": -3.286385135924148,
+        "y": 185.825376719056,
         "z": 0.0
       }
     }
@@ -2972,10 +3654,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
-          "y": 8.0
+          "x": 44.45,
+          "y": 203.2
         },
-        "radius": 2.0,
+        "radius": 50.8,
         "start": {
           "unit": "degrees",
           "value": 200.0
@@ -2997,8 +3679,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -10.6026,
-          "y": 29.1305,
+          "x": -269.3067,
+          "y": 739.914,
           "z": 0.0
         },
         "relative": true
@@ -3014,10 +3696,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.8526,
-          "y": 37.1305
+          "x": -224.8567,
+          "y": 943.114
         },
-        "radius": 2.0,
+        "radius": 50.8,
         "start": {
           "unit": "degrees",
           "value": 20.0
@@ -3039,8 +3721,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -0.1294,
-          "y": 7.316,
+          "x": -3.2864,
+          "y": 185.8254,
           "z": 0.0
         },
         "relative": false
@@ -3065,8 +3747,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -3077,8 +3759,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -2.5,
-      "faces": null
+      "distance": -63.5,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3109,20 +3792,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3139,10 +3811,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3159,10 +3858,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3179,10 +3905,75 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3211,8 +4002,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1499999999999999,
-        "y": 8.0,
+        "x": 3.8099999999999974,
+        "y": 203.2,
         "z": 0.0
       }
     }
@@ -3233,10 +4024,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.75,
-          "y": 8.0
+          "x": -44.45,
+          "y": 203.2
         },
-        "radius": 1.9,
+        "radius": 48.26,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -3275,8 +4066,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3307,6 +4099,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3317,10 +4118,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3340,7 +4159,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -3371,8 +4190,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 10.75262444309573,
-        "y": 37.130471244363164,
+        "x": 273.1166608546315,
+        "y": 943.1139696068243,
         "z": 0.0
       }
     }
@@ -3393,10 +4212,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.8526,
-          "y": 37.1305
+          "x": 224.8567,
+          "y": 943.114
         },
-        "radius": 1.9,
+        "radius": 48.26,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -3435,8 +4254,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
-      "faces": null
+      "distance": 25.4,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3467,6 +4287,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3477,10 +4306,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3500,7 +4347,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -3531,8 +4378,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.55,
-        "y": 6.75,
+        "x": -39.37,
+        "y": 171.45,
         "z": 0.0
       }
     }
@@ -3553,10 +4400,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -1.75,
-          "y": 6.75
+          "x": -44.45,
+          "y": 171.45
         },
-        "radius": 0.2,
+        "radius": 5.08,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -3589,8 +4436,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": -1.75,
-        "y": 8.0,
+        "x": -44.449999999999996,
+        "y": 203.2,
         "z": 0.0
       },
       "num_repetitions": 7,
@@ -3616,8 +4463,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3648,6 +4496,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3658,10 +4515,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3682,8 +4557,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3714,6 +4590,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3724,10 +4609,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3748,8 +4651,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3780,6 +4684,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3790,10 +4703,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3814,8 +4745,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3846,6 +4778,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3856,10 +4797,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3880,8 +4839,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3912,6 +4872,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3922,10 +4891,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -3946,8 +4933,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -3978,6 +4966,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -3988,10 +4985,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4012,8 +5027,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4044,6 +5060,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4054,10 +5079,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4078,8 +5121,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4110,6 +5154,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4120,10 +5173,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4152,8 +5223,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 8.710604299770061,
-        "y": 35.7209323131843,
+        "x": 221.24934921415954,
+        "y": 907.3116807548812,
         "z": 0.0
       }
     }
@@ -4174,10 +5245,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 8.5106,
-          "y": 35.7209
+          "x": 216.1693,
+          "y": 907.3117
         },
-        "radius": 0.2,
+        "radius": 5.08,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4210,8 +5281,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": 8.85262444309573,
-        "y": 37.130471244363164,
+        "x": 224.8566608546315,
+        "y": 943.1139696068243,
         "z": 0.0
       },
       "num_repetitions": 3,
@@ -4237,8 +5308,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4269,6 +5341,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4279,10 +5360,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4303,8 +5402,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4335,6 +5435,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4345,10 +5454,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4369,8 +5496,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4401,6 +5529,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4411,10 +5548,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4435,8 +5590,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4467,6 +5623,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4477,10 +5642,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4509,8 +5692,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -8.552624443095729,
-        "y": 37.130471244363164,
+        "x": -217.2366608546315,
+        "y": 943.1139696068243,
         "z": 0.0
       }
     }
@@ -4531,10 +5714,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.8526,
-          "y": 37.1305
+          "x": -224.8567,
+          "y": 943.114
         },
-        "radius": 0.3,
+        "radius": 7.619999999999999,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -4573,8 +5756,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 1.0,
-      "faces": null
+      "distance": 25.4,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4605,6 +5789,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -4615,10 +5808,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4651,14 +5862,6 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "in"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
@@ -4666,8 +5869,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.984807753012208,
-        "y": 0.17364817766693041,
+        "x": 0.9848077530122081,
+        "y": 0.17364817766693044,
         "z": 0.0
       },
       "y_axis": {
@@ -4690,8 +5893,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -4710,8 +5913,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -8.527034109970234,
-        "y": 38.97698578126106,
+        "x": -216.58666639324395,
+        "y": 990.0154388440308,
         "z": 0.0
       }
     }
@@ -4732,10 +5935,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.8526,
-          "y": 37.1305
+          "x": -224.8567,
+          "y": 943.114
         },
-        "radius": 1.875,
+        "radius": 47.625,
         "start": {
           "unit": "degrees",
           "value": 80.0
@@ -4757,8 +5960,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 19.6962,
-          "y": -3.473,
+          "x": 500.2823,
+          "y": -88.2133,
           "z": 0.0
         },
         "relative": true
@@ -4774,10 +5977,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 10.8435,
-          "y": 33.6575
+          "x": 275.4257,
+          "y": 854.9007
         },
-        "radius": 1.875,
+        "radius": 47.625,
         "start": {
           "unit": "degrees",
           "value": 260.0
@@ -4799,8 +6002,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -8.527,
-          "y": 38.977,
+          "x": -216.5867,
+          "y": 990.0154,
           "z": 0.0
         },
         "relative": false
@@ -4825,8 +6028,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 1.0,
-        "y": 0.0,
+        "x": 0.17364817766693044,
+        "y": -0.9848077530122081,
         "z": 0.0
       }
     }
@@ -4837,8 +6040,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 2.5,
-      "faces": null
+      "distance": 63.5,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -4869,20 +6073,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4899,10 +6092,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4919,10 +6139,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4939,10 +6186,75 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -4971,8 +6283,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -7.00262444309573,
-        "y": 37.130471244363164,
+        "x": -177.86666085463153,
+        "y": 943.1139696068243,
         "z": 0.0
       }
     }
@@ -4993,10 +6305,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.8526,
-          "y": 37.1305
+          "x": -224.8567,
+          "y": 943.114
         },
-        "radius": 1.85,
+        "radius": 46.99,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -5035,8 +6347,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5067,6 +6380,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5077,10 +6399,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5100,7 +6440,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.1,
+      "radius": 2.54,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -5131,8 +6471,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -8.310604299770063,
-        "y": 35.7209323131843,
+        "x": -211.08934921415957,
+        "y": 907.3116807548812,
         "z": 0.0
       }
     }
@@ -5153,10 +6493,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.5106,
-          "y": 35.7209
+          "x": -216.1693,
+          "y": 907.3117
         },
-        "radius": 0.2,
+        "radius": 5.08,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -5189,8 +6529,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": -8.85262444309573,
-        "y": 37.130471244363164,
+        "x": -224.8566608546315,
+        "y": 943.1139696068243,
         "z": 0.0
       },
       "num_repetitions": 7,
@@ -5216,8 +6556,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5248,6 +6589,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5258,10 +6608,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5282,8 +6650,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5314,6 +6683,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5324,10 +6702,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5348,8 +6744,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5380,6 +6777,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5390,10 +6796,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5414,8 +6838,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5446,6 +6871,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5456,10 +6890,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5480,8 +6932,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5512,6 +6965,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5522,10 +6984,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5546,8 +7026,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5578,6 +7059,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5588,10 +7078,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5612,8 +7120,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5644,6 +7153,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5654,10 +7172,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5678,8 +7214,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.15,
-      "faces": null
+      "distance": 3.8099999999999996,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5710,6 +7247,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5720,10 +7266,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5752,8 +7316,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -8.96853061714843,
-        "y": 33.657507691024556,
+        "x": -227.80067767557009,
+        "y": 854.9006953520237,
         "z": 0.0
       }
     }
@@ -5774,10 +7338,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -10.8435,
-          "y": 33.6575
+          "x": -275.4257,
+          "y": 854.9007
         },
-        "radius": 1.875,
+        "radius": 47.625,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -5816,8 +7380,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5848,6 +7413,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5858,10 +7432,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -5890,8 +7482,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.709202258939474,
-        "y": 33.657507691024556,
+        "x": 322.81373737706264,
+        "y": 854.9006953520237,
         "z": 0.0
       }
     }
@@ -5912,10 +7504,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 10.8435,
-          "y": 33.6575
+          "x": 275.4257,
+          "y": 854.9007
         },
-        "radius": 1.865671641791045,
+        "radius": 47.388059701492544,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -5954,8 +7546,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
+      "distance": -12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -5986,6 +7579,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -5996,10 +7598,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6028,7 +7648,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.1,
+        "x": 2.54,
         "y": 0.0,
         "z": 0.0
       }
@@ -6053,7 +7673,7 @@ description: Artifact commands multi-axis-robot.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.1,
+        "radius": 2.54,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -6092,8 +7712,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.01,
-      "faces": null
+      "distance": -0.254,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6124,6 +7745,15 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -6134,10 +7764,28 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6166,8 +7814,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 10.84353061714843,
-        "y": 33.657507691024556,
+        "x": 275.4256776755701,
+        "y": 854.9006953520237,
         "z": 0.0
       }
     }
@@ -6188,8 +7836,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.7483,
-          "y": 0.0763,
+          "x": 44.4077,
+          "y": 1.9389,
           "z": 0.0
         },
         "relative": true
@@ -6205,10 +7853,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 14.6616,
-          "y": 32.6564
+          "x": 372.4035,
+          "y": 829.4733
         },
-        "radius": 2.3333333333333335,
+        "radius": 59.266666666666666,
         "start": {
           "unit": "degrees",
           "value": 152.5
@@ -6230,8 +7878,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.1656,
-          "y": 0.0509,
+          "x": 29.6051,
+          "y": 1.2926,
           "z": 0.0
         },
         "relative": true
@@ -6247,8 +7895,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.4018,
-          "y": 1.4265,
+          "x": -35.6062,
+          "y": 36.2331,
           "z": 0.0
         },
         "relative": true
@@ -6264,8 +7912,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.9074,
-          "y": 0.6014,
+          "x": -48.4488,
+          "y": 15.2759,
           "z": 0.0
         },
         "relative": true
@@ -6281,8 +7929,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -2.1557,
-          "y": -0.8929,
+          "x": -54.7553,
+          "y": -22.6804,
           "z": 0.0
         },
         "relative": true
@@ -6298,8 +7946,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 10.8435,
-          "y": 33.6575,
+          "x": 275.4257,
+          "y": 854.9007,
           "z": 0.0
         },
         "relative": false
@@ -6332,8 +7980,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.5,
-      "faces": null
+      "distance": -38.099999999999994,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6364,20 +8013,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6394,10 +8032,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6414,10 +8079,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6434,10 +8126,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6454,10 +8173,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6474,10 +8220,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6494,10 +8267,75 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6526,8 +8364,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 10.84353061714843,
-        "y": 33.657507691024556,
+        "x": 275.4256776755701,
+        "y": 854.9006953520237,
         "z": 0.0
       }
     }
@@ -6548,8 +8386,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.6168,
-          "y": -0.6697,
+          "x": 41.0664,
+          "y": -17.0103,
           "z": 0.0
         },
         "relative": true
@@ -6565,10 +8403,10 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 14.7737,
-          "y": 33.2924
+          "x": 375.2518,
+          "y": 845.6263
         },
-        "radius": 2.3333333333333335,
+        "radius": 59.266666666666666,
         "start": {
           "unit": "degrees",
           "value": 187.5
@@ -6590,8 +8428,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 1.0779,
-          "y": -0.4465,
+          "x": 27.3776,
+          "y": -11.3402,
           "z": 0.0
         },
         "relative": true
@@ -6607,8 +8445,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.8052,
-          "y": -0.861,
+          "x": -45.8513,
+          "y": -21.87,
           "z": 0.0
         },
         "relative": true
@@ -6624,8 +8462,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.9981,
-          "y": 0.0872,
+          "x": -50.7516,
+          "y": 2.2159,
           "z": 0.0
         },
         "relative": true
@@ -6641,8 +8479,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -1.7203,
-          "y": 1.5764,
+          "x": -43.696,
+          "y": 40.04,
           "z": 0.0
         },
         "relative": true
@@ -6658,8 +8496,8 @@ description: Artifact commands multi-axis-robot.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 10.8435,
-          "y": 33.6575,
+          "x": 275.4257,
+          "y": 854.9007,
           "z": 0.0
         },
         "relative": false
@@ -6692,8 +8530,9 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.5,
-      "faces": null
+      "distance": -38.099999999999994,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -6724,20 +8563,9 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6754,10 +8582,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6774,10 +8629,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6794,10 +8676,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6814,10 +8723,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6834,10 +8770,37 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -6854,10 +8817,75 @@ description: Artifact commands multi-axis-robot.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {

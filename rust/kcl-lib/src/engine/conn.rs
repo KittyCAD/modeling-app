@@ -18,11 +18,12 @@ use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::{EngineStats, ExecutionKind};
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
 use crate::{
-    engine::EngineManager,
+    engine::{AsyncTasks, EngineManager, EngineStats},
     errors::{KclError, KclErrorDetails},
-    execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
+    execution::{DefaultPlanes, IdGenerator},
     SourceRange,
 };
 
@@ -37,22 +38,25 @@ type WebSocketTcpWrite = futures::stream::SplitSink<tokio_tungstenite::WebSocket
 pub struct EngineConnection {
     engine_req_tx: mpsc::Sender<ToEngineReq>,
     shutdown_tx: mpsc::Sender<()>,
-    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+    responses: ResponseInformation,
     pending_errors: Arc<RwLock<Vec<String>>>,
     #[allow(dead_code)]
     tcp_read_handle: Arc<TcpReadHandle>,
     socket_health: Arc<RwLock<SocketHealth>>,
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
+    #[cfg(feature = "artifact-graph")]
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
+    ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
-    execution_kind: Arc<RwLock<ExecutionKind>>,
     stats: EngineStats,
+
+    async_tasks: AsyncTasks,
 }
 
 pub struct TcpRead {
@@ -113,6 +117,19 @@ impl Drop for TcpReadHandle {
     fn drop(&mut self) {
         // Drop the read handle.
         self.handle.abort();
+    }
+}
+
+/// Information about the responses from the engine.
+#[derive(Clone, Debug)]
+struct ResponseInformation {
+    /// The responses from the engine.
+    responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>>,
+}
+
+impl ResponseInformation {
+    pub async fn add(&self, id: Uuid, response: WebSocketResponse) {
+        self.responses.write().await.insert(id, response);
     }
 }
 
@@ -227,11 +244,14 @@ impl EngineConnection {
 
         let session_data: Arc<RwLock<Option<ModelingSessionData>>> = Arc::new(RwLock::new(None));
         let session_data2 = session_data.clone();
-        let responses: Arc<RwLock<IndexMap<uuid::Uuid, WebSocketResponse>>> = Arc::new(RwLock::new(IndexMap::new()));
-        let responses_clone = responses.clone();
+        let ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>> = Arc::new(RwLock::new(IndexMap::new()));
         let socket_health = Arc::new(RwLock::new(SocketHealth::Active));
         let pending_errors = Arc::new(RwLock::new(Vec::new()));
         let pending_errors_clone = pending_errors.clone();
+        let response_information = ResponseInformation {
+            responses: Arc::new(RwLock::new(IndexMap::new())),
+        };
+        let response_information_cloned = response_information.clone();
 
         let socket_health_tcp_read = socket_health.clone();
         let tcp_read_handle = tokio::spawn(async move {
@@ -245,8 +265,7 @@ impl EngineConnection {
                             WebSocketResponse::Success(SuccessWebSocketResponse {
                                 resp: OkWebSocketResponseData::ModelingBatch { responses },
                                 ..
-                            }) =>
-                            {
+                            }) => {
                                 #[expect(
                                     clippy::iter_over_hash_type,
                                     reason = "modeling command uses a HashMap and keys are random, so we don't really have a choice"
@@ -255,26 +274,32 @@ impl EngineConnection {
                                     let id: uuid::Uuid = (*resp_id).into();
                                     match batch_response {
                                         BatchResponse::Success { response } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Success(SuccessWebSocketResponse {
-                                                    success: true,
-                                                    request_id: Some(id),
-                                                    resp: OkWebSocketResponseData::Modeling {
-                                                        modeling_response: response.clone(),
-                                                    },
-                                                }),
-                                            );
+                                            // If the id is in our ids of async commands, remove
+                                            // it.
+                                            response_information_cloned
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Success(SuccessWebSocketResponse {
+                                                        success: true,
+                                                        request_id: Some(id),
+                                                        resp: OkWebSocketResponseData::Modeling {
+                                                            modeling_response: response.clone(),
+                                                        },
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                         BatchResponse::Failure { errors } => {
-                                            responses_clone.write().await.insert(
-                                                id,
-                                                WebSocketResponse::Failure(FailureWebSocketResponse {
-                                                    success: false,
-                                                    request_id: Some(id),
-                                                    errors: errors.clone(),
-                                                }),
-                                            );
+                                            response_information_cloned
+                                                .add(
+                                                    id,
+                                                    WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                        success: false,
+                                                        request_id: Some(id),
+                                                        errors: errors.clone(),
+                                                    }),
+                                                )
+                                                .await;
                                         }
                                     }
                                 }
@@ -292,14 +317,16 @@ impl EngineConnection {
                                 errors,
                             }) => {
                                 if let Some(id) = request_id {
-                                    responses_clone.write().await.insert(
-                                        *id,
-                                        WebSocketResponse::Failure(FailureWebSocketResponse {
-                                            success: false,
-                                            request_id: *request_id,
-                                            errors: errors.clone(),
-                                        }),
-                                    );
+                                    response_information_cloned
+                                        .add(
+                                            *id,
+                                            WebSocketResponse::Failure(FailureWebSocketResponse {
+                                                success: false,
+                                                request_id: *request_id,
+                                                errors: errors.clone(),
+                                            }),
+                                        )
+                                        .await;
                                 } else {
                                     // Add it to our pending errors.
                                     let mut pe = pending_errors_clone.write().await;
@@ -315,7 +342,7 @@ impl EngineConnection {
                         }
 
                         if let Some(id) = id {
-                            responses_clone.write().await.insert(id, ws_resp.clone());
+                            response_information_cloned.add(id, ws_resp.clone()).await;
                         }
                     }
                     Err(e) => {
@@ -336,16 +363,18 @@ impl EngineConnection {
             tcp_read_handle: Arc::new(TcpReadHandle {
                 handle: Arc::new(tcp_read_handle),
             }),
-            responses,
+            responses: response_information,
             pending_errors,
             socket_health,
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            #[cfg(feature = "artifact-graph")]
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
+            ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
-            execution_kind: Default::default(),
             stats: Default::default(),
+            async_tasks: AsyncTasks::new(),
         })
     }
 }
@@ -361,23 +390,20 @@ impl EngineManager for EngineConnection {
     }
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
-        self.responses.clone()
+        self.responses.responses.clone()
     }
 
+    #[cfg(feature = "artifact-graph")]
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         self.artifact_commands.clone()
     }
 
-    async fn execution_kind(&self) -> ExecutionKind {
-        let guard = self.execution_kind.read().await;
-        *guard
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>> {
+        self.ids_of_async_commands.clone()
     }
 
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind {
-        let mut guard = self.execution_kind.write().await;
-        let original = *guard;
-        *guard = execution_kind;
-        original
+    fn async_tasks(&self) -> AsyncTasks {
+        self.async_tasks.clone()
     }
 
     fn stats(&self) -> &EngineStats {
@@ -400,13 +426,13 @@ impl EngineManager for EngineConnection {
         Ok(())
     }
 
-    async fn inner_send_modeling_cmd(
+    async fn inner_fire_modeling_cmd(
         &self,
-        id: uuid::Uuid,
+        _id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
         _id_to_source_range: HashMap<Uuid, SourceRange>,
-    ) -> Result<WebSocketResponse, KclError> {
+    ) -> Result<(), KclError> {
         let (tx, rx) = oneshot::channel();
 
         // Send the request to the engine, via the actor.
@@ -438,6 +464,19 @@ impl EngineManager for EngineConnection {
                 })
             })?;
 
+        Ok(())
+    }
+
+    async fn inner_send_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<WebSocketResponse, KclError> {
+        self.inner_fire_modeling_cmd(id, source_range, cmd, id_to_source_range)
+            .await?;
+
         // Wait for the response.
         let current_time = std::time::Instant::now();
         while current_time.elapsed().as_secs() < 60 {
@@ -457,9 +496,19 @@ impl EngineManager for EngineConnection {
                     }));
                 }
             }
-            // We pop off the responses to cleanup our mappings.
-            if let Some(resp) = self.responses.write().await.shift_remove(&id) {
-                return Ok(resp);
+
+            #[cfg(feature = "artifact-graph")]
+            {
+                // We cannot pop here or it will break the artifact graph.
+                if let Some(resp) = self.responses.responses.read().await.get(&id) {
+                    return Ok(resp.clone());
+                }
+            }
+            #[cfg(not(feature = "artifact-graph"))]
+            {
+                if let Some(resp) = self.responses.responses.write().await.shift_remove(&id) {
+                    return Ok(resp);
+                }
             }
         }
 

@@ -6,19 +6,17 @@ pub mod array;
 pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
-pub mod convert;
+pub mod clone;
 pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
-pub mod import;
 pub mod loft;
 pub mod math;
 pub mod mirror;
 pub mod patterns;
 pub mod planes;
-pub mod polar;
 pub mod revolve;
 pub mod segment;
 pub mod shapes;
@@ -26,12 +24,11 @@ pub mod shell;
 pub mod sketch;
 pub mod sweep;
 pub mod transform;
-pub mod types;
-pub mod units;
 pub mod utils;
 
 use anyhow::Result;
 pub use args::Args;
+use args::TyF64;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use lazy_static::lazy_static;
@@ -42,7 +39,10 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{types::PrimitiveType, ExecState, KclValue},
+    execution::{
+        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitType},
+        ExecState, KclValue,
+    },
     parsing::ast::types::Name,
 };
 
@@ -57,7 +57,6 @@ lazy_static! {
         Box::new(LegAngX),
         Box::new(LegAngY),
         Box::new(crate::std::appearance::Appearance),
-        Box::new(crate::std::convert::Int),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
         Box::new(crate::std::segment::SegEndX),
@@ -70,33 +69,25 @@ lazy_static! {
         Box::new(crate::std::segment::SegLen),
         Box::new(crate::std::segment::SegAng),
         Box::new(crate::std::segment::TangentToEnd),
-        Box::new(crate::std::segment::AngleToMatchLengthX),
-        Box::new(crate::std::segment::AngleToMatchLengthY),
         Box::new(crate::std::shapes::CircleThreePoint),
         Box::new(crate::std::shapes::Polygon),
+        Box::new(crate::std::sketch::InvoluteCircular),
         Box::new(crate::std::sketch::Line),
         Box::new(crate::std::sketch::XLine),
         Box::new(crate::std::sketch::YLine),
-        Box::new(crate::std::sketch::AngledLineToX),
-        Box::new(crate::std::sketch::AngledLineToY),
         Box::new(crate::std::sketch::AngledLine),
-        Box::new(crate::std::sketch::AngledLineOfXLength),
-        Box::new(crate::std::sketch::AngledLineOfYLength),
         Box::new(crate::std::sketch::AngledLineThatIntersects),
         Box::new(crate::std::sketch::StartSketchOn),
-        Box::new(crate::std::sketch::StartProfileAt),
+        Box::new(crate::std::sketch::StartProfile),
         Box::new(crate::std::sketch::ProfileStartX),
         Box::new(crate::std::sketch::ProfileStartY),
         Box::new(crate::std::sketch::ProfileStart),
         Box::new(crate::std::sketch::Close),
         Box::new(crate::std::sketch::Arc),
-        Box::new(crate::std::sketch::ArcTo),
         Box::new(crate::std::sketch::TangentialArc),
-        Box::new(crate::std::sketch::TangentialArcTo),
-        Box::new(crate::std::sketch::TangentialArcToRelative),
         Box::new(crate::std::sketch::BezierCurve),
-        Box::new(crate::std::sketch::Hole),
-        Box::new(crate::std::mirror::Mirror2D),
+        Box::new(crate::std::sketch::Subtract2D),
+        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -107,27 +98,16 @@ lazy_static! {
         Box::new(crate::std::array::Map),
         Box::new(crate::std::array::Push),
         Box::new(crate::std::array::Pop),
-        Box::new(crate::std::chamfer::Chamfer),
-        Box::new(crate::std::fillet::Fillet),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
         Box::new(crate::std::edge::GetCommonEdge),
-        Box::new(crate::std::helix::Helix),
-        Box::new(crate::std::shell::Shell),
-        Box::new(crate::std::shell::Hollow),
-        Box::new(crate::std::revolve::Revolve),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::planes::OffsetPlane),
-        Box::new(crate::std::import::Import),
         Box::new(crate::std::math::Acos),
         Box::new(crate::std::math::Asin),
         Box::new(crate::std::math::Atan),
         Box::new(crate::std::math::Atan2),
-        Box::new(crate::std::math::Pi),
-        Box::new(crate::std::math::E),
-        Box::new(crate::std::math::Tau),
         Box::new(crate::std::math::Sqrt),
         Box::new(crate::std::math::Abs),
         Box::new(crate::std::math::Rem),
@@ -141,21 +121,8 @@ lazy_static! {
         Box::new(crate::std::math::Log2),
         Box::new(crate::std::math::Log10),
         Box::new(crate::std::math::Ln),
-        Box::new(crate::std::math::ToDegrees),
-        Box::new(crate::std::math::ToRadians),
-        Box::new(crate::std::units::Mm),
-        Box::new(crate::std::units::Inch),
-        Box::new(crate::std::units::Ft),
-        Box::new(crate::std::units::M),
-        Box::new(crate::std::units::Cm),
-        Box::new(crate::std::units::Yd),
-        Box::new(crate::std::polar::Polar),
         Box::new(crate::std::assert::Assert),
-        Box::new(crate::std::assert::AssertEqual),
-        Box::new(crate::std::assert::AssertLessThan),
-        Box::new(crate::std::assert::AssertGreaterThan),
-        Box::new(crate::std::assert::AssertLessThanOrEq),
-        Box::new(crate::std::assert::AssertGreaterThanOrEq),
+        Box::new(crate::std::assert::AssertIs),
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
@@ -177,6 +144,7 @@ pub fn get_stdlib_fn(name: &str) -> Option<Box<dyn StdLibFn>> {
 pub struct StdFnProps {
     pub name: String,
     pub deprecated: bool,
+    pub include_in_feature_tree: bool,
 }
 
 impl StdFnProps {
@@ -184,7 +152,13 @@ impl StdFnProps {
         Self {
             name: name.to_owned(),
             deprecated: false,
+            include_in_feature_tree: false,
         }
+    }
+
+    fn include_in_feature_tree(mut self) -> Self {
+        self.include_in_feature_tree = true;
+        self
     }
 }
 
@@ -206,17 +180,52 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
             StdFnProps::default("std::sketch::circle"),
         ),
+        ("prelude", "helix") => (
+            |e, a| Box::pin(crate::std::helix::helix(e, a)),
+            StdFnProps::default("std::helix").include_in_feature_tree(),
+        ),
+        ("sketch", "mirror2d") => (
+            |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
+            StdFnProps::default("std::sketch::mirror2d"),
+        ),
+        ("prelude", "revolve") => (
+            |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
+            StdFnProps::default("std::revolve").include_in_feature_tree(),
+        ),
+        ("prelude", "offsetPlane") => (
+            |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
+            StdFnProps::default("std::offsetPlane").include_in_feature_tree(),
+        ),
+        ("solid", "fillet") => (
+            |e, a| Box::pin(crate::std::fillet::fillet(e, a)),
+            StdFnProps::default("std::solid::fillet").include_in_feature_tree(),
+        ),
+        ("solid", "chamfer") => (
+            |e, a| Box::pin(crate::std::chamfer::chamfer(e, a)),
+            StdFnProps::default("std::solid::chamfer").include_in_feature_tree(),
+        ),
+        ("solid", "shell") => (
+            |e, a| Box::pin(crate::std::shell::shell(e, a)),
+            StdFnProps::default("std::solid::shell").include_in_feature_tree(),
+        ),
+        ("solid", "hollow") => (
+            |e, a| Box::pin(crate::std::shell::hollow(e, a)),
+            StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
+        ),
         _ => unreachable!(),
     }
 }
 
 pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
-        ("prelude", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::Sketch")),
-        ("prelude", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::Solid")),
-        ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
-        ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
-        ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
+        ("types", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::types::Sketch")),
+        ("types", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::types::Solid")),
+        ("types", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::types::Plane")),
+        ("types", "Face") => (PrimitiveType::Face, StdFnProps::default("std::types::Face")),
+        ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
+        ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
+        ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),
+        ("types", "Axis3d") => (PrimitiveType::Axis3d, StdFnProps::default("std::types::Axis3d")),
         _ => unreachable!(),
     }
 }
@@ -278,9 +287,14 @@ pub enum FunctionKind {
     UserDefined,
 }
 
+/// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
+const DEFAULT_TOLERANCE: f64 = 0.0000001;
+
 /// Compute the length of the given leg.
-pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_length(hypotenuse, leg);
     Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
@@ -288,10 +302,16 @@ pub async fn leg_length(_exec_state: &mut ExecState, args: Args) -> Result<KclVa
 /// Compute the length of the given leg.
 ///
 /// ```no_run
-/// legLen(5, 3)
+/// legLen(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legLen",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
@@ -299,19 +319,31 @@ fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for x.
-pub async fn leg_angle_x(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_angle_x(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(
+        result,
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        vec![args.into()],
+    ))
 }
 
 /// Compute the angle of the given leg for x.
 ///
 /// ```no_run
-/// legAngX(5, 3)
+/// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngX",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
@@ -319,19 +351,31 @@ fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
 }
 
 /// Compute the angle of the given leg for y.
-pub async fn leg_angle_y(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (hypotenuse, leg, ty) = args.get_hypotenuse_leg()?;
+pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
+    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
+    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
     let result = inner_leg_angle_y(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
+    Ok(KclValue::from_number_with_type(
+        result,
+        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
+        vec![args.into()],
+    ))
 }
 
 /// Compute the angle of the given leg for y.
 ///
 /// ```no_run
-/// legAngY(5, 3)
+/// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
     name = "legAngY",
+    keywords = true,
+    unlabeled_first = false,
+    args = {
+        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
+        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
+    },
     tags = ["utilities"],
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {

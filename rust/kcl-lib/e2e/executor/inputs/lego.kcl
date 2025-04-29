@@ -20,25 +20,22 @@ const wSegments = total_width / (wbumps + 1)
 
 // make the base
 const s = startSketchOn(XY)
-  |> startProfileAt([-total_width / 2, -total_length / 2], %)
+  |> startProfile(at = [-total_width / 2, -total_length / 2])
   |> line(end = [total_width, 0])
   |> line(end = [0, total_length])
   |> line(end = [-total_width, 0])
   |> close()
   |> extrude(length = height)
 
-const shellExtrude = startSketchOn(s, "start")
-  |> startProfileAt([
-       -(total_width / 2 - t),
-       -(total_length / 2 - t)
-     ], %)
+const shellExtrude = startSketchOn(s, face = "start")
+  |> startProfile(at = [-(total_width / 2 - t), -(total_length / 2 - t)])
   |> line(end = [total_width - (2 * t), 0])
   |> line(end = [0, total_length - (2 * t)])
   |> line(end = [-(total_width - (2 * t)), 0])
   |> close()
   |> extrude(length = -(height - t))
 
-const peg = startSketchOn(s, "end")
+const peg = startSketchOn(s, face = "end")
   |> circle( center= [
        -(total_width / 2 - wSegments),
        -(total_length / 2 - lSegments)

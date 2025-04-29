@@ -6,16 +6,22 @@ use std::{
 use anyhow::Result;
 
 use crate::{
-    parsing::ast::types::{ImportPath, NodeRef, Program},
+    errors::KclErrorDetails,
+    modules::{ModulePath, ModuleRepr},
+    parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
     walk::{Node, Visitable},
+    ExecState, ExecutorContext, KclError, ModuleId, SourceRange,
 };
 
-/// Specific dependency between two modules. The 0th element of this tuple
+/// Specific dependency between two modules. The 0th element of this info
 /// is the "importing" module, the 1st is the "imported" module. The 0th
 /// module *depends on* the 1st module.
 type Dependency = (String, String);
 
 type Graph = Vec<Dependency>;
+
+type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath, ModuleRepr);
+type Universe = HashMap<String, DependencyInfo>;
 
 /// Process a number of programs, returning the graph of dependencies.
 ///
@@ -23,14 +29,14 @@ type Graph = Vec<Dependency>;
 /// run concurrently. Each "stage" is blocking in this model, which will
 /// change in the future. Don't use this function widely, yet.
 #[allow(clippy::iter_over_hash_type)]
-pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<Vec<String>>> {
+pub fn import_graph(progs: &Universe, ctx: &ExecutorContext) -> Result<Vec<Vec<String>>, KclError> {
     let mut graph = Graph::new();
 
-    for (name, program) in progs.iter() {
+    for (name, (_, _, _, repr)) in progs.iter() {
         graph.extend(
-            import_dependencies(program)?
+            import_dependencies(repr, ctx)?
                 .into_iter()
-                .map(|dependency| (name.clone(), dependency))
+                .map(|(dependency, _, _)| (name.clone(), dependency))
                 .collect::<Vec<_>>(),
         );
     }
@@ -40,7 +46,10 @@ pub fn import_graph(progs: HashMap<String, NodeRef<'_, Program>>) -> Result<Vec<
 }
 
 #[allow(clippy::iter_over_hash_type)]
-fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
+fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>, KclError> {
+    if all_modules.is_empty() {
+        return Ok(vec![]);
+    }
     let mut dep_map = HashMap::<String, Vec<String>>::new();
 
     for (dependent, dependency) in graph.iter() {
@@ -83,7 +92,13 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
         }
 
         if stage_modules.is_empty() {
-            anyhow::bail!("imports are acyclic");
+            waiting_modules.sort();
+
+            return Err(KclError::ImportCycle(KclErrorDetails {
+                message: format!("circular import of modules not allowed: {}", waiting_modules.join(", ")),
+                // TODO: we can get the right import lines from the AST, but we don't
+                source_ranges: vec![SourceRange::default()],
+            }));
         }
 
         // not strictly needed here, but perhaps helpful to avoid thinking
@@ -101,33 +116,108 @@ fn topsort(all_modules: &[&str], graph: Graph) -> Result<Vec<Vec<String>>> {
     Ok(order)
 }
 
-pub(crate) fn import_dependencies(prog: NodeRef<'_, Program>) -> Result<Vec<String>> {
+type ImportDependencies = Vec<(String, AstNode<ImportStatement>, ModulePath)>;
+
+pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> Result<ImportDependencies, KclError> {
+    let ModuleRepr::Kcl(prog, _) = repr else {
+        // It has no dependencies, so return an empty list.
+        return Ok(vec![]);
+    };
+
     let ret = Arc::new(Mutex::new(vec![]));
-
-    fn walk(ret: Arc<Mutex<Vec<String>>>, node: Node<'_>) {
+    fn walk(ret: Arc<Mutex<ImportDependencies>>, node: Node<'_>, ctx: &ExecutorContext) -> Result<(), KclError> {
         if let Node::ImportStatement(is) = node {
-            let dependency = match &is.path {
-                ImportPath::Kcl { filename } => filename.to_string(),
-                ImportPath::Foreign { path } => path.to_string(),
-                ImportPath::Std { path } => path.join("::"),
-            };
+            // We only care about Kcl and Foreign imports for now.
+            let resolved_path = ModulePath::from_import_path(&is.path, &ctx.settings.project_directory);
+            match &is.path {
+                ImportPath::Kcl { filename } => {
+                    // We need to lock the mutex to push the dependency.
+                    // This is a bit of a hack, but it works for now.
+                    ret.lock()
+                        .map_err(|err| {
+                            KclError::Internal(KclErrorDetails {
+                                message: format!("Failed to lock mutex: {}", err),
+                                source_ranges: Default::default(),
+                            })
+                        })?
+                        .push((filename.to_string(), is.clone(), resolved_path));
+                }
+                ImportPath::Foreign { path } => {
+                    ret.lock()
+                        .map_err(|err| {
+                            KclError::Internal(KclErrorDetails {
+                                message: format!("Failed to lock mutex: {}", err),
+                                source_ranges: Default::default(),
+                            })
+                        })?
+                        .push((path.to_string(), is.clone(), resolved_path));
+                }
+                ImportPath::Std { .. } => { // do nothing
+                }
+            }
+        }
 
-            ret.lock().unwrap().push(dependency);
-        }
         for child in node.children().iter() {
-            walk(ret.clone(), *child)
+            walk(ret.clone(), *child, ctx)?;
         }
+
+        Ok(())
     }
 
-    walk(ret.clone(), prog.into());
+    walk(ret.clone(), prog.into(), ctx)?;
 
-    let ret = ret.lock().unwrap().clone();
-    Ok(ret)
+    let ret = ret.lock().map_err(|err| {
+        KclError::Internal(KclErrorDetails {
+            message: format!("Failed to lock mutex: {}", err),
+            source_ranges: Default::default(),
+        })
+    })?;
+
+    Ok(ret.clone())
+}
+
+pub(crate) async fn import_universe(
+    ctx: &ExecutorContext,
+    repr: &ModuleRepr,
+    out: &mut Universe,
+    exec_state: &mut ExecState,
+) -> Result<(), KclError> {
+    let modules = import_dependencies(repr, ctx)?;
+    for (filename, import_stmt, module_path) in modules {
+        if out.contains_key(&filename) {
+            continue;
+        }
+
+        let source_range = SourceRange::from(import_stmt.clone());
+        let attrs = &import_stmt.outer_attrs;
+        let module_id = ctx
+            .open_module(&import_stmt.path, attrs, exec_state, source_range)
+            .await?;
+
+        let repr = {
+            let Some(module_info) = exec_state.get_module(module_id) else {
+                return Err(KclError::Internal(KclErrorDetails {
+                    message: format!("Module {} not found", module_id),
+                    source_ranges: vec![import_stmt.into()],
+                }));
+            };
+            module_info.repr.clone()
+        };
+
+        out.insert(
+            filename.clone(),
+            (import_stmt.clone(), module_id, module_path.clone(), repr.clone()),
+        );
+        Box::pin(import_universe(ctx, &repr, out, exec_state)).await?;
+    }
+
+    Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::parsing::ast::types::{ImportSelector, Program};
 
     macro_rules! kcl {
         ( $kcl:expr ) => {{
@@ -135,26 +225,41 @@ mod tests {
         }};
     }
 
-    #[test]
-    fn order_imports() {
+    fn into_module_info(program: AstNode<Program>) -> DependencyInfo {
+        (
+            AstNode::no_src(ImportStatement {
+                selector: ImportSelector::None { alias: None },
+                path: ImportPath::Kcl { filename: "".into() },
+                visibility: Default::default(),
+                digest: None,
+            }),
+            ModuleId::default(),
+            ModulePath::Local { value: "".into() },
+            ModuleRepr::Kcl(program, None),
+        )
+    }
+
+    #[tokio::test]
+    async fn order_imports() {
         let mut modules = HashMap::new();
 
         let a = kcl!("");
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), into_module_info(a));
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        let order = import_graph(modules).unwrap();
+        let ctx = ExecutorContext::new_mock().await;
+        let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned()]], order);
     }
 
-    #[test]
-    fn order_imports_none() {
+    #[tokio::test]
+    async fn order_imports_none() {
         let mut modules = HashMap::new();
 
         let a = kcl!(
@@ -162,49 +267,51 @@ import \"a.kcl\"
 y = 2
 "
         );
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), into_module_info(a));
 
         let b = kcl!(
             "
 x = 1
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        let order = import_graph(modules).unwrap();
+        let ctx = ExecutorContext::new_mock().await;
+        let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(vec![vec!["a.kcl".to_owned(), "b.kcl".to_owned()]], order);
     }
 
-    #[test]
-    fn order_imports_2() {
+    #[tokio::test]
+    async fn order_imports_2() {
         let mut modules = HashMap::new();
 
         let a = kcl!("");
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), into_module_info(a));
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), into_module_info(b));
 
         let c = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("c.kcl".to_owned(), &c);
+        modules.insert("c.kcl".to_owned(), into_module_info(c));
 
-        let order = import_graph(modules).unwrap();
+        let ctx = ExecutorContext::new_mock().await;
+        let order = import_graph(&modules, &ctx).unwrap();
         assert_eq!(
             vec![vec!["a.kcl".to_owned()], vec!["b.kcl".to_owned(), "c.kcl".to_owned()]],
             order
         );
     }
 
-    #[test]
-    fn order_imports_cycle() {
+    #[tokio::test]
+    async fn order_imports_cycle() {
         let mut modules = HashMap::new();
 
         let a = kcl!(
@@ -212,15 +319,16 @@ import \"a.kcl\"
 import \"b.kcl\"
 "
         );
-        modules.insert("a.kcl".to_owned(), &a);
+        modules.insert("a.kcl".to_owned(), into_module_info(a));
 
         let b = kcl!(
             "
 import \"a.kcl\"
 "
         );
-        modules.insert("b.kcl".to_owned(), &b);
+        modules.insert("b.kcl".to_owned(), into_module_info(b));
 
-        import_graph(modules).unwrap_err();
+        let ctx = ExecutorContext::new_mock().await;
+        import_graph(&modules, &ctx).unwrap_err();
     }
 }

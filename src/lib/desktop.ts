@@ -1,14 +1,17 @@
-import { err } from 'lib/trap'
-import { Models } from '@kittycad/lib'
-import { Project, FileEntry } from 'lib/project'
+import type { Models } from '@kittycad/lib'
 
+import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+
+import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
-  initPromise,
   parseAppSettings,
   parseProjectSettings,
-} from 'lang/wasm'
+} from '@src/lang/wasm'
+import { initPromise, relevantFileExtensions } from '@src/lang/wasmUtils'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
@@ -17,10 +20,11 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
   TOKEN_FILE_NAME,
-} from './constants'
-import { DeepPartial } from './types'
-import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+} from '@src/lib/constants'
+import type { FileEntry, Project } from '@src/lib/project'
+import { err } from '@src/lib/trap'
+import type { DeepPartial } from '@src/lib/types'
+import { getInVariableCase } from '@src/lib/utils'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -65,9 +69,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir =
-    config.settings?.app?.project_directory ||
-    config.settings?.project?.directory
+  const projectDir = config.settings?.project?.directory
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -83,10 +85,23 @@ export async function ensureProjectDirectoryExists(
   return projectDir
 }
 
+export async function mkdirOrNOOP(directoryPath: string) {
+  try {
+    await window.electron.stat(directoryPath)
+  } catch (e) {
+    if (e === 'ENOENT') {
+      await window.electron.mkdir(directoryPath, { recursive: true })
+    }
+  }
+
+  return directoryPath
+}
+
 export async function createNewProjectDirectory(
   projectName: string,
   initialCode?: string,
-  configuration?: DeepPartial<Configuration> | Error
+  configuration?: DeepPartial<Configuration> | Error,
+  initialFileName?: string
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile()
@@ -112,8 +127,17 @@ export async function createNewProjectDirectory(
     }
   }
 
-  const projectFile = window.electron.path.join(projectDir, PROJECT_ENTRYPOINT)
-  await window.electron.writeFile(projectFile, initialCode ?? '')
+  const kclFileName = initialFileName || PROJECT_ENTRYPOINT
+  const projectFile = window.electron.path.join(projectDir, kclFileName)
+  // When initialCode is present, we're loading existing code.  If it's not
+  // present, we're creating a new project, and we want to incorporate the
+  // user's settings.
+  const codeToWrite = newKclFile(
+    initialCode,
+    configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT
+  )
+  if (err(codeToWrite)) return Promise.reject(codeToWrite)
+  await window.electron.writeFile(projectFile, codeToWrite)
   const metadata = await window.electron.stat(projectFile)
 
   return {
@@ -190,23 +214,13 @@ export async function listProjects(
   return projects
 }
 
-const IMPORT_FILE_EXTENSIONS = [
-  // TODO Use ImportFormat enum
-  'stp',
-  'glb',
-  'fbxb',
-  'kcl',
-  'step',
-  'stl',
-]
-
-const isRelevantFile = (filename: string): boolean =>
-  IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
-
 const collectAllFilesRecursiveFrom = async (
   path: string,
   canReadWritePath: boolean
 ) => {
+  const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
+  const isRelevantFile = (filename: string): boolean =>
+    RELEVANT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -452,12 +466,13 @@ export const getAppSettingsFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
-  if (isTestEnv && !testSettingsPath) return SETTINGS_FILE_NAME
 
   const appConfig = await window.electron.getPath('appData')
+
   const fullPath = isTestEnv
-    ? testSettingsPath
-    : window.electron.path.join(appConfig, getAppFolderName())
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.resolve(appConfig, getAppFolderName())
+
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -473,9 +488,10 @@ const getTokenFilePath = async () => {
   const testSettingsPath = await window.electron.getAppTestProperty(
     'TEST_SETTINGS_FILE_KEY'
   )
+
   const appConfig = await window.electron.getPath('appData')
   const fullPath = isTestEnv
-    ? testSettingsPath
+    ? window.electron.path.resolve(testSettingsPath, '..')
     : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
@@ -489,8 +505,15 @@ const getTokenFilePath = async () => {
 }
 
 const getTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -503,8 +526,15 @@ const getTelemetryFilePath = async () => {
 }
 
 const getRawTelemetryFilePath = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   const appConfig = await window.electron.getPath('appData')
-  const fullPath = window.electron.path.join(appConfig, getAppFolderName())
+  const fullPath = isTestEnv
+    ? window.electron.path.resolve(testSettingsPath, '..')
+    : window.electron.path.join(appConfig, getAppFolderName())
   try {
     await window.electron.stat(fullPath)
   } catch (e) {
@@ -528,8 +558,16 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
 }
 
 export const getInitialDefaultDir = async () => {
+  const isTestEnv = window.electron.process.env.IS_PLAYWRIGHT === 'true'
+  const testSettingsPath = await window.electron.getAppTestProperty(
+    'TEST_SETTINGS_FILE_KEY'
+  )
+
   if (!window.electron) {
     return ''
+  }
+  if (isTestEnv) {
+    return testSettingsPath
   }
   const dir = await window.electron.getPath('documents')
   return window.electron.path.join(dir, PROJECT_FOLDER)
@@ -580,8 +618,7 @@ export const readAppSettingsFile = async () => {
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory ||
-      parsedAppConfig.settings?.app?.project_directory
+      parsedAppConfig.settings?.project?.directory
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -676,10 +713,12 @@ export const getUser = async (
   hostname: string
 ): Promise<Models['User_type']> => {
   try {
-    const user = await window.electron.kittycad('users.get_user_self', {
-      client: { token },
+    const user = await fetch(`${hostname}/users/me`, {
+      headers: new Headers({
+        Authorization: `Bearer ${token}`,
+      }),
     })
-    return user
+    return user.json()
   } catch (e) {
     console.error(e)
   }
@@ -700,4 +739,13 @@ export const writeProjectThumbnailFile = async (
     asArray[i] = data.charCodeAt(i)
   }
   return window.electron.writeFile(filePath, asArray)
+}
+
+export function getPathFilenameInVariableCase(path: string) {
+  // from https://nodejs.org/en/learn/manipulating-files/nodejs-file-paths#example
+  const basenameNoExt = window.electron.path.basename(
+    path,
+    window.electron.path.extname(path)
+  )
+  return getInVariableCase(basenameNoExt)
 }

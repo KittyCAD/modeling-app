@@ -1,36 +1,34 @@
 import { foldService } from '@codemirror/language'
-import { Extension, EditorState } from '@codemirror/state'
+import type { EditorState, Extension } from '@codemirror/state'
 import { ViewPlugin } from '@codemirror/view'
 
+import type { LanguageServerOptions } from './plugin/lsp'
 import {
-  docPathFacet,
   LanguageServerPlugin,
   LanguageServerPluginSpec,
+  docPathFacet,
   languageId,
   workspaceFolders,
-  LanguageServerOptions,
 } from './plugin/lsp'
 
-export type { LanguageServerClientOptions } from './client'
 export { LanguageServerClient } from './client'
+export type { LanguageServerClientOptions } from './client'
+export { FromServer, IntoServer, LspWorkerEventType } from './client/codec'
+export { Codec } from './client/codec/utils'
 export {
-  Codec,
-  FromServer,
-  IntoServer,
-  LspWorkerEventType,
-} from './client/codec'
-export type { LanguageServerOptions } from './plugin/lsp'
+  lspDiagnosticsEvent,
+  lspFormatCodeEvent,
+  lspSemanticTokensEvent,
+} from './plugin/annotation'
 export {
   LanguageServerPlugin,
   LanguageServerPluginSpec,
   docPathFacet,
   languageId,
   workspaceFolders,
-  lspSemanticTokensEvent,
-  lspDiagnosticsEvent,
-  lspFormatCodeEvent,
 } from './plugin/lsp'
-export { posToOffset, offsetToPos } from './plugin/util'
+export type { LanguageServerOptions } from './plugin/lsp'
+export { offsetToPos, posToOffset } from './plugin/util'
 
 export function lspPlugin(options: LanguageServerOptions): Extension {
   let plugin: LanguageServerPlugin | null = null

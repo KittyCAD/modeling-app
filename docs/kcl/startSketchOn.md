@@ -18,8 +18,8 @@ The point is if you want to export the result of a sketch on a face, you only ne
 
 ```js
 startSketchOn(
-  data: SketchData,
-  tag?: FaceTag,
+  planeOrSolid: SketchData,
+  face?: FaceTag,
 ): SketchSurface
 ```
 
@@ -28,8 +28,8 @@ startSketchOn(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `data` | [`SketchData`](/docs/kcl/types/SketchData) | Data for start sketch on. You can start a sketch on a plane or an solid. | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`FaceTag`](/docs/kcl/types/FaceTag) | A tag for a face. | No |
+| `planeOrSolid` | [`SketchData`](/docs/kcl/types/SketchData) | The plane or solid to sketch on | Yes |
+| `face` | [`FaceTag`](/docs/kcl/types/FaceTag) | Identify a face of a solid if a solid is specified as the input argument (`plane_or_solid`) | No |
 
 ### Returns
 
@@ -40,7 +40,7 @@ startSketchOn(
 
 ```js
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -48,8 +48,8 @@ exampleSketch = startSketchOn(XY)
 
 example = extrude(exampleSketch, length = 5)
 
-exampleSketch002 = startSketchOn(example, 'end')
-  |> startProfileAt([1, 1], %)
+exampleSketch002 = startSketchOn(example, face = END)
+  |> startProfile(at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
@@ -57,8 +57,8 @@ exampleSketch002 = startSketchOn(example, 'end')
 
 example002 = extrude(exampleSketch002, length = 5)
 
-exampleSketch003 = startSketchOn(example002, 'end')
-  |> startProfileAt([2, 2], %)
+exampleSketch003 = startSketchOn(example002, face = END)
+  |> startProfile(at = [2, 2])
   |> line(end = [6, 0])
   |> line(end = [0, 6])
   |> line(end = [-6, 0])
@@ -74,7 +74,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
   |> line(end = [-10, 0])
@@ -82,8 +82,8 @@ exampleSketch = startSketchOn(XY)
 
 example = extrude(exampleSketch, length = 5, tagEnd = $end01)
 
-exampleSketch002 = startSketchOn(example, end01)
-  |> startProfileAt([1, 1], %)
+exampleSketch002 = startSketchOn(example, face = end01)
+  |> startProfile(at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
@@ -91,8 +91,8 @@ exampleSketch002 = startSketchOn(example, end01)
 
 example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
 
-exampleSketch003 = startSketchOn(example002, end02)
-  |> startProfileAt([2, 2], %)
+exampleSketch003 = startSketchOn(example002, face = end02)
+  |> startProfile(at = [2, 2])
   |> line(end = [6, 0])
   |> line(end = [0, 6])
   |> line(end = [-6, 0])
@@ -105,7 +105,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 ```js
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10], tag = $sketchingFace)
   |> line(end = [-10, 0])
@@ -113,8 +113,8 @@ exampleSketch = startSketchOn(XY)
 
 example = extrude(exampleSketch, length = 10)
 
-exampleSketch002 = startSketchOn(example, sketchingFace)
-  |> startProfileAt([1, 1], %)
+exampleSketch002 = startSketchOn(example, face = sketchingFace)
+  |> startProfile(at = [1, 1])
   |> line(end = [8, 0])
   |> line(end = [0, 8])
   |> line(end = [-8, 0])
@@ -122,8 +122,8 @@ exampleSketch002 = startSketchOn(example, sketchingFace)
 
 example002 = extrude(exampleSketch002, length = 10)
 
-exampleSketch003 = startSketchOn(example002, sketchingFace002)
-  |> startProfileAt([-8, 12], %)
+exampleSketch003 = startSketchOn(example002, face = sketchingFace002)
+  |> startProfile(at = [-8, 12])
   |> line(end = [0, 6])
   |> line(end = [6, 0])
   |> line(end = [0, -6])
@@ -136,7 +136,7 @@ example003 = extrude(exampleSketch003, length = 5)
 
 ```js
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([4, 12], %)
+  |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
   |> line(end = [0, -6])
   |> line(end = [4, -6])
@@ -146,10 +146,10 @@ exampleSketch = startSketchOn(XY)
   |> line(end = [-2, 0])
   |> close()
 
-example = revolve(exampleSketch, axis = 'y', angle = 180)
+example = revolve(exampleSketch, axis = Y, angle = 180)
 
-exampleSketch002 = startSketchOn(example, 'end')
-  |> startProfileAt([4.5, -5], %)
+exampleSketch002 = startSketchOn(example, face = END)
+  |> startProfile(at = [4.5, -5])
   |> line(end = [0, 5])
   |> line(end = [5, 0])
   |> line(end = [0, -5])
@@ -165,7 +165,7 @@ example002 = extrude(exampleSketch002, length = 5)
 
 
 exampleSketch = startSketchOn(XY)
-  |> startProfileAt([4, 12], %)
+  |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
   |> line(end = [0, -6])
   |> line(end = [4, -6])
@@ -177,13 +177,13 @@ exampleSketch = startSketchOn(XY)
 
 example = revolve(
   exampleSketch,
-  axis = 'y',
+  axis = Y,
   angle = 180,
   tagEnd = $end01,
 )
 
-exampleSketch002 = startSketchOn(example, end01)
-  |> startProfileAt([4.5, -5], %)
+exampleSketch002 = startSketchOn(example, face = end01)
+  |> startProfile(at = [4.5, -5])
   |> line(end = [0, 5])
   |> line(end = [5, 0])
   |> line(end = [0, -5])
@@ -196,14 +196,12 @@ example002 = extrude(exampleSketch002, length = 5)
 
 ```js
 a1 = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = 0 },
-         xAxis = { x = 1, y = 0, z = 0 },
-         yAxis = { x = 0, y = 1, z = 0 },
-         zAxis = { x = 0, y = 0, z = 1 }
-       }
+       origin = { x = 0, y = 0, z = 0 },
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 1, z = 0 },
+       zAxis = { x = 0, y = 0, z = 1 }
      })
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [100.0, 0])
   |> yLine(length = -100.0)
   |> xLine(length = -100.0)

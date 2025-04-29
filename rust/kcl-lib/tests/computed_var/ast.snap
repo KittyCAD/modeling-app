@@ -8,20 +8,20 @@ description: Result of parsing computed_var.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 37,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 37,
+            "commentStart": 0,
             "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 43,
+            "commentStart": 0,
             "elements": [
               {
-                "commentStart": 44,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -33,7 +33,7 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "commentStart": 47,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -45,7 +45,7 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "commentStart": 50,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -57,7 +57,7 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "commentStart": 53,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "10",
                 "start": 0,
@@ -84,19 +84,19 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 57,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 57,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 57,
+            "commentStart": 0,
             "end": 0,
             "name": "i",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 61,
+            "commentStart": 0,
             "end": 0,
             "raw": "3",
             "start": 0,
@@ -117,23 +117,23 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 63,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 63,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 63,
+            "commentStart": 0,
             "end": 0,
             "name": "ten",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 69,
+            "commentStart": 0,
             "computed": true,
             "end": 0,
             "object": {
-              "commentStart": 69,
+              "commentStart": 0,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -141,7 +141,7 @@ description: Result of parsing computed_var.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 73,
+              "commentStart": 0,
               "end": 0,
               "name": "i",
               "start": 0,
@@ -162,68 +162,60 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 75,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 89,
-              "end": 0,
-              "name": {
-                "commentStart": 89,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": "ten",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 94,
-              "end": 0,
-              "raw": "10",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 10.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "10",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 10.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 98,
-              "end": 0,
-              "raw": "0.000001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.000001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"oops\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "oops"
               }
-            },
-            {
-              "commentStart": 108,
-              "end": 0,
-              "raw": "\"oops\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "oops"
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 77,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 77,
+              "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -231,67 +223,53 @@ description: Result of parsing computed_var.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 77,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "ten",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 115,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 117,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 117,
-            "end": 0,
-            "name": "p",
-            "start": 0,
-            "type": "Identifier"
-          },
-          "init": {
-            "commentStart": 121,
-            "end": 0,
-            "raw": "\"foo\"",
-            "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": "foo"
-          },
-          "start": 0,
-          "type": "VariableDeclarator"
-        },
-        "end": 0,
-        "kind": "const",
-        "start": 0,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "commentStart": 127,
-        "declaration": {
-          "commentStart": 127,
-          "end": 0,
-          "id": {
-            "commentStart": 127,
+            "commentStart": 0,
             "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 133,
+            "commentStart": 0,
             "end": 0,
             "properties": [
               {
-                "commentStart": 135,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 135,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "foo",
                   "start": 0,
@@ -300,7 +278,7 @@ description: Result of parsing computed_var.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 141,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -313,10 +291,10 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "commentStart": 144,
+                "commentStart": 0,
                 "end": 0,
                 "key": {
-                  "commentStart": 144,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "bar",
                   "start": 0,
@@ -325,7 +303,7 @@ description: Result of parsing computed_var.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "commentStart": 150,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -352,23 +330,23 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 154,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 154,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 154,
+            "commentStart": 0,
             "end": 0,
             "name": "one",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 160,
-            "computed": true,
+            "commentStart": 0,
+            "computed": false,
             "end": 0,
             "object": {
-              "commentStart": 160,
+              "commentStart": 0,
               "end": 0,
               "name": "obj",
               "start": 0,
@@ -376,9 +354,9 @@ description: Result of parsing computed_var.kcl
               "type": "Identifier"
             },
             "property": {
-              "commentStart": 164,
+              "commentStart": 0,
               "end": 0,
-              "name": "p",
+              "name": "foo",
               "start": 0,
               "type": "Identifier",
               "type": "Identifier"
@@ -397,68 +375,60 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 166,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 180,
-              "end": 0,
-              "name": {
-                "commentStart": 180,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": "one",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 185,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 188,
-              "end": 0,
-              "raw": "0.0000001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0000001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"oops\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "oops"
               }
-            },
-            {
-              "commentStart": 199,
-              "end": 0,
-              "raw": "\"oops\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "oops"
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 168,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 168,
+              "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -466,79 +436,109 @@ description: Result of parsing computed_var.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 168,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "one",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 206,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 220,
-              "end": 0,
-              "name": {
-                "commentStart": 220,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": "PI",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 224,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 227,
-              "end": 0,
-              "raw": "0.2",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.2,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "0.2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.2,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 232,
-              "end": 0,
-              "raw": "\"oops pi\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "oops pi"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"oops pi\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "oops pi"
+              }
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 208,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 208,
+              "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -546,23 +546,39 @@ description: Result of parsing computed_var.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 208,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "PI",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 243,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 243,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 243,
+            "commentStart": 0,
             "end": 0,
             "name": "x",
             "start": 0,
@@ -571,48 +587,63 @@ description: Result of parsing computed_var.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 251,
+                "commentStart": 0,
                 "end": 0,
-                "left": {
-                  "commentStart": 251,
+                "expr": {
+                  "commentStart": 0,
                   "end": 0,
-                  "raw": "2",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "operator": "*",
-                "right": {
-                  "abs_path": false,
-                  "commentStart": 255,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 255,
+                  "left": {
+                    "commentStart": 0,
                     "end": 0,
-                    "name": "PI",
+                    "raw": "2",
                     "start": 0,
-                    "type": "Identifier"
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
                   },
-                  "path": [],
+                  "operator": "*",
+                  "right": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "PI",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
                   "start": 0,
-                  "type": "Name",
-                  "type": "Name"
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
                 },
                 "start": 0,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
+                "ty": {
+                  "Rad": null,
+                  "commentStart": 0,
+                  "end": 0,
+                  "p_type": "Number",
+                  "start": 0,
+                  "type": "Primitive"
+                },
+                "type": "AscribedExpression",
+                "type": "AscribedExpression"
               }
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 247,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 247,
+                "commentStart": 0,
                 "end": 0,
                 "name": "cos",
                 "start": 0,
@@ -622,7 +653,7 @@ description: Result of parsing computed_var.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 247,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -638,68 +669,82 @@ description: Result of parsing computed_var.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 259,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 271,
-              "end": 0,
-              "name": {
-                "commentStart": 271,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": "x",
+                "name": "isEqualTo",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 274,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 277,
-              "end": 0,
-              "raw": "0.000001",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.000001,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tolerance",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "0.000001",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.000001,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 287,
-              "end": 0,
-              "raw": "\"oops cos\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "oops cos"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"oops cos\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "oops cos"
+              }
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 259,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 259,
+              "commentStart": 0,
               "end": 0,
-              "name": "assertEqual",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -707,11 +752,27 @@ description: Result of parsing computed_var.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 259,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "x",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -724,7 +785,7 @@ description: Result of parsing computed_var.kcl
       "nonCodeNodes": {
         "2": [
           {
-            "commentStart": 75,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -735,7 +796,18 @@ description: Result of parsing computed_var.kcl
         ],
         "3": [
           {
-            "commentStart": 115,
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "5": [
+          {
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -746,7 +818,7 @@ description: Result of parsing computed_var.kcl
         ],
         "6": [
           {
-            "commentStart": 166,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -757,7 +829,7 @@ description: Result of parsing computed_var.kcl
         ],
         "7": [
           {
-            "commentStart": 206,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -780,7 +852,7 @@ description: Result of parsing computed_var.kcl
           }
         },
         {
-          "commentStart": 34,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

@@ -4,8 +4,8 @@
 // Set Units
 @settings(defaultLengthUnit = in)
 
-// Define constants
-lbumps = 4 // number of bumps long
+// Define parameters
+lbumps = 3 // number of bumps long
 wbumps = 2 // number of bumps wide
 pitch = 8.0
 clearance = 0.1
@@ -22,12 +22,12 @@ lSegments = totalLength / lbumps
 wSegments = totalWidth / wbumps
 
 // Add assertions to ensure that the number of bumps are greater than 1
-assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
-assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
+assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
+assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
 base = startSketchOn(XY)
-  |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
+  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
   |> line(end = [totalWidth, 0])
   |> line(end = [0, totalLength])
   |> line(end = [-totalWidth, 0])
@@ -35,11 +35,11 @@ base = startSketchOn(XY)
   |> extrude(length = height)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
-shellExtrude = startSketchOn(base, "start")
-  |> startProfileAt([
+shellExtrude = startSketchOn(base, face = START)
+  |> startProfile(at = [
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
-     ], %)
+     ])
   |> line(end = [totalWidth - (2 * t), 0])
   |> line(end = [0, totalLength - (2 * t)])
   |> line(end = [-(totalWidth - (2 * t)), 0])
@@ -47,7 +47,7 @@ shellExtrude = startSketchOn(base, "start")
   |> extrude(length = -(height - t))
 
 // Create the pegs on the top of the base
-peg = startSketchOn(base, 'end')
+peg = startSketchOn(base, face = END)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2),
@@ -60,7 +60,7 @@ peg = startSketchOn(base, 'end')
   |> extrude(length = bumpHeight)
 
 // Create the pegs on the bottom of the base
-tubePattern = startSketchOn(shellExtrude, 'start')
+tubePattern = startSketchOn(shellExtrude, face = START)
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),

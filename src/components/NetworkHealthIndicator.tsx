@@ -1,11 +1,13 @@
 import { Popover } from '@headlessui/react'
-import { ActionIcon, ActionIconProps } from './ActionIcon'
-import Tooltip from './Tooltip'
-import { ConnectingTypeGroup } from '../lang/std/engineConnection'
-import { useNetworkContext } from '../hooks/useNetworkContext'
-import { NetworkHealthState } from '../hooks/useNetworkStatus'
-import { toSync } from 'lib/utils'
-import { reportRejection } from 'lib/trap'
+
+import type { ActionIconProps } from '@src/components/ActionIcon'
+import { ActionIcon } from '@src/components/ActionIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { ConnectingTypeGroup } from '@src/lang/std/engineConnection'
+import { reportRejection } from '@src/lib/trap'
+import { toSync } from '@src/lib/utils'
 
 export const NETWORK_HEALTH_TEXT: Record<NetworkHealthState, string> = {
   [NetworkHealthState.Ok]: 'Connected',
@@ -84,6 +86,7 @@ export const NetworkHealthIndicator = () => {
     error,
     setHasCopied,
     hasCopied,
+    ping,
   } = useNetworkContext()
 
   return (
@@ -125,6 +128,19 @@ export const NetworkHealthIndicator = () => {
             className="font-bold text-xs uppercase px-2 py-1 rounded-sm"
           >
             {NETWORK_HEALTH_TEXT[overallState]}
+          </p>
+        </div>
+        <div className={`flex items-center justify-between p-2 rounded-t-sm`}>
+          <h2
+            className={`text-xs font-sans font-normal ${overallConnectionStateColor[overallState].icon}`}
+          >
+            Ping
+          </h2>
+          <p
+            data-testid="network"
+            className={`font-bold text-xs uppercase px-2 py-1 rounded-sm ${overallConnectionStateColor[overallState].icon}`}
+          >
+            {ping ?? 'N/A'}
           </p>
         </div>
         <ul className="divide-y divide-chalkboard-20 dark:divide-chalkboard-80">

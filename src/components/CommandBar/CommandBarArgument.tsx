@@ -1,12 +1,13 @@
-import CommandArgOptionInput from './CommandArgOptionInput'
-import CommandBarBasicInput from './CommandBarBasicInput'
-import CommandBarSelectionInput from './CommandBarSelectionInput'
-import CommandBarSelectionMixedInput from './CommandBarSelectionMixedInput'
-import { CommandArgument } from 'lib/commandTypes'
-import CommandBarHeader from './CommandBarHeader'
-import CommandBarKclInput from './CommandBarKclInput'
-import CommandBarTextareaInput from './CommandBarTextareaInput'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
+import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import CommandBarHeader from '@src/components/CommandBar/CommandBarHeader'
+import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
+import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
+import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
+import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
+import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const commandBarState = useCommandBarState()
@@ -100,6 +101,14 @@ function ArgumentInput({
     case 'text':
       return (
         <CommandBarTextareaInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+        />
+      )
+    case 'path':
+      return (
+        <CommandBarPathInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

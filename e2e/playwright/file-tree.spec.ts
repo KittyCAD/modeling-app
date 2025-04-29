@@ -1,24 +1,20 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
 import * as fs from 'fs'
+import { join } from 'path'
+import { FILE_EXT } from '@src/lib/constants'
+import * as fsp from 'fs/promises'
+
 import {
   createProject,
   executorInputPath,
   getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
-} from './test-utils'
-import { join } from 'path'
-import { FILE_EXT } from 'lib/constants'
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe('integrations tests', () => {
   test(
     'Creating a new file or switching file while in sketchMode should exit sketchMode',
     { tag: '@electron' },
     async ({ page, context, homePage, scene, editor, toolbar, cmdBar }) => {
-      if (runningOnWindows()) {
-        test.fixme(orRunWhenFullSuiteEnabled())
-      }
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -28,7 +24,7 @@ test.describe('integrations tests', () => {
         )
       })
 
-      const [clickObj] = await scene.makeMouseHelpers(726, 272)
+      const [clickObj] = scene.makeMouseHelpers(726, 272)
 
       await test.step('setup test', async () => {
         await homePage.expectState({
@@ -46,10 +42,11 @@ test.describe('integrations tests', () => {
         await scene.connectionEstablished()
         await scene.settled(cmdBar)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],
@@ -71,14 +68,14 @@ test.describe('integrations tests', () => {
       })
       await test.step('setup for next assertion', async () => {
         await toolbar.openFile('main.kcl')
-
-        await scene.settled(cmdBar)
-
+        await page.waitForTimeout(2000)
         await clickObj()
+        await page.waitForTimeout(1000)
         await scene.moveNoWhere()
+        await page.waitForTimeout(1000)
         await editor.expectState({
           activeLines: [
-            '|>startProfileAt([75.8,317.2],%)//[$startCapTag,$EndCapTag]',
+            '|>startProfile(at=[75.8,317.2])//[$startCapTag,$EndCapTag]',
           ],
           highlightedCode: '',
           diagnostics: [],
@@ -88,7 +85,7 @@ test.describe('integrations tests', () => {
         await toolbar.expectFileTreeState(['main.kcl', fileName])
       })
       await test.step('check sketch mode is exited when opening a different file', async () => {
-        await toolbar.openFile(fileName, { wait: false })
+        await toolbar.openFile(fileName)
 
         // check we're out of sketch mode
         await expect(toolbar.exitSketchBtn).not.toBeVisible()
@@ -281,7 +278,6 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
-      test.fixme(orRunWhenFullSuiteEnabled())
       const {
         panesOpen,
         pasteCodeInEditor,

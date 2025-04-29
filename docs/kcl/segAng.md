@@ -28,13 +28,13 @@ segAng(tag: TagIdentifier): number
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [5, 10], tag = $seg01)
   |> line(end = [-10, 0])
-  |> angledLine([segAng(seg01), 10], %)
+  |> angledLine(angle = segAng(seg01), length = 10)
   |> line(end = [-10, 0])
-  |> angledLine([segAng(seg01), -15], %)
+  |> angledLine(angle = segAng(seg01), length = -15)
   |> close()
 
 example = extrude(exampleSketch, length = 4)

@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 /** @deprecated, import from ./fixtureSetup.ts instead */
 export const _test = test

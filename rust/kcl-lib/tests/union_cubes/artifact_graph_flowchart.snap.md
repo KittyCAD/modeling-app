@@ -1,23 +1,23 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[52, 103, 0]"]
-    3["Segment<br>[111, 163, 0]"]
-    4["Segment<br>[171, 223, 0]"]
-    5["Segment<br>[231, 283, 0]"]
-    6["Segment<br>[291, 298, 0]"]
+    2["Path<br>[58, 113, 0]"]
+    3["Segment<br>[121, 177, 0]"]
+    4["Segment<br>[185, 241, 0]"]
+    5["Segment<br>[249, 305, 0]"]
+    6["Segment<br>[313, 320, 0]"]
     7[Solid2d]
   end
   subgraph path24 [Path]
-    24["Path<br>[52, 103, 0]"]
-    25["Segment<br>[111, 163, 0]"]
-    26["Segment<br>[171, 223, 0]"]
-    27["Segment<br>[231, 283, 0]"]
-    28["Segment<br>[291, 298, 0]"]
+    24["Path<br>[58, 113, 0]"]
+    25["Segment<br>[121, 177, 0]"]
+    26["Segment<br>[185, 241, 0]"]
+    27["Segment<br>[249, 305, 0]"]
+    28["Segment<br>[313, 320, 0]"]
     29[Solid2d]
   end
-  1["Plane<br>[27, 44, 0]"]
-  8["Sweep Extrusion<br>[306, 326, 0]"]
+  1["Plane<br>[33, 50, 0]"]
+  8["Sweep Extrusion<br>[328, 354, 0]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -32,8 +32,8 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["Plane<br>[27, 44, 0]"]
-  30["Sweep Extrusion<br>[306, 326, 0]"]
+  23["Plane<br>[33, 50, 0]"]
+  30["Sweep Extrusion<br>[328, 354, 0]"]
   31[Wall]
   32[Wall]
   33[Wall]
@@ -48,6 +48,7 @@ flowchart LR
   42["SweepEdge Adjacent"]
   43["SweepEdge Opposite"]
   44["SweepEdge Adjacent"]
+  45["CompositeSolid Union<br>[448, 473, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -58,15 +59,19 @@ flowchart LR
   3 --- 9
   3 --- 15
   3 --- 16
+  3 x--> 13
   4 --- 10
   4 --- 17
   4 --- 18
+  4 x--> 13
   5 --- 11
   5 --- 19
   5 --- 20
+  5 x--> 13
   6 --- 12
   6 --- 21
   6 --- 22
+  6 x--> 13
   8 --- 9
   8 --- 10
   8 --- 11
@@ -81,6 +86,22 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
+  15 <--x 9
+  15 <--x 14
+  16 <--x 9
+  16 <--x 10
+  17 <--x 10
+  17 <--x 14
+  18 <--x 10
+  18 <--x 11
+  19 <--x 11
+  19 <--x 14
+  20 <--x 11
+  20 <--x 12
+  21 <--x 12
+  21 <--x 14
+  22 <--x 9
+  22 <--x 12
   23 --- 24
   24 --- 25
   24 --- 26
@@ -91,15 +112,19 @@ flowchart LR
   25 --- 31
   25 --- 37
   25 --- 38
+  25 x--> 35
   26 --- 32
   26 --- 39
   26 --- 40
+  26 x--> 35
   27 --- 33
   27 --- 41
   27 --- 42
+  27 x--> 35
   28 --- 34
   28 --- 43
   28 --- 44
+  28 x--> 35
   30 --- 31
   30 --- 32
   30 --- 33
@@ -114,4 +139,22 @@ flowchart LR
   30 --- 42
   30 --- 43
   30 --- 44
+  37 <--x 31
+  37 <--x 36
+  38 <--x 31
+  38 <--x 32
+  39 <--x 32
+  39 <--x 36
+  40 <--x 32
+  40 <--x 33
+  41 <--x 33
+  41 <--x 36
+  42 <--x 33
+  42 <--x 34
+  43 <--x 34
+  43 <--x 36
+  44 <--x 31
+  44 <--x 34
+  2 <--x 45
+  24 <--x 45
 ```

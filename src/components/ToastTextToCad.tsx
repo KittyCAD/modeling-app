@@ -1,14 +1,10 @@
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { useFileContext } from 'hooks/useFileContext'
-import { isDesktop } from 'lib/isDesktop'
-import { PATHS } from 'lib/paths'
-import toast from 'react-hot-toast'
-import {
+import type {
   TextToCad_type,
   TextToCadMultiFileIteration_type,
 } from '@kittycad/lib/dist/types/src/models'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import toast from 'react-hot-toast'
+import type { Mesh } from 'three'
 import {
   Box3,
   Color,
@@ -16,25 +12,27 @@ import {
   EdgesGeometry,
   LineBasicMaterial,
   LineSegments,
-  Mesh,
   MeshBasicMaterial,
   OrthographicCamera,
   Scene,
   Vector3,
   WebGLRenderer,
 } from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { base64Decode } from 'lang/wasm'
-import { sendTelemetry } from 'lib/textToCad'
-import { Themes } from 'lib/theme'
-import { ActionButton } from './ActionButton'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { EventFrom } from 'xstate'
-import { fileMachine } from 'machines/fileMachine'
-import { reportRejection } from 'lib/trap'
-import { codeManager, kclManager } from 'lib/singletons'
-import { openExternalBrowserIfDesktop } from 'lib/openWindow'
-import { FileMeta } from 'lib/promptToEdit'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { ActionButton } from '@src/components/ActionButton'
+import { base64Decode } from '@src/lang/wasm'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
+import { sendTelemetry } from '@src/lib/textToCadTelemetry'
+import { reportRejection } from '@src/lib/trap'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
+import { commandBarActor } from '@src/lib/singletons'
+import type { FileMeta } from '@src/lib/types'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -82,10 +80,16 @@ export function ToastTextToCadError({
   toastId,
   message,
   prompt,
+  method,
+  projectName,
+  newProjectName,
 }: {
   toastId: string
   message: string
   prompt: string
+  method: string
+  projectName: string
+  newProjectName: string
 }) {
   return (
     <div className="flex flex-col justify-between gap-6">
@@ -118,10 +122,13 @@ export function ToastTextToCadError({
             commandBarActor.send({
               type: 'Find and select command',
               data: {
-                groupId: 'modeling',
+                groupId: 'application',
                 name: 'Text-to-CAD',
                 argDefaultValues: {
                   prompt,
+                  method,
+                  projectName,
+                  newProjectName,
                 },
               },
             })
@@ -139,24 +146,22 @@ export function ToastTextToCadSuccess({
   toastId,
   data,
   navigate,
-  context,
   token,
-  fileMachineSend,
   settings,
+  projectName,
+  fileName,
+  isProjectNew,
 }: {
   toastId: string
   data: TextToCad_type & { fileName: string }
   navigate: (to: string) => void
-  context: ReturnType<typeof useFileContext>['context']
   token?: string
-  fileMachineSend: (
-    event: EventFrom<typeof fileMachine>,
-    data?: unknown
-  ) => void
-  settings: {
-    theme: Themes
+  settings?: {
     highlightEdges: boolean
   }
+  projectName: string
+  fileName: string
+  isProjectNew: boolean
 }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -164,6 +169,7 @@ export function ToastTextToCadSuccess({
   const [hasCopied, setHasCopied] = useState(false)
   const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
+  const projectDirectoryPath = useProjectDirectoryPath()
 
   const animate = useCallback(
     ({
@@ -198,7 +204,11 @@ export function ToastTextToCadSuccess({
     if (!canvasRef.current) return
 
     const canvas = canvasRef.current
-    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true })
+    const renderer = new WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+    })
     renderer.setSize(CANVAS_SIZE, CANVAS_SIZE)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 
@@ -344,15 +354,30 @@ export function ToastTextToCadSuccess({
               }
               if (isDesktop()) {
                 // Delete the file from the project
-                fileMachineSend({
-                  type: 'Delete file',
-                  data: {
-                    name: data.fileName,
-                    path: `${context.project.path}${window.electron.sep}${data.fileName}`,
-                    children: null,
-                  },
-                })
+
+                if (projectName && fileName) {
+                  // You are in the new workflow for text to cad at the global application level
+                  if (isProjectNew) {
+                    // Delete the entire project if it was newly created from text to CAD
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteProject,
+                      data: {
+                        requestedProjectName: projectName,
+                      },
+                    })
+                  } else {
+                    // Only delete the file if the project was preexisting
+                    systemIOActor.send({
+                      type: SystemIOMachineEvents.deleteKCLFile,
+                      data: {
+                        requestedProjectName: projectName,
+                        requestedFileName: fileName,
+                      },
+                    })
+                  }
+                }
               }
+
               toast.dismiss(toastId)
             }}
           >
@@ -368,11 +393,9 @@ export function ToastTextToCadSuccess({
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                navigate(
-                  `${PATHS.FILE}/${encodeURIComponent(
-                    `${context.project.path}${window.electron.sep}${data.fileName}`
-                  )}`
-                )
+                const path = `${projectDirectoryPath}${window.electron.path.sep}${projectName}${window.electron.sep}${fileName}`
+                navigate(`${PATHS.FILE}/${encodeURIComponent(path)}`)
+
                 toast.dismiss(toastId)
               }}
             >
@@ -426,7 +449,6 @@ function traverseSceneToStyleObjects({
 }: {
   scene: Scene
   color?: number
-  theme: Themes
   highlightEdges?: boolean
 }) {
   scene.traverse((child) => {

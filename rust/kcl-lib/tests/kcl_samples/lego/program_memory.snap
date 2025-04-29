@@ -50,12 +50,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               -7.9,
-              -15.9
+              -11.9
             ],
             "tag": null,
             "to": [
               7.9,
-              -15.9
+              -11.9
             ],
             "type": "ToPoint",
             "units": {
@@ -69,12 +69,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               7.9,
-              -15.9
+              -11.9
             ],
             "tag": null,
             "to": [
               7.9,
-              15.9
+              11.9
             ],
             "type": "ToPoint",
             "units": {
@@ -88,12 +88,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               7.9,
-              15.9
+              11.9
             ],
             "tag": null,
             "to": [
               -7.9,
-              15.9
+              11.9
             ],
             "type": "ToPoint",
             "units": {
@@ -107,12 +107,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               -7.9,
-              15.9
+              11.9
             ],
             "tag": null,
             "to": [
               -7.9,
-              -15.9
+              -11.9
             ],
             "type": "ToPoint",
             "units": {
@@ -128,35 +128,36 @@ description: Variables in memory after executing lego.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
           "from": [
             -7.9,
-            -15.9
+            -11.9
           ],
           "to": [
             -7.9,
-            -15.9
+            -11.9
           ],
           "units": {
             "type": "Inches"
@@ -178,7 +179,8 @@ description: Variables in memory after executing lego.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "bumpDiam": {
@@ -235,14 +237,20 @@ description: Variables in memory after executing lego.kcl
   },
   "lSegments": {
     "type": "Number",
-    "value": 7.95,
+    "value": 7.9333,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "lbumps": {
     "type": "Number",
-    "value": 4.0,
+    "value": 3.0,
     "ty": {
       "type": "Default",
       "len": {
@@ -283,17 +291,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -309,17 +317,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -366,12 +375,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -385,12 +394,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -404,12 +413,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -423,12 +432,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -444,35 +453,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -494,7 +504,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -503,11 +514,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -529,7 +540,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -559,17 +571,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -585,17 +597,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -642,12 +655,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -661,12 +674,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -680,12 +693,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -699,12 +712,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -720,35 +733,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -770,7 +784,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -779,11 +794,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -805,7 +820,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -835,17 +851,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -861,17 +877,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -918,12 +935,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -937,12 +954,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -956,12 +973,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -975,12 +992,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -996,35 +1013,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -1046,7 +1064,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1055,11 +1074,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -1081,7 +1100,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1111,17 +1131,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -1137,17 +1157,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -1194,12 +1215,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1213,12 +1234,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1232,12 +1253,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1251,12 +1272,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1272,35 +1293,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -1322,7 +1344,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1331,11 +1354,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -1357,7 +1380,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1387,17 +1411,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -1413,17 +1437,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -1470,12 +1495,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1489,12 +1514,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1508,12 +1533,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1527,12 +1552,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1548,35 +1573,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -1598,7 +1624,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1607,11 +1634,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -1633,7 +1660,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1663,17 +1691,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -4.0,
-                  -12.0
+                  -8.0
                 ],
                 "from": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   -1.6,
-                  -12.0
+                  -8.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -1689,17 +1717,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -1746,12 +1775,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1765,12 +1794,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        -15.9
+                        -11.9
                       ],
                       "tag": null,
                       "to": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1784,12 +1813,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1803,12 +1832,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -7.9,
-                        15.9
+                        11.9
                       ],
                       "tag": null,
                       "to": [
                         -7.9,
-                        -15.9
+                        -11.9
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -1824,35 +1853,36 @@ description: Variables in memory after executing lego.kcl
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Mm"
+                      }
                     },
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     }
                   },
                   "start": {
                     "from": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "to": [
                       -7.9,
-                      -15.9
+                      -11.9
                     ],
                     "units": {
                       "type": "Inches"
@@ -1874,7 +1904,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1883,11 +1914,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "to": [
                 -1.6,
-                -12.0
+                -8.0
               ],
               "units": {
                 "type": "Inches"
@@ -1909,559 +1940,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -4.0,
-                  -12.0
-                ],
-                "from": [
-                  -1.6,
-                  -12.0
-                ],
-                "radius": 2.4,
-                "tag": null,
-                "to": [
-                  -1.6,
-                  -12.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -7.9,
-                        -15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        7.9,
-                        -15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        7.9,
-                        -15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        7.9,
-                        15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        7.9,
-                        15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        -7.9,
-                        15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -7.9,
-                        15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        -7.9,
-                        -15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    }
-                  ],
-                  "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
-                    "artifactId": "[uuid]",
-                    "value": "XY",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      -7.9,
-                      -15.9
-                    ],
-                    "to": [
-                      -7.9,
-                      -15.9
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 3.2,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                -1.6,
-                -12.0
-              ],
-              "to": [
-                -1.6,
-                -12.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
           },
-          "height": 1.8,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -4.0,
-                  -12.0
-                ],
-                "from": [
-                  -1.6,
-                  -12.0
-                ],
-                "radius": 2.4,
-                "tag": null,
-                "to": [
-                  -1.6,
-                  -12.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "end",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -7.9,
-                        -15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        7.9,
-                        -15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        7.9,
-                        -15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        7.9,
-                        15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        7.9,
-                        15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        -7.9,
-                        15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -7.9,
-                        15.9
-                      ],
-                      "tag": null,
-                      "to": [
-                        -7.9,
-                        -15.9
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    }
-                  ],
-                  "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
-                    "artifactId": "[uuid]",
-                    "value": "XY",
-                    "origin": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "units": {
-                      "type": "Inches"
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      -7.9,
-                      -15.9
-                    ],
-                    "to": [
-                      -7.9,
-                      -15.9
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": 3.2,
-                "startCapId": "[uuid]",
-                "endCapId": "[uuid]",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                -1.6,
-                -12.0
-              ],
-              "to": [
-                -1.6,
-                -12.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          "height": 1.8,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "sectional": false
         }
       }
     ]
@@ -2483,7 +1963,13 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 6.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "shellExtrude": {
@@ -2533,12 +2019,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               -6.4,
-              -14.4
+              -10.4
             ],
             "tag": null,
             "to": [
               6.4,
-              -14.4
+              -10.4
             ],
             "type": "ToPoint",
             "units": {
@@ -2552,12 +2038,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               6.4,
-              -14.4
+              -10.4
             ],
             "tag": null,
             "to": [
               6.4,
-              14.4
+              10.4
             ],
             "type": "ToPoint",
             "units": {
@@ -2571,12 +2057,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               6.4,
-              14.4
+              10.4
             ],
             "tag": null,
             "to": [
               -6.4,
-              14.4
+              10.4
             ],
             "type": "ToPoint",
             "units": {
@@ -2590,12 +2076,12 @@ description: Variables in memory after executing lego.kcl
             },
             "from": [
               -6.4,
-              14.4
+              10.4
             ],
             "tag": null,
             "to": [
               -6.4,
-              -14.4
+              -10.4
             ],
             "type": "ToPoint",
             "units": {
@@ -2611,17 +2097,18 @@ description: Variables in memory after executing lego.kcl
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -2668,12 +2155,12 @@ description: Variables in memory after executing lego.kcl
                   },
                   "from": [
                     -7.9,
-                    -15.9
+                    -11.9
                   ],
                   "tag": null,
                   "to": [
                     7.9,
-                    -15.9
+                    -11.9
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2687,12 +2174,12 @@ description: Variables in memory after executing lego.kcl
                   },
                   "from": [
                     7.9,
-                    -15.9
+                    -11.9
                   ],
                   "tag": null,
                   "to": [
                     7.9,
-                    15.9
+                    11.9
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2706,12 +2193,12 @@ description: Variables in memory after executing lego.kcl
                   },
                   "from": [
                     7.9,
-                    15.9
+                    11.9
                   ],
                   "tag": null,
                   "to": [
                     -7.9,
-                    15.9
+                    11.9
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2725,12 +2212,12 @@ description: Variables in memory after executing lego.kcl
                   },
                   "from": [
                     -7.9,
-                    15.9
+                    11.9
                   ],
                   "tag": null,
                   "to": [
                     -7.9,
-                    -15.9
+                    -11.9
                   ],
                   "type": "ToPoint",
                   "units": {
@@ -2746,35 +2233,36 @@ description: Variables in memory after executing lego.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 1.0,
-                  "z": 0.0
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0
-                },
-                "units": {
-                  "type": "Inches"
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
                 "from": [
                   -7.9,
-                  -15.9
+                  -11.9
                 ],
                 "to": [
                   -7.9,
-                  -15.9
+                  -11.9
                 ],
                 "units": {
                   "type": "Inches"
@@ -2796,7 +2284,8 @@ description: Variables in memory after executing lego.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2805,11 +2294,11 @@ description: Variables in memory after executing lego.kcl
         "start": {
           "from": [
             -6.4,
-            -14.4
+            -10.4
           ],
           "to": [
             -6.4,
-            -14.4
+            -10.4
           ],
           "units": {
             "type": "Inches"
@@ -2831,28 +2320,47 @@ description: Variables in memory after executing lego.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "t": {
     "type": "Number",
     "value": 1.5,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "totalLength": {
     "type": "Number",
-    "value": 31.8,
+    "value": 23.8,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "totalWidth": {
     "type": "Number",
     "value": 15.8,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "tubePattern": {
@@ -2885,17 +2393,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -0.0,
-                  -8.0
+                  -4.0
                 ],
                 "from": [
                   2.4,
-                  -8.0
+                  -4.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   2.4,
-                  -8.0
+                  -4.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -2911,17 +2419,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -2968,12 +2477,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -6.4,
-                        -14.4
+                        -10.4
                       ],
                       "tag": null,
                       "to": [
                         6.4,
-                        -14.4
+                        -10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -2987,12 +2496,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         6.4,
-                        -14.4
+                        -10.4
                       ],
                       "tag": null,
                       "to": [
                         6.4,
-                        14.4
+                        10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3006,12 +2515,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         6.4,
-                        14.4
+                        10.4
                       ],
                       "tag": null,
                       "to": [
                         -6.4,
-                        14.4
+                        10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3025,12 +2534,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -6.4,
-                        14.4
+                        10.4
                       ],
                       "tag": null,
                       "to": [
                         -6.4,
-                        -14.4
+                        -10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3046,17 +2555,18 @@ description: Variables in memory after executing lego.kcl
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "solid": {
                       "type": "Solid",
@@ -3103,12 +2613,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               -7.9,
-                              -15.9
+                              -11.9
                             ],
                             "tag": null,
                             "to": [
                               7.9,
-                              -15.9
+                              -11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3122,12 +2632,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               7.9,
-                              -15.9
+                              -11.9
                             ],
                             "tag": null,
                             "to": [
                               7.9,
-                              15.9
+                              11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3141,12 +2651,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               7.9,
-                              15.9
+                              11.9
                             ],
                             "tag": null,
                             "to": [
                               -7.9,
-                              15.9
+                              11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3160,12 +2670,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               -7.9,
-                              15.9
+                              11.9
                             ],
                             "tag": null,
                             "to": [
                               -7.9,
-                              -15.9
+                              -11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3181,35 +2691,36 @@ description: Variables in memory after executing lego.kcl
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Unknown"
+                            }
                           },
                           "yAxis": {
                             "x": 0.0,
                             "y": 1.0,
-                            "z": 0.0
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0
-                          },
-                          "units": {
-                            "type": "Inches"
+                            "z": 0.0,
+                            "units": {
+                              "type": "Unknown"
+                            }
                           }
                         },
                         "start": {
                           "from": [
                             -7.9,
-                            -15.9
+                            -11.9
                           ],
                           "to": [
                             -7.9,
-                            -15.9
+                            -11.9
                           ],
                           "units": {
                             "type": "Inches"
@@ -3231,7 +2742,8 @@ description: Variables in memory after executing lego.kcl
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Inches"
-                      }
+                      },
+                      "sectional": false
                     },
                     "units": {
                       "type": "Inches"
@@ -3240,11 +2752,11 @@ description: Variables in memory after executing lego.kcl
                   "start": {
                     "from": [
                       -6.4,
-                      -14.4
+                      -10.4
                     ],
                     "to": [
                       -6.4,
-                      -14.4
+                      -10.4
                     ],
                     "units": {
                       "type": "Inches"
@@ -3266,7 +2778,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": null,
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3275,11 +2788,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 2.4,
-                -8.0
+                -4.0
               ],
               "to": [
                 2.4,
-                -8.0
+                -4.0
               ],
               "units": {
                 "type": "Inches"
@@ -3301,7 +2814,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3331,17 +2845,17 @@ description: Variables in memory after executing lego.kcl
                 "ccw": true,
                 "center": [
                   -0.0,
-                  -8.0
+                  -4.0
                 ],
                 "from": [
                   2.4,
-                  -8.0
+                  -4.0
                 ],
                 "radius": 2.4,
                 "tag": null,
                 "to": [
                   2.4,
-                  -8.0
+                  -4.0
                 ],
                 "type": "Circle",
                 "units": {
@@ -3357,17 +2871,18 @@ description: Variables in memory after executing lego.kcl
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
-                "z": 0.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "yAxis": {
                 "x": 0.0,
                 "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
+                "z": 0.0,
+                "units": {
+                  "type": "Unknown"
+                }
               },
               "solid": {
                 "type": "Solid",
@@ -3414,12 +2929,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -6.4,
-                        -14.4
+                        -10.4
                       ],
                       "tag": null,
                       "to": [
                         6.4,
-                        -14.4
+                        -10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3433,12 +2948,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         6.4,
-                        -14.4
+                        -10.4
                       ],
                       "tag": null,
                       "to": [
                         6.4,
-                        14.4
+                        10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3452,12 +2967,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         6.4,
-                        14.4
+                        10.4
                       ],
                       "tag": null,
                       "to": [
                         -6.4,
-                        14.4
+                        10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3471,12 +2986,12 @@ description: Variables in memory after executing lego.kcl
                       },
                       "from": [
                         -6.4,
-                        14.4
+                        10.4
                       ],
                       "tag": null,
                       "to": [
                         -6.4,
-                        -14.4
+                        -10.4
                       ],
                       "type": "ToPoint",
                       "units": {
@@ -3492,17 +3007,18 @@ description: Variables in memory after executing lego.kcl
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
-                      "z": 0.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "yAxis": {
                       "x": 0.0,
                       "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
+                      "z": 0.0,
+                      "units": {
+                        "type": "Unknown"
+                      }
                     },
                     "solid": {
                       "type": "Solid",
@@ -3549,12 +3065,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               -7.9,
-                              -15.9
+                              -11.9
                             ],
                             "tag": null,
                             "to": [
                               7.9,
-                              -15.9
+                              -11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3568,12 +3084,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               7.9,
-                              -15.9
+                              -11.9
                             ],
                             "tag": null,
                             "to": [
                               7.9,
-                              15.9
+                              11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3587,12 +3103,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               7.9,
-                              15.9
+                              11.9
                             ],
                             "tag": null,
                             "to": [
                               -7.9,
-                              15.9
+                              11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3606,12 +3122,12 @@ description: Variables in memory after executing lego.kcl
                             },
                             "from": [
                               -7.9,
-                              15.9
+                              11.9
                             ],
                             "tag": null,
                             "to": [
                               -7.9,
-                              -15.9
+                              -11.9
                             ],
                             "type": "ToPoint",
                             "units": {
@@ -3627,35 +3143,36 @@ description: Variables in memory after executing lego.kcl
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Mm"
+                            }
                           },
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
-                            "z": 0.0
+                            "z": 0.0,
+                            "units": {
+                              "type": "Unknown"
+                            }
                           },
                           "yAxis": {
                             "x": 0.0,
                             "y": 1.0,
-                            "z": 0.0
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0
-                          },
-                          "units": {
-                            "type": "Inches"
+                            "z": 0.0,
+                            "units": {
+                              "type": "Unknown"
+                            }
                           }
                         },
                         "start": {
                           "from": [
                             -7.9,
-                            -15.9
+                            -11.9
                           ],
                           "to": [
                             -7.9,
-                            -15.9
+                            -11.9
                           ],
                           "units": {
                             "type": "Inches"
@@ -3677,7 +3194,8 @@ description: Variables in memory after executing lego.kcl
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Inches"
-                      }
+                      },
+                      "sectional": false
                     },
                     "units": {
                       "type": "Inches"
@@ -3686,11 +3204,11 @@ description: Variables in memory after executing lego.kcl
                   "start": {
                     "from": [
                       -6.4,
-                      -14.4
+                      -10.4
                     ],
                     "to": [
                       -6.4,
-                      -14.4
+                      -10.4
                     ],
                     "units": {
                       "type": "Inches"
@@ -3712,7 +3230,8 @@ description: Variables in memory after executing lego.kcl
                 "endCapId": null,
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3721,11 +3240,11 @@ description: Variables in memory after executing lego.kcl
             "start": {
               "from": [
                 2.4,
-                -8.0
+                -4.0
               ],
               "to": [
                 2.4,
-                -8.0
+                -4.0
               ],
               "units": {
                 "type": "Inches"
@@ -3747,453 +3266,8 @@ description: Variables in memory after executing lego.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
-        }
-      },
-      {
-        "type": "Solid",
-        "value": {
-          "type": "Solid",
-          "id": "[uuid]",
-          "artifactId": "[uuid]",
-          "value": [
-            {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [],
-              "tag": null,
-              "type": "extrudeArc"
-            }
-          ],
-          "sketch": {
-            "type": "Sketch",
-            "id": "[uuid]",
-            "paths": [
-              {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": []
-                },
-                "ccw": true,
-                "center": [
-                  -0.0,
-                  -8.0
-                ],
-                "from": [
-                  2.4,
-                  -8.0
-                ],
-                "radius": 2.4,
-                "tag": null,
-                "to": [
-                  2.4,
-                  -8.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              }
-            ],
-            "on": {
-              "type": "face",
-              "id": "[uuid]",
-              "artifactId": "[uuid]",
-              "value": "start",
-              "xAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0
-              },
-              "yAxis": {
-                "x": 0.0,
-                "y": 1.0,
-                "z": 0.0
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0
-              },
-              "solid": {
-                "type": "Solid",
-                "id": "[uuid]",
-                "artifactId": "[uuid]",
-                "value": [
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  },
-                  {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [],
-                    "tag": null,
-                    "type": "extrudePlane"
-                  }
-                ],
-                "sketch": {
-                  "type": "Sketch",
-                  "id": "[uuid]",
-                  "paths": [
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -6.4,
-                        -14.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        6.4,
-                        -14.4
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        6.4,
-                        -14.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        6.4,
-                        14.4
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        6.4,
-                        14.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        -6.4,
-                        14.4
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": []
-                      },
-                      "from": [
-                        -6.4,
-                        14.4
-                      ],
-                      "tag": null,
-                      "to": [
-                        -6.4,
-                        -14.4
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    }
-                  ],
-                  "on": {
-                    "type": "face",
-                    "id": "[uuid]",
-                    "artifactId": "[uuid]",
-                    "value": "start",
-                    "xAxis": {
-                      "x": 1.0,
-                      "y": 0.0,
-                      "z": 0.0
-                    },
-                    "yAxis": {
-                      "x": 0.0,
-                      "y": 1.0,
-                      "z": 0.0
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0
-                    },
-                    "solid": {
-                      "type": "Solid",
-                      "id": "[uuid]",
-                      "artifactId": "[uuid]",
-                      "value": [
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        },
-                        {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [],
-                          "tag": null,
-                          "type": "extrudePlane"
-                        }
-                      ],
-                      "sketch": {
-                        "type": "Sketch",
-                        "id": "[uuid]",
-                        "paths": [
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              -7.9,
-                              -15.9
-                            ],
-                            "tag": null,
-                            "to": [
-                              7.9,
-                              -15.9
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              7.9,
-                              -15.9
-                            ],
-                            "tag": null,
-                            "to": [
-                              7.9,
-                              15.9
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              7.9,
-                              15.9
-                            ],
-                            "tag": null,
-                            "to": [
-                              -7.9,
-                              15.9
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": []
-                            },
-                            "from": [
-                              -7.9,
-                              15.9
-                            ],
-                            "tag": null,
-                            "to": [
-                              -7.9,
-                              -15.9
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          }
-                        ],
-                        "on": {
-                          "type": "plane",
-                          "id": "[uuid]",
-                          "artifactId": "[uuid]",
-                          "value": "XY",
-                          "origin": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                          },
-                          "xAxis": {
-                            "x": 1.0,
-                            "y": 0.0,
-                            "z": 0.0
-                          },
-                          "yAxis": {
-                            "x": 0.0,
-                            "y": 1.0,
-                            "z": 0.0
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 1.0
-                          },
-                          "units": {
-                            "type": "Inches"
-                          }
-                        },
-                        "start": {
-                          "from": [
-                            -7.9,
-                            -15.9
-                          ],
-                          "to": [
-                            -7.9,
-                            -15.9
-                          ],
-                          "units": {
-                            "type": "Inches"
-                          },
-                          "tag": null,
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": []
-                          }
-                        },
-                        "artifactId": "[uuid]",
-                        "originalId": "[uuid]",
-                        "units": {
-                          "type": "Inches"
-                        }
-                      },
-                      "height": 3.2,
-                      "startCapId": "[uuid]",
-                      "endCapId": "[uuid]",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
-                    }
-                  },
-                  "start": {
-                    "from": [
-                      -6.4,
-                      -14.4
-                    ],
-                    "to": [
-                      -6.4,
-                      -14.4
-                    ],
-                    "units": {
-                      "type": "Inches"
-                    },
-                    "tag": null,
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": []
-                    }
-                  },
-                  "artifactId": "[uuid]",
-                  "originalId": "[uuid]",
-                  "units": {
-                    "type": "Inches"
-                  }
-                },
-                "height": -1.7000000000000002,
-                "startCapId": "[uuid]",
-                "endCapId": null,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "start": {
-              "from": [
-                2.4,
-                -8.0
-              ],
-              "to": [
-                2.4,
-                -8.0
-              ],
-              "units": {
-                "type": "Inches"
-              },
-              "tag": null,
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": []
-              }
-            },
-            "artifactId": "[uuid]",
-            "originalId": "[uuid]",
-            "units": {
-              "type": "Inches"
-            }
           },
-          "height": 1.8,
-          "startCapId": null,
-          "endCapId": "[uuid]",
-          "units": {
-            "type": "Inches"
-          }
+          "sectional": false
         }
       }
     ]
@@ -4202,7 +3276,13 @@ description: Variables in memory after executing lego.kcl
     "type": "Number",
     "value": 7.9,
     "ty": {
-      "type": "Unknown"
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "wbumps": {

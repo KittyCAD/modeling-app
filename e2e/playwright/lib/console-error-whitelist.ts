@@ -64,6 +64,18 @@ export const isErrorWhitelisted = (exception: Error) => {
       project: 'Google Chrome',
     },
     {
+      name: 'fE',
+      message:
+        'engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")',
+      stack: `fE: engine: Failed to wait for promise from send modeling command: JsValue("no connection to send on")
+     at ET (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:49875:12)
+     at WGe.clearSceneAndBustCache (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91886:19)
+     at async a.onEngineConnectionOpened (file:///home/runner/_work/modeling-app/modeling-app/.vite/renderer/main_window/assets/index-BvtRFNLF.js:91483:9)`,
+      foundInSpec:
+        'e2e/playwright/testing-constraints.spec.ts is frequent but could be any spec',
+      project: 'Google Chrome',
+    },
+    {
       name: 'RangeError',
       message: 'Position 160 is out of range for changeset of length 0',
       stack: `RangeError: Position 160 is out of range for changeset of length 0
@@ -271,14 +283,6 @@ export const isErrorWhitelisted = (exception: Error) => {
       stack: '',
       project: 'Google Chrome',
       foundInSpec: 'e2e/playwright/snapshot-tests.spec.ts',
-    },
-    // TODO: fix this error in the code
-    {
-      name: 'ReferenceError',
-      message: 'createNewVariableCheckbox is not defined',
-      stack: '',
-      project: 'Google Chrome',
-      foundInSpec: 'e2e/playwright/testing-constraints.spec.ts',
     },
     {
       name: 'Error',

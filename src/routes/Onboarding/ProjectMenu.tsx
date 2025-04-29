@@ -1,6 +1,7 @@
-import { OnboardingButtons } from '.'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { isDesktop } from 'lib/isDesktop'
+import { isDesktop } from '@src/lib/isDesktop'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function ProjectMenu() {
   const onDesktop = isDesktop()
@@ -50,7 +51,7 @@ export default function ProjectMenu() {
                 </a>{' '}
                 for that. We aren't hosting files for you at this time but are
                 considering supporting it in the future, so we're building
-                Modeling App with a browser-first experience in mind.
+                Design Studio with a browser-first experience in mind.
               </p>
             </>
           )}

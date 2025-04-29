@@ -1,30 +1,40 @@
-import { Models } from '@kittycad/lib'
-import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
-import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import {
-  isPathToNode,
+import type { Models } from '@kittycad/lib'
+
+import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import { DEV } from '@src/env'
+import { findUniqueName } from '@src/lang/create'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getVariableDeclaration } from '@src/lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
+import type {
   PathToNode,
   SourceRange,
   VariableDeclarator,
-} from 'lang/wasm'
-import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
-import { components } from 'lib/machine-api'
-import { Selections } from 'lib/selections'
-import { codeManager, kclManager } from 'lib/singletons'
-import { err } from 'lib/trap'
-import { modelingMachine, SketchTool } from 'machines/modelingMachine'
+} from '@src/lang/wasm'
+import { isPathToNode } from '@src/lang/wasm'
 import {
   loftValidator,
   revolveAxisValidator,
   shellValidator,
   sweepValidator,
-} from './validators'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { IS_NIGHTLY_OR_DEBUG } from 'routes/Settings'
-import { DEV } from 'env'
+} from '@src/lib/commandBarConfigs/validators'
+import type {
+  KclCommandValue,
+  StateMachineCommandSetConfig,
+} from '@src/lib/commandTypes'
+import {
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+  KCL_DEFAULT_DEGREE,
+  KCL_DEFAULT_LENGTH,
+  KCL_DEFAULT_TRANSFORM,
+} from '@src/lib/constants'
+import type { components } from '@src/lib/machine-api'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
+import type { SketchTool, modelingMachine } from '@src/machines/modelingMachine'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 type OutputFormat = Models['OutputFormat3d_type']
 type OutputTypeKey = OutputFormat['type']
@@ -77,11 +87,15 @@ export type ModelingCommandSchema = {
     thickness: KclCommandValue
   }
   Revolve: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
+    // KCL stdlib arguments
     selection: Selections
     angle: KclCommandValue
-    axisOrEdge: 'Axis' | 'Edge'
-    axis: string
-    edge: Selections
+    axis: string | undefined
+    edge: Selections | undefined
   }
   Fillet: {
     // Enables editing workflow
@@ -141,9 +155,6 @@ export type ModelingCommandSchema = {
     }
     namedValue: KclCommandValue
   }
-  'Text-to-CAD': {
-    prompt: string
-  }
   'Prompt-to-edit': {
     prompt: string
     selection: Selections
@@ -154,6 +165,25 @@ export type ModelingCommandSchema = {
   Appearance: {
     nodeToEdit?: PathToNode
     color: string
+  }
+  Translate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    x: KclCommandValue
+    y: KclCommandValue
+    z: KclCommandValue
+  }
+  Rotate: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    roll: KclCommandValue
+    pitch: KclCommandValue
+    yaw: KclCommandValue
+  }
+  Clone: {
+    nodeToEdit?: PathToNode
+    selection: Selections
+    variableName: string
   }
   'Boolean Subtract': {
     target: Selections
@@ -472,6 +502,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'revolve',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
@@ -500,6 +537,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'X Axis', isCurrent: true, value: 'X' },
           { name: 'Y Axis', isCurrent: false, value: 'Y' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       edge: {
         required: (commandContext) =>
@@ -520,7 +558,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Subtract': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Subtract one solid from another.',
     icon: 'booleanSubtract',
     needsReview: true,
@@ -547,7 +584,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Union': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
     description: 'Union multiple solids into a single solid.',
     icon: 'booleanUnion',
     needsReview: true,
@@ -564,8 +600,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Boolean Intersect': {
-    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
-    description: 'Subtract one solid from another.',
+    description: 'Create a solid from the intersection of two solids.',
     icon: 'booleanIntersect',
     needsReview: true,
     args: {
@@ -708,7 +743,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Fillet: {
     description: 'Fillet edge',
     icon: 'fillet3d',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -738,7 +772,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Chamfer: {
     description: 'Chamfer edge',
     icon: 'chamfer3d',
-    status: 'development',
     needsReview: true,
     args: {
       nodeToEdit: {
@@ -769,7 +802,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Create parameter',
     description: 'Add a named constant to use in geometry',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       value: {
@@ -785,7 +817,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     displayName: 'Edit parameter',
     description: 'Edit the value of a named constant',
     icon: 'make-variable',
-    status: 'development',
     needsReview: false,
     args: {
       nodeToEdit: {
@@ -934,16 +965,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  'Text-to-CAD': {
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    icon: 'chat',
-    args: {
-      prompt: {
-        inputType: 'text',
-        required: true,
-      },
-    },
-  },
   'Prompt-to-edit': {
     description: 'Use Zoo AI to edit your kcl',
     icon: 'chat',
@@ -1008,6 +1029,130 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         ],
       },
       // Add more fields
+    },
+  },
+  Translate: {
+    description: 'Set translation on solid or sketch.',
+    icon: 'move',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      x: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      y: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      z: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+    },
+  },
+  Rotate: {
+    description: 'Set rotation on solid or sketch.',
+    icon: 'rotate',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      roll: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      pitch: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+      yaw: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_TRANSFORM,
+        required: true,
+      },
+    },
+  },
+  Clone: {
+    description: 'Clone a solid or sketch.',
+    icon: 'clone',
+    needsReview: true,
+    hide: DEV || IS_NIGHTLY_OR_DEBUG ? undefined : 'both',
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+        hidden: true,
+      },
+      selection: {
+        // selectionMixed allows for feature tree selection of module imports
+        inputType: 'selectionMixed',
+        multiple: false,
+        required: true,
+        skip: true,
+        selectionTypes: ['path'],
+        selectionFilter: ['object'],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      variableName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: () => {
+          return findUniqueName(
+            kclManager.ast,
+            KCL_DEFAULT_CONSTANT_PREFIXES.CLONE
+          )
+        },
+        validation: async ({ data }: { data: string }) => {
+          const variableExists = kclManager.variables[data]
+          if (variableExists) {
+            return 'This variable name is already in use.'
+          }
+
+          return true
+        },
+      },
     },
   },
 }

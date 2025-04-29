@@ -16,11 +16,11 @@ std::math::TAU: number = 6.28318530717958647692528676655900577_
 
 ```js
 exampleSketch = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
-  |> angledLine({
+  |> startProfile(at = [0, 0])
+  |> angledLine(
     angle = 50,
     length = 10 * TAU,
-  }, %)
+  )
   |> yLine(endAbsolute = 0)
   |> close()
 

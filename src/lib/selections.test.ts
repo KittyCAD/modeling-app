@@ -1,13 +1,17 @@
 import { expect } from 'vitest'
-import { assertParse, initPromise, ArtifactGraph, SourceRange } from 'lang/wasm'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import type { Selection } from '@src/lib/selections'
 import {
   codeToIdSelections,
-  Selection,
   findLastRangeStartingBefore,
-} from './selections'
-import { buildArtifactIndex, ArtifactIndex } from './artifactIndex'
-import { Artifact } from 'lang/std/artifactGraph'
+} from '@src/lib/selections'
 
 beforeAll(async () => {
   await initPromise
@@ -15,7 +19,7 @@ beforeAll(async () => {
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([105.55, 105.55], sketch001)
+profile001 = startProfile(sketch001,at=[105.55, 105.55])
   |> xLine(332.55, %, $seg01)
   |> yLine(-310.12, %, $seg02)
   |> xLine(-373.65, %)
@@ -24,7 +28,7 @@ profile001 = startProfileAt([105.55, 105.55], sketch001)
 extrude001 = extrude(profile001, length = 500)
 
 sketch002 = startSketchOn(extrude001, seg01)
-profile002 = startProfileAt([-321.34, 361.76], sketch002)
+profile002 = startProfile(sketch002,at=[-321.34, 361.76])
   |> line(end = [109.03, -61.79])
   |> line(end = [-124.48, -132.65])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -36,29 +40,29 @@ profile006 = circle(sketch005,
   radius = 25.89
 )
 sketch004 = startSketchOn(extrude001, seg02)
-profile005 = startProfileAt([36.1, 174.49], sketch004)
-  |> angledLine([0, 22.33], %, $rectangleSegmentA003)
-  |> angledLine([
-       segAng(rectangleSegmentA003) - 90,
-       155.27
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA003),
-       -segLen(rectangleSegmentA003)
-     ], %)
+profile005 = startProfile(sketch004,at=[36.1, 174.49])
+  |> angledLine(angle = 0, length = 22.33, tag = $rectangleSegmentA003)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA003) - 90,
+       length = 155.27,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA003),
+       length = -segLen(rectangleSegmentA003),
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, seg02)
-profile003 = startProfileAt([-115.59, 439.4], sketch003)
-  |> angledLine([0, 130.08], %, $rectangleSegmentA002)
-  |> angledLine([
-       segAng(rectangleSegmentA002) - 90,
-       123.84
-     ], %)
-  |> angledLine([
-       segAng(rectangleSegmentA002),
-       -segLen(rectangleSegmentA002)
-     ], %)
+profile003 = startProfile(sketch003,at=[-115.59, 439.4])
+  |> angledLine(angle = 0, length = 130.08, tag = $rectangleSegmentA002)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA002) - 90,
+       length = 123.84,
+     )
+  |> angledLine(
+       angle = segAng(rectangleSegmentA002),
+       length = -segLen(rectangleSegmentA002),
+     )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 profile004 = circle(sketch003,
@@ -1166,7 +1170,7 @@ profile004 = circle(sketch003,
     [
       'path selection for a sketch on face',
       {
-        snippet: 'profile002 = startProfileAt([-321.34, 361.76], sketch002)',
+        snippet: 'profile002 = startProfile(sketch002,at=[-321.34, 361.76])',
         artifactDetails: {
           type: 'solid2d',
           range: [398, 398, 0],

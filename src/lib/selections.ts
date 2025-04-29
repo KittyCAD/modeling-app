@@ -1,46 +1,52 @@
-import { Models } from '@kittycad/lib'
+import type { SelectionRange } from '@codemirror/state'
+import { EditorSelection } from '@codemirror/state'
+import type { Models } from '@kittycad/lib'
+import type { Object3D, Object3DEventMap } from 'three'
+import { Mesh } from 'three'
+
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+
+import {
+  SEGMENT_BODIES_PLUS_PROFILE_START,
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
+import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
+import { getNodeFromPath, isSingleCursorInPipe } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import type { Artifact, ArtifactId, CodeRef } from '@src/lang/std/artifactGraph'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
+import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import type {
+  ArtifactGraph,
+  CallExpression,
+  CallExpressionKw,
+  Expr,
+  Program,
+  SourceRange,
+} from '@src/lang/wasm'
+import { defaultSourceRange } from '@src/lang/wasm'
+import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import type { DefaultPlaneStr } from '@src/lib/planes'
 import {
   codeManager,
   engineCommandManager,
   kclManager,
+  rustContext,
   sceneEntitiesManager,
-} from 'lib/singletons'
+} from '@src/lib/singletons'
+import { err } from '@src/lib/trap'
 import {
-  CallExpression,
-  SourceRange,
-  Expr,
-  defaultSourceRange,
-  topLevelRange,
-  ArtifactGraph,
-  CallExpressionKw,
-} from 'lang/wasm'
-import { ModelingMachineEvent } from 'machines/modelingMachine'
-import { isNonNullable, uuidv4 } from 'lib/utils'
-import { EditorSelection, SelectionRange } from '@codemirror/state'
-import { getNormalisedCoordinates, isOverlap } from 'lib/utils'
-import { isCursorInSketchCommandRange } from 'lang/util'
-import { Program } from 'lang/wasm'
-import { getNodeFromPath, isSingleCursorInPipe } from 'lang/queryAst'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { CommandArgument } from './commandTypes'
-import {
-  getParentGroup,
-  SEGMENT_BODIES_PLUS_PROFILE_START,
-} from 'clientSideScene/sceneEntities'
-import { Mesh, Object3D, Object3DEventMap } from 'three'
-import { AXIS_GROUP, X_AXIS } from 'clientSideScene/sceneInfra'
-import { PathToNodeMap } from 'lang/std/sketchcombos'
-import { err } from 'lib/trap'
-import {
-  Artifact,
-  CodeRef,
-  getCodeRefsByArtifactId,
-  ArtifactId,
-} from 'lang/std/artifactGraph'
-import { Node } from '@rust/kcl-lib/bindings/Node'
-import { DefaultPlaneStr } from './planes'
-import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
-import { rustContext } from './singletons'
+  getNormalisedCoordinates,
+  isArray,
+  isNonNullable,
+  isOverlap,
+  uuidv4,
+} from '@src/lib/utils'
+import { engineStreamActor } from '@src/lib/singletons'
+import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -103,6 +109,18 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = kclManager.artifactGraph.get(data.entity_id)
+  if (!_artifact) {
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // (i.e. if the user is holding shift they can keep selecting)
+    // but we should also put up a toast
+    // toast.error('some edges or faces are not currently selectable')
+    showUnsupportedSelectionToast()
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     kclManager.artifactGraph
@@ -646,15 +664,16 @@ export async function sendSelectEventToEngine(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>
 ) {
   // No video stream to normalise against, return immediately
-  if (!engineCommandManager.elVideo)
+  const engineStreamState = engineStreamActor.getSnapshot().context
+  if (!engineStreamState.videoRef.current)
     return Promise.reject('video element not ready')
 
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineCommandManager.elVideo,
+    engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
-  const res = await engineCommandManager.sendSceneCommand({
+  let res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -663,6 +682,13 @@ export async function sendSelectEventToEngine(
     },
     cmd_id: uuidv4(),
   })
+  if (!res) {
+    return Promise.reject('no response')
+  }
+
+  if (isArray(res)) {
+    res = res[0]
+  }
   if (
     res?.success &&
     res?.resp?.type === 'modeling' &&

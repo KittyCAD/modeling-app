@@ -252,7 +252,7 @@ Data for an imported geometry.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: [`ImportedGeometry`](/docs/kcl/types/ImportedGeometry)|  | No |
+| `type` |enum: `ImportedGeometry`|  | No |
 | `id` |[`string`](/docs/kcl/types/string)| The ID of the imported geometry. | No |
 | `value` |`[` [`string`](/docs/kcl/types/string) `]`| The original file paths. | No |
 
@@ -285,7 +285,7 @@ Data for an imported geometry.
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
 | `type` |enum: `Module`|  | No |
-| `value` |[`ModuleId`](/docs/kcl/types/ModuleId)| Identifier of a source file.  Uses a u32 to keep the size small. | No |
+| `value` |`integer`| Identifier of a source file.  Uses a u32 to keep the size small. | No |
 
 
 ----

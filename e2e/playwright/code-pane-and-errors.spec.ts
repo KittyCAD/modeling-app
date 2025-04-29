@@ -1,19 +1,17 @@
-import { test, expect } from './zoo-test'
-import {
-  orRunWhenFullSuiteEnabled,
-  getUtils,
-  executorInputPath,
-} from './test-utils'
 import { join } from 'path'
-import { bracket } from 'lib/exampleKcl'
-import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 import fsp from 'fs/promises'
 
-test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
+import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
+test.describe('Code pane and errors', () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
 
@@ -24,7 +22,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
         `@settings(defaultLengthUnit = in)
 // Extruded Triangle
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [-5, 10])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -35,7 +33,7 @@ extrude001 = extrude(sketch001, length = 5)`
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     // Ensure no badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
@@ -55,7 +53,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -129,7 +126,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     context,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -170,6 +166,8 @@ extrude001 = extrude(sketch001, length = 5)`
     context,
     page,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     // Load the app with the working starter code
     await context.addInitScript((code) => {
@@ -179,9 +177,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
 
-    // FIXME: await scene.waitForExecutionDone() does not work. It still fails.
-    // I needed to increase this timeout to get this to pass.
-    await page.waitForTimeout(10000)
+    await scene.settled(cmdBar)
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
@@ -251,11 +247,11 @@ test(
       ])
       await Promise.all([
         fsp.copyFile(
-          executorInputPath('router-template-slate.kcl'),
+          executorInputPath('cylinder-inches.kcl'),
           join(routerTemplateDir, 'main.kcl')
         ),
         fsp.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
           join(bracketDir, 'main.kcl')
         ),
       ])

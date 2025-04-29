@@ -1,14 +1,7 @@
-import { test, expect } from './zoo-test'
-
-import {
-  doExport,
-  getUtils,
-  makeTemplate,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
+import { doExport, getUtils, makeTemplate } from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', async ({ page, homePage }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -26,9 +19,7 @@ test('Units menu', async ({ page, homePage }) => {
   await millimetersButton.click()
 
   // Look out for the toast message
-  const toastMessage = page.getByText(
-    `Set default unit to "mm" for this project`
-  )
+  const toastMessage = page.getByText('Updated per-file units to mm')
   await expect(toastMessage).toBeVisible()
 
   // Verify that the popover has closed
@@ -57,33 +48,27 @@ totalHeightHalf = 2
 armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn(-XZ)
-|> startProfileAt([0, 0], %)
+|> startProfile(at = [0, 0])
 |> yLine(length = baseHeight)
 |> xLine(length = baseLen)
-|> angledLineToY({
+|> angledLine(
       angle = topAng,
-      to = totalHeightHalf,
-    }, %, $seg04)
+      endAbsoluteY = totalHeightHalf,
+      tag = $seg04,
+   )
 |> xLine(endAbsolute = totalLen, tag = $seg03)
 |> yLine(length = -armThick, tag = $seg01)
-|> angledLineThatIntersects({
-      angle = turns::HALF_TURN,
-      offset = -armThick,
-      intersectTag = seg04
-    }, %)
-|> angledLineToY([segAng(seg04) + 180, turns::ZERO], %)
-|> angledLineToY({
+|> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg04)
+|> angledLine(angle = segAng(seg04) + 180, endAbsoluteY = turns::ZERO)
+|> angledLine(
       angle = -bottomAng,
-      to = -totalHeightHalf - armThick,
-    }, %, $seg02)
+      endAbsoluteY = -totalHeightHalf - armThick,
+      tag = $seg02,
+   )
 |> xLine(endAbsolute = segEndX(seg03) + 0)
 |> yLine(length = -segLen(seg01))
-|> angledLineThatIntersects({
-      angle = turns::HALF_TURN,
-      offset = -armThick,
-      intersectTag = seg02
-    }, %)
-|> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
+|> angledLineThatIntersects(angle = turns::HALF_TURN, offset = -armThick, intersectTag = seg02)
+|> angledLine(angle = segAng(seg02) + 180, endAbsoluteY = -baseHeight)
 |> xLine(endAbsolute = turns::ZERO)
 |> close()
 |> extrude(length = 4)`
@@ -185,6 +170,7 @@ test('Keyboard shortcuts can be viewed through the help menu', async ({
 test('First escape in tool pops you out of tool, second exits sketch mode', async ({
   page,
   homePage,
+  toolbar,
 }) => {
   // Wait for the app to be ready for use
   const u = await getUtils(page)
@@ -194,15 +180,6 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await u.openDebugPanel()
   await u.expectCmdLog('[data-message-type="execution-done"]')
   await u.closeDebugPanel()
-
-  const lineButton = page.getByRole('button', {
-    name: 'line Line',
-    exact: true,
-  })
-  const arcButton = page.getByRole('button', {
-    name: 'arc Tangential Arc',
-    exact: true,
-  })
 
   // Test these hotkeys perform actions when
   // focus is on the canvas
@@ -214,8 +191,8 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(800, 300)
   await page.mouse.click(800, 300)
   await page.waitForTimeout(1000)
-  await expect(lineButton).toBeVisible()
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'true')
+  await expect(toolbar.lineBtn).toBeVisible()
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
   // Draw a line
   await page.mouse.move(700, 200, { steps: 5 })
@@ -231,10 +208,9 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.keyboard.press('Escape')
   // Make sure we didn't pop out of sketch mode.
   await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
-  await expect(lineButton).not.toHaveAttribute('aria-pressed', 'true')
+  await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
   // Equip arc tool
-  await page.keyboard.press('a')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'true')
+  await toolbar.selectTangentialArc()
 
   // click in the same position again to continue the profile
   await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
@@ -245,11 +221,14 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
   await page.mouse.move(1000, 100, { steps: 5 })
   await page.mouse.click(1000, 100)
   await page.keyboard.press('Escape')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
   await expect
     .poll(async () => {
       await page.keyboard.press('l')
-      return lineButton.getAttribute('aria-pressed')
+      return toolbar.lineBtn.getAttribute('aria-pressed')
     })
     .toBe('true')
 
@@ -258,8 +237,11 @@ test('First escape in tool pops you out of tool, second exits sketch mode', asyn
 
   // Unequip line tool
   await page.keyboard.press('Escape')
-  await expect(lineButton).toHaveAttribute('aria-pressed', 'false')
-  await expect(arcButton).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
   // Make sure we didn't pop out of sketch mode.
   await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
   // Exit sketch
@@ -273,7 +255,6 @@ test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
 }) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
   const u = await getUtils(page)
 
   // This test can run long if it takes a little too long to load
@@ -483,8 +464,9 @@ test('Sketch on face', async ({ page, homePage, scene, cmdBar, toolbar }) => {
   await page.addInitScript(async () => {
     localStorage.setItem(
       'persistCode',
-      `sketch001 = startSketchOn(XZ)
-|> startProfileAt([3.29, 7.86], %)
+      `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
+|> startProfile(at = [3.29, 7.86])
 |> line(end = [2.48, 2.44])
 |> line(end = [2.66, 1.17])
 |> line(end = [3.75, 0.46])
@@ -544,8 +526,8 @@ extrude001 = extrude(sketch001, length = 5 + 7)`
   previousCodeContent = await page.locator('.cm-content').innerText()
 
   await expect.poll(u.normalisedEditorCode).toContain(
-    u.normalisedCode(`sketch002 = startSketchOn(extrude001, seg01)
-profile001 = startProfileAt([-12.34, 12.34], sketch002)
+    u.normalisedCode(`sketch002 = startSketchOn(extrude001, face = seg01)
+profile001 = startProfile(sketch002, at = [-12.34, 12.34])
   |> line(end = [12.34, -12.34])
   |> line(end = [-12.34, -12.34])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -560,7 +542,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await u.updateCamPosition([1049, 239, 686])
   await u.closeDebugPanel()
 
-  await page.getByText('startProfileAt([-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
   await expect(page.getByRole('button', { name: 'Edit Sketch' })).toBeVisible()
   await page.getByRole('button', { name: 'Edit Sketch' }).click()
   await page.waitForTimeout(500)
@@ -581,8 +563,8 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await expect(page.locator('.cm-content')).not.toHaveText(previousCodeContent)
   previousCodeContent = await page.locator('.cm-content').innerText()
 
-  const result = makeTemplate`sketch002 = startSketchOn(extrude001, seg01)
-|> startProfileAt([-12.83, 6.7], %)
+  const result = makeTemplate`sketch002 = startSketchOn(extrude001, face = seg01)
+|> startProfile(at = [-12.83, 6.7])
 |> line(end = [${[2.28, 2.35]}, -${0.07}])
 |> line(end = [-3.05, -1.47])
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -595,7 +577,7 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
   await page.getByRole('button', { name: 'Exit Sketch' }).click()
   await u.expectCmdLog('[data-message-type="execution-done"]')
 
-  await page.getByText('startProfileAt([-12').click()
+  await page.getByText('startProfile(sketch002, at = [-12').click()
 
   await expect(page.getByRole('button', { name: 'Extrude' })).not.toBeDisabled()
   await page.waitForTimeout(100)
@@ -612,3 +594,12 @@ profile001 = startProfileAt([-12.34, 12.34], sketch002)
 const sketch002 = extrude(sketch002, length = ${[5, 5]} + 7)`
   await expect(page.locator('.cm-content')).toHaveText(result2.regExp)
 })
+
+test.fixme(
+  `Opening a share link in the web isn't blocked by the web warning banner`,
+  async () => {
+    // This test is not able to be run right now since we don't have a web-only setup for Playwright.
+    // @franknoirot can implement it when that testing infra is set up. It should be a test to cover the fix from
+    // modeling-app issue #6172.
+  }
+)

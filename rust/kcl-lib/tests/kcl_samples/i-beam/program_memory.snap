@@ -18,9 +18,11 @@ description: Variables in memory after executing i-beam.kcl
   },
   "beamLength": {
     "type": "Number",
-    "value": 72.0,
+    "value": 6.0,
     "ty": {
-      "type": "Unknown"
+      "type": "Known",
+      "type": "Length",
+      "type": "Feet"
     }
   },
   "flangeThickness": {
@@ -49,20 +51,7 @@ description: Variables in memory after executing i-beam.kcl
       }
     }
   },
-  "rootRadius": {
-    "type": "Number",
-    "value": 0.457,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "sketch001": {
+  "iBeam": {
     "type": "Solid",
     "value": {
       "type": "Solid",
@@ -182,25 +171,26 @@ description: Variables in memory after executing i-beam.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -227,11 +217,25 @@ description: Variables in memory after executing i-beam.kcl
           "type": "Inches"
         }
       },
-      "height": 72.00000000000001,
-      "startCapId": null,
-      "endCapId": null,
+      "height": 72.0,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
+      },
+      "sectional": false
+    }
+  },
+  "rootRadius": {
+    "type": "Number",
+    "value": 0.457,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
       }
     }
   },

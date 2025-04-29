@@ -1,10 +1,9 @@
-import { test, expect } from './zoo-test'
-import { orRunWhenFullSuiteEnabled } from './test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 /* eslint-disable jest/no-conditional-expect */
 
 const file = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([57.81, 250.51], sketch001)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
   |> line(end = [19.66, -116.4])
@@ -13,7 +12,7 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([-114, 85.52], %)
+  |> startProfile(at = [-114, 85.52])
   |> xLine(length = 265.36)
   |> line(end = [33.17, -261.22])
   |> xLine(length = -297.25)
@@ -21,22 +20,16 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
-  |> startProfileAt([52.92, 157.81], %)
-  |> angledLine([0, 176.4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       53.4
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> startProfile(at = [52.92, 157.81])
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 53.4, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(sketch003, length = 20)
 `
 
-test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
+test.describe('Prompt-to-edit tests', () => {
   test.describe('Check the happy path, for basic changing color', () => {
     const cases = [
       {
@@ -61,7 +54,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           localStorage.setItem('persistCode', file)
         }, file)
         await homePage.goToModelingScene()
-        await scene.waitForExecutionDone()
+        await scene.settled(cmdBar)
 
         const body1CapCoords = { x: 571, y: 311 }
         const greenCheckCoords = { x: 565, y: 305 }
@@ -89,7 +82,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           await scene.expectPixelColor(yellow, body1CapCoords, 20)
           await editor.expectState({
             highlightedCode: '',
-            activeLines: ['|>startProfileAt([-114,85.52],%)'],
+            activeLines: ['|>startProfile(at=[-114,85.52])'],
             diagnostics: [],
           })
         })
@@ -156,7 +149,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const body1CapCoords = { x: 571, y: 311 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
@@ -177,7 +170,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
 
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-114,85.52],%)'],
+        activeLines: ['|>startProfile(at=[-114,85.52])'],
         diagnostics: [],
       })
     })
@@ -205,14 +198,13 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
@@ -281,7 +273,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       localStorage.setItem('persistCode', file)
     }, file)
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
@@ -301,7 +293,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       // Hold shift and select second body
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-114,85.52],%)'],
+        activeLines: ['|>startProfile(at=[-114,85.52])'],
         diagnostics: [],
       })
       await page.keyboard.down('Shift')
@@ -312,7 +304,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           'line(end=[121.13,56.63],tag=$seg02)extrude(profile001,length=200)',
         activeLines: [
           '|>line(end=[121.13,56.63],tag=$seg02)',
-          '|>startProfileAt([-114,85.52],%)',
+          '|>startProfile(at=[-114,85.52])',
         ],
         diagnostics: [],
       })

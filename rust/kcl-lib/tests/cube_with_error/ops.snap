@@ -4,20 +4,19 @@ description: Operations executed cube_with_error.kcl
 ---
 [
   {
-    "type": "UserDefinedFunctionCall",
-    "name": "cube",
-    "functionSourceRange": [
-      7,
-      392,
-      0
-    ],
-    "unlabeledArg": null,
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cube",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
     "sourceRange": []
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"
@@ -63,6 +62,6 @@ description: Operations executed cube_with_error.kcl
     }
   },
   {
-    "type": "UserDefinedFunctionReturn"
+    "type": "GroupEnd"
   }
 ]

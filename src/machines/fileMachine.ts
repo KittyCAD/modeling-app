@@ -1,5 +1,6 @@
 import { assign, fromPromise, setup } from 'xstate'
-import { Project, FileEntry } from 'lib/project'
+
+import type { FileEntry, Project } from '@src/lib/project'
 
 type FileMachineContext = {
   project: Project
@@ -9,6 +10,7 @@ type FileMachineContext = {
 
 type FileMachineEvents =
   | { type: 'Open file'; data: { name: string } }
+  | { type: 'Open file in new window'; data: { name: string } }
   | {
       type: 'Rename file'
       data: { oldName: string; newName: string; isDir: boolean }
@@ -61,6 +63,7 @@ type FileMachineEvents =
     }
   | { type: 'assign'; data: { [key: string]: any } }
   | { type: 'Refresh' }
+  | { type: 'Refresh with new project'; data: { project: Project } }
 
 export const fileMachine = setup({
   types: {} as {
@@ -93,7 +96,12 @@ export const fileMachine = setup({
         )
       },
     }),
+    setProject: assign(({ event }) => {
+      if (event.type !== 'Refresh with new project') return {}
+      return { project: event.data.project }
+    }),
     navigateToFile: () => {},
+    openFileInNewWindow: () => {},
     renameToastSuccess: () => {},
     createToastSuccess: () => {},
     toastSuccess: () => {},
@@ -126,7 +134,7 @@ export const fileMachine = setup({
           makeDir: boolean
           selectedDirectory: FileEntry
           targetPathToClone?: string
-          content: string
+          content?: string
           shouldSetToRename: boolean
         }
       }) => Promise.resolve({ message: '', path: '' })
@@ -152,7 +160,7 @@ export const fileMachine = setup({
           name: string
           makeDir: boolean
           selectedDirectory: FileEntry
-          content: string
+          content?: string
         }
       }) => Promise.resolve({ path: '' })
     ),
@@ -180,6 +188,10 @@ export const fileMachine = setup({
     },
 
     Refresh: '.Reading files',
+    'Refresh with new project': {
+      actions: ['setProject'],
+      target: '.Reading files',
+    },
   },
   states: {
     'Has no files': {
@@ -212,6 +224,10 @@ export const fileMachine = setup({
           target: 'Opening file',
         },
 
+        'Open file in new window': {
+          target: 'Opening file in new window',
+        },
+
         'Set selected directory': {
           target: 'Has files',
           actions: ['setSelectedDirectory'],
@@ -238,7 +254,7 @@ export const fileMachine = setup({
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
             targetPathToClone: event.data.targetPathToClone,
-            content: event.data.content ?? '',
+            content: event.data.content,
             shouldSetToRename: event.data.shouldSetToRename ?? false,
           }
         },
@@ -399,6 +415,10 @@ export const fileMachine = setup({
       entry: ['navigateToFile'],
     },
 
+    'Opening file in new window': {
+      entry: ['openFileInNewWindow'],
+    },
+
     'Creating file': {
       invoke: {
         src: 'createFile',
@@ -417,7 +437,7 @@ export const fileMachine = setup({
             name: event.data.name,
             makeDir: event.data.makeDir,
             selectedDirectory: context.selectedDirectory,
-            content: event.data.content ?? '',
+            content: event.data.content,
           }
         },
         onDone: 'Reading files',

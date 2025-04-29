@@ -26,10 +26,12 @@ yarn-error.log*
 .idea
 .vscode
 .helix
+result
 
 # rust
 rust/target
 rust/kcl-lib/bindings
+rust/kcl-language-server/server
 public/kcl_wasm_lib_bg.wasm
 rust/lcov.info
 rust/kcl-wasm-lib/pkg
@@ -82,3 +84,4 @@ dist
 venv
 
 .vscode-test
+.biome/

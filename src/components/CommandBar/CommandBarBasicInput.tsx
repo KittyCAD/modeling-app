@@ -1,7 +1,14 @@
-import { CommandArgument } from 'lib/commandTypes'
-import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { useEffect, useRef } from 'react'
+import { useSelector } from '@xstate/react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarBasicInput({
   arg,
@@ -18,6 +25,19 @@ function CommandBarBasicInput({
   const commandBarState = useCommandBarState()
   useHotkeys('mod + k, mod + /', () => commandBarActor.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
+  const argMachineContext = useSelector(
+    arg.machineActor,
+    machineContextSelector
+  )
+  const defaultValue = useMemo(
+    () =>
+      arg.defaultValue
+        ? arg.defaultValue instanceof Function
+          ? arg.defaultValue(commandBarState.context, argMachineContext)
+          : arg.defaultValue
+        : '',
+    [arg.defaultValue, commandBarState.context, argMachineContext]
+  )
 
   useEffect(() => {
     if (inputRef.current) {
@@ -49,11 +69,7 @@ function CommandBarBasicInput({
           required
           className="flex-grow px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80 !bg-transparent focus:outline-none"
           placeholder="Enter a value"
-          defaultValue={
-            (commandBarState.context.argumentsToSubmit[arg.name] as
-              | string
-              | undefined) || (arg.defaultValue as string)
-          }
+          defaultValue={defaultValue}
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.shiftKey) {
               stepBack()

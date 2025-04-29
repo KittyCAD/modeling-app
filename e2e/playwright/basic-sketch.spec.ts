@@ -1,13 +1,13 @@
-import { Page } from '@playwright/test'
-import { test, expect } from './zoo-test'
+import type { Page } from '@playwright/test'
+
+import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import {
-  getUtils,
+  PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
   commonPoints,
-  PERSIST_MODELING_CONTEXT,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
-import { HomePageFixture } from './fixtures/homePageFixture'
+  getUtils,
+} from '@e2e/playwright/test-utils'
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.setTimeout(120000)
 
@@ -57,7 +57,7 @@ async function doBasicSketch(
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
   if (openPanes.includes('code')) {
     await expect(u.codeLocator).toContainText(
-      `sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)`
+      `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
     )
   }
   await page.waitForTimeout(500)
@@ -65,17 +65,19 @@ async function doBasicSketch(
   await page.waitForTimeout(500)
 
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
+    await expect(
+      u.codeLocator
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
   |> xLine(length = ${commonPoints.num1})`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      u.codeLocator
+    ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
       commonPoints.startAt
-    }, sketch001)
+    })
   |> xLine(length = ${commonPoints.num1})
   |> yLine(length = ${commonPoints.num1 + 0.01})`)
   } else {
@@ -84,10 +86,11 @@ async function doBasicSketch(
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator)
-      .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+    await expect(
+      u.codeLocator
+    ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, ${
       commonPoints.startAt
-    }, sketch001)
+    })
   |> xLine(length = ${commonPoints.num1})
   |> yLine(length = ${commonPoints.num1 + 0.01})
   |> xLine(length = ${commonPoints.num2 * -1})`)
@@ -119,10 +122,7 @@ async function doBasicSketch(
   await page.waitForTimeout(100)
 
   if (openPanes.includes('code')) {
-    await expect(
-      await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)
-    ).toBeLessThan(3)
-    await expect(await u.getGreatestPixDiff(line1, [0, 0, 255])).toBeLessThan(3)
+    expect(await u.getGreatestPixDiff(line1, TEST_COLORS.BLUE)).toBeLessThan(3)
   }
 
   // hold down shift
@@ -139,23 +139,23 @@ async function doBasicSketch(
     await page.waitForTimeout(100)
   }
 
-  await page.getByRole('button', { name: 'Length: open menu' }).click()
+  await page.getByRole('button', { name: 'constraints: open menu' }).click()
   await page.getByRole('button', { name: 'Equal Length' }).click()
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(u.codeLocator)
-    .toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfileAt(${
+  await expect(
+    u.codeLocator
+  ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
     commonPoints.startAt
-  }, sketch001)
+  })
   |> xLine(length = ${commonPoints.num1}, tag = $seg01)
   |> yLine(length = ${commonPoints.num1 + 0.01})
   |> xLine(length = -segLen(seg01))`)
 }
 
-test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
+test.describe('Basic sketch', () => {
   test('code pane open at start', async ({ page, homePage }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     await doBasicSketch(page, homePage, ['code'])
   })
 

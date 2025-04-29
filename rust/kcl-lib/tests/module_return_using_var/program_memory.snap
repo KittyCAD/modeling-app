@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing module_return_using_var.kcl
+---
+{
+  "cube": {
+    "type": "Module",
+    "value": 8
+  }
+}

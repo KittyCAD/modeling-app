@@ -1,12 +1,12 @@
-import { Toolbar } from '../Toolbar'
-import UserSidebarMenu from 'components/UserSidebarMenu'
-import { type IndexLoaderData } from 'lib/types'
-import ProjectSidebarMenu from './ProjectSidebarMenu'
+import { Toolbar } from '@src/Toolbar'
+import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
+import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import UserSidebarMenu from '@src/components/UserSidebarMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import { type IndexLoaderData } from '@src/lib/types'
+import { useUser } from '@src/lib/singletons'
+
 import styles from './AppHeader.module.css'
-import { RefreshButton } from 'components/RefreshButton'
-import { CommandBarOpenButton } from './CommandBarOpenButton'
-import { isDesktop } from 'lib/isDesktop'
-import { useUser } from 'machines/appMachine'
 
 interface AppHeaderProps extends React.PropsWithChildren {
   showToolbar?: boolean
@@ -48,14 +48,9 @@ export const AppHeader = ({
       <div className="flex-grow flex justify-center max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-4xl 2xl:max-w-5xl">
         {showToolbar && <Toolbar />}
       </div>
-      <div className="flex items-center gap-1 py-1 ml-auto">
+      <div className="flex items-center gap-2 py-1 ml-auto">
         {/* If there are children, show them, otherwise show User menu */}
-        {children || (
-          <>
-            <CommandBarOpenButton />
-            <RefreshButton />
-          </>
-        )}
+        {children || <CommandBarOpenButton />}
         <UserSidebarMenu user={user} />
       </div>
     </header>

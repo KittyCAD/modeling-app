@@ -1,7 +1,7 @@
 use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
-    Annotation, ArrayExpression, ArrayRangeExpression, Ascription, BinaryExpression, BinaryPart, BodyItem,
+    Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
     CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
     Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
     Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty,
@@ -464,7 +464,7 @@ impl LabelledExpression {
     });
 }
 
-impl Ascription {
+impl AscribedExpression {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.expr.compute_digest());
         hasher.update(slf.ty.compute_digest());
@@ -528,13 +528,13 @@ mod test {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_digest() {
         let prog1_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line([5, 5], %)
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 2], %)
+    |> startProfile(at = [0, 2])
     |> line([5, 5], %)
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
@@ -542,7 +542,7 @@ mod test {
         assert!(prog1_digest != prog2_digest);
 
         let prog3_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line([5, 5], %)
 "#;
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();

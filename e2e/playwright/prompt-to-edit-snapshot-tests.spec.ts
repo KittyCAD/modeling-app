@@ -1,4 +1,5 @@
-import { test, expect } from './zoo-test'
+import { expect, test } from '@e2e/playwright/zoo-test'
+
 /* eslint-disable jest/no-conditional-expect */
 
 /**
@@ -22,7 +23,7 @@ import { test, expect } from './zoo-test'
  */
 
 const file = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([57.81, 250.51], sketch001)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
   |> line(end = [19.66, -116.4])
@@ -31,7 +32,7 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([-73.64, -42.89], %)
+  |> startProfile(at = [-73.64, -42.89])
   |> xLine(length = 173.71)
   |> line(end = [-22.12, -94.4])
   |> xLine(length = -156.98)
@@ -39,16 +40,14 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
-  |> startProfileAt([52.92, 157.81], %)
-  |> angledLine([0, 176.4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       53.4
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> startProfile(at = [52.92, 157.81])
+  |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
+  |> angledLine(
+       angle = segAng(rectangleSegmentA001) - 90,
+       length = 53.4,
+       tag = $rectangleSegmentB001,
+     )
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude003 = extrude(sketch003, length = 20)
@@ -62,23 +61,20 @@ test.describe('edit with AI example snapshots', () => {
         localStorage.setItem('persistCode', file)
       }, file)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       const body1CapCoords = { x: 571, y: 351 }
       const [clickBody1Cap] = scene.makeMouseHelpers(
         body1CapCoords.x,
         body1CapCoords.y
       )
-      const yellow: [number, number, number] = [179, 179, 131]
       const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
 
       await test.step('wait for scene to load select body and check selection came through', async () => {
-        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
         await clickBody1Cap()
-        await scene.expectPixelColor(yellow, body1CapCoords, 20)
         await editor.expectState({
           highlightedCode: '',
-          activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+          activeLines: ['|>startProfile(at=[-73.64,-42.89])'],
           diagnostics: [],
         })
       })

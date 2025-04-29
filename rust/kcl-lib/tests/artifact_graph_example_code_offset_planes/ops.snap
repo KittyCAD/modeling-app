@@ -4,6 +4,15 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
 ---
 [
   {
+    "type": "KclStdLibCall",
+    "name": "offsetPlane",
+    "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "XY"
+      },
+      "sourceRange": []
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -22,18 +31,18 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "String",
-        "value": "XY"
+        "value": "XZ"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -52,18 +61,18 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         "sourceRange": []
       }
     },
+    "sourceRange": []
+  },
+  {
+    "type": "KclStdLibCall",
     "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "String",
-        "value": "XZ"
+        "value": "YZ"
       },
       "sourceRange": []
-    }
-  },
-  {
+    },
     "labeledArgs": {
       "offset": {
         "value": {
@@ -82,20 +91,11 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
         "sourceRange": []
       }
     },
-    "name": "offsetPlane",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "String",
-        "value": "YZ"
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
   },
   {
     "labeledArgs": {
-      "data": {
+      "planeOrSolid": {
         "value": {
           "type": "Plane",
           "artifact_id": "[uuid]"

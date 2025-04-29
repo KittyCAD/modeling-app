@@ -1,40 +1,40 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[565, 620, 0]"]
-    3["Segment<br>[628, 696, 0]"]
-    4["Segment<br>[704, 770, 0]"]
-    5["Segment<br>[778, 846, 0]"]
-    6["Segment<br>[854, 873, 0]"]
+    2["Path<br>[566, 621, 0]"]
+    3["Segment<br>[629, 697, 0]"]
+    4["Segment<br>[705, 771, 0]"]
+    5["Segment<br>[779, 847, 0]"]
+    6["Segment<br>[855, 874, 0]"]
     7[Solid2d]
   end
   subgraph path8 [Path]
-    8["Path<br>[1104, 1249, 0]"]
-    9["Segment<br>[1104, 1249, 0]"]
+    8["Path<br>[1118, 1263, 0]"]
+    9["Segment<br>[1118, 1263, 0]"]
     10[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[1264, 1408, 0]"]
-    12["Segment<br>[1264, 1408, 0]"]
+    11["Path<br>[1288, 1432, 0]"]
+    12["Segment<br>[1288, 1432, 0]"]
     13[Solid2d]
   end
   subgraph path14 [Path]
-    14["Path<br>[1423, 1569, 0]"]
-    15["Segment<br>[1423, 1569, 0]"]
+    14["Path<br>[1457, 1603, 0]"]
+    15["Segment<br>[1457, 1603, 0]"]
     16[Solid2d]
   end
   subgraph path17 [Path]
-    17["Path<br>[1584, 1729, 0]"]
-    18["Segment<br>[1584, 1729, 0]"]
+    17["Path<br>[1628, 1773, 0]"]
+    18["Segment<br>[1628, 1773, 0]"]
     19[Solid2d]
   end
   subgraph path20 [Path]
-    20["Path<br>[1744, 1796, 0]"]
-    21["Segment<br>[1744, 1796, 0]"]
+    20["Path<br>[1798, 1850, 0]"]
+    21["Segment<br>[1798, 1850, 0]"]
     22[Solid2d]
   end
-  1["Plane<br>[540, 557, 0]"]
-  23["Sweep Extrusion<br>[1806, 1838, 0]"]
+  1["Plane<br>[541, 558, 0]"]
+  23["Sweep Extrusion<br>[1857, 1889, 0]"]
   24[Wall]
   25[Wall]
   26[Wall]
@@ -49,10 +49,10 @@ flowchart LR
   35["SweepEdge Adjacent"]
   36["SweepEdge Opposite"]
   37["SweepEdge Adjacent"]
-  38["EdgeCut Fillet<br>[1844, 2109, 0]"]
-  39["EdgeCut Fillet<br>[1844, 2109, 0]"]
-  40["EdgeCut Fillet<br>[1844, 2109, 0]"]
-  41["EdgeCut Fillet<br>[1844, 2109, 0]"]
+  38["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  39["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  40["EdgeCut Fillet<br>[1895, 2160, 0]"]
+  41["EdgeCut Fillet<br>[1895, 2160, 0]"]
   1 --- 2
   1 --- 8
   1 --- 11
@@ -68,15 +68,19 @@ flowchart LR
   3 --- 24
   3 --- 30
   3 --- 31
+  3 x--> 28
   4 --- 25
   4 --- 32
   4 --- 33
+  4 x--> 28
   5 --- 26
   5 --- 34
   5 --- 35
+  5 x--> 28
   6 --- 27
   6 --- 36
   6 --- 37
+  6 x--> 28
   8 --- 9
   8 --- 10
   11 --- 12
@@ -101,6 +105,22 @@ flowchart LR
   23 --- 35
   23 --- 36
   23 --- 37
+  30 <--x 24
+  30 <--x 29
+  31 <--x 24
+  31 <--x 25
+  32 <--x 25
+  32 <--x 29
+  33 <--x 25
+  33 <--x 26
+  34 <--x 26
+  34 <--x 29
+  35 <--x 26
+  35 <--x 27
+  36 <--x 27
+  36 <--x 29
+  37 <--x 24
+  37 <--x 27
   37 <--x 38
   31 <--x 39
   33 <--x 40

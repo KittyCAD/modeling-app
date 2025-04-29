@@ -1,4 +1,4 @@
-@import './colors.css';
+@import "./colors.css";
 
 @tailwind base;
 @tailwind components;
@@ -86,7 +86,7 @@ textarea,
 
 button {
   @apply border border-chalkboard-30 m-0.5 px-3 rounded text-xs;
-  @apply focus-visible:outline-chalkboard-100;
+  @apply focus-visible:outline-none;
 }
 
 button:hover {
@@ -94,7 +94,7 @@ button:hover {
 }
 
 .dark button {
-  @apply border-chalkboard-70 focus-visible:outline-chalkboard-10;
+  @apply border-chalkboard-70;
 }
 
 .dark button:hover {
@@ -131,12 +131,12 @@ input {
 }
 
 .mono {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -249,10 +249,10 @@ code {
 #code-mirror-override .cm-tooltip-autocomplete li {
   @apply px-2 py-1;
 }
-#code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+#code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-10 text-liquid-110;
 }
-.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-100 text-liquid-20;
 }
 
@@ -285,6 +285,11 @@ code {
     @apply text-chalkboard-70 dark:text-chalkboard-40;
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
     @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-80;
+  }
+
+  .home-layout {
+    @apply grid lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-16;
+    grid-template-rows: auto 1fr;
   }
 }
 

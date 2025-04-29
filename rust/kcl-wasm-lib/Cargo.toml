@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.56"
+version = "0.1.64"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -12,7 +12,7 @@ bench = false
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 bson = { workspace = true, features = ["uuid-1", "chrono"] }
-console_error_panic_hook = "0.1.7"
+console_error_panic_hook = { workspace = true }
 data-encoding = "2.6.0"
 futures = "0.3.31"
 # Enable the feature in a transitive dependency.
@@ -20,11 +20,11 @@ getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
 getrandom_3 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.72"
-kcl-lib = { path = "../kcl-lib" }
+kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 serde_json = { workspace = true }
-tokio = { workspace = true, features = ["sync"] }
+tokio = { workspace = true, features = ["sync", "rt"] }
 toml = "0.8.19"
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
 uuid = { workspace = true, features = ["v4", "js", "serde"] }

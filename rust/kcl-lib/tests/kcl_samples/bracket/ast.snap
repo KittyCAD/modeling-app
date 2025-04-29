@@ -8,17 +8,17 @@ description: Result of parsing bracket.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 423,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 423,
+            "commentStart": 0,
             "end": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 436,
+            "commentStart": 0,
             "end": 0,
             "raw": "35000",
             "start": 0,
@@ -35,37 +35,33 @@ description: Result of parsing bracket.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "// Shelf Bracket",
-          "// This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.",
-          "",
-          "",
-          "// Define constants"
+          "// Define parameters"
         ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 441,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 468,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 468,
+            "commentStart": 0,
             "end": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 476,
+            "commentStart": 0,
             "end": 0,
-            "raw": "6",
+            "raw": "5.0",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
-              "value": 6.0,
+              "value": 5.0,
               "suffix": "None"
             }
           },
@@ -79,19 +75,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 477,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 486,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 486,
+            "commentStart": 0,
             "end": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 490,
+            "commentStart": 0,
             "end": 0,
             "raw": "300",
             "start": 0,
@@ -112,19 +108,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 493,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 518,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 518,
+            "commentStart": 0,
             "end": 0,
-            "name": "factorOfSafety",
+            "name": "fos",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 535,
+            "commentStart": 0,
             "end": 0,
             "raw": "1.2",
             "start": 0,
@@ -145,21 +141,21 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 538,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 553,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 553,
+            "commentStart": 0,
             "end": 0,
-            "name": "shelfMountL",
+            "name": "shelfMountLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 567,
+            "commentStart": 0,
             "end": 0,
-            "raw": "5",
+            "raw": "5.0",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
@@ -178,26 +174,26 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 568,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 579,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 579,
+            "commentStart": 0,
             "end": 0,
-            "name": "wallMountL",
+            "name": "wallMountLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 592,
+            "commentStart": 0,
             "end": 0,
-            "raw": "2",
+            "raw": "2.25",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
-              "value": 2.0,
+              "value": 2.25,
               "suffix": "None"
             }
           },
@@ -211,19 +207,19 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 593,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 604,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 604,
+            "commentStart": 0,
             "end": 0,
             "name": "shelfDepth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 617,
+            "commentStart": 0,
             "end": 0,
             "raw": "12",
             "start": 0,
@@ -244,26 +240,92 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 619,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 665,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 665,
+            "commentStart": 0,
+            "end": 0,
+            "name": "shelfMountingHoleDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": ".50",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.5,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "wallMountingHoleDiameter",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "raw": ".625",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.625,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "moment",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 674,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 674,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 674,
+                "commentStart": 0,
                 "end": 0,
                 "name": "shelfDepth",
                 "start": 0,
@@ -277,10 +339,10 @@ description: Result of parsing bracket.kcl
             "operator": "*",
             "right": {
               "abs_path": false,
-              "commentStart": 687,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 687,
+                "commentStart": 0,
                 "end": 0,
                 "name": "p",
                 "start": 0,
@@ -300,17 +362,22 @@ description: Result of parsing bracket.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Calculated parameters"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 688,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 816,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 816,
+            "commentStart": 0,
             "end": 0,
             "name": "thickness",
             "start": 0,
@@ -319,20 +386,20 @@ description: Result of parsing bracket.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 833,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 833,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
-                    "commentStart": 833,
+                    "commentStart": 0,
                     "end": 0,
                     "left": {
                       "abs_path": false,
-                      "commentStart": 833,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 833,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "moment",
                         "start": 0,
@@ -346,12 +413,12 @@ description: Result of parsing bracket.kcl
                     "operator": "*",
                     "right": {
                       "abs_path": false,
-                      "commentStart": 842,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 842,
+                        "commentStart": 0,
                         "end": 0,
-                        "name": "factorOfSafety",
+                        "name": "fos",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -366,7 +433,7 @@ description: Result of parsing bracket.kcl
                   },
                   "operator": "*",
                   "right": {
-                    "commentStart": 859,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "6",
                     "start": 0,
@@ -383,14 +450,14 @@ description: Result of parsing bracket.kcl
                 },
                 "operator": "/",
                 "right": {
-                  "commentStart": 864,
+                  "commentStart": 0,
                   "end": 0,
                   "left": {
                     "abs_path": false,
-                    "commentStart": 864,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 864,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "sigmaAllow",
                       "start": 0,
@@ -404,10 +471,10 @@ description: Result of parsing bracket.kcl
                   "operator": "*",
                   "right": {
                     "abs_path": false,
-                    "commentStart": 877,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 877,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "width",
                       "start": 0,
@@ -429,10 +496,10 @@ description: Result of parsing bracket.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 828,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 828,
+                "commentStart": 0,
                 "end": 0,
                 "name": "sqrt",
                 "start": 0,
@@ -442,7 +509,7 @@ description: Result of parsing bracket.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 828,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -453,29 +520,26 @@ description: Result of parsing bracket.kcl
         },
         "end": 0,
         "kind": "const",
-        "preComments": [
-          "// Calculate required thickness of bracket"
-        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 884,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 960,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 960,
+            "commentStart": 0,
             "end": 0,
-            "name": "filletRadius",
+            "name": "bendRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 975,
+            "commentStart": 0,
             "end": 0,
-            "raw": ".25",
+            "raw": "0.25",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
@@ -494,28 +558,28 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 979,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 979,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 979,
+            "commentStart": 0,
             "end": 0,
-            "name": "extFilletRadius",
+            "name": "extBendRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 997,
+            "commentStart": 0,
             "end": 0,
             "left": {
               "abs_path": false,
-              "commentStart": 997,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 997,
+                "commentStart": 0,
                 "end": 0,
-                "name": "filletRadius",
+                "name": "bendRadius",
                 "start": 0,
                 "type": "Identifier"
               },
@@ -527,10 +591,10 @@ description: Result of parsing bracket.kcl
             "operator": "+",
             "right": {
               "abs_path": false,
-              "commentStart": 1012,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1012,
+                "commentStart": 0,
                 "end": 0,
                 "name": "thickness",
                 "start": 0,
@@ -555,21 +619,21 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1022,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1022,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1022,
+            "commentStart": 0,
             "end": 0,
-            "name": "mountingHoleDiameter",
+            "name": "filletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 1045,
+            "commentStart": 0,
             "end": 0,
-            "raw": "0.5",
+            "raw": ".5",
             "start": 0,
             "type": "Literal",
             "type": "Literal",
@@ -588,14 +652,581 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1048,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1050,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1050,
+            "commentStart": 0,
             "end": 0,
-            "name": "sketch001",
+            "name": "shelfMountingHolePlacementOffset",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "shelfMountingHoleDiameter",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "operator": "*",
+            "right": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.5",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.5,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "wallMountingHolePlacementOffset",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "commentStart": 0,
+            "end": 0,
+            "left": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "wallMountingHoleDiameter",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            },
+            "operator": "*",
+            "right": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.5",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.5,
+                "suffix": "None"
+              }
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isGreaterThanOrEqual",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "wallMountingHoleDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "operator": "*",
+                "right": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "3",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 3.0,
+                    "suffix": "None"
+                  }
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"Holes not possible. Either decrease hole diameter or increase wallMountLength\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "Holes not possible. Either decrease hole diameter or increase wallMountLength"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "wallMountLength",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "preComments": [
+          "",
+          "",
+          "// Add checks to ensure bracket is possible. These make sure that there is adequate distance between holes and edges."
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isGreaterThanOrEqual",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "shelfMountingHoleDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "operator": "*",
+                "right": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "5.5",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.5,
+                    "suffix": "None"
+                  }
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "wallMountLength must be longer for hole sizes to work. Either decrease mounting hole diameters or increase shelfMountLength"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "shelfMountLength",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isGreaterThanOrEqual",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "shelfMountingHoleDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "operator": "*",
+                "right": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "5.5",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.5,
+                    "suffix": "None"
+                  }
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"Holes not possible. Either decrease hole diameter or increase width\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "Holes not possible. Either decrease hole diameter or increase width"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "width",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "isGreaterThanOrEqual",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "wallMountingHoleDiameter",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "operator": "*",
+                "right": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "5.5",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 5.5,
+                    "suffix": "None"
+                  }
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"Holes not possible. Either decrease hole diameter or increase width\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "Holes not possible. Either decrease hole diameter or increase width"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "assert",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "width",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "declaration": {
+          "commentStart": 0,
+          "end": 0,
+          "id": {
+            "commentStart": 0,
+            "end": 0,
+            "name": "bracketBody",
             "start": 0,
             "type": "Identifier"
           },
@@ -605,10 +1236,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [
                   {
                     "abs_path": false,
-                    "commentStart": 1076,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 1076,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "XZ",
                       "start": 0,
@@ -622,10 +1253,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1062,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1062,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -635,71 +1266,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1062,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "commentStart": 1100,
-                    "elements": [
-                      {
-                        "commentStart": 1101,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "commentStart": 1104,
-                        "end": 0,
-                        "raw": "0",
-                        "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 0,
-                    "start": 0,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "commentStart": 1108,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1085,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1085,
-                    "end": 0,
-                    "name": "startProfileAt",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1085,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -710,23 +1277,91 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1122,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "at",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "startProfile",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1131,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1131,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1131,
+                          "commentStart": 0,
                           "end": 0,
-                          "name": "shelfMountL",
+                          "name": "shelfMountLength",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -738,10 +1373,10 @@ description: Result of parsing bracket.kcl
                       "operator": "-",
                       "right": {
                         "abs_path": false,
-                        "commentStart": 1145,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1145,
+                          "commentStart": 0,
                           "end": 0,
                           "name": "thickness",
                           "start": 0,
@@ -760,14 +1395,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1156,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1162,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -778,10 +1413,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1116,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1116,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -791,7 +1426,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1116,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -803,7 +1438,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1181,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -811,10 +1446,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1190,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1190,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -829,14 +1464,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1201,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1207,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -847,10 +1482,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1175,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1175,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -860,7 +1495,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1175,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -872,7 +1507,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1226,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -881,12 +1516,12 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 1236,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1236,
+                          "commentStart": 0,
                           "end": 0,
-                          "name": "shelfMountL",
+                          "name": "shelfMountLength",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -895,7 +1530,7 @@ description: Result of parsing bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 1235,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -906,14 +1541,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1249,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1255,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -924,10 +1559,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1220,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1220,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -937,7 +1572,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1220,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -949,7 +1584,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1274,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -958,12 +1593,12 @@ description: Result of parsing bracket.kcl
                     "arg": {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 1284,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1284,
+                          "commentStart": 0,
                           "end": 0,
-                          "name": "wallMountL",
+                          "name": "wallMountLength",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -972,7 +1607,7 @@ description: Result of parsing bracket.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 1283,
+                      "commentStart": 0,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -983,14 +1618,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1296,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1302,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1001,10 +1636,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1268,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1268,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "yLine",
                     "start": 0,
@@ -1014,7 +1649,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1268,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1026,7 +1661,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1321,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1034,10 +1669,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1330,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1330,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -1052,14 +1687,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1341,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1347,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1070,10 +1705,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1315,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1315,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "xLine",
                     "start": 0,
@@ -1083,7 +1718,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1315,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1095,19 +1730,19 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1365,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1379,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1394,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1116,10 +1751,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1380,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1380,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartX",
                               "start": 0,
@@ -1129,7 +1764,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1380,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1138,7 +1773,7 @@ description: Result of parsing bracket.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1412,
+                              "commentStart": 0,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1147,10 +1782,10 @@ description: Result of parsing bracket.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1398,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1398,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "profileStartY",
                               "start": 0,
@@ -1160,7 +1795,7 @@ description: Result of parsing bracket.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1398,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1176,14 +1811,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1417,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1423,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -1194,10 +1829,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1360,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1360,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "line",
                     "start": 0,
@@ -1207,7 +1842,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1360,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1218,10 +1853,10 @@ description: Result of parsing bracket.kcl
                 "arguments": [],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1436,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1436,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "close",
                     "start": 0,
@@ -1231,7 +1866,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1436,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1242,7 +1877,7 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1460,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1250,10 +1885,10 @@ description: Result of parsing bracket.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1469,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1469,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "width",
                         "start": 0,
@@ -1268,10 +1903,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1449,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1449,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -1281,494 +1916,40 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1449,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 1457,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1488,
-                      "end": 0,
-                      "name": "radius",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 1497,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1497,
-                        "end": 0,
-                        "name": "extFilletRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1514,
-                      "end": 0,
-                      "name": "tags",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 1521,
-                      "elements": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1542,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1542,
-                                "end": 0,
-                                "name": "seg03",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1522,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1522,
-                              "end": 0,
-                              "name": "getNextAdjacentEdge",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1522,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1481,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1481,
-                    "end": 0,
-                    "name": "fillet",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1481,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1563,
-                      "end": 0,
-                      "name": "radius",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 1572,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1572,
-                        "end": 0,
-                        "name": "filletRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1586,
-                      "end": 0,
-                      "name": "tags",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 1593,
-                      "elements": [
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1614,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1614,
-                                "end": 0,
-                                "name": "seg06",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1594,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1594,
-                              "end": 0,
-                              "name": "getNextAdjacentEdge",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1594,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1556,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1556,
-                    "end": 0,
-                    "name": "fillet",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1556,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1635,
-                      "end": 0,
-                      "name": "radius",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 1644,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1644,
-                        "end": 0,
-                        "name": "filletRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1658,
-                      "end": 0,
-                      "name": "tags",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 1665,
-                      "elements": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 1666,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1666,
-                            "end": 0,
-                            "name": "seg02",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1689,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1689,
-                                "end": 0,
-                                "name": "seg02",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1673,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1673,
-                              "end": 0,
-                              "name": "getOppositeEdge",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1673,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1628,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1628,
-                    "end": 0,
-                    "name": "fillet",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1628,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
-              },
-              {
-                "arguments": [
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1710,
-                      "end": 0,
-                      "name": "radius",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "abs_path": false,
-                      "commentStart": 1719,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1719,
-                        "end": 0,
-                        "name": "filletRadius",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name",
-                      "type": "Name"
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 1733,
-                      "end": 0,
-                      "name": "tags",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "commentStart": 1740,
-                      "elements": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 1741,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1741,
-                            "end": 0,
-                            "name": "seg05",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 1764,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 1764,
-                                "end": 0,
-                                "name": "seg05",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 1748,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 1748,
-                              "end": 0,
-                              "name": "getOppositeEdge",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 1748,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        }
-                      ],
-                      "end": 0,
-                      "start": 0,
-                      "type": "ArrayExpression",
-                      "type": "ArrayExpression"
-                    }
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1703,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1703,
-                    "end": 0,
-                    "name": "fillet",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1703,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
               }
             ],
-            "commentStart": 1062,
+            "commentStart": 0,
             "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "9": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Add mounting holes to mount to the shelf",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -1778,19 +1959,24 @@ description: Result of parsing bracket.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Create the body of the bracket"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1772,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1774,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1774,
+            "commentStart": 0,
             "end": 0,
-            "name": "sketch002",
+            "name": "shelfMountingHoles",
             "start": 0,
             "type": "Identifier"
           },
@@ -1799,44 +1985,38 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 1800,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 1800,
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
                       "end": 0,
-                      "name": "sketch001",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "abs_path": false,
-                    "commentStart": 1811,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 1811,
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
                       "end": 0,
-                      "name": "seg03",
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "seg03",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1786,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1786,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -1846,40 +2026,84 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1786,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "bracketBody",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1830,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1839,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1841,
+                            "commentStart": 0,
                             "end": 0,
-                            "raw": "1.25",
+                            "left": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "bendRadius",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "shelfMountingHolePlacementOffset",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
                             "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 1.25,
-                              "suffix": "None"
-                            }
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
                           },
-                          "commentStart": 1840,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1887,16 +2111,20 @@ description: Result of parsing bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1847,
+                          "abs_path": false,
+                          "commentStart": 0,
                           "end": 0,
-                          "raw": "1",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "shelfMountingHolePlacementOffset",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -1908,23 +2136,23 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1851,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1860,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 1860,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 1860,
+                          "commentStart": 0,
                           "end": 0,
-                          "name": "mountingHoleDiameter",
+                          "name": "shelfMountingHoleDiameter",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -1935,7 +2163,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 1883,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1954,10 +2182,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1823,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1823,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -1967,7 +2195,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1823,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1979,14 +2207,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1907,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1919,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2001,40 +2229,124 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1922,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1933,
+                      "commentStart": 0,
                       "end": 0,
-                      "raw": "2.5",
+                      "left": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "argument": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "left": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "extBendRadius",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "shelfMountingHolePlacementOffset",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "operator": "-",
+                          "start": 0,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "shelfMountLength",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "start": 0,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "shelfMountingHolePlacementOffset",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 2.5,
-                        "suffix": "None"
-                      }
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1938,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1945,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "argument": {
-                            "commentStart": 1947,
+                            "commentStart": 0,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -2045,7 +2357,7 @@ description: Result of parsing bracket.kcl
                               "suffix": "None"
                             }
                           },
-                          "commentStart": 1946,
+                          "commentStart": 0,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -2053,7 +2365,7 @@ description: Result of parsing bracket.kcl
                           "type": "UnaryExpression"
                         },
                         {
-                          "commentStart": 1950,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2074,10 +2386,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1891,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1891,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2087,7 +2399,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1891,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2099,14 +2411,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1975,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1987,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2121,39 +2433,87 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1990,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2001,
+                      "commentStart": 0,
                       "end": 0,
-                      "raw": "4",
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "width",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "shelfMountingHolePlacementOffset",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "2",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 0,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 4.0,
-                        "suffix": "None"
-                      }
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2004,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2011,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2012,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2165,7 +2525,7 @@ description: Result of parsing bracket.kcl
                           }
                         },
                         {
-                          "commentStart": 2015,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -2186,10 +2546,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1959,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1959,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2199,7 +2559,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1959,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2211,22 +2571,22 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2035,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2044,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 2045,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 2045,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -2237,7 +2597,7 @@ description: Result of parsing bracket.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 2044,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2246,7 +2606,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2057,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": ".01",
                         "start": 0,
@@ -2265,10 +2625,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2024,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2024,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2278,13 +2638,13 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2024,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 2032,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -2292,8 +2652,26 @@ description: Result of parsing bracket.kcl
                 }
               }
             ],
-            "commentStart": 1786,
+            "commentStart": 0,
             "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "4": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Add mounting holes to mount to the wall",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2308,14 +2686,14 @@ description: Result of parsing bracket.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 2061,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 2063,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 2063,
+            "commentStart": 0,
             "end": 0,
-            "name": "sketch003",
+            "name": "wallMountingHoles",
             "start": 0,
             "type": "Identifier"
           },
@@ -2324,44 +2702,38 @@ description: Result of parsing bracket.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 2089,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 2089,
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
                       "end": 0,
-                      "name": "sketch001",
+                      "name": "face",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "abs_path": false,
-                    "commentStart": 2100,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 2100,
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
                       "end": 0,
-                      "name": "seg04",
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "seg04",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2075,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2075,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -2371,57 +2743,121 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2075,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "bracketBody",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2119,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2128,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2129,
+                          "commentStart": 0,
                           "end": 0,
-                          "raw": "1",
+                          "left": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "left": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "wallMountLength",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "operator": "-",
+                            "right": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "wallMountingHolePlacementOffset",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          },
+                          "operator": "-",
+                          "right": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "bendRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
                         },
                         {
-                          "argument": {
-                            "commentStart": 2133,
-                            "end": 0,
-                            "raw": "1",
-                            "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": {
-                              "value": 1.0,
-                              "suffix": "None"
-                            }
-                          },
-                          "commentStart": 2132,
+                          "abs_path": false,
+                          "commentStart": 0,
                           "end": 0,
-                          "operator": "-",
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "wallMountingHolePlacementOffset",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "UnaryExpression",
-                          "type": "UnaryExpression"
+                          "type": "Name",
+                          "type": "Name"
                         }
                       ],
                       "end": 0,
@@ -2433,23 +2869,23 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2137,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2146,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "abs_path": false,
-                        "commentStart": 2146,
+                        "commentStart": 0,
                         "end": 0,
                         "name": {
-                          "commentStart": 2146,
+                          "commentStart": 0,
                           "end": 0,
-                          "name": "mountingHoleDiameter",
+                          "name": "wallMountingHoleDiameter",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -2460,7 +2896,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "/",
                       "right": {
-                        "commentStart": 2169,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -2479,10 +2915,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2112,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2112,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -2492,7 +2928,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2112,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2504,14 +2940,14 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2193,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2205,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -2526,51 +2962,87 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2208,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2219,
+                      "commentStart": 0,
                       "end": 0,
-                      "raw": "4",
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "width",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "left": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "wallMountingHolePlacementOffset",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
+                        "operator": "*",
+                        "right": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "2",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 0,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 4.0,
-                        "suffix": "None"
-                      }
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
                     }
                   },
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2222,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2229,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 2230,
-                          "end": 0,
-                          "raw": "1",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 1.0,
-                            "suffix": "None"
-                          }
-                        },
-                        {
-                          "commentStart": 2233,
+                          "commentStart": 0,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2578,6 +3050,18 @@ description: Result of parsing bracket.kcl
                           "type": "Literal",
                           "value": {
                             "value": 0.0,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "1",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 1.0,
                             "suffix": "None"
                           }
                         }
@@ -2591,10 +3075,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2177,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2177,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "patternLinear2d",
                     "start": 0,
@@ -2604,7 +3088,7 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2177,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2616,22 +3100,22 @@ description: Result of parsing bracket.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 2253,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 2262,
+                      "commentStart": 0,
                       "end": 0,
                       "left": {
                         "argument": {
                           "abs_path": false,
-                          "commentStart": 2263,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 2263,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -2642,7 +3126,7 @@ description: Result of parsing bracket.kcl
                           "type": "Name",
                           "type": "Name"
                         },
-                        "commentStart": 2262,
+                        "commentStart": 0,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2651,7 +3135,7 @@ description: Result of parsing bracket.kcl
                       },
                       "operator": "-",
                       "right": {
-                        "commentStart": 2275,
+                        "commentStart": 0,
                         "end": 0,
                         "raw": "0.1",
                         "start": 0,
@@ -2670,10 +3154,10 @@ description: Result of parsing bracket.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 2242,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 2242,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2683,13 +3167,13 @@ description: Result of parsing bracket.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 2242,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "commentStart": 2250,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -2697,8 +3181,26 @@ description: Result of parsing bracket.kcl
                 }
               }
             ],
-            "commentStart": 2075,
+            "commentStart": 0,
             "end": 0,
+            "nonCodeMeta": {
+              "nonCodeNodes": {
+                "3": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "newLineBlockComment",
+                      "value": "Apply bends",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "startNodes": []
+            },
             "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2711,15 +3213,541 @@ description: Result of parsing bracket.kcl
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "radius",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "extBendRadius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tags",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "elements": [
+                  {
+                    "arguments": [
+                      {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg03",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "getNextAdjacentEdge",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "fillet",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "bracketBody",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "radius",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "bendRadius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tags",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "elements": [
+                  {
+                    "arguments": [
+                      {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg06",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "getNextAdjacentEdge",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "fillet",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "bracketBody",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 0,
+        "end": 0,
+        "expression": {
+          "arguments": [
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "radius",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "filletRadius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "tags",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "elements": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "seg02",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg02",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "getOppositeEdge",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  },
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "seg05",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  {
+                    "arguments": [
+                      {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg05",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "getOppositeEdge",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            }
+          ],
+          "callee": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "fillet",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name"
+          },
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "bracketBody",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
+        },
+        "preComments": [
+          "",
+          "",
+          "// Apply corner fillets"
+        ],
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
       }
     ],
     "commentStart": 0,
     "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 0,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "preComments": [
+          "// Shelf Bracket",
+          "// This is a bracket that holds a shelf. It is made of aluminum and is designed to hold a force of 300 lbs. The bracket is 6 inches wide and the force is applied at the end of the shelf, 12 inches from the wall. The bracket has a factor of safety of 1.2. The legs of the bracket are 5 inches and 2 inches long. The thickness of the bracket is calculated from the constraints provided.",
+          "",
+          "",
+          "// Set units"
+        ],
+        "properties": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 441,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2730,22 +3758,9 @@ description: Result of parsing bracket.kcl
             }
           }
         ],
-        "1": [
-          {
-            "commentStart": 477,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "inlineComment",
-              "value": "inch",
-              "style": "line"
-            }
-          }
-        ],
         "2": [
           {
-            "commentStart": 493,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2758,135 +3773,68 @@ description: Result of parsing bracket.kcl
         ],
         "3": [
           {
-            "commentStart": 538,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
-              "value": "FOS of 1.2",
-              "style": "line"
-            }
-          }
-        ],
-        "4": [
-          {
-            "commentStart": 568,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "inlineComment",
-              "value": "inches",
-              "style": "line"
-            }
-          }
-        ],
-        "5": [
-          {
-            "commentStart": 593,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "inlineComment",
-              "value": "inches",
+              "value": "Factor of safety of 1.2",
               "style": "line"
             }
           }
         ],
         "6": [
           {
-            "commentStart": 619,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
-              "value": "Shelf is 12 inches in depth from the wall",
+              "value": "Shelf is 12 inches deep from the wall",
               "style": "line"
             }
           }
         ],
-        "7": [
+        "9": [
           {
-            "commentStart": 688,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
-              "value": "assume the force is applied at the end of the shelf to be conservative (lb-in)",
+              "value": "assume the force is applied at the end of the shelf",
               "style": "line"
-            }
-          },
-          {
-            "commentStart": 770,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
             }
           }
         ],
-        "8": [
+        "10": [
           {
-            "commentStart": 884,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
-              "value": "this is the calculation of two brackets holding up the shelf (inches)",
+              "value": "required thickness for two brackets to hold up the shelf",
               "style": "line"
-            }
-          },
-          {
-            "commentStart": 957,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "11": [
-          {
-            "commentStart": 1048,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "12": [
-          {
-            "commentStart": 1772,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "13": [
-          {
-            "commentStart": 2061,
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
             }
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 0,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0
   }

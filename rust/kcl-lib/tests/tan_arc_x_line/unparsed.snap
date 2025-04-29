@@ -9,15 +9,9 @@ r = 1
 angleStart = 110
 
 startSketchOn(XY)
-  |> startProfileAt([startX, startY], %)
-  |> angledLine({ angle = angleStart, length = .000001 }, %)
-  |> tangentialArc({ offset = angleOffset, radius = r }, %, $arc1)
-  |> tangentialArc({
-       offset = angleOffset,
-       radius = 0.5 * r
-     }, %, $arc2)
-  |> tangentialArc({
-       offset = -angleOffset,
-       radius = 0.5 * r
-     }, %, $arc3)
+  |> startProfile(at = [startX, startY])
+  |> angledLine(angle = angleStart, length = .000001)
+  |> tangentialArc(angle = angleOffset, radius = r, tag = $arc1)
+  |> tangentialArc(angle = angleOffset, radius = 0.5 * r, tag = $arc2)
+  |> tangentialArc(angle = -angleOffset, radius = 0.5 * r, tag = $arc3)
   |> xLine(endAbsolute = 1)

@@ -1,19 +1,22 @@
-import usePlatform from 'hooks/usePlatform'
-import { hotkeyDisplay } from 'lib/hotkeyWrapper'
-import { COMMAND_PALETTE_HOTKEY } from './CommandBar/CommandBar'
-import { commandBarActor } from 'machines/commandBarMachine'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
+import usePlatform from '@src/hooks/usePlatform'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import { commandBarActor } from '@src/lib/singletons'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 export function CommandBarOpenButton() {
   const platform = usePlatform()
 
   return (
     <button
-      className="group rounded-full flex items-center justify-center gap-2 px-2 py-1 bg-primary/10 dark:bg-chalkboard-90 dark:backdrop-blur-sm border-primary hover:border-primary dark:border-chalkboard-50 dark:hover:border-inherit text-primary dark:text-inherit"
+      type="button"
+      className="flex gap-1 items-center py-0 px-0.5 m-0 text-primary dark:text-inherit bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid border-primary/50 hover:border-primary active:border-primary"
       onClick={() => commandBarActor.send({ type: 'Open' })}
       data-testid="command-bar-open-button"
     >
+      <CustomIcon name="command" className="w-5 h-5" />
       <span>Commands</span>
-      <kbd className="bg-primary/10 dark:bg-chalkboard-80 dark:group-hover:bg-primary font-mono rounded-sm dark:text-inherit inline-block px-1 border-primary dark:border-chalkboard-90">
+      <kbd className="dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
         {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
       </kbd>
     </button>

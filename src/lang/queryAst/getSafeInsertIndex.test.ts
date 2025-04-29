@@ -1,5 +1,6 @@
-import { assertParse, initPromise } from 'lang/wasm'
-import { getSafeInsertIndex } from './getSafeInsertIndex'
+import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
 
 beforeAll(async () => {
   await initPromise
@@ -15,10 +16,10 @@ z = x + y`)
   })
   it(`expression with no identifiers in longer program`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
-  |> angledLine([0, x], %, $a)
-  |> angledLine([segAng(a) + 90, 5], %)
-  |> angledLine([segAng(a), -segLen(a)], %)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
+  |> angledLine(angle = 0, length = x, tag = $a)
+  |> angledLine(angle = segAng(a) + 90, length = 5)
+  |> angledLine(angle = segAng(a), length = -segLen(a))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`)
     const targetExpr = assertParse(`5`)
@@ -40,10 +41,10 @@ z = x + y`)
   })
   it(`expression with a tag declarator add to end`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
-  |> angledLine([0, x], %, $a)
-  |> angledLine([segAng(a) + 90, 5], %)
-  |> angledLine([segAng(a), -segLen(a)], %)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
+  |> angledLine(angle = 0, length = x, tag = $a)
+  |> angledLine(angle = segAng(a) + 90, length = 5)
+  |> angledLine(angle = segAng(a), length = -segLen(a))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()`)
     const targetExpr = assertParse(`5 + segAng(a)`)
@@ -51,10 +52,10 @@ z = x + y`)
   })
   it(`expression with a tag declarator and variable in the middle`, () => {
     const baseProgram = assertParse(`x = 5 + 2
-    profile001 = startProfileAt([0.07, 0], sketch001)
-  |> angledLine([0, x], %, $a)
-  |> angledLine([segAng(a) + 90, 5], %)
-  |> angledLine([segAng(a), -segLen(a)], %)
+    profile001 = startProfile(sketch001, at = [0.07, 0])
+  |> angledLine(angle = 0, length = x, tag = $a)
+  |> angledLine(angle = segAng(a) + 90, length = 5)
+  |> angledLine(angle = segAng(a), length = -segLen(a))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   y = x + x`)

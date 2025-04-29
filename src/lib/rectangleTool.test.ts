@@ -1,15 +1,13 @@
 import { expect } from 'vitest'
-import {
-  recast,
-  assertParse,
-  topLevelRange,
-  VariableDeclaration,
-  initPromise,
-} from 'lang/wasm'
-import { updateCenterRectangleSketch } from './rectangleTool'
-import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { getNodeFromPath } from 'lang/queryAst'
-import { trap } from './trap'
+
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { topLevelRange } from '@src/lang/util'
+import type { VariableDeclaration } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
+import { trap } from '@src/lib/trap'
 
 beforeAll(async () => {
   await initPromise
@@ -21,13 +19,10 @@ describe('library rectangleTool helper functions', () => {
     test('should update AST and source code', async () => {
       // Base source code that will be edited in place
       const sourceCode = `sketch001 = startSketchOn(XZ)
-|> startProfileAt([120.37, 162.76], %)
-|> angledLine([0, 0], %, $rectangleSegmentA001)
-|> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
-|> angledLine([
-segAng(rectangleSegmentA001),
--segLen(rectangleSegmentA001)
-], %, $rectangleSegmentC001)
+profile001 = startProfile(at = [120.37, 162.76])
+|> angledLine(angle = 0, length = 0, tag = $rectangleSegmentA001)
+|> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 0, tag = $rectangleSegmentB001)
+|> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
 |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 |> close()
 `
@@ -36,11 +31,10 @@ segAng(rectangleSegmentA001),
       let ast = structuredClone(_ast)
 
       // Find some nodes and paths to reference
-      const sketchSnippet = `startProfileAt([120.37, 162.76], %)`
-      const sketchRange = topLevelRange(
-        sourceCode.indexOf(sketchSnippet),
-        sourceCode.indexOf(sketchSnippet) + sketchSnippet.length
-      )
+      const sketchSnippet = `startProfile(at = [120.37, 162.76])`
+      const start = sourceCode.indexOf(sketchSnippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const sketchRange = topLevelRange(start, start + sketchSnippet.length)
       const sketchPathToNode = getNodePathFromSourceRange(ast, sketchRange)
       const _node = getNodeFromPath<VariableDeclaration>(
         ast,
@@ -62,7 +56,7 @@ segAng(rectangleSegmentA001),
 
       // Update the ast
       if (sketchInit.type === 'PipeExpression') {
-        updateCenterRectangleSketch(
+        const maybeErr = updateCenterRectangleSketch(
           sketchInit,
           x,
           y,
@@ -70,17 +64,15 @@ segAng(rectangleSegmentA001),
           rectangleOrigin[0],
           rectangleOrigin[1]
         )
+        expect(maybeErr).toEqual(undefined)
       }
 
       // ast is edited in place from the updateCenterRectangleSketch
       const expectedSourceCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([120.37, 80], %)
-  |> angledLine([0, 0], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) + 90, 0], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+profile001 = startProfile(at = [80, 120])
+  |> angledLine(angle = 0, length = 80, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 120, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `

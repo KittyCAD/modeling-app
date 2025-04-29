@@ -1,5 +1,6 @@
-import { assertParse, initPromise } from './wasm'
-import { enginelessExecutor } from '../lib/testHelpers'
+import { assertParse } from '@src/lang/wasm'
+import { initPromise } from '@src/lang/wasmUtils'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 
 beforeAll(async () => {
   await initPromise
@@ -10,7 +11,7 @@ describe('testing artifacts', () => {
   test('sketch artifacts', async () => {
     const code = `
 const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)`
@@ -68,7 +69,7 @@ const mySketch001 = startSketchOn(XY)
     // Enable rotations #152
     const code = `
 const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
   // |> rx(45, %)
@@ -133,6 +134,7 @@ const mySketch001 = startSketchOn(XY)
           ],
         },
         height: 2,
+        sectional: false,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
         units: {
@@ -146,7 +148,7 @@ const mySketch001 = startSketchOn(XY)
     // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
 const sk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
   |> line(endAbsolute = [2.5, 0])
@@ -156,7 +158,7 @@ const sk1 = startSketchOn(XY)
 const theExtrude = extrude(sk1, length = 2)
 // const theTransf = getExtrudeWallTransform('p', theExtrude)
 const sk2 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
   |> line(endAbsolute = [2.5, 0])
@@ -263,6 +265,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {
@@ -364,6 +367,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {

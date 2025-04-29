@@ -15,14 +15,6 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -35,14 +27,6 @@ description: Artifact commands mounting-plate.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -100,8 +84,8 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -3.0,
-        "y": -5.0,
+        "x": -76.19999999999999,
+        "y": -127.0,
         "z": 0.0
       }
     }
@@ -122,8 +106,8 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.0,
-          "y": -5.0,
+          "x": 76.2,
+          "y": -127.0,
           "z": 0.0
         },
         "relative": false
@@ -139,8 +123,8 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 3.0,
-          "y": 5.0,
+          "x": 76.2,
+          "y": 127.0,
           "z": 0.0
         },
         "relative": false
@@ -156,8 +140,8 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -3.0,
-          "y": 5.0,
+          "x": -76.2,
+          "y": 127.0,
           "z": 0.0
         },
         "relative": false
@@ -202,8 +186,8 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -2.0,
-        "y": 4.25,
+        "x": -50.8,
+        "y": 107.94999999999999,
         "z": 0.0
       }
     }
@@ -224,10 +208,10 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -2.25,
-          "y": 4.25
+          "x": -57.15,
+          "y": 107.95
         },
-        "radius": 0.25,
+        "radius": 6.35,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -296,8 +280,8 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.5,
-        "y": 4.25,
+        "x": 63.5,
+        "y": 107.94999999999999,
         "z": 0.0
       }
     }
@@ -318,10 +302,10 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 2.25,
-          "y": 4.25
+          "x": 57.15,
+          "y": 107.95
         },
-        "radius": 0.25,
+        "radius": 6.35,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -390,8 +374,8 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -2.0,
-        "y": -4.25,
+        "x": -50.8,
+        "y": -107.94999999999999,
         "z": 0.0
       }
     }
@@ -412,10 +396,10 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -2.25,
-          "y": -4.25
+          "x": -57.15,
+          "y": -107.95
         },
-        "radius": 0.25,
+        "radius": 6.35,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -484,8 +468,8 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.5,
-        "y": -4.25,
+        "x": 63.5,
+        "y": -107.94999999999999,
         "z": 0.0
       }
     }
@@ -506,10 +490,10 @@ description: Artifact commands mounting-plate.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 2.25,
-          "y": -4.25
+          "x": 57.15,
+          "y": -107.95
         },
-        "radius": 0.25,
+        "radius": 6.35,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -578,7 +562,7 @@ description: Artifact commands mounting-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.0,
+        "x": 50.8,
         "y": 0.0,
         "z": 0.0
       }
@@ -603,7 +587,7 @@ description: Artifact commands mounting-plate.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 2.0,
+        "radius": 50.8,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -664,8 +648,9 @@ description: Artifact commands mounting-plate.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.5,
-      "faces": null
+      "distance": 12.7,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -696,20 +681,9 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -726,10 +700,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -746,10 +747,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -766,10 +794,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -786,10 +841,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -806,10 +888,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -826,10 +935,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -846,10 +982,37 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -866,10 +1029,75 @@ description: Artifact commands mounting-plate.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -919,7 +1147,7 @@ description: Artifact commands mounting-plate.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -931,7 +1159,7 @@ description: Artifact commands mounting-plate.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -943,7 +1171,7 @@ description: Artifact commands mounting-plate.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }
@@ -955,7 +1183,7 @@ description: Artifact commands mounting-plate.kcl
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
-      "radius": 0.5,
+      "radius": 12.7,
       "tolerance": 0.0000001,
       "cut_type": "fillet"
     }

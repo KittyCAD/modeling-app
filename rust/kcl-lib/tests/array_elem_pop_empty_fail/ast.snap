@@ -18,7 +18,7 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 6,
+            "commentStart": 0,
             "elements": [],
             "end": 0,
             "start": 0,
@@ -35,12 +35,12 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 9,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 9,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 9,
+            "commentStart": 0,
             "end": 0,
             "name": "fail",
             "start": 0,
@@ -50,10 +50,10 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
             "arguments": [
               {
                 "abs_path": false,
-                "commentStart": 20,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 20,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "arr",
                   "start": 0,
@@ -67,10 +67,10 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 16,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 16,
+                "commentStart": 0,
                 "end": 0,
                 "name": "pop",
                 "start": 0,
@@ -80,7 +80,7 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 16,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",

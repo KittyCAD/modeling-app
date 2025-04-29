@@ -1,13 +1,14 @@
-import { test, expect } from './zoo-test'
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import * as fsp from 'fs/promises'
+
+import { expect, test } from '@e2e/playwright/zoo-test'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
   return 5 * x
 }
 export fn triangle() {
   return startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> xLine(length = 10)
     |> line(end = [-10, -5])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -16,17 +17,17 @@ export fn triangle() {
 
 length001 = timesFive(1) * 5
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([20, 10], %)
+  |> startProfile(at = [20, 10])
   |> line(end = [10, 10])
-  |> angledLine([-45, length001], %)
+  |> angledLine(angle = -45, length = length001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-revolve001 = revolve(sketch001, axis = "X")
+revolve001 = revolve(sketch001, axis = X)
 triangle()
   |> extrude(length = 30)
 plane001 = offsetPlane(XY, offset = 10)
 sketch002 = startSketchOn(plane001)
-  |> startProfileAt([-20, 0], %)
+  |> startProfile(at = [-20, 0])
   |> line(end = [5, -15])
   |> xLine(length = -10)
   |> line(endAbsolute = [-40, 0])
@@ -36,20 +37,14 @@ extrude001 = extrude(sketch002, length = 10)
 `
 
 const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
-  |> angledLine([0, 4], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       2
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close(%)
 extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, rectangleSegmentB001)
+sketch002 = startSketchOn(extrude001, face = rectangleSegmentB001)
   |> circle(
        center = [-1, 2],
        radius = .5
@@ -63,7 +58,7 @@ test.describe('Feature Tree pane', () => {
   test(
     'User can go to definition and go to function definition',
     { tag: '@electron' },
-    async ({ context, homePage, scene, editor, toolbar }) => {
+    async ({ context, homePage, scene, editor, toolbar, cmdBar, page }) => {
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'test-sample')
         await fsp.mkdir(bracketDir, { recursive: true })
@@ -85,9 +80,13 @@ test.describe('Feature Tree pane', () => {
           sortBy: 'last-modified-desc',
         })
         await homePage.openProject('test-sample')
-        await scene.waitForExecutionDone()
-        await editor.closePane()
+        await scene.connectionEstablished()
+        await scene.settled(cmdBar)
+
         await toolbar.openFeatureTreePane()
+        await expect
+          .poll(() => page.getByText('Feature tree').count())
+          .toBeGreaterThan(1)
       })
 
       async function testViewSource({
@@ -126,7 +125,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Revolve',
         operationIndex: 0,
-        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = "X")',
+        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = X)',
       })
       await testViewSource({
         operationName: 'Triangle',
@@ -195,7 +194,7 @@ test.describe('Feature Tree pane', () => {
           highlightedCode: '',
           diagnostics: [],
           activeLines: [
-            'sketch002=startSketchOn(extrude001,rectangleSegmentB001)',
+            'sketch002=startSketchOn(extrude001,face=rectangleSegmentB001)',
           ],
         })
         await toolbar.exitSketchBtn.click()
@@ -253,7 +252,7 @@ test.describe('Feature Tree pane', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openFeatureTreePane()
     })
 
@@ -338,7 +337,7 @@ test.describe('Feature Tree pane', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
       await toolbar.openFeatureTreePane()
     })
 
@@ -398,9 +397,9 @@ test.describe('Feature Tree pane', () => {
     const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 20], radius = 12)
-profile002 = startProfileAt([0, 7.25], sketch001)
+profile002 = startProfile(sketch001, at = [0, 7.25])
   |> xLine(length = 13.3)
-profile003 = startProfileAt([0, -4.93], sketch001)
+profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, 'test-sample')
@@ -413,8 +412,7 @@ profile003 = startProfileAt([0, -4.93], sketch001)
     const planeColor: [number, number, number] = [74, 74, 74]
 
     await homePage.openProject('test-sample')
-    // FIXME: @lf94 has a better way to verify execution completion, in a PR rn
-    await scene.waitForExecutionDone()
+    await scene.settled(cmdBar)
 
     await test.step(`Verify we see the sketch`, async () => {
       await scene.expectPixelColor(sketchColor, testPoint, 10)
@@ -431,6 +429,18 @@ profile003 = startProfileAt([0, -4.93], sketch001)
       await editor.expectEditor.toContain('plane001 =')
       await editor.expectEditor.not.toContain('sketch001 =')
       await editor.expectEditor.not.toContain('profile002 = ')
+    })
+
+    await test.step(`Delete the remaining plane via feature tree`, async () => {
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Offset Plane',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+
+      // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
+      await editor.expectEditor.not.toContain('plane001 =')
     })
   })
 })

@@ -1,7 +1,7 @@
 //! Run all the KCL samples in the `kcl_samples` directory.
-use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::{
     fs,
+    panic::{catch_unwind, AssertUnwindSafe},
     path::{Path, PathBuf},
 };
 

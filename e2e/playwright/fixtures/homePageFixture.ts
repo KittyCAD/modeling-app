@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test'
+import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
 interface ProjectCardState {
@@ -92,14 +92,20 @@ export class HomePageFixture {
     }
   }
 
+  expectIsCurrentPage = async () => {
+    await expect(this.page).toHaveURL(/.*home/)
+    await expect(
+      this.page.getByRole('heading', { name: 'Projects' })
+    ).toBeVisible()
+  }
+
   projectsLoaded = async () => {
     await expect(this.projectSection).not.toHaveText('Loading your Projects...')
   }
 
-  createAndGoToProject = async (projectTitle = 'project-$nnn') => {
+  createAndGoToProject = async (projectTitle = 'untitled') => {
     await this.projectsLoaded()
     await this.projectButtonNew.click()
-    await this.projectTextName.click()
     await this.projectTextName.fill(projectTitle)
     await this.projectButtonContinue.click()
   }

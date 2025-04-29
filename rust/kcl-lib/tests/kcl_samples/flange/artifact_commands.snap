@@ -15,14 +15,6 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
@@ -35,14 +27,6 @@ description: Artifact commands flange.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "set_scene_units",
-      "unit": "in"
     }
   },
   {
@@ -100,7 +84,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.0625,
+        "x": 52.387499999999996,
         "y": 0.0,
         "z": 0.0
       }
@@ -122,10 +106,10 @@ description: Artifact commands flange.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": 1.75,
+          "x": 44.45,
           "y": 0.0
         },
-        "radius": 0.3125,
+        "radius": 7.9375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -222,7 +206,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.3125,
+        "x": 58.7375,
         "y": 0.0,
         "z": 0.0
       }
@@ -247,7 +231,7 @@ description: Artifact commands flange.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 2.3125,
+        "radius": 58.7375,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -362,8 +346,9 @@ description: Artifact commands flange.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.625,
-      "faces": null
+      "distance": 15.875,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -394,20 +379,9 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_get_all_edge_faces",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -424,10 +398,37 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -444,10 +445,37 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -464,10 +492,37 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -484,10 +539,75 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -516,7 +636,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.1565,
+        "x": 29.3751,
         "y": 0.0,
         "z": 0.0
       }
@@ -541,7 +661,7 @@ description: Artifact commands flange.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.1565,
+        "radius": 29.3751,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -580,8 +700,9 @@ description: Artifact commands flange.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.1279999999999999,
-      "faces": null
+      "distance": 3.251199999999997,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -612,6 +733,15 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -622,10 +752,28 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -654,7 +802,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.25,
+        "x": 31.75,
         "y": 0.0,
         "z": 0.0
       }
@@ -679,7 +827,7 @@ description: Artifact commands flange.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 1.25,
+        "radius": 31.75,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -718,8 +866,9 @@ description: Artifact commands flange.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.06,
-      "faces": null
+      "distance": 1.5239999999999998,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -750,6 +899,15 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -760,10 +918,28 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   },
   {
@@ -792,7 +968,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.625,
+        "x": 15.875,
         "y": 0.0,
         "z": 0.0
       }
@@ -817,7 +993,7 @@ description: Artifact commands flange.kcl
           "x": 0.0,
           "y": 0.0
         },
-        "radius": 0.625,
+        "radius": 15.875,
         "start": {
           "unit": "degrees",
           "value": 0.0
@@ -856,8 +1032,9 @@ description: Artifact commands flange.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.813,
-      "faces": null
+      "distance": -20.650199999999998,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -888,6 +1065,15 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -898,10 +1084,28 @@ description: Artifact commands flange.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_all_edge_faces",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
     }
   }
 ]

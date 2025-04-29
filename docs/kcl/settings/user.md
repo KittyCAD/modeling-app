@@ -37,7 +37,7 @@ text_wrapping = false
 
 #### app
 
-The settings for the modeling app.
+The settings for the Design Studio.
 
 
 **Default:** None
@@ -96,7 +96,7 @@ Permanently dismiss the banner warning to download the desktop app. This setting
 
 ##### stream_idle_mode
 
-When the user is idle, and this is true, the stream will be torn down.
+When the user is idle, teardown the stream after some time.
 
 
 **Default:** None

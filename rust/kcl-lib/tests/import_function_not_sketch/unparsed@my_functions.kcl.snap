@@ -5,7 +5,7 @@ description: Result of unparsing tests/import_function_not_sketch/my_functions.k
 @settings(defaultLengthUnit = mm)
 
 export part001 = startSketchOn(XY)
-  |> startProfileAt([4, 12], %)
+  |> startProfile(at = [4, 12])
   |> line(end = [2, 0])
   |> line(end = [0, -6])
   |> line(end = [4, -6])
@@ -14,7 +14,7 @@ export part001 = startSketchOn(XY)
   |> line(end = [0, -5.5])
   |> line(end = [-2, 0])
   |> close()
-  |> revolve(axis = 'y') // default angle is 360
+  |> revolve(axis = Y) // default angle is 360
 
 export fn two() {
   return 5

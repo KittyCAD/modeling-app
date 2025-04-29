@@ -7,11 +7,15 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
+    execution::{
+        types::{NumericType, RuntimeType},
+        ExecState, KclValue, Sketch, Solid,
+    },
     parsing::ast::types::TagNode,
-    std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
+    std::{extrude::do_post_extrude, Args},
 };
 
 const DEFAULT_V_DEGREE: u32 = 2;
@@ -29,7 +33,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     // This can be set to override the automatically determined topological base curve, which is usually the first section encountered.
     let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
-    let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance")?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
     let tag_start = args.get_kw_arg_opt("tagStart")?;
     let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
@@ -55,7 +59,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square and a triangle.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -63,7 +67,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 ///     |> close()
 ///
 /// triangleSketch = startSketchOn(offsetPlane('XY', offset = 75))
-///     |> startProfileAt([0, 125], %)
+///     |> startProfile(at = [0, 125])
 ///     |> line(end = [-15, -30])
 ///     |> line(end = [30, 0])
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -75,7 +79,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square, a circle, and another circle.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -94,7 +98,7 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// ```no_run
 /// // Loft a square, a circle, and another circle with options.
 /// squareSketch = startSketchOn('XY')
-///     |> startProfileAt([-100, 200], %)
+///     |> startProfile(at = [-100, 200])
 ///     |> line(end = [200, 0])
 ///     |> line(end = [0, -200])
 ///     |> line(end = [-200, 0])
@@ -135,7 +139,7 @@ async fn inner_loft(
     v_degree: NonZeroU32,
     bez_approximate_rational: bool,
     base_curve_index: Option<u32>,
-    tolerance: Option<f64>,
+    tolerance: Option<TyF64>,
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
@@ -159,7 +163,7 @@ async fn inner_loft(
             section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index,
             bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+            tolerance: LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE)),
             v_degree,
         }),
     )
@@ -172,8 +176,9 @@ async fn inner_loft(
     Ok(Box::new(
         do_post_extrude(
             &sketch,
+            #[cfg(feature = "artifact-graph")]
             id.into(),
-            0.0,
+            TyF64::new(0.0, NumericType::mm()),
             false,
             &super::extrude::NamedCapTags {
                 start: tag_start.as_ref(),

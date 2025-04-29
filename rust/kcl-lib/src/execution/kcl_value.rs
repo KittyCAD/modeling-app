@@ -4,20 +4,22 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
 use crate::{
     errors::KclErrorDetails,
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType},
-        Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
+        Metadata, Plane, Sketch, Solid, TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
     },
-    std::StdFnProps,
+    std::{args::TyF64, StdFnProps},
     CompilationError, KclError, ModuleId, SourceRange,
 };
+
+use super::types::UnitType;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
@@ -262,6 +264,7 @@ impl KclValue {
         }
     }
 
+    #[cfg(feature = "artifact-graph")]
     pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
         let KclValue::Function {
             value: FunctionSource::User { ast, .. },
@@ -298,6 +301,18 @@ impl KclValue {
             KclValue::Plane { .. } => "Plane",
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Number {
+                ty: NumericType::Unknown,
+                ..
+            } => "number(unknown units)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Length(_)),
+                ..
+            } => "number(Length)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Angle(_)),
+                ..
+            } => "number(Angle)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
             KclValue::MixedArray { .. } => "array (list)",
@@ -358,15 +373,6 @@ impl KclValue {
             memory.replace_env(old_env, new_env);
         }
         result
-    }
-
-    /// Put the number into a KCL value.
-    pub const fn from_number(f: f64, meta: Vec<Metadata>) -> Self {
-        Self::Number {
-            value: f,
-            meta,
-            ty: NumericType::Unknown,
-        }
     }
 
     pub const fn from_number_with_type(f: f64, ty: NumericType, meta: Vec<Metadata>) -> Self {
@@ -431,21 +437,31 @@ impl KclValue {
     }
 
     pub fn as_array(&self) -> Option<&[KclValue]> {
-        if let KclValue::MixedArray { value, meta: _ } = &self {
-            Some(value)
-        } else {
-            None
+        match self {
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
         }
     }
 
-    pub fn as_point2d(&self) -> Option<[f64; 2]> {
+    pub fn as_point2d(&self) -> Option<[TyF64; 2]> {
         let arr = self.as_array()?;
         if arr.len() != 2 {
             return None;
         }
-        let x = arr[0].as_f64()?;
-        let y = arr[1].as_f64()?;
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
         Some([x, y])
+    }
+
+    pub fn as_point3d(&self) -> Option<[TyF64; 3]> {
+        let arr = self.as_array()?;
+        if arr.len() != 3 {
+            return None;
+        }
+        let x = arr[0].as_ty_f64()?;
+        let y = arr[1].as_ty_f64()?;
+        let z = arr[2].as_ty_f64()?;
+        Some([x, y, z])
     }
 
     pub fn as_uuid(&self) -> Option<uuid::Uuid> {
@@ -495,9 +511,19 @@ impl KclValue {
             None
         }
     }
+
+    #[cfg(test)]
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, .. } = &self {
             Some(*value)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_ty_f64(&self) -> Option<TyF64> {
+        if let KclValue::Number { value, ty, .. } = &self {
+            Some(TyF64::new(*value, ty.clone()))
         } else {
             None
         }
@@ -597,6 +623,25 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
+        }
+    }
+}
+
+impl From<Geometry> for KclValue {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            Geometry::Solid(x) => Self::Solid { value: Box::new(x) },
+        }
+    }
+}
+
+impl From<GeometryWithImportedGeometry> for KclValue {
+    fn from(value: GeometryWithImportedGeometry) -> Self {
+        match value {
+            GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }
 }

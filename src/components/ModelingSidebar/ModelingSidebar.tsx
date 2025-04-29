@@ -1,26 +1,34 @@
+import type { IconDefinition } from '@fortawesome/free-solid-svg-icons'
 import { Resizable } from 're-resizable'
-import {
-  MouseEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useContext,
-} from 'react'
+import type { MouseEventHandler } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { SidebarAction, SidebarType, sidebarPanes } from './ModelingPanes'
-import Tooltip from 'components/Tooltip'
-import { ActionIcon } from 'components/ActionIcon'
-import { ModelingPane } from './ModelingPane'
-import { isDesktop } from 'lib/isDesktop'
-import { useModelingContext } from 'hooks/useModelingContext'
-import { CustomIconName } from 'components/CustomIcon'
-import { IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { useKclContext } from 'lang/KclProvider'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
-import { onboardingPaths } from 'routes/Onboarding/paths'
-import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
-import { commandBarActor } from 'machines/commandBarMachine'
-import { useSettings } from 'machines/appMachine'
+
+import { useAppState } from '@src/AppState'
+import { ActionIcon } from '@src/components/ActionIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
+import { ModelingPane } from '@src/components/ModelingSidebar/ModelingPane'
+import type {
+  SidebarAction,
+  SidebarType,
+} from '@src/components/ModelingSidebar/ModelingPanes'
+import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
+import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { useKclContext } from '@src/lang/KclProvider'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
 
 interface ModelingSidebarProps {
   paneOpacity: '' | 'opacity-20' | 'opacity-40'
@@ -50,6 +58,16 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       : 'pointer-events-auto '
   const showDebugPanel = settings.app.showDebugPanel
 
+  const { overallState, immediateState } = useNetworkContext()
+  const { isExecuting } = useKclContext()
+  const { isStreamReady } = useAppState()
+  const reliesOnEngine =
+    (overallState !== NetworkHealthState.Ok &&
+      overallState !== NetworkHealthState.Weak) ||
+    isExecuting ||
+    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
+    !isStreamReady
+
   const paneCallbackProps = useMemo(
     () => ({
       kclContext,
@@ -61,11 +79,25 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
+      id: 'load-external-model',
+      title: 'Load external model',
+      sidebarName: 'Load external model',
+      icon: 'importFile',
+      keybinding: 'Mod + Alt + L',
+      action: () =>
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: { name: 'load-external-model', groupId: 'code' },
+        }),
+    },
+    {
       id: 'export',
       title: 'Export part',
       sidebarName: 'Export part',
       icon: 'floppyDiskArrow',
       keybinding: 'Ctrl + Shift + E',
+      disable: () =>
+        reliesOnEngine ? 'Need engine connection to export' : undefined,
       action: () =>
         commandBarActor.send({
           type: 'Find and select command',
@@ -88,6 +120,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
@@ -113,17 +156,20 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   )
 
   const paneBadgeMap: Record<SidebarType, BadgeInfoComputed> = useMemo(() => {
-    return filteredPanes.reduce((acc, pane) => {
-      if (pane.showBadge) {
-        acc[pane.id] = {
-          value: pane.showBadge.value(paneCallbackProps),
-          onClick: pane.showBadge.onClick,
-          className: pane.showBadge.className,
-          title: pane.showBadge.title,
+    return filteredPanes.reduce(
+      (acc, pane) => {
+        if (pane.showBadge) {
+          acc[pane.id] = {
+            value: pane.showBadge.value(paneCallbackProps),
+            onClick: pane.showBadge.onClick,
+            className: pane.showBadge.className,
+            title: pane.showBadge.title,
+          }
         }
-      }
-      return acc
-    }, {} as Record<SidebarType, BadgeInfoComputed>)
+        return acc
+      },
+      {} as Record<SidebarType, BadgeInfoComputed>
+    )
   }, [paneCallbackProps])
 
   // Clear any hidden panes from the `openPanes` array
@@ -297,6 +343,7 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
@@ -336,7 +383,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>

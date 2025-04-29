@@ -32,7 +32,7 @@ innerProfile = circle(
 
 // create a profile with holes sketch000Profile000Holes
 pipeProfile = outerProfile
-  |> hole(innerProfile, %)
+  |> subtract2d(tool = innerProfile)
 
 // extrude the pipe profile to create the pipe
 pipe = extrude(pipeProfile, length = length)

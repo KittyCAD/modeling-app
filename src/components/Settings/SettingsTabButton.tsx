@@ -1,4 +1,5 @@
-import { CustomIcon, CustomIconName } from 'components/CustomIcon'
+import type { CustomIconName } from '@src/components/CustomIcon'
+import { CustomIcon } from '@src/components/CustomIcon'
 
 interface SettingsTabButtonProps {
   checked: boolean

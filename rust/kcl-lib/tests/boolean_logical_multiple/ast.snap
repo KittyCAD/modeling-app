@@ -18,10 +18,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 5,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 5,
+              "commentStart": 0,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -31,10 +31,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             },
             "operator": "|",
             "right": {
-              "commentStart": 12,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 12,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "false",
                 "start": 0,
@@ -44,7 +44,7 @@ description: Result of parsing boolean_logical_multiple.kcl
               },
               "operator": "&",
               "right": {
-                "commentStart": 20,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "false",
                 "start": 0,
@@ -70,25 +70,25 @@ description: Result of parsing boolean_logical_multiple.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 26,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 26,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 26,
+            "commentStart": 0,
             "end": 0,
             "name": "i",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 30,
+            "commentStart": 0,
             "cond": {
               "abs_path": false,
-              "commentStart": 33,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 33,
+                "commentStart": 0,
                 "end": 0,
                 "name": "ii",
                 "start": 0,
@@ -105,10 +105,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             "final_else": {
               "body": [
                 {
-                  "commentStart": 53,
+                  "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 53,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -124,7 +124,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "type": "ExpressionStatement"
                 }
               ],
-              "commentStart": 53,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
@@ -132,10 +132,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             "then_val": {
               "body": [
                 {
-                  "commentStart": 40,
+                  "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 40,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -151,7 +151,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "type": "ExpressionStatement"
                 }
               ],
-              "commentStart": 40,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
@@ -168,32 +168,21 @@ description: Result of parsing boolean_logical_multiple.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 57,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 64,
-              "end": 0,
-              "left": {
-                "abs_path": false,
-                "commentStart": 64,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 64,
-                  "end": 0,
-                  "name": "i",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
-                "commentStart": 69,
+              "arg": {
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -203,27 +192,34 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "value": 1.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 72,
-              "end": 0,
-              "raw": "\"and has higher precedence than or\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "and has higher precedence than or"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"and has higher precedence than or\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "and has higher precedence than or"
+              }
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 57,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 57,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -233,36 +229,52 @@ description: Result of parsing boolean_logical_multiple.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 57,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "i",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "commentStart": 108,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 110,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 110,
+            "commentStart": 0,
             "end": 0,
             "name": "jj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 115,
+            "commentStart": 0,
             "end": 0,
             "left": {
-              "commentStart": 115,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 115,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "false",
                 "start": 0,
@@ -272,10 +284,10 @@ description: Result of parsing boolean_logical_multiple.kcl
               },
               "operator": "|",
               "right": {
-                "commentStart": 123,
+                "commentStart": 0,
                 "end": 0,
                 "left": {
-                  "commentStart": 123,
+                  "commentStart": 0,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -286,7 +298,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                 "operator": "&",
                 "right": {
                   "argument": {
-                    "commentStart": 131,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "false",
                     "start": 0,
@@ -294,7 +306,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                     "type": "Literal",
                     "value": false
                   },
-                  "commentStart": 130,
+                  "commentStart": 0,
                   "end": 0,
                   "operator": "!",
                   "start": 0,
@@ -311,10 +323,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             },
             "operator": "|",
             "right": {
-              "commentStart": 139,
+              "commentStart": 0,
               "end": 0,
               "left": {
-                "commentStart": 139,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "false",
                 "start": 0,
@@ -324,7 +336,7 @@ description: Result of parsing boolean_logical_multiple.kcl
               },
               "operator": "&",
               "right": {
-                "commentStart": 147,
+                "commentStart": 0,
                 "end": 0,
                 "raw": "true",
                 "start": 0,
@@ -350,25 +362,25 @@ description: Result of parsing boolean_logical_multiple.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 152,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 152,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 152,
+            "commentStart": 0,
             "end": 0,
             "name": "j",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 156,
+            "commentStart": 0,
             "cond": {
               "abs_path": false,
-              "commentStart": 159,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 159,
+                "commentStart": 0,
                 "end": 0,
                 "name": "jj",
                 "start": 0,
@@ -385,10 +397,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             "final_else": {
               "body": [
                 {
-                  "commentStart": 179,
+                  "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 179,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -404,7 +416,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "type": "ExpressionStatement"
                 }
               ],
-              "commentStart": 179,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
@@ -412,10 +424,10 @@ description: Result of parsing boolean_logical_multiple.kcl
             "then_val": {
               "body": [
                 {
-                  "commentStart": 166,
+                  "commentStart": 0,
                   "end": 0,
                   "expression": {
-                    "commentStart": 166,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -431,7 +443,7 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "type": "ExpressionStatement"
                 }
               ],
-              "commentStart": 166,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
@@ -448,32 +460,21 @@ description: Result of parsing boolean_logical_multiple.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 183,
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
-              "commentStart": 190,
-              "end": 0,
-              "left": {
-                "abs_path": false,
-                "commentStart": 190,
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 190,
-                  "end": 0,
-                  "name": "j",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
-                "commentStart": 195,
+              "arg": {
+                "commentStart": 0,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -483,27 +484,34 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "value": 1.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 198,
-              "end": 0,
-              "raw": "\"multiple logical operators\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "multiple logical operators"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"multiple logical operators\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "multiple logical operators"
+              }
             }
           ],
           "callee": {
             "abs_path": false,
-            "commentStart": 183,
+            "commentStart": 0,
             "end": 0,
             "name": {
-              "commentStart": 183,
+              "commentStart": 0,
               "end": 0,
               "name": "assert",
               "start": 0,
@@ -513,11 +521,27 @@ description: Result of parsing boolean_logical_multiple.kcl
             "start": 0,
             "type": "Name"
           },
-          "commentStart": 183,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "j",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -530,7 +554,7 @@ description: Result of parsing boolean_logical_multiple.kcl
       "nonCodeNodes": {
         "2": [
           {
-            "commentStart": 108,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

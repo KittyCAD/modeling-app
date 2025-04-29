@@ -2,8 +2,7 @@ import {
   runningOnLinux,
   runningOnMac,
   runningOnWindows,
-  orRunWhenFullSuiteEnabled,
-} from './test-utils'
+} from '@e2e/playwright/test-utils'
 
 describe('platform detection utilities', () => {
   const originalPlatform = process.platform
@@ -60,40 +59,5 @@ describe('platform detection utilities', () => {
       })
       expect(runningOnWindows()).toBe(false)
     })
-  })
-})
-
-describe('utility to bypass unreliable tests', () => {
-  const originalEnv = { ...process.env }
-
-  afterAll(() => {
-    process.env = { ...originalEnv }
-  })
-
-  it('always runs them on dedicated branch', () => {
-    process.env.GITHUB_EVENT_NAME = 'push'
-    process.env.GITHUB_REF = 'refs/heads/all-e2e'
-    process.env.GITHUB_HEAD_REF = ''
-    process.env.GITHUB_BASE_REF = ''
-    const shouldSkip = orRunWhenFullSuiteEnabled()
-    expect(shouldSkip).toBe(false)
-  })
-
-  it('skips them on the main branch', () => {
-    process.env.GITHUB_EVENT_NAME = 'push'
-    process.env.GITHUB_REF = 'refs/heads/main'
-    process.env.GITHUB_HEAD_REF = ''
-    process.env.GITHUB_BASE_REF = ''
-    const shouldSkip = orRunWhenFullSuiteEnabled()
-    expect(shouldSkip).toBe(true)
-  })
-
-  it('skips them on pull requests', () => {
-    process.env.GITHUB_EVENT_NAME = 'pull_request'
-    process.env.GITHUB_REF = 'refs/pull/5883/merge'
-    process.env.GITHUB_HEAD_REF = 'my-branch'
-    process.env.GITHUB_BASE_REF = 'main'
-    const shouldSkip = orRunWhenFullSuiteEnabled()
-    expect(shouldSkip).toBe(true)
   })
 })

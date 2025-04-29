@@ -1,15 +1,13 @@
-import { assign, createActor, fromPromise, setup, SnapshotFrom } from 'xstate'
-import {
+import toast from 'react-hot-toast'
+import { assign, fromPromise, setup } from 'xstate'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import type {
   Command,
   CommandArgument,
   CommandArgumentWithName,
   KclCommandValue,
-} from 'lib/commandTypes'
-import { getCommandArgumentKclValuesOnly } from 'lib/commandUtils'
-import { MachineManager } from 'components/MachineManagerProvider'
-import toast from 'react-hot-toast'
-import { useSelector } from '@xstate/react'
-import { authCommands } from 'lib/commandBarConfigs/authCommandConfig'
+} from '@src/lib/commandTypes'
+import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 
 export type CommandBarContext = {
   commands: Command[]
@@ -134,10 +132,11 @@ export const commandBarMachine = setup({
         // that is, the first argument that is not already in the argumentsToSubmit
         // or hidden, or that is not undefined, or that is not marked as "skippable".
         // TODO validate the type of the existing arguments
-        const nonHiddenArgs = Object.entries(selectedCommand.args).filter((a) =>
-          a[1].hidden && typeof a[1].hidden === 'function'
-            ? !a[1].hidden(context)
-            : !a[1].hidden
+        const nonHiddenArgs = Object.entries(selectedCommand.args).filter(
+          (a) =>
+            a[1].hidden && typeof a[1].hidden === 'function'
+              ? !a[1].hidden(context)
+              : !a[1].hidden
         )
         let argIndex = 0
 
@@ -241,8 +240,8 @@ export const commandBarMachine = setup({
             argName in event.data.argDefaultValues
               ? event.data.argDefaultValues[argName]
               : arg.skip && 'defaultValue' in arg
-              ? arg.defaultValue
-              : undefined
+                ? arg.defaultValue
+                : undefined
         }
         return args
       },
@@ -304,6 +303,8 @@ export const commandBarMachine = setup({
             context.currentArgument &&
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
+              argConfig?.inputType === 'string' ||
+              argConfig?.inputType === 'options' ||
               argConfig?.inputType === 'selectionMixed') &&
             argConfig?.validation
           ) {
@@ -653,17 +654,4 @@ function sortCommands(a: Command, b: Command) {
   if (b.groupId === 'settings' && !(a.groupId === 'settings')) return -1
   if (a.groupId === 'settings' && !(b.groupId === 'settings')) return 1
   return a.name.localeCompare(b.name)
-}
-
-export const commandBarActor = createActor(commandBarMachine, {
-  input: {
-    commands: [...authCommands],
-  },
-}).start()
-
-/** Basic state snapshot selector */
-const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
-  state
-export const useCommandBarState = () => {
-  return useSelector(commandBarActor, cmdBarStateSelector)
 }

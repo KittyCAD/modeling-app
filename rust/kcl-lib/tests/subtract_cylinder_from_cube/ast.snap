@@ -8,10 +8,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 3,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 3,
+            "commentStart": 0,
             "end": 0,
             "name": "cube",
             "start": 0,
@@ -27,10 +27,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "arguments": [
                           {
                             "abs_path": false,
-                            "commentStart": 41,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 41,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "XY",
                               "start": 0,
@@ -44,10 +44,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 27,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 27,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
@@ -57,143 +57,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 27,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "commentStart": 67,
-                            "elements": [
-                              {
-                                "commentStart": 68,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 68,
-                                  "computed": false,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 68,
-                                    "end": 0,
-                                    "name": "center",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 75,
-                                    "end": 0,
-                                    "raw": "0",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 0.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 80,
-                                  "end": 0,
-                                  "raw": "10",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              {
-                                "commentStart": 84,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 84,
-                                  "computed": false,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 84,
-                                    "end": 0,
-                                    "name": "center",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 91,
-                                    "end": 0,
-                                    "raw": "1",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 1.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "-",
-                                "right": {
-                                  "commentStart": 96,
-                                  "end": 0,
-                                  "raw": "10",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 10.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            ],
-                            "end": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          },
-                          {
-                            "commentStart": 101,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 52,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 52,
-                            "end": 0,
-                            "name": "startProfileAt",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 52,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -204,24 +68,24 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 116,
+                              "commentStart": 0,
                               "end": 0,
-                              "name": "endAbsolute",
+                              "name": "at",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 130,
+                              "commentStart": 0,
                               "elements": [
                                 {
-                                  "commentStart": 131,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 131,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 131,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -229,287 +93,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 138,
-                                      "end": 0,
-                                      "raw": "0",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "commentStart": 143,
-                                    "end": 0,
-                                    "raw": "10",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "commentStart": 147,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 147,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 147,
-                                      "end": 0,
-                                      "name": "center",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 154,
-                                      "end": 0,
-                                      "raw": "1",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "commentStart": 159,
-                                    "end": 0,
-                                    "raw": "10",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 111,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 111,
-                            "end": 0,
-                            "name": "line",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 111,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "commentStart": 176,
-                              "end": 0,
-                              "name": "endAbsolute",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "arg": {
-                              "commentStart": 190,
-                              "elements": [
-                                {
-                                  "commentStart": 191,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 191,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 191,
-                                      "end": 0,
-                                      "name": "center",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 198,
-                                      "end": 0,
-                                      "raw": "0",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "commentStart": 203,
-                                    "end": 0,
-                                    "raw": "10",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "commentStart": 207,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 207,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 207,
-                                      "end": 0,
-                                      "name": "center",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 214,
-                                      "end": 0,
-                                      "raw": "1",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "+",
-                                  "right": {
-                                    "commentStart": 219,
-                                    "end": 0,
-                                    "raw": "10",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 10.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 171,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 171,
-                            "end": 0,
-                            "name": "line",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 171,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": null
-                      },
-                      {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "commentStart": 236,
-                              "end": 0,
-                              "name": "endAbsolute",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "arg": {
-                              "commentStart": 250,
-                              "elements": [
-                                {
-                                  "commentStart": 251,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 251,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 251,
-                                      "end": 0,
-                                      "name": "center",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 258,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -526,7 +110,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "commentStart": 263,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -542,14 +126,14 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "commentStart": 267,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "left": {
-                                    "commentStart": 267,
+                                    "commentStart": 0,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
-                                      "commentStart": 267,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "center",
                                       "start": 0,
@@ -557,7 +141,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "commentStart": 274,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "raw": "1",
                                       "start": 0,
@@ -572,9 +156,9 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
-                                  "operator": "+",
+                                  "operator": "-",
                                   "right": {
-                                    "commentStart": 279,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "raw": "10",
                                     "start": 0,
@@ -599,10 +183,150 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 231,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 231,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "startProfile",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 0,
+                              "elements": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
                             "end": 0,
                             "name": "line",
                             "start": 0,
@@ -612,7 +336,287 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 231,
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 0,
+                              "elements": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "endAbsolute",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "commentStart": 0,
+                              "elements": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "0",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 0.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "-",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "center",
+                                      "start": 0,
+                                      "type": "Identifier",
+                                      "type": "Identifier"
+                                    },
+                                    "property": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "1",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 1.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 0,
+                              "start": 0,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "line",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name"
+                        },
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -623,10 +627,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "arguments": [],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 291,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 291,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "close",
                             "start": 0,
@@ -636,7 +640,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 291,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -647,14 +651,14 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "commentStart": 314,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "commentStart": 323,
+                              "commentStart": 0,
                               "end": 0,
                               "raw": "10",
                               "start": 0,
@@ -669,10 +673,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         ],
                         "callee": {
                           "abs_path": false,
-                          "commentStart": 306,
+                          "commentStart": 0,
                           "end": 0,
                           "name": {
-                            "commentStart": 306,
+                            "commentStart": 0,
                             "end": 0,
                             "name": "extrude",
                             "start": 0,
@@ -682,7 +686,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                           "start": 0,
                           "type": "Name"
                         },
-                        "commentStart": 306,
+                        "commentStart": 0,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -690,30 +694,30 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "unlabeled": null
                       }
                     ],
-                    "commentStart": 27,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "commentStart": 20,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 16,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 7,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 8,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "center",
                   "start": 0,
@@ -735,12 +739,12 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 328,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 330,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 330,
+            "commentStart": 0,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -749,10 +753,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 345,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 346,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -764,7 +768,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                     }
                   },
                   {
-                    "commentStart": 349,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -784,10 +788,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 340,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 340,
+                "commentStart": 0,
                 "end": 0,
                 "name": "cube",
                 "start": 0,
@@ -797,7 +801,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 340,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -813,12 +817,12 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 353,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 353,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 353,
+            "commentStart": 0,
             "end": 0,
             "name": "part002",
             "start": 0,
@@ -829,7 +833,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
               {
                 "arguments": [
                   {
-                    "commentStart": 377,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -840,10 +844,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 363,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 363,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "startSketchOn",
                     "start": 0,
@@ -853,7 +857,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 363,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -864,36 +868,36 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 395,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 404,
+                      "commentStart": 0,
                       "elements": [
                         {
-                          "commentStart": 405,
+                          "commentStart": 0,
                           "end": 0,
-                          "raw": "0",
+                          "raw": "2",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 0.0,
+                            "value": 2.0,
                             "suffix": "None"
                           }
                         },
                         {
-                          "commentStart": 408,
+                          "commentStart": 0,
                           "end": 0,
-                          "raw": "0",
+                          "raw": "2",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 0.0,
+                            "value": 2.0,
                             "suffix": "None"
                           }
                         }
@@ -907,14 +911,14 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 412,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 421,
+                      "commentStart": 0,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -929,10 +933,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 388,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 388,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "circle",
                     "start": 0,
@@ -942,7 +946,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 388,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -954,21 +958,21 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 437,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 446,
+                      "commentStart": 0,
                       "end": 0,
-                      "raw": "10",
+                      "raw": "5",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 10.0,
+                        "value": 5.0,
                         "suffix": "None"
                       }
                     }
@@ -976,10 +980,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 429,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 429,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -989,7 +993,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 429,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -997,7 +1001,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 363,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1013,12 +1017,12 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 449,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 451,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 451,
+            "commentStart": 0,
             "end": 0,
             "name": "fullPart",
             "start": 0,
@@ -1029,21 +1033,21 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "commentStart": 482,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "tools",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "commentStart": 488,
+                  "commentStart": 0,
                   "elements": [
                     {
                       "abs_path": false,
-                      "commentStart": 489,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 489,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "part002",
                         "start": 0,
@@ -1064,10 +1068,10 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 462,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 462,
+                "commentStart": 0,
                 "end": 0,
                 "name": "subtract",
                 "start": 0,
@@ -1077,20 +1081,20 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 462,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "commentStart": 471,
+              "commentStart": 0,
               "elements": [
                 {
                   "abs_path": false,
-                  "commentStart": 472,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 472,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "part001",
                     "start": 0,
@@ -1124,7 +1128,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 328,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1135,7 +1139,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
         ],
         "2": [
           {
-            "commentStart": 449,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

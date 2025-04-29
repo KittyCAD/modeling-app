@@ -19,176 +19,133 @@ description: Variables in memory after executing poopy-shoe.kcl
   "customPlane": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": -1.4375,
-                "ty": {
-                  "type": "Unknown"
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": -1.4375,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -199,176 +156,133 @@ description: Variables in memory after executing poopy-shoe.kcl
   "customPlane2": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": -3.875,
-                "ty": {
-                  "type": "Unknown"
-                }
+          "x": {
+            "type": "Number",
+            "value": -3.875,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -379,176 +293,133 @@ description: Variables in memory after executing poopy-shoe.kcl
   "customPlane3": {
     "type": "Object",
     "value": {
-      "plane": {
+      "origin": {
         "type": "Object",
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": -3.875,
-                "ty": {
-                  "type": "Unknown"
-                }
+          "x": {
+            "type": "Number",
+            "value": -3.875,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.125,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "z": {
+            "type": "Number",
+            "value": 0.125,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "xAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
               }
             }
           },
-          "zAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+          "y": {
+            "type": "Number",
+            "value": -1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
               },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          }
+        }
+      },
+      "yAxis": {
+        "type": "Object",
+        "value": {
+          "x": {
+            "type": "Number",
+            "value": 1.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "y": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "z": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Inches"
+              },
+              "angle": {
+                "type": "Degrees"
               }
             }
           }
@@ -627,9 +498,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 415,
-            "end": 421,
-            "start": 415,
+            "commentStart": 501,
+            "end": 507,
+            "start": 501,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -746,9 +617,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 415,
-              "end": 421,
-              "start": 415,
+              "commentStart": 501,
+              "end": 507,
+              "start": 501,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -979,25 +850,26 @@ description: Variables in memory after executing poopy-shoe.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1032,10 +904,11 @@ description: Variables in memory after executing poopy-shoe.kcl
       },
       "height": 0.0,
       "startCapId": "[uuid]",
-      "endCapId": "[uuid]",
+      "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -1093,9 +966,9 @@ description: Variables in memory after executing poopy-shoe.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 415,
-            "end": 421,
-            "start": 415,
+            "commentStart": 501,
+            "end": 507,
+            "start": 501,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1326,25 +1199,26 @@ description: Variables in memory after executing poopy-shoe.kcl
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 0.0
+          "z": 0.0,
+          "units": {
+            "type": "Mm"
+          }
         },
         "xAxis": {
           "x": 0.0,
-          "y": 1.0,
-          "z": 0.0
+          "y": -1.0,
+          "z": 0.0,
+          "units": {
+            "type": "Unknown"
+          }
         },
         "yAxis": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0
-        },
-        "zAxis": {
-          "x": -1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "units": {
-          "type": "Inches"
+          "z": 1.0,
+          "units": {
+            "type": "Unknown"
+          }
         }
       },
       "start": {
@@ -1397,9 +1271,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1215,
-            "end": 1221,
-            "start": 1215,
+            "commentStart": 1268,
+            "end": 1274,
+            "start": 1268,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1516,9 +1390,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 1215,
-              "end": 1221,
-              "start": 1215,
+              "commentStart": 1268,
+              "end": 1274,
+              "start": 1268,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1749,25 +1623,26 @@ description: Variables in memory after executing poopy-shoe.kcl
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Mm"
+            }
           },
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1805,7 +1680,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch003": {
@@ -1912,25 +1788,26 @@ description: Variables in memory after executing poopy-shoe.kcl
           "origin": {
             "x": 0.0,
             "y": -1.4375,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Inches"
+            }
           },
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -1962,7 +1839,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch004": {
@@ -2054,9 +1932,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2891,
-            "end": 2897,
-            "start": 2891,
+            "commentStart": 2894,
+            "end": 2900,
+            "start": 2894,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -2296,9 +2174,9 @@ description: Variables in memory after executing poopy-shoe.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 2891,
-              "end": 2897,
-              "start": 2891,
+              "commentStart": 2894,
+              "end": 2900,
+              "start": 2894,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -2319,18 +2197,19 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "end",
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -2349,9 +2228,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 1215,
-                  "end": 1221,
-                  "start": 1215,
+                  "commentStart": 1268,
+                  "end": 1274,
+                  "start": 1268,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2468,9 +2347,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 1215,
-                    "end": 1221,
-                    "start": 1215,
+                    "commentStart": 1268,
+                    "end": 1274,
+                    "start": 1268,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -2701,25 +2580,26 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Mm"
+                  }
                 },
                 "xAxis": {
                   "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": -1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Inches"
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -2757,7 +2637,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -2798,7 +2679,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch005": {
@@ -2841,9 +2723,9 @@ description: Variables in memory after executing poopy-shoe.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3537,
-            "end": 3543,
-            "start": 3537,
+            "commentStart": 3499,
+            "end": 3505,
+            "start": 3499,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -2891,7 +2773,7 @@ description: Variables in memory after executing poopy-shoe.kcl
             ],
             "tag": null,
             "to": [
-              3.0,
+              -3.0,
               5.125
             ],
             "type": "ToPoint",
@@ -2904,18 +2786,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": false,
+            "ccw": true,
             "center": [
-              3.0,
+              -3.0,
               3.1241
             ],
             "from": [
-              3.0,
+              -3.0,
               5.125
             ],
             "tag": null,
             "to": [
-              5.0,
+              -5.0,
               3.0625
             ],
             "type": "TangentialArcTo",
@@ -2928,18 +2810,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              7.0,
+              -7.0,
               3.0009
             ],
             "from": [
-              5.0,
+              -5.0,
               3.0625
             ],
             "tag": null,
             "to": [
-              7.0,
+              -7.0,
               1.0
             ],
             "type": "TangentialArcTo",
@@ -2953,18 +2835,18 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              7.0,
+              -7.0,
               1.0
             ],
             "tag": {
-              "commentStart": 3537,
-              "end": 3543,
-              "start": 3537,
+              "commentStart": 3499,
+              "end": 3505,
+              "start": 3499,
               "type": "TagDeclarator",
               "value": "seg03"
             },
             "to": [
-              7.0,
+              -7.0,
               0.0
             ],
             "type": "ToPoint",
@@ -2978,7 +2860,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "sourceRange": []
             },
             "from": [
-              7.0,
+              -7.0,
               0.0
             ],
             "tag": null,
@@ -3000,25 +2882,26 @@ description: Variables in memory after executing poopy-shoe.kcl
           "origin": {
             "x": -3.875,
             "y": 0.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Inches"
+            }
           },
           "xAxis": {
             "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -3056,7 +2939,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -3183,18 +3067,19 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "seg03",
           "xAxis": {
             "x": 0.0,
-            "y": -1.0,
-            "z": 0.0
+            "y": 1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -3234,9 +3119,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 3537,
-                  "end": 3543,
-                  "start": 3537,
+                  "commentStart": 3499,
+                  "end": 3505,
+                  "start": 3499,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -3284,7 +3169,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   ],
                   "tag": null,
                   "to": [
-                    3.0,
+                    -3.0,
                     5.125
                   ],
                   "type": "ToPoint",
@@ -3297,18 +3182,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": false,
+                  "ccw": true,
                   "center": [
-                    3.0,
+                    -3.0,
                     3.1241
                   ],
                   "from": [
-                    3.0,
+                    -3.0,
                     5.125
                   ],
                   "tag": null,
                   "to": [
-                    5.0,
+                    -5.0,
                     3.0625
                   ],
                   "type": "TangentialArcTo",
@@ -3321,18 +3206,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    7.0,
+                    -7.0,
                     3.0009
                   ],
                   "from": [
-                    5.0,
+                    -5.0,
                     3.0625
                   ],
                   "tag": null,
                   "to": [
-                    7.0,
+                    -7.0,
                     1.0
                   ],
                   "type": "TangentialArcTo",
@@ -3346,18 +3231,18 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.0,
+                    -7.0,
                     1.0
                   ],
                   "tag": {
-                    "commentStart": 3537,
-                    "end": 3543,
-                    "start": 3537,
+                    "commentStart": 3499,
+                    "end": 3505,
+                    "start": 3499,
                     "type": "TagDeclarator",
                     "value": "seg03"
                   },
                   "to": [
-                    7.0,
+                    -7.0,
                     0.0
                   ],
                   "type": "ToPoint",
@@ -3371,7 +3256,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.0,
+                    -7.0,
                     0.0
                   ],
                   "tag": null,
@@ -3393,25 +3278,26 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "origin": {
                   "x": -3.875,
                   "y": 0.0,
-                  "z": 0.0
+                  "z": 0.0,
+                  "units": {
+                    "type": "Inches"
+                  }
                 },
                 "xAxis": {
                   "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": 1.0,
-                  "y": 0.0,
-                  "z": 0.0
-                },
-                "units": {
-                  "type": "Inches"
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 }
               },
               "start": {
@@ -3449,7 +3335,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -3484,7 +3371,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -3611,18 +3499,19 @@ description: Variables in memory after executing poopy-shoe.kcl
           "value": "end",
           "xAxis": {
             "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
+            "y": -1.0,
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0
-          },
-          "zAxis": {
-            "x": -1.0,
-            "y": 0.0,
-            "z": 0.0
+            "z": 1.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "solid": {
             "type": "Solid",
@@ -3711,9 +3600,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 2891,
-                  "end": 2897,
-                  "start": 2891,
+                  "commentStart": 2894,
+                  "end": 2900,
+                  "start": 2894,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -3953,9 +3842,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 2891,
-                    "end": 2897,
-                    "start": 2891,
+                    "commentStart": 2894,
+                    "end": 2900,
+                    "start": 2894,
                     "type": "TagDeclarator",
                     "value": "seg04"
                   },
@@ -3976,18 +3865,19 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "value": "end",
                 "xAxis": {
                   "x": 0.0,
-                  "y": 1.0,
-                  "z": 0.0
+                  "y": -1.0,
+                  "z": 0.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "yAxis": {
                   "x": 0.0,
                   "y": 0.0,
-                  "z": 1.0
-                },
-                "zAxis": {
-                  "x": -1.0,
-                  "y": 0.0,
-                  "z": 0.0
+                  "z": 1.0,
+                  "units": {
+                    "type": "Unknown"
+                  }
                 },
                 "solid": {
                   "type": "Solid",
@@ -4006,9 +3896,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
-                        "commentStart": 1215,
-                        "end": 1221,
-                        "start": 1215,
+                        "commentStart": 1268,
+                        "end": 1274,
+                        "start": 1268,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -4125,9 +4015,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                           0.0
                         ],
                         "tag": {
-                          "commentStart": 1215,
-                          "end": 1221,
-                          "start": 1215,
+                          "commentStart": 1268,
+                          "end": 1274,
+                          "start": 1268,
                           "type": "TagDeclarator",
                           "value": "seg02"
                         },
@@ -4358,25 +4248,26 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 0.0
+                        "z": 0.0,
+                        "units": {
+                          "type": "Mm"
+                        }
                       },
                       "xAxis": {
                         "x": 0.0,
-                        "y": 1.0,
-                        "z": 0.0
+                        "y": -1.0,
+                        "z": 0.0,
+                        "units": {
+                          "type": "Unknown"
+                        }
                       },
                       "yAxis": {
                         "x": 0.0,
                         "y": 0.0,
-                        "z": 1.0
-                      },
-                      "zAxis": {
-                        "x": -1.0,
-                        "y": 0.0,
-                        "z": 0.0
-                      },
-                      "units": {
-                        "type": "Inches"
+                        "z": 1.0,
+                        "units": {
+                          "type": "Unknown"
+                        }
                       }
                     },
                     "start": {
@@ -4414,7 +4305,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Inches"
@@ -4455,7 +4347,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Inches"
@@ -4490,7 +4383,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch008": {
@@ -4618,25 +4512,26 @@ description: Variables in memory after executing poopy-shoe.kcl
           "origin": {
             "x": -3.875,
             "y": 0.0,
-            "z": 0.125
+            "z": 0.125,
+            "units": {
+              "type": "Inches"
+            }
           },
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
-            "z": 0.0
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           },
           "yAxis": {
             "x": 1.0,
             "y": 0.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
-          "units": {
-            "type": "Inches"
+            "z": 0.0,
+            "units": {
+              "type": "Unknown"
+            }
           }
         },
         "start": {
@@ -4668,7 +4563,8 @@ description: Variables in memory after executing poopy-shoe.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "wallThickness": {

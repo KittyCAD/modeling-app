@@ -31,7 +31,7 @@ data = {
 
         {modified_release_body}
     '''),
-    "username": "Modeling App Release Updates",
+    "username": "Design Studio Release Updates",
     "avatar_url": "https://raw.githubusercontent.com/KittyCAD/modeling-app/main/public/discord-avatar.png"
 }
 

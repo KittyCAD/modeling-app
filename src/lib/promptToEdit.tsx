@@ -1,38 +1,31 @@
-import { Models, ml, Client } from '@kittycad/lib'
-import { VITE_KC_API_BASE_URL } from 'env'
-import crossPlatformFetch from './crossPlatformFetch'
-import { err, reportRejection } from './trap'
-import { Selections } from './selections'
-import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { ArtifactGraph, SourceRange, topLevelRange } from 'lang/wasm'
-import toast from 'react-hot-toast'
-import { codeManager, editorManager, kclManager } from './singletons'
-import { ToastPromptToEditCadSuccess } from 'components/ToastTextToCad'
-import { KittyCadLibFile, uuidv4 } from './utils'
+import type { SelectionRange } from '@codemirror/state'
+import { EditorSelection, Transaction } from '@codemirror/state'
+import type { Models } from '@kittycad/lib'
+import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
-import { Transaction, EditorSelection, SelectionRange } from '@codemirror/state'
-import { modelingMachineEvent } from 'editor/manager'
-import { getCookie, TOKEN_PERSIST_KEY } from 'machines/authMachine'
-import { COOKIE_NAME } from './constants'
-import { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
-import { isDesktop } from './isDesktop'
-import { openExternalBrowserIfDesktop } from './openWindow'
-import { ActionButton } from 'components/ActionButton'
-import { CustomIcon } from 'components/CustomIcon'
+import toast from 'react-hot-toast'
+import { Client } from '@kittycad/lib'
+import { ml } from '@kittycad/lib'
+import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
+import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
+import { COOKIE_NAME } from '@src/lib/constants'
+import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
 
-export type FileMeta =
-  | {
-      type: 'kcl'
-      relPath: string
-      absPath: string
-      fileContents: string
-      execStateFileNamesIndex: number
-    }
-  | {
-      type: 'other'
-      relPath: string
-      data: Blob
-    }
+import { ToastPromptToEditCadSuccess } from '@src/components/ToastTextToCad'
+import { modelingMachineEvent } from '@src/editor/manager'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
+import type { Selections } from '@src/lib/selections'
+import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
+import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
+import type { FileMeta } from '@src/lib/types'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -130,10 +123,10 @@ export async function submitPromptToEditToQueue({
       if (artifact?.type === 'cap') {
         prompts.push({
           prompt: `The users main selection is the end cap of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range most likely refers to "startProfileAt" simply because this is the start of the profile that was swept.
+The source range most likely refers to "startProfile" simply because this is the start of the profile that was swept.
 If you need to operate on this cap, for example for sketching on the face, you can use the special string ${
             artifact.subType === 'end' ? 'END' : 'START'
-          } i.e. \`startSketchOn(someSweepVariable, ${
+          } i.e. \`startSketchOn(someSweepVariable, face = ${
             artifact.subType === 'end' ? 'END' : 'START'
           })\`
 When they made this selection they main have intended this surface directly or meant something more general like the sweep body.
@@ -156,7 +149,7 @@ See later source ranges for more context.`,
       if (artifact?.type === 'wall') {
         prompts.push({
           prompt: `The users main selection is the wall of a general-sweep (that is an extrusion, revolve, sweep or loft).
-The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, segmentTag)"
+The source range though is for the original segment before it was extruded, you can add a tag to that segment in order to refer to this wall, for example "startSketchOn(someSweepVariable, face = segmentTag)"
 But it's also worth bearing in mind that the user may have intended to select the sweep itself, not this individual wall, see later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),
           file: filePath,
@@ -297,7 +290,7 @@ export async function doPromptEdit({
 
   let submitResult
 
-    // work around for @kittycad/lib not really being built for the browser
+  // work around for @kittycad/lib not really being built for the browser
   ;(window as any).process = {
     env: {
       ZOO_API_TOKEN: token,

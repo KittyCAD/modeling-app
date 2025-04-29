@@ -6,19 +6,19 @@ description: Result of parsing mounting-plate.kcl
   "Ok": {
     "body": [
       {
-        "commentStart": 240,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 262,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 262,
+            "commentStart": 0,
             "end": 0,
             "name": "plateLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 276,
+            "commentStart": 0,
             "end": 0,
             "raw": "10",
             "start": 0,
@@ -35,26 +35,26 @@ description: Result of parsing mounting-plate.kcl
         "end": 0,
         "kind": "const",
         "preComments": [
-          "// Define constants"
+          "// Define parameters"
         ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 279,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 279,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 279,
+            "commentStart": 0,
             "end": 0,
             "name": "plateWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 292,
+            "commentStart": 0,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -75,19 +75,19 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 294,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 294,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 294,
+            "commentStart": 0,
             "end": 0,
             "name": "filletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 309,
+            "commentStart": 0,
             "end": 0,
             "raw": "0.5",
             "start": 0,
@@ -108,19 +108,19 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 313,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 313,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 313,
+            "commentStart": 0,
             "end": 0,
             "name": "plateThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 330,
+            "commentStart": 0,
             "end": 0,
             "raw": ".5",
             "start": 0,
@@ -141,19 +141,19 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 333,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 333,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 333,
+            "commentStart": 0,
             "end": 0,
             "name": "centerHoleDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 354,
+            "commentStart": 0,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -174,12 +174,12 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 355,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 510,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 510,
+            "commentStart": 0,
             "end": 0,
             "name": "rectShape",
             "start": 0,
@@ -189,12 +189,12 @@ description: Result of parsing mounting-plate.kcl
             "body": {
               "body": [
                 {
-                  "commentStart": 535,
+                  "commentStart": 0,
                   "declaration": {
-                    "commentStart": 535,
+                    "commentStart": 0,
                     "end": 0,
                     "id": {
-                      "commentStart": 535,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rr",
                       "start": 0,
@@ -206,10 +206,10 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "abs_path": false,
-                              "commentStart": 554,
+                              "commentStart": 0,
                               "end": 0,
                               "name": {
-                                "commentStart": 554,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "XY",
                                 "start": 0,
@@ -223,10 +223,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 540,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 540,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "startSketchOn",
                               "start": 0,
@@ -236,191 +236,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 540,
-                          "end": 0,
-                          "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
-                              "commentStart": 580,
-                              "elements": [
-                                {
-                                  "commentStart": 581,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 581,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 581,
-                                      "end": 0,
-                                      "name": "pos",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 585,
-                                      "end": 0,
-                                      "raw": "0",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "commentStart": 591,
-                                    "end": 0,
-                                    "left": {
-                                      "abs_path": false,
-                                      "commentStart": 591,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 591,
-                                        "end": 0,
-                                        "name": "w",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "commentStart": 595,
-                                      "end": 0,
-                                      "raw": "2",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                },
-                                {
-                                  "commentStart": 599,
-                                  "end": 0,
-                                  "left": {
-                                    "commentStart": 599,
-                                    "computed": false,
-                                    "end": 0,
-                                    "object": {
-                                      "commentStart": 599,
-                                      "end": 0,
-                                      "name": "pos",
-                                      "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
-                                    },
-                                    "property": {
-                                      "commentStart": 603,
-                                      "end": 0,
-                                      "raw": "1",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  "operator": "-",
-                                  "right": {
-                                    "commentStart": 609,
-                                    "end": 0,
-                                    "left": {
-                                      "abs_path": false,
-                                      "commentStart": 609,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 609,
-                                        "end": 0,
-                                        "name": "l",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "operator": "/",
-                                    "right": {
-                                      "commentStart": 613,
-                                      "end": 0,
-                                      "raw": "2",
-                                      "start": 0,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 2.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "start": 0,
-                                    "type": "BinaryExpression",
-                                    "type": "BinaryExpression"
-                                  },
-                                  "start": 0,
-                                  "type": "BinaryExpression",
-                                  "type": "BinaryExpression"
-                                }
-                              ],
-                              "end": 0,
-                              "start": 0,
-                              "type": "ArrayExpression",
-                              "type": "ArrayExpression"
-                            },
-                            {
-                              "commentStart": 618,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "abs_path": false,
-                            "commentStart": 565,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 565,
-                              "end": 0,
-                              "name": "startProfileAt",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name"
-                          },
-                          "commentStart": 565,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -431,24 +247,24 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 633,
+                                "commentStart": 0,
                                 "end": 0,
-                                "name": "endAbsolute",
+                                "name": "at",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 647,
+                                "commentStart": 0,
                                 "elements": [
                                   {
-                                    "commentStart": 648,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 648,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 648,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -456,7 +272,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 652,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "0",
                                         "start": 0,
@@ -471,16 +287,16 @@ description: Result of parsing mounting-plate.kcl
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
-                                    "operator": "+",
+                                    "operator": "-",
                                     "right": {
-                                      "commentStart": 657,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 657,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 657,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "w",
                                           "start": 0,
@@ -493,7 +309,7 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 661,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -513,14 +329,14 @@ description: Result of parsing mounting-plate.kcl
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "commentStart": 664,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 664,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 664,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -528,7 +344,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 668,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "1",
                                         "start": 0,
@@ -545,14 +361,14 @@ description: Result of parsing mounting-plate.kcl
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "commentStart": 674,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 674,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 674,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "l",
                                           "start": 0,
@@ -565,7 +381,195 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 678,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "raw": "2",
+                                        "start": 0,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 2.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    },
+                                    "start": 0,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "startProfile",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "start": 0,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "endAbsolute",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "left": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "object": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "property": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "raw": "0",
+                                        "start": 0,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 0.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "operator": "+",
+                                    "right": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "left": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "w",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "operator": "/",
+                                      "right": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "raw": "2",
+                                        "start": 0,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 2.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    },
+                                    "start": 0,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "left": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "object": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "pos",
+                                        "start": 0,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      },
+                                      "property": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "raw": "1",
+                                        "start": 0,
+                                        "type": "Literal",
+                                        "type": "Literal",
+                                        "value": {
+                                          "value": 1.0,
+                                          "suffix": "None"
+                                        }
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "operator": "-",
+                                    "right": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "left": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "l",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "operator": "/",
+                                      "right": {
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -594,14 +598,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 683,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 689,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -612,10 +616,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 628,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 628,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "line",
                               "start": 0,
@@ -625,7 +629,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 628,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -637,24 +641,24 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 709,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 723,
+                                "commentStart": 0,
                                 "elements": [
                                   {
-                                    "commentStart": 724,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 724,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 724,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -662,7 +666,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 728,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "0",
                                         "start": 0,
@@ -679,14 +683,14 @@ description: Result of parsing mounting-plate.kcl
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "commentStart": 733,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 733,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 733,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "w",
                                           "start": 0,
@@ -699,7 +703,7 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 737,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -719,14 +723,14 @@ description: Result of parsing mounting-plate.kcl
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "commentStart": 740,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 740,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 740,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -734,7 +738,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 744,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "1",
                                         "start": 0,
@@ -751,14 +755,14 @@ description: Result of parsing mounting-plate.kcl
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "commentStart": 749,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 749,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 749,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "l",
                                           "start": 0,
@@ -771,7 +775,7 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 753,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -800,14 +804,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 757,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 763,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -818,10 +822,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 704,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 704,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "line",
                               "start": 0,
@@ -831,7 +835,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 704,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -843,24 +847,24 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 783,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "endAbsolute",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 797,
+                                "commentStart": 0,
                                 "elements": [
                                   {
-                                    "commentStart": 798,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 798,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 798,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -868,7 +872,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 802,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "0",
                                         "start": 0,
@@ -885,14 +889,14 @@ description: Result of parsing mounting-plate.kcl
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "commentStart": 808,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 808,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 808,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "w",
                                           "start": 0,
@@ -905,7 +909,7 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 812,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -925,14 +929,14 @@ description: Result of parsing mounting-plate.kcl
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "commentStart": 816,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "left": {
-                                      "commentStart": 816,
+                                      "commentStart": 0,
                                       "computed": false,
                                       "end": 0,
                                       "object": {
-                                        "commentStart": 816,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": "pos",
                                         "start": 0,
@@ -940,7 +944,7 @@ description: Result of parsing mounting-plate.kcl
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "commentStart": 820,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "1",
                                         "start": 0,
@@ -957,14 +961,14 @@ description: Result of parsing mounting-plate.kcl
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "commentStart": 825,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "left": {
                                         "abs_path": false,
-                                        "commentStart": 825,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "name": {
-                                          "commentStart": 825,
+                                          "commentStart": 0,
                                           "end": 0,
                                           "name": "l",
                                           "start": 0,
@@ -977,7 +981,7 @@ description: Result of parsing mounting-plate.kcl
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "commentStart": 829,
+                                        "commentStart": 0,
                                         "end": 0,
                                         "raw": "2",
                                         "start": 0,
@@ -1006,14 +1010,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 833,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 839,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -1024,10 +1028,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 778,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 778,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "line",
                               "start": 0,
@@ -1037,7 +1041,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 778,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1049,14 +1053,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "commentStart": 860,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "tag",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "commentStart": 866,
+                                "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
                                 "type": "TagDeclarator",
@@ -1067,10 +1071,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 854,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 854,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "close",
                               "start": 0,
@@ -1080,7 +1084,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 854,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1088,7 +1092,7 @@ description: Result of parsing mounting-plate.kcl
                           "unlabeled": null
                         }
                       ],
-                      "commentStart": 540,
+                      "commentStart": 0,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1106,10 +1110,10 @@ description: Result of parsing mounting-plate.kcl
                 {
                   "argument": {
                     "abs_path": false,
-                    "commentStart": 883,
+                    "commentStart": 0,
                     "end": 0,
                     "name": {
-                      "commentStart": 883,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "rr",
                       "start": 0,
@@ -1120,24 +1124,24 @@ description: Result of parsing mounting-plate.kcl
                     "type": "Name",
                     "type": "Name"
                   },
-                  "commentStart": 876,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 531,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 519,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 520,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "pos",
                   "start": 0,
@@ -1147,7 +1151,7 @@ description: Result of parsing mounting-plate.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 525,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "w",
                   "start": 0,
@@ -1157,7 +1161,7 @@ description: Result of parsing mounting-plate.kcl
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 528,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "l",
                   "start": 0,
@@ -1184,19 +1188,19 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 887,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 943,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 943,
+            "commentStart": 0,
             "end": 0,
             "name": "holeRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 956,
+            "commentStart": 0,
             "end": 0,
             "raw": ".25",
             "start": 0,
@@ -1222,19 +1226,19 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 960,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 960,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 960,
+            "commentStart": 0,
             "end": 0,
             "name": "holeIndex",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "commentStart": 972,
+            "commentStart": 0,
             "end": 0,
             "raw": ".75",
             "start": 0,
@@ -1255,12 +1259,12 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 975,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1036,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1036,
+            "commentStart": 0,
             "end": 0,
             "name": "rs",
             "start": 0,
@@ -1269,10 +1273,10 @@ description: Result of parsing mounting-plate.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 1051,
+                "commentStart": 0,
                 "elements": [
                   {
-                    "commentStart": 1052,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1284,7 +1288,7 @@ description: Result of parsing mounting-plate.kcl
                     }
                   },
                   {
-                    "commentStart": 1055,
+                    "commentStart": 0,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -1303,10 +1307,10 @@ description: Result of parsing mounting-plate.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 1059,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1059,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "plateWidth",
                   "start": 0,
@@ -1319,10 +1323,10 @@ description: Result of parsing mounting-plate.kcl
               },
               {
                 "abs_path": false,
-                "commentStart": 1071,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1071,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "plateLength",
                   "start": 0,
@@ -1336,10 +1340,10 @@ description: Result of parsing mounting-plate.kcl
             ],
             "callee": {
               "abs_path": false,
-              "commentStart": 1041,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 1041,
+                "commentStart": 0,
                 "end": 0,
                 "name": "rectShape",
                 "start": 0,
@@ -1349,7 +1353,7 @@ description: Result of parsing mounting-plate.kcl
               "start": 0,
               "type": "Name"
             },
-            "commentStart": 1041,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -1370,12 +1374,12 @@ description: Result of parsing mounting-plate.kcl
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 1084,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 1084,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 1084,
+            "commentStart": 0,
             "end": 0,
             "name": "part",
             "start": 0,
@@ -1385,10 +1389,10 @@ description: Result of parsing mounting-plate.kcl
             "body": [
               {
                 "abs_path": false,
-                "commentStart": 1091,
+                "commentStart": 0,
                 "end": 0,
                 "name": {
-                  "commentStart": 1091,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "rs",
                   "start": 0,
@@ -1402,550 +1406,108 @@ description: Result of parsing mounting-plate.kcl
               {
                 "arguments": [
                   {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1119,
-                          "end": 0,
-                          "name": "center",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "commentStart": 1128,
-                          "elements": [
-                            {
-                              "commentStart": 1139,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1139,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 1140,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1140,
-                                      "end": 0,
-                                      "name": "plateWidth",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 1139,
-                                  "end": 0,
-                                  "operator": "-",
-                                  "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1153,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1157,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1157,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "commentStart": 1177,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1177,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 1177,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 1177,
-                                    "end": 0,
-                                    "name": "plateLength",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1191,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "-",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1195,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1195,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          ],
-                          "end": 0,
-                          "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1222,
-                          "end": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "abs_path": false,
-                          "commentStart": 1231,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1231,
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "tool",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
                             "end": 0,
-                            "name": "holeRadius",
+                            "name": "center",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 1104,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1104,
-                        "end": 0,
-                        "name": "circle",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name"
-                    },
-                    "commentStart": 1104,
-                    "end": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "commentStart": 1251,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1099,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1099,
-                    "end": 0,
-                    "name": "hole",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1099,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1279,
-                          "end": 0,
-                          "name": "center",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "commentStart": 1288,
-                          "elements": [
-                            {
-                              "commentStart": 1299,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1299,
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
-                                  "abs_path": false,
-                                  "commentStart": 1299,
+                                  "commentStart": 0,
                                   "end": 0,
-                                  "name": {
-                                    "commentStart": 1299,
-                                    "end": 0,
-                                    "name": "plateWidth",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1312,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "-",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1316,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1316,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "commentStart": 1336,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1336,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 1336,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 1336,
-                                    "end": 0,
-                                    "name": "plateLength",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1350,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "-",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1354,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1354,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          ],
-                          "end": 0,
-                          "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1381,
-                          "end": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "abs_path": false,
-                          "commentStart": 1390,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1390,
-                            "end": 0,
-                            "name": "holeRadius",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 1264,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1264,
-                        "end": 0,
-                        "name": "circle",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name"
-                    },
-                    "commentStart": 1264,
-                    "end": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "commentStart": 1410,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1259,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1259,
-                    "end": 0,
-                    "name": "hole",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1259,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1438,
-                          "end": 0,
-                          "name": "center",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "commentStart": 1447,
-                          "elements": [
-                            {
-                              "commentStart": 1458,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1458,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 1459,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1459,
+                                  "left": {
+                                    "argument": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
                                       "end": 0,
-                                      "name": "plateWidth",
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "plateWidth",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
-                                    "path": [],
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "operator": "-",
                                     "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
                                   },
-                                  "commentStart": 1458,
-                                  "end": 0,
-                                  "operator": "-",
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
                                 },
-                                "operator": "/",
+                                "operator": "+",
                                 "right": {
-                                  "commentStart": 1472,
+                                  "abs_path": false,
+                                  "commentStart": 0,
                                   "end": 0,
-                                  "raw": "2",
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
                                   "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
+                                  "type": "Name",
+                                  "type": "Name"
                                 },
                                 "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "operator": "+",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1476,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1476,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "commentStart": 1496,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1496,
+                              {
+                                "commentStart": 0,
                                 "end": 0,
                                 "left": {
-                                  "argument": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
                                     "abs_path": false,
-                                    "commentStart": 1497,
+                                    "commentStart": 0,
                                     "end": 0,
                                     "name": {
-                                      "commentStart": 1497,
+                                      "commentStart": 0,
                                       "end": 0,
                                       "name": "plateLength",
                                       "start": 0,
@@ -1956,166 +1518,32 @@ description: Result of parsing mounting-plate.kcl
                                     "type": "Name",
                                     "type": "Name"
                                   },
-                                  "commentStart": 1496,
-                                  "end": 0,
-                                  "operator": "-",
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
                                 },
-                                "operator": "/",
+                                "operator": "-",
                                 "right": {
-                                  "commentStart": 1511,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1515,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1515,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          ],
-                          "end": 0,
-                          "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1542,
-                          "end": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "abs_path": false,
-                          "commentStart": 1551,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1551,
-                            "end": 0,
-                            "name": "holeRadius",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 1423,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1423,
-                        "end": 0,
-                        "name": "circle",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name"
-                    },
-                    "commentStart": 1423,
-                    "end": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "commentStart": 1571,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1418,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1418,
-                    "end": 0,
-                    "name": "hole",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1418,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1599,
-                          "end": 0,
-                          "name": "center",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "commentStart": 1608,
-                          "elements": [
-                            {
-                              "commentStart": 1619,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1619,
-                                "end": 0,
-                                "left": {
                                   "abs_path": false,
-                                  "commentStart": 1619,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": {
-                                    "commentStart": 1619,
+                                    "commentStart": 0,
                                     "end": 0,
-                                    "name": "plateWidth",
+                                    "name": "holeIndex",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -2124,184 +1552,76 @@ description: Result of parsing mounting-plate.kcl
                                   "type": "Name",
                                   "type": "Name"
                                 },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1632,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
                                 "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
-                              },
-                              "operator": "-",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1636,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1636,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            },
-                            {
-                              "commentStart": 1656,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 1656,
-                                "end": 0,
-                                "left": {
-                                  "argument": {
-                                    "abs_path": false,
-                                    "commentStart": 1657,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 1657,
-                                      "end": 0,
-                                      "name": "plateLength",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "commentStart": 1656,
-                                  "end": 0,
-                                  "operator": "-",
-                                  "start": 0,
-                                  "type": "UnaryExpression",
-                                  "type": "UnaryExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 1671,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "+",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 1675,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 1675,
-                                  "end": 0,
-                                  "name": "holeIndex",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          ],
-                          "end": 0,
-                          "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1702,
-                          "end": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "abs_path": false,
-                          "commentStart": 1711,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1711,
+                              }
+                            ],
                             "end": 0,
-                            "name": "holeRadius",
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "radius",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
+                          "arg": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "holeRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 1584,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1584,
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
                         "end": 0,
-                        "name": "circle",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
-                      "path": [],
+                      "commentStart": 0,
+                      "end": 0,
                       "start": 0,
-                      "type": "Name"
-                    },
-                    "commentStart": 1584,
-                    "end": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "commentStart": 1731,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    }
                   }
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1579,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1579,
+                    "commentStart": 0,
                     "end": 0,
-                    "name": "hole",
+                    "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -2309,143 +1629,847 @@ description: Result of parsing mounting-plate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1579,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "arguments": [
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1751,
-                          "end": 0,
-                          "name": "center",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "commentStart": 1760,
-                          "elements": [
-                            {
-                              "commentStart": 1761,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            },
-                            {
-                              "commentStart": 1764,
-                              "end": 0,
-                              "raw": "0",
-                              "start": 0,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          ],
-                          "end": 0,
-                          "start": 0,
-                          "type": "ArrayExpression",
-                          "type": "ArrayExpression"
-                        }
-                      },
-                      {
-                        "type": "LabeledArg",
-                        "label": {
-                          "commentStart": 1768,
-                          "end": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "arg": {
-                          "abs_path": false,
-                          "commentStart": 1777,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 1777,
-                            "end": 0,
-                            "name": "centerHoleDiameter",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      }
-                    ],
-                    "callee": {
-                      "abs_path": false,
-                      "commentStart": 1744,
-                      "end": 0,
-                      "name": {
-                        "commentStart": 1744,
-                        "end": 0,
-                        "name": "circle",
-                        "start": 0,
-                        "type": "Identifier"
-                      },
-                      "path": [],
-                      "start": 0,
-                      "type": "Name"
-                    },
-                    "commentStart": 1744,
-                    "end": 0,
-                    "start": 0,
-                    "type": "CallExpressionKw",
-                    "type": "CallExpressionKw",
-                    "unlabeled": null
-                  },
-                  {
-                    "commentStart": 1798,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "abs_path": false,
-                  "commentStart": 1739,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 1739,
-                    "end": 0,
-                    "name": "hole",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name"
-                },
-                "commentStart": 1739,
-                "end": 0,
-                "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1814,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "tool",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "plateWidth",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "plateLength",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "radius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "holeRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "subtract2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "tool",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "argument": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "plateWidth",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "operator": "-",
+                                    "start": 0,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "argument": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "plateLength",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "operator": "-",
+                                    "start": 0,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "radius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "holeRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "subtract2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "tool",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "plateWidth",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "argument": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "plateLength",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "operator": "-",
+                                    "start": 0,
+                                    "type": "UnaryExpression",
+                                    "type": "UnaryExpression"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "operator": "+",
+                                "right": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "holeIndex",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            ],
+                            "end": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "radius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "holeRadius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "subtract2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "tool",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "center",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "raw": "0",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "raw": "0",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.0,
+                                  "suffix": "None"
+                                }
+                              }
+                            ],
+                            "end": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "radius",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "centerHoleDiameter",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "subtract2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2453,10 +2477,10 @@ description: Result of parsing mounting-plate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1823,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1823,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "plateThickness",
                         "start": 0,
@@ -2471,10 +2495,10 @@ description: Result of parsing mounting-plate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1806,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1806,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
                     "start": 0,
@@ -2484,7 +2508,7 @@ description: Result of parsing mounting-plate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1806,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2496,7 +2520,7 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1859,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
@@ -2504,10 +2528,10 @@ description: Result of parsing mounting-plate.kcl
                     },
                     "arg": {
                       "abs_path": false,
-                      "commentStart": 1868,
+                      "commentStart": 0,
                       "end": 0,
                       "name": {
-                        "commentStart": 1868,
+                        "commentStart": 0,
                         "end": 0,
                         "name": "filletRadius",
                         "start": 0,
@@ -2522,27 +2546,27 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "commentStart": 1889,
+                      "commentStart": 0,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "commentStart": 1896,
+                      "commentStart": 0,
                       "elements": [
                         {
                           "arguments": [
                             {
-                              "commentStart": 1931,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 1931,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 1931,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "rs",
                                   "start": 0,
@@ -2550,7 +2574,7 @@ description: Result of parsing mounting-plate.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 1934,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -2562,7 +2586,7 @@ description: Result of parsing mounting-plate.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 1939,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge1",
                                 "start": 0,
@@ -2576,10 +2600,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1907,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1907,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getPreviousAdjacentEdge",
                               "start": 0,
@@ -2589,7 +2613,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1907,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2598,15 +2622,15 @@ description: Result of parsing mounting-plate.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 1980,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 1980,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 1980,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "rs",
                                   "start": 0,
@@ -2614,7 +2638,7 @@ description: Result of parsing mounting-plate.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 1983,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -2626,7 +2650,7 @@ description: Result of parsing mounting-plate.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 1988,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge2",
                                 "start": 0,
@@ -2640,10 +2664,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 1956,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 1956,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getPreviousAdjacentEdge",
                               "start": 0,
@@ -2653,7 +2677,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 1956,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2662,15 +2686,15 @@ description: Result of parsing mounting-plate.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 2029,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 2029,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 2029,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "rs",
                                   "start": 0,
@@ -2678,7 +2702,7 @@ description: Result of parsing mounting-plate.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 2032,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -2690,7 +2714,7 @@ description: Result of parsing mounting-plate.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 2037,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge3",
                                 "start": 0,
@@ -2704,10 +2728,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2005,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2005,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getPreviousAdjacentEdge",
                               "start": 0,
@@ -2717,7 +2741,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2005,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2726,15 +2750,15 @@ description: Result of parsing mounting-plate.kcl
                         {
                           "arguments": [
                             {
-                              "commentStart": 2078,
+                              "commentStart": 0,
                               "computed": false,
                               "end": 0,
                               "object": {
-                                "commentStart": 2078,
+                                "commentStart": 0,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
-                                  "commentStart": 2078,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "rs",
                                   "start": 0,
@@ -2742,7 +2766,7 @@ description: Result of parsing mounting-plate.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "commentStart": 2081,
+                                  "commentStart": 0,
                                   "end": 0,
                                   "name": "tags",
                                   "start": 0,
@@ -2754,7 +2778,7 @@ description: Result of parsing mounting-plate.kcl
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "commentStart": 2086,
+                                "commentStart": 0,
                                 "end": 0,
                                 "name": "edge4",
                                 "start": 0,
@@ -2768,10 +2792,10 @@ description: Result of parsing mounting-plate.kcl
                           ],
                           "callee": {
                             "abs_path": false,
-                            "commentStart": 2054,
+                            "commentStart": 0,
                             "end": 0,
                             "name": {
-                              "commentStart": 2054,
+                              "commentStart": 0,
                               "end": 0,
                               "name": "getPreviousAdjacentEdge",
                               "start": 0,
@@ -2781,7 +2805,7 @@ description: Result of parsing mounting-plate.kcl
                             "start": 0,
                             "type": "Name"
                           },
-                          "commentStart": 2054,
+                          "commentStart": 0,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2797,10 +2821,10 @@ description: Result of parsing mounting-plate.kcl
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 1844,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 1844,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "fillet",
                     "start": 0,
@@ -2810,7 +2834,7 @@ description: Result of parsing mounting-plate.kcl
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 1844,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2818,7 +2842,7 @@ description: Result of parsing mounting-plate.kcl
                 "unlabeled": null
               }
             ],
-            "commentStart": 1091,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2841,7 +2865,7 @@ description: Result of parsing mounting-plate.kcl
         "commentStart": 0,
         "end": 0,
         "name": {
-          "commentStart": 208,
+          "commentStart": 0,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -2852,14 +2876,14 @@ description: Result of parsing mounting-plate.kcl
           "// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components.",
           "",
           "",
-          "// Set Units"
+          "// Set units"
         ],
         "properties": [
           {
-            "commentStart": 217,
+            "commentStart": 0,
             "end": 0,
             "key": {
-              "commentStart": 217,
+              "commentStart": 0,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -2869,10 +2893,10 @@ description: Result of parsing mounting-plate.kcl
             "type": "ObjectProperty",
             "value": {
               "abs_path": false,
-              "commentStart": 237,
+              "commentStart": 0,
               "end": 0,
               "name": {
-                "commentStart": 237,
+                "commentStart": 0,
                 "end": 0,
                 "name": "in",
                 "start": 0,
@@ -2893,7 +2917,7 @@ description: Result of parsing mounting-plate.kcl
       "nonCodeNodes": {},
       "startNodes": [
         {
-          "commentStart": 240,
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

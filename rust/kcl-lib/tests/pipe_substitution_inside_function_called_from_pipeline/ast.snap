@@ -8,10 +8,10 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
       {
         "commentStart": 0,
         "declaration": {
-          "commentStart": 64,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 64,
+            "commentStart": 0,
             "end": 0,
             "name": "f",
             "start": 0,
@@ -22,30 +22,30 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
               "body": [
                 {
                   "argument": {
-                    "commentStart": 86,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
-                  "commentStart": 79,
+                  "commentStart": 0,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "commentStart": 75,
+              "commentStart": 0,
               "end": 0,
               "start": 0
             },
-            "commentStart": 65,
+            "commentStart": 0,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "commentStart": 66,
+                  "commentStart": 0,
                   "end": 0,
                   "name": "ignored",
                   "start": 0,
@@ -70,12 +70,12 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
         "type": "VariableDeclaration"
       },
       {
-        "commentStart": 89,
+        "commentStart": 0,
         "declaration": {
-          "commentStart": 91,
+          "commentStart": 0,
           "end": 0,
           "id": {
-            "commentStart": 91,
+            "commentStart": 0,
             "end": 0,
             "name": "answer",
             "start": 0,
@@ -84,7 +84,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
           "init": {
             "body": [
               {
-                "commentStart": 100,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "PipeSubstitution",
@@ -93,7 +93,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
               {
                 "arguments": [
                   {
-                    "commentStart": 109,
+                    "commentStart": 0,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -102,10 +102,10 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                 ],
                 "callee": {
                   "abs_path": false,
-                  "commentStart": 107,
+                  "commentStart": 0,
                   "end": 0,
                   "name": {
-                    "commentStart": 107,
+                    "commentStart": 0,
                     "end": 0,
                     "name": "f",
                     "start": 0,
@@ -115,14 +115,14 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                   "start": 0,
                   "type": "Name"
                 },
-                "commentStart": 107,
+                "commentStart": 0,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "commentStart": 100,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -144,7 +144,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
       "nonCodeNodes": {
         "0": [
           {
-            "commentStart": 89,
+            "commentStart": 0,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

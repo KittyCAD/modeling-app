@@ -1,14 +1,15 @@
-fn cube(center) {
+fn cube(center, size) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - 10, center[1] - 10], %)
-    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
+    |> startProfile(at = [center[0] - size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] - size])
+    |> line(endAbsolute = [center[0] + size, center[1] + size])
+    |> line(endAbsolute = [center[0] - size, center[1] + size])
     |> close()
-    |> extrude(length = 10)
+    |> extrude(length = 2 * size)
 }
 
-part001 = cube([0, 0])
-part002 = cube([20, 10])
+part001 = cube([0, 0], 10)
+part002 = cube([7, 3], 5)
+     |> translate(z = 1)
 
 fullPart = union([part001, part002])

@@ -6,7 +6,7 @@
     var(--primary-hue, 264.48);
   --primary: oklch(
     var(--primary-lightness) var(--primary-chroma) var(--primary-hue, 264.48) /
-      var(--opacity, 1)
+    var(--opacity, 1)
   );
 
   /*

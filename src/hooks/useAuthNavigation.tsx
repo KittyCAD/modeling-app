@@ -1,7 +1,8 @@
-import { PATHS } from 'lib/paths'
-import { useAuthState } from 'machines/appMachine'
 import { useEffect } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+
+import { PATHS } from '@src/lib/paths'
+import { useAuthState } from '@src/lib/singletons'
 
 /**
  * A simple hook that listens to the auth state of the app and navigates
@@ -14,6 +15,7 @@ export function useAuthNavigation() {
 
   // Subscribe to the auth state of the app and navigate accordingly.
   useEffect(() => {
+    console.log('authState', authState.value)
     if (
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
@@ -25,5 +27,5 @@ export function useAuthNavigation() {
     ) {
       navigate(PATHS.SIGN_IN)
     }
-  }, [authState])
+  }, [authState, location.pathname])
 }

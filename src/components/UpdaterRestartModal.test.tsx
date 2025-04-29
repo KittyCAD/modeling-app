@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-import { UpdaterRestartModal } from './UpdaterRestartModal'
+
+import { UpdaterRestartModal } from '@src/components/UpdaterRestartModal'
 
 describe('UpdaterRestartModal tests', () => {
   test('Renders the modal', () => {
@@ -29,12 +30,16 @@ describe('UpdaterRestartModal tests', () => {
     expect(updateButton).toBeEnabled()
     fireEvent.click(updateButton)
     expect(callback.mock.calls).toHaveLength(1)
-    expect(callback.mock.lastCall[0]).toEqual({ wantRestart: true })
+    expect(callback.mock?.lastCall ? callback.mock?.lastCall[0] : null).toEqual(
+      { wantRestart: true }
+    )
 
     const cancelButton = screen.getByTestId('update-restrart-button-cancel')
     expect(cancelButton).toBeEnabled()
     fireEvent.click(cancelButton)
     expect(callback.mock.calls).toHaveLength(2)
-    expect(callback.mock.lastCall[0]).toEqual({ wantRestart: false })
+    expect(callback.mock?.lastCall ? callback.mock?.lastCall[0] : null).toEqual(
+      { wantRestart: false }
+    )
   })
 })

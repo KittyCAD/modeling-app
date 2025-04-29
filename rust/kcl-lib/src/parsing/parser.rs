@@ -3,6 +3,7 @@
 
 use std::{cell::RefCell, collections::BTreeMap};
 
+use indexmap::IndexMap;
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
@@ -13,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{Ascription, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -35,7 +36,7 @@ use crate::{
         token::{Token, TokenSlice, TokenType},
         PIPE_OPERATOR, PIPE_SUBSTITUTION_OPERATOR,
     },
-    SourceRange,
+    SourceRange, IMPORT_FILE_EXTENSIONS,
 };
 
 thread_local! {
@@ -286,6 +287,11 @@ fn non_code_node(i: &mut TokenSlice) -> PResult<Node<NonCodeNode>> {
     alt((non_code_node_leading_whitespace, non_code_node_no_leading_whitespace)).parse_next(i)
 }
 
+fn outer_annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
+    peek((at_sign, open_paren)).parse_next(i)?;
+    annotation(i)
+}
+
 fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
     let at = at_sign.parse_next(i)?;
     let name = opt(binding_name).parse_next(i)?;
@@ -523,13 +529,6 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                 let value: f64 = token.numeric_value().ok_or_else(|| {
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
-
-                if token.numeric_suffix().is_some() {
-                    ParseContext::warn(CompilationError::err(
-                        (&token).into(),
-                        "Unit of Measure suffixes are experimental and currently do nothing.",
-                    ));
-                }
 
                 Ok((
                     LiteralValue::Number {
@@ -1311,6 +1310,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
+    // TODO: This should be an expression, not just a literal or identifier.
     let property = alt((
         literal.map(LiteralIdentifier::Literal),
         nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
@@ -1629,6 +1629,12 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                 }
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
+                    if !body.is_empty() {
+                        ParseContext::warn(CompilationError::err(
+                            attr.as_source_range(),
+                            "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
+                        ));
+                    }
                     inner_attrs.push(attr);
                 } else {
                     pending_attrs.push(attr);
@@ -1798,11 +1804,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
             end = alias.end;
             *selector_alias = Some(alias);
         }
-
-        ParseContext::warn(CompilationError::err(
-            SourceRange::new(start, path.end, path.module_id),
-            "Importing a whole module is experimental, likely to be buggy, and likely to change",
-        ));
     }
 
     let path_string = match path.inner.value {
@@ -1837,8 +1838,6 @@ fn import_stmt(i: &mut TokenSlice) -> PResult<BoxNode<ImportStatement>> {
         module_id,
     ))
 }
-
-const FOREIGN_IMPORT_EXTENSIONS: [&str; 8] = ["fbx", "gltf", "glb", "obj", "ply", "sldprt", "step", "stl"];
 
 /// Validates the path string in an `import` statement.
 ///
@@ -1904,12 +1903,11 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
 
         ImportPath::Std { path: segments }
     } else if path_string.contains('.') {
-        // TODO should allow other extensions if there is a format attribute.
-        let extn = &path_string[path_string.rfind('.').unwrap() + 1..];
-        if !FOREIGN_IMPORT_EXTENSIONS.contains(&extn) {
+        let extn = std::path::Path::new(&path_string).extension().unwrap_or_default();
+        if !IMPORT_FILE_EXTENSIONS.contains(&extn.to_string_lossy().to_string()) {
             ParseContext::warn(CompilationError::err(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             ))
         }
         ImportPath::Foreign { path: path_string }
@@ -1917,7 +1915,7 @@ fn validate_path_string(path_string: String, var_name: bool, path_range: SourceR
         return Err(ErrMode::Cut(
             CompilationError::fatal(
                 path_range,
-                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", FOREIGN_IMPORT_EXTENSIONS.join(", ")),
+                format!("unsupported import path format. KCL files can be imported from the current project, CAD files with the following formats are supported: {}", IMPORT_FILE_EXTENSIONS.join(", ")),
             )
             .into(),
         ));
@@ -2017,9 +2015,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
 
     let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        ParseContext::warn(CompilationError::err((&ty).into(), "Type ascription is experimental."));
-
-        expr = Expr::AscribedExpression(Box::new(Ascription::new(expr, ty)))
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
@@ -2079,6 +2075,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
         fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
@@ -2813,13 +2810,6 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
     result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
 
-    if suffix.is_some() {
-        ParseContext::warn(CompilationError::err(
-            result.as_source_range(),
-            "Unit of Measure types are experimental and currently do nothing.",
-        ));
-    }
-
     Ok(result)
 }
 
@@ -2830,7 +2820,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = primitive_type(i)?;
+    let ty = argument_type(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2869,7 +2859,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         ArrayLen::None
     };
 
-    Ok(ty.map(|ty| Type::Array { ty, len }))
+    Ok(ty.map(|ty| Type::Array { ty: Box::new(ty), len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -2903,13 +2893,17 @@ struct ParamDescription {
     arg_name: Token,
     type_: std::option::Option<Node<Type>>,
     default_value: Option<DefaultParamVal>,
+    attr: Option<Node<Annotation>>,
     comments: Option<Node<Vec<String>>>,
 }
 
 fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
-    let (_, comments, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
         opt(whitespace),
         opt(comments),
+        opt(whitespace),
+        opt(outer_annotation),
+        opt(whitespace),
         opt(at_sign),
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
@@ -2934,6 +2928,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
                 return Err(ErrMode::Backtrack(ContextError::from(e)));
             }
         },
+        attr,
         comments,
     })
 }
@@ -2955,12 +2950,16 @@ fn parameters(i: &mut TokenSlice) -> PResult<Vec<Parameter>> {
                  arg_name,
                  type_,
                  default_value,
+                 attr,
                  comments,
              }| {
                 let mut identifier = Node::<Identifier>::try_from(arg_name)?;
                 if let Some(comments) = comments {
                     identifier.comment_start = comments.start;
                     identifier.pre_comments = comments.inner;
+                }
+                if let Some(attr) = attr {
+                    identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
@@ -3132,6 +3131,21 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
 
+    // Validate there aren't any duplicate labels.
+    let mut counted_labels = IndexMap::with_capacity(args.len());
+    for arg in &args {
+        *counted_labels.entry(&arg.label.inner.name).or_insert(0) += 1;
+    }
+    if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
+        let msg = format!(
+            "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
+        );
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            msg,
+        ));
+    }
+
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -3243,6 +3257,14 @@ mod tests {
     }
 
     #[test]
+    fn kw_call_as_operand() {
+        let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let op = operand.parse(tokens).unwrap();
+        println!("{op:#?}");
+    }
+
+    #[test]
     fn weird_program_just_a_pipe() {
         let tokens = crate::parsing::token::lex("|", ModuleId::default()).unwrap();
         let err: CompilationError = program.parse(tokens.as_slice()).unwrap_err().into();
@@ -3319,7 +3341,7 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
@@ -3868,6 +3890,23 @@ mySk1 = startSketchOn(XY)
                 panic!("{e:#?}");
             }
         }
+    }
+
+    #[test]
+    fn parse_numeric() {
+        let test_program = "fn foo(x: number(Length)) {}";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_mm";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 1);
+        run_parser(tokens.as_slice()).unwrap();
+
+        let test_program = "42_Length";
+        let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
+        assert_eq!(tokens.iter().count(), 2);
+        assert_eq!(run_parser(tokens.as_slice()).unwrap_errs().count(), 1);
     }
 
     #[test]
@@ -4468,14 +4507,14 @@ e
 /// ```
 /// exampleSketch = startSketchOn("XZ")
 ///   |> startProfileAt([0, 0], %)
-///   |> angledLine({
-///     angle = 30,
-///     length = 3 / cos(toRadians(30)),
-///   }, %)
+///   |> angledLine(
+///        angle = 30,
+///        length = 3 / cos(toRadians(30)),
+///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-///  
-/// example = extrude(5, exampleSketch)
+/// 
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
 export fn cos(num: number(rad)): number(_) {}"#;
@@ -4484,40 +4523,37 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn warn_import() {
-        let some_program_string = r#"import "foo.kcl""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.obj""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
-        let some_program_string = r#"import "foo.sldprt""#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1, "{errs:#?}");
-
         let some_program_string = r#"import "foo.bad""#;
         let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2, "{errs:#?}");
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
+    fn warn_late_settings() {
+        let some_program_string = r#"foo = 42
+@settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
     }
 
     #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
-        assert_eq!(errs.len(), 2);
+        assert!(errs.is_empty(), "Expected no errors, found: {errs:?}");
     }
 
     #[test]
     fn error_underscore() {
         let (_, errs) = assert_no_fatal("_foo(_blah, _)");
-        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+        assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
     #[test]
     fn error_type_ascription() {
         let (_, errs) = assert_no_fatal("a + b: number");
-        assert_eq!(errs.len(), 1, "found: {:#?}", errs);
+        assert!(errs.is_empty());
     }
 
     #[test]
@@ -5064,6 +5100,18 @@ baz = 2
             );
         }
     }
+
+    #[test]
+    fn test_sensible_error_duplicated_args() {
+        let program = r#"f(arg = 1, normal = 44, arg = 2)"#;
+        let (_, mut errs) = assert_no_fatal(program);
+        assert_eq!(errs.len(), 1);
+        let err = errs.pop().unwrap();
+        assert_eq!(
+            err.message,
+            "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
+        );
+    }
 }
 
 #[cfg(test)]
@@ -5288,17 +5336,6 @@ mod snapshot_tests {
         }"
     );
     snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
-    );
-    snapshot_test!(
         bb,
         r#"
 my14 = 4 ^ 2 - 3 ^ 2 * 2
@@ -5362,6 +5399,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
              bar = x,
            )"#
     );
+    snapshot_test!(kw_function_in_binary_op, r#"val = f(x = 1) + 1"#);
 }
 
 #[allow(unused)]

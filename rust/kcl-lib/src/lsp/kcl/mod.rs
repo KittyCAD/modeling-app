@@ -17,30 +17,31 @@ use tokio::sync::RwLock;
 use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
-        CodeAction, CodeActionKind, CodeActionOrCommand, CodeActionParams, CodeActionResponse, CompletionItem,
-        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport, DocumentDiagnosticReportResult,
-        DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse,
-        Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability, FullDocumentDiagnosticReport,
-        Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability, InitializeParams, InitializeResult,
-        InitializedParams, InlayHint, InlayHintParams, InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf,
-        Position, RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken,
-        SemanticTokenModifier, SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend,
-        SemanticTokensOptions, SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
-        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
-        StaticRegistrationOptions, TextDocumentItem, TextDocumentRegistrationOptions, TextDocumentSyncCapability,
-        TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions, WorkspaceEdit,
-        WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
+        CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
+        CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind, CompletionOptions,
+        CompletionParams, CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
+        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
+        DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
+        FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
+        InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
+        MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
+        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens,
+        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
+        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
+        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
+        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
+        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
+        WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
 
 use crate::{
     docs::kcl_doc::DocData,
-    errors::Suggestion,
+    errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
     lsp::{
@@ -799,7 +800,7 @@ impl Backend {
                     // We do not have project descriptions yet.
                     project_description: None,
                     project_name,
-                    // The UUID for the modeling app.
+                    // The UUID for the Design Studio.
                     // We can unwrap here because we know it will not panic.
                     source_id: uuid::Uuid::from_str("70178592-dfca-47b3-bd2d-6fce2bcaee04").unwrap(),
                     type_: kittycad::types::Type::ModelingAppEvent,
@@ -810,56 +811,6 @@ impl Backend {
             .map_err(|e| anyhow::anyhow!(e.to_string()))?;
 
         Ok(())
-    }
-
-    pub async fn update_units(
-        &self,
-        params: custom_notifications::UpdateUnitsParams,
-    ) -> RpcResult<Option<custom_notifications::UpdateUnitsResponse>> {
-        {
-            let mut ctx = self.executor_ctx.write().await;
-            // Borrow the executor context mutably.
-            let Some(ref mut executor_ctx) = *ctx else {
-                self.client
-                    .log_message(MessageType::ERROR, "no executor context set to update units for")
-                    .await;
-                return Ok(None);
-            };
-
-            self.client
-                .log_message(MessageType::INFO, format!("update units: {:?}", params))
-                .await;
-
-            if executor_ctx.settings.units == params.units
-                && !self.has_diagnostics(params.text_document.uri.as_ref()).await
-            {
-                // Return early the units are the same.
-                return Ok(None);
-            }
-
-            // Set the engine units.
-            executor_ctx.update_units(params.units);
-        }
-        // Lock is dropped here since nested.
-        // This is IMPORTANT.
-
-        let new_params = TextDocumentItem {
-            uri: params.text_document.uri.clone(),
-            text: std::mem::take(&mut params.text.to_string()),
-            version: Default::default(),
-            language_id: Default::default(),
-        };
-
-        // Force re-execution.
-        self.inner_on_change(new_params, true).await;
-
-        // Check if we have diagnostics.
-        // If we do we return early, since we failed in some way.
-        if self.has_diagnostics(params.text_document.uri.as_ref()).await {
-            return Ok(None);
-        }
-
-        Ok(Some(custom_notifications::UpdateUnitsResponse {}))
     }
 
     pub async fn update_can_execute(
@@ -887,6 +838,11 @@ impl LanguageServer for Backend {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
+                    code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
+                    resolve_provider: Some(false),
+                    work_done_progress_options: WorkDoneProgressOptions::default(),
+                })),
                 completion_provider: Some(CompletionOptions {
                     resolve_provider: Some(false),
                     trigger_characters: Some(vec![".".to_string()]),
@@ -1244,7 +1200,7 @@ impl LanguageServer for Backend {
                 // Get last word
                 let last_word = line_prefix
                     .split(|c: char| c.is_whitespace() || c.is_ascii_punctuation())
-                    .last()
+                    .next_back()
                     .unwrap_or("");
 
                 // If the last word starts with a digit, return no completions
@@ -1502,14 +1458,18 @@ impl LanguageServer for Backend {
             .diagnostics
             .into_iter()
             .filter_map(|diagnostic| {
-                let (suggestion, range) = diagnostic.data.as_ref().and_then(|data| {
-                    serde_json::from_value::<(Suggestion, tower_lsp::lsp_types::Range)>(data.clone()).ok()
-                })?;
+                let (suggestion, range) = diagnostic
+                    .data
+                    .as_ref()
+                    .and_then(|data| serde_json::from_value::<LspSuggestion>(data.clone()).ok())?;
                 let edit = TextEdit {
                     range,
                     new_text: suggestion.insert,
                 };
                 let changes = HashMap::from([(params.text_document.uri.clone(), vec![edit])]);
+
+                // If you add more code action kinds, make sure you add it to the server
+                // capabilities on initialization!
                 Some(CodeActionOrCommand::CodeAction(CodeAction {
                     title: suggestion.title,
                     kind: Some(CodeActionKind::QUICKFIX),

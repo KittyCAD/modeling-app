@@ -5,10 +5,8 @@ use kcmc::{
     coord::{System, KITTYCAD},
     each_cmd as mcmd,
     format::InputFormat3d,
-    ok_response::OkModelingCmdResponse,
     shared::FileImportFormat,
     units::UnitLength,
-    websocket::OkWebSocketResponseData,
     ImportFile, ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
@@ -173,7 +171,7 @@ pub(super) fn format_from_annotations(
                     KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "Unknown format for import, expected one of: {}",
-                            annotations::IMPORT_FORMAT_VALUES.join(", ")
+                            crate::IMPORT_FILE_EXTENSIONS.join(", ")
                         ),
                         source_ranges: vec![p.as_source_range()],
                     })
@@ -289,34 +287,17 @@ pub struct PreImportedGeometry {
 }
 
 pub async fn send_to_engine(pre: PreImportedGeometry, ctxt: &ExecutorContext) -> Result<ImportedGeometry, KclError> {
-    if ctxt.no_engine_commands().await {
-        return Ok(ImportedGeometry {
-            id: pre.id,
-            value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-            meta: vec![pre.source_range.into()],
-        });
-    }
+    let imported_geometry = ImportedGeometry::new(
+        pre.id,
+        pre.command.files.iter().map(|f| f.path.to_string()).collect(),
+        vec![pre.source_range.into()],
+    );
 
-    let resp = ctxt
-        .engine
-        .send_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
+    ctxt.engine
+        .async_modeling_cmd(pre.id, pre.source_range, &ModelingCmd::from(pre.command.clone()))
         .await?;
 
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::ImportFiles(imported_files),
-    } = &resp
-    else {
-        return Err(KclError::Engine(KclErrorDetails {
-            message: format!("ImportFiles response was not as expected: {:?}", resp),
-            source_ranges: vec![pre.source_range],
-        }));
-    };
-
-    Ok(ImportedGeometry {
-        id: imported_files.object_id,
-        value: pre.command.files.iter().map(|f| f.path.to_string()).collect(),
-        meta: vec![pre.source_range.into()],
-    })
+    Ok(imported_geometry)
 }
 
 /// Get the source format from the extension.
