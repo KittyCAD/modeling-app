@@ -42,7 +42,11 @@ import {
   horzVertDistanceInfo,
 } from '@src/components/Toolbar/SetHorzVertDistance'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
-import { createLiteral, createLocalName } from '@src/lang/create'
+import {
+  createExpressionStatement,
+  createLiteral,
+  createLocalName,
+} from '@src/lang/create'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   addClone,
@@ -132,6 +136,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2779,6 +2784,57 @@ export const modelingMachine = setup({
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
             return new Error("Couldn't find corresponding path to node")
+          }
+        }
+
+        // Look up for an existing expression refering to the import alias, otherwise create one
+        const importNode = getNodeFromPath<ImportStatement>(ast, pathToNode, [
+          'ImportStatement',
+        ])
+        if (
+          !err(importNode) &&
+          importNode.node.type === 'ImportStatement' &&
+          importNode.node.selector.type === 'None' &&
+          importNode.node.selector.alias &&
+          importNode.node.selector.alias?.type === 'Identifier'
+        ) {
+          let pipe: PipeExpression | undefined
+          const alias = importNode.node.selector.alias.name
+          for (const [i, n] of ast.body.entries()) {
+            if (
+              n.type === 'ExpressionStatement' &&
+              n.expression.type === 'PipeExpression' &&
+              n.expression.body[0].type === 'Name' &&
+              n.expression.body[0].name.name === alias
+            ) {
+              pipe = n.expression
+              pathToNode = [
+                ['body', ''],
+                [i, 'index'],
+                ['expression', 'PipeExpression'],
+              ]
+              console.log('assigned pathToNode', pathToNode)
+              break
+            }
+
+            // TODO: add support for variable assignments later
+            // if (n.type === 'VariableDeclaration' && n.declaration.type === 'VariableDeclarator' &&
+            //     n.declaration.init.type === 'PipeExpression' && n.declaration.init.body[0].type === 'Name' && n.declaration.init.body[0].name.name === alias) {
+            //   pipe = n.declaration.init
+            //   break
+            // }
+          }
+
+          if (!pipe) {
+            console.log('pipe not found, creating expression statement')
+            const expression = createExpressionStatement(createLocalName(alias))
+            modifiedAst.body.push(expression)
+            pathToNode = [
+              ['body', ''],
+              [modifiedAst.body.length - 1, 'index'],
+              ['expression', 'Name'],
+            ]
+            console.log('assigned pathToNode to fresh expression', pathToNode)
           }
         }
 

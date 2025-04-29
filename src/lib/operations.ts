@@ -1,7 +1,9 @@
+import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { getNodeFromPath } from '@src/lang/queryAst'
+import { getIdentifiersInProgram } from '@src/lang/queryAst/getIndentifiersInProgram'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -1370,13 +1372,63 @@ export async function enterTranslateFlow({
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
-  const pipe = getNodeFromPath<PipeExpression>(
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
     'PipeExpression'
   )
-  if (!err(pipe) && pipe.node.body) {
-    const translate = pipe.node.body.find(
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    const importNode = getNodeFromPath<ImportStatement>(ast, nodeToEdit, [
+      'ImportStatement',
+    ])
+    console.log('importNode', importNode)
+    if (
+      err(importNode) ||
+      !(
+        importNode.node.type === 'ImportStatement' &&
+        importNode.node.selector.type === 'None' &&
+        importNode.node.selector.alias &&
+        importNode.node.selector.alias?.type === 'Identifier'
+      )
+    ) {
+      return new Error("Couldn't retrieve import")
+    }
+
+    const alias = importNode.node.selector.alias.name
+    for (const n of ast.body) {
+      if (
+        n.type === 'ExpressionStatement' &&
+        n.expression.type === 'PipeExpression' &&
+        n.expression.body[0].type === 'Name' &&
+        n.expression.body[0].name.name === alias
+      ) {
+        pipe = n.expression
+        break
+      }
+
+      if (
+        n.type === 'VariableDeclaration' &&
+        n.declaration.type === 'VariableDeclarator' &&
+        n.declaration.init.type === 'PipeExpression' &&
+        n.declaration.init.body[0].type === 'Name' &&
+        n.declaration.init.body[0].name.name === alias
+      ) {
+        pipe = n.declaration.init
+        break
+      }
+    }
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  console.log('pipe', pipe)
+  if (pipe) {
+    const translate = pipe.body.find(
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
     )
     if (translate?.type === 'CallExpressionKw') {
