@@ -801,7 +801,7 @@ export class LanguageServerPlugin implements PluginValue {
 
         // Remove after a delay or on editor changes
         setTimeout(() => {
-          tooltipElement.remove()
+          removeTooltip() // Use the function that also cleans up event listeners
         }, 10000) // Show for 10 seconds
 
         // Also remove on any user input
