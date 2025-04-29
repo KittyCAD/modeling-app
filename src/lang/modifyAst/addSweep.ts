@@ -1,11 +1,10 @@
-import { Annotation } from '@rust/kcl-lib/bindings/Annotation'
-import { ModuleId } from '@rust/kcl-lib/bindings/ModuleId'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
+  createLiteral,
   createLocalName,
   createVariableDeclaration,
   findUniqueName,
@@ -21,8 +20,9 @@ import type {
   Expr,
   PathToNode,
   Program,
+  VariableDeclarator,
 } from '@src/lang/wasm'
-import {
+import type {
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
@@ -149,6 +149,62 @@ export function addRevolve({
     const name = findUniqueName(
       modifiedAst,
       KCL_DEFAULT_CONSTANT_PREFIXES.REVOLVE
+    )
+    const declaration = createVariableDeclaration(name, call)
+    modifiedAst.body.push(declaration)
+    pathToNode = createPathToNode(modifiedAst)
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addSweep({
+  ast,
+  sketches,
+  trajectoryDeclarator,
+  sectional,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  sketches: Expr[]
+  trajectoryDeclarator: VariableDeclarator
+  sectional?: boolean
+  nodeToEdit?: PathToNode
+}):
+  | {
+      modifiedAst: Node<Program>
+      pathToNode: PathToNode
+    }
+  | Error {
+  const modifiedAst = structuredClone(ast)
+  let sketchesExpr = createSketchExpression(sketches)
+  const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
+    createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
+    ...(sectional
+      ? [createLabeledArg('sectional', createLiteral(sectional))]
+      : []),
+  ])
+
+  let pathToNode: PathToNode = []
+  if (nodeToEdit) {
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      nodeToEdit,
+      'CallExpressionKw'
+    )
+    if (err(result)) {
+      return result
+    }
+
+    Object.assign(result.node, call)
+    pathToNode = nodeToEdit
+  } else {
+    const name = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP
     )
     const declaration = createVariableDeclaration(name, call)
     modifiedAst.body.push(declaration)

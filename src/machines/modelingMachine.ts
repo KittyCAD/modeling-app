@@ -49,7 +49,6 @@ import {
   addHelix,
   addOffsetPlane,
   addShell,
-  addSweep,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
   loftSketches,
@@ -67,6 +66,7 @@ import {
 import {
   addExtrude,
   addRevolve,
+  addSweep,
   getAxisExpressionAndIndex,
 } from '@src/lang/modifyAst/addSweep'
 import {
@@ -131,7 +131,7 @@ import {
 } from '@src/lib/singletons'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
@@ -1790,8 +1790,8 @@ export const modelingMachine = setup({
       unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
-      const { selection, length, nodeToEdit } = input
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const { nodeToEdit, selection, length } = input
       let ast = kclManager.ast
       const sketches = getProfileExpressionsFromSelection(
         selection,
@@ -1812,7 +1812,7 @@ export const modelingMachine = setup({
         return Promise.reject(new Error("Couldn't add extrude statement"))
       }
 
-      const { modifiedAst, pathToNode: pathToExtrudeArg } = astResult
+      const { modifiedAst, pathToNode } = astResult
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,
@@ -1822,7 +1822,7 @@ export const modelingMachine = setup({
           codeManager,
         },
         {
-          focusPath: [pathToExtrudeArg],
+          focusPath: [pathToNode],
         }
       )
     }),
@@ -1830,7 +1830,7 @@ export const modelingMachine = setup({
       unknown,
       ModelingCommandSchema['Revolve'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
+      if (!input) return Promise.reject(new Error('No input provided'))
       const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
       let ast = kclManager.ast
       const sketches = getProfileExpressionsFromSelection(
@@ -2093,100 +2093,63 @@ export const modelingMachine = setup({
         )
       }
     ),
-    sweepAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Sweep'] | undefined
-      }) => {
-        if (!input) return new Error('No input provided')
-        // Extract inputs
-        const ast = kclManager.ast
-        const { target, trajectory, sectional, nodeToEdit } = input
-        let variableName: string | undefined = undefined
-        let insertIndex: number | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old one
-        if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const variableNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-
-          if (err(variableNode)) {
-            console.error('Error extracting name')
-          } else {
-            variableName = variableNode.node.declaration.id.name
-          }
-
-          // Removing the old statement
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        // Find the target declaration
-        const targetNodePath = getNodePathFromSourceRange(
-          ast,
-          target.graphSelections[0].codeRef.range
-        )
-        // Gotchas, not sure why
-        // - it seems like in some cases we get a list on edit, especially the state that e2e hits
-        // - looking for a VariableDeclaration seems more robust than VariableDeclarator
-        const targetNode = getNodeFromPath<
-          VariableDeclaration | VariableDeclaration[]
-        >(ast, targetNodePath, 'VariableDeclaration')
-        if (err(targetNode)) {
-          return new Error("Couldn't parse profile selection")
-        }
-
-        const targetDeclarator = isArray(targetNode.node)
-          ? targetNode.node[0].declaration
-          : targetNode.node.declaration
-
-        // Find the trajectory (or path) declaration
-        const trajectoryNodePath = getNodePathFromSourceRange(
-          ast,
-          trajectory.graphSelections[0].codeRef.range
-        )
-        // Also looking for VariableDeclaration for consistency here
-        const trajectoryNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          trajectoryNodePath,
-          'VariableDeclaration'
-        )
-        if (err(trajectoryNode)) {
-          return new Error("Couldn't parse path selection")
-        }
-
-        const trajectoryDeclarator = trajectoryNode.node.declaration
-
-        // Perform the sweep
-        const { modifiedAst, pathToNode } = addSweep({
-          node: ast,
-          targetDeclarator,
-          trajectoryDeclarator,
-          sectional,
-          variableName,
-          insertIndex,
-        })
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [pathToNode],
-          }
-        )
+    sweepAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Sweep'] | undefined
+    >(async ({ input }) => {
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const ast = kclManager.ast
+      const { nodeToEdit, target, trajectory, sectional } = input
+      const sketches = getProfileExpressionsFromSelection(
+        target,
+        ast,
+        nodeToEdit
+      )
+      if (err(sketches)) {
+        return Promise.reject(sketches)
       }
-    ),
+
+      // Find the trajectory (or path) declaration
+      const trajectoryNodePath = getNodePathFromSourceRange(
+        ast,
+        trajectory.graphSelections[0].codeRef.range
+      )
+      const trajectoryNode = getNodeFromPath<VariableDeclaration>(
+        ast,
+        trajectoryNodePath,
+        'VariableDeclaration'
+      )
+      if (err(trajectoryNode)) {
+        return Promise.reject(new Error("Couldn't parse path selection"))
+      }
+
+      const trajectoryDeclarator = trajectoryNode.node.declaration
+
+      const astResult = addSweep({
+        ast,
+        sketches,
+        trajectoryDeclarator,
+        sectional,
+        nodeToEdit,
+      })
+      if (err(astResult)) {
+        return Promise.reject(new Error("Couldn't add extrude statement"))
+      }
+
+      const { modifiedAst, pathToNode } = astResult
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
+        },
+        {
+          focusPath: [pathToNode],
+        }
+      )
+    }),
     loftAstMod: fromPromise(
       async ({
         input,

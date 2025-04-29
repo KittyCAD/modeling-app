@@ -74,7 +74,7 @@ export type ModelingCommandSchema = {
     // Arguments
     target: Selections
     trajectory: Selections
-    sectional: boolean
+    sectional?: boolean
   }
   Loft: {
     selection: Selections
@@ -414,13 +414,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
       target: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
+        multiple: true,
         required: true,
-        skip: true,
-        multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       trajectory: {

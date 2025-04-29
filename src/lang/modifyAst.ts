@@ -428,63 +428,6 @@ export function addShell({
   }
 }
 
-export function addSweep({
-  node,
-  targetDeclarator,
-  trajectoryDeclarator,
-  sectional,
-  variableName,
-  insertIndex,
-}: {
-  node: Node<Program>
-  targetDeclarator: VariableDeclarator
-  trajectoryDeclarator: VariableDeclarator
-  sectional: boolean
-  variableName?: string
-  insertIndex?: number
-}): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const call = createCallExpressionStdLibKw(
-    'sweep',
-    createLocalName(targetDeclarator.id.name),
-    [
-      createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
-      createLabeledArg('sectional', createLiteral(sectional)),
-    ]
-  )
-  const variable = createVariableDeclaration(name, call)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, variable)
-    : modifiedAst.body.push(variable)
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function sketchOnExtrudedFace(
   node: Node<Program>,
   sketchPathToNode: PathToNode,
