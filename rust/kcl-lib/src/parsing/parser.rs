@@ -2399,9 +2399,17 @@ impl TryFrom<Token> for Node<TagDeclarator> {
                     token.value.as_str()
                 ),
             )),
+            // e.g. `line(%, $)`
+            TokenType::Brace => {
+                let r = token.as_source_range();
+                Err(CompilationError::fatal(
+                    SourceRange::new(r.start() - 1, r.end() - 1, r.module_id()),
+                    "Tag names must not be empty".to_string(),
+                ))
+            }
 
-            // e.g. `line(%, $)` or `line(%, $ , 5)`
-            TokenType::Brace | TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
+            // e.g. `line(%, $ , 5)`
+            TokenType::Whitespace | TokenType::Comma => Err(CompilationError::fatal(
                 token.as_source_range(),
                 "Tag names must not be empty".to_string(),
             )),
@@ -3022,7 +3030,6 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let fn_name = name(i)?;
     ignore_whitespace(i);
-    eprintln!("Parsed fn name {:?}", fn_name.inner.name.inner.name);
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
@@ -3042,17 +3049,18 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 non_code_meta: Default::default(),
             },
         );
-        return dbg!(Ok(result));
+        return Ok(result);
     }
 
     // Special case: one arg (unlabeled)
-    let early_close = peek((expression, close_paren)).parse_next(i);
+    let early_close = peek((expression, opt(whitespace), close_paren)).parse_next(i);
     if early_close.is_ok() {
-        let (first_expression, early_close) = (expression, close_paren).parse_next(i)?;
-        eprintln!("Found first_expression, early_close");
+        let first_expression = expression.parse_next(i)?;
+        ignore_whitespace(i);
+        let end = close_paren.parse_next(i)?.end;
         let result = Node::new_node(
             fn_name.start,
-            early_close.end,
+            end,
             fn_name.module_id,
             CallExpressionKw {
                 callee: fn_name,
@@ -3062,7 +3070,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 non_code_meta: Default::default(),
             },
         );
-        return Ok(dbg!(result));
+        return Ok(result);
     }
 
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
@@ -3843,7 +3851,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4114,7 +4122,7 @@ mySk1 = startSketchOn(XY)
     fn test_parse_half_pipe_small() {
         assert_err_contains(
             "secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |",
             "Unexpected token: |",
         );
@@ -4178,7 +4186,7 @@ height = [obj["a"] -1, 0]"#;
 
     #[test]
     fn test_anon_fn() {
-        crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+        crate::parsing::top_level_parse("foo(42, closure = fn(x) { return x + 1 })").unwrap();
     }
 
     #[test]
@@ -4207,15 +4215,15 @@ height = [obj["a"] -1, 0]"#;
         let code = "height = 10
 
 firstExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
-  |> line([0, 8], %)
-  |> line([20, 0], %)
-  |> line([0, -8], %)
+  |> startProfile(at = [0,0])
+  |> line(at = [0, 8])
+  |> line(at = [20, 0])
+  |> line(at = [0, -8])
   |> close()
   |> extrude(length=2)
 
 secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |";
         assert_err_contains(code, "Unexpected token: |");
     }
@@ -4486,7 +4494,7 @@ e
 ///
 /// ```
 /// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///        angle = 30,
 ///        length = 3 / cos(toRadians(30)),
@@ -4526,7 +4534,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn error_underscore() {
-        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
+        let (_, errs) = assert_no_fatal("_foo(_blah, arg = _)");
         assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
@@ -4672,16 +4680,16 @@ thing(false)
     fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube = (pos, scale) => {
   sg = startSketchOn('XY')
-  |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+  |> startProfile(at = pos)
+    |> line([0, scale])
+    |> line([scale, 0])
+    |> line([0, -scale])
 
   return sg
 }
 
-b1 = cube([0,0], 10)
-b2 = cube([3,3], 4)
+b1 = cube(pos = [0,0], scale = 10)
+b2 = cube(pos = [3,3], scale = 4)
 
 pt1 = b1[0]
 pt2 = b2[0]
@@ -4700,16 +4708,16 @@ let other_thing = 2 * cos(3)"#;
     fn test_negative_arguments() {
         let some_program_string = r#"fn box = (p, h, l, w) => {
  myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
+    |> startProfile(at = p)
+    |> line([0, l])
+    |> line([w, 0])
+    |> line([0, -l])
     |> close()
     |> extrude(length=h)
 
   return myBox
 }
-let myBox = box([0,0], -3, -16, -10)
+let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
@@ -4726,28 +4734,28 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_named_std_lib() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $xLine)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 5], tag = $xLine)
 "#;
         assert_err(
             some_program_string,
             "Cannot assign a tag to a reserved keyword: xLine",
-            [76, 82],
+            [85, 91],
         );
     }
 
     #[test]
     fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line(%, $)
+    |> startProfile(at = [0, 0])
+    |> line(end = [1, 1], tag = $)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [85, 86]);
     }
     #[test]
     fn test_parse_empty_tag_whitespace() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $ ,01)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
@@ -4756,7 +4764,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_comma() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $,)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
@@ -4765,7 +4773,7 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
@@ -4777,14 +4785,14 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line(%, $var01)"#;
+    |> startProfile(at = [0, 0])
+    |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $!var,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
@@ -4792,7 +4800,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_dollar() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $$,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
@@ -4800,7 +4808,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_fn() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $fn,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
@@ -4808,7 +4816,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
         let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $//
     ,01)
     "#;
@@ -4823,8 +4831,8 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
     startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $sketching)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 5], tag = $sketching)
     "#;
         assert_no_err(some_program_string);
     }
@@ -4975,7 +4983,7 @@ bar = 1
 }"#
         );
 
-        let some_program_string = r#"myMap = map([0..5], (n) => {
+        let some_program_string = r#"myMap = map([0..5], f = (n) => {
     return n * 2
 })"#;
         let (_, errs) = assert_no_err(some_program_string);
@@ -4984,7 +4992,7 @@ bar = 1
         let replaced = errs[1].apply_suggestion(&replaced).unwrap();
         assert_eq!(
             replaced,
-            r#"myMap = map([0..5], fn(n)  {
+            r#"myMap = map([0..5], f = fn(n)  {
     return n * 2
 })"#
         );
