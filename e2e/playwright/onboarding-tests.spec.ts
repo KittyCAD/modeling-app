@@ -160,6 +160,7 @@ test.describe('Onboarding tests', () => {
           ],
           sortBy: 'last-modified-desc',
         })
+
         await helpMenuButton.click()
         await helpMenuRestartOnboardingButton.click()
       })

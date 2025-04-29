@@ -159,3 +159,12 @@ export function joinRouterPaths(...parts: string[]): string {
 export function safeEncodeForRouterPaths(dynamicValue: string): string {
   return `${encodeURIComponent(dynamicValue)}`
 }
+
+/**
+ * /dog/cat/house.kcl gives you house.kcl
+ * \dog\cat\house.kcl gives you house.kcl
+ * Works on all OS!
+ */
+export function getStringAfterLastSeparator(path: string): string {
+  return path.split(window.electron.sep).pop() || ''
+}

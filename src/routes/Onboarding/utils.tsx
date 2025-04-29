@@ -16,7 +16,11 @@ import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-import { joinRouterPaths, PATHS } from '@src/lib/paths'
+import {
+  getStringAfterLastSeparator,
+  joinRouterPaths,
+  PATHS,
+} from '@src/lib/paths'
 import {
   codeManager,
   editorManager,
@@ -449,17 +453,15 @@ export async function createAndOpenNewTutorialProject(
     configuration
   )
 
-  const fileNameWithExtension = newProject.default_file.split('/').pop()
+  const fileNameWithExtension = getStringAfterLastSeparator(
+    newProject.default_file
+  )
   if (!fileNameWithExtension) {
     return Promise.reject(
       new Error('Failed to create default project kcl file')
     )
   }
   const subRoute = joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
-  console.log('SENT!')
-  console.log(newProject.name)
-  console.log(fileNameWithExtension)
-  console.log(subRoute)
 
   systemIOActor.send({
     type: SystemIOMachineEvents.navigateToFile,
