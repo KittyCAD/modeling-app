@@ -1151,15 +1151,9 @@ export const tangentialArc: SketchLineHelperKw = {
           stdLibFnName: 'tangentialArc',
           type: 'xAbsolute',
           isConstrained: isNotLiteralArrayOrStatic(expr),
-          sourceRange: topLevelRange(
-            expr.start,
-            expr.end
-          ),
+          sourceRange: topLevelRange(expr.start, expr.end),
           pathToNode: pathToArg,
-          value: code.slice(
-            expr.start,
-            expr.end
-          ),
+          value: code.slice(expr.start, expr.end),
           argPosition: {
             type: 'labeledArgArrayItem',
             index: 0,
@@ -1170,15 +1164,9 @@ export const tangentialArc: SketchLineHelperKw = {
           stdLibFnName: 'tangentialArc',
           type: 'yAbsolute',
           isConstrained: isNotLiteralArrayOrStatic(expr),
-          sourceRange: topLevelRange(
-            expr.start,
-            expr.end
-          ),
+          sourceRange: topLevelRange(expr.start, expr.end),
           pathToNode: pathToArg,
-          value: code.slice(
-            expr.start,
-            expr.end
-          ),
+          value: code.slice(expr.start, expr.end),
           argPosition: {
             type: 'labeledArgArrayItem',
             index: 1,

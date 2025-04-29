@@ -24,7 +24,11 @@ import { findUsesOfTagInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { InputArg, InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type {
+  InputArg,
+  InputArgKeys,
+  SimplifiedArgDetails,
+} from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
