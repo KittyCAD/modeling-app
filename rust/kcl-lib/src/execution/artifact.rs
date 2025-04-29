@@ -400,10 +400,12 @@ impl Artifact {
             Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 9,
             Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 10,
             Artifact::Cap(_) => 11,
-            Artifact::SweepEdge(_) => 12,
-            Artifact::EdgeCut(_) => 13,
-            Artifact::EdgeCutEdge(_) => 14,
-            Artifact::Helix(_) => 15,
+            Artifact::SweepEdge(SweepEdge { sub_type, .. }) if *sub_type == SweepEdgeSubType::Adjacent => 12,
+            Artifact::SweepEdge(SweepEdge { sub_type, .. }) if *sub_type == SweepEdgeSubType::Opposite => 13,
+            Artifact::SweepEdge(_) => 14,
+            Artifact::EdgeCut(_) => 15,
+            Artifact::EdgeCutEdge(_) => 16,
+            Artifact::Helix(_) => 17,
         }
     }
 }
@@ -414,13 +416,16 @@ impl PartialOrd for Artifact {
         // to sort them by the sub_type.
         match (self, other) {
             (Artifact::SweepEdge(a), Artifact::SweepEdge(b)) => {
+                if a.sub_type != b.sub_type {
+                    return Some(a.sub_type.cmp(&b.sub_type));
+                }
                 if a.sweep_id != b.sweep_id {
                     return Some(a.sweep_id.cmp(&b.sweep_id));
                 }
-                if a.seg_id != b.seg_id {
-                    return Some(a.seg_id.cmp(&b.seg_id));
+                if a.cmd_id != b.cmd_id {
+                    return Some(a.cmd_id.cmp(&b.cmd_id));
                 }
-                Some(a.sub_type.cmp(&b.sub_type))
+                Some(a.id.cmp(&b.id))
             }
             (Artifact::Sweep(a), Artifact::Sweep(b)) => {
                 if a.code_ref.range != b.code_ref.range {

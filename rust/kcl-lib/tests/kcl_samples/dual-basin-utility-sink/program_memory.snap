@@ -4293,8 +4293,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           },
           "height": 13.0,
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
           },
@@ -4463,8 +4463,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           },
           "height": 13.0,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": {
             "type": "Mm"
           },
@@ -6048,8 +6048,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           },
           "height": 671.5,
-          "startCapId": "[uuid]",
-          "endCapId": "[uuid]",
+          "startCapId": null,
+          "endCapId": null,
           "units": {
             "type": "Mm"
           },
@@ -9550,8 +9550,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           },
           "height": -13.0,
-          "startCapId": null,
-          "endCapId": null,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
           },
