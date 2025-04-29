@@ -182,6 +182,7 @@ export function createProjectCommands({
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
+    hideFromSearch: true,
     onSubmit: (record) => {
       if (record) {
         systemIOActor.send({
