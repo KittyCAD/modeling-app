@@ -561,12 +561,10 @@ export class LanguageServerPlugin implements PluginValue {
           })
         })
 
-
-      if (!prepareResult) {
+      if (!prepareResult || 'defaultBehavior' in prepareResult) {
         showErrorMessage(view, 'Cannot rename this symbol')
         return
       }
-
 
       // Create popup input
       const popup = document.createElement('div')
