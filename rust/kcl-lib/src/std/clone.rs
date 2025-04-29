@@ -361,10 +361,11 @@ async fn fix_tags_and_references(
 
             // We do this pre-flush so that we have the original path ids.
             for edge_cut in solid.edge_cuts.iter_mut() {
-                let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) else {
-                    anyhow::bail!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
-                };
-                edge_cut.set_edge_id(*new_edge_id);
+                if let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) {
+                    edge_cut.set_edge_id(*new_edge_id);
+                } else {
+                    crate::log::logln!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
+                }
             }
 
             // Flush the fillets / chamfers for the solid.
@@ -378,13 +379,14 @@ async fn fix_tags_and_references(
             // Fix the edge cuts.
             // Then after flushing we need to fix the edge cuts ids.
             for edge_cut in solid.edge_cuts.iter_mut() {
-                let Some(id) = entity_id_map.get(&edge_cut.id()) else {
-                    anyhow::bail!(
+                if let Some(id) = entity_id_map.get(&edge_cut.id()) {
+                    edge_cut.set_id(*id);
+                } else {
+                    crate::log::logln!(
                         "Failed to find new edge cut id for old edge cut id: {:?}",
                         edge_cut.id()
                     );
-                };
-                edge_cut.set_id(*id);
+                }
             }
 
             // Do the after extrude things to update those ids, based on the new sketch
@@ -475,10 +477,13 @@ async fn fix_sketch_tags_and_references(
 ) -> Result<()> {
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
-        let Some(new_path_id) = entity_id_map.get(&path.get_id()) else {
-            anyhow::bail!("Failed to find new path id for old path id: {:?}", path.get_id());
-        };
-        path.set_id(*new_path_id);
+        if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
+            path.set_id(*new_path_id);
+        } else {
+            // We log on these because we might have already flushed and the id is no longer
+            // relevant since filleted or something.
+            crate::log::logln!("Failed to find new path id for old path id: {:?}", path.get_id());
+        }
     }
 
     // Fix the tags
@@ -492,14 +497,14 @@ async fn fix_sketch_tags_and_references(
     }
 
     // Fix the base path.
-    // TODO: Right now this one does not work, ignore for now and see if we really need it.
-    /* let Some(new_base_path) = entity_id_map.get(&new_sketch.start.geo_meta.id) else {
-        anyhow::bail!(
+    if let Some(new_base_path) = entity_id_map.get(&new_sketch.start.geo_meta.id) {
+        new_sketch.start.geo_meta.id = *new_base_path;
+    } else {
+        crate::log::logln!(
             "Failed to find new base path id for old base path id: {:?}",
             new_sketch.start.geo_meta.id
         );
-    };
-    new_sketch.start.geo_meta.id = *new_base_path;*/
+    }
 
     Ok(())
 }
