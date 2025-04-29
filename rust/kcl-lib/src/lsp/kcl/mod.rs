@@ -1292,38 +1292,60 @@ impl LanguageServer for Backend {
             return Ok(None);
         };
 
-        // If  we are on a (, then get the string in front of the (
-        // and try to get the signature.
-        // We do these before the ast check because we might not have a valid ast.
-        if ch == '(' {
-            let Some(last_word) = current_code[..pos].split_whitespace().last() else {
-                return Ok(None);
-            };
+        let check_char = |ch: char| {
+            // If  we are on a (, then get the string in front of the (
+            // and try to get the signature.
+            // We do these before the ast check because we might not have a valid ast.
+            if ch == '(' {
+                let Some(last_word) = current_code[..pos].split_whitespace().last() else {
+                    return None;
+                };
 
-            // Get the function name.
-            let Some(signature) = self.stdlib_signatures.get(last_word) else {
-                return Ok(None);
-            };
+                // Get the function name.
+                let Some(signature) = self.stdlib_signatures.get(last_word) else {
+                    return None;
+                };
 
-            return Ok(Some(signature.clone()));
-        } else if ch == ',' {
-            // If we have a comma, then get the string in front of
-            // the closest ( and try to get the signature.
+                return Some(signature.clone());
+            } else if ch == ',' {
+                // If we have a comma, then get the string in front of
+                // the closest ( and try to get the signature.
 
-            // Find the last ( before the comma.
-            let Some(last_paren) = current_code[..pos].rfind('(') else {
-                return Ok(None);
-            };
-            // Get the string in front of the (.
-            let Some(last_word) = current_code[..last_paren].split_whitespace().last() else {
-                return Ok(None);
-            };
-            // Get the function name.
-            let Some(signature) = self.stdlib_signatures.get(last_word) else {
-                return Ok(None);
-            };
+                // Find the last ( before the comma.
+                let Some(last_paren) = current_code[..pos].rfind('(') else {
+                    return None;
+                };
+                // Get the string in front of the (.
+                let Some(last_word) = current_code[..last_paren].split_whitespace().last() else {
+                    return None;
+                };
+                // Get the function name.
+                let Some(signature) = self.stdlib_signatures.get(last_word) else {
+                    return None;
+                };
 
-            return Ok(Some(signature.clone()));
+                return Some(signature.clone());
+            }
+
+            return None;
+        };
+
+        if let Some(signature) = check_char(ch) {
+            return Ok(Some(signature));
+        }
+
+        // Check if we have context.
+        if let Some(context) = params.context {
+            if let Some(character) = context.trigger_character {
+                for character in character.chars() {
+                    // Check if we are on a ( or a ,.
+                    if character == '(' || character == ',' {
+                        if let Some(signature) = check_char(character) {
+                            return Ok(Some(signature));
+                        }
+                    }
+                }
+            }
         }
 
         // Let's iterate over the AST and find the node that contains the cursor.

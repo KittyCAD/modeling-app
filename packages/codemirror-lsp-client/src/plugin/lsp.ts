@@ -683,15 +683,6 @@ export class LanguageServerPlugin implements PluginValue {
 
     try {
       // Request signature help
-      console.log('requestSignatureHelp', {
-        textDocument: { uri: this.getDocUri() },
-        position: { line, character },
-        context: {
-          isRetrigger: false,
-          triggerKind: 1, // Invoked
-          triggerCharacter,
-        },
-      })
       const result = await this.client.textDocumentSignatureHelp({
         textDocument: { uri: this.getDocUri() },
         position: { line, character },
@@ -701,8 +692,6 @@ export class LanguageServerPlugin implements PluginValue {
           triggerCharacter,
         },
       })
-
-      console.log('result', result)
 
       if (!result?.signatures || result.signatures.length === 0) {
         return null
@@ -747,16 +736,14 @@ export class LanguageServerPlugin implements PluginValue {
       }
 
       // Position tooltip at cursor
-      const pos = posToOffset(view.state.doc, { line, character })
-      if (pos == null) {
-        return null
-      }
+      let pos = posToOffset(view.state.doc, { line, character })!
+      if (pos === null) return null
 
       return {
         pos,
         end: pos,
         create: (_view) => ({ dom }),
-        above: false,
+        above: true,
       }
     } catch (error) {
       console.error('Signature help error:', error)
@@ -778,22 +765,21 @@ export class LanguageServerPlugin implements PluginValue {
       triggerCharacter
     )
 
-    console.log('tooltip', tooltip)
-
     if (tooltip) {
       // Create and show the tooltip manually
       const { pos: tooltipPos, create } = tooltip
       const tooltipView = create(view)
 
       const tooltipElement = document.createElement('div')
-      tooltipElement.className = 'cm-tooltip cm-signature-tooltip'
+      tooltipElement.className =
+        'documentation hover-tooltip cm-tooltip cm-signature-tooltip'
       tooltipElement.style.position = 'absolute'
+      tooltipElement.style.zIndex = '99999999'
 
       tooltipElement.appendChild(tooltipView.dom)
 
       // Position the tooltip
       const coords = view.coordsAtPos(tooltipPos)
-      console.log('coords', coords)
       if (coords) {
         tooltipElement.style.left = `${coords.left}px`
         tooltipElement.style.top = `${coords.bottom + 5}px`
@@ -825,7 +811,6 @@ export class LanguageServerPlugin implements PluginValue {
   private createTooltipContainer(): HTMLElement {
     const dom = document.createElement('div')
     dom.classList.add('cm-signature-help')
-    dom.style.cssText = 'padding: 6px; max-width: 400px;'
     return dom
   }
 

@@ -220,18 +220,22 @@ code {
   @apply bg-transparent !important;
 }
 
-#code-mirror-override .cm-tooltip {
+#code-mirror-override .cm-tooltip,
+.cm-tooltip {
   @apply text-xs shadow-md;
   @apply bg-chalkboard-10 text-chalkboard-80;
   @apply rounded-sm border-solid border border-chalkboard-40/30 border-l-liquid-10;
 }
 
-.dark #code-mirror-override .cm-tooltip {
+.dark #code-mirror-override .cm-tooltip,
+.cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }
 
-#code-mirror-override .cm-tooltip-hover {
+#code-mirror-override .cm-tooltip-hover,
+#code-mirror-override .cm-signature-tooltip,
+.cm-signature-tooltip {
   @apply py-1 px-2 w-max max-w-md;
 }
 
@@ -294,9 +298,9 @@ code {
 }
 
 @layer utilities {
-  /* 
+  /*
     This is where your own custom Tailwind utility classes can go,
-    which lets you use them with @apply in your CSS, and get 
+    which lets you use them with @apply in your CSS, and get
     autocomplete in classNames in your JSX.
   */
   .parsed-markdown ul,
