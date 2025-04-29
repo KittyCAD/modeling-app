@@ -1318,11 +1318,7 @@ impl LanguageServer for Backend {
                 };
 
                 // Get the function name.
-                let Some(signature) = self.stdlib_signatures.get(last_word) else {
-                    return None;
-                };
-
-                return Some(signature.clone());
+                return self.stdlib_signatures.get(last_word);
             } else if ch == ',' {
                 // If we have a comma, then get the string in front of
                 // the closest ( and try to get the signature.
@@ -1336,14 +1332,10 @@ impl LanguageServer for Backend {
                     return None;
                 };
                 // Get the function name.
-                let Some(signature) = self.stdlib_signatures.get(last_word) else {
-                    return None;
-                };
-
-                return Some(signature.clone());
+                return self.stdlib_signatures.get(last_word);
             }
 
-            return None;
+            None
         };
 
         if let Some(signature) = check_char(ch) {
