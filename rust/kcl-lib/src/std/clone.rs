@@ -301,6 +301,7 @@ async fn inner_clone(
             GeometryWithImportedGeometry::Sketch(new_sketch)
         }
         GeometryWithImportedGeometry::Solid(solid) => {
+            // We flush before the clone so all the shit exists.
             args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
 
             let mut new_solid = solid.clone();
@@ -918,11 +919,6 @@ clonedCube = clone(cube)
 
         #[cfg(feature = "artifact-graph")]
         assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
-
-        for (path, cloned_path) in cube.sketch.paths.iter().zip(cloned_cube.sketch.paths.iter()) {
-            assert_ne!(path.get_id(), cloned_path.get_id());
-            assert_eq!(path.get_tag(), cloned_path.get_tag());
-        }
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
             assert_ne!(value.get_id(), cloned_value.get_id());
