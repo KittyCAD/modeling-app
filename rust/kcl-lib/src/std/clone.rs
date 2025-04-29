@@ -359,6 +359,7 @@ async fn fix_tags_and_references(
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
+            // We do this pre-flush so that we have the original path ids.
             for edge_cut in solid.edge_cuts.iter_mut() {
                 let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) else {
                     anyhow::bail!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
@@ -375,6 +376,7 @@ async fn fix_tags_and_references(
             let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
 
             // Fix the edge cuts.
+            // Then after flushing we need to fix the edge cuts ids.
             for edge_cut in solid.edge_cuts.iter_mut() {
                 let Some(id) = entity_id_map.get(&edge_cut.id()) else {
                     anyhow::bail!(
