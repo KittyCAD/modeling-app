@@ -1085,6 +1085,9 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
   test('empty-scene default-planes act as expected', async ({
     page,
     homePage,
+    scene,
+    cmdBar,
+    editor,
   }) => {
     /**
      * Tests the following things
@@ -1099,6 +1102,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
 
     const u = await getUtils(page)
     await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
@@ -1154,25 +1158,36 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
       .toBeLessThan(8)
 
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
-    await page.waitForTimeout(600)
+
+    // wait for line button to have aria-pressed as proxy for sketch mode
+    await expect
+      .poll(async () => page.getByTestId('line').getAttribute('aria-pressed'), {
+        timeout: 10_000,
+      })
+      .toBe('true')
+    await page.waitForTimeout(200)
 
     await page.mouse.click(XYPlanePoint.x, XYPlanePoint.y)
     await page.waitForTimeout(200)
     await page.mouse.click(XYPlanePoint.x + 50, XYPlanePoint.y + 50)
-    await expect(u.codeLocator).toHaveText(`sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [11.8, 9.09])
-    |> line(end = [3.39, -3.39])
-  `)
+    await editor.expectEditor.toContain(
+      `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [299.72, 230.82])
+  |> line(end = [86.12, -86.13])
+  `,
+      { shouldNormalise: true }
+    )
 
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [11.8, 9.09])
-    |> line(end = [3.39, -3.39])
+profile001 = startProfile(sketch001, at = [299.72, 230.82])
+  |> line(end = [86.12, -86.13])
   `
       )
     })
+    await scene.settled(cmdBar)
 
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
