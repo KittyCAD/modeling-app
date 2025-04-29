@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
 use crate::{docs::StdLibFn, ModuleId, SourceRange};
@@ -247,21 +247,21 @@ pub enum OpKclValue {
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {
