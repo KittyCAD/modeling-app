@@ -1419,7 +1419,7 @@ impl LanguageServer for Backend {
         ast.rename_symbol(&params.new_name, pos);
         // Now recast it.
         let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len() - 1, module_id);
+        let source_range = SourceRange::new(0, current_code.len(), module_id);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(

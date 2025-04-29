@@ -1816,6 +1816,84 @@ async fn test_kcl_lsp_rename() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_rename_no_hanging_parens() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let code = r#"myVARName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVARName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let rename = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            new_name: "myVarName".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the rename.
+    let changes = rename.changes.unwrap();
+
+    let last_character = 27;
+
+    // Get the last character of the last line of the original code.
+    assert_eq!(code.lines().last().unwrap().chars().count(), last_character);
+
+    let u: tower_lsp::lsp_types::Url = "file:///test.kcl".try_into().unwrap();
+    assert_eq!(
+        changes.get(&u).unwrap().clone(),
+        vec![tower_lsp::lsp_types::TextEdit {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+                // Its important we get back the right number here so that we actually replace the whole text!!
+                end: tower_lsp::lsp_types::Position {
+                    line: 9,
+                    character: last_character as u32
+                }
+            },
+            new_text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)\n"
+                .to_string()
+        }]
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_diagnostic_no_errors() {
     let server = kcl_lsp_server(false).await.unwrap();
 
