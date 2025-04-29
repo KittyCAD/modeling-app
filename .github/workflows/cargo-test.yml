@@ -130,7 +130,7 @@ jobs:
           path: nextest-archive.tar.zst
 
   build-test-artifacts:
-    name: Build test artifacts
+    name: cargo test
     runs-on:
       - runs-on=${{ github.run_id }}
       - runner=32cpu-linux-x64
