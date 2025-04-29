@@ -359,6 +359,13 @@ async fn fix_tags_and_references(
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
 
+            for edge_cut in solid.edge_cuts.iter_mut() {
+                let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) else {
+                    anyhow::bail!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
+                };
+                edge_cut.set_edge_id(*new_edge_id);
+            }
+
             // Flush the fillets / chamfers for the solid.
             let mut old_solid = solid.clone();
             old_solid.id = old_geometry_id;
@@ -376,10 +383,6 @@ async fn fix_tags_and_references(
                     );
                 };
                 edge_cut.set_id(*id);
-                /*let Some(new_edge_id) = entity_id_map.get(&edge_cut.edge_id()) else {
-                    anyhow::bail!("Failed to find new edge id for old edge id: {:?}", edge_cut.edge_id());
-                };
-                edge_cut.set_edge_id(*new_edge_id);*/
             }
 
             // Do the after extrude things to update those ids, based on the new sketch
@@ -944,7 +947,7 @@ clonedCube = clone(cube)
 
         for (edge_cut, cloned_edge_cut) in cube.edge_cuts.iter().zip(cloned_cube.edge_cuts.iter()) {
             assert_ne!(edge_cut.id(), cloned_edge_cut.id());
-            //assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
+            assert_ne!(edge_cut.edge_id(), cloned_edge_cut.edge_id());
             assert_eq!(edge_cut.tag(), cloned_edge_cut.tag());
         }
 
