@@ -63,20 +63,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "XY",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "\"XY\"",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": "XY"
             }
           },
           "start": 0,
@@ -154,20 +147,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "XZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "\"XZ\"",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": "XZ"
             }
           },
           "start": 0,
@@ -237,20 +223,13 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "YZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "\"YZ\"",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": "YZ"
             }
           },
           "start": 0,
@@ -277,24 +256,6 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "offsetPlane001",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  }
-                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -313,8 +274,24 @@ description: Result of parsing artifact_graph_example_code_offset_planes.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "offsetPlane001",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [

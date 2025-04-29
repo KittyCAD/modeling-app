@@ -91,15 +91,6 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                 "type": "PipeSubstitution"
               },
               {
-                "arguments": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -118,8 +109,15 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "start": 0,
+                  "type": "PipeSubstitution",
+                  "type": "PipeSubstitution"
+                }
               }
             ],
             "commentStart": 0,

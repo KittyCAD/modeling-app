@@ -24,24 +24,6 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   "argument": {
                     "body": [
                       {
-                        "arguments": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "XY",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -60,8 +42,24 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "XY",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
                       },
                       {
                         "arguments": [
@@ -624,7 +622,6 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "unlabeled": null
                       },
                       {
-                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -643,8 +640,9 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
                       },
                       {
                         "arguments": [
@@ -751,41 +749,6 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "elements": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "0",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  }
-                ],
-                "end": 0,
-                "start": 0,
-                "type": "ArrayExpression",
-                "type": "ArrayExpression"
-              }
-            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -804,8 +767,41 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 0,
+              "elements": [
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "0",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "0",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 0.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
+              "end": 0,
+              "start": 0,
+              "type": "ArrayExpression",
+              "type": "ArrayExpression"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -831,24 +827,6 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "XY",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  }
-                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -867,8 +845,17 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "'XY'",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "XY"
+                }
               },
               {
                 "arguments": [
