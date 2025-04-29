@@ -88,8 +88,9 @@ export function createApplicationCommands({
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
-    description: 'Add KCL file or 3D model to new or existing project.',
-    needsReview: true,
+    description:
+      'Add KCL file, Zoo sample, or 3D model to new or existing project.',
+    needsReview: false,
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
