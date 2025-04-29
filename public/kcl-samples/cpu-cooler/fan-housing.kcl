@@ -9,7 +9,7 @@ import * from "parameters.kcl"
 
 // Model the housing which holds the motor, the fan, and the mounting provisions
 // Bottom mounting face
-bottomFaceSketch = startSketchOn(XY)
+bottomFaceSketch = startSketchOn(YZ)
   |> startProfile(at = [-fanSize / 2, -fanSize / 2])
   |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)

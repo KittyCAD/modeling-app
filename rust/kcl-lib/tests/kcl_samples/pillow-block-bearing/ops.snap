@@ -1,0 +1,30 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed pillow-block-bearing.kcl
+---
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "ballBearing",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "block",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

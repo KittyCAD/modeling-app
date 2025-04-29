@@ -8,33 +8,25 @@
 import * from "parameters.kcl"
 
 // Model the center of the fan
-fanCenter = startSketchOn(XZ)
-  |> startProfile(at = [-0.0001, fanHeight])
-  |> xLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = 90)
-  |> yLine(endAbsolute = 4.5)
-  |> xLine(endAbsolute = -13)
-  |> yLine(endAbsolute = profileStartY(%) - 5)
-  |> tangentialArc(radius = 1, angle = -90)
-  |> xLine(endAbsolute = -1)
-  |> yLine(length = 2)
-  |> xLine(length = -0.15)
-  |> line(endAbsolute = [
-       profileStartX(%) - 1,
-       profileStartY(%) - 1.4
-     ])
-  |> xLine(endAbsolute = profileStartX(%))
-  |> yLine(endAbsolute = profileStartY(%))
+fanCenter = startSketchOn(XY)
+  |> startProfile(at = [fanHeight, -0.0001])
+  |> yLine(endAbsolute = -15 + 1.5)
+  |> tangentialArc(radius = 1.5, angle = -90)
+  |> xLine(endAbsolute = 4.5)
+  |> yLine(endAbsolute = -13)
+  |> xLine(endAbsolute = profileStartX(%) - 5)
+  |> tangentialArc(radius = 1, angle = 90)
+  |> yLine(endAbsolute = -1)
+  |> xLine(length = 2)
   |> close()
   |> revolve(axis = {
-       direction = [0.0, 1.0],
+       direction = [1.0, 0.0],
        origin = [0.0, 0.0]
      })
-  |> appearance(color = "#f3e2d8")
 
 // Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
-fn fanBlade(offsetHeight, startAngle: number(deg)) {
-  fanBlade = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+fn fanBlade(offsetHeight, startAngle) {
+  fanBlade = startSketchOn(offsetPlane(YZ, offset = offsetHeight))
     |> startProfile(at = [
          15 * cos(startAngle),
          15 * sin(startAngle)
@@ -72,17 +64,19 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
 }
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
-loft([
-       fanBlade(4.5, 50),
-       fanBlade((fanHeight - 2 - 4) / 2, 30),
-       fanBlade(fanHeight - 2, 0)
+fanBlades = loft([
+       fanBlade(4.5, 50deg),
+       fanBlade((fanHeight - 2 - 4) / 2, 30deg),
+       fanBlade(fanHeight - 2, 0deg)
      ])
   |> appearance(color = "#f3e2d8")
   |> patternCircular3d(
        %,
        instances = 9,
-       axis = [0, 0, 1],
+       axis = [1, 0, 0],
        center = [0, 0, 0],
        arcDegrees = 360,
        rotateDuplicates = true,
      )
+[fanCenter, fanBlades]
+  |> appearance(color = "#110803")
