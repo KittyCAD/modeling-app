@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 name: cargo test
 jobs:
-  cargotest:
-    name: cargo test
+  build-test-artifacts:
+    name: Build test artifacts
     runs-on:
       - runs-on=${{ github.run_id }}
       - runner=32cpu-linux-x64
@@ -43,7 +43,6 @@ jobs:
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
-      - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Install just
         uses: taiki-e/install-action@just
@@ -121,21 +120,66 @@ jobs:
           # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
-      - name: cargo test
-        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
+      - name: Build and archive tests
+        run: |
+          cd rust
+          cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
+      - name: Upload archive to workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextest-archive
+          path: rust/nextest-archive.tar.zst
+
+  run-test-artifacts:
+    name: cargo test (shard ${{ matrix.partitionIndex}})
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
+    needs: build-test-artifacts
+    strategy:
+      matrix:
+        partitionIndex: [1, 2, 3, 4, 5, 6]
+        partitionTotal: [6]
+    steps:
+      - uses: runs-on/action@v1
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+      - name: Start Vector
+        run: .github/ci-cd-scripts/start-vector-ubuntu.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
+      - uses: taiki-e/install-action@nextest
+      - name: Download archive
+        uses: actions/download-artifact@v4
+        with:
+          name: nextest-archive
+      - name: Run tests
         shell: bash
         run: |-
+          cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
+          ls -lah
           cd rust
-          cargo llvm-cov nextest --workspace --features artifact-graph --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run\
+           --retries=2 --no-fail-fast -P ci --archive-file nextest-archive.tar.zst \
+           --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
+           2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
-      - name: Upload to codecov.io
-        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          fail_ci_if_error: true
-          flags: rust
-          verbose: true
-          files: lcov.info
 
