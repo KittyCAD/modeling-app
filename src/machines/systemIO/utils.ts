@@ -57,7 +57,7 @@ export enum SystemIOMachineActions {
   toastError = 'toastError',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
-  setLastProjectDeleteRequest = 'set last project delete request'
+  setLastProjectDeleteRequest = 'set last project delete request',
 }
 
 export const NO_PROJECT_DIRECTORY = ''

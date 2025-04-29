@@ -397,11 +397,13 @@ impl Artifact {
             Artifact::Sweep(_) => 6,
             Artifact::CompositeSolid(_) => 7,
             Artifact::Wall(_) => 8,
-            Artifact::Cap(_) => 9,
-            Artifact::SweepEdge(_) => 10,
-            Artifact::EdgeCut(_) => 11,
-            Artifact::EdgeCutEdge(_) => 12,
-            Artifact::Helix(_) => 13,
+            Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 9,
+            Artifact::Cap(Cap { sub_type, .. }) if *sub_type == CapSubType::Start => 10,
+            Artifact::Cap(_) => 11,
+            Artifact::SweepEdge(_) => 12,
+            Artifact::EdgeCut(_) => 13,
+            Artifact::EdgeCutEdge(_) => 14,
+            Artifact::Helix(_) => 15,
         }
     }
 }
@@ -472,13 +474,16 @@ impl PartialOrd for Artifact {
             }
             // Sort the caps by their code_ref range.
             (Artifact::Cap(a), Artifact::Cap(b)) => {
+                if a.sub_type != b.sub_type {
+                    return Some(a.sub_type.cmp(&b.sub_type));
+                }
                 if a.sweep_id != b.sweep_id {
                     return Some(a.sweep_id.cmp(&b.sweep_id));
                 }
                 if a.face_code_ref.range != b.face_code_ref.range {
                     return Some(a.face_code_ref.range.cmp(&b.face_code_ref.range));
                 }
-                Some(a.sub_type.cmp(&b.sub_type))
+                Some(a.id.cmp(&b.id))
             }
             (Artifact::CompositeSolid(a), Artifact::CompositeSolid(b)) => Some(a.id.cmp(&b.id)),
             (Artifact::StartSketchOnFace(a), Artifact::StartSketchOnFace(b)) => Some(a.id.cmp(&b.id)),

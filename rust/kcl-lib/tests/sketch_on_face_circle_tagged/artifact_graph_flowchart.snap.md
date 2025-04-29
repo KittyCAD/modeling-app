@@ -23,8 +23,8 @@ flowchart LR
   17[Wall]
   18[Wall]
   19["Cap Start"]
-  20["Cap End"]
-  21["Cap Start"]
+  20["Cap Start"]
+  21["Cap End"]
   22["Cap End"]
   23["SweepEdge Opposite"]
   24["SweepEdge Adjacent"]
@@ -37,7 +37,7 @@ flowchart LR
   31["SweepEdge Opposite"]
   32["SweepEdge Adjacent"]
   1 --- 3
-  20 x--> 2
+  21 x--> 2
   3 --- 5
   3 --- 6
   3 --- 7
@@ -47,7 +47,7 @@ flowchart LR
   4 --- 9
   4 --- 10
   4 ---- 13
-  20 --- 4
+  21 --- 4
   5 --- 17
   5 x--> 19
   5 --- 29
@@ -65,7 +65,7 @@ flowchart LR
   8 --- 27
   8 --- 28
   9 --- 18
-  9 x--> 21
+  9 x--> 20
   9 --- 31
   9 --- 32
   12 --- 14
@@ -73,7 +73,7 @@ flowchart LR
   12 --- 16
   12 --- 17
   12 --- 19
-  12 --- 20
+  12 --- 21
   12 --- 23
   12 --- 24
   12 --- 25
@@ -83,7 +83,7 @@ flowchart LR
   12 --- 29
   12 --- 30
   13 --- 18
-  13 --- 21
+  13 --- 20
   13 --- 22
   13 --- 31
   13 --- 32
