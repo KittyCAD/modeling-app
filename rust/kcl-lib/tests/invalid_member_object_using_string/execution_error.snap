@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing invalid_member_object_using_string.kcl
+---
+KCL Semantic error
+
+  × semantic: Cannot index object with string; use dot notation instead, e.g.
+  │ `obj.foo`
+   ╭─[6:7]
+ 5 │ // Try to index with a string.
+ 6 │ one = obj[p]
+   ·       ───┬──
+   ·          ╰── tests/invalid_member_object_using_string/input.kcl
+   ╰────

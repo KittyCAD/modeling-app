@@ -4,8 +4,7 @@ description: Error from executing invalid_index_str.kcl
 ---
 KCL Semantic error
 
-  × semantic: Only integers >= 0 can be used as the index of an array, but
-  │ you're using a string
+  × semantic: Only numbers (>= 0) can be indexes
    ╭─[2:5]
  1 │ arr = [1, 2, 3]
  2 │ x = arr["s"]

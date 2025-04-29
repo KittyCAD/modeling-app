@@ -861,8 +861,8 @@ impl Node<MemberExpression> {
         };
 
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
-        match (object, property) {
-            (KclValue::Object { value: map, meta: _ }, Property::String(property)) => {
+        match (object, property, self.computed) {
+            (KclValue::Object { value: map, meta: _ }, Property::String(property), false) => {
                 if let Some(value) = map.get(&property) {
                     Ok(value.to_owned())
                 } else {
@@ -872,7 +872,11 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::Object { .. }, p) => {
+            (KclValue::Object { .. }, Property::String(property), true) => Err(KclError::Semantic(KclErrorDetails {
+                message: format!("Cannot index object with string; use dot notation instead, e.g. `obj.{property}`"),
+                source_ranges: vec![self.clone().into()],
+            })),
+            (KclValue::Object { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -885,6 +889,7 @@ impl Node<MemberExpression> {
             (
                 KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
                 Property::UInt(index),
+                _,
             ) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
@@ -896,7 +901,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p) => {
+            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -906,10 +911,10 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (KclValue::Solid { value }, Property::String(prop)) if prop == "sketch" => Ok(KclValue::Sketch {
+            (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => Ok(KclValue::Sketch {
                 value: Box::new(value.sketch),
             }),
-            (KclValue::Sketch { value: sk }, Property::String(prop)) if prop == "tags" => Ok(KclValue::Object {
+            (KclValue::Sketch { value: sk }, Property::String(prop), false) if prop == "tags" => Ok(KclValue::Object {
                 meta: vec![Metadata {
                     source_range: SourceRange::from(self.clone()),
                 }],
@@ -919,7 +924,7 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
             }),
-            (being_indexed, _) => {
+            (being_indexed, _, _) => {
                 let t = being_indexed.human_friendly_type();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1036,12 +1041,12 @@ impl Node<BinaryExpression> {
 
         let value = match self.operator {
             BinaryOperator::Add => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
                 self.warn_on_unknown(&ty, "Adding", exec_state);
                 KclValue::Number { value: l + r, meta, ty }
             }
             BinaryOperator::Sub => {
-                let (l, r, ty) = NumericType::combine_eq(left, right);
+                let (l, r, ty) = NumericType::combine_eq_coerce(left, right);
                 self.warn_on_unknown(&ty, "Subtracting", exec_state);
                 KclValue::Number { value: l - r, meta, ty }
             }
@@ -1919,10 +1924,11 @@ impl Property {
             LiteralIdentifier::Identifier(identifier) => {
                 let name = &identifier.name;
                 if !computed {
-                    // Treat the property as a literal
+                    // This is dot syntax. Treat the property as a literal.
                     Ok(Property::String(name.to_string()))
                 } else {
-                    // Actually evaluate memory to compute the property.
+                    // This is bracket syntax. Actually evaluate memory to
+                    // compute the property.
                     let prop = exec_state.stack().get(name, property_src)?;
                     jvalue_to_prop(prop, property_sr, name)
                 }
@@ -1940,10 +1946,9 @@ impl Property {
                             }))
                         }
                     }
-                    LiteralValue::String(s) => Ok(Property::String(s)),
                     _ => Err(KclError::Semantic(KclErrorDetails {
                         source_ranges: vec![sr],
-                        message: "Only strings or numbers (>= 0) can be properties/indexes".to_owned(),
+                        message: "Only numbers (>= 0) can be indexes".to_owned(),
                     })),
                 }
             }

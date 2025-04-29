@@ -66,7 +66,7 @@ pub async fn cos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`cos` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -87,7 +87,7 @@ pub async fn sin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`sin` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -107,7 +107,7 @@ pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         } => {
             exec_state.warn(CompilationError::err(
                 args.source_range,
-                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `toRadians` to convert from degrees to radians",
+                "`tan` requires its input in radians, but the input is assumed to be in degrees. You can use a numeric suffix (e.g., `0rad`) or type ascription (e.g., `(1/2): number(rad)`) to show the number is in radians, or `units::toRadians` to convert from degrees to radians",
             ));
             num.n
         }
@@ -115,34 +115,6 @@ pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         _ => num.n,
     };
     Ok(args.make_user_val_from_f64_with_type(TyF64::count(num.tan())))
-}
-
-/// Return the value of `pi`. Archimedes’ constant (π).
-pub async fn pi(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_pi()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::count(result)))
-}
-
-/// Return the value of `pi`. Archimedes’ constant (π).
-///
-/// **DEPRECATED** use the constant PI
-///
-/// ```no_run
-/// circumference = 70
-///
-/// exampleSketch = startSketchOn("XZ")
-///  |> circle( center = [0, 0], radius = circumference/ (2 * pi()) )
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "pi",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_pi() -> Result<f64, KclError> {
-    Ok(std::f64::consts::PI)
 }
 
 /// Compute the square root of a number.
@@ -478,7 +450,7 @@ pub async fn acos(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(acos(0.5)),
+///     angle = units::toDegrees(acos(0.5)),
 ///     length = 10,
 ///   )
 ///   |> line(end = [5, 0])
@@ -514,7 +486,7 @@ pub async fn asin(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(asin(0.5)),
+///     angle = units::toDegrees(asin(0.5)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -551,7 +523,7 @@ pub async fn atan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
 /// sketch001 = startSketchOn('XZ')
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(atan(1.25)),
+///     angle = units::toDegrees(atan(1.25)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -588,7 +560,7 @@ pub async fn atan2(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = toDegrees(atan2(y = 1.25, x = 2)),
+///     angle = units::toDegrees(atan2(y = 1.25, x = 2)),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -745,70 +717,6 @@ pub async fn ln(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclE
 }]
 fn inner_ln(input: f64) -> f64 {
     input.ln()
-}
-
-/// Return the value of Euler’s number `e`.
-pub async fn e(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_e()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
-}
-
-/// Return the value of Euler’s number `e`.
-///
-/// **DEPRECATED** use the constant E
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfile(at = [0, 0])
-///   |> angledLine(
-///     angle = 30,
-///     length = 2 * e() ^ 2,
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///  
-/// example = extrude(exampleSketch, length = 10)
-/// ```
-#[stdlib {
-    name = "e",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_e() -> Result<f64, KclError> {
-    Ok(std::f64::consts::E)
-}
-
-/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
-pub async fn tau(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let result = inner_tau()?;
-
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::count())))
-}
-
-/// Return the value of `tau`. The full circle constant (τ). Equal to 2π.
-///
-/// **DEPRECATED** use the constant TAU
-///
-/// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfile(at = [0, 0])
-///   |> angledLine(
-///     angle = 50,
-///     length = 10 * tau(),
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///
-/// example = extrude(exampleSketch, length = 5)
-/// ```
-#[stdlib {
-    name = "tau",
-    tags = ["math"],
-    deprecated = true,
-}]
-fn inner_tau() -> Result<f64, KclError> {
-    Ok(std::f64::consts::TAU)
 }
 
 #[cfg(test)]

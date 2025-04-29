@@ -6,6 +6,8 @@ import {
   ARG_END,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
+  ARG_LEG,
+  ARG_HYPOTENUSE,
   ARG_END_ABSOLUTE_Y,
   ARG_INTERSECT_TAG,
   ARG_LENGTH,
@@ -473,9 +475,9 @@ const getMinAndSegAngVals = (
     createArrayExpression([createSegLen(referenceSegName), varVal]),
     []
   )
-  const legAngle = createCallExpression(fnName, [
-    createSegLen(referenceSegName),
-    varVal,
+  const legAngle = createCallExpressionStdLibKw(fnName, null, [
+    createLabeledArg(ARG_HYPOTENUSE, createSegLen(referenceSegName)),
+    createLabeledArg(ARG_LEG, varVal),
   ])
   return [minVal, legAngle]
 }
@@ -2177,26 +2179,38 @@ export function transformAstSketchLines({
 }
 
 function createSegLen(referenceSegName: string): BinaryPart {
-  return createCallExpression('segLen', [createLocalName(referenceSegName)])
+  return createCallExpressionStdLibKw(
+    'segLen',
+    createLocalName(referenceSegName),
+    []
+  )
 }
 
 function createSegAngle(referenceSegName: string): BinaryPart {
-  return createCallExpression('segAng', [createLocalName(referenceSegName)])
+  return createCallExpressionStdLibKw(
+    'segAng',
+    createLocalName(referenceSegName),
+    []
+  )
 }
 
 function createSegEnd(
   referenceSegName: string,
   isX: boolean
-): Node<CallExpression> {
-  return createCallExpression(isX ? 'segEndX' : 'segEndY', [
+): Node<CallExpressionKw> {
+  return createCallExpressionStdLibKw(
+    isX ? 'segEndX' : 'segEndY',
     createLocalName(referenceSegName),
-  ])
+    []
+  )
 }
 
-function createLastSeg(isX: boolean): Node<CallExpression> {
-  return createCallExpression(isX ? 'lastSegX' : 'lastSegY', [
+function createLastSeg(isX: boolean): Node<CallExpressionKw> {
+  return createCallExpressionStdLibKw(
+    isX ? 'lastSegX' : 'lastSegY',
     createPipeSubstitution(),
-  ])
+    []
+  )
 }
 
 export type ConstraintLevel = 'free' | 'partial' | 'full'
@@ -2312,16 +2326,30 @@ export function isNotLiteralArrayOrStatic(
 }
 
 export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
-  if (
-    expr.type === 'Literal' ||
-    expr.type === 'Name' ||
-    expr.type === 'BinaryExpression' ||
-    expr.type === 'CallExpression' ||
-    expr.type === 'UnaryExpression' ||
-    expr.type === 'MemberExpression'
-  )
-    return true
-  return false
+  switch (expr.type) {
+    case 'Literal':
+    case 'Name':
+    case 'BinaryExpression':
+    case 'CallExpression':
+    case 'CallExpressionKw':
+    case 'UnaryExpression':
+    case 'MemberExpression':
+    case 'IfExpression':
+      return true
+    case 'TagDeclarator':
+    case 'PipeSubstitution':
+    case 'ArrayExpression':
+    case 'PipeExpression':
+    case 'ObjectExpression':
+    case 'FunctionExpression':
+    case 'ArrayRangeExpression':
+    case 'LabelledExpression':
+    case 'AscribedExpression':
+      return false
+    default:
+      const _exhaustiveCheck: never = expr
+      return false // unreachable
+  }
 }
 
 function getInputOfType(a: InputArgs, b: LineInputsType | 'radius'): InputArg {

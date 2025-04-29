@@ -9,7 +9,10 @@ import {
   useRequestedTextToCadGeneration,
   useFolders,
 } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  NO_PROJECT_DIRECTORY,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
@@ -85,7 +88,7 @@ export function SystemIOMachineLogicListenerDesktop() {
 
   const useWatchingApplicationProjectDirectory = () => {
     useFileSystemWatcher(
-      async () => {
+      async (eventType, path) => {
         // Gotcha: Chokidar is buggy. It will emit addDir or add on files that did not get created.
         // This means while the application initialize and Chokidar initializes you cannot tell if
         // a directory or file is actually created or they are buggy signals. This means you must
@@ -95,9 +98,23 @@ export function SystemIOMachineLogicListenerDesktop() {
         if (!hasListedProjects) {
           return
         }
-        systemIOActor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
+
+        const folderName =
+          systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
+        const folderPath = `${projectDirectoryPath}${window.electron.sep}${folderName}`
+        if (
+          folderName !== NO_PROJECT_DIRECTORY &&
+          (eventType === 'unlinkDir' || eventType === 'unlink') &&
+          path.includes(folderPath)
+        ) {
+          // NO OP: The systemIOMachine will be triggering the read in the state transition, don't spam it again
+          // once this event is processed after the deletion.
+        } else {
+          // Prevents spamming reading from disk twice on deletion due to files and folders being deleted async
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        }
       },
       settings.app.projectDirectory.current
         ? [settings.app.projectDirectory.current]

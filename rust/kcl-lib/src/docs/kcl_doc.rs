@@ -1047,7 +1047,7 @@ mod test {
             if let DocData::Const(d) = d {
                 if d.name == "PI" {
                     assert!(d.value.unwrap().starts_with('3'));
-                    assert_eq!(d.ty, Some("number".to_owned()));
+                    assert_eq!(d.ty, Some("number(_?)".to_owned()));
                     assert_eq!(d.qual_name, "std::math::PI");
                     assert!(d.summary.is_some());
                     assert!(!d.examples.is_empty());

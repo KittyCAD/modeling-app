@@ -21,6 +21,27 @@ impl From<[usize; 3]> for SourceRange {
     }
 }
 
+impl Ord for SourceRange {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // Sort by module id first, then by start and end.
+        let module_id_cmp = self.module_id().cmp(&other.module_id());
+        if module_id_cmp != std::cmp::Ordering::Equal {
+            return module_id_cmp;
+        }
+        let start_cmp = self.start().cmp(&other.start());
+        if start_cmp != std::cmp::Ordering::Equal {
+            return start_cmp;
+        }
+        self.end().cmp(&other.end())
+    }
+}
+
+impl PartialOrd for SourceRange {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl From<&SourceRange> for miette::SourceSpan {
     fn from(source_range: &SourceRange) -> Self {
         let length = source_range.end() - source_range.start();

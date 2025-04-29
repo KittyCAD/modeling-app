@@ -11,9 +11,8 @@ ten = arr[i]
 
 assert(ten, isEqualTo = 10, error = "oops")
 
-p = "foo"
 obj = { foo = 1, bar = 0 }
-one = obj[p]
+one = obj.foo
 
 assert(one, isEqualTo = 1, error = "oops")
 
@@ -24,7 +23,7 @@ assert(
   error = "oops pi",
 )
 
-x = cos(2 * PI)
+x = cos((2 * PI): number(rad))
 assert(
   x,
   isEqualTo = 1,

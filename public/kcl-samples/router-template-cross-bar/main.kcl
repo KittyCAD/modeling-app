@@ -6,7 +6,7 @@
 
 // Define parameters
 routerDiameter = 12.7
-templateDiameter = fromInches(11 / 16)
+templateDiameter = (11 / 16): number(in)
 slateWidthHalf = 41.5 / 2
 minClampingDistance = 50 + 30
 templateThickness = 10

@@ -24,7 +24,7 @@ export type MenuLabels =
   | 'File.Sign out'
   | 'File.Create new file'
   | 'File.Create new folder'
-  | 'File.Load external model'
+  | 'File.Add file to project'
   | 'File.Export current part'
   | 'File.Share part via Zoo link'
   | 'File.Preferences.Project settings'

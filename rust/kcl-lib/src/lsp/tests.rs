@@ -1,14 +1,19 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{
+        CodeActionKind, CodeActionOrCommand, Diagnostic, SemanticTokenModifier, SemanticTokenType, TextEdit,
+        WorkspaceEdit,
+    },
     LanguageServer,
 };
 
 use crate::{
+    errors::{LspSuggestion, Suggestion},
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
+    SourceRange,
 };
 
 #[track_caller]
@@ -945,7 +950,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -3475,7 +3480,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -3548,4 +3553,130 @@ startSketchOn(XY)
     }
 
     server.executor_ctx().await.clone().unwrap().close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn({
+    origin = { x = 0, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+})
+|> startProfile(at = [0, 0])"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics else {
+        panic!("Expected diagnostics");
+    };
+
+    let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics else {
+        panic!("Expected full diagnostics");
+    };
+    assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0].message,
+        "offsetPlane should be used to define a new plane offset from the origin"
+    );
+
+    // Make sure we get the suggestion data.
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0]
+            .data
+            .clone()
+            .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
+        Some((
+            Suggestion {
+                insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                source_range: SourceRange::new(14, 133, Default::default()),
+                title: "use offsetPlane instead".to_string(),
+            },
+            tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            }
+        ))
+    );
+
+    let diagnostic = diagnostics.full_document_diagnostic_report.items[0].clone();
+
+    // Run a code action.
+    let code_action = server
+        .code_action(tower_lsp::lsp_types::CodeActionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            },
+            context: tower_lsp::lsp_types::CodeActionContext {
+                diagnostics: vec![diagnostic.clone()],
+                only: None,
+                trigger_kind: Default::default(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    assert!(code_action.is_some());
+
+    let code_action = code_action.unwrap();
+
+    assert_eq!(code_action.len(), 1);
+
+    assert_eq!(
+        code_action[0],
+        CodeActionOrCommand::CodeAction(tower_lsp::lsp_types::CodeAction {
+            title: "use offsetPlane instead".to_string(),
+            kind: Some(CodeActionKind::QUICKFIX),
+            diagnostics: Some(vec![diagnostic]),
+            edit: Some(WorkspaceEdit {
+                changes: Some(HashMap::from_iter(vec![(
+                    "file:///testlint.kcl".try_into().unwrap(),
+                    vec![TextEdit {
+                        range: tower_lsp::lsp_types::Range {
+                            start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                            end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+                        },
+                        new_text: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                    }],
+                )])),
+                document_changes: None,
+                change_annotations: None,
+            }),
+            command: None,
+            is_preferred: Some(true),
+            disabled: None,
+            data: None,
+        })
+    );
 }

@@ -28,14 +28,14 @@ export boltLength = 2.500
 export boltHeadLength = boltDiameter
 export boltHeadDiameter = 0.938
 export boltHexDrive = 1 / 2
-export boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
+export boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 export boltThreadLength = 1.750
 
 // Hex nut (95479A127)
 export hexNutDiameter = 5 / 8
 export hexNutFlatToFlat = 15 / 16
 export hexNutThickness = 35 / 64
-export hexNutFlatLength = hexNutFlatToFlat / (2 * cos(toRadians(30)))
+export hexNutFlatLength = hexNutFlatToFlat / (2 * cos(30deg))
 
 // Gasket (9472K188)
 export gasketOutsideDiameter = 4.125

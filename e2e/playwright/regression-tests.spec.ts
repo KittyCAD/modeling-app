@@ -223,21 +223,6 @@ extrude001 = extrude(sketch001, length = 50)
     })
   })
 
-  // Not relevant to us anymore, or at least for the time being.
-  test.skip('ensure the Zoo logo is not a link in browser app', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    const zooLogo = page.locator('[data-testid="app-logo"]')
-    // Make sure it's not a link
-    await expect(zooLogo).not.toHaveAttribute('href')
-  })
-
   test('Position _ Is Out Of Range... regression test', async ({
     context,
     page,

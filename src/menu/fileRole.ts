@@ -36,6 +36,25 @@ export const projectFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
+        label: 'Add file to project',
+        id: 'File.Add file to project',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Add file to project',
+          })
+        },
+      },
+      {
+        label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Create with Zoo Text-To-CAD',
+          })
+        },
+      },
+      { type: 'separator' },
+      {
         label: 'Preferences',
         submenu: [
           {
@@ -148,11 +167,11 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load external model',
-        id: 'File.Load external model',
+        label: 'Add file to project',
+        id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load external model',
+            menuLabel: 'File.Add file to project',
           })
         },
       },

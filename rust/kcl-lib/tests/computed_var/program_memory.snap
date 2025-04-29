@@ -117,10 +117,6 @@ description: Variables in memory after executing computed_var.kcl
       }
     }
   },
-  "p": {
-    "type": "String",
-    "value": "foo"
-  },
   "ten": {
     "type": "Number",
     "value": 10.0,

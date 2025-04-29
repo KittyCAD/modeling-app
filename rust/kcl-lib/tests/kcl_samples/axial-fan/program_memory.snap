@@ -5,14 +5,14 @@ description: Variables in memory after executing axial-fan.kcl
 {
   "fan": {
     "type": "Module",
-    "value": 9
+    "value": 11
   },
   "fanHousing": {
     "type": "Module",
-    "value": 7
+    "value": 8
   },
   "motor": {
     "type": "Module",
-    "value": 8
+    "value": 10
   }
 }
