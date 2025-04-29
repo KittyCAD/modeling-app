@@ -206,7 +206,7 @@ const Home = () => {
   return (
     <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
       <AppHeader showToolbar={false} />
-      <div className="overflow-hidden home-layout max-w-4xl xl:max-w-7xl mb-12 px-4 mx-auto mt-24 lg:px-0">
+      <div className="overflow-hidden flex-1 home-layout max-w-4xl xl:max-w-7xl mb-12 px-4 mx-auto mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
