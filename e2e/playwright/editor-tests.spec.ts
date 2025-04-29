@@ -640,6 +640,11 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await expect(page.locator('.cm-signature-tooltip')).toContainText(
       'sketches:'
     )
+
+    // Make sure the tooltip goes away after a timeout.
+    await page.waitForTimeout(3000)
+
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
   })
 
   test('if you write kcl with lint errors you get lints', async ({
