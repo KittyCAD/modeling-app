@@ -14,6 +14,10 @@ import { bracket } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
+import makeUrlPathRelative from './makeUrlPathRelative'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { systemIOActor } from './singletons'
 
 export const isHidden = (fileOrDir: FileEntry) =>
   !!fileOrDir.name?.startsWith('.')
@@ -132,19 +136,9 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewTutorialProject({
-  onProjectOpen,
-  navigate,
-}: {
-  onProjectOpen: (
-    project: {
-      name: string | null
-      path: string | null
-    } | null,
-    file: FileEntry | null
-  ) => void
-  navigate: (path: string) => void
-}) {
+export async function createAndOpenNewTutorialProject(
+  onboardingStatus = onboardingPaths.INDEX
+) {
   // Create a new project with the onboarding project name
   const configuration = await readAppSettingsFile()
   const projects = await listProjects(configuration)
@@ -175,19 +169,20 @@ export async function createAndOpenNewTutorialProject({
     configuration
   )
 
-  // Prep the LSP and navigate to the onboarding start
-  onProjectOpen(
-    {
-      name: newProject.name,
-      path: newProject.path,
+  const filePathAsUri = encodeURIComponent(
+    newProject.default_file.replace(newProject.path, '')
+  )
+  const subRoute = `${filePathAsUri}${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(
+    onboardingStatus
+  )}`
+  systemIOActor.send({
+    type: SystemIOMachineEvents.navigateToProject,
+    data: {
+      requestedProjectName: newProject.name,
+      subRoute,
     },
-    null
-  )
-  navigate(
-    `${PATHS.FILE}/${encodeURIComponent(newProject.default_file)}${
-      PATHS.ONBOARDING.INDEX
-    }`
-  )
+  })
+
   return newProject
 }
 
