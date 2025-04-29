@@ -9,7 +9,10 @@ import {
   useRequestedTextToCadGeneration,
   useFolders,
 } from '@src/machines/systemIO/hooks'
-import { NO_PROJECT_DIRECTORY, SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  NO_PROJECT_DIRECTORY,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import { useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
@@ -96,9 +99,14 @@ export function SystemIOMachineLogicListenerDesktop() {
           return
         }
 
-        const folderName = systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
+        const folderName =
+          systemIOActor.getSnapshot().context.lastProjectDeleteRequest.project
         const folderPath = `${projectDirectoryPath}${window.electron.sep}${folderName}`
-        if (folderName !== NO_PROJECT_DIRECTORY && (eventType === 'unlinkDir' || eventType === 'unlink') && path.includes(folderPath)) {
+        if (
+          folderName !== NO_PROJECT_DIRECTORY &&
+          (eventType === 'unlinkDir' || eventType === 'unlink') &&
+          path.includes(folderPath)
+        ) {
           // NO OP: The systemIOMachine will be triggering the read in the state transition, don't spam it again
           // once this event is processed after the deletion.
         } else {
