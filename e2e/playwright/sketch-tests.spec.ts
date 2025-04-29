@@ -1195,7 +1195,7 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
       lugDiameter = 0.5
       lugLength = 2
 
-      fn lug = (origin, length, diameter, plane) => {
+      fn lug(origin, length, diameter, plane) {
         lugSketch = startSketchOn(plane)
           |> startProfile(at = [origin[0] + lugDiameter / 2, origin[1]])
           |> angledLine(angle = 60, lengthY = lugHeadLength)
