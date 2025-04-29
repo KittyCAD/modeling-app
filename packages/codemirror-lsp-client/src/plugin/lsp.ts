@@ -1262,7 +1262,6 @@ export class LanguageServerPlugin implements PluginValue {
           })
         )
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const diagnostic: Diagnostic = {
           from: posToOffsetOrZero(this.view.state.doc, range.start),
           to: posToOffsetOrZero(this.view.state.doc, range.end),
@@ -1276,6 +1275,7 @@ export class LanguageServerPlugin implements PluginValue {
       }
     )
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const diagnostics = (await Promise.all(rawDiagnostics))
       .filter(
         ({ from, to }) =>
