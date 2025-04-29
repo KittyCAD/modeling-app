@@ -2,7 +2,12 @@ import type { FormEvent, HTMLProps } from 'react'
 import { useEffect, useRef } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
@@ -19,7 +24,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import { kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -39,6 +44,12 @@ import {
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  acceptOnboarding,
+  needsToOnboard,
+  onDismissOnboardingInvite,
+} from './Onboarding/utils'
+import Tooltip from '@src/components/Tooltip'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -69,8 +80,10 @@ const Home = () => {
     })
   })
 
+  const location = useLocation()
   const navigate = useNavigate()
   const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus.current
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -204,6 +217,42 @@ const Home = () => {
         />
         <aside className="row-start-1 -row-end-1 flex flex-col justify-between">
           <ul className="flex flex-col">
+            {needsToOnboard(location, onboardingStatus) && (
+              <li className="flex group">
+                <ActionButton
+                  Element="button"
+                  onClick={() => {
+                    acceptOnboarding({
+                      onboardingStatus,
+                      navigate,
+                      codeManager,
+                      kclManager,
+                    }).catch(reportRejection)
+                  }}
+                  className={`${sidebarButtonClasses} !text-primary flex-1`}
+                  iconStart={{
+                    icon: 'play',
+                    bgClassName: '!bg-primary rounded-sm',
+                    iconClassName: '!text-white',
+                  }}
+                  data-testid="home-tutorial"
+                >
+                  {onboardingStatus === '' ? 'Start' : 'Continue'} tutorial
+                </ActionButton>
+                <ActionButton
+                  Element="button"
+                  onClick={onDismissOnboardingInvite}
+                  className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
+                  iconStart={{
+                    icon: 'close',
+                    bgClassName: '!bg-transparent rounded-sm',
+                  }}
+                  data-testid="onboarding-dismiss"
+                >
+                  <Tooltip>Dismiss tutorial</Tooltip>
+                </ActionButton>
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="button"
