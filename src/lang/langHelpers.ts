@@ -1,4 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
+import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError } from '@src/lang/errors'
@@ -156,6 +157,7 @@ export async function lintAst({
                   to: suggestion.source_range[1],
                   insert: suggestion.insert,
                 },
+                annotations: [lspCodeActionEvent],
               })
             },
           },

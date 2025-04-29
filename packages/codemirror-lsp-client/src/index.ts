@@ -20,6 +20,7 @@ export {
   lspFormatCodeEvent,
   lspRenameEvent,
   lspSemanticTokensEvent,
+  lspCodeActionEvent,
 } from './plugin/annotation'
 export {
   LanguageServerPlugin,

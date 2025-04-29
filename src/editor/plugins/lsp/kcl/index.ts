@@ -6,6 +6,7 @@ import type {
   LanguageServerOptions,
 } from '@kittycad/codemirror-lsp-client'
 import {
+  lspCodeActionEvent,
   lspFormatCodeEvent,
   lspPlugin,
   lspRenameEvent,
@@ -97,6 +98,11 @@ export class KclPlugin implements PluginValue {
       } else if (tr.annotation(lspRenameEvent.type)) {
         // Rename does not need to trigger the world.
         // It's the same ast just different variable names.
+        isRelevant = false
+        break
+      } else if (tr.annotation(lspCodeActionEvent.type)) {
+        // Code actions should be stable enough where they create the same
+        // code and we do not need to need trigger an update.
         isRelevant = false
         break
       }

@@ -29,6 +29,7 @@ import {
   lspFormatCodeEvent,
   lspSemanticTokensEvent,
   lspRenameEvent,
+  lspCodeActionEvent,
 } from './annotation'
 import lspAutocompleteExt, { CompletionItemKindMap } from './autocomplete'
 import lspFormatExt from './format'
@@ -697,6 +698,8 @@ export class LanguageServerPlugin implements PluginValue {
         },
       })
 
+      console.log('Signature help result:', result)
+
       if (!result?.signatures || result.signatures.length === 0) {
         return null
       }
@@ -1250,6 +1253,7 @@ export class LanguageServerPlugin implements PluginValue {
                         to: posToOffset(this.view.state.doc, change.range.end),
                         insert: change.newText,
                       },
+                      annotations: [lspCodeActionEvent],
                     })
                   )
                 }
