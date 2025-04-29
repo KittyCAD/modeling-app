@@ -1,7 +1,6 @@
 import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
-import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addImportAndInsert } from '@src/lang/modifyAst'
 import {
@@ -14,10 +13,8 @@ import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
-  FILE_EXT,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
@@ -25,21 +22,9 @@ import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
-interface OnSubmitProps {
-  name: string
-  content?: string
-  targetPathToClone?: string
-  method: 'overwrite' | 'newFile'
-  source: 'kcl-samples' | 'local'
-}
-
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
-  specialPropsForLoadCommand: {
-    onSubmit: (p: OnSubmitProps) => Promise<void>
-    providedOptions: CommandArgumentOption<string>[]
-  }
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
@@ -187,160 +172,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       icon: 'code',
       onSubmit: () => {
         kclManager.format().catch(reportRejection)
-      },
-    },
-    {
-      name: 'load-external-model',
-      displayName: 'Load external model',
-      description:
-        'Loads a model from an external source into the current project.',
-      needsReview: true,
-      icon: 'importFile',
-      reviewMessage: ({ argumentsToSubmit }) =>
-        argumentsToSubmit['method'] === 'overwrite'
-          ? CommandBarOverwriteWarning({
-              heading: 'Overwrite current file with sample?',
-              message:
-                'This will erase your current file and load the sample part.',
-            })
-          : 'This will create a new file in the current project and open it.',
-      groupId: 'code',
-      onSubmit(data) {
-        if (!data) {
-          return new Error('No input data')
-        }
-
-        const { method, source, sample, path } = data
-        if (source === 'local' && path) {
-          commandProps.specialPropsForLoadCommand
-            .onSubmit({
-              name: '',
-              targetPathToClone: path,
-              method,
-              source,
-            })
-            .catch(reportError)
-        } else if (source === 'kcl-samples' && sample) {
-          const pathParts = sample.split('/')
-          const projectPathPart = pathParts[0]
-          const primaryKclFile = pathParts[1]
-          // local only
-          const sampleCodeUrl =
-            (isDesktop() ? '.' : '') +
-            `/kcl-samples/${encodeURIComponent(
-              projectPathPart
-            )}/${encodeURIComponent(primaryKclFile)}`
-
-          fetch(sampleCodeUrl)
-            .then(async (codeResponse) => {
-              if (!codeResponse.ok) {
-                console.error(
-                  'Failed to fetch sample code:',
-                  codeResponse.statusText
-                )
-                return Promise.reject(new Error('Failed to fetch sample code'))
-              }
-              const code = await codeResponse.text()
-              commandProps.specialPropsForLoadCommand
-                .onSubmit({
-                  name: data.sample.split('/')[0] + FILE_EXT,
-                  content: code,
-                  source,
-                  method,
-                })
-                .catch(reportError)
-            })
-            .catch(reportError)
-        } else {
-          toast.error("The command couldn't be submitted, check the arguments.")
-        }
-      },
-      args: {
-        source: {
-          inputType: 'options',
-          required: true,
-          skip: false,
-          defaultValue: 'local',
-          hidden: !isDesktop(),
-          options() {
-            return [
-              {
-                value: 'kcl-samples',
-                name: 'KCL Samples',
-                isCurrent: true,
-              },
-              ...(isDesktop()
-                ? [
-                    {
-                      value: 'local',
-                      name: 'Local Drive',
-                      isCurrent: false,
-                    },
-                  ]
-                : []),
-            ]
-          },
-        },
-        method: {
-          inputType: 'options',
-          skip: true,
-          required: (commandContext) =>
-            !['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
-          hidden: (commandContext) =>
-            ['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
-          defaultValue: isDesktop() ? 'newFile' : 'overwrite',
-          options() {
-            return [
-              {
-                value: 'overwrite',
-                name: 'Overwrite current code',
-                isCurrent: !isDesktop(),
-              },
-              ...(isDesktop()
-                ? [
-                    {
-                      value: 'newFile',
-                      name: 'Create a new file',
-                      isCurrent: true,
-                    },
-                  ]
-                : []),
-            ]
-          },
-        },
-        sample: {
-          inputType: 'options',
-          required: (commandContext) =>
-            !['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
-          hidden: (commandContext) =>
-            ['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
-          valueSummary(value) {
-            const MAX_LENGTH = 12
-            if (typeof value === 'string') {
-              return value.length > MAX_LENGTH
-                ? value.substring(0, MAX_LENGTH) + '...'
-                : value
-            }
-            return value
-          },
-          options: commandProps.specialPropsForLoadCommand.providedOptions,
-        },
-        path: {
-          inputType: 'path',
-          valueSummary: (value) => window.electron.path.basename(value),
-          required: (commandContext) =>
-            ['local'].includes(
-              commandContext.argumentsToSubmit.source as string
-            ),
-        },
       },
     },
     {

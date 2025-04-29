@@ -469,10 +469,13 @@ export const systemIOMachine = setup({
             assign({
               requestedFileName: ({ context, event }) => {
                 assertEvent(event, SystemIOMachineEvents.done_importFileFromURL)
-                // Not the entire path
+                // Gotcha: file could have an ending of .kcl...
+                const file = event.output.fileName.endsWith('.kcl')
+                  ? event.output.fileName
+                  : event.output.fileName + '.kcl'
                 return {
                   project: event.output.projectName,
-                  file: event.output.fileName + '.kcl',
+                  file,
                 }
               },
             }),
