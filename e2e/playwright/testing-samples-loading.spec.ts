@@ -1,3 +1,4 @@
+import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
@@ -82,9 +83,17 @@ test.describe('Testing loading external models', () => {
   test(
     'Desktop: should create new file by default, creates a second file with automatic unique name',
     { tag: '@electron' },
-    async ({ editor, page, scene, cmdBar, toolbar }) => {
+    async ({ editor,context, page, scene, cmdBar, toolbar }) => {
       if (runningOnWindows()) {
       }
+
+      await context.folderSetupFn(async (dir) => {
+        const bracketDir = join(dir, 'bracket')
+        await fsp.mkdir(bracketDir, { recursive: true })
+        await fsp.writeFile(join(bracketDir, 'main.kcl'), bracket, {
+          encoding: 'utf-8',
+        })
+      })
       const u = await getUtils(page)
 
       // Locators and constants
