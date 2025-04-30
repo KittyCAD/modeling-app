@@ -9,7 +9,11 @@ import {
   createObjectExpression,
 } from '@src/lang/create'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath, traverse } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  traverse,
+  findPipesWithImportAlias,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   expandCap,
@@ -33,7 +37,6 @@ import type {
 import type { Selection } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
-import { findFirstPipeWithImportAlias } from '@src/lang/modifyAst/setTransform'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -132,14 +135,12 @@ export async function deleteFromSelection(
     selection.codeRef.pathToNode[1] &&
     typeof selection.codeRef.pathToNode[1][0] === 'number'
   ) {
-    // Gotcha: this is finding only the first pipe and won't look for all pipes in the file
-    const { pathToPipeNode } = findFirstPipeWithImportAlias(
-      ast,
-      selection.codeRef.pathToNode
-    )
-    if (pathToPipeNode && typeof pathToPipeNode[1][0] === 'number') {
-      const pipeWithImportAliasIndex = pathToPipeNode[1][0]
-      astClone.body.splice(pipeWithImportAliasIndex, 1)
+    const pipes = findPipesWithImportAlias(ast, selection.codeRef.pathToNode)
+    for (const { pathToNode: pathToPipeNode } of pipes) {
+      if (typeof pathToPipeNode[1][0] === 'number') {
+        const pipeWithImportAliasIndex = pathToPipeNode[1][0]
+        astClone.body.splice(pipeWithImportAliasIndex, 1)
+      }
     }
 
     const importIndex = selection.codeRef.pathToNode[1][0]

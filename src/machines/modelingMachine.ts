@@ -84,11 +84,12 @@ import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
   setTranslate,
   setRotate,
-  findFirstPipeWithImportAlias,
   insertExpressionNode,
 } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
+  findPipesWithImportAlias,
+  findImportNodeAndAlias,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -2787,16 +2788,30 @@ export const modelingMachine = setup({
           }
         }
 
-        // Look up for an existing expression referring to the import alias, otherwise create one
-        const { pipe, pathToPipeNode, alias } = findFirstPipeWithImportAlias(
-          ast,
-          pathToNode,
-          'translate'
-        )
-        if (pipe && pathToPipeNode) {
-          pathToNode = pathToPipeNode
-        } else if (alias) {
-          pathToNode = insertExpressionNode(modifiedAst, alias)
+        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
+        // Otherwise create one
+        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+        if (importNodeAndAlias) {
+          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
+          const lastPipe = pipes.at(-1)
+          if (lastPipe && lastPipe.pathToNode) {
+            pathToNode = lastPipe.pathToNode
+          } else {
+            const otherRelevantPipes = findPipesWithImportAlias(
+              ast,
+              pathToNode,
+              'rotate'
+            )
+            const lastRelevantPipe = otherRelevantPipes.at(-1)
+            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
+              pathToNode = lastRelevantPipe.pathToNode
+            } else {
+              pathToNode = insertExpressionNode(
+                modifiedAst,
+                importNodeAndAlias.alias
+              )
+            }
+          }
         }
 
         insertVariableAndOffsetPathToNode(x, modifiedAst, pathToNode)
@@ -2856,16 +2871,30 @@ export const modelingMachine = setup({
           }
         }
 
-        // Look up for an existing expression referring to the import alias, otherwise create one
-        const { pipe, pathToPipeNode, alias } = findFirstPipeWithImportAlias(
-          ast,
-          pathToNode,
-          'rotate'
-        )
-        if (pipe && pathToPipeNode) {
-          pathToNode = pathToPipeNode
-        } else if (alias) {
-          pathToNode = insertExpressionNode(modifiedAst, alias)
+        // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
+        // Otherwise create one
+        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+        if (importNodeAndAlias) {
+          const pipes = findPipesWithImportAlias(ast, pathToNode, 'rotate')
+          const lastPipe = pipes.at(-1)
+          if (lastPipe && lastPipe.pathToNode) {
+            pathToNode = lastPipe.pathToNode
+          } else {
+            const otherRelevantPipes = findPipesWithImportAlias(
+              ast,
+              pathToNode,
+              'translate'
+            )
+            const lastRelevantPipe = otherRelevantPipes.at(-1)
+            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
+              pathToNode = lastRelevantPipe.pathToNode
+            } else {
+              pathToNode = insertExpressionNode(
+                modifiedAst,
+                importNodeAndAlias.alias
+              )
+            }
+          }
         }
 
         insertVariableAndOffsetPathToNode(roll, modifiedAst, pathToNode)

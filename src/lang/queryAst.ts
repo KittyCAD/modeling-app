@@ -1058,3 +1058,89 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     ? variable.variableIdentifierAst
     : variable.valueAst
 }
+
+export function findImportNodeAndAlias(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+) {
+  const importNode = getNodeFromPath<ImportStatement>(ast, pathToNode, [
+    'ImportStatement',
+  ])
+  if (
+    !err(importNode) &&
+    importNode.node.type === 'ImportStatement' &&
+    importNode.node.selector.type === 'None' &&
+    importNode.node.selector.alias &&
+    importNode.node.selector.alias?.type === 'Identifier'
+  ) {
+    return {
+      node: importNode.node,
+      alias: importNode.node.selector.alias.name,
+    }
+  }
+
+  return undefined
+}
+
+/* Starting form the path to the import node, look for all pipe expressions
+ * that uses the import alias. If found, return the pipe expression and the
+ * path to the pipe node, and the alias. Wrote for the assemblies codemods.
+ * TODO: add unit tests, relying on e2e/playwright/point-click-assemblies.spec.ts for now
+ */
+export function findPipesWithImportAlias(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  callInPipe?: string
+) {
+  let pipes: { expression: PipeExpression; pathToNode: PathToNode }[] = []
+  const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+  if (importNodeAndAlias) {
+    for (const [i, n] of ast.body.entries()) {
+      if (
+        n.type === 'ExpressionStatement' &&
+        n.expression.type === 'PipeExpression' &&
+        n.expression.body[0].type === 'Name' &&
+        n.expression.body[0].name.name === importNodeAndAlias.alias
+      ) {
+        if (callInPipe) {
+          const containsFilter = n.expression.body.some(
+            (v) =>
+              v.type === 'CallExpressionKw' && v.callee.name.name === callInPipe
+          )
+          if (!containsFilter) {
+            continue
+          }
+        }
+        const expression = n.expression
+        const pathToNode: PathToNode = [
+          ['body', ''],
+          [i, 'index'],
+          ['expression', 'PipeExpression'],
+        ]
+        pipes.push({ expression, pathToNode })
+        break
+      }
+
+      if (
+        n.type === 'VariableDeclaration' &&
+        n.declaration.type === 'VariableDeclarator' &&
+        n.declaration.init.type === 'PipeExpression' &&
+        n.declaration.init.body[0].type === 'Name' &&
+        n.declaration.init.body[0].name.name === importNodeAndAlias.alias
+      ) {
+        const expression = n.declaration.init
+        const pathToNode: PathToNode = [
+          ['body', ''],
+          [i, 'index'],
+          ['declaration', 'VariableDeclaration'],
+          ['init', 'VariableDeclarator'],
+          ['body', 'PipeExpression'],
+        ]
+        pipes.push({ expression, pathToNode })
+        break
+      }
+    }
+  }
+
+  return pipes
+}

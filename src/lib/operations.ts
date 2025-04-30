@@ -1,8 +1,7 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { findFirstPipeWithImportAlias } from '@src/lang/modifyAst/setTransform'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, findPipesWithImportAlias } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -1382,8 +1381,9 @@ export async function enterTranslateFlow({
     err(pipeLookupFromOperation) ||
     pipeLookupFromOperation.node.type !== 'PipeExpression'
   ) {
-    const result = findFirstPipeWithImportAlias(ast, nodeToEdit, 'translate')
-    pipe = result.pipe
+    // Look for the last pipe with the import alias and a call to translate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
+    pipe = pipes.at(-1)?.expression
   } else {
     pipe = pipeLookupFromOperation.node
   }
@@ -1443,8 +1443,9 @@ export async function enterRotateFlow({
     err(pipeLookupFromOperation) ||
     pipeLookupFromOperation.node.type !== 'PipeExpression'
   ) {
-    const result = findFirstPipeWithImportAlias(ast, nodeToEdit, 'rotate')
-    pipe = result.pipe
+    // Look for the last pipe with the import alias and a call to rotate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'rotate')
+    pipe = pipes.at(-1)?.expression
   } else {
     pipe = pipeLookupFromOperation.node
   }
