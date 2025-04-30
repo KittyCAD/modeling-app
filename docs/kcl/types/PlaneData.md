@@ -96,7 +96,7 @@ A defined plane.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `plane` |`object`|  | No |
+| `plane` |[`PlaneInfo`](/docs/kcl/types/PlaneInfo)|  | No |
 
 
 ----
