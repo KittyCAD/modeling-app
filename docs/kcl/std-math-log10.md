@@ -8,8 +8,8 @@ Compute the base 10 logarithm of the number.
 
 
 
-```js
-math::log10(@input: number): number
+```kcl
+math::log10(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ math::log10(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [math::log10(100), 0])

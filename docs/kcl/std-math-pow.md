@@ -8,11 +8,11 @@ Compute the number to a power.
 
 
 
-```js
+```kcl
 pow(
-  @input: number,
-  exp: number(_),
-): number
+  @input: [number](/docs/kcl/types/number),
+  exp: [number](/docs/kcl/types/number)(_),
+): [number](/docs/kcl/types/number)
 ```
 
 
@@ -30,7 +30,7 @@ pow(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

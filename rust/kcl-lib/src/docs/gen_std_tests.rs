@@ -461,7 +461,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let data = json!({
         "name": ty.qual_name(),
-        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
+        "definition": ty.alias.as_ref().map(|t| cleanup_sig(format!("type {} = {t}", ty.preferred_name), ty.referenced_types.iter().filter(|t| !DECLARED_TYPES.contains(&&***t)))),
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
@@ -497,7 +497,10 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
-        "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
+        "fn_signature": cleanup_sig(function.preferred_name.clone() + &function.fn_signature(), function
+            .referenced_types
+            .iter()
+            .filter(|t| !DECLARED_TYPES.contains(&&***t))),
         "tags": [],
         "examples": examples,
         "is_utilities": false,
@@ -622,7 +625,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
-        "fn_signature": internal_fn.fn_signature(true),
+        "fn_signature": cleanup_sig(internal_fn.fn_signature(true), types.keys()),
         "tags": internal_fn.tags(),
         "examples": examples,
         "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
@@ -651,20 +654,6 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
     Ok(types)
 }
 
-fn cleanup_static_links(output: &str) -> String {
-    let mut cleaned_output = output.to_string();
-    // Fix the links to the types.
-    // Gross hack for the stupid alias types.
-    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
-
-    let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
-    cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
-    let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
-    cleaned_output = cleaned_output.replace("`TagIdentifier`", &link);
-
-    cleaned_output
-}
-
 // Fix the links to the types.
 fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>) -> String {
     let mut cleaned_output = output.to_string();
@@ -673,11 +662,11 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
     // TODO: This is a hack for the handlebars template being too complex.
     cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
     cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
-    cleaned_output = cleaned_output.replace("`[, `integer`, `integer`, `integer`]`", "`[integer, integer, integer]`");
 
     // Fix the links to the types.
     for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" || type_name == "tag"
+        {
             continue;
         } else {
             let link = format!("(/docs/kcl/types/{})", type_name);
@@ -703,7 +692,59 @@ fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>)
         "[`Axis2d`](/docs/kcl/types/Axis2d) or [`Edge`](/docs/kcl/types/Edge)",
     );
 
-    cleanup_static_links(&cleaned_output)
+    // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
+    let link = "[`TagDeclarator`](/docs/kcl/types#tag-declaration)";
+    cleaned_output = cleaned_output.replace("`TagDeclarator`", link);
+    let link = "[`TagIdentifier`](/docs/kcl/types#tag-identifier)";
+    cleaned_output = cleaned_output.replace("`TagIdentifier`", link);
+
+    cleaned_output
+}
+
+// TODO total code dup with `cleanup_type_links`, just this version doesn't have the backticks. :-(
+fn cleanup_sig<'a>(input: String, types: impl Iterator<Item = &'a String>) -> String {
+    let mut cleaned_output = input;
+
+    // Fix the links to the types.
+    for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
+        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" || type_name == "tag"
+        {
+            continue;
+        } else {
+            let link = format!("(/docs/kcl/types/{})", type_name);
+            // Do the same for the type with brackets.
+            cleaned_output = cleaned_output.replace(&format!("[{}]", type_name), &format!("[[{}]]{}", type_name, link));
+            cleaned_output = cleaned_output.replace(type_name, &format!("[{}]{}", type_name, &link));
+        }
+    }
+
+    // TODO handle union types generically rather than special casing them.
+    cleaned_output = cleaned_output.replace(
+        "Sketch | Plane | Face",
+        "[Sketch](/docs/kcl/types/Sketch) | [Plane](/docs/kcl/types/Plane) | [Face](/docs/kcl/types/Face)",
+    );
+    cleaned_output = cleaned_output.replace(
+        "Axis3d | Edge",
+        "[Axis3d](/docs/kcl/types/Axis3d) | [Edge](/docs/kcl/types/Edge)",
+    );
+    cleaned_output = cleaned_output.replace(
+        "Axis2d | Edge",
+        "[Axis2d](/docs/kcl/types/Axis2d) | [Edge](/docs/kcl/types/Edge)",
+    );
+
+    // Fix the links to the types.
+    // Gross hack for the stupid alias types.
+    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+
+    let link = "[TagDeclarator](/docs/kcl/types#tag-declaration)";
+    cleaned_output = cleaned_output.replace("TagDeclarator", link);
+    let link = "[TagIdentifier](/docs/kcl/types#tag-identifier)";
+    cleaned_output = cleaned_output.replace("TagIdentifier", link);
+
+    cleaned_output
 }
 
 fn add_to_types(

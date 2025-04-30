@@ -8,8 +8,8 @@ Compute the square root of a number.
 
 
 
-```js
-sqrt(@input: number): number
+```kcl
+sqrt(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ sqrt(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

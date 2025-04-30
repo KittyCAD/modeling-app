@@ -8,8 +8,8 @@ Compute the tangent of a number.
 
 
 
-```js
-math::tan(@num: number(Angle)): number(_)
+```kcl
+math::tan(@num: [number](/docs/kcl/types/number)(Angle)): [number](/docs/kcl/types/number)(_)
 ```
 
 
@@ -26,7 +26,7 @@ math::tan(@num: number(Angle)): number(_)
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

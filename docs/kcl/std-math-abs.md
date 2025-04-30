@@ -8,8 +8,8 @@ Compute the absolute value of a number.
 
 
 
-```js
-math::abs(@input: number): number
+```kcl
+math::abs(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ math::abs(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 myAngle = -120
 
 sketch001 = startSketchOn(XZ)

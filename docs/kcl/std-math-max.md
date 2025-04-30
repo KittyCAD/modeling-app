@@ -8,8 +8,8 @@ Compute the maximum of the given arguments.
 
 
 
-```js
-math::max(@input: [number; 1+]): number
+```kcl
+math::max(@input: [[number](/docs/kcl/types/number); 1+]): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ math::max(@input: [number; 1+]): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

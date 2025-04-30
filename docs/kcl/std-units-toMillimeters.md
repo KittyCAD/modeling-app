@@ -8,8 +8,8 @@ Convert a number to millimeters from its current units.
 
 
 
-```js
-units::toMillimeters(@num: number(mm)): number(mm)
+```kcl
+units::toMillimeters(@num: [number](/docs/kcl/types/number)(mm)): [number](/docs/kcl/types/number)(mm)
 ```
 
 

@@ -8,8 +8,8 @@ Compute the arccosine of a number.
 
 
 
-```js
-math::acos(@num: number(_)): number(rad)
+```kcl
+math::acos(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -26,7 +26,7 @@ math::acos(@num: number(_)): number(rad)
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

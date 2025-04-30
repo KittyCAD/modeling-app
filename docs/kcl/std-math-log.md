@@ -10,11 +10,11 @@ The result might not be correctly rounded owing to implementation
 details; `math::log2` can produce more accurate results for base 2,
 and `math::log10` can produce more accurate results for base 10.
 
-```js
+```kcl
 math::log(
-  @input: number,
-  base: number(_),
-): number
+  @input: [number](/docs/kcl/types/number),
+  base: [number](/docs/kcl/types/number)(_),
+): [number](/docs/kcl/types/number)
 ```
 
 
@@ -32,7 +32,7 @@ math::log(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [math::log(100, base = 5), 0])

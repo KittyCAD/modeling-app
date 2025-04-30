@@ -8,8 +8,8 @@ Remove the last element from an array.
 
 Returns a new array with the last element removed.
 
-```js
-pop(array: [KclValue]): KclValue
+```kcl
+pop(array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue))): [KclValue](/docs/kcl/types/KclValue)
 ```
 
 
@@ -26,7 +26,7 @@ pop(array: [KclValue]): KclValue
 
 ### Examples
 
-```js
+```kcl
 arr = [1, 2, 3, 4]
 new_arr = pop(arr)
 assert(

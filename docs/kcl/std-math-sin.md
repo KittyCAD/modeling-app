@@ -8,8 +8,8 @@ Compute the sine of a number.
 
 
 
-```js
-math::sin(@num: number(Angle)): number(_)
+```kcl
+math::sin(@num: [number](/docs/kcl/types/number)(Angle)): [number](/docs/kcl/types/number)(_)
 ```
 
 
@@ -26,7 +26,7 @@ math::sin(@num: number(Angle)): number(_)
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
