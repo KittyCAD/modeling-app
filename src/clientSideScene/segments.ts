@@ -91,6 +91,7 @@ import type {
   SegmentOverlays,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -1551,10 +1552,10 @@ class ThreePointArcSegment implements SegmentUtils {
       overlayDetails.forEach((payload, index) => {
         if (payload?.type === 'set-one') {
           overlays[payload.pathToNodeString] = payload.seg
-          // Add filterValue: 'interiorAbsolute' for p2 and 'end' for p3
+          // Add filterValue: 'interiorAbsolute' for p2 and 'endAbsolute' for p3
           segmentOverlays.push({
             ...payload.seg[0],
-            filterValue: index === 0 ? 'interiorAbsolute' : 'end',
+            filterValue: index === 0 ? ARG_INTERIOR_ABSOLUTE : 'endAbsolute',
           })
         }
       })
