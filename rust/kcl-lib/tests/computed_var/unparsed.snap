@@ -23,7 +23,7 @@ assert(
   error = "oops pi",
 )
 
-x = math::cos((2 * PI): number(rad))
+x = cos((2 * PI): number(rad))
 assert(
   x,
   isEqualTo = 1,
