@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```js
-min(@input: [number; 1+]): number
+math::min(@input: [number; 1+]): number
 ```
 
 

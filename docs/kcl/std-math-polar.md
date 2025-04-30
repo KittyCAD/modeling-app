@@ -10,7 +10,7 @@ Convert polar/sphere (azimuth, elevation, distance) coordinates to
 cartesian (x/y/z grid) coordinates.
 
 ```js
-polar(
+math::polar(
   angle: number(rad),
   length: number(Length),
 ): Point2d

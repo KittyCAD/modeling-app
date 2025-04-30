@@ -9,7 +9,7 @@ Converts a number to radians from its current units.
 
 
 ```js
-toRadians(@num: number(rad)): number(rad)
+units::toRadians(@num: number(rad)): number(rad)
 ```
 
 

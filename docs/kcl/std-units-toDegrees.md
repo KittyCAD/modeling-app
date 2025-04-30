@@ -9,7 +9,7 @@ Converts a number to degrees from its current units.
 
 
 ```js
-toDegrees(@num: number(deg)): number(deg)
+units::toDegrees(@num: number(deg)): number(deg)
 ```
 
 

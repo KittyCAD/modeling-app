@@ -9,7 +9,7 @@ Compute the arctangent of a number.
 Consider using `atan2()` instead for the true inverse of tangent.
 
 ```js
-atan(@num: number(_)): number(rad)
+math::atan(@num: number(_)): number(rad)
 ```
 
 

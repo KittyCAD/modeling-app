@@ -9,7 +9,7 @@ Compute the tangent of a number.
 
 
 ```js
-tan(@num: number(Angle)): number(_)
+math::tan(@num: number(Angle)): number(_)
 ```
 
 

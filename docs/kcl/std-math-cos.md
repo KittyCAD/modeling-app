@@ -9,7 +9,7 @@ Compute the cosine of a number.
 
 
 ```js
-cos(@num: number(Angle)): number(_)
+math::cos(@num: number(Angle)): number(_)
 ```
 
 

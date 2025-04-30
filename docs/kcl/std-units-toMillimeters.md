@@ -9,7 +9,7 @@ Convert a number to millimeters from its current units.
 
 
 ```js
-toMillimeters(@num: number(mm)): number(mm)
+units::toMillimeters(@num: number(mm)): number(mm)
 ```
 
 

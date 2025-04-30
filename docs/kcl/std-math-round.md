@@ -9,7 +9,7 @@ Round a number to the nearest integer.
 
 
 ```js
-round(@input: number): number
+math::round(@input: number): number
 ```
 
 

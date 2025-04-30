@@ -9,7 +9,7 @@ Convert a number to meters from its current units.
 
 
 ```js
-toMeters(@num: number(m)): number(m)
+units::toMeters(@num: number(m)): number(m)
 ```
 
 

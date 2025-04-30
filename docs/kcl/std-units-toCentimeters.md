@@ -9,7 +9,7 @@ Convert a number to centimeters from its current units.
 
 
 ```js
-toCentimeters(@num: number(cm)): number(cm)
+units::toCentimeters(@num: number(cm)): number(cm)
 ```
 
 

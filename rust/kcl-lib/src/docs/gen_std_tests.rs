@@ -461,7 +461,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let data = json!({
         "name": ty.qual_name(),
-        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.name)),
+        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
@@ -485,8 +485,6 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
 
     let hbs = init_handlebars()?;
 
-    let name = function.name.clone();
-
     let examples: Vec<serde_json::Value> = function
         .examples
         .iter()
@@ -499,7 +497,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
-        "fn_signature": name.clone() + &function.fn_signature(),
+        "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "tags": [],
         "examples": examples,
         "is_utilities": false,

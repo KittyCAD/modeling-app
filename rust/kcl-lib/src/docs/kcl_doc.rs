@@ -1,4 +1,8 @@
-use std::{collections::HashSet, fmt, str::FromStr};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt,
+    str::FromStr,
+};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -9,7 +13,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, PrimitiveType, Type, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -17,19 +21,41 @@ use crate::{
 
 pub fn walk_prelude() -> Vec<DocData> {
     let mut visitor = CollectionVisitor::default();
-    visitor.visit_module("prelude", "").unwrap();
-    visitor.result
+    visitor.visit_module("prelude", "", WalkForNames::All).unwrap();
+    visitor.result.into_values().collect()
 }
 
 #[derive(Debug, Clone, Default)]
 struct CollectionVisitor {
     name: String,
-    result: Vec<DocData>,
+    result: HashMap<String, DocData>,
     id: usize,
 }
 
+#[derive(Clone, Debug)]
+enum WalkForNames<'a> {
+    All,
+    Selected(Vec<&'a str>),
+}
+
+impl<'a> WalkForNames<'a> {
+    fn contains(&self, name: &str) -> bool {
+        match self {
+            WalkForNames::All => true,
+            WalkForNames::Selected(names) => names.contains(&name),
+        }
+    }
+
+    fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
+        match self {
+            WalkForNames::All => WalkForNames::Selected(names.collect()),
+            WalkForNames::Selected(mine) => WalkForNames::Selected(names.filter(|n| mine.contains(n)).collect()),
+        }
+    }
+}
+
 impl CollectionVisitor {
-    fn visit_module(&mut self, name: &str, preferred_prefix: &str) -> Result<(), String> {
+    fn visit_module(&mut self, name: &str, preferred_prefix: &str, names: WalkForNames) -> Result<(), String> {
         let old_name = std::mem::replace(&mut self.name, name.to_owned());
         let source = crate::modules::read_std(name).unwrap();
         let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
@@ -38,23 +64,29 @@ impl CollectionVisitor {
         self.id += 1;
 
         for n in &parsed.body {
+            if n.visibility() != ItemVisibility::Export {
+                continue;
+            }
             match n {
-                crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
-                    match &import.path {
-                        crate::parsing::ast::types::ImportPath::Std { path } => {
-                            match import.selector {
-                                ImportSelector::Glob(..) => self.visit_module(&path[1], "")?,
-                                ImportSelector::None { .. } => {
-                                    self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
-                                }
-                                // Only supports glob or whole-module imports for now (make sure the module is re-exported as well as some of the names in it).
-                                _ => {}
+                crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
+                    crate::parsing::ast::types::ImportPath::Std { path } => match &import.selector {
+                        ImportSelector::Glob(..) => self.visit_module(&path[1], "", names.clone())?,
+                        ImportSelector::None { .. } => {
+                            let name = import.module_name().unwrap();
+                            if names.contains(&name) {
+                                self.visit_module(&path[1], &format!("{}::", name), WalkForNames::All)?;
                             }
                         }
-                        p => return Err(format!("Unexpected import: `{p}`")),
+                        ImportSelector::List { items } => {
+                            self.visit_module(&path[1], "", names.intersect(items.iter().map(|n| &*n.name.name)))?
+                        }
+                    },
+                    p => return Err(format!("Unexpected import: `{p}`")),
+                },
+                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) => {
+                    if !names.contains(var.name()) {
+                        continue;
                     }
-                }
-                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
                     let qual_name = if self.name == "prelude" {
                         "std::".to_owned()
                     } else {
@@ -66,6 +98,10 @@ impl CollectionVisitor {
                             DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix, name))
                         }
                     };
+                    let key = format!("I:{}", dd.qual_name());
+                    if self.result.contains_key(&key) {
+                        continue;
+                    }
 
                     dd.with_meta(&var.outer_attrs);
                     for a in &var.outer_attrs {
@@ -73,15 +109,22 @@ impl CollectionVisitor {
                     }
                     dd.with_comments(n.get_comments());
 
-                    self.result.push(dd);
+                    self.result.insert(key, dd);
                 }
-                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
+                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) => {
+                    if !names.contains(ty.name()) {
+                        continue;
+                    }
                     let qual_name = if self.name == "prelude" {
                         "std::".to_owned()
                     } else {
                         format!("std::{}::", self.name)
                     };
                     let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix, name));
+                    let key = format!("T:{}", dd.qual_name());
+                    if self.result.contains_key(&key) {
+                        continue;
+                    }
 
                     dd.with_meta(&ty.outer_attrs);
                     for a in &ty.outer_attrs {
@@ -89,7 +132,7 @@ impl CollectionVisitor {
                     }
                     dd.with_comments(n.get_comments());
 
-                    self.result.push(dd);
+                    self.result.insert(key, dd);
                 }
                 _ => {}
             }
@@ -113,6 +156,14 @@ impl DocData {
             DocData::Fn(f) => &f.name,
             DocData::Const(c) => &c.name,
             DocData::Ty(t) => &t.name,
+        }
+    }
+
+    pub fn qual_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.qual_name,
+            DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => &t.qual_name,
         }
     }
 

@@ -10,7 +10,7 @@ Compute the remainder after dividing `num` by `div`.
 If `num` is negative, the result will be too.
 
 ```js
-rem(
+math::rem(
   @num: number,
   divisor: number,
 ): number

@@ -9,7 +9,7 @@ Compute the smallest integer greater than or equal to a number.
 
 
 ```js
-ceil(@input: number): number
+math::ceil(@input: number): number
 ```
 
 

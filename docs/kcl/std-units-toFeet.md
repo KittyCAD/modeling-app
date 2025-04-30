@@ -9,7 +9,7 @@ Convert a number to feet from its current units.
 
 
 ```js
-toFeet(@num: number(ft)): number(ft)
+units::toFeet(@num: number(ft)): number(ft)
 ```
 
 

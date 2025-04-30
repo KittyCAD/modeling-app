@@ -9,7 +9,7 @@ Compute the base 2 logarithm of the number.
 
 
 ```js
-log2(@input: number): number
+math::log2(@input: number): number
 ```
 
 

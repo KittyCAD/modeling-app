@@ -9,7 +9,7 @@ Compute the maximum of the given arguments.
 
 
 ```js
-max(@input: [number; 1+]): number
+math::max(@input: [number; 1+]): number
 ```
 
 

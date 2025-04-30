@@ -9,7 +9,7 @@ Compute the largest integer less than or equal to a number.
 
 
 ```js
-floor(@input: number): number
+math::floor(@input: number): number
 ```
 
 

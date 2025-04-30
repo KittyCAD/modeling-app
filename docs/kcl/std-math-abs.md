@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```js
-abs(@input: number): number
+math::abs(@input: number): number
 ```
 
 

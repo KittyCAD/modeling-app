@@ -11,7 +11,7 @@ details; `math::log2` can produce more accurate results for base 2,
 and `math::log10` can produce more accurate results for base 10.
 
 ```js
-log(
+math::log(
   @input: number,
   base: number(_),
 ): number

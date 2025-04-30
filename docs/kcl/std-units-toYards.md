@@ -9,7 +9,7 @@ Converts a number to yards from its current units.
 
 
 ```js
-toYards(@num: number(yd)): number(yd)
+units::toYards(@num: number(yd)): number(yd)
 ```
 
 

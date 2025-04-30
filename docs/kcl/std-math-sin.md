@@ -9,7 +9,7 @@ Compute the sine of a number.
 
 
 ```js
-sin(@num: number(Angle)): number(_)
+math::sin(@num: number(Angle)): number(_)
 ```
 
 
