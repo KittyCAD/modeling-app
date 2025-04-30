@@ -2057,7 +2057,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
-        let code = r#"sketch001 = startSketchOn('XZ')
+        let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)

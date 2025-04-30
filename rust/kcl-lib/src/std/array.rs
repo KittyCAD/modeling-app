@@ -27,7 +27,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```no_run
 /// r = 10 // radius
 /// fn drawCircle(id) {
-///   return startSketchOn("XY")
+///   return startSketchOn(XY)
 ///     |> circle( center= [id * 2 * r, 0], radius= r)
 /// }
 ///
@@ -45,7 +45,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// circles = map(
 ///   [1..3],
 ///   f = fn(id) {
-///     return startSketchOn("XY")
+///     return startSketchOn(XY)
 ///       |> circle( center= [id * 2 * r, 0], radius= r)
 ///   }
 /// )

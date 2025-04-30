@@ -101,7 +101,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// // Sketch 4 cylinders.
-/// sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
@@ -169,7 +169,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///   
-///   return startSketchOn('XY')
+///   return startSketchOn(XY)
 ///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)

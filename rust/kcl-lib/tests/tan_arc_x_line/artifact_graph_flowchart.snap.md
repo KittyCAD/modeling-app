@@ -1,14 +1,14 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[89, 124, 0]"]
-    3["Segment<br>[130, 178, 0]"]
-    4["Segment<br>[184, 243, 0]"]
-    5["Segment<br>[249, 314, 0]"]
-    6["Segment<br>[320, 386, 0]"]
-    7["Segment<br>[392, 414, 0]"]
+    2["Path<br>[87, 122, 0]"]
+    3["Segment<br>[128, 176, 0]"]
+    4["Segment<br>[182, 241, 0]"]
+    5["Segment<br>[247, 312, 0]"]
+    6["Segment<br>[318, 384, 0]"]
+    7["Segment<br>[390, 412, 0]"]
   end
-  1["Plane<br>[64, 83, 0]"]
+  1["Plane<br>[64, 81, 0]"]
   1 --- 2
   2 --- 3
   2 --- 4

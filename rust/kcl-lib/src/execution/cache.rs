@@ -248,7 +248,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
         let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -279,7 +279,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_changed_whitespace() {
         let old = r#" // Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -291,7 +291,7 @@ firstSketch = startSketchOn('XY')
 shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -324,7 +324,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_changed_code_comment_start_of_program() {
         let old = r#" // Removed the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -336,7 +336,7 @@ firstSketch = startSketchOn('XY')
 shell(firstSketch, faces = [END], thickness = 0.25) "#;
 
         let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -371,7 +371,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
         let old = r#"@foo(whatever = whatever)
 @bar
 // Removed the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -385,7 +385,7 @@ shell(firstSketch, faces = [END], thickness = 0.25) "#;
         let new = r#"@foo(whatever = 42)
 @baz
 // Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -419,7 +419,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_different_grid_setting() {
         let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -456,7 +456,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
         let new = r#"// Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -530,10 +530,10 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_different_unit_setting_using_annotation() {
         let old_code = r#"@settings(defaultLengthUnit = in)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let new_code = r#"@settings(defaultLengthUnit = mm)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
@@ -568,10 +568,10 @@ startSketchOn('XY')
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_removed_unit_setting_using_annotation() {
         let old_code = r#"@settings(defaultLengthUnit = in)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let new_code = r#"
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
 
         let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();

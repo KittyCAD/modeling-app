@@ -27,8 +27,8 @@ test.describe('Regression tests', () => {
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch2 = startSketchOn("XY")
-  sketch001 = startSketchOn("XY")
+        `sketch2 = startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> startProfile(at = [-0, -0])
     |> line(end = [0, 0])
     |> line(end = [-4.84, -5.29])
@@ -234,7 +234,7 @@ extrude001 = extrude(sketch001, length = 50)
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `exampleSketch = startSketchOn("XZ")
+        `exampleSketch = startSketchOn(XZ)
       |> startProfile(at = [0, 0])
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
@@ -291,7 +291,7 @@ extrude001 = extrude(sketch001, length = 50)
 
     await expect(
       page.locator('.cm-content')
-    ).toContainText(`exampleSketch = startSketchOn("XZ")
+    ).toContainText(`exampleSketch = startSketchOn(XZ)
       |> startProfile(at = [0, 0])
       |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)

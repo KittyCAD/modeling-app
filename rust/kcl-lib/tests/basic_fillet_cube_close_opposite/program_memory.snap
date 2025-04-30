@@ -15,9 +15,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 92,
-            "end": 98,
-            "start": 92,
+            "commentStart": 90,
+            "end": 96,
+            "start": 90,
             "type": "TagDeclarator",
             "value": "thing"
           },
@@ -35,9 +35,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 157,
-            "end": 164,
-            "start": 157,
+            "commentStart": 155,
+            "end": 162,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "thing2"
           },
@@ -48,9 +48,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 183,
-            "end": 190,
-            "start": 183,
+            "commentStart": 181,
+            "end": 188,
+            "start": 181,
             "type": "TagDeclarator",
             "value": "thing3"
           },
@@ -71,9 +71,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
-              "commentStart": 92,
-              "end": 98,
-              "start": 92,
+              "commentStart": 90,
+              "end": 96,
+              "start": 90,
               "type": "TagDeclarator",
               "value": "thing"
             },
@@ -115,9 +115,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0
             ],
             "tag": {
-              "commentStart": 157,
-              "end": 164,
-              "start": 157,
+              "commentStart": 155,
+              "end": 162,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "thing2"
             },
@@ -140,9 +140,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
-              "commentStart": 183,
-              "end": 190,
-              "start": 183,
+              "commentStart": 181,
+              "end": 188,
+              "start": 181,
               "type": "TagDeclarator",
               "value": "thing3"
             },

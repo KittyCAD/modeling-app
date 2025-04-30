@@ -43,7 +43,7 @@ fn slot(sketch1, start, end, width) {
   return slotSketch
 }
 
-// Create a sketch on the "XY" plane for the flipper
+// Create a sketch on the XY plane for the flipper
 flipperSketch = startSketchOn(XY)
 
 // Create a profile of the flipper
@@ -82,7 +82,7 @@ fillet(
   ],
 )
 
-// Create a sketch on the "XZ" plane offset by half the thickness
+// Create a sketch on the XZ plane offset by half the thickness
 handleSketch = startSketchOn(offsetPlane(XZ, offset = -handleWidth / 2))
 
 // Create a profile of the spatula handle

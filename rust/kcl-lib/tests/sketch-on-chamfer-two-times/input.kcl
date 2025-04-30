@@ -1,4 +1,4 @@
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 217.26, tag = $seg01)

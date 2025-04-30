@@ -1,5 +1,5 @@
 fn box(p, h, l, w) {
-  myBox = startSketchOn('XY')
+  myBox = startSketchOn(XY)
     |> startProfile(at = p)
     |> line(end = [0, l])
     |> line(end = [w, 0])

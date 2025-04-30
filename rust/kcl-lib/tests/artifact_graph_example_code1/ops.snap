@@ -7,8 +7,8 @@ description: Operations executed artifact_graph_example_code1.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

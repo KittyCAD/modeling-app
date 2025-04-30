@@ -203,9 +203,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 347,
-            "end": 356,
-            "start": 347,
+            "commentStart": 345,
+            "end": 354,
+            "start": 345,
             "type": "TagDeclarator",
             "value": "myCircle"
           },
@@ -232,9 +232,9 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
             ],
             "radius": 5.0,
             "tag": {
-              "commentStart": 347,
-              "end": 356,
-              "start": 347,
+              "commentStart": 345,
+              "end": 354,
+              "start": 345,
               "type": "TagDeclarator",
               "value": "myCircle"
             },

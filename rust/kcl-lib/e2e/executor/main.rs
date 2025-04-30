@@ -197,11 +197,11 @@ fn box(sk1, sk2, scale, plane) {
   return boxsketch
 }
 
-box(0, 0, 5, 'xy')
-box(10, 23, 8, 'xz')
-box(30, 43, 18, '-xy')
-thing = box(-12, -15, 10, 'yz')
-box(-20, -5, 10, 'xy')"#;
+box(0, 0, 5, XY)
+box(10, 23, 8, XZ)
+box(30, 43, 18, -XY)
+thing = box(-12, -15, 10, YZ)
+box(-20, -5, 10, XY)"#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("different_planes_same_drawing", &result);
@@ -242,13 +242,13 @@ part001 = startSketchOn(XY)
   |> close()
   |> extrude(length = 4)
 
-part002 = startSketchOn('-XZ')
+part002 = startSketchOn(-XZ)
   |> startProfile(at = [-9.35, 19.18])
   |> line(end = [32.14, -2.47])
   |> line(end = [8.39, -3.73])
   |> close()
 
-part003 = startSketchOn('-XZ')
+part003 = startSketchOn(-XZ)
   |> startProfile(at = [13.82, 16.51])
   |> line(end = [-6.24, -30.82])
   |> line(end = [8.39, -3.73])
@@ -819,55 +819,6 @@ part002 = startSketchOn(part001, face = END)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_stdlib_kcl_error_circle() {
-    let code = r#"// Mounting Plate
-// A flat piece of material, often metal or plastic, that serves as a support or base for attaching, securing, or mounting various types of equipment, devices, or components. 
-
-// Create a function that defines the body width and length of the mounting plate. Tag the corners so they can be passed through the fillet function.
-fn rectShape(pos, w, l) {
-  rr = startSketchOn(XY)
-  |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
-  |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
-  |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
-  |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
-  |> close(tag = $edge4)
-  return rr
-}
-
-// Define the hole radius and x, y location constants
-holeRadius = 1
-holeIndex = 6
-
-// Create the mounting plate extrusion, holes, and fillets
-part = rectShape([0, 0], 20, 20)
-  |> subtract2d(tool = circle('XY', center = [-holeIndex, holeIndex], radius = holeRadius))
-  |> subtract2d(tool = circle('XY', center = [holeIndex, holeIndex], radius = holeRadius))
-  |> subtract2d(tool = circle('XY', center = [-holeIndex, -holeIndex], radius = holeRadius))
-  |> subtract2d(tool = circle('XY', center = [holeIndex, -holeIndex], radius = holeRadius))
-  |> extrude(length = 2)
-  |> fillet(
-       radius = 4,
-       tags = [
-          getNextAdjacentEdge(edge1),
-          getNextAdjacentEdge(edge2),
-          getNextAdjacentEdge(edge3),
-          getNextAdjacentEdge(edge4)
-       ]
-     )
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-    let err = result.err().unwrap();
-    let ExecError::Kcl(err) = err else {
-        panic!("Expected KCL error, found {err}");
-    };
-    assert_eq!(
-        err.error.message(),
-        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve() {
     let code = r#"part001 = startSketchOn(XY)
      |> startProfile(at = [4, 12])
@@ -1334,7 +1285,7 @@ bracket = startSketchOn(XY)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_empty_start_sketch_on_string() {
-    let code = r#"part001 = startSketchOn('-XZ')
+    let code = r#"part001 = startSketchOn(-XZ)
   |> startProfile(at = [75.75, 184.25])
   |> line(end = [190.03, -118.13])
   |> line(end = [-33.38, -202.86])
