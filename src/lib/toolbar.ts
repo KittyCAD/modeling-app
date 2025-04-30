@@ -1,4 +1,3 @@
-import { DEV } from '@src/env'
 import type { EventFrom, StateFrom } from 'xstate'
 import { settingsActor } from '@src/lib/singletons'
 
