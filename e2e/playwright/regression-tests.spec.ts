@@ -327,14 +327,15 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await page.setBodyDimensions({ width: 500, height: 500 })
+      await toolbar.closePane('code')
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
       const websocket = await websocketPromise
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
-      await toolbar.closePane('code')
+      await page.setBodyDimensions({ width: 500, height: 500 })
 
       // expect pixel color to be background color
       const offModelBefore = { x: 446, y: 250 }

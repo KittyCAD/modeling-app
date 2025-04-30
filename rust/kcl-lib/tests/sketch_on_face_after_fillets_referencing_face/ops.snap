@@ -4,6 +4,17 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -193,5 +204,8 @@ description: Operations executed sketch_on_face_after_fillets_referencing_face.k
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

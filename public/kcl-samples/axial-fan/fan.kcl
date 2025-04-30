@@ -36,35 +36,35 @@ fanCenter = startSketchOn(XZ)
 fn fanBlade(offsetHeight, startAngle: number(deg)) {
   fanBlade = startSketchOn(offsetPlane(XY, offset = offsetHeight))
     |> startProfile(at = [
-         15 * cos(startAngle),
-         15 * sin(startAngle)
+         15 * math::cos(startAngle),
+         15 * math::sin(startAngle)
        ])
     |> arc(angleStart = startAngle, angleEnd = startAngle + 14, radius = 15)
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 20),
-           fanSize * 22 / 50 * sin(startAngle - 20)
+           fanSize * 22 / 50 * math::cos(startAngle - 20),
+           fanSize * 22 / 50 * math::sin(startAngle - 20)
          ],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle + 3),
-           fanSize * 11 / 50 * sin(startAngle + 3)
+           fanSize * 11 / 50 * math::cos(startAngle + 3),
+           fanSize * 11 / 50 * math::sin(startAngle + 3)
          ],
        )
     |> arc(
          endAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 24),
-           fanSize * 22 / 50 * sin(startAngle - 24)
+           fanSize * 22 / 50 * math::cos(startAngle - 24),
+           fanSize * 22 / 50 * math::sin(startAngle - 24)
          ],
          interiorAbsolute = [
-           fanSize * 22 / 50 * cos(startAngle - 22),
-           fanSize * 22 / 50 * sin(startAngle - 22)
+           fanSize * 22 / 50 * math::cos(startAngle - 22),
+           fanSize * 22 / 50 * math::sin(startAngle - 22)
          ],
        )
     |> arc(
          endAbsolute = [profileStartX(%), profileStartY(%)],
          interiorAbsolute = [
-           fanSize * 11 / 50 * cos(startAngle - 5),
-           fanSize * 11 / 50 * sin(startAngle - 5)
+           fanSize * 11 / 50 * math::cos(startAngle - 5),
+           fanSize * 11 / 50 * math::sin(startAngle - 5)
          ],
        )
     |> close()

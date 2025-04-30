@@ -169,10 +169,8 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -181,6 +179,8 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

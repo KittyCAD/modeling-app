@@ -246,7 +246,7 @@ ${insertCode}
 
 describe('testing getConstraintInfo', () => {
   describe('object notation', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
   |> startProfile(at = [0,0])
   |> line(end = [3, 4])
   |> angledLine(angle = 3.14, length = 3.14)
@@ -571,7 +571,11 @@ describe('testing getConstraintInfo', () => {
             isConstrained: false,
             value: '3.14',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'arrayItem', index: 0 },
+            argPosition: {
+              type: 'labeledArgArrayItem',
+              key: 'endAbsolute',
+              index: 0,
+            },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArc',
           },
@@ -580,7 +584,11 @@ describe('testing getConstraintInfo', () => {
             isConstrained: false,
             value: '13.14',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'arrayItem', index: 1 },
+            argPosition: {
+              type: 'labeledArgArrayItem',
+              key: 'endAbsolute',
+              index: 1,
+            },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArc',
           },
@@ -607,7 +615,7 @@ describe('testing getConstraintInfo', () => {
     })
   })
   describe('array notation', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3, 4])
     |> angledLine(angle = 3.14, length = 3.14)
@@ -763,7 +771,7 @@ describe('testing getConstraintInfo', () => {
     })
   })
   describe('constrained', () => {
-    const code = `const part001 = startSketchOn(-XZ)
+    const code = `part001 = startSketchOn(-XZ)
     |> startProfile(at = [0, 0])
     |> line(end = [3 + 0, 4 + 0])
     |> angledLine(angle = 3.14 + 0, length = 3.14 + 0 )
@@ -1085,7 +1093,11 @@ describe('testing getConstraintInfo', () => {
             isConstrained: true,
             value: '3.14 + 0',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'arrayItem', index: 0 },
+            argPosition: {
+              type: 'labeledArgArrayItem',
+              key: 'endAbsolute',
+              index: 0,
+            },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArc',
           },
@@ -1094,7 +1106,11 @@ describe('testing getConstraintInfo', () => {
             isConstrained: true,
             value: '13.14 + 0',
             sourceRange: [expect.any(Number), expect.any(Number), 0],
-            argPosition: { type: 'arrayItem', index: 1 },
+            argPosition: {
+              type: 'labeledArgArrayItem',
+              key: 'endAbsolute',
+              index: 1,
+            },
             pathToNode: expect.any(Array),
             stdLibFnName: 'tangentialArc',
           },

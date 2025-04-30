@@ -14,6 +14,7 @@ interface LSPRequestMap {
     LSP.CompletionParams,
     LSP.CompletionItem[] | LSP.CompletionList | null,
   ]
+  'completionItem/resolve': [LSP.CompletionItem, LSP.CompletionItem]
   'textDocument/semanticTokens/full': [
     LSP.SemanticTokensParams,
     LSP.SemanticTokens,
@@ -23,6 +24,23 @@ interface LSPRequestMap {
     LSP.TextEdit[] | null,
   ]
   'textDocument/foldingRange': [LSP.FoldingRangeParams, LSP.FoldingRange[]]
+  'textDocument/signatureHelp': [
+    LSP.SignatureHelpParams,
+    LSP.SignatureHelp | null,
+  ]
+  'textDocument/codeAction': [
+    LSP.CodeActionParams,
+    (LSP.Command | LSP.CodeAction)[] | null,
+  ]
+  'textDocument/rename': [LSP.RenameParams, LSP.WorkspaceEdit | null]
+  'textDocument/prepareRename': [
+    LSP.PrepareRenameParams,
+    LSP.Range | LSP.PrepareRenameResult | null,
+  ]
+  'textDocument/definition': [
+    LSP.DefinitionParams,
+    LSP.Definition | LSP.DefinitionLink[] | null,
+  ]
 }
 
 // Client to server
@@ -124,7 +142,7 @@ export class LanguageServerClient {
   async textDocumentSemanticTokensFull(params: LSP.SemanticTokensParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.semanticTokensProvider) {
-      return
+      return null
     }
 
     return this.request('textDocument/semanticTokens/full', params)
@@ -133,7 +151,7 @@ export class LanguageServerClient {
   async textDocumentHover(params: LSP.HoverParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.hoverProvider) {
-      return
+      return null
     }
     return await this.request('textDocument/hover', params)
   }
@@ -141,7 +159,7 @@ export class LanguageServerClient {
   async textDocumentFormatting(params: LSP.DocumentFormattingParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.documentFormattingProvider) {
-      return
+      return null
     }
     return await this.request('textDocument/formatting', params)
   }
@@ -149,7 +167,7 @@ export class LanguageServerClient {
   async textDocumentFoldingRange(params: LSP.FoldingRangeParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.foldingRangeProvider) {
-      return
+      return null
     }
     return await this.request('textDocument/foldingRange', params)
   }
@@ -157,10 +175,58 @@ export class LanguageServerClient {
   async textDocumentCompletion(params: LSP.CompletionParams) {
     const serverCapabilities = this.getServerCapabilities()
     if (!serverCapabilities.completionProvider) {
-      return
+      return null
     }
-    const response = await this.request('textDocument/completion', params)
-    return response
+    return await this.request('textDocument/completion', params)
+  }
+
+  async completionItemResolve(params: LSP.CompletionItem) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.completionProvider) {
+      return null
+    }
+    return await this.request('completionItem/resolve', params)
+  }
+
+  async textDocumentSignatureHelp(params: LSP.SignatureHelpParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.signatureHelpProvider) {
+      return null
+    }
+    return await this.request('textDocument/signatureHelp', params)
+  }
+
+  async textDocumentCodeAction(params: LSP.CodeActionParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.codeActionProvider) {
+      return null
+    }
+    return await this.request('textDocument/codeAction', params)
+  }
+
+  async textDocumentRename(params: LSP.RenameParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.renameProvider) {
+      return null
+    }
+
+    return await this.request('textDocument/rename', params)
+  }
+
+  async textDocumentPrepareRename(params: LSP.PrepareRenameParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.renameProvider) {
+      return null
+    }
+    return await this.request('textDocument/prepareRename', params)
+  }
+
+  async textDocumentDefinition(params: LSP.DefinitionParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.definitionProvider) {
+      return null
+    }
+    return await this.request('textDocument/definition', params)
   }
 
   attachPlugin(plugin: LanguageServerPlugin) {

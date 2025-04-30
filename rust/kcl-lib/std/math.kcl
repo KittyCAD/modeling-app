@@ -47,14 +47,14 @@ export E = 2.71828182845904523536028747135266250_
 /// ```
 export TAU = 6.28318530717958647692528676655900577_
 
-/// Compute the cosine of a number (in radians).
+/// Compute the cosine of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 30,
-///     length = 3 / cos(30deg),
+///     length = 3 / math::cos(30deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -62,16 +62,16 @@ export TAU = 6.28318530717958647692528676655900577_
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn cos(@num: number(Angle)): number(_) {}
+export fn cos(@num: number(Angle)): number(Count) {}
 
-/// Compute the sine of a number (in radians).
+/// Compute the sine of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 15 / sin(135deg),
+///     length = 15 / math::sin(135deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -79,16 +79,16 @@ export fn cos(@num: number(Angle)): number(_) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn sin(@num: number(Angle)): number(_) {}
+export fn sin(@num: number(Angle)): number(Count) {}
 
-/// Compute the tangent of a number (in radians).
+/// Compute the tangent of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 50 * tan((1/2): number(rad)),
+///     length = 50 * math::tan((1/2): number(rad)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -96,7 +96,78 @@ export fn sin(@num: number(Angle)): number(_) {}
 /// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
-export fn tan(@num: number(Angle)): number(_) {}
+export fn tan(@num: number(Angle)): number(Count) {}
+
+/// Compute the arccosine of a number.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = math::acos(0.5),
+///     length = 10,
+///   )
+///   |> line(end = [5, 0])
+///   |> line(endAbsolute = [12, 0])
+///   |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn acos(@num: number(Count)): number(rad) {}
+
+/// Compute the arcsine of a number.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = math::asin(0.5),
+///     length = 20,
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn asin(@num: number(Count)): number(rad) {}
+
+/// Compute the arctangent of a number.
+///
+/// Consider using `atan2()` instead for the true inverse of tangent.
+///
+/// ```no_run
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = math::atan(1.25),
+///     length = 20,
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn atan(@num: number(Count)): number(rad) {}
+
+/// Compute the four quadrant arctangent of Y and X.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = math::atan2(y = 1.25, x = 2),
+///     length = 20,
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 
 /// Convert polar/sphere (azimuth, elevation, distance) coordinates to
 /// cartesian (x/y/z grid) coordinates.
@@ -104,7 +175,7 @@ export fn tan(@num: number(Angle)): number(_) {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = math::polar(angle = 30, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
@@ -117,3 +188,241 @@ export fn polar(angle: number(rad), length: number(Length)): Point2d {
   y = length * sin(angle)
   return [x, y]
 }
+
+/// Compute the remainder after dividing `num` by `div`.
+/// If `num` is negative, the result will be too.
+///
+/// ```
+/// import rem from "std::math"
+///
+/// assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem(-7,    divisor =   4), isEqualTo =  -3, error = "remainder is -3")
+/// assert(rem( 7,    divisor =  -4), isEqualTo =   3, error = "remainder is 3")
+/// assert(rem( 6,    divisor = 2.5), isEqualTo =   1, error = "remainder is 1")
+/// assert(rem( 6.5,  divisor = 2.5), isEqualTo = 1.5, error = "remainder is 1.5")
+/// assert(rem( 6.5,  divisor =   2), isEqualTo = 0.5, error = "remainder is 0.5")
+/// ```
+@(impl = std_rust)
+export fn rem(
+  /// The number which will be divided by `divisor`.
+  @num: number,
+  /// The number which will divide `num`.
+  divisor: number,
+): number {}
+
+/// Compute the square root of a number.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 50,
+///     length = sqrt(2500),
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn sqrt(@input: number): number {}
+
+/// Compute the absolute value of a number.
+///
+/// ```
+/// myAngle = -120
+///
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [8, 0])
+///   |> angledLine(
+///     angle = math::abs(myAngle),
+///     length = 5,
+///   )
+///   |> line(end = [-5, 0])
+///   |> angledLine(
+///     angle = myAngle,
+///     length = 5,
+///   )
+///   |> close()
+///
+/// baseExtrusion = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn abs(@input: number): number {}
+
+/// Round a number to the nearest integer.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///    |> startProfile(at = [0, 0])
+///    |> line(endAbsolute = [12, 10])
+///    |> line(end = [math::round(7.02986), 0])
+///    |> yLine(endAbsolute = 0)
+///    |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn round(@input: number): number {}
+
+/// Compute the largest integer less than or equal to a number.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///    |> startProfile(at = [0, 0])
+///    |> line(endAbsolute = [12, 10])
+///    |> line(end = [math::floor(7.02986), 0])
+///    |> yLine(endAbsolute = 0)
+///    |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn floor(@input: number): number {}
+
+/// Compute the smallest integer greater than or equal to a number.
+///
+/// ```
+/// sketch001 = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(endAbsolute = [12, 10])
+///   |> line(end = [math::ceil(7.02986), 0])
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// extrude001 = extrude(sketch001, length = 5)
+/// ```
+@(impl = std_rust)
+export fn ceil(@input: number): number {}
+
+/// Compute the minimum of the given arguments.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 70,
+///     length = math::min([15, 31, 4, 13, 22])
+///   )
+///   |> line(end = [20, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn min(
+  /// An array of numbers to compute the minimum of.
+  @input: [number; 1+],
+): number {}
+
+/// Compute the maximum of the given arguments.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 70,
+///     length = math::max([15, 31, 4, 13, 22])
+///   )
+///   |> line(end = [20, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn max(
+  /// An array of numbers to compute the maximum of.
+  @input: [number; 1+],
+): number {}
+
+/// Compute the number to a power.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> angledLine(
+///     angle = 50,
+///     length = math::pow(5, exp = 2),
+///   )
+///   |> yLine(endAbsolute = 0)
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn pow(
+  /// The number to raise.
+  @input: number,
+  /// The power to raise to.
+  exp: number(Count),
+): number {}
+
+/// Compute the logarithm of the number with respect to an arbitrary base.
+///
+/// The result might not be correctly rounded owing to implementation
+/// details; `math::log2` can produce more accurate results for base 2,
+/// and `math::log10` can produce more accurate results for base 10.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [math::log(100, base = 5), 0])
+///   |> line(end = [5, 8])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn log(
+  /// The number to compute the logarithm of.
+  @input: number,
+  /// The base of the logarithm.
+  base: number(Count),
+): number {}
+
+/// Compute the base 2 logarithm of the number.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [math::log2(100), 0])
+///   |> line(end = [5, 8])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn log2(@input: number): number {}
+
+/// Compute the base 10 logarithm of the number.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [math::log10(100), 0])
+///   |> line(end = [5, 8])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn log10(@input: number): number {}
+
+/// Compute the natural logarithm of the number.
+///
+/// ```
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [math::ln(100), 15])
+///   |> line(end = [5, -6])
+///   |> line(end = [-10, -10])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5)
+/// ```
+@(impl = std_rust)
+export fn ln(@input: number): number {}

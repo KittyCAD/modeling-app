@@ -171,6 +171,14 @@ interface LabeledArg<T> {
   expr: T
   overrideExpr?: Node<Expr>
 }
+interface LabeledArgArrayItem<T> {
+  type: 'labeledArgArrayItem'
+  key: InputArgKeys
+  index: 0 | 1
+  argType: LineInputsType
+  expr: T
+  overrideExpr?: Node<Expr>
+}
 
 type _InputArg<T> =
   | SingleValueInput<T>
@@ -179,6 +187,7 @@ type _InputArg<T> =
   | ArrayOrObjItemInput<T>
   | ArrayInObject<T>
   | LabeledArg<T>
+  | LabeledArgArrayItem<T>
 
 /**
  * {@link RawArg.expr} is the current expression for each of the args for a segment
@@ -222,6 +231,7 @@ export type SimplifiedArgDetails =
   | Omit<ArrayOrObjItemInput<null>, 'expr' | 'argType'>
   | Omit<ArrayInObject<null>, 'expr' | 'argType'>
   | Omit<LabeledArg<null>, 'expr' | 'argType'>
+  | Omit<LabeledArgArrayItem<null>, 'expr' | 'argType'>
 
 /**
  * Represents the result of creating a sketch expression (line, tangentialArc, angledLine, circle, etc.).

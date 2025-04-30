@@ -36,8 +36,8 @@ export plane001 = {
 export plane002 = {
   origin = [0.0, 0.0, 0.0],
   xAxis = [
-    sin(axisJ1): number(in),
-    cos(axisJ1): number(in),
+    math::sin(axisJ1): number(in),
+    math::cos(axisJ1): number(in),
     0.0
   ],
   yAxis = [0.0, 0.0, 1.0]
@@ -47,8 +47,8 @@ export plane002 = {
 export plane003 = {
   origin = [-0.1, 0.0, 0.0],
   xAxis = [
-    sin(axisJ1): number(in),
-    cos(axisJ1): number(in),
+    math::sin(axisJ1): number(in),
+    math::cos(axisJ1): number(in),
     0.0
   ],
   yAxis = [0.0, 0.0, 1.0]

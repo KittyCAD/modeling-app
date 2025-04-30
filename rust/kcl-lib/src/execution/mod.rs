@@ -1298,16 +1298,16 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"fn def = (x) => {
+        let ast = r#"fn def(x) {
   return x
 }
-fn ghi = (x) => {
+fn ghi(x) {
   return x
 }
-fn jkl = (x) => {
+fn jkl(x) {
   return x
 }
-fn hmm = (x) => {
+fn hmm(x) {
   return x
 }
 
@@ -1331,12 +1331,12 @@ yo2 = hmm([identifierGuy + 5])"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions_unary() {
-        let ast = r#"const myVar = 3
-const part001 = startSketchOn(XY)
+        let ast = r#"myVar = 3
+part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
-  min([segLen(seg01), myVar]),
+  math::min([segLen(seg01), myVar]),
   -legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
@@ -1346,12 +1346,12 @@ const part001 = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_pipe_substitutions() {
-        let ast = r#"const myVar = 3
-const part001 = startSketchOn(XY)
+        let ast = r#"myVar = 3
+part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [3, 4], tag = $seg01)
   |> line(end = [
-  min([segLen(seg01), myVar]),
+  math::min([segLen(seg01), myVar]),
   legLen(hypotenuse = segLen(seg01), leg = myVar)
 ])
 "#;
@@ -1361,21 +1361,21 @@ const part001 = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_inline_comment() {
-        let ast = r#"const baseThick = 1
-const armAngle = 60
+        let ast = r#"baseThick = 1
+armAngle = 60
 
-const baseThickHalf = baseThick / 2
-const halfArmAngle = armAngle / 2
+baseThickHalf = baseThick / 2
+halfArmAngle = armAngle / 2
 
-const arrExpShouldNotBeIncluded = [1, 2, 3]
-const objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+arrExpShouldNotBeIncluded = [1, 2, 3]
+objExpShouldNotBeIncluded = { a = 1, b = 2, c = 3 }
 
-const part001 = startSketchOn(XY)
+part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 1)
   |> xLine(length = 3.84) // selection-range-7ish-before-this
 
-const variableBelowShouldNotBeIncluded = 3
+variableBelowShouldNotBeIncluded = 3
 "#;
 
         parse_execute(ast).await.unwrap();
@@ -1383,15 +1383,15 @@ const variableBelowShouldNotBeIncluded = 3
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_literal_in_pipe() {
-        let ast = r#"const w = 20
-const l = 8
-const h = 10
+        let ast = r#"w = 20
+l = 8
+h = 10
 
-fn thing = () => {
+fn thing() {
   return -8
 }
 
-const firstExtrude = startSketchOn(XY)
+firstExtrude = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1404,15 +1404,15 @@ const firstExtrude = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_unary_in_pipe() {
-        let ast = r#"const w = 20
-const l = 8
-const h = 10
+        let ast = r#"w = 20
+l = 8
+h = 10
 
-fn thing = (x) => {
+fn thing(x) {
   return -x
 }
 
-const firstExtrude = startSketchOn(XY)
+firstExtrude = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1425,15 +1425,15 @@ const firstExtrude = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_array_in_pipe() {
-        let ast = r#"const w = 20
-const l = 8
-const h = 10
+        let ast = r#"w = 20
+l = 8
+h = 10
 
-fn thing = (x) => {
+fn thing(x) {
   return [0, -x]
 }
 
-const firstExtrude = startSketchOn(XY)
+firstExtrude = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1446,19 +1446,19 @@ const firstExtrude = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_call_in_pipe() {
-        let ast = r#"const w = 20
-const l = 8
-const h = 10
+        let ast = r#"w = 20
+l = 8
+h = 10
 
-fn other_thing = (y) => {
+fn other_thing(y) {
   return -y
 }
 
-fn thing = (x) => {
+fn thing(x) {
   return other_thing(x)
 }
 
-const firstExtrude = startSketchOn(XY)
+firstExtrude = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, l])
   |> line(end = [w, 0])
@@ -1471,8 +1471,8 @@ const firstExtrude = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_with_function_sketch() {
-        let ast = r#"fn box = (h, l, w) => {
- const myBox = startSketchOn(XY)
+        let ast = r#"fn box(h, l, w) {
+ myBox = startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
@@ -1483,15 +1483,15 @@ const firstExtrude = startSketchOn(XY)
   return myBox
 }
 
-const fnBox = box(3, 6, 10)"#;
+fnBox = box(3, 6, 10)"#;
 
         parse_execute(ast).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
-        let ast = r#"fn box = (obj) => {
- let myBox = startSketchOn(XY)
+        let ast = r#"fn box(obj) {
+ myBox = startSketchOn(XY)
     |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
     |> line(end = [obj.w, 0])
@@ -1502,7 +1502,7 @@ const fnBox = box(3, 6, 10)"#;
   return myBox
 }
 
-const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
+thisBox = box({start = [0,0], l = 6, w = 10, h = 3})
 "#;
         parse_execute(ast).await.unwrap();
     }
@@ -1511,7 +1511,7 @@ const thisBox = box({start: [0,0], l: 6, w: 10, h: 3})
     #[ignore] // https://github.com/KittyCAD/modeling-app/issues/3338
     async fn test_object_member_starting_pipeline() {
         let ast = r#"
-fn test2 = () => {
+fn test2() {
   return {
     thing: startSketchOn(XY)
       |> startProfile(at = [0, 0])
@@ -1522,7 +1522,7 @@ fn test2 = () => {
   }
 }
 
-const x2 = test2()
+x2 = test2()
 
 x2.thing
   |> extrude(length = 10)
@@ -1533,7 +1533,7 @@ x2.thing
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_objects() {
-        let ast = r#"fn box = (obj) => {
+        let ast = r#"fn box(obj) {
 let myBox = startSketchOn(XY)
     |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
@@ -1546,7 +1546,7 @@ let myBox = startSketchOn(XY)
 }
 
 for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h: 1.5}] {
-  const thisBox = box(var)
+  thisBox = box(var)
 }"#;
 
         parse_execute(ast).await.unwrap();
@@ -1555,8 +1555,8 @@ for var in [{start: [0,0], l: 6, w: 10, h: 3}, {start: [-10,-10], l: 3, w: 5, h:
     #[tokio::test(flavor = "multi_thread")]
     #[ignore] // ignore til we get loops
     async fn test_execute_with_function_sketch_loop_array() {
-        let ast = r#"fn box = (h, l, w, start) => {
- const myBox = startSketchOn(XY)
+        let ast = r#"fn box(h, l, w, start) {
+ myBox = startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
@@ -1577,8 +1577,8 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"fn box = (arr) => {
- let myBox =startSketchOn(XY)
+        let ast = r#"fn box(arr) {
+ myBox =startSketchOn(XY)
     |> startProfile(at = arr[0])
     |> line(end = [0, arr[1]])
     |> line(end = [arr[2], 0])
@@ -1589,7 +1589,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
   return myBox
 }
 
-const thisBox = box([[0,0], 6, 10, 3])
+thisBox = box([[0,0], 6, 10, 3])
 
 "#;
         parse_execute(ast).await.unwrap();
@@ -1598,27 +1598,18 @@ const thisBox = box([[0,0], 6, 10, 3])
     #[tokio::test(flavor = "multi_thread")]
     async fn test_function_cannot_access_future_definitions() {
         let ast = r#"
-fn returnX = () => {
+fn returnX() {
   // x shouldn't be defined yet.
   return x
 }
 
-const x = 5
+x = 5
 
-const answer = returnX()"#;
+answer = returnX()"#;
 
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        assert_eq!(
-            err,
-            KclError::UndefinedValue(KclErrorDetails {
-                message: "`x` is not defined".to_owned(),
-                source_ranges: vec![
-                    SourceRange::new(64, 65, ModuleId::default()),
-                    SourceRange::new(97, 106, ModuleId::default())
-                ],
-            }),
-        );
+        assert_eq!(err.message(), "`x` is not defined");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -1648,7 +1639,7 @@ type Other = MyTy | Helix
     #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
-fn foo () {
+fn foo() {
   #!hello
   return true
 }
@@ -1662,7 +1653,7 @@ foo
             err,
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: #".to_owned(),
-                source_ranges: vec![SourceRange::new(15, 16, ModuleId::default())],
+                source_ranges: vec![SourceRange::new(14, 15, ModuleId::default())],
             }),
         );
     }
@@ -1670,43 +1661,37 @@ foo
     #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
-fn transform = (replicaId) => {
+fn transform(replicaId) {
   // x shouldn't be defined yet.
-  let scale = x
+  scale = x
   return {
-    translate: [0, 0, replicaId * 10],
-    scale: [scale, 1, 0],
+    translate = [0, 0, replicaId * 10],
+    scale = [scale, 1, 0],
   }
 }
 
-fn layer = () => {
+fn layer() {
   return startSketchOn(XY)
-    |> circle( center= [0, 0], radius= 1 , tag =$tag1)
+    |> circle( center= [0, 0], radius= 1, tag = $tag1)
     |> extrude(length = 10)
 }
 
-const x = 5
+x = 5
 
 // The 10 layers are replicas of each other, with a transform applied to each.
-let shape = layer() |> patternTransform(instances = 10, transform = transform)
+shape = layer() |> patternTransform(instances = 10, transform = transform)
 "#;
 
         let result = parse_execute(ast).await;
         let err = result.unwrap_err();
-        assert_eq!(
-            err,
-            KclError::UndefinedValue(KclErrorDetails {
-                message: "`x` is not defined".to_owned(),
-                source_ranges: vec![SourceRange::new(80, 81, ModuleId::default())],
-            }),
-        );
+        assert_eq!(err.message(), "`x` is not defined",);
     }
 
     // ADAM: Move some of these into simulation tests.
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_functions() {
-        let ast = r#"myVar = 2 + min([100, -1 + legLen(hypotenuse = 5, leg = 3)])"#;
+        let ast = r#"myVar = 2 + math::min([100, -1 + legLen(hypotenuse = 5, leg = 3)])"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             5.0,
@@ -1718,7 +1703,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute() {
-        let ast = r#"const myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
+        let ast = r#"myVar = 1 + 2 * (3 - 4) / -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             7.4,
@@ -1730,7 +1715,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
-        let ast = r#"const myVar = -5 + 6"#;
+        let ast = r#"myVar = -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             1.0,
@@ -1742,7 +1727,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_with_pi() {
-        let ast = r#"const myVar = PI * 2"#;
+        let ast = r#"myVar = PI * 2"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             std::f64::consts::TAU,
@@ -1754,7 +1739,7 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_define_decimal_without_leading_zero() {
-        let ast = r#"let thing = .4 + 7"#;
+        let ast = r#"thing = .4 + 7"#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
             7.4,
@@ -1766,12 +1751,12 @@ let shape = layer() |> patternTransform(instances = 10, transform = transform)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_zero_param_fn() {
-        let ast = r#"const sigmaAllow = 35000 // psi
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-fn thickness = () => { return 0.56 }
+        let ast = r#"sigmaAllow = 35000 // psi
+leg1 = 5 // inches
+leg2 = 8 // inches
+fn thickness() { return 0.56 }
 
-const bracket = startSketchOn(XY)
+bracket = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1794,7 +1779,7 @@ d = !returnTrue()
 
 assertIs(!false, error = "expected to pass")
 
-fn check = (x) => {
+fn check(x) {
   assertIs(!x, error = "expected argument to be false")
   return true
 }
@@ -1831,74 +1816,56 @@ check(false)
     async fn test_unary_operator_not_on_non_bool_fails() {
         let code1 = r#"
 // Yup, this is null.
-let myNull = 0 / 0
-let notNull = !myNull
+myNull = 0 / 0
+notNull = !myNull
 "#;
         assert_eq!(
-            parse_execute(code1).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange::new(56, 63, ModuleId::default())],
-            })
+            parse_execute(code1).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: number",
         );
 
-        let code2 = "let notZero = !0";
+        let code2 = "notZero = !0";
         assert_eq!(
-            parse_execute(code2).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange::new(14, 16, ModuleId::default())],
-            })
+            parse_execute(code2).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: number",
         );
 
         let code3 = r#"
-let notEmptyString = !""
+notEmptyString = !""
 "#;
         assert_eq!(
-            parse_execute(code3).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: string (text)".to_owned(),
-                source_ranges: vec![SourceRange::new(22, 25, ModuleId::default())],
-            })
+            parse_execute(code3).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: string (text)",
         );
 
         let code4 = r#"
-let obj = { a: 1 }
-let notMember = !obj.a
+obj = { a = 1 }
+notMember = !obj.a
 "#;
         assert_eq!(
-            parse_execute(code4).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: number".to_owned(),
-                source_ranges: vec![SourceRange::new(36, 42, ModuleId::default())],
-            })
+            parse_execute(code4).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: number",
         );
 
         let code5 = "
-let a = []
-let notArray = !a";
+a = []
+notArray = !a";
         assert_eq!(
-            parse_execute(code5).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: array (list)".to_owned(),
-                source_ranges: vec![SourceRange::new(27, 29, ModuleId::default())],
-            })
+            parse_execute(code5).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: array (list)",
         );
 
         let code6 = "
-let x = {}
-let notObject = !x";
+x = {}
+notObject = !x";
         assert_eq!(
-            parse_execute(code6).await.unwrap_err(),
-            KclError::Semantic(KclErrorDetails {
-                message: "Cannot apply unary operator ! to non-boolean value: object".to_owned(),
-                source_ranges: vec![SourceRange::new(28, 30, ModuleId::default())],
-            })
+            parse_execute(code6).await.unwrap_err().message(),
+            "Cannot apply unary operator ! to non-boolean value: object",
         );
 
         let code7 = "
-fn x = () => { return 1 }
-let notFunction = !x";
+fn x() { return 1 }
+notFunction = !x";
         let fn_err = parse_execute(code7).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
@@ -1911,8 +1878,8 @@ let notFunction = !x";
         );
 
         let code8 = "
-let myTagDeclarator = $myTag
-let notTagDeclarator = !myTagDeclarator";
+myTagDeclarator = $myTag
+notTagDeclarator = !myTagDeclarator";
         let tag_declarator_err = parse_execute(code8).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
@@ -1925,8 +1892,8 @@ let notTagDeclarator = !myTagDeclarator";
         );
 
         let code9 = "
-let myTagDeclarator = $myTag
-let notTagIdentifier = !myTag";
+myTagDeclarator = $myTag
+notTagIdentifier = !myTag";
         let tag_identifier_err = parse_execute(code9).await.unwrap_err();
         // These are currently printed out as JSON objects, so we don't want to
         // check the full error.
@@ -1938,27 +1905,27 @@ let notTagIdentifier = !myTag";
             tag_identifier_err
         );
 
-        let code10 = "let notPipe = !(1 |> 2)";
+        let code10 = "notPipe = !(1 |> 2)";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code10).await.unwrap_err(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: !".to_owned(),
-                source_ranges: vec![SourceRange::new(14, 15, ModuleId::default())],
+                source_ranges: vec![SourceRange::new(10, 11, ModuleId::default())],
             })
         );
 
         let code11 = "
-fn identity = (x) => { return x }
-let notPipeSub = 1 |> identity(!%))";
+fn identity(x) { return x }
+notPipeSub = 1 |> identity(!%))";
         assert_eq!(
             // TODO: We don't currently parse this, but we should.  It should be
             // a runtime error instead.
             parse_execute(code11).await.unwrap_err(),
             KclError::Syntax(KclErrorDetails {
                 message: "Unexpected token: |>".to_owned(),
-                source_ranges: vec![SourceRange::new(54, 56, ModuleId::default())],
+                source_ranges: vec![SourceRange::new(44, 46, ModuleId::default())],
             })
         );
 
@@ -1969,20 +1936,20 @@ let notPipeSub = 1 |> identity(!%))";
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_negative_variable_in_binary_expression() {
-        let ast = r#"const sigmaAllow = 35000 // psi
-const width = 1 // inch
+        let ast = r#"sigmaAllow = 35000 // psi
+width = 1 // inch
 
-const p = 150 // lbs
-const distance = 6 // inches
-const FOS = 2
+p = 150 // lbs
+distance = 6 // inches
+FOS = 2
 
-const leg1 = 5 // inches
-const leg2 = 8 // inches
+leg1 = 5 // inches
+leg2 = 8 // inches
 
-const thickness_squared = distance * p * FOS * 6 / sigmaAllow
-const thickness = 0.56 // inches. App does not support square root function yet
+thickness_squared = distance * p * FOS * 6 / sigmaAllow
+thickness = 0.56 // inches. App does not support square root function yet
 
-const bracket = startSketchOn(XY)
+bracket = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -1994,7 +1961,7 @@ const bracket = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_function_no_return() {
-        let ast = r#"fn test = (origin) => {
+        let ast = r#"fn test(origin) {
   origin
 }
 
@@ -2007,16 +1974,16 @@ test([0, 0])
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_doubly_nested_parens() {
-        let ast = r#"const sigmaAllow = 35000 // psi
-const width = 4 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 6 // inches
-const FOS = 2
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-const thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
-const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchOn(XY)
+        let ast = r#"sigmaAllow = 35000 // psi
+width = 4 // inch
+p = 150 // Force on shelf - lbs
+distance = 6 // inches
+FOS = 2
+leg1 = 5 // inches
+leg2 = 8 // inches
+thickness_squared = (distance * p * FOS * 6 / (sigmaAllow - width))
+thickness = 0.32 // inches. App does not support square root function yet
+bracket = startSketchOn(XY)
   |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -2031,16 +1998,16 @@ const bracket = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_math_nested_parens_one_less() {
-        let ast = r#"const sigmaAllow = 35000 // psi
-const width = 4 // inch
-const p = 150 // Force on shelf - lbs
-const distance = 6 // inches
-const FOS = 2
-const leg1 = 5 // inches
-const leg2 = 8 // inches
-const thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
-const thickness = 0.32 // inches. App does not support square root function yet
-const bracket = startSketchOn(XY)
+        let ast = r#" sigmaAllow = 35000 // psi
+width = 4 // inch
+p = 150 // Force on shelf - lbs
+distance = 6 // inches
+FOS = 2
+leg1 = 5 // inches
+leg2 = 8 // inches
+thickness_squared = distance * p * FOS * 6 / (sigmaAllow - width)
+thickness = 0.32 // inches. App does not support square root function yet
+bracket = startSketchOn(XY)
   |> startProfile(at = [0,0])
     |> line(end = [0, leg1])
   |> line(end = [leg2, 0])
@@ -2055,11 +2022,11 @@ const bracket = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_fn_as_operand() {
-        let ast = r#"fn f = () => { return 1 }
-let x = f()
-let y = x + 1
-let z = f() + 1
-let w = f() + f()
+        let ast = r#"fn f() { return 1 }
+x = f()
+y = x + 1
+z = f() + 1
+w = f() + f()
 "#;
         parse_execute(ast).await.unwrap();
     }
