@@ -85,7 +85,6 @@ export const EngineStream = (props: {
 
   // When the scene is ready play the stream and execute!
   const play = () => {
-    console.log('PALY PLAY PLAYPLAYPLAYPALYAPY')
     engineStreamActor.send({
       type: EngineStreamTransition.Play,
     })
