@@ -7,7 +7,7 @@ description: Operations executed translate_after_fillet.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}

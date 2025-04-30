@@ -200,7 +200,7 @@ description: Result of parsing pipe-with-bend.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch in the 'XZ' plane"
+          "// Create a sketch in the XZ plane"
         ],
         "start": 0,
         "type": "VariableDeclaration",

@@ -18,8 +18,8 @@ description: Operations executed parametric.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

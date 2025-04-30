@@ -139,7 +139,7 @@ startSketchOn(motorHousing, face = END)
   |> extrude(length = -16)
   |> appearance(color = "#a55e2c")
   |> fillet(
-       radius = math::abs(fanSize - mountingHoleSpacing) / 2,
+       radius = abs(fanSize - mountingHoleSpacing) / 2,
        tags = [
          getNextAdjacentEdge(rectangleSegmentA001),
          getNextAdjacentEdge(rectangleSegmentB001),

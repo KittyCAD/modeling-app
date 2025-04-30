@@ -101,7 +101,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// // Sketch 4 cylinders.
-/// sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
@@ -169,7 +169,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///   
-///   return startSketchOn('XY')
+///   return startSketchOn(XY)
 ///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)
@@ -202,7 +202,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Defines how to modify each layer of the vase.
 /// // Each replica is shifted up the Z axis, and has a smoothly-varying radius
 /// fn transform(replicaId) {
-///   scale = r * math::abs(1 - (t * replicaId)) * (5 + math::cos((replicaId / 8): number(rad)))
+///   scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
 ///   return {
 ///     translate = [0, 0, replicaId * 10],
 ///     scale = [scale, scale, 0],

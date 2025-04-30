@@ -30,7 +30,7 @@ acos(@num: number(_)): number(rad)
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = math::acos(0.5),
+    angle = acos(0.5),
     length = 10,
   )
   |> line(end = [5, 0])

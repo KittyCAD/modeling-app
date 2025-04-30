@@ -2081,10 +2081,10 @@ o = 3mm / 3
 p = 3_ / 4
 q = 4inch / 2_
 
-r = math::min([0, 3, 42])
-s = math::min([0, 3mm, -42])
-t = math::min([100, 3in, 142mm])
-u = math::min([3rad, 4in])
+r = min([0, 3, 42])
+s = min([0, 3mm, -42])
+t = min([100, 3in, 142mm])
+u = min([3rad, 4in])
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -2137,10 +2137,10 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = math::cos(units::toRadians(30))
+a = cos(units::toRadians(30))
 b = 3 / a
-c = math::cos(30deg)
-d = math::cos(30)
+c = cos(30deg)
+d = cos(30)
 "#;
 
         let result = parse_execute(program).await.unwrap();

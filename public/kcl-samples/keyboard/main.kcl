@@ -58,7 +58,7 @@ extrude(
 plane001 = {
   origin = [0.0, 0.0, 0.7],
   xAxis = [1.0, 0.0, 0.0],
-  yAxis = [0.0, 1.0, math::sin(7deg)],
+  yAxis = [0.0, 1.0, sin(7deg)],
   zAxis = [0.0, 0.0, 1.0]
 }
 
@@ -124,7 +124,7 @@ keyFn([spacing * 3 + 12, row6], 1, keyHeight * .6, 0, highlightColor2)
 plane002 = {
   origin = [0.0, 0.0, .81],
   xAxis = [1.0, 0.0, 0.0],
-  yAxis = [0.0, 1.0, math::sin(7deg)],
+  yAxis = [0.0, 1.0, sin(7deg)],
   zAxis = [0.0, 0.0, 1.0]
 }
 

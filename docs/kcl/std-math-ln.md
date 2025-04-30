@@ -29,7 +29,7 @@ ln(@input: number): number
 ```js
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> line(end = [math::ln(100), 15])
+  |> line(end = [ln(100), 15])
   |> line(end = [5, -6])
   |> line(end = [-10, -10])
   |> close()

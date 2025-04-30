@@ -22,13 +22,20 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'YZ'",
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "YZ",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "YZ"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
@@ -655,13 +662,28 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
+                    "argument": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "XZ",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "'-XZ'",
+                    "operator": "-",
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": "-XZ"
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
                   }
                 ],
                 "callee": {

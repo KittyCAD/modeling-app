@@ -26,14 +26,14 @@ fn slot(sketch1, start, end, width) {
     }
   } else {
     if end[0] < start[0] {
-      units::toDegrees(math::atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
+      units::toDegrees(atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
     } else {
-      units::toDegrees(      math::atan((end[1] - start[1]) / (end[0] - start[0])))
+      units::toDegrees(      atan((end[1] - start[1]) / (end[0] - start[0])))
     }
   }
   dist = sqrt(pow(end[1] - start[1], exp = 2) + pow(end[0] - start[0], exp = 2))
-  xstart = width / 2 * math::cos(angle - 90) + start[0]
-  ystart = width / 2 * math::sin(angle - 90) + start[1]
+  xstart = width / 2 * cos(angle - 90) + start[0]
+  ystart = width / 2 * sin(angle - 90) + start[1]
   slotSketch = startProfile(sketch1, at = [xstart, ystart])
     |> angledLine(angle = angle, length = dist)
     |> tangentialArc(radius = width / 2, angle = 180)
@@ -43,7 +43,7 @@ fn slot(sketch1, start, end, width) {
   return slotSketch
 }
 
-// Create a sketch on the "XY" plane for the flipper
+// Create a sketch on the XY plane for the flipper
 flipperSketch = startSketchOn(XY)
 
 // Create a profile of the flipper
@@ -82,7 +82,7 @@ fillet(
   ],
 )
 
-// Create a sketch on the "XZ" plane offset by half the thickness
+// Create a sketch on the XZ plane offset by half the thickness
 handleSketch = startSketchOn(offsetPlane(XZ, offset = -handleWidth / 2))
 
 // Create a profile of the spatula handle
