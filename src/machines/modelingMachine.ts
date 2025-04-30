@@ -810,18 +810,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'set selection filter to curves only': () => {
-      ;(async () => {
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter: ['curve'],
-          },
-        })
-      })().catch(reportRejection)
-    },
     'tear down client sketch': () => {
       sceneEntitiesManager.tearDownSketch({ removeAxis: false })
     },
@@ -3329,7 +3317,6 @@ export const modelingMachine = setup({
           entry: [
             'show default planes',
             'reset camera position',
-            'set selection filter to curves only',
           ],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',
