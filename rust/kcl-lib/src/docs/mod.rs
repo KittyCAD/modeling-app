@@ -533,14 +533,18 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.name(),
+                label: self.fn_signature(true),
                 documentation: Some(Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: if !self.description().is_empty() {
-                        format!("{}\n\n{}", self.summary(), self.description())
-                    } else {
-                        self.summary()
-                    },
+                    value: format!(
+                        r#"{}
+
+{}"#,
+                        self.summary(),
+                        self.description()
+                    )
+                    .trim()
+                    .to_string(),
                 })),
                 parameters: Some(self.args(true).into_iter().map(|arg| arg.into()).collect()),
                 active_parameter,
@@ -1115,5 +1119,22 @@ mod tests {
         let stdlib = crate::std::StdLib::new();
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         crate::lsp::kcl::get_signatures_from_stdlib(&stdlib, &kcl_std);
+    }
+
+    #[test]
+    fn get_extrude_signature_help() {
+        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
+        let sh = extrude_fn.to_signature_help();
+        assert_eq!(
+            sh.signatures[0].label,
+            r#"extrude(
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     }
 }
