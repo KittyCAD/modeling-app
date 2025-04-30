@@ -44,7 +44,7 @@ balls = revolve(ballsSketch, axis = X)
 chainSketch = startSketchOn(XY)
   |> startProfile(at = [
        shaftDia / 2 + wallThickness + sphereDia / 2 - (chainWidth / 2),
-       0.125 * math::sin(60)
+       0.125 * sin(60)
      ])
   |> arc(angleStart = 120, angleEnd = 60, radius = sphereDia / 2)
   |> line(end = [0, chainThickness])

@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 70,
-    length = math::max([15, 31, 4, 13, 22])
+    length = max([15, 31, 4, 13, 22])
   )
   |> line(end = [20, 0])
   |> close()

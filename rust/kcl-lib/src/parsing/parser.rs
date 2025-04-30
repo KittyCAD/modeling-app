@@ -4104,7 +4104,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_parse_half_pipe_small() {
         assert_err_contains(
-            "secondExtrude = startSketchOn('XY')
+            "secondExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |",
             "Unexpected token: |",
@@ -4197,7 +4197,7 @@ height = [obj["a"] -1, 0]"#;
     fn test_parse_half_pipe() {
         let code = "height = 10
 
-firstExtrude = startSketchOn('XY')
+firstExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |> line([0, 8], %)
   |> line([20, 0], %)
@@ -4205,7 +4205,7 @@ firstExtrude = startSketchOn('XY')
   |> close()
   |> extrude(length=2)
 
-secondExtrude = startSketchOn('XY')
+secondExtrude = startSketchOn(XY)
   |> startProfileAt([0,0], %)
   |";
         assert_err_contains(code, "Unexpected token: |");
@@ -4476,7 +4476,7 @@ e
         let code = r#"/// Compute the cosine of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfileAt([0, 0], %)
 ///   |> angledLine(
 ///        angle = 30,
@@ -4628,7 +4628,7 @@ thing(false)
 
     #[test]
     fn random_words_fail() {
-        let test_program = r#"part001 = startSketchOn('-XZ')
+        let test_program = r#"part001 = startSketchOn(-XZ)
     |> startProfileAt([8.53, 11.8], %)
     asdasd asdasd
     |> line([11.12, -14.82], %)
@@ -4642,7 +4642,7 @@ thing(false)
     #[test]
     fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube(pos, scale) {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
   |> startProfileAt(pos, %)
     |> line([0, scale], %)
     |> line([scale, 0], %)
@@ -4670,7 +4670,7 @@ let other_thing = 2 * cos(3)"#;
     #[test]
     fn test_negative_arguments() {
         let some_program_string = r#"fn box(p, h, l, w) {
- myBox = startSketchOn('XY')
+ myBox = startSketchOn(XY)
     |> startProfileAt(p, %)
     |> line([0, l], %)
     |> line([w, 0], %)
@@ -4696,89 +4696,89 @@ let myBox = box([0,0], -3, -16, -10)
 
     #[test]
     fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $xLine)
 "#;
         assert_err(
             some_program_string,
             "Cannot assign a tag to a reserved keyword: xLine",
-            [76, 82],
+            [74, 80],
         );
     }
 
     #[test]
     fn test_parse_empty_tag_brace() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_empty_tag_whitespace() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $ ,01)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
 
     #[test]
     fn test_parse_empty_tag_comma() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $,)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
+    startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
             "Tag names must not start with a number. Tag starts with `01`",
-            [74, 76],
+            [72, 74],
         );
     }
     #[test]
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
+    startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $!var,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a bang", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_dollar() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $$,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a dollar", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_fn() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $fn,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
+        assert_err(some_program_string, "Tag names must not start with a keyword", [67, 69]);
     }
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
-        let some_program_string = r#"startSketchOn('XY')
+        let some_program_string = r#"startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(%, $//
     ,01)
@@ -4786,14 +4786,14 @@ let myBox = box([0,0], -3, -16, -10)
         assert_err(
             some_program_string,
             "Tag names must not start with a lineComment",
-            [69, 71],
+            [67, 69],
         );
     }
 
     #[test]
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
-    startSketchOn('XY')
+    startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line([5, 5], %, $sketching)
     "#;
@@ -4803,21 +4803,21 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
+sketch001 = startSketchOn(XZ) |> startProfileAt([90.45, 119.09, %)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 67],
+            [49, 65],
         );
     }
     #[test]
     fn test_parse_array_missing_comma() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfileAt([90.45 119.09], %)"#;
         assert_err(
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between elements.",
-            [52, 65],
+            [50, 63],
         );
     }
     #[test]
@@ -4825,21 +4825,21 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfileAt([90.45 $struct], %)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [49, 50],
         );
     }
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfileAt([}], %)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [49, 50],
         );
     }
 

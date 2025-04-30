@@ -139,7 +139,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// sketch001 = startSketchOn(XY)
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
+/// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)

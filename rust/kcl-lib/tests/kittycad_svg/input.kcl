@@ -1,4 +1,4 @@
-svg = startSketchOn('XY')
+svg = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [2.52, -26.04]) // MoveAbsolute
   |> line(endAbsolute = [2.52, -25.2]) // VerticalLineAbsolute

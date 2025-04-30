@@ -78,7 +78,7 @@ async fn cache_test(
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
-    let code = r#"part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
@@ -254,7 +254,7 @@ extrude(profile001, length = 100)"#
 #[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_commands() {
-    let code = r#"sketch001 = startSketchOn('XY')
+    let code = r#"sketch001 = startSketchOn(XY)
   |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])

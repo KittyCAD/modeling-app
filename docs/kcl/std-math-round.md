@@ -30,7 +30,7 @@ round(@input: number): number
 sketch001 = startSketchOn(XZ)
    |> startProfile(at = [0, 0])
    |> line(endAbsolute = [12, 10])
-   |> line(end = [math::round(7.02986), 0])
+   |> line(end = [round(7.02986), 0])
    |> yLine(endAbsolute = 0)
    |> close()
 

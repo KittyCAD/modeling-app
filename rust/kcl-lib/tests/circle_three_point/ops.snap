@@ -7,8 +7,8 @@ description: Operations executed circle_three_point.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
