@@ -196,6 +196,68 @@ sketch001 = startSketchOn(XY)
     )
   })
 
+  test('F2 can rename a variable', async ({ page, homePage, scene }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `myVARName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVARName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 12)`
+      )
+    })
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+
+    await u.codeLocator.click()
+
+    // Move the cursor to the start of the code
+    await page.keyboard.press('ControlOrMeta+Home')
+    await page.keyboard.press('ArrowRight')
+
+    await page.waitForTimeout(100)
+
+    // Press F2 to rename the variable
+    await page.keyboard.press('F2')
+
+    // Wait for the rename box.
+    await expect(page.locator('.cm-rename-popup')).toBeVisible()
+
+    // Make sure we are focused on the rename box
+    await expect(page.locator('.cm-rename-popup input')).toBeFocused()
+
+    // Type the new name
+    await page.keyboard.type('myNewName')
+    // Press Enter to accept the rename
+    await page.keyboard.press('Enter')
+
+    // Ensure we have the new name
+    await expect(page.locator('.cm-content')).toHaveText(
+      `myNewName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myNewName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 12)`.replaceAll('\n', '')
+    )
+  })
+
   test('if you click the format button it formats your code and executes so lints are still there', async ({
     page,
     homePage,
@@ -479,6 +541,113 @@ sketch_001 = startSketchOn(XY)
     await expect(
       page.getByText('Identifiers must be lowerCamelCase').first()
     ).toBeVisible()
+  })
+
+  test('you can accept the suggestion from a lint', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `a1 = startSketchOn({
+       origin = { x = 0, y = 0, z = 0 },
+       xAxis = { x = 1, y = 0, z = 0 },
+       yAxis = { x = 0, y = 12, z = 0 },
+     })
+  |> startProfile(at = [0, 0])
+  |> line(end = [100.0, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)`
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+
+    await expect(page.locator('.cm-lint-marker-info')).toBeVisible()
+
+    // error in guter
+    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+
+    // error text on hover
+    await page.hover('.cm-lint-marker-info')
+    await expect(
+      page.getByText('offsetPlane should be used').first()
+    ).toBeVisible()
+
+    // select the line that's causing the error and delete it
+    // accept the change
+    await page.getByText('use offsetPlane instead').click()
+
+    // Ensure we have the new code
+    await expect(page.locator('.cm-content')).toHaveText(
+      `a1 = startSketchOn(offsetPlane(XY, offset = 12))
+  |> startProfile(at = [0, 0])
+  |> line(end = [100.0, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)`.replaceAll('\n', '')
+    )
+  })
+
+  test('signature help triggered by comma', async ({
+    page,
+    homePage,
+    scene,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `myVARName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVARName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 12`
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await homePage.goToModelingScene()
+
+    await scene.connectionEstablished()
+
+    // Expect the signature help to NOT be visible
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
+
+    // Click in the editor
+    await page.locator('.cm-content').click()
+
+    // Go to the end of the code
+    await page.keyboard.press('ControlOrMeta+End')
+    // Type a comma
+    await page.keyboard.press(',')
+
+    // Wait for the signature help to show
+    await expect(page.locator('.cm-signature-tooltip')).toBeVisible()
+
+    // Make sure the parameters are correct
+    await expect(page.locator('.cm-signature-tooltip')).toContainText(
+      'sketches:'
+    )
+
+    // Make sure the tooltip goes away after a timeout.
+    await page.waitForTimeout(12000)
+
+    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
   })
 
   test('if you write kcl with lint errors you get lints', async ({
