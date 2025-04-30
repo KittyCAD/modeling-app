@@ -819,7 +819,8 @@ description: Result of parsing gridfinity-baseplate.kcl
                   "name": "plane",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

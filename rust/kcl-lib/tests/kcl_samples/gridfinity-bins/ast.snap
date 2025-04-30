@@ -1170,7 +1170,8 @@ description: Result of parsing gridfinity-bins.kcl
                   "name": "plane",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
