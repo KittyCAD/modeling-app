@@ -3,22 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing pipe_as_arg.kcl
 ---
 fn cube(length, center) {
-  l = length / 2
-  x = center[0]
-  y = center[1]
-  p0 = [-l + x, -l + y]
-  p1 = [-l + x, l + y]
-  p2 = [l + x, l + y]
-  p3 = [l + x, -l + y]
-
-  return startSketchOn(XY)
-    |> startProfile(at = p0)
-    |> line(endAbsolute = p1)
-    |> line(endAbsolute = p2)
-    |> line(endAbsolute = p3)
-    |> line(endAbsolute = p0)
-    |> close(%)
-    |> extrude(length = length)
+  return length
 }
 
 fn double(@x) {
@@ -30,6 +15,6 @@ fn width() {
 
 myCube = cube(
   length =   200
-    |> double(),
+    |> double(%),
   center = [0, 0],
 )
