@@ -7,16 +7,21 @@ description: Operations executed import_mesh_clone.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "cube",
-      "moduleId": 6
+      "name": "yellow",
+      "moduleId": 0
     },
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "yellow",
+      "moduleId": 0
+    },
+    "sourceRange": []
   },
   {
-    "isError": true,
     "labeledArgs": {
       "geometry": {
         "value": {
@@ -30,5 +35,65 @@ description: Operations executed import_mesh_clone.kcl
     "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "yellow",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "geometry": {
+        "value": {
+          "type": "ImportedGeometry",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "clone",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "yellow",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "geometry": {
+        "value": {
+          "type": "ImportedGeometry",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "clone",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]
