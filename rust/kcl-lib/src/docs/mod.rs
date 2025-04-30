@@ -736,7 +736,7 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
                 for enum_value in enum_values {
                     if let serde_json::value::Value::String(enum_value) = enum_value {
                         had_enum_string = true;
-                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                        parsed_enum_values.push(enum_value.to_owned());
                     } else {
                         had_enum_string = false;
                         break;
@@ -925,7 +925,7 @@ mod tests {
     fn get_autocomplete_snippet_start_sketch_on() {
         let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartSketchOn);
         let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"startSketchOn(${0:"XY"})"#);
+        assert_eq!(snippet, r#"startSketchOn(${0:XY})"#);
     }
 
     #[test]

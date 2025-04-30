@@ -40,7 +40,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Union two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -62,7 +62,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -85,7 +85,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -190,7 +190,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Intersect two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -212,7 +212,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -323,7 +323,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// // Subtract a cylinder from a cube using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
@@ -345,7 +345,7 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
+///     return startSketchOn(XY)
 ///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])

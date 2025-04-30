@@ -34,9 +34,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
-            "commentStart": 117,
-            "end": 138,
-            "start": 117,
+            "commentStart": 115,
+            "end": 136,
+            "start": 115,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -59,9 +59,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
-            "commentStart": 220,
-            "end": 241,
-            "start": 220,
+            "commentStart": 218,
+            "end": 239,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -84,9 +84,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             8.21
           ],
           "tag": {
-            "commentStart": 343,
-            "end": 364,
-            "start": 343,
+            "commentStart": 341,
+            "end": 362,
+            "start": 341,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },

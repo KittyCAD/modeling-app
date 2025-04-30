@@ -10,7 +10,7 @@ plane94894440791888 = {
 }
 
 // create a sketch with UID 94894440902176
-sketch94894440902176 = startSketchOn('-XZ')
+sketch94894440902176 = startSketchOn(-XZ)
   |> startProfile(at = [-0.005, -0.005])
   |> line(end = [0.01, 0.0], tag = $line94894439494384)
   |> line(end = [0.0, 0.01], tag = $line94894439429616)

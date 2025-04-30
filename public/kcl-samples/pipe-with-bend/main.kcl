@@ -10,7 +10,7 @@ outerDiameter = 20
 bendRadius = 30
 bendAngle = 90
 
-// Create a sketch in the 'XZ' plane
+// Create a sketch in the XZ plane
 sketch000 = startSketchOn(XZ)
 
 // Create a profile for the outer diameter
