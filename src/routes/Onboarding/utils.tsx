@@ -15,12 +15,7 @@ import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { bracket } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-import {
-  getStringAfterLastSeparator,
-  joinRouterPaths,
-  PATHS,
-} from '@src/lib/paths'
+import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {
   codeManager,
   editorManager,
@@ -32,6 +27,7 @@ import { settingsActor } from '@src/lib/singletons'
 import { isKclEmptyOrOnlySettings, parse, resultIsOk } from '@src/lang/wasm'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
+  DEFAULT_FILE_NAME,
   EXECUTION_TYPE_REAL,
   ONBOARDING_PROJECT_NAME,
 } from '@src/lib/constants'
@@ -41,16 +37,8 @@ import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { Logo } from '@src/components/Logo'
-import {
-  readAppSettingsFile,
-  listProjects,
-  createNewProjectDirectory,
-} from '@src/lib/desktop'
-import {
-  getNextProjectIndex,
-  interpolateProjectNameWithIndex,
-} from '@src/lib/desktopFS'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -145,16 +133,16 @@ export function OnboardingButtons({
   dismissClassName?: string
   onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const ONBOARDING_SUBPATHSArray = Object.values(ONBOARDING_SUBPATHS)
+  const onboardingPathsArray = Object.values(ONBOARDING_SUBPATHS)
   const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
   const previousStep =
-    !stepNumber || stepNumber <= 1 ? null : ONBOARDING_SUBPATHSArray[stepNumber]
+    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber]
   const goToPrevious = useNextClick(previousStep ?? ONBOARDING_SUBPATHS.INDEX)
   const nextStep =
-    !stepNumber || stepNumber === ONBOARDING_SUBPATHSArray.length
+    !stepNumber || stepNumber === onboardingPathsArray.length
       ? null
-      : ONBOARDING_SUBPATHSArray[stepNumber]
+      : onboardingPathsArray[stepNumber]
   const goToNext = useNextClick(nextStep + ONBOARDING_SUBPATHS.INDEX)
 
   return (
@@ -194,7 +182,7 @@ export function OnboardingButtons({
         </ActionButton>
         {stepNumber !== undefined && (
           <p className="font-mono text-xs text-center m-0">
-            {stepNumber} / {ONBOARDING_SUBPATHSArray.length}
+            {stepNumber} / {onboardingPathsArray.length}
           </p>
         )}
         <ActionButton
@@ -236,7 +224,20 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
   if (isDesktop()) {
-    return createAndOpenNewTutorialProject(deps.onboardingStatus)
+    /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
+    systemIOActor.send({
+      type: SystemIOMachineEvents.importFileFromURL,
+      data: {
+        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedFileName: DEFAULT_FILE_NAME,
+        requestedCode: bracket,
+        requestedSubRoute: joinRouterPaths(
+          PATHS.ONBOARDING.INDEX,
+          deps.onboardingStatus
+        ),
+      },
+    })
+    return Promise.resolve()
   }
 
   const isCodeResettable = hasResetReadyCode(deps.codeManager)
@@ -418,59 +419,4 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
       </div>
     </div>
   )
-}
-
-export async function createAndOpenNewTutorialProject(
-  onboardingStatus: OnboardingStatus = ONBOARDING_SUBPATHS.INDEX
-) {
-  // Create a new project with the onboarding project name
-  const configuration = await readAppSettingsFile()
-  const projects = await listProjects(configuration)
-  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-  const name = interpolateProjectNameWithIndex(
-    ONBOARDING_PROJECT_NAME,
-    nextIndex
-  )
-
-  // Delete the tutorial project if it already exists.
-  if (isDesktop()) {
-    if (configuration.settings?.project?.directory === undefined) {
-      return Promise.reject(new Error('configuration settings are undefined'))
-    }
-
-    const fullPath = window.electron.join(
-      configuration.settings.project.directory,
-      name
-    )
-    if (window.electron.exists(fullPath)) {
-      await window.electron.rm(fullPath)
-    }
-  }
-
-  const newProject = await createNewProjectDirectory(
-    name,
-    bracket,
-    configuration
-  )
-
-  const fileNameWithExtension = getStringAfterLastSeparator(
-    newProject.default_file
-  )
-  if (!fileNameWithExtension) {
-    return Promise.reject(
-      new Error('Failed to create default project kcl file')
-    )
-  }
-  const subRoute = joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
-
-  systemIOActor.send({
-    type: SystemIOMachineEvents.navigateToFile,
-    data: {
-      requestedProjectName: newProject.name,
-      requestedFileName: fileNameWithExtension,
-      requestedSubRoute: subRoute,
-    },
-  })
-
-  return newProject
 }

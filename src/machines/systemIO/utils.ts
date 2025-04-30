@@ -8,6 +8,7 @@ export enum SystemIOMachineActors {
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
   checkReadWrite = 'check read write',
+  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   deleteKCLFile = 'delete kcl delete',
 }
@@ -21,6 +22,7 @@ export enum SystemIOMachineStates {
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
   checkingReadWrite = 'checkingReadWrite',
+  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'importFileFromURL',
   deletingKCLFile = 'deletingKCLFile',
 }
@@ -41,6 +43,7 @@ export enum SystemIOMachineEvents {
   createKCLFile = 'create kcl file',
   setDefaultProjectFolderName = 'set default project folder name',
   done_checkReadWrite = donePrefix + 'check read write',
+  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
