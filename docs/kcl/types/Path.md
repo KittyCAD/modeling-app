@@ -28,7 +28,7 @@ A path that goes to a point.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -51,7 +51,7 @@ A arc that is tangential to the last path segment that goes to a point
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -74,7 +74,7 @@ A arc that is tangential to the last path segment
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -98,7 +98,7 @@ a complete arc
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -122,7 +122,7 @@ A base path.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -146,7 +146,7 @@ A base path.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -168,7 +168,7 @@ A path that is horizontal.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -191,7 +191,7 @@ An angled line to.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -212,7 +212,7 @@ A base path.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 
@@ -236,7 +236,7 @@ A circular arc, not necessarily tangential to the current point.
 | `from` |`[number, number]`| The from point. | No |
 | `to` |`[number, number]`| The to point. | No |
 | `units` |[`UnitLen`](/docs/kcl/types/UnitLen)| A unit of length. | No |
-| [`tag`](/docs/kcl/types/tag) |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
+| `tag` |[`TagDeclarator`](/docs/kcl/types#tag-declaration)| The tag of the path. | No |
 | `__geoMeta` |[`GeoMeta`](/docs/kcl/types/GeoMeta)| Metadata. | No |
 
 

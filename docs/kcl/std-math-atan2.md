@@ -8,11 +8,11 @@ Compute the four quadrant arctangent of Y and X.
 
 
 
-```js
+```kcl
 atan2(
-  y: number(Length),
-  x: number(Length),
-): number(rad)
+  y: [number](/docs/kcl/types/number)(Length),
+  x: [number](/docs/kcl/types/number)(Length),
+): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -30,11 +30,11 @@ atan2(
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = math::atan2(y = 1.25, x = 2),
+    angle = atan2(y = 1.25, x = 2),
     length = 20,
   )
   |> yLine(endAbsolute = 0)

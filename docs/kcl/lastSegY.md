@@ -8,8 +8,8 @@ Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
 
 
 
-```js
-lastSegY(sketch: Sketch): number
+```kcl
+lastSegY(sketch: [Sketch](/docs/kcl/types/Sketch)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ lastSegY(sketch: Sketch): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [5, 0])

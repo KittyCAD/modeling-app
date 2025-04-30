@@ -27,42 +27,8 @@ pub struct Configuration {
 }
 
 impl Configuration {
-    // TODO: remove this when we remove backwards compatibility with the old settings file.
-    pub fn backwards_compatible_toml_parse(toml_str: &str) -> Result<Self> {
-        let mut settings = toml::from_str::<Self>(toml_str)?;
-
-        if let Some(project_directory) = &settings.settings.app.project_directory {
-            if settings.settings.project.directory.to_string_lossy().is_empty() {
-                settings.settings.project.directory.clone_from(project_directory);
-                settings.settings.app.project_directory = None;
-            }
-        }
-
-        if let Some(theme) = &settings.settings.app.theme {
-            if settings.settings.app.appearance.theme == AppTheme::default() {
-                settings.settings.app.appearance.theme = *theme;
-                settings.settings.app.theme = None;
-            }
-        }
-
-        if let Some(theme_color) = &settings.settings.app.theme_color {
-            if settings.settings.app.appearance.color == AppColor::default() {
-                settings.settings.app.appearance.color = theme_color.clone().into();
-                settings.settings.app.theme_color = None;
-            }
-        }
-
-        if let Some(enable_ssao) = settings.settings.app.enable_ssao {
-            if settings.settings.modeling.enable_ssao.into() {
-                settings.settings.modeling.enable_ssao = enable_ssao.into();
-                settings.settings.app.enable_ssao = None;
-            }
-        }
-
-        if settings.settings.modeling.show_debug_panel && !settings.settings.app.show_debug_panel {
-            settings.settings.app.show_debug_panel = settings.settings.modeling.show_debug_panel;
-            settings.settings.modeling.show_debug_panel = Default::default();
-        }
+    pub fn parse_and_validate(toml_str: &str) -> Result<Self> {
+        let settings = toml::from_str::<Self>(toml_str)?;
 
         settings.validate()?;
 
@@ -84,22 +50,20 @@ pub struct Settings {
     #[validate(nested)]
     pub modeling: ModelingSettings,
     /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default, alias = "textEditor", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
     pub text_editor: TextEditorSettings,
     /// Settings that affect the behavior of project management.
-    #[serde(default, alias = "projects", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
     pub project: ProjectSettings,
     /// Settings that affect the behavior of the command bar.
-    #[serde(default, alias = "commandBar", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     #[validate(nested)]
     pub command_bar: CommandBarSettings,
 }
 
 /// Application wide settings.
-// TODO: When we remove backwards compatibility with the old settings file, we can remove the
-// aliases to camelCase (and projects plural) from everywhere.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
@@ -109,27 +73,11 @@ pub struct AppSettings {
     #[validate(nested)]
     pub appearance: AppearanceSettings,
     /// The onboarding status of the app.
-    #[serde(default, alias = "onboardingStatus", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub onboarding_status: OnboardingStatus,
-    /// Backwards compatible project directory setting.
-    #[serde(default, alias = "projectDirectory", skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
-    pub project_directory: Option<std::path::PathBuf>,
-    /// Backwards compatible theme setting.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
-    pub theme: Option<AppTheme>,
-    /// The hue of the primary theme color for the app.
-    #[serde(default, skip_serializing_if = "Option::is_none", alias = "themeColor")]
-    #[ts(skip)]
-    pub theme_color: Option<FloatOrInt>,
-    /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-    #[serde(default, alias = "enableSSAO", skip_serializing_if = "Option::is_none")]
-    #[ts(skip)]
-    pub enable_ssao: Option<bool>,
     /// Permanently dismiss the banner warning to download the desktop app.
     /// This setting only applies to the web app. And is temporary until we have Linux support.
-    #[serde(default, alias = "dismissWebBanner", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub dismiss_web_banner: bool,
     /// When the user is idle, teardown the stream after some time.
     #[serde(
@@ -139,12 +87,12 @@ pub struct AppSettings {
         skip_serializing_if = "is_default"
     )]
     stream_idle_mode: Option<u32>,
-    /// When the user is idle, and this is true, the stream will be torn down.
-    #[serde(default, alias = "allowOrbitInSketchMode", skip_serializing_if = "is_default")]
+    /// Allow orbiting in sketch mode.
+    #[serde(default, skip_serializing_if = "is_default")]
     pub allow_orbit_in_sketch_mode: bool,
     /// Whether to show the debug panel, which lets you see various states
     /// of the app to aid in development.
-    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub show_debug_panel: bool,
 }
 
@@ -300,31 +248,25 @@ impl From<AppTheme> for kittycad::types::Color {
 #[ts(export)]
 pub struct ModelingSettings {
     /// The default unit to use in modeling dimensions.
-    #[serde(default, alias = "defaultUnit", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub base_unit: UnitLength,
     /// The projection mode the camera should use while modeling.
-    #[serde(default, alias = "cameraProjection", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub camera_projection: CameraProjectionType,
     /// The methodology the camera should use to orbit around the model.
-    #[serde(default, alias = "cameraOrbit", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub camera_orbit: CameraOrbitType,
     /// The controls for how to navigate the 3D view.
-    #[serde(default, alias = "mouseControls", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub mouse_controls: MouseControlType,
     /// Highlight edges of 3D objects?
-    #[serde(default, alias = "highlightEdges", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub highlight_edges: DefaultTrue,
-    /// Whether to show the debug panel, which lets you see various states
-    /// of the app to aid in development.
-    /// Remove this when we remove backwards compatibility with the old settings file.
-    #[serde(default, alias = "showDebugPanel", skip_serializing_if = "is_default")]
-    #[ts(skip)]
-    pub show_debug_panel: bool,
     /// Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
     #[serde(default, skip_serializing_if = "is_default")]
     pub enable_ssao: DefaultTrue,
     /// Whether or not to show a scale grid in the 3D modeling view
-    #[serde(default, alias = "showScaleGrid", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub show_scale_grid: bool,
 }
 
@@ -435,21 +377,17 @@ impl From<UnitLength> for kittycad_modeling_cmds::units::UnitLength {
 pub enum MouseControlType {
     #[default]
     #[display("zoo")]
-    #[serde(rename = "zoo", alias = "Zoo", alias = "KittyCAD")]
+    #[serde(rename = "zoo")]
     Zoo,
     #[display("onshape")]
-    #[serde(rename = "onshape", alias = "OnShape")]
+    #[serde(rename = "onshape")]
     OnShape,
-    #[serde(alias = "Trackpad Friendly")]
     TrackpadFriendly,
-    #[serde(alias = "Solidworks")]
     Solidworks,
-    #[serde(alias = "NX")]
     Nx,
-    #[serde(alias = "Creo")]
     Creo,
     #[display("autocad")]
-    #[serde(rename = "autocad", alias = "AutoCAD")]
+    #[serde(rename = "autocad")]
     AutoCad,
 }
 
@@ -487,10 +425,10 @@ pub enum CameraOrbitType {
 #[ts(export)]
 pub struct TextEditorSettings {
     /// Whether to wrap text in the editor or overflow with scroll.
-    #[serde(default, alias = "textWrapping", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub text_wrapping: DefaultTrue,
     /// Whether to make the cursor blink in the editor.
-    #[serde(default, alias = "blinkingCursor", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub blinking_cursor: DefaultTrue,
 }
 
@@ -503,7 +441,7 @@ pub struct ProjectSettings {
     #[serde(default, skip_serializing_if = "is_default")]
     pub directory: std::path::PathBuf,
     /// The default project name to use when creating a new project.
-    #[serde(default, alias = "defaultProjectName", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub default_project_name: ProjectNameTemplate,
 }
 
@@ -536,7 +474,7 @@ impl From<String> for ProjectNameTemplate {
 #[ts(export)]
 pub struct CommandBarSettings {
     /// Whether to include settings in the command bar.
-    #[serde(default, alias = "includeSettings", skip_serializing_if = "is_default")]
+    #[serde(default, skip_serializing_if = "is_default")]
     pub include_settings: DefaultTrue,
 }
 
@@ -589,9 +527,6 @@ pub enum OnboardingStatus {
     #[serde(rename = "/export")]
     #[display("/export")]
     Export,
-    #[serde(rename = "/move")]
-    #[display("/move")]
-    Move,
     #[serde(rename = "/sketching")]
     #[display("/sketching")]
     Sketching,
@@ -611,305 +546,9 @@ mod tests {
 
     use super::{
         AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
-        ModelingSettings, OnboardingStatus, ProjectSettings, Settings, TextEditorSettings, UnitLength,
+        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
+        TextEditorSettings, UnitLength,
     };
-    use crate::settings::types::CameraOrbitType;
-
-    #[test]
-    // Test that we can deserialize a project file from the old format.
-    // TODO: We can remove this functionality after a few versions.
-    fn test_backwards_compatible_project_settings_file_pw() {
-        let old_project_file = r#"[settings.app]
-theme = "dark"
-onboardingStatus = "dismissed"
-projectDirectory = ""
-enableSSAO = false
-
-[settings.modeling]
-defaultUnit = "in"
-cameraProjection = "orthographic"
-mouseControls = "KittyCAD"
-showDebugPanel = true
-
-[settings.projects]
-defaultProjectName = "untitled"
-
-[settings.textEditor]
-textWrapping = true
-#"#;
-
-        //let parsed = toml::from_str::<Configuration(old_project_file).unwrap();
-        let parsed = Configuration::backwards_compatible_toml_parse(old_project_file).unwrap();
-        assert_eq!(
-            parsed,
-            Configuration {
-                settings: Settings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::Dark,
-                            color: Default::default()
-                        },
-                        onboarding_status: OnboardingStatus::Dismissed,
-                        project_directory: None,
-                        theme: None,
-                        theme_color: None,
-                        dismiss_web_banner: false,
-                        enable_ssao: None,
-                        stream_idle_mode: None,
-                        allow_orbit_in_sketch_mode: false,
-                        show_debug_panel: true,
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::In,
-                        camera_projection: CameraProjectionType::Orthographic,
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
-                        show_debug_panel: Default::default(),
-                        highlight_edges: Default::default(),
-                        enable_ssao: false.into(),
-                        show_scale_grid: false,
-                    },
-                    text_editor: TextEditorSettings {
-                        text_wrapping: true.into(),
-                        blinking_cursor: true.into()
-                    },
-                    project: Default::default(),
-                    command_bar: CommandBarSettings {
-                        include_settings: true.into()
-                    },
-                }
-            }
-        );
-    }
-
-    #[test]
-    // Test that we can deserialize a project file from the old format.
-    // TODO: We can remove this functionality after a few versions.
-    fn test_backwards_compatible_project_settings_file() {
-        let old_project_file = r#"[settings.app]
-theme = "dark"
-themeColor = "138"
-
-[settings.modeling]
-defaultUnit = "yd"
-showDebugPanel = true
-
-[settings.textEditor]
-textWrapping = false
-blinkingCursor = false
-
-[settings.commandBar]
-includeSettings = false
-#"#;
-
-        //let parsed = toml::from_str::<Configuration(old_project_file).unwrap();
-        let parsed = Configuration::backwards_compatible_toml_parse(old_project_file).unwrap();
-        assert_eq!(
-            parsed,
-            Configuration {
-                settings: Settings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::Dark,
-                            color: 138.0.into()
-                        },
-                        onboarding_status: Default::default(),
-                        project_directory: None,
-                        theme: None,
-                        theme_color: None,
-                        dismiss_web_banner: false,
-                        enable_ssao: None,
-                        show_debug_panel: true,
-                        stream_idle_mode: None,
-                        allow_orbit_in_sketch_mode: false,
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::Yd,
-                        camera_projection: Default::default(),
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
-                        highlight_edges: Default::default(),
-                        enable_ssao: true.into(),
-                        show_scale_grid: false,
-                        show_debug_panel: Default::default(),
-                    },
-                    text_editor: TextEditorSettings {
-                        text_wrapping: false.into(),
-                        blinking_cursor: false.into()
-                    },
-                    project: Default::default(),
-                    command_bar: CommandBarSettings {
-                        include_settings: false.into()
-                    },
-                }
-            }
-        );
-    }
-
-    #[test]
-    // Test that we can deserialize a app settings file from the old format.
-    // TODO: We can remove this functionality after a few versions.
-    fn test_backwards_compatible_app_settings_file() {
-        let old_app_settings_file = r#"[settings.app]
-onboardingStatus = "dismissed"
-projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
-theme = "dark"
-themeColor = "138"
-
-[settings.modeling]
-defaultUnit = "yd"
-showDebugPanel = true
-
-[settings.textEditor]
-textWrapping = false
-blinkingCursor = false
-
-[settings.commandBar]
-includeSettings = false
-
-[settings.projects]
-defaultProjectName = "projects-$nnn"
-#"#;
-
-        //let parsed = toml::from_str::<Configuration>(old_app_settings_file).unwrap();
-        let parsed = Configuration::backwards_compatible_toml_parse(old_app_settings_file).unwrap();
-        assert_eq!(
-            parsed,
-            Configuration {
-                settings: Settings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::Dark,
-                            color: 138.0.into()
-                        },
-                        onboarding_status: OnboardingStatus::Dismissed,
-                        project_directory: None,
-                        theme: None,
-                        theme_color: None,
-                        dismiss_web_banner: false,
-                        enable_ssao: None,
-                        stream_idle_mode: None,
-                        allow_orbit_in_sketch_mode: false,
-                        show_debug_panel: true,
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::Yd,
-                        camera_projection: Default::default(),
-                        camera_orbit: CameraOrbitType::Spherical,
-                        mouse_controls: Default::default(),
-                        highlight_edges: Default::default(),
-                        show_debug_panel: Default::default(),
-                        enable_ssao: true.into(),
-                        show_scale_grid: false,
-                    },
-                    text_editor: TextEditorSettings {
-                        text_wrapping: false.into(),
-                        blinking_cursor: false.into()
-                    },
-                    project: ProjectSettings {
-                        directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "projects-$nnn".to_string().into()
-                    },
-                    command_bar: CommandBarSettings {
-                        include_settings: false.into()
-                    },
-                }
-            }
-        );
-
-        // Write the file back out.
-        let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(
-            serialized,
-            r#"[settings.app]
-onboarding_status = "dismissed"
-show_debug_panel = true
-
-[settings.app.appearance]
-theme = "dark"
-color = 138.0
-
-[settings.modeling]
-base_unit = "yd"
-
-[settings.text_editor]
-text_wrapping = false
-blinking_cursor = false
-
-[settings.project]
-directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
-default_project_name = "projects-$nnn"
-
-[settings.command_bar]
-include_settings = false
-"#
-        );
-    }
-
-    #[test]
-    fn test_settings_backwards_compat_partial() {
-        let partial_settings_file = r#"[settings.app]
-onboardingStatus = "dismissed"
-projectDirectory = "/Users/macinatormax/Documents/kittycad-modeling-projects""#;
-
-        //let parsed = toml::from_str::<Configuration>(partial_settings_file).unwrap();
-        let parsed = Configuration::backwards_compatible_toml_parse(partial_settings_file).unwrap();
-        assert_eq!(
-            parsed,
-            Configuration {
-                settings: Settings {
-                    app: AppSettings {
-                        appearance: AppearanceSettings {
-                            theme: AppTheme::System,
-                            color: Default::default()
-                        },
-                        onboarding_status: OnboardingStatus::Dismissed,
-                        project_directory: None,
-                        theme: None,
-                        theme_color: None,
-                        dismiss_web_banner: false,
-                        enable_ssao: None,
-                        show_debug_panel: false,
-                        stream_idle_mode: None,
-                        allow_orbit_in_sketch_mode: false,
-                    },
-                    modeling: ModelingSettings {
-                        base_unit: UnitLength::Mm,
-                        camera_projection: Default::default(),
-                        camera_orbit: Default::default(),
-                        mouse_controls: Default::default(),
-                        highlight_edges: true.into(),
-                        show_debug_panel: Default::default(),
-                        enable_ssao: true.into(),
-                        show_scale_grid: false,
-                    },
-                    text_editor: TextEditorSettings {
-                        text_wrapping: true.into(),
-                        blinking_cursor: true.into()
-                    },
-                    project: ProjectSettings {
-                        directory: "/Users/macinatormax/Documents/kittycad-modeling-projects".into(),
-                        default_project_name: "untitled".to_string().into()
-                    },
-                    command_bar: CommandBarSettings {
-                        include_settings: true.into()
-                    },
-                }
-            }
-        );
-
-        // Write the file back out.
-        let serialized = toml::to_string(&parsed).unwrap();
-        assert_eq!(
-            serialized,
-            r#"[settings.app]
-onboarding_status = "dismissed"
-
-[settings.project]
-directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
-"#
-        );
-    }
 
     #[test]
     fn test_settings_empty_file_parses() {
@@ -922,8 +561,85 @@ directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
         let serialized = toml::to_string(&parsed).unwrap();
         assert_eq!(serialized, r#""#);
 
-        let parsed = Configuration::backwards_compatible_toml_parse(empty_settings_file).unwrap();
+        let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+    }
+
+    #[test]
+    fn test_settings_parse_basic() {
+        let settings_file = r#"[settings.app]
+default_project_name = "untitled"
+directory = ""
+onboarding_status = "dismissed"
+
+  [settings.app.appearance]
+  theme = "dark"
+
+[settings.modeling]
+enable_ssao = false
+base_unit = "in"
+mouse_controls = "zoo"
+camera_projection = "perspective"
+
+[settings.project]
+default_project_name = "untitled"
+directory = ""
+
+[settings.text_editor]
+text_wrapping = true"#;
+
+        let expected = Configuration {
+            settings: Settings {
+                app: AppSettings {
+                    onboarding_status: OnboardingStatus::Dismissed,
+                    appearance: AppearanceSettings {
+                        theme: AppTheme::Dark,
+                        color: AppColor(264.5),
+                    },
+                    ..Default::default()
+                },
+                modeling: ModelingSettings {
+                    enable_ssao: false.into(),
+                    base_unit: UnitLength::In,
+                    mouse_controls: MouseControlType::Zoo,
+                    camera_projection: CameraProjectionType::Perspective,
+                    ..Default::default()
+                },
+                project: ProjectSettings {
+                    default_project_name: ProjectNameTemplate("untitled".to_string()),
+                    directory: "".into(),
+                },
+                text_editor: TextEditorSettings {
+                    text_wrapping: true.into(),
+                    ..Default::default()
+                },
+                command_bar: CommandBarSettings {
+                    include_settings: true.into(),
+                },
+            },
+        };
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(parsed, expected,);
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+onboarding_status = "dismissed"
+
+[settings.app.appearance]
+theme = "dark"
+
+[settings.modeling]
+base_unit = "in"
+camera_projection = "perspective"
+enable_ssao = false
+"#
+        );
+
+        let parsed = Configuration::parse_and_validate(settings_file).unwrap();
+        assert_eq!(parsed, expected);
     }
 
     #[test]
@@ -960,7 +676,7 @@ directory = "/Users/macinatormax/Documents/kittycad-modeling-projects"
         let settings_file = r#"[settings.app.appearance]
 color = 1567.4"#;
 
-        let result = Configuration::backwards_compatible_toml_parse(settings_file);
+        let result = Configuration::parse_and_validate(settings_file);
         if let Ok(r) = result {
             panic!("Expected an error, but got success: {:?}", r);
         }

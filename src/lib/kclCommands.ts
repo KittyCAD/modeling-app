@@ -2,7 +2,7 @@ import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { addImportAndInsert } from '@src/lang/modifyAst'
+import { addModuleImport } from '@src/lang/modifyAst'
 import {
   changeKclSettings,
   unitAngleToUnitAng,
@@ -130,7 +130,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const path = context.argumentsToSubmit['path'] as string
             return getPathFilenameInVariableCase(path)
           },
-          validation: async ({ data, context }) => {
+          validation: async ({ data }) => {
             const variableExists = kclManager.variables[data.localName]
             if (variableExists) {
               return 'This variable name is already in use.'
@@ -147,18 +147,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         const ast = kclManager.ast
         const { path, localName } = data
-        const { modifiedAst, pathToImportNode, pathToInsertNode } =
-          addImportAndInsert({
-            node: ast,
-            path,
-            localName,
-          })
+        const { modifiedAst, pathToNode } = addModuleImport({
+          ast,
+          path,
+          localName,
+        })
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
           {
-            focusPath: [pathToImportNode, pathToInsertNode],
+            focusPath: [pathToNode],
           }
         ).catch(reportRejection)
       },

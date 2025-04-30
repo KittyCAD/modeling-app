@@ -135,26 +135,26 @@ flowchart LR
     98[Solid2d]
   end
   subgraph path28 [Path]
-    28["Path<br>[1113, 1215, 11]"]
-    95["Segment<br>[2205, 2212, 11]"]
+    28["Path<br>[1113, 1203, 11]"]
+    95["Segment<br>[2133, 2140, 11]"]
     97[Solid2d]
   end
   subgraph path29 [Path]
-    29["Path<br>[1113, 1215, 11]"]
-    86["Segment<br>[1223, 1292, 11]"]
-    88["Segment<br>[1300, 1624, 11]"]
-    91["Segment<br>[1632, 1958, 11]"]
-    93["Segment<br>[1966, 2197, 11]"]
-    96["Segment<br>[2205, 2212, 11]"]
+    29["Path<br>[1113, 1203, 11]"]
+    86["Segment<br>[1211, 1280, 11]"]
+    88["Segment<br>[1288, 1588, 11]"]
+    91["Segment<br>[1596, 1898, 11]"]
+    93["Segment<br>[1906, 2125, 11]"]
+    96["Segment<br>[2133, 2140, 11]"]
     100[Solid2d]
   end
   subgraph path30 [Path]
-    30["Path<br>[1113, 1215, 11]"]
-    87["Segment<br>[1223, 1292, 11]"]
-    89["Segment<br>[1300, 1624, 11]"]
-    90["Segment<br>[1632, 1958, 11]"]
-    92["Segment<br>[1966, 2197, 11]"]
-    94["Segment<br>[2205, 2212, 11]"]
+    30["Path<br>[1113, 1203, 11]"]
+    87["Segment<br>[1211, 1280, 11]"]
+    89["Segment<br>[1288, 1588, 11]"]
+    90["Segment<br>[1596, 1898, 11]"]
+    92["Segment<br>[1906, 2125, 11]"]
+    94["Segment<br>[2133, 2140, 11]"]
     109[Solid2d]
   end
   1["Plane<br>[300, 317, 8]"]
@@ -177,7 +177,7 @@ flowchart LR
   129["Sweep Extrusion<br>[333, 353, 10]"]
   130["Sweep Extrusion<br>[543, 564, 10]"]
   131["Sweep Revolve<br>[764, 846, 11]"]
-  132["Sweep Loft<br>[2331, 2451, 11]"]
+  132["Sweep Loft<br>[2259, 2379, 11]"]
   133[Wall]
   134[Wall]
   135[Wall]
@@ -313,14 +313,14 @@ flowchart LR
   265["SweepEdge Adjacent"]
   266["SweepEdge Adjacent"]
   267["SweepEdge Adjacent"]
-  268["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  269["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  270["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  271["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  272["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  273["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  274["EdgeCut Fillet<br>[5113, 5630, 8]"]
-  275["EdgeCut Fillet<br>[5113, 5630, 8]"]
+  268["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  269["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  270["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  271["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  272["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  273["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  274["EdgeCut Fillet<br>[5113, 5624, 8]"]
+  275["EdgeCut Fillet<br>[5113, 5624, 8]"]
   276["EdgeCut Fillet<br>[394, 452, 10]"]
   277["EdgeCut Fillet<br>[394, 452, 10]"]
   1 --- 8
@@ -605,19 +605,19 @@ flowchart LR
   84 --- 147
   84 --- 233
   87 --- 169
-  87 x--> 184
+  87 x--> 183
   87 --- 212
   87 --- 257
   89 --- 168
-  89 x--> 184
+  89 x--> 183
   89 --- 214
   89 --- 258
   90 --- 167
-  90 x--> 184
+  90 x--> 183
   90 --- 211
   90 --- 256
   92 --- 166
-  92 x--> 184
+  92 x--> 183
   92 --- 213
   92 --- 259
   119 --- 162
@@ -865,10 +865,10 @@ flowchart LR
   221 <--x 181
   222 <--x 181
   193 <--x 182
-  211 <--x 183
-  212 <--x 183
-  213 <--x 183
-  214 <--x 183
+  211 <--x 184
+  212 <--x 184
+  213 <--x 184
+  214 <--x 184
   203 <--x 186
   204 <--x 186
   205 <--x 186

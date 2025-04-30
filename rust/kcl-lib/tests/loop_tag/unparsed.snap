@@ -21,8 +21,8 @@ angleIncrement = 360 / numSides
 // Function to calculate the coordinates of a point on the circle
 fn calculatePoint(index) {
   angle = index * angleIncrement
-  x = radius * math::cos(angle)
-  y = radius * math::sin(angle)
+  x = radius * cos(angle)
+  y = radius * sin(angle)
   return [x, y]
 }
 

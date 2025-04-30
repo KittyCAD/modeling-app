@@ -1,5 +1,18 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_constant.kcl
 ---
-[]
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "export_constant.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

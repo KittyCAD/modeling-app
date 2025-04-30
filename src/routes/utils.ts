@@ -3,12 +3,12 @@ import { isDesktop } from '@src/lib/isDesktop'
 import * as THREE from 'three'
 import { uuidv4 } from '@src/lib/utils'
 
-import { IS_PLAYWRIGHT_KEY } from '@src/lib/isPlaywright'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import type {
   CameraViewState_type,
   UnitLength_type,
 } from '@kittycad/lib/dist/types/src/models'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 

@@ -8,13 +8,13 @@ Draw a line relative to the current origin to a specified distance away from the
 
 
 
-```js
+```kcl
 xLine(
-  sketch: Sketch,
-  length?: number,
-  endAbsolute?: number,
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  length?: [number](/docs/kcl/types/number),
+  endAbsolute?: [number](/docs/kcl/types/number),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -25,7 +25,7 @@ xLine(
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
 | `length` | [`number`](/docs/kcl/types/number) | How far away along the X axis should this line go? Incompatible with `endAbsolute`. | No |
 | `endAbsolute` | [`number`](/docs/kcl/types/number) | Which absolute X value should this line go to? Incompatible with `length`. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -34,7 +34,7 @@ xLine(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> xLine(length = 15)

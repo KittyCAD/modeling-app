@@ -8,13 +8,13 @@ The value of `pi`, Archimedes’ constant (π).
 
 
 
-```js
+```kcl
 std::math::PI: number(_?) = 3.14159265358979323846264338327950288_?
 ```
 
 ### Examples
 
-```js
+```kcl
 circumference = 70
 
 exampleSketch = startSketchOn(XZ)

@@ -8,8 +8,8 @@ Compute the length of the provided line segment.
 
 
 
-```js
-segLen(tag: TagIdentifier): number
+```kcl
+segLen(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -17,7 +17,7 @@ segLen(tag: TagIdentifier): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
@@ -26,7 +26,7 @@ segLen(tag: TagIdentifier): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = 10, tag = $thing)

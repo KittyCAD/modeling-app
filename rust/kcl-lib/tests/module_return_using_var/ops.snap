@@ -7,7 +7,7 @@ description: Operations executed module_return_using_var.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "cube",
+      "name": "cube.kcl",
       "moduleId": 0
     },
     "sourceRange": []

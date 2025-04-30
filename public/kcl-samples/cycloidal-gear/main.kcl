@@ -11,8 +11,8 @@ fn cycloidalGear(gearPitch, gearHeight, holeDiameter, helixAngle: number(deg)) {
     helixAngleP = helixAngle * gHeight / gearHeight
     gearProfile = startSketchOn(offsetPlane(XY, offset = gHeight))
       |> startProfile(at = [
-           gearPitch * 1.55 * math::cos(helixAngleP) + gearPitch * math::sin(-helixAngleP),
-           gearPitch * 1.55 * math::sin(helixAngleP) + gearPitch * math::cos(-helixAngleP)
+           gearPitch * 1.55 * cos(helixAngleP) + gearPitch * sin(-helixAngleP),
+           gearPitch * 1.55 * sin(helixAngleP) + gearPitch * cos(-helixAngleP)
          ])
       |> arc(angleStart = 90 + helixAngleP, angleEnd = -90 + helixAngleP, radius = gearPitch)
       |> tangentialArc(radius = gearPitch * 1.67, angle = 60)

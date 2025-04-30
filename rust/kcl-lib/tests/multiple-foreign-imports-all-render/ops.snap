@@ -7,7 +7,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "cube",
+      "name": "cube.step",
       "moduleId": 0
     },
     "sourceRange": []
@@ -16,7 +16,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "othercube",
+      "name": "othercube.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -25,7 +25,7 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "anothercube",
+      "name": "anothercube.kcl",
       "moduleId": 0
     },
     "sourceRange": []

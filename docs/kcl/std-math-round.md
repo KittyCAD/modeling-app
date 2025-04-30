@@ -8,8 +8,8 @@ Round a number to the nearest integer.
 
 
 
-```js
-round(@input: number): number
+```kcl
+round(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,11 +26,11 @@ round(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XZ)
    |> startProfile(at = [0, 0])
    |> line(endAbsolute = [12, 10])
-   |> line(end = [math::round(7.02986), 0])
+   |> line(end = [round(7.02986), 0])
    |> yLine(endAbsolute = 0)
    |> close()
 

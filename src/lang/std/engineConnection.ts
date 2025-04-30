@@ -1434,7 +1434,7 @@ export class EngineCommandManager extends EventTarget {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.onEngineConnectionOpened = async () => {
       await this.rustContext?.clearSceneAndBustCache(
-        { settings: await jsAppSettings() },
+        await jsAppSettings(),
         this.codeManager?.currentFilePath || undefined
       )
 

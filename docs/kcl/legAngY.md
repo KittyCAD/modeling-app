@@ -8,11 +8,11 @@ Compute the angle of the given leg for y.
 
 
 
-```js
+```kcl
 legAngY(
-  hypotenuse: number,
-  leg: number,
-): number
+  hypotenuse: [number](/docs/kcl/types/number),
+  leg: [number](/docs/kcl/types/number),
+): [number](/docs/kcl/types/number)
 ```
 
 ### Tags
@@ -34,7 +34,7 @@ legAngY(
 
 ### Examples
 
-```js
+```kcl
 legAngY(hypotenuse = 5, leg = 3)
 ```
 

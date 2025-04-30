@@ -2,4 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_side_effect.kcl
 ---
-[]
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "export_side_effect.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

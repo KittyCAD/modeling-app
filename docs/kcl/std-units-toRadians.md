@@ -8,8 +8,8 @@ Converts a number to radians from its current units.
 
 
 
-```js
-toRadians(@num: number(rad)): number(rad)
+```kcl
+units::toRadians(@num: [number](/docs/kcl/types/number)(rad)): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -26,12 +26,12 @@ toRadians(@num: number(rad)): number(rad)
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 70 * math::cos(units::toRadians(45)),
+    length = 70 * cos(units::toRadians(45)),
   )
   |> yLine(endAbsolute = 0)
   |> close()

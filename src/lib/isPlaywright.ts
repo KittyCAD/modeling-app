@@ -1,4 +1,4 @@
-export const IS_PLAYWRIGHT_KEY = 'playwright'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 export function isPlaywright(): boolean {
   // ? checks for browser
