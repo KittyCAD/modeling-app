@@ -9,7 +9,7 @@ Compute the base 10 logarithm of the number.
 
 
 ```kcl
-math::log10(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
+log10(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -29,7 +29,7 @@ math::log10(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> line(end = [math::log10(100), 0])
+  |> line(end = [log10(100), 0])
   |> line(end = [5, 8])
   |> line(end = [-10, 0])
   |> close()

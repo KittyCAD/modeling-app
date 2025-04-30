@@ -9,7 +9,7 @@ Compute the tangent of a number.
 
 
 ```kcl
-math::tan(@num: [number](/docs/kcl/types/number)(Angle)): [number](/docs/kcl/types/number)(_)
+tan(@num: [number](/docs/kcl/types/number)(Angle)): [number](/docs/kcl/types/number)(_)
 ```
 
 
@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 50 * math::tan((1/2): number(rad)),
+    length = 50 * tan((1/2): number(rad)),
   )
   |> yLine(endAbsolute = 0)
   |> close()

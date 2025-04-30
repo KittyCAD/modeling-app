@@ -9,7 +9,7 @@ Compute the arctangent of a number.
 Consider using `atan2()` instead for the true inverse of tangent.
 
 ```kcl
-math::atan(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/number)(rad)
+atan(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -30,7 +30,7 @@ math::atan(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = math::atan(1.25),
+    angle = atan(1.25),
     length = 20,
   )
   |> yLine(endAbsolute = 0)

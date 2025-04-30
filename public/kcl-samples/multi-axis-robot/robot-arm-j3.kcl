@@ -8,8 +8,8 @@ import plane002, axisJ2, axisJ3C, axisJ4, axisJ2ArmLength, axisJ3CArmLength, axi
 // Create Body of J3 Robot Arm
 sketch017 = startSketchOn(plane002)
   |> startProfile(at = [
-       1.75 + axisJ2ArmLength * math::cos(axisJ2) - (axisJ3CArmWidth / 2 * math::sin(axisJ3C)),
-       8 + axisJ2ArmLength * math::sin(axisJ2) + axisJ3CArmWidth / 2 * math::cos(axisJ3C)
+       1.75 + axisJ2ArmLength * cos(axisJ2) - (axisJ3CArmWidth / 2 * sin(axisJ3C)),
+       8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmWidth / 2 * cos(axisJ3C)
      ])
   |> arc(angleStart = 90 + axisJ3C, angleEnd = 270 + axisJ3C, radius = axisJ3CArmWidth / 2)
   |> angledLine(angle = axisJ3C, length = axisJ3CArmLength)
@@ -21,8 +21,8 @@ extrude017 = extrude(sketch017, length = axisJ3CArmThickness)
 sketch018 = startSketchOn(extrude017, face = END)
   |> circle(
        center = [
-         1.75 + axisJ2ArmLength * math::cos(axisJ2),
-         8 + axisJ2ArmLength * math::sin(axisJ2)
+         1.75 + axisJ2ArmLength * cos(axisJ2),
+         8 + axisJ2ArmLength * sin(axisJ2)
        ],
        radius = 3.7 / 2,
        tag = $referenceEdge6,
@@ -35,15 +35,15 @@ extrude018 = extrude(sketch018, length = 0.15)
 sketch019 = startSketchOn(extrude018, face = END)
   |> circle(
        center = [
-         1.75 + (axisJ2ArmLength - 1) * math::cos(axisJ2),
-         8 + (axisJ2ArmLength - 1.5) * math::sin(axisJ2)
+         1.75 + (axisJ2ArmLength - 1) * cos(axisJ2),
+         8 + (axisJ2ArmLength - 1.5) * sin(axisJ2)
        ],
        radius = 0.2,
      )
   |> patternCircular2d(
        center = [
-         1.75 + axisJ2ArmLength * math::cos(axisJ2),
-         8 + axisJ2ArmLength * math::sin(axisJ2)
+         1.75 + axisJ2ArmLength * cos(axisJ2),
+         8 + axisJ2ArmLength * sin(axisJ2)
        ],
        instances = 8,
        arcDegrees = 360,
@@ -56,8 +56,8 @@ extrude019 = extrude(sketch019, length = 0.15)
 sketch020 = startSketchOn(extrude017, face = START)
   |> circle(
        center = [
-         -1.75 - (axisJ2ArmLength * math::cos(axisJ2)) - (axisJ3CArmLength * math::cos(axisJ3C)),
-         8 + axisJ2ArmLength * math::sin(axisJ2) + axisJ3CArmLength * math::sin(axisJ3C)
+         -1.75 - (axisJ2ArmLength * cos(axisJ2)) - (axisJ3CArmLength * cos(axisJ3C)),
+         8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
        ],
        radius = axisJ3CArmWidth / 2,
      )
@@ -66,8 +66,8 @@ extrude020 = extrude(sketch020, length = -0.5)
 sketch021 = startSketchOn(extrude017, face = END)
   |> circle(
        center = [
-         1.75 + axisJ2ArmLength * math::cos(axisJ2) + axisJ3CArmLength * math::cos(axisJ3C),
-         8 + axisJ2ArmLength * math::sin(axisJ2) + axisJ3CArmLength * math::sin(axisJ3C)
+         1.75 + axisJ2ArmLength * cos(axisJ2) + axisJ3CArmLength * cos(axisJ3C),
+         8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
        ],
        radius = axisJ3CArmWidth / 2.01,
      )
@@ -85,8 +85,8 @@ extrude022 = extrude(sketch022, length = -0.01)
 // Build Upper Claw Finger
 sketch023 = startSketchOn(extrude022, face = START)
   |> startProfile(at = [
-       1.75 + axisJ2ArmLength * math::cos(axisJ2) + axisJ3CArmLength * math::cos(axisJ3C),
-       8 + axisJ2ArmLength * math::sin(axisJ2) + axisJ3CArmLength * math::sin(axisJ3C)
+       1.75 + axisJ2ArmLength * cos(axisJ2) + axisJ3CArmLength * cos(axisJ3C),
+       8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
      ])
   |> angledLine(angle = axisJ3C + axisJ4 / 2, length = grabberLength / 4)
   |> arc(angleStart = 150 + axisJ3C + axisJ4 / 2, angleEnd = 30 + axisJ3C + axisJ4 / 2, radius = grabberLength / 3)
@@ -102,8 +102,8 @@ extrude023 = extrude(sketch023, length = -1.5)
 // Build Lower Claw Finger
 sketch024 = startSketchOn(extrude022, face = START)
   |> startProfile(at = [
-       1.75 + axisJ2ArmLength * math::cos(axisJ2) + axisJ3CArmLength * math::cos(axisJ3C),
-       8 + axisJ2ArmLength * math::sin(axisJ2) + axisJ3CArmLength * math::sin(axisJ3C)
+       1.75 + axisJ2ArmLength * cos(axisJ2) + axisJ3CArmLength * cos(axisJ3C),
+       8 + axisJ2ArmLength * sin(axisJ2) + axisJ3CArmLength * sin(axisJ3C)
      ])
   |> angledLine(angle = axisJ3C - (axisJ4 / 2), length = grabberLength / 4)
   |> arc(angleStart = 210 + axisJ3C - (axisJ4 / 2), angleEnd = 330 + axisJ3C - (axisJ4 / 2), radius = grabberLength / 3)

@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 70 * math::cos(units::toRadians(45)),
+    length = 70 * cos(units::toRadians(45)),
   )
   |> yLine(endAbsolute = 0)
   |> close()

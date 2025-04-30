@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```kcl
-math::abs(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
+abs(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -33,7 +33,7 @@ sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [8, 0])
   |> angledLine(
-    angle = math::abs(myAngle),
+    angle = abs(myAngle),
     length = 5,
   )
   |> line(end = [-5, 0])

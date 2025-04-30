@@ -10,7 +10,7 @@ Convert polar/sphere (azimuth, elevation, distance) coordinates to
 cartesian (x/y/z grid) coordinates.
 
 ```kcl
-math::polar(
+polar(
   angle: [number](/docs/kcl/types/number)(rad),
   length: [number](/docs/kcl/types/number)(Length),
 ): [Point2d](/docs/kcl/types/Point2d)
@@ -34,7 +34,7 @@ math::polar(
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> line(end = math::polar(angle = 30, length = 5), tag = $thing)
+  |> line(end = polar(angle = 30, length = 5), tag = $thing)
   |> line(end = [0, 5])
   |> line(end = [segEndX(thing), 0])
   |> line(end = [-20, 10])

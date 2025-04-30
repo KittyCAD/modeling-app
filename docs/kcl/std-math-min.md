@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```kcl
-math::min(@input: [[number](/docs/kcl/types/number); 1+]): [number](/docs/kcl/types/number)
+min(@input: [[number](/docs/kcl/types/number); 1+]): [number](/docs/kcl/types/number)
 ```
 
 
@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 70,
-    length = math::min([15, 31, 4, 13, 22])
+    length = min([15, 31, 4, 13, 22])
   )
   |> line(end = [20, 0])
   |> close()

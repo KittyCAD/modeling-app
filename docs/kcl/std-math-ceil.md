@@ -9,7 +9,7 @@ Compute the smallest integer greater than or equal to a number.
 
 
 ```kcl
-math::ceil(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
+ceil(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -30,7 +30,7 @@ math::ceil(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/n
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [12, 10])
-  |> line(end = [math::ceil(7.02986), 0])
+  |> line(end = [ceil(7.02986), 0])
   |> yLine(endAbsolute = 0)
   |> close()
 

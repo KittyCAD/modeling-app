@@ -149,84 +149,84 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
     match (path, fn_name) {
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a)),
-            StdFnProps::default("std::math::cos"),
+            StdFnProps::default("std::cos"),
         ),
         ("math", "sin") => (
             |e, a| Box::pin(crate::std::math::sin(e, a)),
-            StdFnProps::default("std::math::sin"),
+            StdFnProps::default("std::sin"),
         ),
         ("math", "tan") => (
             |e, a| Box::pin(crate::std::math::tan(e, a)),
-            StdFnProps::default("std::math::tan"),
+            StdFnProps::default("std::tan"),
         ),
         ("math", "acos") => (
             |e, a| Box::pin(crate::std::math::acos(e, a)),
-            StdFnProps::default("std::math::acos"),
+            StdFnProps::default("std::acos"),
         ),
         ("math", "asin") => (
             |e, a| Box::pin(crate::std::math::asin(e, a)),
-            StdFnProps::default("std::math::asin"),
+            StdFnProps::default("std::asin"),
         ),
         ("math", "atan") => (
             |e, a| Box::pin(crate::std::math::atan(e, a)),
-            StdFnProps::default("std::math::atan"),
+            StdFnProps::default("std::atan"),
         ),
         ("math", "atan2") => (
             |e, a| Box::pin(crate::std::math::atan2(e, a)),
-            StdFnProps::default("std::math::atan2"),
+            StdFnProps::default("std::atan2"),
         ),
         ("math", "sqrt") => (
             |e, a| Box::pin(crate::std::math::sqrt(e, a)),
-            StdFnProps::default("std::math::sqrt"),
+            StdFnProps::default("std::sqrt"),
         ),
 
         ("math", "abs") => (
             |e, a| Box::pin(crate::std::math::abs(e, a)),
-            StdFnProps::default("std::math::abs"),
+            StdFnProps::default("std::abs"),
         ),
         ("math", "rem") => (
             |e, a| Box::pin(crate::std::math::rem(e, a)),
-            StdFnProps::default("std::math::rem"),
+            StdFnProps::default("std::rem"),
         ),
         ("math", "round") => (
             |e, a| Box::pin(crate::std::math::round(e, a)),
-            StdFnProps::default("std::math::round"),
+            StdFnProps::default("std::round"),
         ),
         ("math", "floor") => (
             |e, a| Box::pin(crate::std::math::floor(e, a)),
-            StdFnProps::default("std::math::floor"),
+            StdFnProps::default("std::floor"),
         ),
         ("math", "ceil") => (
             |e, a| Box::pin(crate::std::math::ceil(e, a)),
-            StdFnProps::default("std::math::ceil"),
+            StdFnProps::default("std::ceil"),
         ),
         ("math", "min") => (
             |e, a| Box::pin(crate::std::math::min(e, a)),
-            StdFnProps::default("std::math::min"),
+            StdFnProps::default("std::min"),
         ),
         ("math", "max") => (
             |e, a| Box::pin(crate::std::math::max(e, a)),
-            StdFnProps::default("std::math::max"),
+            StdFnProps::default("std::max"),
         ),
         ("math", "pow") => (
             |e, a| Box::pin(crate::std::math::pow(e, a)),
-            StdFnProps::default("std::math::pow"),
+            StdFnProps::default("std::pow"),
         ),
         ("math", "log") => (
             |e, a| Box::pin(crate::std::math::log(e, a)),
-            StdFnProps::default("std::math::log"),
+            StdFnProps::default("std::log"),
         ),
         ("math", "log2") => (
             |e, a| Box::pin(crate::std::math::log2(e, a)),
-            StdFnProps::default("std::math::log2"),
+            StdFnProps::default("std::log2"),
         ),
         ("math", "log10") => (
             |e, a| Box::pin(crate::std::math::log10(e, a)),
-            StdFnProps::default("std::math::log10"),
+            StdFnProps::default("std::log10"),
         ),
         ("math", "ln") => (
             |e, a| Box::pin(crate::std::math::ln(e, a)),
-            StdFnProps::default("std::math::ln"),
+            StdFnProps::default("std::ln"),
         ),
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),

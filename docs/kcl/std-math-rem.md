@@ -10,7 +10,7 @@ Compute the remainder after dividing `num` by `div`.
 If `num` is negative, the result will be too.
 
 ```kcl
-math::rem(
+rem(
   @num: [number](/docs/kcl/types/number),
   divisor: [number](/docs/kcl/types/number),
 ): [number](/docs/kcl/types/number)
