@@ -148,7 +148,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         const ast = kclManager.ast
         const { path, localName } = data
         const { modifiedAst, pathToNode } = addModuleImport({
-          node: ast,
+          ast,
           path,
           localName,
         })

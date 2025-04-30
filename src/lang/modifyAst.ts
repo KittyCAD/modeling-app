@@ -713,25 +713,25 @@ export function addOffsetPlane({
  * Add an import call to load a part
  */
 export function addModuleImport({
-  node,
+  ast,
   path,
   localName,
 }: {
-  node: Node<Program>
+  ast: Node<Program>
   path: string
   localName: string
 }): {
   modifiedAst: Node<Program>
   pathToNode: PathToNode
 } {
-  const modifiedAst = structuredClone(node)
+  const modifiedAst = structuredClone(ast)
 
   // Add import statement
   const importStatement = createImportStatement(
     createImportAsSelector(localName),
     { type: 'Kcl', filename: path }
   )
-  const lastImportIndex = node.body.findLastIndex(
+  const lastImportIndex = modifiedAst.body.findLastIndex(
     (v) => v.type === 'ImportStatement'
   )
   const importIndex = lastImportIndex + 1 // either -1 + 1 = 0 or after the last import

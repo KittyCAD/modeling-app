@@ -138,7 +138,8 @@ export async function deleteFromSelection(
     )
     console.log('pathToPipeNode', JSON.stringify(pathToPipeNode))
     if (pathToPipeNode && typeof pathToPipeNode[1][0] === 'number') {
-      astClone.body.splice(pathToPipeNode[1][0], 1)
+      const pipeWithImportAliasIndex = pathToPipeNode[1][0]
+      astClone.body.splice(pipeWithImportAliasIndex, 1)
     }
 
     const importIndex = selection.codeRef.pathToNode[1][0]
