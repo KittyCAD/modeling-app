@@ -659,7 +659,9 @@ export function getKclVersion(): string {
 /**
  * Serialize a project configuration to a TOML string.
  */
-export function serializeConfiguration(configuration: any): string | Error {
+export function serializeConfiguration(
+  configuration: DeepPartial<Configuration>
+): string | Error {
   try {
     return serialize_configuration(configuration)
   } catch (e: any) {
@@ -671,7 +673,7 @@ export function serializeConfiguration(configuration: any): string | Error {
  * Serialize a project configuration to a TOML string.
  */
 export function serializeProjectConfiguration(
-  configuration: any
+  configuration: DeepPartial<ProjectConfiguration>
 ): string | Error {
   try {
     return serialize_project_configuration(configuration)

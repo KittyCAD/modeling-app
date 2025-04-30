@@ -547,7 +547,11 @@ mod tests {
     use pretty_assertions::assert_eq;
     use validator::Validate;
 
-    use super::{AppColor, AppTheme, AppearanceSettings, Configuration};
+    use super::{
+        AppColor, AppSettings, AppTheme, AppearanceSettings, CameraProjectionType, CommandBarSettings, Configuration,
+        ModelingSettings, MouseControlType, OnboardingStatus, ProjectNameTemplate, ProjectSettings, Settings,
+        TextEditorSettings, UnitLength,
+    };
 
     #[test]
     fn test_settings_empty_file_parses() {
@@ -562,6 +566,83 @@ mod tests {
 
         let parsed = Configuration::parse_and_validate(empty_settings_file).unwrap();
         assert_eq!(parsed, Configuration::default());
+    }
+
+    #[test]
+    fn test_settings_parse_basic() {
+        let settings_file = r#"[settings.app]
+default_project_name = "untitled"
+directory = ""
+onboarding_status = "dismissed"
+
+  [settings.app.appearance]
+  theme = "dark"
+
+[settings.modeling]
+enable_ssao = false
+base_unit = "in"
+mouse_controls = "zoo"
+camera_projection = "perspective"
+
+[settings.project]
+default_project_name = "untitled"
+directory = ""
+
+[settings.text_editor]
+text_wrapping = true"#;
+
+        let expected = Configuration {
+            settings: Settings {
+                app: AppSettings {
+                    onboarding_status: OnboardingStatus::Dismissed,
+                    appearance: AppearanceSettings {
+                        theme: AppTheme::Dark,
+                        color: AppColor(264.5),
+                    },
+                    ..Default::default()
+                },
+                modeling: ModelingSettings {
+                    enable_ssao: false.into(),
+                    base_unit: UnitLength::In,
+                    mouse_controls: MouseControlType::Zoo,
+                    camera_projection: CameraProjectionType::Perspective,
+                    ..Default::default()
+                },
+                project: ProjectSettings {
+                    default_project_name: ProjectNameTemplate("untitled".to_string()),
+                    directory: "".into(),
+                },
+                text_editor: TextEditorSettings {
+                    text_wrapping: true.into(),
+                    ..Default::default()
+                },
+                command_bar: CommandBarSettings {
+                    include_settings: true.into(),
+                },
+            },
+        };
+        let parsed = toml::from_str::<Configuration>(settings_file).unwrap();
+        assert_eq!(parsed, expected,);
+
+        // Write the file back out.
+        let serialized = toml::to_string(&parsed).unwrap();
+        assert_eq!(
+            serialized,
+            r#"[settings.app]
+onboarding_status = "dismissed"
+
+[settings.app.appearance]
+theme = "dark"
+
+[settings.modeling]
+base_unit = "in"
+camera_projection = "perspective"
+enable_ssao = false
+"#
+        );
+
+        let parsed = Configuration::parse_and_validate(settings_file).unwrap();
+        assert_eq!(parsed, expected);
     }
 
     #[test]

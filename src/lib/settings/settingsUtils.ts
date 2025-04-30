@@ -13,7 +13,10 @@ import {
   serializeProjectConfiguration,
 } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
-import { mouseControlsToCameraSystem } from '@src/lib/cameraControls'
+import {
+  cameraSystemToMouseControl,
+  mouseControlsToCameraSystem,
+} from '@src/lib/cameraControls'
 import { BROWSER_PROJECT_NAME } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
@@ -82,6 +85,50 @@ export function configurationToSettingsPayload(
     },
     commandBar: {
       includeSettings: configuration?.settings?.command_bar?.include_settings,
+    },
+  }
+}
+
+export function settingsPayloadToConfiguration(
+  configuration: DeepPartial<SaveSettingsPayload>
+): DeepPartial<Configuration> {
+  return {
+    settings: {
+      app: {
+        appearance: {
+          theme: configuration?.app?.theme,
+          color: configuration?.app?.themeColor
+            ? parseInt(configuration.app.themeColor, 10)
+            : undefined,
+        },
+        onboarding_status: configuration?.app?.onboardingStatus,
+        dismiss_web_banner: configuration?.app?.dismissWebBanner,
+        stream_idle_mode: configuration?.app?.streamIdleMode,
+        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
+        show_debug_panel: configuration?.app?.showDebugPanel,
+      },
+      modeling: {
+        base_unit: configuration?.modeling?.defaultUnit,
+        camera_projection: configuration?.modeling?.cameraProjection,
+        camera_orbit: configuration?.modeling?.cameraOrbit,
+        mouse_controls: configuration?.modeling?.mouseControls
+          ? cameraSystemToMouseControl(configuration?.modeling?.mouseControls)
+          : undefined,
+        highlight_edges: configuration?.modeling?.highlightEdges,
+        enable_ssao: configuration?.modeling?.enableSSAO,
+        show_scale_grid: configuration?.modeling?.showScaleGrid,
+      },
+      text_editor: {
+        text_wrapping: configuration?.textEditor?.textWrapping,
+        blinking_cursor: configuration?.textEditor?.blinkingCursor,
+      },
+      project: {
+        directory: configuration?.app?.projectDirectory,
+        default_project_name: configuration?.projects?.defaultProjectName,
+      },
+      command_bar: {
+        include_settings: configuration?.commandBar?.includeSettings,
+      },
     },
   }
 }
@@ -156,6 +203,41 @@ export function projectConfigurationToSettingsPayload(
   }
 }
 
+export function settingsPayloadToProjectConfiguration(
+  configuration: DeepPartial<SaveSettingsPayload>
+): DeepPartial<ProjectConfiguration> {
+  return {
+    settings: {
+      app: {
+        appearance: {
+          color: configuration?.app?.themeColor
+            ? parseInt(configuration.app.themeColor, 10)
+            : undefined,
+        },
+        onboarding_status: configuration?.app?.onboardingStatus,
+        dismiss_web_banner: configuration?.app?.dismissWebBanner,
+        allow_orbit_in_sketch_mode: configuration?.app?.allowOrbitInSketchMode,
+        show_debug_panel: configuration?.app?.showDebugPanel,
+        named_views: deepPartialNamedViewsToNamedViews(
+          configuration?.app?.namedViews
+        ),
+      },
+      modeling: {
+        base_unit: configuration?.modeling?.defaultUnit,
+        highlight_edges: configuration?.modeling?.highlightEdges,
+        enable_ssao: configuration?.modeling?.enableSSAO,
+      },
+      text_editor: {
+        text_wrapping: configuration?.textEditor?.textWrapping,
+        blinking_cursor: configuration?.textEditor?.blinkingCursor,
+      },
+      command_bar: {
+        include_settings: configuration?.commandBar?.includeSettings,
+      },
+    },
+  }
+}
+
 function localStorageAppSettingsPath() {
   return '/settings.toml'
 }
@@ -183,7 +265,7 @@ export function readLocalStorageAppSettingsFile():
   } catch (e) {
     const settings = defaultAppSettings()
     if (err(settings)) return settings
-    const tomlStr = serializeConfiguration(settings)
+    const tomlStr = ''
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -204,7 +286,7 @@ export function readLocalStorageProjectSettingsFile():
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings()
-    const tomlStr = serializeProjectConfiguration(settings)
+    const tomlStr = ''
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
@@ -281,7 +363,9 @@ export async function saveSettings(
 
   // Get the user settings.
   const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
-  const appTomlString = serializeConfiguration({ settings: jsAppSettings })
+  const appTomlString = serializeConfiguration(
+    settingsPayloadToConfiguration(jsAppSettings)
+  )
   if (err(appTomlString)) return
 
   // Write the app settings.
@@ -298,9 +382,9 @@ export async function saveSettings(
 
   // Get the project settings.
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  const projectTomlString = serializeProjectConfiguration({
-    settings: jsProjectSettings,
-  })
+  const projectTomlString = serializeProjectConfiguration(
+    settingsPayloadToProjectConfiguration(jsProjectSettings)
+  )
   if (err(projectTomlString)) return
 
   // Write the project settings.
