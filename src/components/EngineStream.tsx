@@ -91,6 +91,10 @@ export const EngineStream = (props: {
 
     kmp
       .then(async () => {
+        // Gotcha: Playwright E2E tests will be zoom_to_fit, when you try to recreate the e2e test manually
+        // your localhost will do view_isometric. Turn this boolean on to have the same exeperience when manually
+        // debugging e2e tests
+
         // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
         // written with zoom_to_fit with padding 0.1
         const padding = 0.1
