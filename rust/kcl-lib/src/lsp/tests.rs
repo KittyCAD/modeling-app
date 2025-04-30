@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, HashMap};
 use pretty_assertions::assert_eq;
 use tower_lsp::{
     lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, SemanticTokenModifier, SemanticTokenType, TextEdit,
-        WorkspaceEdit,
+        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
+        SemanticTokenType, TextEdit, WorkspaceEdit,
     },
     LanguageServer,
 };
@@ -4144,5 +4144,40 @@ async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
             disabled: None,
             data: None,
         })
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_prepare_rename() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let result = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        PrepareRenameResponse::DefaultBehavior { default_behavior: true }
     );
 }

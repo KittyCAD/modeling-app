@@ -27,14 +27,14 @@ use tower_lsp::{
         DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
         FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
         InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
-        MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
-        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
-        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
-        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
+        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
+        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
+        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -827,6 +827,39 @@ impl Backend {
 
         Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
+
+    /// Returns the new string for the code after rename.
+    pub fn inner_prepare_rename(
+        &self,
+        params: &TextDocumentPositionParams,
+        new_name: &str,
+    ) -> RpcResult<Option<(String, String)>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(None);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
+
+        // Parse the ast.
+        // I don't know if we need to do this again since it should be updated in the context.
+        // But I figure better safe than sorry since this will write back out to the file.
+        let module_id = ModuleId::default();
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+            return Ok(None);
+        };
+
+        // Let's convert the position to a character index.
+        let pos = position_to_char_index(params.position, current_code);
+        // Now let's perform the rename on the ast.
+        ast.rename_symbol(new_name, pos);
+        // Now recast it.
+        let recast = ast.recast(&Default::default(), 0);
+
+        Ok(Some((current_code.to_string(), recast)))
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -1459,42 +1492,37 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
-        let filename = params.text_document_position.text_document.uri.to_string();
-
-        let Some(current_code) = self.code_map.get(&filename) else {
-            return Ok(None);
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Some((current_code, new_code)) =
+            self.inner_prepare_rename(&params.text_document_position, &params.new_name)?
+        else {
             return Ok(None);
         };
 
-        // Parse the ast.
-        // I don't know if we need to do this again since it should be updated in the context.
-        // But I figure better safe than sorry since this will write back out to the file.
-        let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
-            return Ok(None);
-        };
-
-        // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, current_code);
-        // Now let's perform the rename on the ast.
-        ast.rename_symbol(&params.new_name, pos);
-        // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len(), module_id);
-        let range = source_range.to_lsp_range(current_code);
+        let source_range = SourceRange::new(0, current_code.len(), ModuleId::default());
+        let range = source_range.to_lsp_range(&current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,
                 vec![TextEdit {
-                    new_text: recast,
+                    new_text: new_code,
                     range,
                 }],
             )])),
             document_changes: None,
             change_annotations: None,
         }))
+    }
+
+    async fn prepare_rename(&self, params: TextDocumentPositionParams) -> RpcResult<Option<PrepareRenameResponse>> {
+        if self
+            .inner_prepare_rename(&params, "someNameNoOneInTheirRightMindWouldEverUseForTesting")?
+            .is_none()
+        {
+            return Ok(None);
+        }
+
+        // Return back to the client, that it is safe to use the rename behavior.
+        Ok(Some(PrepareRenameResponse::DefaultBehavior { default_behavior: true }))
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> RpcResult<Option<Vec<FoldingRange>>> {
