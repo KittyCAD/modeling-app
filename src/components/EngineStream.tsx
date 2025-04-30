@@ -117,7 +117,7 @@ export const EngineStream = (props: {
            * Default all users to view_isometric when loading into the engine.
            * This works for perspective projection and orthographic projection
            * This does not change the projection of the camera only the view direction which makes
-           * it safe to use with wither projection defaulted
+           * it safe to use with either projection defaulted
            */
           await engineCommandManager.sendSceneCommand({
             type: 'modeling_cmd_req',
