@@ -1,10 +1,5 @@
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import {
-  PATHS,
-  joinRouterPaths,
-  joinOSPaths,
-  safeEncodeForRouterPaths,
-} from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
 import {
   useHasListedProjects,
@@ -40,14 +35,14 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
+      let projectPathWithoutSpecificKCLFile =
+        projectDirectoryPath +
+        window.electron.path.sep +
         requestedProjectName.name
-      )
-      const requestedPath = joinRouterPaths(
-        PATHS.FILE,
-        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile)
-      )
+
+      const requestedPath = `${PATHS.FILE}/${encodeURIComponent(
+        projectPathWithoutSpecificKCLFile
+      )}`
       navigate(requestedPath)
     }, [requestedProjectName])
   }
@@ -57,16 +52,12 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedFileName.file || !requestedFileName.project) {
         return
       }
-      const filePath = joinOSPaths(
+      const projectPath = window.electron.join(
         projectDirectoryPath,
-        requestedFileName.project,
-        requestedFileName.file
+        requestedFileName.project
       )
-      const requestedPath = joinRouterPaths(
-        PATHS.FILE,
-        safeEncodeForRouterPaths(filePath),
-        requestedFileName.subRoute || ''
-      )
+      const filePath = window.electron.join(projectPath, requestedFileName.file)
+      const requestedPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
       navigate(requestedPath)
     }, [requestedFileName])
   }

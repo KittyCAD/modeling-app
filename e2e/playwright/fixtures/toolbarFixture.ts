@@ -17,8 +17,6 @@ type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 export class ToolbarFixture {
   public page: Page
 
-  projectName!: Locator
-  fileName!: Locator
   extrudeButton!: Locator
   loftButton!: Locator
   sweepButton!: Locator
@@ -55,8 +53,6 @@ export class ToolbarFixture {
   constructor(page: Page) {
     this.page = page
 
-    this.projectName = page.getByTestId('app-header-project-name')
-    this.fileName = page.getByTestId('app-header-file-name')
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
     this.sweepButton = page.getByTestId('sweep')

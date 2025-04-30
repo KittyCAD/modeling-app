@@ -43,11 +43,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.navigateToFile
-          data: {
-            requestedProjectName: string
-            requestedFileName: string
-            requestedSubRoute?: string
-          }
+          data: { requestedProjectName: string; requestedFileName: string }
         }
       | {
           type: SystemIOMachineEvents.createProject
@@ -79,7 +75,6 @@ export const systemIOMachine = setup({
             requestedProjectName: string
             requestedFileName: string
             requestedCode: string
-            requestedSubRoute?: string
           }
         }
       | {
@@ -122,9 +117,7 @@ export const systemIOMachine = setup({
     [SystemIOMachineActions.setRequestedProjectName]: assign({
       requestedProjectName: ({ event }) => {
         assertEvent(event, SystemIOMachineEvents.navigateToProject)
-        return {
-          name: event.data.requestedProjectName,
-        }
+        return { name: event.data.requestedProjectName }
       },
     }),
     [SystemIOMachineActions.setRequestedFileName]: assign({
@@ -133,7 +126,6 @@ export const systemIOMachine = setup({
         return {
           project: event.data.requestedProjectName,
           file: event.data.requestedFileName,
-          subRoute: event.data.requestedSubRoute,
         }
       },
     }),
@@ -232,15 +224,13 @@ export const systemIOMachine = setup({
           requestedFileName: string
           requestedCode: string
           rootContext: AppMachineContext
-          requestedSubRoute?: string
         }
       }): Promise<{
         message: string
         fileName: string
         projectName: string
-        subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '', subRoute: '' }
+        return { message: '', fileName: '', projectName: '' }
       }
     ),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
@@ -468,7 +458,6 @@ export const systemIOMachine = setup({
             context,
             requestedProjectName: event.data.requestedProjectName,
             requestedFileName: event.data.requestedFileName,
-            requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
           }
@@ -487,7 +476,6 @@ export const systemIOMachine = setup({
                 return {
                   project: event.output.projectName,
                   file,
-                  subRoute: event.output.subRoute,
                 }
               },
             }),
