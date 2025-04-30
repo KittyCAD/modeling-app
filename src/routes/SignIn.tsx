@@ -26,7 +26,9 @@ const SignIn = () => {
   if (isDesktop()) {
     window.electron.createFallbackMenu().catch(reportRejection)
     // Disable these since they cannot be accessed within the sign in page.
-    window.electron.disableMenu('Help.Reset onboarding').catch(reportRejection)
+    window.electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
 
