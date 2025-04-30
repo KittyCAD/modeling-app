@@ -1094,6 +1094,10 @@ export function findPipesWithImportAlias(
 ) {
   let pipes: { expression: PipeExpression; pathToNode: PathToNode }[] = []
   const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+  const callInPipeFilter = callInPipe
+    ? (v: Expr) =>
+        v.type === 'CallExpressionKw' && v.callee.name.name === callInPipe
+    : undefined
   if (importNodeAndAlias) {
     for (const [i, n] of ast.body.entries()) {
       if (
@@ -1102,23 +1106,17 @@ export function findPipesWithImportAlias(
         n.expression.body[0].type === 'Name' &&
         n.expression.body[0].name.name === importNodeAndAlias.alias
       ) {
-        if (callInPipe) {
-          const containsFilter = n.expression.body.some(
-            (v) =>
-              v.type === 'CallExpressionKw' && v.callee.name.name === callInPipe
-          )
-          if (!containsFilter) {
-            continue
-          }
-        }
         const expression = n.expression
         const pathToNode: PathToNode = [
           ['body', ''],
           [i, 'index'],
           ['expression', 'PipeExpression'],
         ]
+        if (callInPipeFilter && !expression.body.some(callInPipeFilter)) {
+          continue
+        }
+
         pipes.push({ expression, pathToNode })
-        break
       }
 
       if (
@@ -1136,8 +1134,11 @@ export function findPipesWithImportAlias(
           ['init', 'VariableDeclarator'],
           ['body', 'PipeExpression'],
         ]
+        if (callInPipeFilter && !expression.body.some(callInPipeFilter)) {
+          continue
+        }
+
         pipes.push({ expression, pathToNode })
-        break
       }
     }
   }

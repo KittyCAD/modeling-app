@@ -136,7 +136,7 @@ export async function deleteFromSelection(
     typeof selection.codeRef.pathToNode[1][0] === 'number'
   ) {
     const pipes = findPipesWithImportAlias(ast, selection.codeRef.pathToNode)
-    for (const { pathToNode: pathToPipeNode } of pipes) {
+    for (const { pathToNode: pathToPipeNode } of pipes.reverse()) {
       if (typeof pathToPipeNode[1][0] === 'number') {
         const pipeWithImportAliasIndex = pathToPipeNode[1][0]
         astClone.body.splice(pipeWithImportAliasIndex, 1)
