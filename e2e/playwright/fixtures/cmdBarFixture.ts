@@ -276,7 +276,6 @@ export class CmdBarFixture {
           fs.mkdirSync(dir, { recursive: true })
         }
 
-        console.log('writing file!!')
         // Write the request body to the file
         fs.writeFileSync(outputPath, JSON.stringify(requestBody, null, 2))
 
