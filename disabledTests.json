@@ -1,0 +1,10 @@
+{
+  "Can edit a sketch that has been revolved in the same pipe": {
+    "title":"Can edit a sketch that has been revolved in the same pipe",
+    "titlePath": [
+        "sketch-tests.spec.ts",
+        "Sketch tests",
+        "Can edit a sketch that has been revolved in the same pipe"
+      ]
+  }
+}
