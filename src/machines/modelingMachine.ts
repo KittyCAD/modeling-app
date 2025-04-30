@@ -105,7 +105,6 @@ import type {
   CallExpression,
   CallExpressionKw,
   Expr,
-  ExpressionStatement,
   Literal,
   Name,
   PathToNode,
@@ -137,6 +136,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2928,11 +2928,11 @@ export const modelingMachine = setup({
 
         const returnEarly = true
         const geometryNode = getNodeFromPath<
-          VariableDeclaration | ExpressionStatement | PipeExpression
+          VariableDeclaration | ImportStatement | PipeExpression
         >(
           ast,
           pathToNode,
-          ['VariableDeclaration', 'ExpressionStatement', 'PipeExpression'],
+          ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
           returnEarly
         )
         if (err(geometryNode)) {
@@ -2945,16 +2945,11 @@ export const modelingMachine = setup({
         if (geometryNode.node.type === 'VariableDeclaration') {
           geometryName = geometryNode.node.declaration.id.name
         } else if (
-          geometryNode.node.type === 'ExpressionStatement' &&
-          geometryNode.node.expression.type === 'Name'
+          geometryNode.node.type === 'ImportStatement' &&
+          geometryNode.node.selector.type === 'None' &&
+          geometryNode.node.selector.alias
         ) {
-          geometryName = geometryNode.node.expression.name.name
-        } else if (
-          geometryNode.node.type === 'ExpressionStatement' &&
-          geometryNode.node.expression.type === 'PipeExpression' &&
-          geometryNode.node.expression.body[0].type === 'Name'
-        ) {
-          geometryName = geometryNode.node.expression.body[0].name.name
+          geometryName = geometryNode.node.selector.alias?.name
         } else {
           return Promise.reject(
             new Error("Couldn't find corresponding geometry")

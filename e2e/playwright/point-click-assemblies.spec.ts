@@ -603,8 +603,7 @@ foreign
     }
   )
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
+  test(
     'Point-and-click Clone on assembly parts',
     { tag: ['@electron'] },
     async ({
