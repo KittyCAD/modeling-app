@@ -98,7 +98,7 @@ export function settingsPayloadToConfiguration(
         appearance: {
           theme: configuration?.app?.theme,
           color: configuration?.app?.themeColor
-            ? parseInt(configuration.app.themeColor, 10)
+            ? parseFloat(configuration.app.themeColor)
             : undefined,
         },
         onboarding_status: configuration?.app?.onboardingStatus,
@@ -211,7 +211,7 @@ export function settingsPayloadToProjectConfiguration(
       app: {
         appearance: {
           color: configuration?.app?.themeColor
-            ? parseInt(configuration.app.themeColor, 10)
+            ? parseFloat(configuration.app.themeColor)
             : undefined,
         },
         onboarding_status: configuration?.app?.onboardingStatus,
