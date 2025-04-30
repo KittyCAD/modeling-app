@@ -149,9 +149,10 @@ function createPipeWithTransform(
  * path to the pipe node, and the alias. Wrote for the assemblies codemods.
  * Gotcha: doesn't support multiple pipe expressions for the same alias.
  */
-export function lookAheadForPipeWithImportAlias(
+export function findFirstPipeWithImportAlias(
   ast: Node<Program>,
-  pathToNode: PathToNode
+  pathToNode: PathToNode,
+  filterInPipe?: string
 ) {
   let pipe: PipeExpression | undefined
   let pathToPipeNode: PathToNode | undefined
@@ -174,6 +175,16 @@ export function lookAheadForPipeWithImportAlias(
         n.expression.body[0].type === 'Name' &&
         n.expression.body[0].name.name === alias
       ) {
+        if (filterInPipe) {
+          const containsFilter = n.expression.body.some(
+            (v) =>
+              v.type === 'CallExpressionKw' &&
+              v.callee.name.name === filterInPipe
+          )
+          if (!containsFilter) {
+            continue
+          }
+        }
         pipe = n.expression
         pathToPipeNode = [
           ['body', ''],

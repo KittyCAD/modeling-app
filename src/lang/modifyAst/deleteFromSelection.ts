@@ -33,7 +33,7 @@ import type {
 import type { Selection } from '@src/lib/selections'
 import { err, reportRejection } from '@src/lib/trap'
 import { isArray, roundOff } from '@src/lib/utils'
-import { lookAheadForPipeWithImportAlias } from '@src/lang/modifyAst/setTransform'
+import { findFirstPipeWithImportAlias } from '@src/lang/modifyAst/setTransform'
 
 export async function deleteFromSelection(
   ast: Node<Program>,
@@ -132,7 +132,8 @@ export async function deleteFromSelection(
     selection.codeRef.pathToNode[1] &&
     typeof selection.codeRef.pathToNode[1][0] === 'number'
   ) {
-    const { pathToPipeNode } = lookAheadForPipeWithImportAlias(
+    // Gotcha: this is finding only the first pipe and won't look for all pipes in the file
+    const { pathToPipeNode } = findFirstPipeWithImportAlias(
       ast,
       selection.codeRef.pathToNode
     )

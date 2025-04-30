@@ -84,7 +84,7 @@ import { setAppearance } from '@src/lang/modifyAst/setAppearance'
 import {
   setTranslate,
   setRotate,
-  lookAheadForPipeWithImportAlias,
+  findFirstPipeWithImportAlias,
   insertExpressionNode,
 } from '@src/lang/modifyAst/setTransform'
 import {
@@ -2788,9 +2788,10 @@ export const modelingMachine = setup({
         }
 
         // Look up for an existing expression referring to the import alias, otherwise create one
-        const { pipe, pathToPipeNode, alias } = lookAheadForPipeWithImportAlias(
+        const { pipe, pathToPipeNode, alias } = findFirstPipeWithImportAlias(
           ast,
-          pathToNode
+          pathToNode,
+          'translate'
         )
         if (pipe && pathToPipeNode) {
           pathToNode = pathToPipeNode
@@ -2855,10 +2856,11 @@ export const modelingMachine = setup({
           }
         }
 
-        // Look up for an existing expression refering to the import alias, otherwise create one
-        const { pipe, pathToPipeNode, alias } = lookAheadForPipeWithImportAlias(
+        // Look up for an existing expression referring to the import alias, otherwise create one
+        const { pipe, pathToPipeNode, alias } = findFirstPipeWithImportAlias(
           ast,
-          pathToNode
+          pathToNode,
+          'rotate'
         )
         if (pipe && pathToPipeNode) {
           pathToNode = pathToPipeNode
