@@ -307,6 +307,8 @@ export const settingsMachine = setup({
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
 
+      console.log('Resetting settings at level', event.level)
+
       // Create a new, blank payload
       const newPayload =
         event.level === 'user'
