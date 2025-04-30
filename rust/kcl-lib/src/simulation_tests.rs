@@ -1016,8 +1016,29 @@ mod import_glob {
         super::execute(TEST_NAME, false).await
     }
 }
-mod import_whole {
-    const TEST_NAME: &str = "import_whole";
+mod import_whole_simple {
+    const TEST_NAME: &str = "import_whole_simple";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
+mod import_whole_transitive_import {
+    const TEST_NAME: &str = "import_whole_transitive_import";
 
     /// Test parsing KCL.
     #[test]

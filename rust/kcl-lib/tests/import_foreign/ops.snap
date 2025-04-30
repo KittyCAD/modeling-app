@@ -7,7 +7,7 @@ description: Operations executed import_foreign.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "cube",
+      "name": "cube.gltf",
       "moduleId": 0
     },
     "sourceRange": []
