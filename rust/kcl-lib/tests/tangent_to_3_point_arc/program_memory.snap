@@ -86,10 +86,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -98,6 +96,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -154,9 +154,8 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
   "sketch001": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -165,6 +164,7 @@ description: Variables in memory after executing tangent_to_3_point_arc.kcl
           "type": "Mm"
         }
       },
+      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
