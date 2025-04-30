@@ -29,6 +29,7 @@ export const ShareButton = () => {
       onClick={onShareClick}
       disabled={disabled}
       className="flex gap-1 items-center py-0 pl-0.5 pr-1.5 m-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid active:border-primary"
+      data-testid="share-button"
     >
       <CustomIcon name="link" className="w-5 h-5" />
       <span className="flex-1">Share</span>
