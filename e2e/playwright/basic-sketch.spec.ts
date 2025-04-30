@@ -161,7 +161,12 @@ async function doBasicSketch(
   // Open the code pane.
   await u.openKclCodePanel()
   await editor.expectEditor.toContain(
-    `sketch001=startSketchOn(XZ)profile001=startProfile(sketch001,at=[182.59,-246.32])|>xLine(length=184.3,tag=$seg01)|>yLine(length=184.31)|>xLine(length=-segLen(seg01))`,
+    `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
+      commonPoints.startAt
+    })
+  |> xLine(length = ${commonPoints.num1}, tag = $seg01)
+  |> yLine(length = ${commonPoints.num1 + 0.01})
+  |> xLine(length = -segLen(seg01))`,
     { shouldNormalise: true }
   )
 }
