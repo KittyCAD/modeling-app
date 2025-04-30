@@ -2,6 +2,7 @@ import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import {
   PATHS,
   joinRouterPaths,
+  joinOSPaths,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
@@ -39,7 +40,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedProjectName.name) {
         return
       }
-      const projectPathWithoutSpecificKCLFile = joinRouterPaths(
+      const projectPathWithoutSpecificKCLFile = joinOSPaths(
         projectDirectoryPath,
         requestedProjectName.name
       )
@@ -56,7 +57,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       if (!requestedFileName.file || !requestedFileName.project) {
         return
       }
-      const filePath = joinRouterPaths(
+      const filePath = joinOSPaths(
         projectDirectoryPath,
         requestedFileName.project,
         requestedFileName.file

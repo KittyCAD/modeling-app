@@ -156,6 +156,29 @@ export function joinRouterPaths(...parts: string[]): string {
   )
 }
 
+/**
+ * Joins any number of arguments of strings to create a OS level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * or \value\value1\value2 for POSIX OSes like Windows
+ * Filters out the separator slashes
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ * or \dog\cat on POSIX
+ */
+export function joinOSPaths(...parts: string[]): string {
+  const sep = window.electron?.sep || '/'
+  const regexSep = sep === '/' ? '/' : '\\'
+  return (
+    (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
+    parts
+      .map((part) =>
+        part.replace(new RegExp(`^${regexSep}+|${regexSep}+$`, 'g'), '')
+      ) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0) // Remove empty segments
+      .join(sep)
+  )
+}
+
 export function safeEncodeForRouterPaths(dynamicValue: string): string {
   return `${encodeURIComponent(dynamicValue)}`
 }

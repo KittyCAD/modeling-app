@@ -27,7 +27,7 @@ import { settingsActor } from '@src/lib/singletons'
 import { isKclEmptyOrOnlySettings, parse, resultIsOk } from '@src/lang/wasm'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
-  DEFAULT_FILE_NAME,
+  DEFAULT_PROJECT_KCL_FILE,
   EXECUTION_TYPE_REAL,
   ONBOARDING_PROJECT_NAME,
 } from '@src/lib/constants'
@@ -229,7 +229,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedFileName: DEFAULT_FILE_NAME,
+        requestedFileName: DEFAULT_PROJECT_KCL_FILE,
         requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING.INDEX,
