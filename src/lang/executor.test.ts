@@ -433,7 +433,8 @@ describe('testing math operators', () => {
     expect((removedUnaryExpMemSketch as Sketch).paths?.[1]?.to).toEqual([6, 8])
   })
   it('with nested callExpression and binaryExpression', async () => {
-    const code = 'myVar = 2 + math::min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
+    const code =
+      'myVar = 2 + math::min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(5)
   })
