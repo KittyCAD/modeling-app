@@ -2765,7 +2765,7 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Translate'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) return Promise.reject(new Error('No input provided'))
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { x, y, z, nodeToEdit, selection } = input
@@ -2778,13 +2778,17 @@ export const modelingMachine = setup({
             )
             const variable = getLastVariable(children, modifiedAst)
             if (!variable) {
-              return new Error("Couldn't find corresponding path to node")
+              return Promise.reject(
+                new Error("Couldn't find corresponding path to node")
+              )
             }
             pathToNode = variable.pathToNode
           } else if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
-            return new Error("Couldn't find corresponding path to node")
+            return Promise.reject(
+              new Error("Couldn't find corresponding path to node")
+            )
           }
         }
 
@@ -2825,7 +2829,7 @@ export const modelingMachine = setup({
           z: valueOrVariable(z),
         })
         if (err(result)) {
-          return err(result)
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -2848,7 +2852,7 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Rotate'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) return Promise.reject(new Error('No input provided'))
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { roll, pitch, yaw, nodeToEdit, selection } = input
@@ -2861,13 +2865,17 @@ export const modelingMachine = setup({
             )
             const variable = getLastVariable(children, modifiedAst)
             if (!variable) {
-              return new Error("Couldn't find corresponding path to node")
+              return Promise.reject(
+                new Error("Couldn't find corresponding path to node")
+              )
             }
             pathToNode = variable.pathToNode
           } else if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
-            return new Error("Couldn't find corresponding path to node")
+            return Promise.reject(
+              new Error("Couldn't find corresponding path to node")
+            )
           }
         }
 
@@ -2908,7 +2916,7 @@ export const modelingMachine = setup({
           yaw: valueOrVariable(yaw),
         })
         if (err(result)) {
-          return err(result)
+          return Promise.reject(result)
         }
 
         await updateModelingState(

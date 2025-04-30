@@ -55,7 +55,7 @@ export function setTranslate({
 
   return {
     modifiedAst,
-    pathToNode, // TODO: check if this should be updated
+    pathToNode,
   }
 }
 
@@ -95,7 +95,7 @@ export function setRotate({
 
   return {
     modifiedAst,
-    pathToNode, // TODO: check if this should be updated
+    pathToNode,
   }
 }
 
