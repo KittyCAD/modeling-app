@@ -738,6 +738,11 @@ export class KclManager {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
 
+  // Determines if there is no KCL code which means it is executing a blank KCL file
+  isAstBodyEmpty(ast: Node<Program>) {
+    return ast.body.length === 0
+  }
+
   get fileSettings() {
     return this._fileSettings
   }

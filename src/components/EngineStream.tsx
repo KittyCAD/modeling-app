@@ -30,6 +30,12 @@ import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import {
+  engineStreamZoomToFit,
+  engineViewIsometricWithGeometryPresent,
+  engineViewIsometricWithoutGeometryPresent,
+} from '@src/routes/utils'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -79,6 +85,7 @@ export const EngineStream = (props: {
 
   // When the scene is ready play the stream and execute!
   const play = () => {
+    console.log('PALY PLAY PLAYPLAYPLAYPALYAPY')
     engineStreamActor.send({
       type: EngineStreamTransition.Play,
     })
@@ -99,46 +106,22 @@ export const EngineStream = (props: {
         // written with zoom_to_fit with padding 0.1
         const padding = 0.1
         if (isPlaywright()) {
-          // It makes sense to also call zoom to fit here, when a new file is
-          // loaded for the first time, but not overtaking the work kevin did
-          // so the camera isn't moving all the time.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'zoom_to_fit',
-              object_ids: [], // leave empty to zoom to all objects
-              padding, // padding around the objects
-              animated: false, // don't animate the zoom for now
-            },
-          })
+          await engineStreamZoomToFit({ engineCommandManager, padding })
         } else {
-          /**
-           * Default all users to view_isometric when loading into the engine.
-           * This works for perspective projection and orthographic projection
-           * This does not change the projection of the camera only the view direction which makes
-           * it safe to use with either projection defaulted
-           */
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'view_isometric',
-              padding, // padding around the objects
-            },
-          })
-
-          /**
-           * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
-           * to render which makes the axis point in an old direction.
-           */
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_get_settings',
-            },
-          })
+          // If the scene is empty you cannot use view_isometric, it will not move the camera
+          if (kclManager.isAstBodyEmpty(kclManager.ast)) {
+            await engineViewIsometricWithoutGeometryPresent({
+              engineCommandManager,
+              unit:
+                kclManager.fileSettings.defaultLengthUnit ||
+                DEFAULT_DEFAULT_LENGTH_UNIT,
+            })
+          } else {
+            await engineViewIsometricWithGeometryPresent({
+              engineCommandManager,
+              padding,
+            })
+          }
         }
       })
       .catch(trap)
