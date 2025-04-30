@@ -30,7 +30,7 @@ asin(@num: number(_)): number(rad)
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = math::asin(0.5),
+    angle = asin(0.5),
     length = 20,
   )
   |> yLine(endAbsolute = 0)

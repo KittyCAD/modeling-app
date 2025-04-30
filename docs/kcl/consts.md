@@ -21,7 +21,10 @@ layout: manual
 ### `std::math`
 
 - [`E`](/docs/kcl/consts/std-math-E)
+- [`E`](/docs/kcl/consts/std-math-E)
 - [`PI`](/docs/kcl/consts/std-math-PI)
+- [`PI`](/docs/kcl/consts/std-math-PI)
+- [`TAU`](/docs/kcl/consts/std-math-TAU)
 - [`TAU`](/docs/kcl/consts/std-math-TAU)
 
 ### `std::turns`
