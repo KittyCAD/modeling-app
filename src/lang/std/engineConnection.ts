@@ -1539,7 +1539,7 @@ export class EngineCommandManager extends EventTarget {
       try {
         console.log('clearing scene and busting cache')
         await this.rustContext?.clearSceneAndBustCache(
-          { settings: await jsAppSettings() },
+          await jsAppSettings(),
           this.codeManager?.currentFilePath || undefined
         )
       } catch (e) {

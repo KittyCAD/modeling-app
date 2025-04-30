@@ -59,34 +59,6 @@ The onboarding status of the app.
 
 **Default:** None
 
-##### project_directory
-
-Backwards compatible project directory setting.
-
-
-**Default:** None
-
-##### theme
-
-Backwards compatible theme setting.
-
-
-**Default:** None
-
-##### theme_color
-
-The hue of the primary theme color for the app.
-
-
-**Default:** None
-
-##### enable_ssao
-
-Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.
-
-
-**Default:** None
-
 ##### dismiss_web_banner
 
 Permanently dismiss the banner warning to download the desktop app. This setting only applies to the web app. And is temporary until we have Linux support.
@@ -103,7 +75,7 @@ When the user is idle, teardown the stream after some time.
 
 ##### allow_orbit_in_sketch_mode
 
-When the user is idle, and this is true, the stream will be torn down.
+Allow orbiting in sketch mode.
 
 
 **Default:** None
@@ -157,13 +129,6 @@ The controls for how to navigate the 3D view.
 ##### highlight_edges
 
 Highlight edges of 3D objects?
-
-
-**Default:** None
-
-##### show_debug_panel
-
-Whether to show the debug panel, which lets you see various states of the app to aid in development. Remove this when we remove backwards compatibility with the old settings file.
 
 
 **Default:** None

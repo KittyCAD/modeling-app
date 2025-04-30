@@ -24,7 +24,7 @@ import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
@@ -53,7 +53,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
   const onboardingStatus = settings.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    onboardingStatus.current === onboardingPaths.CAMERA ||
+    onboardingStatus.current === ONBOARDING_SUBPATHS.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '

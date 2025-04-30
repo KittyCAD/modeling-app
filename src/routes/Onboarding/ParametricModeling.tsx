@@ -2,9 +2,8 @@ import { bracketThicknessCalculationLine } from '@src/lib/exampleKcl'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { useSettings } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
 import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
@@ -72,7 +71,9 @@ export default function OnboardingParametricModeling() {
             </figcaption>
           </figure>
         </section>
-        <OnboardingButtons currentSlug={onboardingPaths.PARAMETRIC_MODELING} />
+        <OnboardingButtons
+          currentSlug={ONBOARDING_SUBPATHS.PARAMETRIC_MODELING}
+        />
       </div>
     </div>
   )
