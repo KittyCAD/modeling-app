@@ -139,10 +139,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "YZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -151,6 +149,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
@@ -282,10 +282,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -294,6 +292,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,

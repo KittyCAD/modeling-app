@@ -321,10 +321,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 44.0,
@@ -333,6 +331,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -883,10 +883,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 44.0,
@@ -895,6 +893,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1224,10 +1224,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": -52.0,
             "y": 0.0,
@@ -1236,6 +1234,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -1378,10 +1378,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": -52.0,
             "y": 0.0,
@@ -1390,6 +1388,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -2010,10 +2010,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2022,6 +2020,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2294,10 +2294,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2306,6 +2304,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2583,10 +2583,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2595,6 +2593,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2867,10 +2867,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2879,6 +2877,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,

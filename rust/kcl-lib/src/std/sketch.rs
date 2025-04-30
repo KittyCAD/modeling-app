@@ -18,7 +18,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         types::{ArrayLen, NumericType, PrimitiveType, RuntimeType, UnitLen},
-        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, Point2d, Point3d, Sketch, SketchSurface, Solid,
+        BasePath, ExecState, Face, GeoMeta, KclValue, Path, Plane, PlaneInfo, Point2d, Sketch, SketchSurface, Solid,
         TagEngineInfo, TagIdentifier,
     },
     parsing::ast::types::TagNode,
@@ -953,16 +953,7 @@ pub enum PlaneData {
     #[serde(rename = "-YZ", alias = "-yz")]
     NegYZ,
     /// A defined plane.
-    Plane {
-        /// Origin of the plane.
-        origin: Point3d,
-        /// What should the plane’s X axis be?
-        #[serde(rename = "xAxis")]
-        x_axis: Point3d,
-        /// What should the plane’s Y axis be?
-        #[serde(rename = "yAxis")]
-        y_axis: Point3d,
-    },
+    Plane(PlaneInfo),
 }
 
 /// Start a sketch on a specific plane or face.
@@ -1177,13 +1168,13 @@ async fn inner_start_sketch_on(
         }
         SketchData::Plane(plane) => {
             if plane.value == crate::exec::PlaneType::Uninit {
-                if plane.origin.units == UnitLen::Unknown {
+                if plane.info.origin.units == UnitLen::Unknown {
                     return Err(KclError::Semantic(KclErrorDetails {
                         message: "Origin of plane has unknown units".to_string(),
                         source_ranges: vec![args.source_range],
                     }));
                 }
-                let plane = make_sketch_plane_from_orientation(plane.into_plane_data(), exec_state, args).await?;
+                let plane = make_sketch_plane_from_orientation(plane.info.into_plane_data(), exec_state, args).await?;
                 Ok(SketchSurface::Plane(plane))
             } else {
                 // Create artifact used only by the UI, not the engine.
@@ -1252,7 +1243,7 @@ async fn make_sketch_plane_from_orientation(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Box<Plane>, KclError> {
-    let plane = Plane::from_plane_data(data.clone(), exec_state);
+    let plane = Plane::from_plane_data(data.clone(), exec_state)?;
 
     // Create the plane on the fly.
     let clobber = false;
@@ -1262,10 +1253,10 @@ async fn make_sketch_plane_from_orientation(
         plane.id,
         ModelingCmd::from(mcmd::MakePlane {
             clobber,
-            origin: plane.origin.into(),
+            origin: plane.info.origin.into(),
             size,
-            x_axis: plane.x_axis.into(),
-            y_axis: plane.y_axis.into(),
+            x_axis: plane.info.x_axis.into(),
+            y_axis: plane.info.y_axis.into(),
             hide,
         }),
     )
@@ -1374,7 +1365,7 @@ pub(crate) async fn inner_start_profile(
                 adjust_camera: false,
                 planar_normal: if let SketchSurface::Plane(plane) = &sketch_surface {
                     // We pass in the normal for the plane here.
-                    let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
+                    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
                     Some(normal.into())
                 } else {
                     None
