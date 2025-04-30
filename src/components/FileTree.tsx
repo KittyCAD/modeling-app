@@ -230,7 +230,7 @@ const FileTreeItem = ({
         codeManager.updateCodeStateEditor(code)
       } else if (isImportedInCurrentFile && eventType === 'change') {
         await rustContext.clearSceneAndBustCache(
-          { settings: await jsAppSettings() },
+          await jsAppSettings(),
           codeManager?.currentFilePath || undefined
         )
         await kclManager.executeAst()

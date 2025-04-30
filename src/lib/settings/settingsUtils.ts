@@ -537,7 +537,7 @@ export function getSettingInputType(setting: Setting) {
   return typeof setting.default as 'string' | 'boolean'
 }
 
-export const jsAppSettings = async () => {
+export const jsAppSettings = async (): Promise<DeepPartial<Configuration>> => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
     // TODO: https://github.com/KittyCAD/modeling-app/issues/6445
@@ -548,5 +548,5 @@ export const jsAppSettings = async () => {
       jsAppSettings = getAllCurrentSettings(settings)
     }
   }
-  return jsAppSettings
+  return settingsPayloadToConfiguration(jsAppSettings)
 }
