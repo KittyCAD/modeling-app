@@ -32,7 +32,7 @@ map(
 
 ```kcl
 r = 10 // radius
-fn drawCircle(id) {
+fn drawCircle(@id) {
   return startSketchOn(XY)
     |> circle(center = [id * 2 * r, 0], radius = r)
 }

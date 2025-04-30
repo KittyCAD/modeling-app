@@ -91,7 +91,7 @@ assert(
 
 ```kcl
 // Declare a function that sketches a decagon.
-fn decagon(radius) {
+fn decagon(@radius) {
   // Each side of the decagon is turned this many radians from the previous angle.
   stepAngle = (1 / 10 * TAU): number(rad)
 

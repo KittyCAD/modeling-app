@@ -26,7 +26,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `[f(a), f(b), f(c)]`
 /// ```no_run
 /// r = 10 // radius
-/// fn drawCircle(id) {
+/// fn drawCircle(@id) {
 ///   return startSketchOn(XY)
 ///     |> circle( center= [id * 2 * r, 0], radius= r)
 /// }
@@ -138,7 +138,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 /// ```no_run
 /// // Declare a function that sketches a decagon.
-/// fn decagon(radius) {
+/// fn decagon(@radius) {
 ///   // Each side of the decagon is turned this many radians from the previous angle.
 ///   stepAngle = ((1/10) * TAU): number(rad)
 ///
