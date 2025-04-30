@@ -116,6 +116,17 @@ impl TyF64 {
         angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
 
+    pub fn to_radians(&self) -> f64 {
+        let angle = match self.ty {
+            NumericType::Default { angle, .. } => angle,
+            NumericType::Known(UnitType::Angle(angle)) => angle,
+            _ => unreachable!(),
+        };
+
+        assert_ne!(angle, UnitAngle::Unknown);
+
+        angle.adjust_to(self.n, UnitAngle::Radians).0
+    }
     pub fn count(n: f64) -> Self {
         Self {
             n,

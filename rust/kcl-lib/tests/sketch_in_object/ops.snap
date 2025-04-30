@@ -4,15 +4,19 @@ description: Operations executed sketch_in_object.kcl
 ---
 [
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "test",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": []
+      }
     },
-    "sourceRange": []
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -30,7 +34,15 @@ description: Operations executed sketch_in_object.kcl
     "unlabeledArg": null
   },
   {
-    "type": "GroupEnd"
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "test",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -77,24 +89,6 @@ description: Operations executed sketch_in_object.kcl
   },
   {
     "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XY"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
       "length": {
         "value": {
           "type": "Number",
@@ -124,5 +118,11 @@ description: Operations executed sketch_in_object.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

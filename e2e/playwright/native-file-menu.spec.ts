@@ -550,7 +550,7 @@ test.describe(
           const expected = 'Open project'
           expect(actual).toBe(expected)
         })
-        test('Modeling.File.Load external model', async ({
+        test('Modeling.File.Add file to project', async ({
           tronApp,
           cmdBar,
           page,
@@ -571,10 +571,10 @@ test.describe(
               throw new Error('app or app.applicationMenu is missing')
             }
             const openProject = app.applicationMenu.getMenuItemById(
-              'File.Load external model'
+              'File.Add file to project'
             )
             if (!openProject) {
-              throw new Error('File.Load external model')
+              throw new Error('File.Add file to project')
             }
             openProject.click()
           })
@@ -584,7 +584,7 @@ test.describe(
           const actual = await cmdBar.cmdBarElement
             .getByTestId('command-name')
             .textContent()
-          const expected = 'Load external model'
+          const expected = 'Add file to project'
           expect(actual).toBe(expected)
         })
         test('Modeling.File.Export current part', async ({

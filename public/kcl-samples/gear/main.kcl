@@ -11,7 +11,7 @@ pitchDiameter = module * nTeeth
 pressureAngle = 20
 addendum = module
 deddendum = 1.25 * module
-baseDiameter = pitchDiameter * cos(units::toRadians(pressureAngle))
+baseDiameter = pitchDiameter * math::cos(pressureAngle)
 tipDiameter = pitchDiameter + 2 * module
 gearHeight = 3
 
@@ -36,7 +36,7 @@ angles = map(
 invas = map(
   angles,
   f = fn(a) {
-    return tan(units::toRadians(a)) - units::toRadians(a)
+    return math::tan(a) - units::toRadians(a)
   },
 )
 
@@ -44,14 +44,14 @@ invas = map(
 xs = map(
   [0..cmo],
   f = fn(i) {
-    return rs[i] * cos(invas[i]: number(rad))
+    return rs[i] * math::cos(invas[i]: number(rad))
   },
 )
 
 ys = map(
   [0..cmo],
   f = fn(i) {
-    return rs[i] * sin(invas[i]: number(rad))
+    return rs[i] * math::sin(invas[i]: number(rad))
   },
 )
 
@@ -69,8 +69,8 @@ fn leftInvolute(i, sg) {
 }
 
 fn rightInvolute(i, sg) {
-  x = rs[i] * cos(units::toRadians(-toothAngle + units::toDegrees(atan(ys[i] / xs[i]))))
-  y = -rs[i] * sin(units::toRadians(-toothAngle + units::toDegrees(atan(ys[i] / xs[i]))))
+  x = rs[i] * math::cos(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
+  y = -rs[i] * math::sin(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
   return line(sg, endAbsolute = [x, y])
 }
 
@@ -100,8 +100,8 @@ startAngle = asin(keywayWidth / 2 / holeRadius)
 // Sketch the keyway and center hole and extrude
 keyWay = startSketchOn(body, face = END)
   |> startProfile(at = [
-       holeRadius * cos(startAngle),
-       holeRadius * sin(startAngle)
+       holeRadius * math::cos(startAngle),
+       holeRadius * math::sin(startAngle)
      ])
   |> xLine(length = keywayDepth)
   |> yLine(length = -keywayWidth)

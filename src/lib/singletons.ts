@@ -28,7 +28,6 @@ import type { AppMachineContext } from '@src/lib/types'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 
 export const codeManager = new CodeManager()
 export const engineCommandManager = new EngineCommandManager()
@@ -227,7 +226,6 @@ commandBarActor.send({
     commands: [
       ...createAuthCommands({ authActor }),
       ...createProjectCommands({ systemIOActor }),
-      ...createApplicationCommands({ systemIOActor }),
     ],
   },
 })

@@ -13,9 +13,6 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
@@ -28,67 +25,16 @@ description: Operations executed multiple-foreign-imports-all-render.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "cube",
-      "moduleId": 0
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "geometry": {
-        "value": {
-          "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "clone",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupEnd"
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
       "name": "anothercube",
       "moduleId": 0
     },
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
-      "name": "cube",
-      "moduleId": 0
-    },
-    "sourceRange": []
-  },
-  {
     "type": "GroupEnd"
   },
   {
-    "labeledArgs": {
-      "geometry": {
-        "value": {
-          "type": "ImportedGeometry",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "clone",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

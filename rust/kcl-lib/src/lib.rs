@@ -76,6 +76,8 @@ pub mod std;
 pub mod test_server;
 mod thread;
 mod unparser;
+#[cfg(test)]
+mod variant_name;
 pub mod walk;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
