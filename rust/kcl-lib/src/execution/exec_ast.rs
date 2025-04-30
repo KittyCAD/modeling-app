@@ -1168,14 +1168,14 @@ impl Node<UnaryExpression> {
             }
             KclValue::Plane { value } => {
                 let mut plane = value.clone();
-                if plane.x_axis.x != 0.0 {
-                    plane.x_axis.x *= -1.0;
+                if plane.info.x_axis.x != 0.0 {
+                    plane.info.x_axis.x *= -1.0;
                 }
-                if plane.x_axis.y != 0.0 {
-                    plane.x_axis.y *= -1.0;
+                if plane.info.x_axis.y != 0.0 {
+                    plane.info.x_axis.y *= -1.0;
                 }
-                if plane.x_axis.z != 0.0 {
-                    plane.x_axis.z *= -1.0;
+                if plane.info.x_axis.z != 0.0 {
+                    plane.info.x_axis.z *= -1.0;
                 }
 
                 plane.value = PlaneType::Uninit;
@@ -2694,9 +2694,9 @@ p2 = -p
             .unwrap()
         {
             KclValue::Plane { value } => {
-                assert_eq!(value.x_axis.x, -1.0);
-                assert_eq!(value.x_axis.y, 0.0);
-                assert_eq!(value.x_axis.z, 0.0);
+                assert_eq!(value.info.x_axis.x, -1.0);
+                assert_eq!(value.info.x_axis.y, 0.0);
+                assert_eq!(value.info.x_axis.z, 0.0);
             }
             _ => unreachable!(),
         }

@@ -323,6 +323,7 @@ impl Node<Program> {
         let rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
+            crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
         ];
 

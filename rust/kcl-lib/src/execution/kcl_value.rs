@@ -4,6 +4,7 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
+use super::types::UnitType;
 use crate::{
     errors::KclErrorDetails,
     execution::{
@@ -18,8 +19,6 @@ use crate::{
     std::{args::TyF64, StdFnProps},
     CompilationError, KclError, ModuleId, SourceRange,
 };
-
-use super::types::UnitType;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
