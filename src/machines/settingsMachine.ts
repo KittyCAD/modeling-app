@@ -235,14 +235,44 @@ export const settingsMachine = setup({
         id: `${event.type}.success`,
       })
     },
-    'Execute AST': ({ self }) => {
+    'Execute AST': ({ context, event, self }) => {
       const rootContext = self.system.get('root').getSnapshot().context
       const kclManager = rootContext.kclManager
       try {
-        // The rust side knows whether or not to execute the AST, just send
-        // it. Any logic here for send vs not send is futile.
-        // If there is a bug fix it on the rust side cache.
-        kclManager.executeCode().catch(reportRejection)
+        const relevantSetting = (s: typeof settings) => {
+          return (
+            s.modeling?.defaultUnit?.current !==
+              context.modeling.defaultUnit.current ||
+            s.modeling.showScaleGrid.current !==
+              context.modeling.showScaleGrid.current ||
+            s.modeling?.highlightEdges.current !==
+              context.modeling.highlightEdges.current
+          )
+        }
+
+        const allSettingsIncludesUnitChange =
+          event.type === 'Set all settings' &&
+          relevantSetting(event.settings || context)
+        const resetSettingsIncludesUnitChange =
+          event.type === 'Reset settings' && relevantSetting(settings)
+
+        const shouldExecute =
+          kclManager !== undefined &&
+          (event.type === 'set.modeling.defaultUnit' ||
+            event.type === 'set.modeling.showScaleGrid' ||
+            event.type === 'set.modeling.highlightEdges' ||
+            allSettingsIncludesUnitChange ||
+            resetSettingsIncludesUnitChange)
+
+        if (shouldExecute) {
+          // Unit changes requires a re-exec of code
+          kclManager.executeCode().catch(reportRejection)
+        } else {
+          // For any future logging we'd like to do
+          // console.log(
+          //   'Not re-executing AST because the settings change did not affect the code interpretation'
+          // )
+        }
       } catch (e) {
         console.error('Error executing AST after settings change', e)
       }
@@ -276,6 +306,8 @@ export const settingsMachine = setup({
     }),
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
+
+      console.log('Resetting settings at level', event.level)
 
       // Create a new, blank payload
       const newPayload =
