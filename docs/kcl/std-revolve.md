@@ -36,7 +36,7 @@ revolve(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | `[Sketch; 1+]` | The sketch or set of sketches that should be revolved | Yes |
-| `axis` | `Axis2d | Edge` | Axis of revolution. | Yes |
+| `axis` | [`Axis2d`](/docs/kcl/types/Axis2d) or [`Edge`](/docs/kcl/types/Edge) | Axis of revolution. | Yes |
 | `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | `number(Length)` | Tolerance for the revolve operation. | No |
 | `symmetric` | [`bool`](/docs/kcl/types/bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |

@@ -29,7 +29,7 @@ helix(
 | `angleStart` | `number(Angle)` | Start angle. | Yes |
 | `ccw` | [`bool`](/docs/kcl/types/bool) | Is the helix rotation counter clockwise? The default is `false`. | No |
 | `radius` | `number(Length)` | Radius of the helix. | No |
-| `axis` | `Axis3d | Edge` | Axis to use for the helix. | No |
+| `axis` | [`Axis3d`](/docs/kcl/types/Axis3d) or [`Edge`](/docs/kcl/types/Edge) | Axis to use for the helix. | No |
 | `length` | `number(Length)` | Length of the helix. This is not necessary if the helix is created around an edge. If not given the length of the edge is used. | No |
 | `cylinder` | [`Solid`](/docs/kcl/types/Solid) | Cylinder to create the helix on. | No |
 

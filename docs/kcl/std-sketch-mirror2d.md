@@ -23,7 +23,7 @@ mirror2d(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | `[Sketch; 1+]` | The sketch or sketches to be reflected. | Yes |
-| `axis` | `Axis2d | Edge` | The axis to reflect around. | Yes |
+| `axis` | [`Axis2d`](/docs/kcl/types/Axis2d) or [`Edge`](/docs/kcl/types/Edge) | The axis to reflect around. | Yes |
 
 ### Returns
 

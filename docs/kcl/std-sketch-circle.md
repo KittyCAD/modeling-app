@@ -23,7 +23,7 @@ circle(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch_or_surface` | [`Sketch`](/docs/kcl/types/Sketch) OR [`Plane`](/docs/kcl/types/Plane) OR [`Face`](/docs/kcl/types/Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
+| `sketch_or_surface` | [`Sketch`](/docs/kcl/types/Sketch) or [`Plane`](/docs/kcl/types/Plane) or [`Face`](/docs/kcl/types/Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `center` | [`Point2d`](/docs/kcl/types/Point2d) | The center of the circle. | Yes |
 | `radius` | `number(Length)` | The radius of the circle. | Yes |
 | [`tag`](/docs/kcl/types/tag) | [`tag`](/docs/kcl/types/tag) | Create a new tag which refers to this circle. | No |
