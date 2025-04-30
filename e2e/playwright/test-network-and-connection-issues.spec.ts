@@ -265,7 +265,6 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
       'Paused stream freezes view frame, unpause reconnect is seamless to user',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage, scene, cmdBar, toolbar }) => {
-        const u = await getUtils(page)
         const networkToggle = page.getByTestId('network-toggle')
         const networkToggleConnectedText = page.getByText('Connected')
         const networkToggleWeakText = page.getByText('Network health (Weak)')
@@ -313,7 +312,9 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
           // We should now be paused. To the user, it should appear we're still
           // connected.
           await networkToggle.hover()
-          await expect(networkToggleConnectedText.or(networkToggleWeakText)).toBeVisible()
+          await expect(
+            networkToggleConnectedText.or(networkToggleWeakText)
+          ).toBeVisible()
 
           const center = {
             x: dim.width / 2,
@@ -323,7 +324,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
           let probe = { x: 0, y: 0 }
 
           // ... and the model's still visibly there
-          probe.x = center.x + (dim.width / 100)
+          probe.x = center.x + dim.width / 100
           probe.y = center.y
           await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
           probe = { ...center }
@@ -335,7 +336,7 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
           // Check the pixel a couple times as it reconnects.
           // NOTE: Remember, idle behavior is still on at this point -
           // if this test takes longer than 5s shit WILL go south!
-          probe.x = center.x + (dim.width / 100)
+          probe.x = center.x + dim.width / 100
           probe.y = center.y
           await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
           await page.waitForTimeout(1000)
@@ -344,7 +345,9 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
 
           // Ensure we're still connected
           await networkToggle.hover()
-          await expect(networkToggleConnectedText.or(networkToggleWeakText)).toBeVisible()
+          await expect(
+            networkToggleConnectedText.or(networkToggleWeakText)
+          ).toBeVisible()
         })
       }
     )

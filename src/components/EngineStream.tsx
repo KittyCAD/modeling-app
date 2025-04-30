@@ -211,8 +211,10 @@ export const EngineStream = (props: {
     const connectionCheckIntervalId = setInterval(() => {
       // SKIP DURING TESTS BECAUSE IT WILL MESS WITH REUSING THE
       // ELECTRON INSTANCE.
-      if (TEST) { return }
-      
+      if (TEST) {
+        return
+      }
+
       // Don't try try to restart if we're already connected!
       const hasEngineConnectionInst = engineCommandManager.engineConnection
       const isDisconnected =
