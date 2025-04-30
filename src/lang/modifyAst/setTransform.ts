@@ -144,6 +144,11 @@ function createPipeWithTransform(
   }
 }
 
+/* Starting form the path to the import node, look for the first pipe expression
+ * that uses the import alias. If found, return the pipe expression and the
+ * path to the pipe node, and the alias. Wrote for the assemblies codemods.
+ * Gotcha: doesn't support multiple pipe expressions for the same alias.
+ */
 export function lookAheadForPipeWithImportAlias(
   ast: Node<Program>,
   pathToNode: PathToNode
@@ -186,8 +191,13 @@ export function lookAheadForPipeWithImportAlias(
         n.declaration.init.body[0].name.name === alias
       ) {
         pipe = n.declaration.init
-        // TODO: fix later
-        pathToPipeNode = []
+        pathToPipeNode = [
+          ['body', ''],
+          [i, 'index'],
+          ['declaration', 'VariableDeclaration'],
+          ['init', 'VariableDeclarator'],
+          ['body', 'PipeExpression'],
+        ]
         break
       }
     }

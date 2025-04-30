@@ -2787,7 +2787,7 @@ export const modelingMachine = setup({
           }
         }
 
-        // Look up for an existing expression refering to the import alias, otherwise create one
+        // Look up for an existing expression referring to the import alias, otherwise create one
         const { pipe, pathToPipeNode, alias } = lookAheadForPipeWithImportAlias(
           ast,
           pathToNode

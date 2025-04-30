@@ -342,6 +342,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.expectPixelColor(partColor, moreToTheRightPoint, tolerance)
       })
 
+      // TODO: enable once deleting the first import is fixed
       // await test.step('Delete the part using the feature tree', async () => {
       //   await toolbar.openPane('feature-tree')
       //   const op = await toolbar.getFeatureTreeOperation('bracket', 0)
