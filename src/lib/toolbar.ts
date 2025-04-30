@@ -1,4 +1,3 @@
-import { DEV } from '@src/env'
 import type { EventFrom, StateFrom } from 'xstate'
 import { settingsActor } from '@src/lib/singletons'
 
@@ -11,7 +10,6 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -405,7 +403,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 type: 'Find and select command',
                 data: { name: 'Clone', groupId: 'modeling' },
               }),
-            status: DEV || IS_NIGHTLY_OR_DEBUG ? 'available' : 'kcl-only',
+            status: 'available',
             title: 'Clone',
             icon: 'clone',
             description: 'Clone a solid or sketch.',
