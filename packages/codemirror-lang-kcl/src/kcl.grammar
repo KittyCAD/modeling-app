@@ -18,8 +18,8 @@
 
 statement[@isGroup=Statement] {
   ImportStatement { kw<"import"> ImportItems ImportFrom String } |
-  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals? ParamList Arrow? Body } |
-  VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
+  FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition ParamList Body } |
+  VariableDeclaration { kw<"export">? VariableDefinition Equals expression } |
   TypeDeclaration { kw<"export">? kw<"type"> identifier ("=" type)? } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression } |
@@ -66,7 +66,7 @@ ObjectProperty { PropertyName (":" | Equals) expression }
 
 AnnotationProperty {
   PropertyName
-  ( AddOp | MultOp | ExpOp | LogicOp | BangOp | CompOp | Equals | Arrow | PipeOperator | PipeSubstitution )
+  ( AddOp | MultOp | ExpOp | LogicOp | BangOp | CompOp | Equals | PipeOperator | PipeSubstitution )
   expression
 }
 
@@ -107,7 +107,6 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   BangOp { "!" }
   CompOp { "==" | "!=" | "<=" | ">=" | "<" | ">" }
   Equals { "=" }
-  Arrow { "=>" }
   PipeOperator { "|>" }
 
   PipeSubstitution { "%" }

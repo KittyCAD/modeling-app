@@ -1573,10 +1573,10 @@ async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
   |> close()
   |> extrude(length = 3.14)
 
-thing = {blah: "foo"}
+thing = {blah = "foo"}
 bar = thing.blah
 
-fn myFn = (param1) => {
+fn myFn(param1) {
     return param1
 }"#
                 .to_string(),

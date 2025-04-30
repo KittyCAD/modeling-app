@@ -309,16 +309,16 @@ describe('Testing giveSketchFnCallTag', () => {
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `fn ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} (x) {
   return x
 }
 `
   const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
-fn ghi = (x) => {
+fn ghi(x) {
     return 2
 }
-const abc = 3
-const identifierGuy = 5
+abc = 3
+identifierGuy = 5
 yo = 5 + 6
 part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
@@ -876,7 +876,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-3.86, -2.73])
     //   |> line(end = [-17.67, 0.85])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 10)`,
+    // extrude001 = extrude(sketch001, length = 10)`,
     //         codeAfter: `sketch001 = startSketchOn(XZ)
     //   |> startProfile(at = [3.29, 7.86])
     //   |> line(end = [2.48, 2.44])
@@ -904,7 +904,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-8.54, -2.51])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 5)
+    // extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
@@ -958,7 +958,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-8.54, -2.51])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 5)
+    // extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])

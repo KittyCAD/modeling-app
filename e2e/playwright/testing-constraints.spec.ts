@@ -1126,7 +1126,7 @@ test.describe('Electron constraint tests', () => {
         await fsp.writeFile(
           path.join(bracketDir, 'main.kcl'),
           `@settings(defaultLengthUnit = in)
-          const part001 = startSketchOn(XY)
+          part001 = startSketchOn(XY)
             |> startProfile(at = [4.83, 12.56])
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
