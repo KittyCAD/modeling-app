@@ -191,7 +191,7 @@ description: Operations executed keyboard.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -7027,7 +7027,7 @@ description: Operations executed keyboard.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}

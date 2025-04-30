@@ -1038,7 +1038,6 @@ export function updatePathToNodesAfterEdit(
   if (err(oldNodeResult)) return oldNodeResult
   const oldNode = oldNodeResult.node
   const varName = oldNode.declaration.id.name
-  console.log('varName', varName)
 
   // Find the old and new indices for this variable
   const oldIndex = oldVarDecls.get(varName)

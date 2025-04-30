@@ -15,9 +15,9 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 92,
-            "end": 98,
-            "start": 92,
+            "commentStart": 90,
+            "end": 96,
+            "start": 90,
             "type": "TagDeclarator",
             "value": "thing"
           },
@@ -35,9 +35,9 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 157,
-            "end": 164,
-            "start": 157,
+            "commentStart": 155,
+            "end": 162,
+            "start": 155,
             "type": "TagDeclarator",
             "value": "thing2"
           },
@@ -65,9 +65,9 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 92,
-              "end": 98,
-              "start": 92,
+              "commentStart": 90,
+              "end": 96,
+              "start": 90,
               "type": "TagDeclarator",
               "value": "thing"
             },
@@ -109,9 +109,9 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               10.0
             ],
             "tag": {
-              "commentStart": 157,
-              "end": 164,
-              "start": 157,
+              "commentStart": 155,
+              "end": 162,
+              "start": 155,
               "type": "TagDeclarator",
               "value": "thing2"
             },
@@ -145,10 +145,8 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -157,6 +155,8 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

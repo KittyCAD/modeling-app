@@ -8,6 +8,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
+use crate::engine::{PlaneName, DEFAULT_PLANE_INFO};
+use crate::errors::KclErrorDetails;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::{
@@ -281,17 +283,26 @@ pub struct Plane {
     pub artifact_id: ArtifactId,
     // The code for the plane either a string or custom.
     pub value: PlaneType,
+    /// The information for the plane.
+    #[serde(flatten)]
+    pub info: PlaneInfo,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct PlaneInfo {
     /// Origin of the plane.
     pub origin: Point3d,
     /// What should the plane's X axis be?
     pub x_axis: Point3d,
     /// What should the plane's Y axis be?
     pub y_axis: Point3d,
-    #[serde(skip)]
-    pub meta: Vec<Metadata>,
 }
 
-impl Plane {
+impl PlaneInfo {
     pub(crate) fn into_plane_data(self) -> PlaneData {
         if self.origin.is_zero() {
             match self {
@@ -317,7 +328,6 @@ impl Plane {
                             z: 0.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::XY,
                 Self {
                     origin:
@@ -341,7 +351,6 @@ impl Plane {
                             z: 0.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::NegXY,
                 Self {
                     origin:
@@ -365,7 +374,6 @@ impl Plane {
                             z: 1.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::XZ,
                 Self {
                     origin:
@@ -389,7 +397,6 @@ impl Plane {
                             z: 1.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::NegXZ,
                 Self {
                     origin:
@@ -413,7 +420,6 @@ impl Plane {
                             z: 1.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::YZ,
                 Self {
                     origin:
@@ -437,96 +443,78 @@ impl Plane {
                             z: 1.0,
                             units: _,
                         },
-                    ..
                 } => return PlaneData::NegYZ,
                 _ => {}
             }
         }
 
-        PlaneData::Plane {
+        PlaneData::Plane(Self {
             origin: self.origin,
             x_axis: self.x_axis,
             y_axis: self.y_axis,
+        })
+    }
+}
+
+impl TryFrom<PlaneData> for PlaneInfo {
+    type Error = KclError;
+
+    fn try_from(value: PlaneData) -> Result<Self, Self::Error> {
+        if let PlaneData::Plane(info) = value {
+            return Ok(info);
+        }
+        let name = match value {
+            PlaneData::XY => PlaneName::Xy,
+            PlaneData::NegXY => PlaneName::NegXy,
+            PlaneData::XZ => PlaneName::Xz,
+            PlaneData::NegXZ => PlaneName::NegXz,
+            PlaneData::YZ => PlaneName::Yz,
+            PlaneData::NegYZ => PlaneName::NegYz,
+            PlaneData::Plane(_) => {
+                // We will never get here since we already checked for PlaneData::Plane.
+                return Err(KclError::Internal(KclErrorDetails {
+                    message: format!("PlaneData {:?} not found", value),
+                    source_ranges: Default::default(),
+                }));
+            }
+        };
+
+        let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
+            KclError::Internal(KclErrorDetails {
+                message: format!("Plane {} not found", name),
+                source_ranges: Default::default(),
+            })
+        })?;
+
+        Ok(info.clone())
+    }
+}
+
+impl From<PlaneData> for PlaneType {
+    fn from(value: PlaneData) -> Self {
+        match value {
+            PlaneData::XY => PlaneType::XY,
+            PlaneData::NegXY => PlaneType::XY,
+            PlaneData::XZ => PlaneType::XZ,
+            PlaneData::NegXZ => PlaneType::XZ,
+            PlaneData::YZ => PlaneType::YZ,
+            PlaneData::NegYZ => PlaneType::YZ,
+            PlaneData::Plane(_) => PlaneType::Custom,
         }
     }
+}
 
-    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
+impl Plane {
+    pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Result<Self, KclError> {
         let id = exec_state.next_uuid();
-        match value {
-            PlaneData::XY => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::NegXY => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                value: PlaneType::XY,
-                meta: vec![],
-            },
-            PlaneData::XZ => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::NegXZ => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                value: PlaneType::XZ,
-                meta: vec![],
-            },
-            PlaneData::YZ => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::NegYZ => Plane {
-                id,
-                #[cfg(feature = "artifact-graph")]
-                artifact_id: id.into(),
-                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
-                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
-                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
-                value: PlaneType::YZ,
-                meta: vec![],
-            },
-            PlaneData::Plane { origin, x_axis, y_axis } => {
-                let id = exec_state.next_uuid();
-                Plane {
-                    id,
-                    #[cfg(feature = "artifact-graph")]
-                    artifact_id: id.into(),
-                    origin,
-                    x_axis,
-                    y_axis,
-                    value: PlaneType::Custom,
-                    meta: vec![],
-                }
-            }
-        }
+        Ok(Plane {
+            id,
+            #[cfg(feature = "artifact-graph")]
+            artifact_id: id.into(),
+            info: PlaneInfo::try_from(value.clone())?,
+            value: value.into(),
+            meta: vec![],
+        })
     }
 
     /// The standard planes are XY, YZ and XZ (in both positive and negative)
@@ -629,7 +617,7 @@ impl Sketch {
                     adjust_camera: false,
                     planar_normal: if let SketchSurface::Plane(plane) = &self.on {
                         // We pass in the normal for the plane here.
-                        let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
+                        let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
                         Some(normal.into())
                     } else {
                         None
@@ -664,13 +652,13 @@ impl SketchSurface {
     }
     pub(crate) fn x_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.x_axis,
+            SketchSurface::Plane(plane) => plane.info.x_axis,
             SketchSurface::Face(face) => face.x_axis,
         }
     }
     pub(crate) fn y_axis(&self) -> Point3d {
         match self {
-            SketchSurface::Plane(plane) => plane.y_axis,
+            SketchSurface::Plane(plane) => plane.info.y_axis,
             SketchSurface::Face(face) => face.y_axis,
         }
     }

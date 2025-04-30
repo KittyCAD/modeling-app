@@ -1,0 +1,19 @@
+// Remove the end face for the extrusion.
+firstSketch = startSketchOn(XY)
+    |> startProfile(at = [-12, 12])
+    |> line(end = [24, 0])
+    |> line(end = [0, -24])
+    |> line(end = [-24, 0])
+    |> close()
+    |> extrude(length = 6)
+
+// Remove the end face for the extrusion.
+firstShell = shell(
+    firstSketch,
+    faces = [END],
+    thickness = 0.25,
+)
+
+secondShell = clone(firstShell)
+    |> translate(x = 50)
+

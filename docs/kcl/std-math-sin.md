@@ -1,10 +1,10 @@
 ---
 title: "std::math::sin"
-excerpt: "Compute the sine of a number (in radians)."
+excerpt: "Compute the sine of a number."
 layout: manual
 ---
 
-Compute the sine of a number (in radians).
+Compute the sine of a number.
 
 
 
@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 15 / sin(135deg),
+    length = 15 / math::sin(135deg),
   )
   |> yLine(endAbsolute = 0)
   |> close()

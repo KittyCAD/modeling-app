@@ -26,7 +26,7 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// Get the opposite edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
@@ -109,7 +109,7 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// Get the next adjacent edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
@@ -201,7 +201,7 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// Get the previous adjacent edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
@@ -295,7 +295,7 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
 /// // Get an edge shared between two faces, created after a chamfer.
 ///
 /// scale = 20
-/// part001 = startSketchOn('XY')
+/// part001 = startSketchOn(XY)
 ///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])

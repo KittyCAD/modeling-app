@@ -105,7 +105,7 @@ height = 30
 thickness = 2
 keychainHoleSize = 3
 
-keychain = startSketchOn("XY")
+keychain = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
@@ -113,7 +113,7 @@ keychain = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-keychain1 = startSketchOn("XY")
+keychain1 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
@@ -121,7 +121,7 @@ keychain1 = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-keychain2 = startSketchOn("XY")
+keychain2 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])

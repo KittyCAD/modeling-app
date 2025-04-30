@@ -313,11 +313,11 @@ mod tests {
     fn check_ptr_eq() {
         let program = kcl!(
             "
-const foo = 1
-const bar = foo + 1
+foo = 1
+bar = foo + 1
 
-fn myfn = () => {
-    const foo = 2
+fn myfn() {
+    foo = 2
     sin(foo)
 }
 "

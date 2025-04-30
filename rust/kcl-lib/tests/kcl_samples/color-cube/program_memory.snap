@@ -6,9 +6,8 @@ description: Variables in memory after executing color-cube.kcl
   "bluePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -17,6 +16,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -51,9 +51,8 @@ description: Variables in memory after executing color-cube.kcl
   "greenPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 50.0,
@@ -62,6 +61,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -109,9 +109,8 @@ description: Variables in memory after executing color-cube.kcl
   "purplePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": -50.0,
@@ -120,6 +119,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,
@@ -141,9 +141,8 @@ description: Variables in memory after executing color-cube.kcl
   "redPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 49.0,
         "y": 0.0,
@@ -152,6 +151,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -202,9 +202,8 @@ description: Variables in memory after executing color-cube.kcl
   "tealPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": -50.0,
         "y": 0.0,
@@ -213,6 +212,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -234,9 +234,8 @@ description: Variables in memory after executing color-cube.kcl
   "yellowPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -245,6 +244,7 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

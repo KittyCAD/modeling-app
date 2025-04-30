@@ -7,7 +7,7 @@ description: Operations executed rotate_after_fillet.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}

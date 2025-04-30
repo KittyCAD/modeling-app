@@ -74,7 +74,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Scale a pipe.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
@@ -83,13 +83,13 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -115,7 +115,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// ```
 /// // Sweep two sketches along the same path.
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
@@ -131,7 +131,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
+/// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
@@ -240,7 +240,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Move a pipe.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
@@ -249,13 +249,13 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -275,7 +275,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// import "tests/inputs/cube.sldprt" as cube
 ///
 /// // Circle so you actually see the move.
-/// startSketchOn('XY')
+/// startSketchOn(XY)
 ///     |> circle(
 ///         center = [-10, -10],
 ///         radius = 10,
@@ -295,7 +295,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// ```
 /// // Sweep two sketches along the same path.
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
@@ -311,7 +311,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
+/// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
@@ -353,7 +353,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///
 /// ```no_run
 /// // Translate and rotate a sketch to create a loft.
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///
 /// fn square() {
 ///     return  startProfile(sketch001, at = [-10, 10])
@@ -579,7 +579,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Rotate a pipe with roll, pitch, and yaw.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
@@ -588,13 +588,13 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -612,7 +612,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Rotate a pipe with just roll.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
@@ -621,13 +621,13 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///     )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -643,7 +643,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Rotate a pipe about an axis with an angle.
 ///
 /// // Create a path for the sweep.
-/// sweepPath = startSketchOn('XZ')
+/// sweepPath = startSketchOn(XZ)
 ///     |> startProfile(at = [0.05, 0.05])
 ///     |> line(end = [0, 7])
 ///     |> tangentialArc(angle = 90, radius = 5)
@@ -652,13 +652,13 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     |> line(end = [0, 7])
 ///
 /// // Create a hole for the pipe.
-/// pipeHole = startSketchOn('XY')
+/// pipeHole = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 1.5,
 ///    )
 ///
-/// sweepSketch = startSketchOn('XY')
+/// sweepSketch = startSketchOn(XY)
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
@@ -686,7 +686,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 /// // Sweep two sketches along the same path.
 ///
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 /// rectangleSketch = startProfile(sketch001, at = [-200, 23.86])
 ///     |> angledLine(angle = 0, length = 73.47, tag = $rectangleSegmentA001)
 ///     |> angledLine(
@@ -702,7 +702,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
 ///
-/// sketch002 = startSketchOn('YZ')
+/// sketch002 = startSketchOn(YZ)
 /// sweepPath = startProfile(sketch002, at = [0, 0])
 ///     |> yLine(length = 231.81)
 ///     |> tangentialArc(radius = 80, angle = -90)
@@ -716,7 +716,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// ```no_run
 /// // Translate and rotate a sketch to create a loft.
-/// sketch001 = startSketchOn('XY')
+/// sketch001 = startSketchOn(XY)
 ///
 /// fn square() {
 ///     return  startProfile(sketch001, at = [-10, 10])
@@ -830,7 +830,7 @@ mod tests {
 
     use crate::execution::parse_execute;
 
-    const PIPE: &str = r#"sweepPath = startSketchOn('XZ')
+    const PIPE: &str = r#"sweepPath = startSketchOn(XZ)
     |> startProfile(at = [0.05, 0.05])
     |> line(end = [0, 7])
     |> tangentialArc(angle = 90, radius = 5)
@@ -839,12 +839,12 @@ mod tests {
     |> line(end = [0, 7])
 
 // Create a hole for the pipe.
-pipeHole = startSketchOn('XY')
+pipeHole = startSketchOn(XY)
     |> circle(
         center = [0, 0],
         radius = 1.5,
     )
-sweepSketch = startSketchOn('XY')
+sweepSketch = startSketchOn(XY)
     |> circle(
         center = [0, 0],
         radius = 2,

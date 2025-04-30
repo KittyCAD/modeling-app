@@ -98,7 +98,7 @@ import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
 )
-const ARC_SEGMENT_ERR = new Error('Invalid input, expected "arc-segment"')
+const ARC_SEGMENT_ERR = () => new Error('Invalid input, expected "arc-segment"')
 const CIRCLE_THREE_POINT_SEGMENT_ERR = new Error(
   'Invalid input, expected "circle-three-point-segment"'
 )
@@ -1026,13 +1026,15 @@ export const tangentialArc: SketchLineHelperKw = {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
-          type: 'arrayItem',
+          type: 'labeledArgArrayItem',
+          key: ARG_END_ABSOLUTE,
           index: 0,
           argType: 'xAbsolute',
           expr: toX,
         },
         {
-          type: 'arrayItem',
+          type: 'labeledArgArrayItem',
+          key: ARG_END_ABSOLUTE,
           index: 1,
           argType: 'yAbsolute',
           expr: toY,
@@ -1145,28 +1147,32 @@ export const tangentialArc: SketchLineHelperKw = {
         ['arg', LABELED_ARG_FIELD],
       ]
       if (expr.type !== 'ArrayExpression' || expr.elements.length < 2) {
-        constraints.push(
-          constrainInfo(
-            'xAbsolute',
-            isNotLiteralArrayOrStatic(expr),
-            code.slice(expr.start, expr.end),
-            'tangentialArc',
-            0,
-            topLevelRange(expr.start, expr.end),
-            pathToArg
-          )
-        )
-        constraints.push(
-          constrainInfo(
-            'yAbsolute',
-            isNotLiteralArrayOrStatic(expr),
-            code.slice(expr.start, expr.end),
-            'tangentialArc',
-            1,
-            topLevelRange(expr.start, expr.end),
-            pathToArg
-          )
-        )
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'xAbsolute',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(expr.start, expr.end),
+          pathToNode: pathToArg,
+          value: code.slice(expr.start, expr.end),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 0,
+            key: ARG_END_ABSOLUTE,
+          },
+        })
+        constraints.push({
+          stdLibFnName: 'tangentialArc',
+          type: 'yAbsolute',
+          isConstrained: isNotLiteralArrayOrStatic(expr),
+          sourceRange: topLevelRange(expr.start, expr.end),
+          pathToNode: pathToArg,
+          value: code.slice(expr.start, expr.end),
+          argPosition: {
+            type: 'labeledArgArrayItem',
+            index: 1,
+            key: ARG_END_ABSOLUTE,
+          },
+        })
         return constraints
       }
       const pathToX: PathToNode = [
@@ -1181,91 +1187,215 @@ export const tangentialArc: SketchLineHelperKw = {
       ]
       const exprX = expr.elements[0]
       const exprY = expr.elements[1]
-      constraints.push(
-        constrainInfo(
-          'xAbsolute',
-          isNotLiteralArrayOrStatic(exprX),
-          code.slice(exprX.start, exprX.end),
-          'tangentialArc',
-          0,
-          topLevelRange(exprX.start, exprX.end),
-          pathToX
-        )
-      )
-      constraints.push(
-        constrainInfo(
-          'yAbsolute',
-          isNotLiteralArrayOrStatic(exprY),
-          code.slice(exprY.start, exprY.end),
-          'tangentialArc',
-          1,
-          topLevelRange(exprY.start, exprY.end),
-          pathToY
-        )
-      )
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(exprX),
+        sourceRange: topLevelRange(exprX.start, exprX.end),
+        pathToNode: pathToX,
+        value: code.slice(exprX.start, exprX.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 0,
+          key: ARG_END_ABSOLUTE,
+        },
+      })
+      constraints.push({
+        stdLibFnName: 'tangentialArc',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(exprY),
+        sourceRange: topLevelRange(exprY.start, exprY.end),
+        pathToNode: pathToY,
+        value: code.slice(exprY.start, exprY.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 1,
+          key: ARG_END_ABSOLUTE,
+        },
+      })
     }
     return constraints
   },
 }
 export const circle: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
-    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR()
 
     const { center, radius } = segmentInput
     const _node = { ...node }
+
+    // Try to get the pipe expression first
     const nodeMeta = getNodeFromPath<PipeExpression>(
       _node,
       pathToNode,
       'PipeExpression'
     )
-    if (err(nodeMeta)) return nodeMeta
 
-    const { node: pipe } = nodeMeta
+    // If we get a pipe expression, handle as before
+    if (!err(nodeMeta) && nodeMeta.node.type === 'PipeExpression') {
+      const { node: pipe } = nodeMeta
 
+      const x = createLiteral(roundOff(center[0], 2))
+      const y = createLiteral(roundOff(center[1], 2))
+      const radiusExp = createLiteral(roundOff(radius, 2))
+      const centerArray = createArrayExpression([x, y])
+
+      if (replaceExistingCallback) {
+        const result = replaceExistingCallback([
+          {
+            type: 'labeledArgArrayItem',
+            argType: 'xAbsolute',
+            key: ARG_CIRCLE_CENTER,
+            index: 0,
+            expr: x,
+          },
+          {
+            type: 'labeledArgArrayItem',
+            argType: 'yAbsolute',
+            key: ARG_CIRCLE_CENTER,
+            index: 1,
+            expr: y,
+          },
+          {
+            type: 'labeledArg',
+            argType: 'radius',
+            key: ARG_RADIUS,
+            expr: radiusExp,
+          },
+        ])
+        if (err(result)) return result
+        const { callExp, valueUsedInTransform } = result
+
+        const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+
+        // Handle the case where the returned expression is not a proper kwarg expression
+        if (callExp.type !== 'CallExpressionKw') {
+          // In a pipe expression, the unlabeled first arg can be omitted
+          const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+          const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
+          const circleKw = createCallExpressionStdLibKw('circle', null, [
+            centerArg,
+            radiusArg,
+          ])
+
+          pipe.body[callIndex] = circleKw
+        } else {
+          // For CallExpressionKw, we don't need to set an unlabeled argument in pipe expressions
+          if (callExp.unlabeled) {
+            callExp.unlabeled = null
+          }
+          pipe.body[callIndex] = callExp
+        }
+
+        return {
+          modifiedAst: _node,
+          pathToNode,
+          valueUsedInTransform,
+        }
+      }
+      return new Error('Problem with circle')
+    }
+
+    // If it's not in a pipe expression, try to get variable declarator
+    const varDecMeta = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+
+    if (err(varDecMeta))
+      return new Error('Could not find pipe expression or variable declarator')
+
+    const { node: varDec } = varDecMeta
+
+    // Get the existing circle expression to extract the unlabeled first argument (sketch)
+    const existingCircleExpr = varDec.init as Node<CallExpressionKw>
+    let sketchArg: Expr | null = null
+
+    // Extract the unlabeled sketch argument if it exists
+    if (existingCircleExpr && existingCircleExpr.type === 'CallExpressionKw') {
+      sketchArg = existingCircleExpr.unlabeled
+    }
+
+    // These follow the same pattern whether we use the callback or not
     const x = createLiteral(roundOff(center[0], 2))
     const y = createLiteral(roundOff(center[1], 2))
-
     const radiusExp = createLiteral(roundOff(radius, 2))
+    const centerArray = createArrayExpression([x, y])
 
     if (replaceExistingCallback) {
+      // debugger
       const result = replaceExistingCallback([
         {
-          type: 'arrayInObject',
-          index: 0,
-          key: 'center',
+          type: 'labeledArgArrayItem',
           argType: 'xAbsolute',
+          key: ARG_CIRCLE_CENTER,
+          index: 0,
           expr: x,
         },
         {
-          type: 'arrayInObject',
-          index: 1,
-          key: 'center',
+          type: 'labeledArgArrayItem',
           argType: 'yAbsolute',
+          key: ARG_CIRCLE_CENTER,
+          index: 1,
           expr: y,
         },
         {
-          type: 'objectProperty',
-          key: 'radius',
+          type: 'labeledArg',
           argType: 'radius',
+          key: ARG_RADIUS,
           expr: radiusExp,
         },
       ])
       if (err(result)) return result
       const { callExp, valueUsedInTransform } = result
 
-      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
-      pipe.body[callIndex] = callExp
+      // Make sure the unlabeled first argument (sketch) is preserved
+      if (callExp.type === 'CallExpressionKw') {
+        if (sketchArg && !callExp.unlabeled) {
+          callExp.unlabeled = sketchArg
+        }
+
+        // Replace the variable declarator init with the call expression
+        varDec.init = callExp
+      } else {
+        // If somehow we get a non-kw expression, create the correct one
+        const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+        const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
+        const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
+          centerArg,
+          radiusArg,
+        ])
+
+        // Replace the variable declarator init with the correct KW expression
+        varDec.init = circleKw
+      }
 
       return {
         modifiedAst: _node,
         pathToNode,
         valueUsedInTransform,
       }
+    } else {
+      // If no callback, create a CallExpressionKw directly
+      const centerArg = createLabeledArg(ARG_CIRCLE_CENTER, centerArray)
+      const radiusArg = createLabeledArg(ARG_RADIUS, radiusExp)
+      const circleKw = createCallExpressionStdLibKw('circle', sketchArg, [
+        centerArg,
+        radiusArg,
+      ])
+
+      // Replace the variable declarator init with the call expression
+      varDec.init = circleKw
+
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
     }
-    return new Error('not implemented')
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
@@ -1301,6 +1431,7 @@ export const circle: SketchLineHelperKw = {
       ['arguments', 'CallExpressionKw'],
       [centerInfo.argIndex, ARG_INDEX_FIELD],
       ['arg', LABELED_ARG_FIELD],
+      ['elements', 'ArrayExpression'],
     ]
     const pathToRadiusLiteral: PathToNode = [
       ...pathToNode,
@@ -1317,16 +1448,19 @@ export const circle: SketchLineHelperKw = {
       [1, 'index'],
     ]
 
-    return [
-      constrainInfo(
-        'radius',
-        isNotLiteralArrayOrStatic(radiusInfo.expr),
-        code.slice(radiusInfo.expr.start, radiusInfo.expr.end),
-        'circle',
-        'radius',
-        topLevelRange(radiusInfo.expr.start, radiusInfo.expr.end),
-        pathToRadiusLiteral
-      ),
+    const constraints: ConstrainInfo[] = [
+      {
+        stdLibFnName: 'circle',
+        type: 'radius',
+        isConstrained: isNotLiteralArrayOrStatic(radiusInfo.expr),
+        sourceRange: topLevelRange(radiusInfo.expr.start, radiusInfo.expr.end),
+        pathToNode: pathToRadiusLiteral,
+        value: code.slice(radiusInfo.expr.start, radiusInfo.expr.end),
+        argPosition: {
+          type: 'labeledArg',
+          key: ARG_RADIUS,
+        },
+      },
       {
         stdLibFnName: 'circle',
         type: 'xAbsolute',
@@ -1341,9 +1475,9 @@ export const circle: SketchLineHelperKw = {
           centerInfo.expr.elements[0].end
         ),
         argPosition: {
-          type: 'arrayInObject',
+          type: 'labeledArgArrayItem',
           index: 0,
-          key: 'center',
+          key: ARG_CIRCLE_CENTER,
         },
       },
       {
@@ -1360,12 +1494,13 @@ export const circle: SketchLineHelperKw = {
           centerInfo.expr.elements[1].end
         ),
         argPosition: {
-          type: 'arrayInObject',
+          type: 'labeledArgArrayItem',
           index: 1,
           key: 'center',
         },
       },
     ]
+    return constraints
   },
 }
 
@@ -1378,7 +1513,7 @@ export const arc: SketchLineHelperKw = {
     replaceExistingCallback,
     spliceBetween,
   }) => {
-    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius, from, to } = segmentInput
     const _node = { ...node }
 
@@ -1512,7 +1647,7 @@ export const arc: SketchLineHelperKw = {
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR()
     const { center, radius, from, to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
@@ -1653,7 +1788,7 @@ export const arcTo: SketchLineHelperKw = {
     spliceBetween,
   }) => {
     if (segmentInput.type !== 'circle-three-point-segment')
-      return ARC_SEGMENT_ERR
+      return ARC_SEGMENT_ERR()
 
     const { p2, p3 } = segmentInput
     const _node = { ...node }
@@ -1669,29 +1804,43 @@ export const arcTo: SketchLineHelperKw = {
     // p1 is the start point (from the previous segment)
     // p2 is the interiorAbsolute point
     // p3 is the end point
-    const interiorAbsolute = createArrayExpression([
-      createLiteral(roundOff(p2[0], 2)),
-      createLiteral(roundOff(p2[1], 2)),
-    ])
+    const p2x = createLiteral(roundOff(p2[0], 2))
+    const p2y = createLiteral(roundOff(p2[1], 2))
+    const interiorAbsolute = createArrayExpression([p2x, p2y])
 
-    const end = createArrayExpression([
-      createLiteral(roundOff(p3[0], 2)),
-      createLiteral(roundOff(p3[1], 2)),
-    ])
+    const p3x = createLiteral(roundOff(p3[0], 2))
+    const p3y = createLiteral(roundOff(p3[1], 2))
+    const end = createArrayExpression([p3x, p3y])
 
     if (replaceExistingCallback) {
       const result = replaceExistingCallback([
         {
-          type: 'objectProperty',
+          type: 'labeledArgArrayItem',
           key: 'interiorAbsolute',
+          index: 0,
           argType: 'xAbsolute',
-          expr: createLiteral(0), // This is a workaround, the actual value will be set later
+          expr: p2x,
         },
         {
-          type: 'objectProperty',
-          key: 'endAbsolute',
+          type: 'labeledArgArrayItem',
+          key: 'interiorAbsolute',
+          index: 1,
           argType: 'yAbsolute',
-          expr: createLiteral(0), // This is a workaround, the actual value will be set later
+          expr: p2y,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
+          index: 0,
+          argType: 'xAbsolute',
+          expr: p3x,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
+          index: 1,
+          argType: 'yAbsolute',
+          expr: p3y,
         },
       ])
       if (err(result)) return result
@@ -1757,7 +1906,7 @@ export const arcTo: SketchLineHelperKw = {
     }
   },
   updateArgs: ({ node, pathToNode, input }) => {
-    if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
+    if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR()
 
     const { p2, p3 } = input
     const _node = { ...node }
@@ -1866,8 +2015,8 @@ export const arcTo: SketchLineHelperKw = {
         ),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'interiorAbsolute',
+          type: 'labeledArgArrayItem',
+          key: ARG_INTERIOR_ABSOLUTE,
           index: 0,
         },
         sourceRange: topLevelRange(
@@ -1875,7 +2024,7 @@ export const arcTo: SketchLineHelperKw = {
           interiorAbsoluteArr.elements[0].end
         ),
         pathToNode: pathToInteriorX,
-        filterValue: 'interiorAbsolute',
+        filterValue: ARG_INTERIOR_ABSOLUTE,
       },
       {
         type: 'yAbsolute',
@@ -1888,8 +2037,8 @@ export const arcTo: SketchLineHelperKw = {
         ),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'interiorAbsolute',
+          type: 'labeledArgArrayItem',
+          key: ARG_INTERIOR_ABSOLUTE,
           index: 1,
         },
         sourceRange: topLevelRange(
@@ -1897,7 +2046,7 @@ export const arcTo: SketchLineHelperKw = {
           interiorAbsoluteArr.elements[1].end
         ),
         pathToNode: pathToInteriorY,
-        filterValue: 'interiorAbsolute',
+        filterValue: ARG_INTERIOR_ABSOLUTE,
       },
       {
         type: 'xAbsolute',
@@ -1905,8 +2054,8 @@ export const arcTo: SketchLineHelperKw = {
         value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'end',
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
           index: 0,
         },
         sourceRange: topLevelRange(
@@ -1914,7 +2063,7 @@ export const arcTo: SketchLineHelperKw = {
           endArr.elements[0].end
         ),
         pathToNode: pathToEndX,
-        filterValue: 'end',
+        filterValue: 'endAbsolute',
       },
       {
         type: 'yAbsolute',
@@ -1922,8 +2071,8 @@ export const arcTo: SketchLineHelperKw = {
         value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
         stdLibFnName: 'arc',
         argPosition: {
-          type: 'arrayInObject',
-          key: 'end',
+          type: 'labeledArgArrayItem',
+          key: 'endAbsolute',
           index: 1,
         },
         sourceRange: topLevelRange(
@@ -1931,7 +2080,7 @@ export const arcTo: SketchLineHelperKw = {
           endArr.elements[1].end
         ),
         pathToNode: pathToEndY,
-        filterValue: 'end',
+        filterValue: 'endAbsolute',
       },
     ]
 
@@ -3053,6 +3202,54 @@ export function changeSketchArguments(
 }
 
 /**
+ * Converts a function name to a ToolTip (UI hint/identifier) based on the segment type.
+ *
+ * This function differs from fnNameToTooltip() in that it uses the Path/segment
+ * type information to determine the correct ToolTip, rather than analyzing function
+ * argument labels. This is particularly important for functions like 'arc' where
+ * the same function name can map to different ToolTips ('arc' or 'arcTo') depending
+ * on the segment type (ArcThreePoint vs other types).
+ *
+ * While fnNameToTooltip() determines the ToolTip by examining the function's argument
+ * structure at call site, this function uses the segment geometry information, making
+ * it suitable for contexts where we have the Path object but not the full argument list.
+ *
+ * @param seg - The Path object containing segment type information
+ * @param fnName - The function name to convert to a ToolTip
+ * @returns The corresponding ToolTip or an Error if the function name is unknown
+ */
+export function fnNameToToolTipFromSegment(
+  seg: Path,
+  fnName: string
+): ToolTip | Error {
+  switch (fnName) {
+    case 'arc': {
+      return seg.type === 'ArcThreePoint' ? 'arcTo' : 'arc'
+    }
+    case 'line':
+    case 'lineTo':
+    case 'xLine':
+    case 'xLineTo':
+    case 'yLine':
+    case 'yLineTo':
+    case 'angledLineToX':
+    case 'angledLineToY':
+    case 'angledLineOfXLength':
+    case 'angledLineOfYLength':
+    case 'angledLineThatIntersects':
+    case 'circleThreePoint':
+    case 'circle':
+    case 'tangentialArc':
+    case 'angledLine':
+      return fnName
+    default:
+      const err = `Unknown sketch line function ${fnName}`
+      console.error(err)
+      return new Error(err)
+  }
+}
+
+/**
  * Function names no longer cleanly correspond to tooltips.
  * A tooltip is a user action, like a line to a given point, or in a given direction.
  * These are two separate tooltips (line and lineTo) but are made by the same stdlib function,
@@ -3770,18 +3967,30 @@ export const getArc = (
   callExp: CallExpressionKw
 ):
   | {
-      val: [Expr, Expr, Expr]
+      val: [Expr, Expr, Expr] | [Expr, Expr]
       tag?: Expr
     }
   | Error => {
   const angleStart = findKwArg(ARG_ANGLE_START, callExp)
   const angleEnd = findKwArg(ARG_ANGLE_END, callExp)
   const radius = findKwArg(ARG_RADIUS, callExp)
-  if (!angleStart || !angleEnd || !radius) {
-    return new Error(`arc call needs angleStart, angleEnd, and radius args`)
+  const isMissingAnyAngleKwArgs = !angleStart || !angleEnd || !radius
+
+  const interiorAbsolute = findKwArg(ARG_INTERIOR_ABSOLUTE, callExp)
+  const endAbsolute = findKwArg(ARG_END_ABSOLUTE, callExp)
+  const isMissingAnyEndKwArgs = !interiorAbsolute || !endAbsolute
+
+  if (!isMissingAnyAngleKwArgs) {
+    const tag = findKwArg(ARG_TAG, callExp)
+    return { val: [angleStart, angleEnd, radius], tag }
+  } else if (!isMissingAnyEndKwArgs) {
+    const tag = findKwArg(ARG_TAG, callExp)
+    return { val: [interiorAbsolute, endAbsolute], tag }
   }
-  const tag = findKwArg(ARG_TAG, callExp)
-  return { val: [angleStart, angleEnd, radius], tag }
+
+  return new Error(
+    `arc call needs [angleStart, angleEnd, radius] or [interiorAbsolute, endAbsolute] args`
+  )
 }
 
 /**

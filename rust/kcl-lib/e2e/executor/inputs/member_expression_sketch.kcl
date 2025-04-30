@@ -1,4 +1,4 @@
-fn square = (pos, scale) => {
+fn square(pos, scale) {
   sg = startSketchOn(XY)
     |> startProfile(at = pos)
     |> line(end = [0, scale])
