@@ -93,11 +93,14 @@ assert(
 // Declare a function that sketches a decagon.
 fn decagon(radius) {
   // Each side of the decagon is turned this many radians from the previous angle.
-  stepAngle = 1 / 10 * TAU
+  stepAngle = (1 / 10 * TAU): number(rad)
 
   // Start the decagon sketch at this point.
   startOfDecagonSketch = startSketchOn(XY)
-    |> startProfile(at = [cos(0) * radius, sin(0) * radius])
+    |> startProfile(at = [
+         math::cos(0) * radius,
+         math::sin(0) * radius
+       ])
 
     // Use a `reduce` to draw the remaining decagon sides.
     // For each number in the array 1..10, run the given function,
@@ -107,8 +110,8 @@ fn decagon(radius) {
     initial = startOfDecagonSketch,
     f = fn(i, partialDecagon) {
       // Draw one edge of the decagon.
-      x = cos(stepAngle * i) * radius
-      y = sin(stepAngle * i) * radius
+      x = math::cos(stepAngle * i) * radius
+      y = math::sin(stepAngle * i) * radius
       return line(partialDecagon, end = [x, y])
     },
   )
@@ -118,15 +121,15 @@ fn decagon(radius) {
 
 /* The `decagon` above is basically like this pseudo-code:
 fn decagon(radius):
-    stepAngle = (1/10) * TAU
-    plane = startSketchOn('XY')
-    startOfDecagonSketch = startProfile(plane, at = [(cos(0)*radius), (sin(0) * radius)])
+    stepAngle = ((1/10) * TAU): number(rad)
+    plane = startSketchOn(XY)
+    startOfDecagonSketch = startProfile(plane, at = [(math::cos(0)*radius), (math::sin(0) * radius)])
 
     // Here's the reduce part.
     partialDecagon = startOfDecagonSketch
     for i in [1..10]:
-        x = cos(stepAngle * i) * radius
-        y = sin(stepAngle * i) * radius
+        x = math::cos(stepAngle * i) * radius
+        y = math::sin(stepAngle * i) * radius
         partialDecagon = line(partialDecagon, end = [x, y])
     fullDecagon = partialDecagon // it's now full
     return fullDecagon */

@@ -32,8 +32,8 @@ fn slot(sketch1, start, end, width) {
     }
   }
   dist = sqrt(pow(end[1] - start[1], exp = 2) + pow(end[0] - start[0], exp = 2))
-  xstart = width / 2 * cos(units::toRadians(angle - 90)) + start[0]
-  ystart = width / 2 * sin(units::toRadians(angle - 90)) + start[1]
+  xstart = width / 2 * math::cos(angle - 90) + start[0]
+  ystart = width / 2 * math::sin(angle - 90) + start[1]
   slotSketch = startProfile(sketch1, at = [xstart, ystart])
     |> angledLine(angle = angle, length = dist)
     |> tangentialArc(radius = width / 2, angle = 180)
