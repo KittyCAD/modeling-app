@@ -321,10 +321,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -333,6 +331,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -546,10 +546,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -558,6 +556,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -771,10 +771,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -783,6 +781,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -996,10 +996,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1008,6 +1006,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1221,10 +1221,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1233,6 +1231,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1446,10 +1446,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1458,6 +1456,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1671,10 +1671,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1683,6 +1681,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1896,10 +1896,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1908,6 +1906,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2121,10 +2121,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2133,6 +2131,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2346,10 +2346,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2358,6 +2356,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2571,10 +2571,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2583,6 +2581,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2796,10 +2796,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2808,6 +2806,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3021,10 +3021,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3033,6 +3031,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3246,10 +3246,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3258,6 +3256,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3471,10 +3471,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3483,6 +3481,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3696,10 +3696,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3708,6 +3706,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3921,10 +3921,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3933,6 +3931,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4146,10 +4146,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4158,6 +4156,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4371,10 +4371,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4383,6 +4381,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4596,10 +4596,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4608,6 +4606,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4821,10 +4821,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4833,6 +4831,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5046,10 +5046,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5058,6 +5056,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5271,10 +5271,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5283,6 +5281,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5496,10 +5496,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5508,6 +5506,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5729,10 +5729,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5741,6 +5739,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6049,10 +6049,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6061,6 +6059,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6369,10 +6369,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6381,6 +6379,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6689,10 +6689,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6701,6 +6699,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7009,10 +7009,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7021,6 +7019,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7329,10 +7329,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7341,6 +7339,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7677,10 +7677,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7689,6 +7687,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7902,10 +7902,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7914,6 +7912,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8127,10 +8127,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8139,6 +8137,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8352,10 +8352,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8364,6 +8362,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8577,10 +8577,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8589,6 +8587,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8802,10 +8802,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8814,6 +8812,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9027,10 +9027,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9039,6 +9037,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9252,10 +9252,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9264,6 +9262,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9477,10 +9477,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9489,6 +9487,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9702,10 +9702,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9714,6 +9712,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9927,10 +9927,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9939,6 +9937,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10152,10 +10152,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10164,6 +10162,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10377,10 +10377,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10389,6 +10387,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10602,10 +10602,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10614,6 +10612,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10827,10 +10827,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10839,6 +10837,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11052,10 +11052,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11064,6 +11062,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11277,10 +11277,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11289,6 +11287,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11502,10 +11502,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11514,6 +11512,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11727,10 +11727,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11739,6 +11737,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11952,10 +11952,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11964,6 +11962,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12177,10 +12177,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12189,6 +12187,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12402,10 +12402,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12414,6 +12412,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12627,10 +12627,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12639,6 +12637,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12852,10 +12852,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12864,6 +12862,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13108,10 +13108,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -13120,6 +13118,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13441,10 +13441,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13453,6 +13451,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13666,10 +13666,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13678,6 +13676,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13891,10 +13891,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13903,6 +13901,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14116,10 +14116,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -14128,6 +14126,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14555,10 +14555,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 3.75,
                 "y": 0.0,
@@ -14567,6 +14565,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14895,10 +14895,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 3.75,
                 "y": 0.0,
@@ -14907,6 +14905,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -15240,10 +15240,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 80.25,
                 "y": 0.0,
@@ -15252,6 +15250,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -15580,10 +15580,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 80.25,
                 "y": 0.0,
@@ -15592,6 +15590,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -15941,10 +15941,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 3.75,
                 "y": 0.0,
@@ -15953,6 +15951,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16281,10 +16281,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 3.75,
                 "y": 0.0,
@@ -16293,6 +16291,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16636,10 +16636,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 3.75,
             "y": 0.0,
@@ -16648,6 +16646,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -16976,10 +16976,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 3.75,
             "y": 0.0,
@@ -16988,6 +16986,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -17316,10 +17316,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 122.25,
@@ -17328,6 +17326,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -17656,10 +17656,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 80.25,
             "y": 0.0,
@@ -17668,6 +17666,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -18064,10 +18064,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 122.25,
@@ -18076,6 +18074,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18404,10 +18404,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 122.25,
@@ -18416,6 +18414,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -18715,10 +18715,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -18727,6 +18725,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -19135,10 +19135,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -19147,6 +19145,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -19555,10 +19555,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -19567,6 +19565,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -19975,10 +19975,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -19987,6 +19985,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -20796,10 +20796,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -20808,6 +20806,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -21021,10 +21021,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -21033,6 +21031,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -21246,10 +21246,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -21258,6 +21256,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -21471,10 +21471,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -21483,6 +21481,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -21701,10 +21701,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -21713,6 +21711,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -22018,10 +22018,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -22030,6 +22028,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -22243,10 +22243,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -22255,6 +22253,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

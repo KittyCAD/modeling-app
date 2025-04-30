@@ -221,10 +221,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -233,6 +231,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -391,10 +391,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -403,6 +401,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -561,10 +561,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -573,6 +571,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -731,10 +731,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -743,6 +741,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -901,10 +901,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -913,6 +911,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1071,10 +1071,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1083,6 +1081,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1190,9 +1190,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "doorPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1201,6 +1200,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1248,9 +1248,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "floorPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XY",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -1259,6 +1258,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -1326,10 +1326,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1338,6 +1336,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1434,10 +1434,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1446,6 +1444,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1542,10 +1542,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1554,6 +1552,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1650,10 +1650,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1662,6 +1660,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1758,10 +1758,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1770,6 +1768,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1866,10 +1866,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1878,6 +1876,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2011,9 +2011,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "handlePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2022,6 +2021,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2153,10 +2153,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2165,6 +2163,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2240,10 +2240,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2252,6 +2250,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -2297,9 +2297,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "handleSectionPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -2308,6 +2307,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -2479,10 +2479,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2491,6 +2489,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2649,10 +2649,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2661,6 +2659,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2819,10 +2819,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2831,6 +2829,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2989,10 +2989,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3001,6 +2999,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3159,10 +3159,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3171,6 +3169,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3329,10 +3329,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3341,6 +3339,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3499,10 +3499,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3511,6 +3509,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3669,10 +3669,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3681,6 +3679,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3899,10 +3899,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3911,6 +3909,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4069,10 +4069,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4081,6 +4079,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4239,10 +4239,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4251,6 +4249,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4409,10 +4409,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4421,6 +4419,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4579,10 +4579,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4591,6 +4589,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4749,10 +4749,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4761,6 +4759,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4953,10 +4953,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4965,6 +4963,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5123,10 +5123,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5135,6 +5133,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5229,9 +5229,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "lowerBeltPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -5240,6 +5239,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -5411,10 +5411,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5423,6 +5421,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5581,10 +5581,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5593,6 +5591,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5824,10 +5824,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5836,6 +5834,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5994,10 +5994,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6006,6 +6004,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6164,10 +6164,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6176,6 +6174,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6334,10 +6334,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6346,6 +6344,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6504,10 +6504,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6516,6 +6514,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6674,10 +6674,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6686,6 +6684,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6754,9 +6754,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "pillarPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -6765,6 +6764,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -7104,10 +7104,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7116,6 +7114,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7494,10 +7494,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7506,6 +7504,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -7889,10 +7889,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7901,6 +7899,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8279,10 +8279,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8291,6 +8289,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -8601,10 +8601,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           ],
           "on": {
-            "type": "plane",
-            "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": "Custom",
+            "id": "[uuid]",
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -8613,6 +8611,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "type": "Mm"
               }
             },
+            "type": "plane",
+            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -8824,10 +8824,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
             }
           ],
           "on": {
-            "type": "plane",
-            "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": "Custom",
+            "id": "[uuid]",
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -8836,6 +8834,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                 "type": "Mm"
               }
             },
+            "type": "plane",
+            "value": "Custom",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -9079,10 +9079,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -9091,6 +9089,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -9144,9 +9144,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "tableTopPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -9155,6 +9154,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -9326,10 +9326,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9338,6 +9336,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9496,10 +9496,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9508,6 +9506,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9700,10 +9700,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9712,6 +9710,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9870,10 +9870,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -9882,6 +9880,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -9950,9 +9950,8 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
   "upperBeltPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -9961,6 +9960,7 @@ description: Variables in memory after executing dual-basin-utility-sink.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
