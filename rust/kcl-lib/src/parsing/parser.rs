@@ -936,7 +936,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     );
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(
+        ParseContext::err(
             CompilationError::err(
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
@@ -1221,20 +1221,10 @@ fn if_expr(i: &mut TokenSlice) -> PResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let (result, has_arrow) = function_decl.parse_next(i)?;
+    let result = function_decl.parse_next(i)?;
     if fn_tok.is_none() {
-        if has_arrow {
-            ParseContext::warn(
-                CompilationError::err(
-                    result.as_source_range().start_as_range(),
-                    "Missing `fn` in function declaration",
-                )
-                .with_suggestion("Add `fn`", "fn", None, Tag::None),
-            );
-        } else {
-            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-            return Err(ErrMode::Cut(err.into()));
-        }
+        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+        return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1244,7 +1234,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
+fn function_decl(i: &mut TokenSlice) -> PResult<Node<FunctionExpression>> {
     fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -1255,8 +1245,6 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     let start = open.start;
     let params = parameters(i)?;
     close_paren(i)?;
-    ignore_whitespace(i);
-    let arrow = opt(big_arrow).parse_next(i)?;
     ignore_whitespace(i);
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
@@ -1282,18 +1270,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow =
-        if let Some(arrow) = arrow {
-            ParseContext::warn(
-                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
-                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
-            );
-            true
-        } else {
-            false
-        };
-
-    Ok((result, has_arrow))
+    Ok(result)
 }
 
 /// E.g. `person.name`
@@ -2140,7 +2117,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             ignore_whitespace(i);
 
             let val = function_decl
-                .map(|t| Box::new(t.0))
+                .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
                 .parse_next(i);
@@ -2174,7 +2151,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
             if let Some((_, tok)) = decl_token {
                 let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
-                ParseContext::warn(
+                ParseContext::err(
                     CompilationError::err(
                         tok.as_source_range(),
                         format!(
@@ -2582,12 +2559,6 @@ fn some_brace(symbol: &'static str, i: &mut TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
-/// Parse a => operator.
-fn big_arrow(i: &mut TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "=>"))
-        .context(expected("the => symbol, used for declaring functions"))
-        .parse_next(i)
-}
 /// Parse a |> operator.
 fn pipe_operator(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, PIPE_OPERATOR))
@@ -3313,7 +3284,7 @@ mod tests {
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.body[0].get_comments();
         let comment0 = expr.body.body[1].get_comments();
@@ -3330,7 +3301,7 @@ mod tests {
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -3399,7 +3370,7 @@ mySk1 = startSketchOn(XY)
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
             expr.body.non_code_meta.start_nodes,
             vec![Node::new(
@@ -4559,7 +4530,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn zero_param_function() {
         let code = r#"
-        fn firstPrimeNumber = () => {
+        fn firstPrimeNumber() {
             return 2
         }
         firstPrimeNumber()
@@ -4648,26 +4619,6 @@ thing(false)
     }
 
     #[test]
-    fn test_error_define_function_as_var() {
-        for name in ["var", "let", "const"] {
-            let some_program_string = format!(
-                r#"{} thing = (param) => {{
-    return true
-}}
-
-thing(false)
-"#,
-                name
-            );
-            assert_err(
-                &some_program_string,
-                "Expected a `fn` variable kind, found: `const`",
-                [0, name.len()],
-            );
-        }
-    }
-
-    #[test]
     fn test_error_define_var_as_function() {
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
@@ -4690,7 +4641,7 @@ thing(false)
 
     #[test]
     fn test_member_expression_sketch() {
-        let some_program_string = r#"fn cube = (pos, scale) => {
+        let some_program_string = r#"fn cube(pos, scale) {
   sg = startSketchOn('XY')
   |> startProfileAt(pos, %)
     |> line([0, scale], %)
@@ -4718,7 +4669,7 @@ let other_thing = 2 * cos(3)"#;
 
     #[test]
     fn test_negative_arguments() {
-        let some_program_string = r#"fn box = (p, h, l, w) => {
+        let some_program_string = r#"fn box(p, h, l, w) {
  myBox = startSketchOn('XY')
     |> startProfileAt(p, %)
     |> line([0, l], %)
@@ -4970,67 +4921,6 @@ bar = 1
     }
 
     #[test]
-    fn warn_object_expr() {
-        let some_program_string = "{ foo: bar }";
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
-        assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
-    }
-
-    #[test]
-    fn warn_fn_decl() {
-        let some_program_string = r#"fn foo = () => {
-    return 0
-}"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
-        // real life we might reformat after applying suggestions.
-        assert_eq!(
-            replaced,
-            r#"fn foo  ()  {
-    return 0
-}"#
-        );
-
-        let some_program_string = r#"myMap = map([0..5], (n) => {
-    return n * 2
-})"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"myMap = map([0..5], fn(n)  {
-    return n * 2
-})"#
-        );
-    }
-
-    #[test]
-    fn warn_const() {
-        let some_program_string = r#"const foo = 0
-let bar = 1
-var baz = 2
-"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 3);
-        let replaced = errs[2].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"foo = 0
-bar = 1
-baz = 2
-"#
-        );
-    }
-
-    #[test]
     fn test_unary_not_on_keyword_bool() {
         let some_program_string = r#"!true"#;
         let module_id = ModuleId::default();
@@ -5196,11 +5086,11 @@ mod snapshot_tests {
 
     snapshot_test!(c, "myVar = min(-legLen(5, 4), 5)");
     snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45, %)");
-    snapshot_test!(e, "let x = 1 * (3 - 4)");
+    snapshot_test!(e, "x = 1 * (3 - 4)");
     snapshot_test!(f, r#"x = 1 // this is an inline comment"#);
     snapshot_test!(
         g,
-        r#"fn x = () => {
+        r#"fn x() {
         return sg
         return sg
       }"#
@@ -5208,32 +5098,32 @@ mod snapshot_tests {
     snapshot_test!(d2, r#"x = -leg2 + thickness"#);
     snapshot_test!(
         h,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = 1 - obj.a"#
     );
     snapshot_test!(
         i,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
      height = 1 - obj["a"]"#
     );
     snapshot_test!(
         j,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"] - 1"#
     );
     snapshot_test!(
         k,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [1 - obj["a"], 0]"#
     );
     snapshot_test!(
         l,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [obj["a"] - 1, 0]"#
     );
     snapshot_test!(
         m,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = {a = 1, b = 2 }
     height = [obj["a"] -1, 0]"#
     );
     snapshot_test!(n, "height = 1 - obj.a");
@@ -5242,7 +5132,7 @@ mod snapshot_tests {
     snapshot_test!(q, r#"height = [ obj["a"], 0 ]"#);
     snapshot_test!(
         r,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"]"#
     );
     snapshot_test!(s, r#"prop = yo["one"][two]"#);
@@ -5263,14 +5153,14 @@ mod snapshot_tests {
     snapshot_test!(
         ad,
         r#"
-    fn firstPrimeNumber = () => {
+    fn firstPrimeNumber() {
         return 2
     }
     firstPrimeNumber()"#
     );
     snapshot_test!(
         ae,
-        r#"fn thing = (param) => {
+        r#"fn thing(param) {
         return true
     }
     thing(false)"#
@@ -5300,10 +5190,10 @@ mod snapshot_tests {
     snapshot_test!(ar, r#"5 + "a""#);
     snapshot_test!(at, "line([0, l], %)");
     snapshot_test!(au, include_str!("../../e2e/executor/inputs/cylinder.kcl"));
-    snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
+    snapshot_test!(av, "fn f(angle?) { return default(angle, 360) }");
     snapshot_test!(
         aw,
-        "let numbers = [
+        "numbers = [
             1,
             // A,
             // B,
@@ -5312,7 +5202,7 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ax,
-        "let numbers = [
+        "numbers = [
             1,
             2,
             // A,
@@ -5329,7 +5219,7 @@ mod snapshot_tests {
     );
     snapshot_test!(
         az,
-        "let props = {
+        "props = {
             a: 1,
             // b: 2,
             c: 3
@@ -5359,14 +5249,14 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
-    snapshot_test!(be, "let x = 3 == 3");
-    snapshot_test!(bf, "let x = 3 != 3");
+    snapshot_test!(be, "x = 3 == 3");
+    snapshot_test!(bf, "x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
-    snapshot_test!(bh, "obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(bh, "obj = {center = [10, 10], radius =5}");
     snapshot_test!(
         bi,
         r#"x = 3
-        obj = { x, y: 4}"#
+        obj = { x, y = 4}"#
     );
     snapshot_test!(bj, "true");
     snapshot_test!(bk, "truee");

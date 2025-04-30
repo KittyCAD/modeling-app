@@ -1,4 +1,4 @@
-const boxSketch = startSketchOn(XY)
+boxSketch = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line(end = [0, 10])
     |> tangentialArc(radius = 5, angle = 90)

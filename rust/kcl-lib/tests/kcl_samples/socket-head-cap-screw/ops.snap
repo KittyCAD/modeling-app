@@ -7,15 +7,12 @@ description: Operations executed socket-head-cap-screw.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "labeledArgs": {
@@ -266,5 +263,8 @@ description: Operations executed socket-head-cap-screw.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

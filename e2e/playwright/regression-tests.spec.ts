@@ -223,21 +223,6 @@ extrude001 = extrude(sketch001, length = 50)
     })
   })
 
-  // Not relevant to us anymore, or at least for the time being.
-  test.skip('ensure the Zoo logo is not a link in browser app', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
-
-    const zooLogo = page.locator('[data-testid="app-logo"]')
-    // Make sure it's not a link
-    await expect(zooLogo).not.toHaveAttribute('href')
-  })
-
   test('Position _ Is Out Of Range... regression test', async ({
     context,
     page,
@@ -342,14 +327,15 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await page.setBodyDimensions({ width: 500, height: 500 })
+      await toolbar.closePane('code')
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
       const websocket = await websocketPromise
 
       await scene.connectionEstablished()
       await scene.settled(cmdBar)
-      await toolbar.closePane('code')
+      await page.setBodyDimensions({ width: 500, height: 500 })
 
       // expect pixel color to be background color
       const offModelBefore = { x: 446, y: 250 }

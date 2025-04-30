@@ -323,6 +323,7 @@ impl Node<Program> {
         let rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
+            crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
         ];
 
@@ -3623,7 +3624,7 @@ mod tests {
 
     #[test]
     fn test_get_lsp_folding_ranges() {
-        let code = r#"const part001 = startSketchOn(XY)
+        let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
@@ -3631,13 +3632,13 @@ startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
-const part002 = "part002"
-const things = [part001, 0.0]
-let blah = 1
-const foo = false
-let baz = {a: 1, b: "thing"}
+part002 = "part002"
+things = [part001, 0.0]
+blah = 1
+foo = false
+baz = {a = 1, b = "thing"}
 
-fn ghi = (x) => {
+fn ghi(x) {
   return x
 }
 
@@ -3647,32 +3648,32 @@ ghi("things")
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 27);
-        assert_eq!(folding_ranges[0].end_line, 132);
+        assert_eq!(folding_ranges[0].end_line, 126);
         assert_eq!(
             folding_ranges[0].collapsed_text,
             Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 151);
-        assert_eq!(folding_ranges[1].end_line, 250);
+        assert_eq!(folding_ranges[1].start_line, 145);
+        assert_eq!(folding_ranges[1].end_line, 244);
         assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
-        assert_eq!(folding_ranges[2].start_line, 380);
-        assert_eq!(folding_ranges[2].end_line, 399);
+        assert_eq!(folding_ranges[2].start_line, 350);
+        assert_eq!(folding_ranges[2].end_line, 363);
         assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
     }
 
     #[test]
     fn test_get_lsp_symbols() {
-        let code = r#"const part001 = startSketchOn('XY')
+        let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
     |> line([0.4900857016, -0.0240763666], %)
 
-const part002 = "part002"
-const things = [part001, 0.0]
-let blah = 1
-const foo = false
-let baz = {a: 1, b: "thing"}
+part002 = "part002"
+things = [part001, 0.0]
+blah = 1
+foo = false
+baz = {a = 1, b = "thing"}
 
-fn ghi = (x) => {
+fn ghi(x) {
   return x
 }
 "#;
@@ -3684,58 +3685,59 @@ fn ghi = (x) => {
     #[test]
     fn test_ast_in_comment() {
         let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
-const h = 30
+h = 30
 
 // st
-const cylinder = startSketchOn('-XZ')
+
+cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
   |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: r
+       angle_end = 360,
+       angle_start = 0,
+       radius = r
      }, %)
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(50));
+        assert!(program.in_comment(43));
     }
 
     #[test]
     fn test_ast_in_comment_pipe() {
         let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
-const h = 30
+h = 30
 
 // st
-const cylinder = startSketchOn('-XZ')
+cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
   // comment
   |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: r
+       angle_end= 360,
+       angle_start= 0,
+       radius= r
      }, %)
   |> extrude(h, %)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(124));
+        assert!(program.in_comment(117));
     }
 
     #[test]
     fn test_ast_in_comment_inline() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
+        let some_program_string = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(92));
+        assert!(program.in_comment(85));
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number(mm), arg1: string, tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: number(mm), arg1: string, tag?: string) {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3766,7 +3768,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_array_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: [number], arg1: [string], tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: [string], tag?: string) {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3803,7 +3805,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -3836,14 +3838,14 @@ const cylinder = startSketchOn('-XZ')
                                 name: "thing".to_owned(),
                                 digest: None,
                             },
-                            35,
-                            40,
+                            32,
+                            37,
                             module_id,
                         ),
                         type_: Some(Node::new(
                             Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
-                            42,
-                            48,
+                            39,
+                            45,
                             module_id
                         )),
                         default_value: None,
@@ -3856,8 +3858,8 @@ const cylinder = startSketchOn('-XZ')
                                 name: "things".to_owned(),
                                 digest: None,
                             },
-                            50,
-                            56,
+                            47,
+                            53,
                             module_id,
                         ),
                         type_: Some(Node::new(
@@ -3865,8 +3867,8 @@ const cylinder = startSketchOn('-XZ')
                                 ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
-                            59,
-                            65,
+                            56,
+                            62,
                             module_id
                         )),
                         default_value: None,
@@ -3879,11 +3881,11 @@ const cylinder = startSketchOn('-XZ')
                                 name: "more".to_owned(),
                                 digest: None
                             },
-                            68,
-                            72,
+                            65,
+                            69,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 75, 81, module_id)),
+                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 72, 78, module_id)),
                         labeled: true,
                         default_value: Some(DefaultParamVal::none()),
                         digest: None
@@ -3894,91 +3896,6 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[2].type_.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing(): {thing: number, things: [string], more?: string} {
-    return 1
-}"#;
-        let module_id = ModuleId::default();
-        let program = crate::parsing::parse_str(some_program_string, module_id).unwrap();
-
-        // Check the program output for the types of the parameters.
-        let function = program.body.first().unwrap();
-        let BodyItem::VariableDeclaration(var_decl) = function else {
-            panic!("expected a variable declaration")
-        };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
-            panic!("expected a function expression")
-        };
-        let params = &func_expr.params;
-        assert_eq!(params.len(), 0);
-        assert_eq!(
-            func_expr.return_type.as_ref().unwrap().inner,
-            Type::Object {
-                properties: vec![
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "thing".to_owned(),
-                                digest: None
-                            },
-                            13,
-                            18,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(
-                            Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
-                            20,
-                            26,
-                            module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "things".to_owned(),
-                                digest: None
-                            },
-                            28,
-                            34,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(
-                            Type::Array {
-                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
-                                len: ArrayLen::None
-                            },
-                            37,
-                            43,
-                            module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "more".to_owned(),
-                                digest: None
-                            },
-                            46,
-                            50,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 53, 59, module_id)),
-                        labeled: true,
-                        default_value: Some(DefaultParamVal::none()),
-                        digest: None
-                    }
-                ]
-            }
         );
     }
 

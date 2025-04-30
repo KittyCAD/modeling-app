@@ -78,10 +78,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -90,6 +88,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -212,10 +212,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -224,6 +222,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -346,10 +346,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -358,6 +356,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -480,10 +480,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -492,6 +490,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -614,10 +614,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -626,6 +624,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -748,10 +748,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -760,6 +758,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -882,10 +882,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -894,6 +892,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1016,10 +1016,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1028,6 +1026,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1150,10 +1150,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1162,6 +1160,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1284,10 +1284,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1296,6 +1294,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1400,10 +1400,8 @@ description: Variables in memory after executing ball-bearing.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1412,6 +1410,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1581,10 +1581,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1593,6 +1591,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1767,10 +1767,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1779,6 +1777,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1953,10 +1953,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1965,6 +1963,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2139,10 +2139,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2151,6 +2149,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2325,10 +2325,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2337,6 +2335,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2511,10 +2511,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2523,6 +2521,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2697,10 +2697,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2709,6 +2707,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2883,10 +2883,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2895,6 +2893,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3069,10 +3069,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3081,6 +3079,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3255,10 +3255,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3267,6 +3265,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3409,10 +3409,8 @@ description: Variables in memory after executing ball-bearing.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3421,6 +3419,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3535,10 +3535,8 @@ description: Variables in memory after executing ball-bearing.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3547,6 +3545,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3630,10 +3630,8 @@ description: Variables in memory after executing ball-bearing.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3642,6 +3640,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -3746,10 +3746,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3758,6 +3756,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3854,10 +3854,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3866,6 +3864,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -3962,10 +3962,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -3974,6 +3972,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4070,10 +4070,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4082,6 +4080,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4178,10 +4178,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4190,6 +4188,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4286,10 +4286,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4298,6 +4296,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4394,10 +4394,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4406,6 +4404,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4502,10 +4502,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4514,6 +4512,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4610,10 +4610,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4622,6 +4620,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4718,10 +4718,8 @@ description: Variables in memory after executing ball-bearing.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -4730,6 +4728,8 @@ description: Variables in memory after executing ball-bearing.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -4815,10 +4815,8 @@ description: Variables in memory after executing ball-bearing.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4827,6 +4825,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4941,10 +4941,8 @@ description: Variables in memory after executing ball-bearing.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4953,6 +4951,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -5036,10 +5036,8 @@ description: Variables in memory after executing ball-bearing.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -5048,6 +5046,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

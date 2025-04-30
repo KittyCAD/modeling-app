@@ -1,4 +1,4 @@
-fn foo = () => {
+fn foo() {
   import identity from "identity.kcl"
   return 1
 }

@@ -8,7 +8,7 @@ use crate::{
     execution::{
         kcl_value::{KclValue, TypeDef},
         memory::{self},
-        ExecState, Plane, Point3d,
+        ExecState, Plane, PlaneInfo, Point3d,
     },
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
@@ -1076,9 +1076,11 @@ impl KclValue {
                         id,
                         #[cfg(feature = "artifact-graph")]
                         artifact_id: id.into(),
-                        origin,
-                        x_axis: x_axis.normalize(),
-                        y_axis: y_axis.normalize(),
+                        info: PlaneInfo {
+                            origin,
+                            x_axis: x_axis.normalize(),
+                            y_axis: y_axis.normalize(),
+                        },
                         value: super::PlaneType::Uninit,
                         meta: meta.clone(),
                     };
@@ -1364,7 +1366,7 @@ mod test {
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
             KclValue::Plane {
-                value: Box::new(Plane::from_plane_data(crate::std::sketch::PlaneData::XY, exec_state)),
+                value: Box::new(Plane::from_plane_data(crate::std::sketch::PlaneData::XY, exec_state).unwrap()),
             },
             // No easy way to make a Face, Sketch, Solid, or Helix
             KclValue::ImportedGeometry(crate::execution::ImportedGeometry::new(
@@ -2133,19 +2135,19 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(units::toRadians(30))
+a = math::cos(units::toRadians(30))
 b = 3 / a
-c = cos(30deg)
-d = cos(30)
+c = math::cos(30deg)
+d = math::cos(30)
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 1);
+        assert!(result.exec_state.errors().is_empty());
 
         assert_value_and_type("a", &result, 1.0, NumericType::count());
         assert_value_and_type("b", &result, 3.0, NumericType::default());
         assert_value_and_type("c", &result, 1.0, NumericType::count());
-        assert_value_and_type("d", &result, 0.0, NumericType::count());
+        assert_value_and_type("d", &result, 1.0, NumericType::count());
     }
 
     #[tokio::test(flavor = "multi_thread")]

@@ -24,8 +24,6 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
-import type { KclSamplesManifestItem } from '@src/lib/getKclSamplesManifest'
-import { getKclSamplesManifest } from '@src/lib/getKclSamplesManifest'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
@@ -59,9 +57,6 @@ export const FileMachineProvider = ({
   const settings = useSettings()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
-  const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
-    []
-  )
 
   const filePath = useAbsoluteFilePath()
   // Only create the native file menus on desktop
@@ -102,12 +97,6 @@ export const FileMachineProvider = ({
 
   useEffect(() => {
     markOnce('code/didLoadFile')
-    async function fetchKclSamples() {
-      const manifest = await getKclSamplesManifest()
-      const filteredFiles = manifest.filter((file) => !file.multipleFiles)
-      setKclSamples(filteredFiles)
-    }
-    fetchKclSamples().catch(reportError)
   }, [])
 
   const [state, send] = useMachine(
@@ -468,28 +457,6 @@ export const FileMachineProvider = ({
             settings.modeling.defaultUnit.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT,
         },
-        specialPropsForLoadCommand: {
-          onSubmit: async (data) => {
-            if (data.method === 'overwrite' && data.content) {
-              codeManager.updateCodeStateEditor(data.content)
-              await kclManager.executeCode()
-              await codeManager.writeToFile()
-            } else if (data.method === 'newFile' && isDesktop()) {
-              send({
-                type: 'Create file',
-                data: {
-                  ...data,
-                  makeDir: false,
-                  shouldSetToRename: false,
-                },
-              })
-            }
-          },
-          providedOptions: kclSamples.map((sample) => ({
-            value: sample.pathFromProjectDirectoryToFirstFile,
-            name: sample.title,
-          })),
-        },
         specialPropsForInsertCommand: {
           providedOptions: (isDesktop() && project?.children
             ? project.children
@@ -510,10 +477,8 @@ export const FileMachineProvider = ({
                 }
           }),
         },
-      }).filter(
-        (command) => kclSamples.length || command.name !== 'load-external-model'
-      ),
-    [codeManager, kclManager, send, kclSamples, project, file]
+      }),
+    [codeManager, kclManager, send, project, file]
   )
 
   useEffect(() => {

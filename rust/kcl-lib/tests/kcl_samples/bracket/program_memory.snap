@@ -277,10 +277,8 @@ description: Variables in memory after executing bracket.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -289,6 +287,8 @@ description: Variables in memory after executing bracket.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -840,10 +840,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -852,6 +850,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1289,10 +1289,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1301,6 +1299,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1738,10 +1738,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1750,6 +1748,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2187,10 +2187,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2199,6 +2197,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2706,10 +2706,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2718,6 +2716,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -3155,10 +3155,8 @@ description: Variables in memory after executing bracket.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3167,6 +3165,8 @@ description: Variables in memory after executing bracket.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,

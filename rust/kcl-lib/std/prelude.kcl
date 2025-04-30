@@ -5,7 +5,8 @@
 
 export import * from "std::types"
 export import "std::units"
-export import * from "std::math"
+export import PI, E, TAU from "std::math"
+export import "std::math"
 export import * from "std::sketch"
 export import * from "std::solid"
 export import "std::turns"
@@ -113,7 +114,7 @@ export END = 'end'
 /// // Create a helix on a cylinder.
 ///
 /// part001 = startSketchOn(XY)
-///   |> circle( center= [5, 5], radius= 10 )
+///   |> circle( center = [5, 5], radius= 10 )
 ///   |> extrude(length = 10)
 ///
 /// helix(
@@ -281,7 +282,7 @@ export fn helix(
 ///    sketch001,
 ///    axis = {
 ///      direction = [0.0, 1.0],
-///      origin: [0.0, 0.0]
+///      origin = [0.0, 0.0]
 ///   }
 /// )
 /// ```

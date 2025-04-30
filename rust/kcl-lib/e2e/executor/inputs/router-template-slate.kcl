@@ -1,15 +1,15 @@
-const routerDiameter = 12.7
-const mmInInch = 25.4
-const templateDiameter = mmInInch * 11 / 16
-const templateGap = ((templateDiameter - routerDiameter) / 2) -0.5
-const slateWidthHalf = 41.5 / 2
-const minClampingDistance = 50 + 30
-const templateThickness = 10
-const radius = 10
-const depth = 30
-const length001 = slateWidthHalf - radius
-const length002 = depth + minClampingDistance
-const sketch001 = startSketchOn(XZ)
+routerDiameter = 12.7
+mmInInch = 25.4
+templateDiameter = mmInInch * 11 / 16
+templateGap = ((templateDiameter - routerDiameter) / 2) -0.5
+slateWidthHalf = 41.5 / 2
+minClampingDistance = 50 + 30
+templateThickness = 10
+radius = 10
+depth = 30
+length001 = slateWidthHalf - radius
+length002 = depth + minClampingDistance
+sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, depth - templateGap])
   |> xLine(length = length001, tag = $seg01)
   |> arc(
@@ -32,20 +32,20 @@ const sketch001 = startSketchOn(XZ)
      )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-const extrude001 = extrude(sketch001, length = 5)
-const sketch002 = startSketchOn(extrude001, face = 'START')
+extrude001 = extrude(sketch001, length = 5)
+sketch002 = startSketchOn(extrude001, face = 'START')
   |> startProfile(at = [-slateWidthHalf, -templateGap * 2 - (templateDiameter / 2)])
   |> xLine(length = -7, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001, %) + 90, length = minClampingDistance, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001, %), length = -segLen(rectangleSegmentA001, %), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-const extrude002 = extrude(sketch002, length = 7.5)
-const sketch003 = startSketchOn(extrude001, face = 'START')
+extrude002 = extrude(sketch002, length = 7.5)
+sketch003 = startSketchOn(extrude001, face = 'START')
   |> startProfile(at = [slateWidthHalf, -templateGap * 2 - (templateDiameter / 2)])
   |> xLine(length = 7, tag = $rectangleSegmentA002)
   |> angledLine(angle = segAng(rectangleSegmentA002, %) - 90, length = minClampingDistance)
   |> angledLine(angle = segAng(rectangleSegmentA002, %), length = -segLen(rectangleSegmentA002, %))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-const extrude003 = extrude(sketch003, length = 7.5)
+extrude003 = extrude(sketch003, length = 7.5)

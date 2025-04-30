@@ -14,7 +14,9 @@ use crate::{
 };
 
 /// Identifier of a source file.  Uses a u32 to keep the size small.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
+#[derive(
+    Debug, Default, Ord, PartialOrd, Eq, PartialEq, Clone, Copy, Hash, Deserialize, Serialize, ts_rs::TS, JsonSchema,
+)]
 #[ts(export)]
 pub struct ModuleId(u32);
 
