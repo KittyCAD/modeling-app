@@ -8,8 +8,8 @@ Compute the base 2 logarithm of the number.
 
 
 
-```js
-log2(@input: number): number
+```kcl
+log2(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ log2(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [log2(100), 0])

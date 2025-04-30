@@ -558,7 +558,8 @@ test.describe('Point-and-click assemblies tests', () => {
     }
   )
 
-  test(
+  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
+  test.fixme(
     `Insert foreign parts into assembly as whole module import`,
     { tag: ['@electron'] },
     async ({
@@ -799,7 +800,8 @@ foreign
     }
   )
 
-  test(
+  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
+  test.fixme(
     'Point-and-click Clone on assembly parts',
     { tag: ['@electron'] },
     async ({

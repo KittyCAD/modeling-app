@@ -8,7 +8,7 @@ layout: manual
 
 
 
-```js
+```kcl
 std::turns::HALF_TURN: number(deg) = 180deg
 ```
 
