@@ -265,7 +265,7 @@ export function readLocalStorageAppSettingsFile():
   } catch (e) {
     const settings = defaultAppSettings()
     if (err(settings)) return settings
-    const tomlStr = ''
+    const tomlStr = serializeConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageAppSettingsPath(), tomlStr)
@@ -286,7 +286,8 @@ export function readLocalStorageProjectSettingsFile():
   const projectSettings = parseProjectSettings(stored)
   if (err(projectSettings)) {
     const settings = defaultProjectSettings()
-    const tomlStr = ''
+    if (err(settings)) return settings
+    const tomlStr = serializeProjectConfiguration(settings)
     if (err(tomlStr)) return tomlStr
 
     localStorage.setItem(localStorageProjectSettingsPath(), tomlStr)
