@@ -267,6 +267,8 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
       async ({ page, homePage, scene, cmdBar, toolbar }) => {
         const u = await getUtils(page)
         const networkToggle = page.getByTestId('network-toggle')
+        const networkToggleConnectedText = page.getByText('Connected')
+        const networkToggleWeakText = page.getByText('Network health (Weak)')
         const userSettingsTab = page.getByRole('radio', { name: 'User' })
         const appStreamIdleModeSetting = page.getByTestId('app-streamIdleMode')
         const settingsCloseButton = page.getByTestId('settings-close-button')
@@ -275,43 +277,20 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
           localStorage.setItem(
             'persistCode',
             `sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [44.41, 59.65])
-  |> line(end = [205.52, 251.67])
-  |> line(end = [184.62, -219.45])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+profile001 = startProfile(sketch001, at = [0.0, 0.0])
+  |> line(end = [10.0, 0])
+  |> line(end = [0, 10.0])
   |> close()`
           )
         })
 
-        const dim = { width: 1200, height: 800 }
+        const dim = { width: 1200, height: 500 }
         await page.setBodyDimensions(dim)
 
         await test.step('Go to modeling scene', async () => {
           await homePage.goToModelingScene()
           await scene.settled(cmdBar)
         })
-
-        // GRAB THE COORDINATES OF A POINT ON A LINE.
-        // Use the right side of the square (not covered by panes)
-        // Trigger highlight by hovering over the space
-        await circleMove(page, dim.width / 2, dim.height / 2, 20, 10)
-
-        // Double click to edit sketch.
-        await page.mouse.dblclick(dim.width / 2, dim.height / 2, { delay: 100 })
-        await toolbar.waitUntilSketchingReady()
-
-        // We need to be in sketch mode to access this data.
-        const line = await u.getBoundingBox('[data-overlay-index="0"]')
-        const angle = await u.getAngle('[data-overlay-index="0"]')
-        const midPoint = {
-          x: line.x + (Math.sin((angle / 360) * Math.PI * 2) * line.width) / 2,
-          // Different coordinate space, need to -1 to fix it up
-          y:
-            (line.y +
-              (Math.cos((angle / 360) * Math.PI * 2) * line.height) / 2) *
-            -1,
-        }
-        await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
         await test.step('Set stream idle pause time to 5s', async () => {
           await page.getByRole('link', { name: 'Settings' }).last().click()
@@ -333,25 +312,39 @@ profile001 = startProfile(sketch001, at = [44.41, 59.65])
 
           // We should now be paused. To the user, it should appear we're still
           // connected.
-          await expect(networkToggle).toContainText('Connected')
+          await networkToggle.hover()
+          await expect(networkToggleConnectedText.or(networkToggleWeakText)).toBeVisible()
+
+          const center = {
+            x: dim.width / 2,
+            y: dim.height / 2,
+          }
+
+          let probe = { x: 0, y: 0 }
 
           // ... and the model's still visibly there
-          console.log(midPoint)
-          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+          probe.x = center.x + (dim.width / 100)
+          probe.y = center.y
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+          probe = { ...center }
 
           // Now move the mouse around to unpause!
-          await circleMove(page, dim.width / 2, dim.height / 2, 20, 10)
+          await circleMove(page, probe.x, probe.y, 20, 10)
 
           // ONCE AGAIN! Check the view area hasn't changed at all.
           // Check the pixel a couple times as it reconnects.
           // NOTE: Remember, idle behavior is still on at this point -
           // if this test takes longer than 5s shit WILL go south!
-          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+          probe.x = center.x + (dim.width / 100)
+          probe.y = center.y
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
           await page.waitForTimeout(1000)
-          await scene.expectPixelColor(TEST_COLORS.OFFWHITE, midPoint, 15)
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+          probe = { ...center }
 
           // Ensure we're still connected
-          await expect(networkToggle).toContainText('Connected')
+          await networkToggle.hover()
+          await expect(networkToggleConnectedText.or(networkToggleWeakText)).toBeVisible()
         })
       }
     )

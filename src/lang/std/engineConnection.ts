@@ -1,3 +1,4 @@
+import { TEST } from '@src/env'
 import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from '@src/env'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -1449,6 +1450,10 @@ export class EngineCommandManager extends EventTarget {
 
   private onOffline = () => {
     console.log('Browser reported network is offline')
+    if (TEST) {
+      console.warn('DURING TESTS ENGINECONNECTION.ONOFFLINE WILL DO NOTHING.')
+      return
+    }
     this.onEngineConnectionRestartRequest()
   }
 

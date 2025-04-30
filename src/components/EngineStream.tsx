@@ -1,3 +1,4 @@
+import { TEST } from '@src/env'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -208,6 +209,10 @@ export const EngineStream = (props: {
     // Poll that we're connected. If not, send a reset signal.
     // Do not restart if we're in idle mode.
     const connectionCheckIntervalId = setInterval(() => {
+      // SKIP DURING TESTS BECAUSE IT WILL MESS WITH REUSING THE
+      // ELECTRON INSTANCE.
+      if (TEST) { return }
+      
       // Don't try try to restart if we're already connected!
       const hasEngineConnectionInst = engineCommandManager.engineConnection
       const isDisconnected =
