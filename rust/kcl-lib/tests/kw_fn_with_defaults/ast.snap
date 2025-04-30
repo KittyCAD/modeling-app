@@ -135,20 +135,6 @@ description: Result of parsing kw_fn_with_defaults.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "1",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              }
-            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -167,8 +153,20 @@ description: Result of parsing kw_fn_with_defaults.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"

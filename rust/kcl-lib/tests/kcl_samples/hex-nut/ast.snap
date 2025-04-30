@@ -137,32 +137,6 @@ description: Result of parsing hex-nut.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "argument": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "XZ",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "operator": "-",
-                              "start": 0,
-                              "type": "UnaryExpression",
-                              "type": "UnaryExpression"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -181,8 +155,32 @@ description: Result of parsing hex-nut.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "argument": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "XZ",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "commentStart": 0,
+                            "end": 0,
+                            "operator": "-",
+                            "start": 0,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          }
                         },
                         {
                           "arguments": [
@@ -694,7 +692,6 @@ description: Result of parsing hex-nut.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -713,8 +710,9 @@ description: Result of parsing hex-nut.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -1050,69 +1048,99 @@ description: Result of parsing hex-nut.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "elements": [
-                {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "start",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "elements": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "thk",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "0",
+                  "name": "thickness",
                   "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
+                  "type": "Identifier"
                 },
-                {
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "innerDia",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "0",
+                  "name": "diameter",
                   "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
-                  }
-                }
-              ],
-              "end": 0,
-              "start": 0,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
-            },
-            {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "thickness",
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "diameter",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
+                "type": "Name",
+                "type": "Name"
+              }
             }
           ],
           "callee": {
@@ -1133,8 +1161,9 @@ description: Result of parsing hex-nut.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "preComments": [
           "",

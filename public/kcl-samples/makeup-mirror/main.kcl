@@ -29,15 +29,15 @@ fn hingeFn(x, y, z) {
   return hingeBody
 }
 
-hingePartA1 = hingeFn(0, 0, 0)
-hingePartA2 = hingeFn(0, 0, hingeHeight + hingeGap)
-hingePartA3 = hingeFn(0, 0, hingeHeight * 2 + hingeGap * 2)
+hingePartA1 = hingeFn(x = 0, y = 0, z = 0)
+hingePartA2 = hingeFn(x = 0, y = 0, z = hingeHeight + hingeGap)
+hingePartA3 = hingeFn(x = 0, y = 0, z = hingeHeight * 2 + hingeGap * 2)
 
-hingePartB2 = hingeFn(armLength, 0, hingeHeight + hingeGap)
-hingePartB3 = hingeFn(armLength, 0, hingeHeight * 2 + hingeGap * 2)
+hingePartB2 = hingeFn(x = armLength, y = 0, z = hingeHeight + hingeGap)
+hingePartB3 = hingeFn(x = armLength, y = 0, z = hingeHeight * 2 + hingeGap * 2)
 
-hingePartC2 = hingeFn(armLength, -armLength, hingeHeight * 2 + hingeGap * 2)
-hingePartC3 = hingeFn(armLength, -armLength, hingeHeight * 3 + hingeGap * 3)
+hingePartC2 = hingeFn(x = armLength, y = -armLength, z = hingeHeight * 2 + hingeGap * 2)
+hingePartC3 = hingeFn(x = armLength, y = -armLength, z = hingeHeight * 3 + hingeGap * 3)
 
 // Add a function to create the arm
 fn armFn(plane, offset, altitude) {
@@ -47,8 +47,8 @@ fn armFn(plane, offset, altitude) {
   return armBody
 }
 
-armPartA = armFn(YZ, 0, hingeHeight * 1.5 + hingeGap)
-armPartB = armFn(XZ, armLength, hingeHeight * 2.5 + hingeGap * 2)
+armPartA = armFn(plane = YZ, offset = 0, altitude = hingeHeight * 1.5 + hingeGap)
+armPartB = armFn(plane = XZ, offset = armLength, altitude = hingeHeight * 2.5 + hingeGap * 2)
 
 // Add a function to create the mirror
 fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
@@ -72,4 +72,13 @@ fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD
   return armBody
 }
 
-mirror = mirrorFn(XZ, armLength, armLength, hingeHeight * 4 + hingeGap * 3 + mirrorRadius + archToMirrorGap + archThickness, mirrorRadius, mirrorThickness, archRadius, archThickness)
+mirror = mirrorFn(
+  plane = XZ,
+  offsetX = armLength,
+  offsetY = armLength,
+  altitude = hingeHeight * 4 + hingeGap * 3 + mirrorRadius + archToMirrorGap + archThickness,
+  radius = mirrorRadius,
+  tiefe = mirrorThickness,
+  gestellR = archRadius,
+  gestellD = archThickness,
+)

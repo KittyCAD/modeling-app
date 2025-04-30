@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing union_cubes.kcl
 ---
-fn cube(center, size) {
+fn cube(pos, scale) {
   return startSketchOn(XY)
     |> startProfile(at = [center[0] - size, center[1] - size])
     |> line(endAbsolute = [center[0] + size, center[1] - size])
@@ -12,8 +12,8 @@ fn cube(center, size) {
     |> extrude(length = 2 * size)
 }
 
-part001 = cube([0, 0], 10)
-part002 = cube([7, 3], 5)
+part001 = cube(pos = [0, 0], scale = 10)
+part002 = cube(pos = [7, 3], scale = 5)
   |> translate(z = 1)
 
 fullPart = union([part001, part002])

@@ -37,7 +37,7 @@ kitHeadElevation = kitBodyElevation + kitBodyHeight - kitHeadOffset - kitHeadHei
 
 kitHeadWidth = kitBodyWidth - (kitHeadOffset * 2)
 kitHeadDepth = 3
-kitHead = pixelBox(kitBody, END, -kitHeadWidth / 2, kitHeadElevation, kitHeadWidth, kitHeadHeight, kitHeadDepth)
+kitHead = pixelBox(kitExtrude = kitBody, extrudeTag = END, positionY = -kitHeadWidth / 2, positionZ = kitHeadElevation, width = kitHeadWidth, height = kitHeadHeight, depth = kitHeadDepth)
 kitFaceElevation = kitHeadElevation + 2
 
 // 3. Kitty Face
@@ -67,17 +67,17 @@ kitFace = startSketchOn(kitHead, face = END)
 
 // 3.1.1 Kitty Left Eye
 kitEyeDepth = 0.5
-kitEyeHeihgt = kitFaceElevation + 7
+kitEyeHeight = kitFaceElevation + 7
 kitEyeOffset = 7
 
 // 3.1.2 Kitty Right Eye
-kitLeftEye1 = pixelBox(kitFace, START, -kitEyeOffset, kitEyeHeihgt, 1, 1, kitEyeDepth)
+kitLeftEye1 = pixelBox(kitExtrude = kitFace, extrudeTag = START, positionY = -kitEyeOffset, positionZ = kitEyeHeight, width = 1, height = 1, depth = kitEyeDepth)
 
 // 3.2 Kitty Nose
-kitLeftEye2 = pixelBox(kitFace, START, -kitEyeOffset + 1, kitEyeHeihgt + 1, 3, 1, kitEyeDepth)
-kitLeftEye3 = pixelBox(kitFace, START, -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, kitEyeDepth)
-kitRightEye = pixelBox(kitFace, START, kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
-kitNoseElevation = kitEyeHeihgt - 5
+kitLeftEye2 = pixelBox(kitExtrude = kitFace, extrudeTag = START, positionY = -kitEyeOffset + 1, positionZ = kitEyeHeight + 1, width = 3, height = 1, depth = kitEyeDepth)
+kitLeftEye3 = pixelBox(kitExtrude = kitFace, extrudeTag = START, positionY = -kitEyeOffset + 4, positionZ = kitEyeHeight, width = 1, height = 1, depth = kitEyeDepth)
+kitRightEye = pixelBox(kitExtrude = kitFace, extrudeTag = START, positionY = kitEyeOffset - 3, positionZ = kitEyeHeight - 1, width = 2, height = 4, depth = kitEyeDepth)
+kitNoseElevation = kitEyeHeight - 5
 kitNose = startSketchOn(kitFace, face = START)
   |> startProfile(at = [-2, kitNoseElevation]) // H V
   |> line(end = [0, 1]) // lower-left up
@@ -97,7 +97,7 @@ kitNose = startSketchOn(kitFace, face = START)
 
 // 3.3 Kitty Mouth
 kitMouthOffset = 4
-kitMouthHeight = kitEyeHeihgt - 3
+kitMouthHeight = kitEyeHeight - 3
 kitMouthUpLeft = pixelBox(kitFace, START, -kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
 
 // 4. Kitty Belly
