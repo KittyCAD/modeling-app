@@ -1,4 +1,5 @@
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+export const IS_PLAYWRIGHT_KEY = 'playwright'
+
 export function isPlaywright(): boolean {
   // ? checks for browser
   const electronRunTimePlaywright =

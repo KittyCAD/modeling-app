@@ -1,7 +1,7 @@
 import { NODE_ENV } from '@src/env'
 import { isDesktop } from '@src/lib/isDesktop'
 
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/isPlaywright'
 
 const isTestEnv = window?.localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
 
