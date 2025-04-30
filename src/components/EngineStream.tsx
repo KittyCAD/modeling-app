@@ -29,6 +29,7 @@ import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
+import { isPlaywright } from '@src/lib/isPlaywright'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -89,21 +90,41 @@ export const EngineStream = (props: {
     console.log('scene is ready, fire!')
 
     kmp
-      .then(() =>
-        // It makes sense to also call zoom to fit here, when a new file is
-        // loaded for the first time, but not overtaking the work kevin did
-        // so the camera isn't moving all the time.
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      )
+      .then(async () => {
+        // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
+        // written with zoom_to_fit with padding 0.1
+        const padding = 0.1
+        if (isPlaywright()) {
+          // It makes sense to also call zoom to fit here, when a new file is
+          // loaded for the first time, but not overtaking the work kevin did
+          // so the camera isn't moving all the time.
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding, // padding around the objects
+              animated: false, // don't animate the zoom for now
+            },
+          })
+        } else {
+          /**
+           * Default all users to view_isometric when loading into the engine.
+           * This works for perspective projection and orthographic projection
+           * This does not change the projection of the camera only the view direction which makes
+           * it safe to use with wither projection defaulted
+           */
+          await engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'view_isometric',
+              padding, // padding around the objects
+            },
+          })
+        }
+      })
       .catch(trap)
   }
 

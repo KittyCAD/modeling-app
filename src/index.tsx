@@ -16,6 +16,9 @@ import { reportRejection } from '@src/lib/trap'
 import { appActor, systemIOActor, commandBarActor } from '@src/lib/singletons'
 import reportWebVitals from '@src/reportWebVitals'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
+import { isPlaywright } from '@src/lib/isPlaywright'
+
+console.log(isPlaywright())
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
