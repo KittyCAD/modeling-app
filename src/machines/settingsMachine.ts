@@ -236,7 +236,6 @@ export const settingsMachine = setup({
       })
     },
     'Execute AST': ({ self }) => {
-      console.log('Execute AST after settings change')
       const rootContext = self.system.get('root').getSnapshot().context
       const kclManager = rootContext.kclManager
       try {
