@@ -738,7 +738,7 @@ impl ExecutorContext {
         let mut universe = std::collections::HashMap::new();
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        #[cfg_attr(not(feature = "artifact-graph"), expect(unused))]
+        #[cfg_attr(not(feature = "artifact-graph"), expect(unused_variables))]
         let root_imports = crate::walk::import_universe(
             self,
             &ModuleRepr::Kcl(program.ast.clone(), None),
