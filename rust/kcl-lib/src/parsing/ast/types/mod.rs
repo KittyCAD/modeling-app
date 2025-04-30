@@ -312,7 +312,7 @@ impl Node<Program> {
         let v = Arc::new(Mutex::new(vec![]));
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            findings.append(&mut rule.check(node)?);
+            findings.append(&mut rule.check(node, self)?);
             Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();

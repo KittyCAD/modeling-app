@@ -5,7 +5,7 @@ use crate::{
     errors::Suggestion,
     execution::{types::UnitLen, PlaneInfo, Point3d},
     lint::rule::{def_finding, Discovered, Finding},
-    parsing::ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
+    parsing::ast::types::{BinaryPart, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator},
     walk::Node,
     SourceRange,
 };
@@ -27,7 +27,7 @@ use offsetPlane where possible.
 "
 );
 
-pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
+pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let Some((call_source_range, plane_name, offset)) = start_sketch_on_check_specific_plane(node)? else {
         return Ok(vec![]);
     };
