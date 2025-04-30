@@ -9,7 +9,6 @@ import {
 import {
   createArrayExpression,
   createBinaryExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -64,16 +63,16 @@ export const getRectangleCallExpressions = (
     ),
     angledLine(
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+        createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
       createLiteral(0) // This will be the height of the rectangle
     ),
     angledLine(
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]), // same angle as the first line
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [createLocalName(tag)]),
+        createCallExpressionStdLibKw('segLen', createLocalName(tag), []),
         '-'
       ) // negative height
     ),
@@ -120,7 +119,7 @@ export function updateRectangleSketch(
     'angle',
     secondEdge,
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ])
@@ -198,7 +197,7 @@ export function updateCenterRectangleSketch(
     }
     oldAngleOperator = oldAngle.operator
     const newAngle = createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       oldAngleOperator,
       createLiteral(90),
     ])

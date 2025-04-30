@@ -267,9 +267,8 @@ export const ModelingMachineProvider = ({
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
             if (event.type !== 'Set Segment Overlays') return {}
-            if (event.data.type === 'add-many')
+            if (event.data.type === 'set-many')
               return {
-                ...segmentOverlays,
                 ...event.data.overlays,
               }
             if (event.data.type === 'set-one')
@@ -1393,6 +1392,8 @@ export const ModelingMachineProvider = ({
                   })
                 )
               )
+              result.exprInsertIndex = data.namedValue.insertIndex
+
               if (
                 trap(parseResultAfterInsertion) ||
                 !resultIsOk(parseResultAfterInsertion)
@@ -1401,7 +1402,7 @@ export const ModelingMachineProvider = ({
               result = {
                 modifiedAst: parseResultAfterInsertion.program,
                 pathToReplaced: astAfterReplacement.pathToReplaced,
-                exprInsertIndex: astAfterReplacement.exprInsertIndex,
+                exprInsertIndex: result.exprInsertIndex,
               }
             } else if ('valueText' in data.namedValue) {
               // If they didn't provide a constant name,
@@ -1870,11 +1871,6 @@ export const ModelingMachineProvider = ({
       {
         menuLabel: 'Design.Apply modification feature.Shell',
         commandName: 'Shell',
-        groupId: 'modeling',
-      },
-      {
-        menuLabel: 'Design.Create with Zoo Text-To-CAD',
-        commandName: 'Text-to-CAD',
         groupId: 'modeling',
       },
       {

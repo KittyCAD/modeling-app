@@ -12,7 +12,7 @@ const DUMMY_VARIABLE_NAME = '__result__'
  */
 export async function getCalculatedKclExpressionValue(value: string) {
   // Create a one-line program that assigns the value to a variable
-  const dummyProgramCode = `const ${DUMMY_VARIABLE_NAME} = ${value}`
+  const dummyProgramCode = `${DUMMY_VARIABLE_NAME} = ${value}`
   const pResult = parse(dummyProgramCode)
   if (err(pResult) || !resultIsOk(pResult)) return pResult
   const ast = pResult.program

@@ -104,23 +104,6 @@ lazy_static! {
         Box::new(crate::std::edge::GetCommonEdge),
         Box::new(crate::std::sweep::Sweep),
         Box::new(crate::std::loft::Loft),
-        Box::new(crate::std::math::Acos),
-        Box::new(crate::std::math::Asin),
-        Box::new(crate::std::math::Atan),
-        Box::new(crate::std::math::Atan2),
-        Box::new(crate::std::math::Sqrt),
-        Box::new(crate::std::math::Abs),
-        Box::new(crate::std::math::Rem),
-        Box::new(crate::std::math::Round),
-        Box::new(crate::std::math::Floor),
-        Box::new(crate::std::math::Ceil),
-        Box::new(crate::std::math::Min),
-        Box::new(crate::std::math::Max),
-        Box::new(crate::std::math::Pow),
-        Box::new(crate::std::math::Log),
-        Box::new(crate::std::math::Log2),
-        Box::new(crate::std::math::Log10),
-        Box::new(crate::std::math::Ln),
         Box::new(crate::std::assert::Assert),
         Box::new(crate::std::assert::AssertIs),
         Box::new(crate::std::transform::Scale),
@@ -175,6 +158,75 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("math", "tan") => (
             |e, a| Box::pin(crate::std::math::tan(e, a)),
             StdFnProps::default("std::math::tan"),
+        ),
+        ("math", "acos") => (
+            |e, a| Box::pin(crate::std::math::acos(e, a)),
+            StdFnProps::default("std::math::acos"),
+        ),
+        ("math", "asin") => (
+            |e, a| Box::pin(crate::std::math::asin(e, a)),
+            StdFnProps::default("std::math::asin"),
+        ),
+        ("math", "atan") => (
+            |e, a| Box::pin(crate::std::math::atan(e, a)),
+            StdFnProps::default("std::math::atan"),
+        ),
+        ("math", "atan2") => (
+            |e, a| Box::pin(crate::std::math::atan2(e, a)),
+            StdFnProps::default("std::math::atan2"),
+        ),
+        ("math", "sqrt") => (
+            |e, a| Box::pin(crate::std::math::sqrt(e, a)),
+            StdFnProps::default("std::math::sqrt"),
+        ),
+
+        ("math", "abs") => (
+            |e, a| Box::pin(crate::std::math::abs(e, a)),
+            StdFnProps::default("std::math::abs"),
+        ),
+        ("math", "rem") => (
+            |e, a| Box::pin(crate::std::math::rem(e, a)),
+            StdFnProps::default("std::math::rem"),
+        ),
+        ("math", "round") => (
+            |e, a| Box::pin(crate::std::math::round(e, a)),
+            StdFnProps::default("std::math::round"),
+        ),
+        ("math", "floor") => (
+            |e, a| Box::pin(crate::std::math::floor(e, a)),
+            StdFnProps::default("std::math::floor"),
+        ),
+        ("math", "ceil") => (
+            |e, a| Box::pin(crate::std::math::ceil(e, a)),
+            StdFnProps::default("std::math::ceil"),
+        ),
+        ("math", "min") => (
+            |e, a| Box::pin(crate::std::math::min(e, a)),
+            StdFnProps::default("std::math::min"),
+        ),
+        ("math", "max") => (
+            |e, a| Box::pin(crate::std::math::max(e, a)),
+            StdFnProps::default("std::math::max"),
+        ),
+        ("math", "pow") => (
+            |e, a| Box::pin(crate::std::math::pow(e, a)),
+            StdFnProps::default("std::math::pow"),
+        ),
+        ("math", "log") => (
+            |e, a| Box::pin(crate::std::math::log(e, a)),
+            StdFnProps::default("std::math::log"),
+        ),
+        ("math", "log2") => (
+            |e, a| Box::pin(crate::std::math::log2(e, a)),
+            StdFnProps::default("std::math::log2"),
+        ),
+        ("math", "log10") => (
+            |e, a| Box::pin(crate::std::math::log10(e, a)),
+            StdFnProps::default("std::math::log10"),
+        ),
+        ("math", "ln") => (
+            |e, a| Box::pin(crate::std::math::ln(e, a)),
+            StdFnProps::default("std::math::ln"),
         ),
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),

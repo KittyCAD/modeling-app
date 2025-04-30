@@ -1,8 +1,8 @@
-let startX = 0
-let startY = 0
-let angleOffset = 135
-let r = 1
-let angleStart = 110
+startX = 0
+startY = 0
+angleOffset = 135
+r = 1
+angleStart = 110
 
 startSketchOn(XY)
   |> startProfile(at = [startX, startY])

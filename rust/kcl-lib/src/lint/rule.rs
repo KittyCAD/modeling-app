@@ -3,7 +3,13 @@ use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{errors::Suggestion, lsp::IntoDiagnostic, walk::Node, SourceRange};
+use crate::{
+    errors::Suggestion,
+    lsp::IntoDiagnostic,
+    parsing::ast::types::{Node as AstNode, Program},
+    walk::Node,
+    SourceRange,
+};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -11,15 +17,15 @@ use crate::{errors::Suggestion, lsp::IntoDiagnostic, walk::Node, SourceRange};
 /// but it can also be manually implemented as required.
 pub trait Rule<'a> {
     /// Check the AST at this specific node for any Finding(s).
-    fn check(&self, node: Node<'a>) -> Result<Vec<Discovered>>;
+    fn check(&self, node: Node<'a>, prog: &AstNode<Program>) -> Result<Vec<Discovered>>;
 }
 
 impl<'a, FnT> Rule<'a> for FnT
 where
-    FnT: Fn(Node<'a>) -> Result<Vec<Discovered>>,
+    FnT: Fn(Node<'a>, &AstNode<Program>) -> Result<Vec<Discovered>>,
 {
-    fn check(&self, n: Node<'a>) -> Result<Vec<Discovered>> {
-        self(n)
+    fn check(&self, n: Node<'a>, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+        self(n, prog)
     }
 }
 

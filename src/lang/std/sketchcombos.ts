@@ -39,6 +39,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   createFirstArg,
   fnNameToTooltip,
+  fnNameToToolTipFromSegment,
   getAngledLine,
   getAngledLineThatIntersects,
   getArc,
@@ -79,7 +80,12 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import { cleanErrs, err, isErr, isNotErr } from '@src/lib/trap'
+import {
+  cleanErrs,
+  err,
+  isErr as _isErr,
+  isNotErr as _isNotErr,
+} from '@src/lib/trap'
 import {
   allLabels,
   getAngle,
@@ -1420,40 +1426,114 @@ export function removeSingleConstraint({
             'This code path only works with callExpressionKw but a positional call was somehow passed'
           )
         }
+
+        // Get all current labeled arguments from the CallExpressionKw
+        const existingArgs = callExp.node.arguments
         const toReplace = inputToReplace.key
-        let argsPreFilter = inputs.map((arg) => {
-          if (arg.type !== 'labeledArg') {
-            return new Error(`arg isn't a labeled arg: ${arg.type}`)
-          }
-          const k = arg.key
-          if (k !== toReplace) {
-            return createLabeledArg(k, arg.expr)
-          } else {
+
+        // Basic approach: get the current args, filter out the TAG arg if it exists,
+        // replace the targetArg with the raw value
+
+        // 1. Filter out any existing tag argument since it will be handled separately
+        const filteredArgs = existingArgs.filter(
+          (arg) => arg.label.name !== ARG_TAG
+        )
+
+        // 2. Map through the args, replacing only the one we want to change
+        const labeledArgs = filteredArgs.map((arg) => {
+          if (arg.label.name === toReplace) {
+            // Find the raw value to use for the argument being replaced
             const rawArgVersion = rawArgs.find(
-              (a) => a.type === 'labeledArg' && a.key === k
+              (a) => a.type === 'labeledArg' && a.key === toReplace
             )
+
             if (!rawArgVersion) {
-              return new Error(
-                `raw arg version not found while trying to remove constraint: ${JSON.stringify(arg)}`
-              )
+              console.error(`Raw arg version not found for key: ${toReplace}`)
+              // If raw value not found, preserve the original argument
+              return arg
             }
-            return createLabeledArg(k, rawArgVersion.expr)
+
+            // Replace with raw value
+            return createLabeledArg(toReplace, rawArgVersion.expr)
           }
+
+          // Keep other arguments as they are
+          return arg
         })
-        const args = argsPreFilter.filter(isNotErr)
-        const errorArgs = argsPreFilter.filter(isErr)
-        if (errorArgs.length > 0) {
-          return new Error('Error while trying to remove constraint', {
-            cause: errorArgs,
-          })
-        }
+
         const noncode = callExp.node.nonCodeMeta
+
+        // Use the existing unlabeled argument if available, otherwise use undefined
+        const unlabeledArg = callExp.node.unlabeled ?? undefined
+
         return createStdlibCallExpressionKw(
           callExp.node.callee.name.name as ToolTip,
-          args,
+          labeledArgs,
           tag,
           undefined,
+          unlabeledArg,
+          noncode
+        )
+      }
+      if (inputToReplace.type === 'labeledArgArrayItem') {
+        if (callExp.node.type !== 'CallExpressionKw') {
+          return new Error(
+            'This code path only works with callExpressionKw but a positional call was somehow passed'
+          )
+        }
+
+        // Get all current labeled arguments from the CallExpressionKw
+        const existingArgs = callExp.node.arguments
+        const targetKey = inputToReplace.key
+        const targetIndex = inputToReplace.index
+
+        // Create a copy of the existing labeled arguments
+        const labeledArgs = existingArgs.map((arg) => {
+          // Only modify the specific argument that matches the targeted key
+          if (
+            arg.label.name === targetKey &&
+            arg.arg.type === 'ArrayExpression'
+          ) {
+            // We're dealing with an array expression within a labeled argument
+            const arrayElements = [...arg.arg.elements]
+
+            // Find the raw value to use for the argument item being replaced
+            const rawArgVersion = rawArgs.find(
+              (a) =>
+                a.type === 'labeledArgArrayItem' &&
+                a.key === targetKey &&
+                a.index === targetIndex
+            )
+
+            if (rawArgVersion && 'expr' in rawArgVersion) {
+              // Replace just the specific array element with the raw value
+              arrayElements[targetIndex] = rawArgVersion.expr
+
+              // Create a new labeled argument with the modified array
+              return createLabeledArg(
+                targetKey,
+                createArrayExpression(arrayElements)
+              )
+            }
+
+            // If no raw value found, keep the original argument
+            return arg
+          }
+
+          // Return other arguments unchanged
+          return arg
+        })
+
+        const noncode = callExp.node.nonCodeMeta
+        // Use the existing unlabeled argument if available, otherwise use undefined
+        const unlabeledArg = callExp.node.unlabeled ?? undefined
+
+        return createStdlibCallExpressionKw(
+          callExp.node.callee.name.name as ToolTip,
+          labeledArgs,
+          tag,
           undefined,
+          unlabeledArg,
           noncode
         )
       }
@@ -2057,6 +2137,15 @@ export function transformAstSketchLines({
             argType: a.type,
           })
           break
+        case 'labeledArgArrayItem':
+          inputs.push({
+            type: 'labeledArgArrayItem',
+            key: a.argPosition.key,
+            index: a.argPosition.index,
+            expr: nodeMeta.node,
+            argType: a.type,
+          })
+          break
         case 'arrayInObject':
           inputs.push({
             type: 'arrayInObject',
@@ -2105,35 +2194,42 @@ export function transformAstSketchLines({
     }
     const { to, from } = seg
     // Note to ADAM: Here is where the replaceExisting call gets sent.
+    const segmentInput: Parameters<
+      typeof replaceSketchLine
+    >[0]['segmentInput'] =
+      seg.type === 'Circle'
+        ? {
+            type: 'arc-segment',
+            center: seg.center,
+            radius: seg.radius,
+            from,
+            to: from, // For a full circle, to is the same as from
+            ccw: true, // Default to counter-clockwise for circles
+          }
+        : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
+          ? {
+              type: 'circle-three-point-segment',
+              p1: seg.p1,
+              p2: seg.p2,
+              p3: seg.p3,
+            }
+          : {
+              type: 'straight-segment',
+              to,
+              from,
+            }
+    const fnName = fnNameToToolTipFromSegment(
+      seg,
+      transformTo || (call.node.callee.name.name as ToolTip)
+    )
+    if (err(fnName)) return fnName
     const replacedSketchLine = replaceSketchLine({
       node: node,
       variables: memVars,
       pathToNode: _pathToNode,
       referencedSegment,
-      fnName: transformTo || (call.node.callee.name.name as ToolTip),
-      segmentInput:
-        seg.type === 'Circle'
-          ? {
-              type: 'arc-segment',
-              center: seg.center,
-              radius: seg.radius,
-              from,
-              to: from, // For a full circle, to is the same as from
-              ccw: true, // Default to counter-clockwise for circles
-            }
-          : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
-            ? {
-                type: 'circle-three-point-segment',
-                p1: seg.p1,
-                p2: seg.p2,
-                p3: seg.p3,
-              }
-            : {
-                type: 'straight-segment',
-                to,
-                from,
-              },
-
+      fnName,
+      segmentInput,
       replaceExistingCallback: (rawArgs) =>
         callBack({
           referenceSegName: _referencedSegmentName,

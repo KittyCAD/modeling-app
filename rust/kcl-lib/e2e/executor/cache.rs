@@ -119,7 +119,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_off_to_on() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
-    let code = r#"part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])
@@ -160,7 +160,7 @@ async fn kcl_test_cache_change_grid_visualizes_grid_on_to_off() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_change_highlight_edges_changes_visual() {
-    let code = r#"part001 = startSketchOn('XY')
+    let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [5.5229, 5.25217])
   |> line(end = [10.50433, -1.19122])
   |> line(end = [8.01362, -5.48731])

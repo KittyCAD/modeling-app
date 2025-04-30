@@ -9,7 +9,7 @@ use kittycad_modeling_cmds::{
     EnableSketchMode, ModelingCmd,
 };
 use schemars::JsonSchema;
-use serde::{ser::SerializeSeq, Deserialize, Serialize};
+use serde::{ser::SerializeSeq, Serialize};
 use uuid::Uuid;
 
 use crate::{
@@ -24,7 +24,7 @@ mod mermaid_tests;
 /// A command that may create or update artifacts on the TS side.  Because
 /// engine commands are batched, we don't have the response yet when these are
 /// created.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactCommand {
@@ -58,7 +58,7 @@ impl PartialOrd for ArtifactCommand {
     }
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Artifact.ts")]
 pub struct ArtifactId(Uuid);
 
@@ -115,7 +115,7 @@ where
     seq.end()
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
@@ -135,7 +135,7 @@ impl CodeRef {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct CompositeSolid {
@@ -150,7 +150,7 @@ pub struct CompositeSolid {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum CompositeSolidSubType {
@@ -159,7 +159,7 @@ pub enum CompositeSolidSubType {
     Union,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Plane {
@@ -168,7 +168,7 @@ pub struct Plane {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Path {
@@ -182,7 +182,7 @@ pub struct Path {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Segment {
@@ -200,7 +200,7 @@ pub struct Segment {
 }
 
 /// A sweep is a more generic term for extrude, revolve, loft, and sweep.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Sweep {
@@ -214,7 +214,7 @@ pub struct Sweep {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, PartialOrd, Ord, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, PartialOrd, Ord, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepSubType {
@@ -225,7 +225,7 @@ pub enum SweepSubType {
     Sweep,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Solid2d {
@@ -233,7 +233,7 @@ pub struct Solid2d {
     pub path_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StartSketchOnFace {
@@ -242,7 +242,7 @@ pub struct StartSketchOnFace {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct StartSketchOnPlane {
@@ -251,7 +251,7 @@ pub struct StartSketchOnPlane {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Wall {
@@ -265,11 +265,11 @@ pub struct Wall {
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
     /// to the extrude and/or segment to get the wall's code_ref.
     pub face_code_ref: CodeRef,
-    /// The command ID that got the data for this wall.
+    /// The command ID that got the data for this wall. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Cap {
@@ -283,9 +283,11 @@ pub struct Cap {
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
     /// to the extrude and/or segment to get the cap's code_ref.
     pub face_code_ref: CodeRef,
+    /// The command ID that got the data for this cap. Used for stable sorting.
+    pub cmd_id: uuid::Uuid,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum CapSubType {
@@ -293,7 +295,7 @@ pub enum CapSubType {
     End,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct SweepEdge {
@@ -306,7 +308,7 @@ pub struct SweepEdge {
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum SweepEdgeSubType {
@@ -314,7 +316,7 @@ pub enum SweepEdgeSubType {
     Adjacent,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct EdgeCut {
@@ -328,7 +330,7 @@ pub struct EdgeCut {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, PartialOrd, Ord, Eq, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, Serialize, PartialEq, PartialOrd, Ord, Eq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub enum EdgeCutSubType {
@@ -345,7 +347,7 @@ impl From<kcmc::shared::CutType> for EdgeCutSubType {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct EdgeCutEdge {
@@ -354,7 +356,7 @@ pub struct EdgeCutEdge {
     pub surface_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct Helix {
@@ -365,7 +367,7 @@ pub struct Helix {
     pub code_ref: CodeRef,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum Artifact {
@@ -381,6 +383,7 @@ pub enum Artifact {
     Cap(Cap),
     SweepEdge(SweepEdge),
     EdgeCut(EdgeCut),
+    #[expect(unused)]
     EdgeCutEdge(EdgeCutEdge),
     Helix(Helix),
 }
@@ -488,6 +491,9 @@ impl PartialOrd for Artifact {
             (Artifact::Cap(a), Artifact::Cap(b)) => {
                 if a.sub_type != b.sub_type {
                     return Some(a.sub_type.cmp(&b.sub_type));
+                }
+                if a.cmd_id != b.cmd_id {
+                    return Some(a.cmd_id.cmp(&b.cmd_id));
                 }
                 if a.sweep_id != b.sweep_id {
                     return Some(a.sweep_id.cmp(&b.sweep_id));
@@ -668,7 +674,7 @@ impl EdgeCut {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ArtifactGraph {
@@ -873,6 +879,7 @@ fn artifacts_to_update(
                         sweep_id: cap.sweep_id,
                         path_ids: cap.path_ids.clone(),
                         face_code_ref: cap.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
                     })]);
                 }
                 Some(_) | None => {
@@ -934,6 +941,7 @@ fn artifacts_to_update(
                     sweep_id: cap.sweep_id,
                     path_ids: vec![id],
                     face_code_ref: cap.face_code_ref.clone(),
+                    cmd_id: artifact_command.cmd_id,
                 }));
             }
             return Ok(return_arr);
@@ -1140,6 +1148,7 @@ fn artifacts_to_update(
                             range: sketch_on_face_source_range,
                             path_to_node: Vec::new(),
                         },
+                        cmd_id: artifact_command.cmd_id,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;

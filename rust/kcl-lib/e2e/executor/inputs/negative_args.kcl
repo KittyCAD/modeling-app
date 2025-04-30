@@ -1,9 +1,9 @@
-const width = 5
-const height = 10
-const length = 12
+width = 5
+height = 10
+length = 12
 
-fn box = (sk1, sk2, scale) => {
-  const boxSketch = startSketchOn(XY)
+fn box(sk1, sk2, scale) {
+  boxSketch = startSketchOn(XY)
     |> startProfile(at = [sk1, sk2])
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
@@ -15,5 +15,5 @@ fn box = (sk1, sk2, scale) => {
 
 box(0, 0, 5)
 box(10, 23, 8)
-let thing = box(-12, -15, 10)
+thing = box(-12, -15, 10)
 box(-20, -5, 10)

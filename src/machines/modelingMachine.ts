@@ -278,7 +278,7 @@ export type SegmentOverlayPayload =
     }
   | { type: 'clear' }
   | {
-      type: 'add-many'
+      type: 'set-many'
       overlays: SegmentOverlays
     }
 

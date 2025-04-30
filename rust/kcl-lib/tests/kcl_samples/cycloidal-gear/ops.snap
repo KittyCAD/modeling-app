@@ -142,7 +142,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -153,7 +153,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -164,7 +164,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -175,7 +175,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -186,7 +186,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -197,7 +197,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -208,7 +208,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -219,7 +219,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -230,7 +230,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -241,7 +241,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -252,7 +252,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -263,7 +263,7 @@ description: Operations executed cycloidal-gear.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
