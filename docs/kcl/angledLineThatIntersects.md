@@ -8,14 +8,14 @@ Draw an angled line from the current origin, constructing a line segment such th
 
 
 
-```js
+```kcl
 angledLineThatIntersects(
-  sketch: Sketch,
-  angle: number,
-  intersectTag: TagIdentifier,
-  offset?: number,
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  angle: [number](/docs/kcl/types/number),
+  intersectTag: [TagIdentifier](/docs/kcl/types#tag-identifier),
+  offset?: [number](/docs/kcl/types/number),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -27,7 +27,7 @@ angledLineThatIntersects(
 | `angle` | [`number`](/docs/kcl/types/number) | Which angle should the line be drawn at? | Yes |
 | `intersectTag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the line to intersect with | Yes |
 | `offset` | [`number`](/docs/kcl/types/number) | The offset from the intersecting line. Defaults to 0. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -36,7 +36,7 @@ angledLineThatIntersects(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [5, 10])

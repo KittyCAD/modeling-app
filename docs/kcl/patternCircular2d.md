@@ -8,15 +8,15 @@ Repeat a 2-dimensional sketch some number of times along a partial or complete c
 
 
 
-```js
+```kcl
 patternCircular2d(
-  sketchSet: [Sketch],
+  sketchSet: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
   instances: integer,
-  center: [number],
-  arcDegrees: number,
-  rotateDuplicates: bool,
-  useOriginal?: bool,
-): [Sketch]
+  center: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  arcDegrees: [number](/docs/kcl/types/number),
+  rotateDuplicates: [bool](/docs/kcl/types/bool),
+  useOriginal?: [bool](/docs/kcl/types/bool),
+): [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch))
 ```
 
 
@@ -38,7 +38,7 @@ patternCircular2d(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [.5, 25])
   |> line(end = [0, 5])

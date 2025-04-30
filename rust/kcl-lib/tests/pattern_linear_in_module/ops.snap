@@ -6,6 +6,15 @@ description: Operations executed pattern_linear_in_module.kcl
   {
     "type": "GroupBegin",
     "group": {
+      "type": "ModuleInstance",
+      "name": "thing.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
       "type": "FunctionCall",
       "name": "thing",
       "functionSourceRange": [],
@@ -101,6 +110,9 @@ description: Operations executed pattern_linear_in_module.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

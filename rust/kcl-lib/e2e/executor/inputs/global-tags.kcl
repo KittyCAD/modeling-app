@@ -15,7 +15,7 @@ tabThk = 4
 
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
-  rr = startSketchOn('xy')
+  rr = startSketchOn(XY)
     |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)

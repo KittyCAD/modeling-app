@@ -8,8 +8,8 @@ Compute the angle (in degrees) of the provided line segment.
 
 
 
-```js
-segAng(tag: TagIdentifier): number
+```kcl
+segAng(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -17,7 +17,7 @@ segAng(tag: TagIdentifier): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
@@ -26,7 +26,7 @@ segAng(tag: TagIdentifier): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])

@@ -669,8 +669,9 @@ impl NumericType {
                 meta: meta.clone(),
             }),
 
-            // We don't actually need to coerce, since we just keep the partially-known type with the value.
-            (Default { .. }, Default { .. }) => Ok(KclValue::Number {
+            // If we're coercing to a default, we treat this as coercing to Any since leaving the numeric type unspecified in a coercion situation
+            // means accept any number rather than force the current default.
+            (_, Default { .. }) => Ok(KclValue::Number {
                 value: *value,
                 ty: ty.clone(),
                 meta: meta.clone(),
@@ -698,16 +699,13 @@ impl NumericType {
             (Known(_), Known(_)) => Err(val.into()),
 
             // Known and unknown => we assume the rhs, possibly with adjustment
-            (Known(UnitType::Count), Default { .. }) | (Default { .. }, Known(UnitType::Count)) => {
-                Ok(KclValue::Number {
-                    value: *value,
-                    ty: Known(UnitType::Count),
-                    meta: meta.clone(),
-                })
-            }
+            (Default { .. }, Known(UnitType::Count)) => Ok(KclValue::Number {
+                value: *value,
+                ty: Known(UnitType::Count),
+                meta: meta.clone(),
+            }),
 
-            (Known(UnitType::Length(l1)), Default { len: l2, .. })
-            | (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
+            (Default { len: l1, .. }, Known(UnitType::Length(l2))) => {
                 let (value, ty) = l1.adjust_to(*value, *l2);
                 Ok(KclValue::Number {
                     value,
@@ -716,8 +714,7 @@ impl NumericType {
                 })
             }
 
-            (Known(UnitType::Angle(a1)), Default { angle: a2, .. })
-            | (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
+            (Default { angle: a1, .. }, Known(UnitType::Angle(a2))) => {
                 let (value, ty) = a1.adjust_to(*value, *a2);
                 Ok(KclValue::Number {
                     value,
@@ -775,7 +772,7 @@ pub enum UnitType {
 impl std::fmt::Display for UnitType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            UnitType::Count => write!(f, "_"),
+            UnitType::Count => write!(f, "Count"),
             UnitType::Length(l) => l.fmt(f),
             UnitType::Angle(a) => a.fmt(f),
         }
@@ -2034,7 +2031,7 @@ mod test {
                 .as_f64()
                 .unwrap()
                 .round(),
-            25.0
+            1.0
         );
         assert_eq!(
             rads.coerce(&NumericType::default().into(), &mut exec_state)
@@ -2042,7 +2039,7 @@ mod test {
                 .as_f64()
                 .unwrap()
                 .round(),
-            57.0
+            1.0
         );
     }
 
@@ -2091,7 +2088,12 @@ u = min([3rad, 4in])
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 5);
+        assert_eq!(
+            result.exec_state.errors().len(),
+            5,
+            "errors: {:?}",
+            result.exec_state.errors()
+        );
 
         assert_value_and_type("a", &result, 9.0, NumericType::default());
         assert_value_and_type("b", &result, 3.0, NumericType::default());
@@ -2135,10 +2137,10 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = math::cos(units::toRadians(30))
+a = cos(units::toRadians(30))
 b = 3 / a
-c = math::cos(30deg)
-d = math::cos(30)
+c = cos(30deg)
+d = cos(30)
 "#;
 
         let result = parse_execute(program).await.unwrap();

@@ -8,14 +8,14 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of dis
 
 
 
-```js
+```kcl
 patternLinear2d(
-  sketches: [Sketch],
+  sketches: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
   instances: integer,
-  distance: number,
-  axis: [number],
-  useOriginal?: bool,
-): [Sketch]
+  distance: [number](/docs/kcl/types/number),
+  axis: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  useOriginal?: [bool](/docs/kcl/types/bool),
+): [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch))
 ```
 
 
@@ -36,7 +36,7 @@ patternLinear2d(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
   |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4)

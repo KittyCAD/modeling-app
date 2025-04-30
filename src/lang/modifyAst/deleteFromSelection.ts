@@ -1,4 +1,5 @@
 import type { Models } from '@kittycad/lib'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -8,7 +9,11 @@ import {
   createObjectExpression,
 } from '@src/lang/create'
 import { deleteEdgeTreatment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath, traverse } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  traverse,
+  findPipesWithImportAlias,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   expandCap,
@@ -22,7 +27,6 @@ import type {
   ArtifactGraph,
   CallExpression,
   CallExpressionKw,
-  ExpressionStatement,
   KclValue,
   PathToNode,
   PipeExpression,
@@ -120,45 +124,27 @@ export async function deleteFromSelection(
   }
 
   // Module import and expression case, need to find and delete both
-  const statement = getNodeFromPath<ExpressionStatement>(
+  const statement = getNodeFromPath<ImportStatement>(
     astClone,
     selection.codeRef.pathToNode,
-    'ExpressionStatement'
+    'ImportStatement'
   )
-  if (!err(statement) && statement.node.type === 'ExpressionStatement') {
-    let expressionIndexToDelete: number | undefined
-    let importAliasToDelete: string | undefined
-    if (
-      statement.node.expression.type === 'Name' &&
-      statement.node.expression.name.type === 'Identifier'
-    ) {
-      expressionIndexToDelete = Number(selection.codeRef.pathToNode[1][0])
-      importAliasToDelete = statement.node.expression.name.name
-    } else if (
-      statement.node.expression.type === 'PipeExpression' &&
-      statement.node.expression.body[0].type === 'Name' &&
-      statement.node.expression.body[0].name.type === 'Identifier'
-    ) {
-      expressionIndexToDelete = Number(selection.codeRef.pathToNode[1][0])
-      importAliasToDelete = statement.node.expression.body[0].name.name
-    } else {
-      return new Error('Expected expression to be a Name or PipeExpression')
+  if (
+    !err(statement) &&
+    statement.node.type === 'ImportStatement' &&
+    selection.codeRef.pathToNode[1] &&
+    typeof selection.codeRef.pathToNode[1][0] === 'number'
+  ) {
+    const pipes = findPipesWithImportAlias(ast, selection.codeRef.pathToNode)
+    for (const { pathToNode: pathToPipeNode } of pipes.reverse()) {
+      if (typeof pathToPipeNode[1][0] === 'number') {
+        const pipeWithImportAliasIndex = pathToPipeNode[1][0]
+        astClone.body.splice(pipeWithImportAliasIndex, 1)
+      }
     }
 
-    astClone.body.splice(expressionIndexToDelete, 1)
-    const importIndexToDelete = astClone.body.findIndex(
-      (n) =>
-        n.type === 'ImportStatement' &&
-        n.selector.type === 'None' &&
-        n.selector.alias?.type === 'Identifier' &&
-        n.selector.alias.name === importAliasToDelete
-    )
-    if (importIndexToDelete >= 0) {
-      astClone.body.splice(importIndexToDelete, 1)
-    } else {
-      return new Error("Couldn't find import to delete")
-    }
-
+    const importIndex = selection.codeRef.pathToNode[1][0]
+    astClone.body.splice(importIndex, 1)
     return astClone
   }
 

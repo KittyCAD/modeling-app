@@ -1,5 +1,4 @@
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function Streaming() {
@@ -41,7 +40,7 @@ export default function Streaming() {
           </p>
         </section>
         <OnboardingButtons
-          currentSlug={onboardingPaths.STREAMING}
+          currentSlug={ONBOARDING_SUBPATHS.STREAMING}
           dismissClassName="right-auto left-full"
         />
       </div>

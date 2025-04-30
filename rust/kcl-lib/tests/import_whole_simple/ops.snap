@@ -1,13 +1,13 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed import_whole.kcl
+description: Operations executed import_whole_simple.kcl
 ---
 [
   {
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "foo",
+      "name": "exported_mod.kcl",
       "moduleId": 0
     },
     "sourceRange": []

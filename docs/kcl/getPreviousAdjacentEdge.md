@@ -8,8 +8,8 @@ Get the previous adjacent edge to the edge given.
 
 
 
-```js
-getPreviousAdjacentEdge(edge: TagIdentifier): Uuid
+```kcl
+getPreviousAdjacent[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/types#tag-identifier)): Uuid
 ```
 
 
@@ -26,7 +26,7 @@ getPreviousAdjacentEdge(edge: TagIdentifier): Uuid
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])

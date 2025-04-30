@@ -1876,15 +1876,7 @@ description: Result of parsing ball-bearing.kcl
                                 "start": 0,
                                 "type": "Identifier"
                               },
-                              "path": [
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "math",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                }
-                              ],
+                              "path": [],
                               "start": 0,
                               "type": "Name"
                             },

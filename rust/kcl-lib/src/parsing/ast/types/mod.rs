@@ -312,7 +312,7 @@ impl Node<Program> {
         let v = Arc::new(Mutex::new(vec![]));
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            findings.append(&mut rule.check(node)?);
+            findings.append(&mut rule.check(node, self)?);
             Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();
@@ -781,6 +781,15 @@ impl BodyItem {
             BodyItem::VariableDeclaration(node) => (node.comment_start, node.start),
             BodyItem::TypeDeclaration(node) => (node.comment_start, node.start),
             BodyItem::ReturnStatement(node) => (node.comment_start, node.start),
+        }
+    }
+
+    pub(crate) fn visibility(&self) -> ItemVisibility {
+        match self {
+            BodyItem::ImportStatement(node) => node.visibility,
+            BodyItem::VariableDeclaration(node) => node.visibility,
+            BodyItem::TypeDeclaration(node) => node.visibility,
+            BodyItem::ExpressionStatement(_) | BodyItem::ReturnStatement(_) => ItemVisibility::Default,
         }
     }
 }
@@ -1917,6 +1926,12 @@ pub struct TypeDeclaration {
     pub digest: Option<Digest>,
 }
 
+impl TypeDeclaration {
+    pub(crate) fn name(&self) -> &str {
+        &self.name.name
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1994,6 +2009,10 @@ impl VariableDeclaration {
             kind,
             digest: None,
         }
+    }
+
+    pub(crate) fn name(&self) -> &str {
+        &self.declaration.id.name
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {

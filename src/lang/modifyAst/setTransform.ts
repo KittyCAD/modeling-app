@@ -2,7 +2,9 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createCallExpressionStdLibKw,
+  createExpressionStatement,
   createLabeledArg,
+  createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -53,7 +55,7 @@ export function setTranslate({
 
   return {
     modifiedAst,
-    pathToNode, // TODO: check if this should be updated
+    pathToNode,
   }
 }
 
@@ -93,7 +95,7 @@ export function setRotate({
 
   return {
     modifiedAst,
-    pathToNode, // TODO: check if this should be updated
+    pathToNode,
   }
 }
 
@@ -139,4 +141,15 @@ function createPipeWithTransform(
   } else {
     return new Error('Unsupported operation type.')
   }
+}
+
+export function insertExpressionNode(ast: Node<Program>, alias: string) {
+  const expression = createExpressionStatement(createLocalName(alias))
+  ast.body.push(expression)
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [ast.body.length - 1, 'index'],
+    ['expression', 'Name'],
+  ]
+  return pathToNode
 }

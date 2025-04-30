@@ -6,7 +6,6 @@ import type { NonCodeMeta } from '@rust/kcl-lib/bindings/NonCodeMeta'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
-  createExpressionStatement,
   createIdentifier,
   createImportAsSelector,
   createImportStatement,
@@ -713,51 +712,39 @@ export function addOffsetPlane({
 /**
  * Add an import call to load a part
  */
-export function addImportAndInsert({
-  node,
+export function addModuleImport({
+  ast,
   path,
   localName,
 }: {
-  node: Node<Program>
+  ast: Node<Program>
   path: string
   localName: string
 }): {
   modifiedAst: Node<Program>
-  pathToImportNode: PathToNode
-  pathToInsertNode: PathToNode
+  pathToNode: PathToNode
 } {
-  const modifiedAst = structuredClone(node)
+  const modifiedAst = structuredClone(ast)
 
   // Add import statement
   const importStatement = createImportStatement(
     createImportAsSelector(localName),
     { type: 'Kcl', filename: path }
   )
-  const lastImportIndex = node.body.findLastIndex(
+  const lastImportIndex = modifiedAst.body.findLastIndex(
     (v) => v.type === 'ImportStatement'
   )
   const importIndex = lastImportIndex + 1 // either -1 + 1 = 0 or after the last import
   modifiedAst.body.splice(importIndex, 0, importStatement)
-  const pathToImportNode: PathToNode = [
+  const pathToNode: PathToNode = [
     ['body', ''],
     [importIndex, 'index'],
     ['path', 'ImportStatement'],
   ]
 
-  // Add insert statement
-  const insertStatement = createExpressionStatement(createLocalName(localName))
-  const insertIndex = modifiedAst.body.length
-  modifiedAst.body.push(insertStatement)
-  const pathToInsertNode: PathToNode = [
-    ['body', ''],
-    [insertIndex, 'index'],
-    ['expression', 'ExpressionStatement'],
-  ]
-
   return {
     modifiedAst,
-    pathToImportNode,
-    pathToInsertNode,
+    pathToNode,
   }
 }
 

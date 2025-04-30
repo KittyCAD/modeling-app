@@ -10,7 +10,7 @@ pub use artifact::{
 use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
 #[cfg(feature = "artifact-graph")]
-pub use cad_op::Operation;
+pub use cad_op::{Group, Operation};
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
@@ -738,7 +738,8 @@ impl ExecutorContext {
         let mut universe = std::collections::HashMap::new();
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        crate::walk::import_universe(
+        #[cfg_attr(not(feature = "artifact-graph"), expect(unused_variables))]
+        let root_imports = crate::walk::import_universe(
             self,
             &ModuleRepr::Kcl(program.ast.clone(), None),
             &mut universe,
@@ -810,11 +811,39 @@ impl ExecutorContext {
                 };
                 let module_id = *module_id;
                 let module_path = module_path.clone();
+                let source_range = SourceRange::from(import_stmt);
+
+                #[cfg(feature = "artifact-graph")]
+                match &module_path {
+                    ModulePath::Main => {
+                        // This should never happen.
+                    }
+                    ModulePath::Local { value, .. } => {
+                        // We only want to display the top-level module imports in
+                        // the Feature Tree, not transitive imports.
+                        if root_imports.contains_key(value) {
+                            exec_state.global.operations.push(Operation::GroupBegin {
+                                group: Group::ModuleInstance {
+                                    name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                                    module_id,
+                                },
+                                source_range,
+                            });
+                            // Due to concurrent execution, we cannot easily
+                            // group operations by module. So we leave the
+                            // group empty and close it immediately.
+                            exec_state.global.operations.push(Operation::GroupEnd);
+                        }
+                    }
+                    ModulePath::Std { .. } => {
+                        // We don't want to display stdlib in the Feature Tree.
+                    }
+                }
+
                 let repr = repr.clone();
                 let exec_state = exec_state.clone();
                 let exec_ctxt = self.clone();
                 let results_tx = results_tx.clone();
-                let source_range = SourceRange::from(import_stmt);
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
                                          repr: &ModuleRepr,
@@ -2057,7 +2086,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_changing_a_setting_updates_the_cached_state() {
-        let code = r#"sketch001 = startSketchOn('XZ')
+        let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfile(at = [61.74, 206.13])
 |> xLine(length = 305.11, tag = $seg01)
 |> yLine(length = -291.85)

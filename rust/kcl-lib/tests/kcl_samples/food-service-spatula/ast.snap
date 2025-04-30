@@ -1483,15 +1483,7 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "Identifier"
                             },
-                            "path": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "math",
-                                "start": 0,
-                                "type": "Identifier"
-                              }
-                            ],
+                            "path": [],
                             "start": 0,
                             "type": "Name"
                           },
@@ -1652,15 +1644,7 @@ description: Result of parsing food-service-spatula.kcl
                               "start": 0,
                               "type": "Identifier"
                             },
-                            "path": [
-                              {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "math",
-                                "start": 0,
-                                "type": "Identifier"
-                              }
-                            ],
+                            "path": [],
                             "start": 0,
                             "type": "Name"
                           },
@@ -2371,7 +2355,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch on the \"XY\" plane for the flipper"
+          "// Create a sketch on the XY plane for the flipper"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -3991,7 +3975,7 @@ description: Result of parsing food-service-spatula.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch on the \"XZ\" plane offset by half the thickness"
+          "// Create a sketch on the XZ plane offset by half the thickness"
         ],
         "start": 0,
         "type": "VariableDeclaration",

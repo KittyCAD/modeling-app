@@ -28,7 +28,7 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { fileLoader, homeLoader, telemetryLoader } from '@src/lib/routeLoaders'
+import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
   codeManager,
   engineCommandManager,
@@ -110,7 +110,6 @@ const router = createRouter([
           },
           {
             id: PATHS.FILE + 'TELEMETRY',
-            loader: telemetryLoader,
             children: [
               {
                 path: makeUrlPathRelative(PATHS.TELEMETRY),
@@ -144,7 +143,6 @@ const router = createRouter([
           },
           {
             path: makeUrlPathRelative(PATHS.TELEMETRY),
-            loader: telemetryLoader,
             element: <Telemetry />,
           },
         ],

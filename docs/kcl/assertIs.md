@@ -8,9 +8,9 @@ Asserts that a value is the boolean value true.
 
 
 
-```js
+```kcl
 assertIs(
-  actual: bool,
+  actual: [bool](/docs/kcl/types/bool),
   error?: String,
 ): ()
 ```
@@ -30,7 +30,7 @@ assertIs(
 
 ### Examples
 
-```js
+```kcl
 kclIsFun = true
 assertIs(kclIsFun)
 ```

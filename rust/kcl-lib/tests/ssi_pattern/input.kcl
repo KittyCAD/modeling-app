@@ -1,4 +1,4 @@
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
   |> startProfile(at = [-4.35, -12.26])
   |> yLine(length = 10.2)
   |> line(end = [0.54, -0.03])

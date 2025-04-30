@@ -1,11 +1,9 @@
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import type { DeepPartial } from '@src/lib/types'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
-
-export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
@@ -33,12 +31,15 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
 
 export const TEST_SETTINGS_ONBOARDING_USER_MENU: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.USER_MENU },
+  app: {
+    ...TEST_SETTINGS.app,
+    onboarding_status: ONBOARDING_SUBPATHS.USER_MENU,
+  },
 }
 
 export const TEST_SETTINGS_ONBOARDING_EXPORT: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.EXPORT },
+  app: { ...TEST_SETTINGS.app, onboarding_status: ONBOARDING_SUBPATHS.EXPORT },
 }
 
 export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING: DeepPartial<Settings> =
@@ -46,7 +47,7 @@ export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING: DeepPartial<Settings>
     ...TEST_SETTINGS,
     app: {
       ...TEST_SETTINGS.app,
-      onboarding_status: onboardingPaths.PARAMETRIC_MODELING,
+      onboarding_status: ONBOARDING_SUBPATHS.PARAMETRIC_MODELING,
     },
   }
 
@@ -104,7 +105,7 @@ height = 30
 thickness = 2
 keychainHoleSize = 3
 
-keychain = startSketchOn("XY")
+keychain = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
@@ -112,7 +113,7 @@ keychain = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-keychain1 = startSketchOn("XY")
+keychain1 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])
@@ -120,7 +121,7 @@ keychain1 = startSketchOn("XY")
   |> close()
   |> extrude(length = thickness)
 
-keychain2 = startSketchOn("XY")
+keychain2 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [width, 0])
   |> line(endAbsolute = [width, height])

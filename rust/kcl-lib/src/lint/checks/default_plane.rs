@@ -3,6 +3,7 @@ use anyhow::Result;
 use crate::{
     errors::Suggestion,
     lint::rule::{def_finding, Discovered, Finding},
+    parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
 };
 
@@ -21,7 +22,7 @@ These are the default planes: XY, -XY, XZ, -XZ, YZ, -YZ.
 "
 );
 
-pub fn lint_should_be_default_plane(node: Node) -> Result<Vec<Discovered>> {
+pub fn lint_should_be_default_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let Some((call_source_range, plane_name, offset)) = start_sketch_on_check_specific_plane(node)? else {
         return Ok(vec![]);
     };

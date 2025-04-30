@@ -8,13 +8,13 @@ Just like patternTransform, but works on 2D sketches not 3D solids.
 
 
 
-```js
+```kcl
 patternTransform2d(
-  sketches: [Sketch],
+  sketches: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
   instances: integer,
   transform: FunctionSource,
-  useOriginal?: bool,
-): [Sketch]
+  useOriginal?: [bool](/docs/kcl/types/bool),
+): [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch))
 ```
 
 
@@ -34,7 +34,7 @@ patternTransform2d(
 
 ### Examples
 
-```js
+```kcl
 // Each instance will be shifted along the X axis.
 fn transform(id) {
   return { translate = [4 * id, 0] }

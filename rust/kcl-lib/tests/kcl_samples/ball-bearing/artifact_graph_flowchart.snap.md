@@ -17,40 +17,40 @@ flowchart LR
     30[Solid2d]
   end
   subgraph path11 [Path]
-    11["Path<br>[1484, 1612, 0]"]
-    19["Segment<br>[1618, 1678, 0]"]
-    20["Segment<br>[1684, 1715, 0]"]
-    21["Segment<br>[1721, 1749, 0]"]
-    22["Segment<br>[1755, 1762, 0]"]
+    11["Path<br>[1484, 1606, 0]"]
+    19["Segment<br>[1612, 1672, 0]"]
+    20["Segment<br>[1678, 1709, 0]"]
+    21["Segment<br>[1715, 1743, 0]"]
+    22["Segment<br>[1749, 1756, 0]"]
     27[Solid2d]
   end
   subgraph path12 [Path]
-    12["Path<br>[2096, 2238, 0]"]
-    23["Segment<br>[2096, 2238, 0]"]
+    12["Path<br>[2090, 2232, 0]"]
+    23["Segment<br>[2090, 2232, 0]"]
     28[Solid2d]
   end
   subgraph path13 [Path]
-    13["Path<br>[2632, 2685, 0]"]
-    24["Segment<br>[2632, 2685, 0]"]
+    13["Path<br>[2626, 2679, 0]"]
+    24["Segment<br>[2626, 2679, 0]"]
     26[Solid2d]
   end
   subgraph path14 [Path]
-    14["Path<br>[2709, 2783, 0]"]
-    25["Segment<br>[2709, 2783, 0]"]
+    14["Path<br>[2703, 2777, 0]"]
+    25["Segment<br>[2703, 2777, 0]"]
     29[Solid2d]
   end
   1["Plane<br>[610, 657, 0]"]
   2["Plane<br>[957, 974, 0]"]
   3["Plane<br>[1461, 1478, 0]"]
-  4["Plane<br>[2073, 2090, 0]"]
-  5["Plane<br>[2578, 2625, 0]"]
-  6["StartSketchOnPlane<br>[2564, 2626, 0]"]
+  4["Plane<br>[2067, 2084, 0]"]
+  5["Plane<br>[2572, 2619, 0]"]
+  6["StartSketchOnPlane<br>[2558, 2620, 0]"]
   7["StartSketchOnPlane<br>[596, 658, 0]"]
   33["Sweep Extrusion<br>[848, 900, 0]"]
   34["Sweep Revolve<br>[1196, 1226, 0]"]
-  35["Sweep Revolve<br>[1804, 1834, 0]"]
-  36["Sweep Revolve<br>[2281, 2332, 0]"]
-  37["Sweep Extrusion<br>[2800, 2853, 0]"]
+  35["Sweep Revolve<br>[1798, 1828, 0]"]
+  36["Sweep Revolve<br>[2275, 2326, 0]"]
+  37["Sweep Extrusion<br>[2794, 2847, 0]"]
   38[Wall]
   39[Wall]
   40[Wall]
@@ -110,7 +110,7 @@ flowchart LR
   14 --- 25
   14 --- 29
   15 --- 46
-  15 x--> 49
+  15 x--> 47
   15 --- 55
   15 --- 63
   34 <--x 17
@@ -132,7 +132,7 @@ flowchart LR
   22 --- 40
   22 --- 59
   23 --- 38
-  23 x--> 47
+  23 x--> 49
   23 --- 53
   23 --- 56
   24 --- 39
@@ -140,8 +140,8 @@ flowchart LR
   24 --- 54
   24 --- 57
   33 --- 46
-  33 --- 49
-  33 --- 52
+  33 --- 47
+  33 --- 50
   33 --- 55
   33 --- 63
   34 --- 44
@@ -156,8 +156,8 @@ flowchart LR
   35 --- 60
   35 --- 61
   36 --- 38
-  36 --- 47
-  36 --- 50
+  36 --- 49
+  36 --- 52
   36 --- 53
   36 --- 56
   37 --- 39
@@ -181,7 +181,7 @@ flowchart LR
   62 <--x 45
   55 <--x 46
   63 <--x 46
-  53 <--x 50
+  55 <--x 50
   54 <--x 51
-  55 <--x 52
+  53 <--x 52
 ```

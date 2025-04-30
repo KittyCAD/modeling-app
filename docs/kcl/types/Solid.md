@@ -9,7 +9,7 @@ A solid is a collection of extrude surfaces.
 When you define a solid to a variable like:
 
 ```js
-myPart = startSketchOn('XY')
+myPart = startSketchOn(XY)
     |> startProfile(at = [-12, 12])
     |> line(end = [24, 0])
     |> line(end = [0, -24])
@@ -28,7 +28,7 @@ you can use a function.
 
 ```js
 fn createPart() {
-   return startSketchOn('XY')
+   return startSketchOn(XY)
         |> startProfile(at = [-12, 12])
         |> line(end = [24, 0])
         |> line(end = [0, -24])
