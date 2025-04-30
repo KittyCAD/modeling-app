@@ -2994,6 +2994,46 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
+    // Special case: no args
+    let early_close = peek(close_paren).parse_next(i);
+    if early_close.is_ok() {
+        let cl = close_paren.parse_next(i)?;
+        let result = Node::new_node(
+            fn_name.start,
+            cl.end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Default::default(),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
+    // Special case: one arg (unlabeled)
+    let early_close = peek((expression, opt(whitespace), close_paren)).parse_next(i);
+    if early_close.is_ok() {
+        let first_expression = expression.parse_next(i)?;
+        ignore_whitespace(i);
+        let end = close_paren.parse_next(i)?.end;
+        let result = Node::new_node(
+            fn_name.start,
+            end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Some(first_expression),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -3769,7 +3809,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4040,7 +4080,7 @@ mySk1 = startSketchOn(XY)
     fn test_parse_half_pipe_small() {
         assert_err_contains(
             "secondExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |",
             "Unexpected token: |",
         );
@@ -4104,7 +4144,7 @@ height = [obj["a"] -1, 0]"#;
 
     #[test]
     fn test_anon_fn() {
-        crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+        crate::parsing::top_level_parse("foo(num=42, closure=fn(x) { return x + 1 })").unwrap();
     }
 
     #[test]
@@ -4133,15 +4173,15 @@ height = [obj["a"] -1, 0]"#;
         let code = "height = 10
 
 firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
-  |> line([0, 8], %)
-  |> line([20, 0], %)
-  |> line([0, -8], %)
+  |> startProfile(at = [0,0])
+  |> line(at = [0, 8])
+  |> line(at = [20, 0])
+  |> line(at = [0, -8])
   |> close()
   |> extrude(length=2)
 
 secondExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
+  |> startProfile(at = [0,0])
   |";
         assert_err_contains(code, "Unexpected token: |");
     }
@@ -4412,7 +4452,7 @@ e
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
-///   |> startProfileAt([0, 0], %)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///        angle = 30,
 ///        length = 3 / cos(toRadians(30)),
@@ -4452,7 +4492,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn error_underscore() {
-        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
+        let (_, errs) = assert_no_fatal("_foo(a=_blah, b=_)");
         assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
@@ -4564,11 +4604,11 @@ thing(false)
     #[test]
     fn random_words_fail() {
         let test_program = r#"part001 = startSketchOn(-XZ)
-    |> startProfileAt([8.53, 11.8], %)
+    |> startProfile(at = [8.53, 11.8])
     asdasd asdasd
-    |> line([11.12, -14.82], %)
-    |> line([-13.27, -6.98], %)
-    |> line([-5.09, 12.33], %)
+    |> line(at = [11.12, -14.82])
+    |> line(at = [-13.27, -6.98])
+    |> line(at = [-5.09, 12.33])
     asdasd
 "#;
         let _ = crate::parsing::top_level_parse(test_program).unwrap_errs();
@@ -4578,16 +4618,16 @@ thing(false)
     fn test_member_expression_sketch() {
         let some_program_string = r#"fn cube(pos, scale) {
   sg = startSketchOn(XY)
-  |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+  |> startProfile(pos)
+    |> line(at = [0, scale])
+    |> line(at = [scale, 0])
+    |> line(at = [0, -scale])
 
   return sg
 }
 
-b1 = cube([0,0], 10)
-b2 = cube([3,3], 4)
+b1 = cube(pos=[0,0], scale=10)
+b2 = cube(pos=[3,3], scale=4)
 
 pt1 = b1[0]
 pt2 = b2[0]
@@ -4606,16 +4646,16 @@ let other_thing = 2 * cos(3)"#;
     fn test_negative_arguments() {
         let some_program_string = r#"fn box(p, h, l, w) {
  myBox = startSketchOn(XY)
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
+    |> startProfile(p)
+    |> line(at = [0, l])
+    |> line(at = [w, 0])
+    |> line(at = [0, -l])
     |> close()
     |> extrude(length=h)
 
   return myBox
 }
-let myBox = box([0,0], -3, -16, -10)
+let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
@@ -4632,20 +4672,20 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_named_std_lib() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $xLine)
+    |> startProfile(at = [0, 0])
+    |> line(%, end = [5, 5], tag = $xLine)
 "#;
         assert_err(
             some_program_string,
             "Cannot assign a tag to a reserved keyword: xLine",
-            [74, 80],
+            [86, 92],
         );
     }
 
     #[test]
     fn test_parse_empty_tag_brace() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
@@ -4653,7 +4693,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_whitespace() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $ ,01)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
@@ -4662,7 +4702,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_empty_tag_comma() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $,)
     "#;
         assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
@@ -4671,7 +4711,7 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
     startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
@@ -4683,14 +4723,14 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
     startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line(%, $var01)"#;
+    |> startProfile(at = [0, 0])
+    |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $!var,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a bang", [67, 68]);
@@ -4698,7 +4738,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_dollar() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $$,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a dollar", [67, 68]);
@@ -4706,7 +4746,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_fn() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $fn,01)
     "#;
         assert_err(some_program_string, "Tag names must not start with a keyword", [67, 69]);
@@ -4714,7 +4754,7 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
         let some_program_string = r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> line(%, $//
     ,01)
     "#;
@@ -4729,8 +4769,8 @@ let myBox = box([0,0], -3, -16, -10)
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
     startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $sketching)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 5], tag = $sketching)
     "#;
         assert_no_err(some_program_string);
     }
@@ -4738,21 +4778,21 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
-sketch001 = startSketchOn(XZ) |> startProfileAt([90.45, 119.09, %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45, 119.09)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [49, 65],
+            [52, 60],
         );
     }
     #[test]
     fn test_parse_array_missing_comma() {
         let some_program_string = r#"
-sketch001 = startSketchOn(XZ) |> startProfileAt([90.45 119.09], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 119.09])"#;
         assert_err(
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between elements.",
-            [50, 63],
+            [53, 66],
         );
     }
     #[test]
@@ -4760,21 +4800,21 @@ sketch001 = startSketchOn(XZ) |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn(XZ) |> startProfileAt([90.45 $struct], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 $struct])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [49, 50],
+            [52, 53],
         );
     }
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
-sketch001 = startSketchOn(XZ) |> startProfileAt([}], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [}])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [49, 50],
+            [52, 53],
         );
     }
 
@@ -5010,17 +5050,17 @@ mod snapshot_tests {
     snapshot_test!(
         a,
         r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
-    |> line([5, -15], %)
+    |> startProfileAt(at = [0, 0])
+    |> line(at = [0, 10])
+    |> tangentialArc(end = [-5, 5])
+    |> line(at = [5, -15])
     |> extrude(length=10)
 "#
     );
-    snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
+    snapshot_test!(b, "myVar = min(x=5 , y=-legLen(5, z=4))"); // Space before comma
 
-    snapshot_test!(c, "myVar = min(-legLen(5, 4), 5)");
-    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45, %)");
+    snapshot_test!(c, "myVar = min(x=-legLen(a=5, b=4), y=5)");
+    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45)");
     snapshot_test!(e, "x = 1 * (3 - 4)");
     snapshot_test!(f, r#"x = 1 // this is an inline comment"#);
     snapshot_test!(
@@ -5076,11 +5116,11 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
-    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfile(pos)"#);
     snapshot_test!(
         z,
         "sg = startSketchOn(XY)
-    |> startProfileAt(pos) |> line([0, -scale], %)"
+    |> startProfile(pos) |> line([0, -scale])"
     );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
@@ -5103,7 +5143,7 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchOn(XY)
-        |> startProfileAt([0,0], %)
+        |> startProfile(at = [0,0])
         |> line(endAbsolute = [0, 1], tag = $myPath)
         |> line(endAbsolute = [1, 1])
         |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -5111,21 +5151,21 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ag,
-        "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %) |> line(endAbsolute = [1, 1]) |> close()"
+        "mySketch = startSketchOn(XY) |> startProfile(at = [0,0]) |> line(endAbsolute = [1, 1]) |> close()"
     );
-    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfileAt(p, %)");
-    snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
+    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfile(at = p)");
+    snapshot_test!(ai, r#"myBox = f(1) |> g(2)"#);
     snapshot_test!(
         aj,
-        r#"myBox = startSketchOn(XY) |> startProfileAt(p, %) |> line(end = [0, l])"#
+        r#"myBox = startSketchOn(XY) |> startProfile(at = p) |> line(end = [0, l])"#
     );
     snapshot_test!(ak, "line(endAbsolute = [0, 1])");
-    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %)");
-    snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
+    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfile(at = [0,0])");
+    snapshot_test!(aq, "log(number = 5, msg = \"hello\", id=aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
-    snapshot_test!(at, "line([0, l], %)");
+    snapshot_test!(at, "line([0, l])");
     snapshot_test!(au, include_str!("../../e2e/executor/inputs/cylinder.kcl"));
-    snapshot_test!(av, "fn f(angle?) { return default(angle, 360) }");
+    snapshot_test!(av, "fn f(angle?) { return default(maybe=angle, otherwise=360) }");
     snapshot_test!(
         aw,
         "numbers = [
