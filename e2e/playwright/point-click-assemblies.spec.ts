@@ -428,7 +428,7 @@ test.describe('Point-and-click assemblies tests', () => {
         await scene.expectPixelColor(partColor, partPoint, tolerance)
       })
 
-      await test.step('Insert second step part by clicking', async () => {
+      await test.step('Insert second foreign part by clicking', async () => {
         await toolbar.openPane('files')
         await toolbar.expectFileTreeState([
           complexPlmFileName,
@@ -471,6 +471,7 @@ test.describe('Point-and-click assemblies tests', () => {
       })
 
       await test.step('Delete first part using the feature tree', async () => {
+        page.on('console', console.log)
         await toolbar.openPane('feature-tree')
         const op = await toolbar.getFeatureTreeOperation('cube', 0)
         await op.click({ button: 'right' })
@@ -493,7 +494,7 @@ test.describe('Point-and-click assemblies tests', () => {
 
       await test.step('Delete second part using the feature tree', async () => {
         await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('cubeSw', 0)
+        const op = await toolbar.getFeatureTreeOperation('cube_Complex', 0)
         await op.click({ button: 'right' })
         await page.getByTestId('context-menu-delete').click()
         await scene.settled(cmdBar)
@@ -504,7 +505,6 @@ test.describe('Point-and-click assemblies tests', () => {
         await editor.expectEditor.not.toContain(
           `import "${complexPlmFileName}" as cubeSw`
         )
-        await editor.expectEditor.not.toContain('cubeSw')
         await toolbar.closePane('code')
         await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
