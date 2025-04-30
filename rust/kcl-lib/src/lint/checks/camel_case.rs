@@ -211,6 +211,6 @@ part001 = startSketchOn(XY)
 circ = {angle_start = 0, angle_end = 360, radius = 5}
 ",
         "found 'angle_start'",
-        Some("circ = {\n  angle_start = 0,\n  angle_end = 360,\n  radius = 5\n}\n".to_string())
+        None
     );
 }
