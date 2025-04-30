@@ -81,6 +81,14 @@ export class KclPlugin implements PluginValue {
       } else if (tr.annotation(lspFormatCodeEvent.type)) {
         isRelevant = true
       }
+      // This is ON because the artifact graph and ast will be stale if we
+      // don't update the world.
+      // Also, then the file won't be saved.
+      else if (tr.annotation(lspRenameEvent.type)) {
+        isRelevant = true
+      } else if (tr.annotation(lspCodeActionEvent.type)) {
+        isRelevant = true
+      }
 
       // Don't make this an else.
       if (tr.annotation(codeManagerUpdateEvent.type)) {
@@ -93,16 +101,6 @@ export class KclPlugin implements PluginValue {
         break
       } else if (tr.annotation(updateOutsideEditorEvent.type)) {
         // We want to ignore other events outside the editor.
-        isRelevant = false
-        break
-      } else if (tr.annotation(lspRenameEvent.type)) {
-        // Rename does not need to trigger the world.
-        // It's the same ast just different variable names.
-        isRelevant = false
-        break
-      } else if (tr.annotation(lspCodeActionEvent.type)) {
-        // Code actions should be stable enough where they create the same
-        // code and we do not need to need trigger an update.
         isRelevant = false
         break
       }
