@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
@@ -176,19 +177,34 @@ pub(crate) fn import_dependencies(repr: &ModuleRepr, ctx: &ExecutorContext) -> R
     Ok(ret.clone())
 }
 
+/// Mutates the `out` universe with the imported modules. Returns the imports of
+/// only `repr`'s non-transitive imports.
 pub(crate) async fn import_universe(
     ctx: &ExecutorContext,
     repr: &ModuleRepr,
     out: &mut Universe,
     exec_state: &mut ExecState,
-) -> Result<(), KclError> {
+) -> Result<HashMap<PathBuf, crate::parsing::ast::types::Node<ImportStatement>>, KclError> {
     let modules = import_dependencies(repr, ctx)?;
+    let mut module_imports = HashMap::new();
     for (filename, import_stmt, module_path) in modules {
+        match &module_path {
+            ModulePath::Main => {
+                // We only care about what the root module imports.
+            }
+            ModulePath::Local { value, .. } => {
+                module_imports.insert(value.clone(), import_stmt.clone());
+            }
+            ModulePath::Std { .. } => {
+                // We don't care about std imports.
+            }
+        }
+
         if out.contains_key(&filename) {
             continue;
         }
 
-        let source_range = SourceRange::from(import_stmt.clone());
+        let source_range = SourceRange::from(&import_stmt);
         let attrs = &import_stmt.outer_attrs;
         let module_id = ctx
             .open_module(&import_stmt.path, attrs, exec_state, source_range)
@@ -204,14 +220,11 @@ pub(crate) async fn import_universe(
             module_info.repr.clone()
         };
 
-        out.insert(
-            filename.clone(),
-            (import_stmt.clone(), module_id, module_path.clone(), repr.clone()),
-        );
+        out.insert(filename, (import_stmt, module_id, module_path, repr.clone()));
         Box::pin(import_universe(ctx, &repr, out, exec_state)).await?;
     }
 
-    Ok(())
+    Ok(module_imports)
 }
 
 #[cfg(test)]

@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_whole_transitive_import/bolt.kcl
+---
+// Pretend that we render something here.

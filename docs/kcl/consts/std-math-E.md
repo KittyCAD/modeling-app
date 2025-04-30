@@ -8,13 +8,13 @@ The value of Euler’s number `e`.
 
 
 
-```js
+```kcl
 std::math::E: number = 2.71828182845904523536028747135266250_
 ```
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

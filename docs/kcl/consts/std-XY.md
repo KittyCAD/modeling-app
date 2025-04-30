@@ -8,7 +8,7 @@ layout: manual
 
 
 
-```js
+```kcl
 std::XY
 ```
 

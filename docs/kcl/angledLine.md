@@ -8,17 +8,17 @@ Draw a line segment relative to the current origin using the polar measure of so
 
 
 
-```js
+```kcl
 angledLine(
-  sketch: Sketch,
-  angle: number,
-  length?: number,
-  lengthX?: number,
-  lengthY?: number,
-  endAbsoluteX?: number,
-  endAbsoluteY?: number,
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  angle: [number](/docs/kcl/types/number),
+  length?: [number](/docs/kcl/types/number),
+  lengthX?: [number](/docs/kcl/types/number),
+  lengthY?: [number](/docs/kcl/types/number),
+  endAbsoluteX?: [number](/docs/kcl/types/number),
+  endAbsoluteY?: [number](/docs/kcl/types/number),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -33,7 +33,7 @@ angledLine(
 | `lengthY` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
 | `endAbsoluteX` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
 | `endAbsoluteY` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -42,7 +42,7 @@ angledLine(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 15)

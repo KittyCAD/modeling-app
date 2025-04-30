@@ -8,8 +8,8 @@ Compute the arcsine of a number.
 
 
 
-```js
-asin(@num: number(_)): number(rad)
+```kcl
+asin(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -26,11 +26,11 @@ asin(@num: number(_)): number(rad)
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
-    angle = math::asin(0.5),
+    angle = asin(0.5),
     length = 20,
   )
   |> yLine(endAbsolute = 0)

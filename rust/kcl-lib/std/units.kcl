@@ -38,7 +38,7 @@ export fn toYards(@num: number(yd)): number(yd) {
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 70 * math::cos(units::toRadians(45)),
+///     length = 70 * cos(units::toRadians(45)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -56,7 +56,7 @@ export fn toRadians(@num: number(rad)): number(rad) {
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 70 * math::cos(units::toDegrees((PI/4): number(rad))),
+///     length = 70 * cos(units::toDegrees((PI/4): number(rad))),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()

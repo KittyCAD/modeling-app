@@ -8,15 +8,15 @@ Extend the current sketch with a new involute circular curve.
 
 
 
-```js
+```kcl
 involuteCircular(
-  sketch: Sketch,
-  startRadius: number,
-  endRadius: number,
-  angle: number,
-  reverse?: bool,
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  startRadius: [number](/docs/kcl/types/number),
+  endRadius: [number](/docs/kcl/types/number),
+  angle: [number](/docs/kcl/types/number),
+  reverse?: [bool](/docs/kcl/types/bool),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -29,7 +29,7 @@ involuteCircular(
 | `endRadius` | [`number`](/docs/kcl/types/number) | The involute is described between two circles, end_radius is the radius of the outer circle. | Yes |
 | `angle` | [`number`](/docs/kcl/types/number) | The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve. | Yes |
 | `reverse` | [`bool`](/docs/kcl/types/bool) | If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. Defaults to false. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -38,7 +38,7 @@ involuteCircular(
 
 ### Examples
 
-```js
+```kcl
 a = 10
 b = 14
 startSketchOn(XZ)

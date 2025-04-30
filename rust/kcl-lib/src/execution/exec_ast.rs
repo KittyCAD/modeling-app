@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::cad_op::{Group, OpArg, OpKclValue, Operation};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -27,11 +29,6 @@ use crate::{
         FunctionKind,
     },
     CompilationError,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::cad_op::{Group, OpArg, OpKclValue, Operation},
-    parsing::ast::types::BoxNode,
 };
 
 enum StatementKind<'a> {
@@ -519,19 +516,9 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
-        #[cfg(feature = "artifact-graph")] module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        #[cfg(feature = "artifact-graph")]
-        exec_state.global.operations.push(Operation::GroupBegin {
-            group: Group::ModuleInstance {
-                name: module_name.to_string(),
-                module_id,
-            },
-            source_range,
-        });
-
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
@@ -569,9 +556,6 @@ impl ExecutorContext {
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
-
-        #[cfg(feature = "artifact-graph")]
-        exec_state.global.operations.push(Operation::GroupEnd);
 
         result
     }
@@ -626,7 +610,6 @@ impl ExecutorContext {
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
                         module_id,
-                        #[cfg(feature = "artifact-graph")] name, 
                         exec_state,
                         metadata.source_range
                         ).await?

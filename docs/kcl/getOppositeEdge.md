@@ -8,8 +8,8 @@ Get the opposite edge to the edge given.
 
 
 
-```js
-getOppositeEdge(edge: TagIdentifier): Uuid
+```kcl
+getOpposite[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/types#tag-identifier)): Uuid
 ```
 
 
@@ -26,7 +26,7 @@ getOppositeEdge(edge: TagIdentifier): Uuid
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])

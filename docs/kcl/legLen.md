@@ -8,11 +8,11 @@ Compute the length of the given leg.
 
 
 
-```js
+```kcl
 legLen(
-  hypotenuse: number,
-  leg: number,
-): number
+  hypotenuse: [number](/docs/kcl/types/number),
+  leg: [number](/docs/kcl/types/number),
+): [number](/docs/kcl/types/number)
 ```
 
 ### Tags
@@ -34,7 +34,7 @@ legLen(
 
 ### Examples
 
-```js
+```kcl
 legLen(hypotenuse = 5, leg = 3)
 ```
 

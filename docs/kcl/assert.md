@@ -8,15 +8,15 @@ Check a value meets some expected conditions at runtime. Program terminates with
 
 
 
-```js
+```kcl
 assert(
-  actual: number,
-  isGreaterThan?: number,
-  isLessThan?: number,
-  isGreaterThanOrEqual?: number,
-  isLessThanOrEqual?: number,
-  isEqualTo?: number,
-  tolerance?: number,
+  actual: [number](/docs/kcl/types/number),
+  isGreaterThan?: [number](/docs/kcl/types/number),
+  isLessThan?: [number](/docs/kcl/types/number),
+  isGreaterThanOrEqual?: [number](/docs/kcl/types/number),
+  isLessThanOrEqual?: [number](/docs/kcl/types/number),
+  isEqualTo?: [number](/docs/kcl/types/number),
+  tolerance?: [number](/docs/kcl/types/number),
   error?: String,
 ): ()
 ```
@@ -42,7 +42,7 @@ assert(
 
 ### Examples
 
-```js
+```kcl
 n = 10
 assert(n, isEqualTo = 10)
 assert(

@@ -8,13 +8,13 @@ The value of `tau`, the full circle constant (τ). Equal to 2π.
 
 
 
-```js
+```kcl
 std::math::TAU: number = 6.28318530717958647692528676655900577_
 ```
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

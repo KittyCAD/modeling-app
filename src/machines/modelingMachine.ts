@@ -81,9 +81,15 @@ import {
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
 import { setAppearance } from '@src/lang/modifyAst/setAppearance'
-import { setTranslate, setRotate } from '@src/lang/modifyAst/setTransform'
+import {
+  setTranslate,
+  setRotate,
+  insertExpressionNode,
+} from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
+  findPipesWithImportAlias,
+  findImportNodeAndAlias,
   isNodeSafeToReplacePath,
   stringifyPathToNode,
   updatePathToNodesAfterEdit,
@@ -100,7 +106,6 @@ import type {
   CallExpression,
   CallExpressionKw,
   Expr,
-  ExpressionStatement,
   Literal,
   Name,
   PathToNode,
@@ -132,6 +137,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2759,7 +2765,7 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Translate'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) return Promise.reject(new Error('No input provided'))
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { x, y, z, nodeToEdit, selection } = input
@@ -2772,13 +2778,43 @@ export const modelingMachine = setup({
             )
             const variable = getLastVariable(children, modifiedAst)
             if (!variable) {
-              return new Error("Couldn't find corresponding path to node")
+              return Promise.reject(
+                new Error("Couldn't find corresponding path to node")
+              )
             }
             pathToNode = variable.pathToNode
           } else if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
-            return new Error("Couldn't find corresponding path to node")
+            return Promise.reject(
+              new Error("Couldn't find corresponding path to node")
+            )
+          }
+        }
+
+        // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
+        // Otherwise create one
+        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+        if (importNodeAndAlias) {
+          const pipes = findPipesWithImportAlias(ast, pathToNode, 'translate')
+          const lastPipe = pipes.at(-1)
+          if (lastPipe && lastPipe.pathToNode) {
+            pathToNode = lastPipe.pathToNode
+          } else {
+            const otherRelevantPipes = findPipesWithImportAlias(
+              ast,
+              pathToNode,
+              'rotate'
+            )
+            const lastRelevantPipe = otherRelevantPipes.at(-1)
+            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
+              pathToNode = lastRelevantPipe.pathToNode
+            } else {
+              pathToNode = insertExpressionNode(
+                modifiedAst,
+                importNodeAndAlias.alias
+              )
+            }
           }
         }
 
@@ -2793,7 +2829,7 @@ export const modelingMachine = setup({
           z: valueOrVariable(z),
         })
         if (err(result)) {
-          return err(result)
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -2816,7 +2852,7 @@ export const modelingMachine = setup({
       }: {
         input: ModelingCommandSchema['Rotate'] | undefined
       }) => {
-        if (!input) return new Error('No input provided')
+        if (!input) return Promise.reject(new Error('No input provided'))
         const ast = kclManager.ast
         const modifiedAst = structuredClone(ast)
         const { roll, pitch, yaw, nodeToEdit, selection } = input
@@ -2829,13 +2865,43 @@ export const modelingMachine = setup({
             )
             const variable = getLastVariable(children, modifiedAst)
             if (!variable) {
-              return new Error("Couldn't find corresponding path to node")
+              return Promise.reject(
+                new Error("Couldn't find corresponding path to node")
+              )
             }
             pathToNode = variable.pathToNode
           } else if (selection?.graphSelections[0].codeRef.pathToNode) {
             pathToNode = selection?.graphSelections[0].codeRef.pathToNode
           } else {
-            return new Error("Couldn't find corresponding path to node")
+            return Promise.reject(
+              new Error("Couldn't find corresponding path to node")
+            )
+          }
+        }
+
+        // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
+        // Otherwise create one
+        const importNodeAndAlias = findImportNodeAndAlias(ast, pathToNode)
+        if (importNodeAndAlias) {
+          const pipes = findPipesWithImportAlias(ast, pathToNode, 'rotate')
+          const lastPipe = pipes.at(-1)
+          if (lastPipe && lastPipe.pathToNode) {
+            pathToNode = lastPipe.pathToNode
+          } else {
+            const otherRelevantPipes = findPipesWithImportAlias(
+              ast,
+              pathToNode,
+              'translate'
+            )
+            const lastRelevantPipe = otherRelevantPipes.at(-1)
+            if (lastRelevantPipe && lastRelevantPipe.pathToNode) {
+              pathToNode = lastRelevantPipe.pathToNode
+            } else {
+              pathToNode = insertExpressionNode(
+                modifiedAst,
+                importNodeAndAlias.alias
+              )
+            }
           }
         }
 
@@ -2850,7 +2916,7 @@ export const modelingMachine = setup({
           yaw: valueOrVariable(yaw),
         })
         if (err(result)) {
-          return err(result)
+          return Promise.reject(result)
         }
 
         await updateModelingState(
@@ -2901,11 +2967,11 @@ export const modelingMachine = setup({
 
         const returnEarly = true
         const geometryNode = getNodeFromPath<
-          VariableDeclaration | ExpressionStatement | PipeExpression
+          VariableDeclaration | ImportStatement | PipeExpression
         >(
           ast,
           pathToNode,
-          ['VariableDeclaration', 'ExpressionStatement', 'PipeExpression'],
+          ['VariableDeclaration', 'ImportStatement', 'PipeExpression'],
           returnEarly
         )
         if (err(geometryNode)) {
@@ -2918,16 +2984,11 @@ export const modelingMachine = setup({
         if (geometryNode.node.type === 'VariableDeclaration') {
           geometryName = geometryNode.node.declaration.id.name
         } else if (
-          geometryNode.node.type === 'ExpressionStatement' &&
-          geometryNode.node.expression.type === 'Name'
+          geometryNode.node.type === 'ImportStatement' &&
+          geometryNode.node.selector.type === 'None' &&
+          geometryNode.node.selector.alias
         ) {
-          geometryName = geometryNode.node.expression.name.name
-        } else if (
-          geometryNode.node.type === 'ExpressionStatement' &&
-          geometryNode.node.expression.type === 'PipeExpression' &&
-          geometryNode.node.expression.body[0].type === 'Name'
-        ) {
-          geometryName = geometryNode.node.expression.body[0].name.name
+          geometryName = geometryNode.node.selector.alias?.name
         } else {
           return Promise.reject(
             new Error("Couldn't find corresponding geometry")

@@ -6,6 +6,15 @@ description: Operations executed bench.kcl
   {
     "type": "GroupBegin",
     "group": {
+      "type": "ModuleInstance",
+      "name": "bench-parts.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
       "type": "FunctionCall",
       "name": "divider",
       "functionSourceRange": [],
@@ -1416,6 +1425,9 @@ description: Operations executed bench.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"
