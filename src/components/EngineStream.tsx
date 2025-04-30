@@ -34,7 +34,7 @@ import {
   engineStreamZoomToFit,
   engineViewIsometricWithGeometryPresent,
   engineViewIsometricWithoutGeometryPresent,
-} from '@src/routes/utils'
+} from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export const EngineStream = (props: {
