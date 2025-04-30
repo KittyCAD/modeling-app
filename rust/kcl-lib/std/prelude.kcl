@@ -6,7 +6,6 @@
 export import * from "std::types"
 export import "std::units"
 export import * from "std::math"
-export import "std::math"
 export import * from "std::sketch"
 export import * from "std::solid"
 export import "std::turns"
