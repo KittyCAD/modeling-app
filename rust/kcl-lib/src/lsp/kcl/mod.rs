@@ -1287,6 +1287,69 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        // Get the character at the position.
+        let Some(ch) = current_code.chars().nth(pos) else {
+            return Ok(None);
+        };
+
+        let check_char = |ch: char| {
+            // If  we are on a (, then get the string in front of the (
+            // and try to get the signature.
+            // We do these before the ast check because we might not have a valid ast.
+            if ch == '(' {
+                // If the current character is not a " " then get the next space after
+                // our position so we can split on that.
+                // Find the next space after the current position.
+                let next_space = if ch != ' ' {
+                    if let Some(next_space) = current_code[pos..].find(' ') {
+                        pos + next_space
+                    } else if let Some(next_space) = current_code[pos..].find('(') {
+                        pos + next_space
+                    } else {
+                        pos
+                    }
+                } else {
+                    pos
+                };
+                let p2 = std::cmp::max(pos, next_space);
+
+                let last_word = current_code[..p2].split_whitespace().last()?;
+
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            } else if ch == ',' {
+                // If we have a comma, then get the string in front of
+                // the closest ( and try to get the signature.
+
+                // Find the last ( before the comma.
+                let last_paren = current_code[..pos].rfind('(')?;
+                // Get the string in front of the (.
+                let last_word = current_code[..last_paren].split_whitespace().last()?;
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            }
+
+            None
+        };
+
+        if let Some(signature) = check_char(ch) {
+            return Ok(Some(signature.clone()));
+        }
+
+        // Check if we have context.
+        if let Some(context) = params.context {
+            if let Some(character) = context.trigger_character {
+                for character in character.chars() {
+                    // Check if we are on a ( or a ,.
+                    if character == '(' || character == ',' {
+                        if let Some(signature) = check_char(character) {
+                            return Ok(Some(signature.clone()));
+                        }
+                    }
+                }
+            }
+        }
+
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
@@ -1419,7 +1482,7 @@ impl LanguageServer for Backend {
         ast.rename_symbol(&params.new_name, pos);
         // Now recast it.
         let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len() - 1, module_id);
+        let source_range = SourceRange::new(0, current_code.len(), module_id);
         let range = source_range.to_lsp_range(current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
@@ -1590,7 +1653,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    char_position
+    std::cmp::min(char_position, code.len() - 1)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
