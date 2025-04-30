@@ -26,13 +26,20 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
+                            "abs_path": false,
                             "commentStart": 0,
                             "end": 0,
-                            "raw": "'XY'",
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "XY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Literal",
-                            "type": "Literal",
-                            "value": "XY"
+                            "type": "Name",
+                            "type": "Name"
                           }
                         ],
                         "callee": {
@@ -454,13 +461,20 @@ description: Result of parsing sketch_in_object.kcl
                                   {
                                     "arguments": [
                                       {
+                                        "abs_path": false,
                                         "commentStart": 0,
                                         "end": 0,
-                                        "raw": "'XY'",
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "XY",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
                                         "start": 0,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": "XY"
+                                        "type": "Name",
+                                        "type": "Name"
                                       }
                                     ],
                                     "callee": {

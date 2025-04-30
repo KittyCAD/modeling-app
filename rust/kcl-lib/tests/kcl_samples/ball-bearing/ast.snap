@@ -1855,13 +1855,13 @@ description: Result of parsing ball-bearing.kcl
                               {
                                 "commentStart": 0,
                                 "end": 0,
-                                "raw": "60deg",
+                                "raw": "60",
                                 "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
                                   "value": 60.0,
-                                  "suffix": "Deg"
+                                  "suffix": "None"
                                 }
                               }
                             ],

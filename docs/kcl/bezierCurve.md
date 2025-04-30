@@ -8,14 +8,14 @@ Draw a smooth, continuous, curved line segment from the current origin to the de
 
 
 
-```js
+```kcl
 bezierCurve(
-  sketch: Sketch,
-  control1: [number],
-  control2: [number],
-  end: [number],
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  control1: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  control2: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  end: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -27,7 +27,7 @@ bezierCurve(
 | `control1` | [`[number]`](/docs/kcl/types/number) | First control point for the cubic | Yes |
 | `control2` | [`[number]`](/docs/kcl/types/number) | Second control point for the cubic | Yes |
 | `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this line go? | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -36,7 +36,7 @@ bezierCurve(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [0, 10])

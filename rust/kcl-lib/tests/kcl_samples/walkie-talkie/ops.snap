@@ -7,7 +7,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "body",
+      "name": "parameters.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -16,7 +16,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "antenna",
+      "name": "body.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -25,7 +25,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "case",
+      "name": "case.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -34,7 +34,7 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "talkButton",
+      "name": "antenna.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -43,7 +43,25 @@ description: Operations executed walkie-talkie.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "knob",
+      "name": "talk-button.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "knob.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "button.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -471,6 +489,12 @@ description: Operations executed walkie-talkie.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

@@ -11,7 +11,7 @@ Strings may be delimited using either single or double quotes.
 
 ### Examples
 
-```js
+```kcl
 "hello,"
 'world!'
 ```

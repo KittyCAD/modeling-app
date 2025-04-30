@@ -8,7 +8,7 @@ layout: manual
 
 
 
-```js
+```kcl
 std::turns::ZERO: number = 0
 ```
 

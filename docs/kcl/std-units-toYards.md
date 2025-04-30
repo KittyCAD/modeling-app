@@ -8,8 +8,8 @@ Converts a number to yards from its current units.
 
 
 
-```js
-toYards(@num: number(yd)): number(yd)
+```kcl
+units::toYards(@num: [number](/docs/kcl/types/number)(yd)): [number](/docs/kcl/types/number)(yd)
 ```
 
 

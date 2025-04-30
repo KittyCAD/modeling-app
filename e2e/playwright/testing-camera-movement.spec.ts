@@ -216,7 +216,7 @@ test.describe('Testing Camera Movement', () => {
     // select a plane
     await page.mouse.click(700, 325)
 
-    let code = `sketch001 = startSketchOn('XY')`
+    let code = `sketch001 = startSketchOn(XY)`
     await expect(u.codeLocator).toHaveText(code)
     await u.closeDebugPanel()
 

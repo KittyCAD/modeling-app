@@ -2,8 +2,9 @@ use anyhow::Result;
 use convert_case::Casing;
 
 use crate::{
+    errors::Suggestion,
     lint::rule::{def_finding, Discovered, Finding},
-    parsing::ast::types::{ObjectProperty, VariableDeclarator},
+    parsing::ast::types::{Node as AstNode, ObjectProperty, Program, VariableDeclarator},
     walk::Node,
     SourceRange,
 };
@@ -23,16 +24,28 @@ https://en.wikipedia.org/wiki/Camel_case
 "
 );
 
-fn lint_lower_camel_case_var(decl: &VariableDeclarator) -> Result<Vec<Discovered>> {
+fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
     let ident = &decl.id;
     let name = &ident.name;
 
     if !name.is_case(convert_case::Case::Camel) {
+        // Get what it should be.
+        let new_name = name.to_case(convert_case::Case::Camel);
+
+        let mut prog = prog.clone();
+        prog.rename_symbol(&new_name, ident.start);
+        let recast = prog.recast(&Default::default(), 0);
+
+        let suggestion = Suggestion {
+            title: format!("rename '{}' to '{}'", name, new_name),
+            insert: recast,
+            source_range: prog.as_source_range(),
+        };
         findings.push(Z0001.at(
             format!("found '{}'", name),
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            None,
+            Some(suggestion.clone()),
         ));
         return Ok(findings);
     }
@@ -40,12 +53,13 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator) -> Result<Vec<Discovered
     Ok(findings)
 }
 
-fn lint_lower_camel_case_property(decl: &ObjectProperty) -> Result<Vec<Discovered>> {
+fn lint_lower_camel_case_property(decl: &ObjectProperty, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
     let ident = &decl.key;
     let name = &ident.name;
 
     if !name.is_case(convert_case::Case::Camel) {
+        // We can't rename the properties yet.
         findings.push(Z0001.at(
             format!("found '{}'", name),
             SourceRange::new(ident.start, ident.end, ident.module_id),
@@ -57,15 +71,15 @@ fn lint_lower_camel_case_property(decl: &ObjectProperty) -> Result<Vec<Discovere
     Ok(findings)
 }
 
-pub fn lint_variables(decl: Node) -> Result<Vec<Discovered>> {
+pub fn lint_variables(decl: Node, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let Node::VariableDeclaration(decl) = decl else {
         return Ok(vec![]);
     };
 
-    lint_lower_camel_case_var(&decl.declaration)
+    lint_lower_camel_case_var(&decl.declaration, prog)
 }
 
-pub fn lint_object_properties(decl: Node) -> Result<Vec<Discovered>> {
+pub fn lint_object_properties(decl: Node, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let Node::ObjectExpression(decl) = decl else {
         return Ok(vec![]);
     };
@@ -73,7 +87,7 @@ pub fn lint_object_properties(decl: Node) -> Result<Vec<Discovered>> {
     Ok(decl
         .properties
         .iter()
-        .flat_map(|v| lint_lower_camel_case_property(v).unwrap_or_default())
+        .flat_map(|v| lint_lower_camel_case_property(v, prog).unwrap_or_default())
         .collect())
 }
 
@@ -87,46 +101,49 @@ mod tests {
         assert_finding!(
             lint_variables,
             Z0001,
-            "const Thickness = 0.5",
+            "Thickness = 0.5",
             "found 'Thickness'",
-            None
+            Some("thickness = 0.5\n".to_string())
         );
         assert_finding!(
             lint_variables,
             Z0001,
-            "const THICKNESS = 0.5",
+            "THICKNESS = 0.5",
             "found 'THICKNESS'",
-            None
+            Some("thickness = 0.5\n".to_string())
         );
         assert_finding!(
             lint_variables,
             Z0001,
-            "const THICC_NES = 0.5",
+            "THICC_NES = 0.5",
             "found 'THICC_NES'",
-            None
+            Some("thiccNes = 0.5\n".to_string())
         );
         assert_finding!(
             lint_variables,
             Z0001,
-            "const thicc_nes = 0.5",
+            "thicc_nes = 0.5",
             "found 'thicc_nes'",
-            None
+            Some("thiccNes = 0.5\n".to_string())
+        );
+        assert_finding!(
+            lint_variables,
+            Z0001,
+            "myAPIVar = 0.5",
+            "found 'myAPIVar'",
+            Some("myApiVar = 0.5\n".to_string())
         );
     }
 
-    test_finding!(
-        z0001_full_bad,
-        lint_variables,
-        Z0001,
-        "\
+    const FULL_BAD: &str = "\
 // Define constants
-const pipeLength = 40
-const pipeSmallDia = 10
-const pipeLargeDia = 20
-const thickness = 0.5
+pipeLength = 40
+pipeSmallDia = 10
+pipeLargeDia = 20
+thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const Part001 = startSketchOn(XY)
+Part001 = startSketchOn(XY)
   |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
@@ -141,9 +158,15 @@ const Part001 = startSketchOn(XY)
   |> angledLine(angle = 60, endAbsoluteX = pipeLargeDia)
   |> close()
   |> revolve(axis = Y)
-", 
-    "found 'Part001'",
-    None
+";
+
+    test_finding!(
+        z0001_full_bad,
+        lint_variables,
+        Z0001,
+        FULL_BAD,
+        "found 'Part001'",
+        Some(FULL_BAD.replace("Part001", "part001").to_string())
     );
 
     test_no_finding!(
@@ -152,13 +175,13 @@ const Part001 = startSketchOn(XY)
         Z0001,
         "\
 // Define constants
-const pipeLength = 40
-const pipeSmallDia = 10
-const pipeLargeDia = 20
-const thickness = 0.5
+pipeLength = 40
+pipeSmallDia = 10
+pipeLargeDia = 20
+thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const part001 = startSketchOn(XY)
+part001 = startSketchOn(XY)
   |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
@@ -181,7 +204,7 @@ const part001 = startSketchOn(XY)
         lint_object_properties,
         Z0001,
         "\
-let circ = {angle_start = 0, angle_end = 360, radius = 5}
+circ = {angle_start = 0, angle_end = 360, radius = 5}
 ",
         "found 'angle_start'",
         None

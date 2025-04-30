@@ -48,9 +48,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.182,
           "tag": {
-            "commentStart": 519,
-            "end": 526,
-            "start": 519,
+            "commentStart": 515,
+            "end": 522,
+            "start": 515,
             "type": "TagDeclarator",
             "value": "arc001"
           },
@@ -65,10 +65,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -77,6 +75,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -173,9 +173,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.2734375,
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -190,10 +190,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -202,6 +200,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -262,9 +262,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -291,9 +291,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             ],
             "radius": 0.2734375,
             "tag": {
-              "commentStart": 364,
-              "end": 371,
-              "start": 364,
+              "commentStart": 360,
+              "end": 367,
+              "start": 360,
               "type": "TagDeclarator",
               "value": "arc000"
             },
@@ -308,10 +308,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -320,6 +318,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -398,9 +398,9 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.2734375,
           "tag": {
-            "commentStart": 364,
-            "end": 371,
-            "start": 364,
+            "commentStart": 360,
+            "end": 367,
+            "start": 360,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -415,10 +415,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -427,6 +425,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -478,9 +478,8 @@ description: Variables in memory after executing flush_batch_on_end.kcl
   "sketch000": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XY",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -489,6 +488,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "type": "Mm"
         }
       },
+      "value": "XY",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,

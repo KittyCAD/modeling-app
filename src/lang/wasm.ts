@@ -126,6 +126,7 @@ export type SyntaxType =
   | 'LiteralValue'
   | 'NonCodeNode'
   | 'UnaryExpression'
+  | 'ImportStatement'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'

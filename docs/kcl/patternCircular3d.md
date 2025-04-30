@@ -8,16 +8,16 @@ Repeat a 3-dimensional solid some number of times along a partial or complete ci
 
 
 
-```js
+```kcl
 patternCircular3d(
-  solids: [Solid],
+  solids: [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)),
   instances: integer,
-  axis: [number],
-  center: [number],
-  arcDegrees: number,
-  rotateDuplicates: bool,
-  useOriginal?: bool,
-): [Solid]
+  axis: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  center: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  arcDegrees: [number](/docs/kcl/types/number),
+  rotateDuplicates: [bool](/docs/kcl/types/bool),
+  useOriginal?: [bool](/docs/kcl/types/bool),
+): [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid))
 ```
 
 
@@ -40,7 +40,7 @@ patternCircular3d(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
 
