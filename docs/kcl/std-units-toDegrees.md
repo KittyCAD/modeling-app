@@ -8,8 +8,8 @@ Converts a number to degrees from its current units.
 
 
 
-```js
-toDegrees(@num: number(deg)): number(deg)
+```kcl
+units::toDegrees(@num: [number](/docs/kcl/types/number)(deg)): [number](/docs/kcl/types/number)(deg)
 ```
 
 
@@ -26,12 +26,12 @@ toDegrees(@num: number(deg)): number(deg)
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 70 * math::cos(units::toDegrees((PI/4): number(rad))),
+    length = 70 * cos(units::toDegrees((PI/4): number(rad))),
   )
   |> yLine(endAbsolute = 0)
   |> close()

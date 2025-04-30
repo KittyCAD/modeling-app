@@ -7,14 +7,14 @@ layout: manual
 Compute the logarithm of the number with respect to an arbitrary base.
 
 The result might not be correctly rounded owing to implementation
-details; `math::log2` can produce more accurate results for base 2,
-and `math::log10` can produce more accurate results for base 10.
+details; `log2` can produce more accurate results for base 2,
+and `log10` can produce more accurate results for base 10.
 
-```js
+```kcl
 log(
-  @input: number,
-  base: number(_),
-): number
+  @input: [number](/docs/kcl/types/number),
+  base: [number](/docs/kcl/types/number)(_),
+): [number](/docs/kcl/types/number)
 ```
 
 
@@ -32,10 +32,10 @@ log(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
-  |> line(end = [math::log(100, base = 5), 0])
+  |> line(end = [log(100, base = 5), 0])
   |> line(end = [5, 8])
   |> line(end = [-10, 0])
   |> close()

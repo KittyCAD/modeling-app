@@ -8,8 +8,8 @@ Convert a number to feet from its current units.
 
 
 
-```js
-toFeet(@num: number(ft)): number(ft)
+```kcl
+units::toFeet(@num: [number](/docs/kcl/types/number)(ft)): [number](/docs/kcl/types/number)(ft)
 ```
 
 

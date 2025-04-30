@@ -8,14 +8,14 @@ Construct a circle derived from 3 points.
 
 
 
-```js
+```kcl
 circleThreePoint(
-  sketchSurfaceOrGroup: SketchOrSurface,
-  p1: [number],
-  p2: [number],
-  p3: [number],
-  tag?: TagDeclarator,
-): Sketch
+  sketchSurfaceOrGroup: [[Sketch](/docs/kcl/types/Sketch)OrSurface](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)OrSurface),
+  p1: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  p2: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  p3: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -27,7 +27,7 @@ circleThreePoint(
 | `p1` | [`[number]`](/docs/kcl/types/number) | 1st point to derive the circle. | Yes |
 | `p2` | [`[number]`](/docs/kcl/types/number) | 2nd point to derive the circle. | Yes |
 | `p3` | [`[number]`](/docs/kcl/types/number) | 3rd point to derive the circle. | Yes |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
@@ -36,7 +36,7 @@ circleThreePoint(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XY)
   |> circleThreePoint(p1 = [10, 10], p2 = [20, 8], p3 = [15, 5])
   |> extrude(length = 5)

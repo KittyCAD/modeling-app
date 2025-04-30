@@ -8,13 +8,13 @@ Extend the current sketch with a new straight line.
 
 
 
-```js
+```kcl
 line(
-  sketch: Sketch,
-  endAbsolute?: [number],
-  end?: [number],
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/Sketch),
+  endAbsolute?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  end?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
+  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
+): [Sketch](/docs/kcl/types/Sketch)
 ```
 
 
@@ -25,7 +25,7 @@ line(
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
 | `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Which absolute point should this line go to? Incompatible with `end`. | No |
 | `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
 
 ### Returns
 
@@ -34,7 +34,7 @@ line(
 
 ### Examples
 
-```js
+```kcl
 triangle = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   // The END argument means it ends at exactly [10, 0].

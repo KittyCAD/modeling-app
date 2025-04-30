@@ -65,8 +65,8 @@ description: Operations executed subtract_cylinder_from_cube.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

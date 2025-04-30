@@ -9,11 +9,11 @@ layout: manual
 Compute the remainder after dividing `num` by `div`.
 If `num` is negative, the result will be too.
 
-```js
+```kcl
 rem(
-  @num: number,
-  divisor: number,
-): number
+  @num: [number](/docs/kcl/types/number),
+  divisor: [number](/docs/kcl/types/number),
+): [number](/docs/kcl/types/number)
 ```
 
 
@@ -31,7 +31,7 @@ rem(
 
 ### Examples
 
-```js
+```kcl
 import rem from "std::math"
 
 assert(rem( 7,    divisor =   4), isEqualTo =   3, error = "remainder is 3")

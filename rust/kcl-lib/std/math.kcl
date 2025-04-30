@@ -54,7 +54,7 @@ export TAU = 6.28318530717958647692528676655900577_
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 30,
-///     length = 3 / math::cos(30deg),
+///     length = 3 / cos(30deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -71,7 +71,7 @@ export fn cos(@num: number(Angle)): number(Count) {}
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 15 / math::sin(135deg),
+///     length = 15 / sin(135deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -88,7 +88,7 @@ export fn sin(@num: number(Angle)): number(Count) {}
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 50 * math::tan((1/2): number(rad)),
+///     length = 50 * tan((1/2): number(rad)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -104,7 +104,7 @@ export fn tan(@num: number(Angle)): number(Count) {}
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = math::acos(0.5),
+///     angle = acos(0.5),
 ///     length = 10,
 ///   )
 ///   |> line(end = [5, 0])
@@ -122,7 +122,7 @@ export fn acos(@num: number(Count)): number(rad) {}
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = math::asin(0.5),
+///     angle = asin(0.5),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -141,7 +141,7 @@ export fn asin(@num: number(Count)): number(rad) {}
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = math::atan(1.25),
+///     angle = atan(1.25),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -158,7 +158,7 @@ export fn atan(@num: number(Count)): number(rad) {}
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
-///     angle = math::atan2(y = 1.25, x = 2),
+///     angle = atan2(y = 1.25, x = 2),
 ///     length = 20,
 ///   )
 ///   |> yLine(endAbsolute = 0)
@@ -175,7 +175,7 @@ export fn atan2(y: number(Length), x: number(Length)): number(rad) {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = math::polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])
@@ -236,7 +236,7 @@ export fn sqrt(@input: number): number {}
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [8, 0])
 ///   |> angledLine(
-///     angle = math::abs(myAngle),
+///     angle = abs(myAngle),
 ///     length = 5,
 ///   )
 ///   |> line(end = [-5, 0])
@@ -257,7 +257,7 @@ export fn abs(@input: number): number {}
 /// sketch001 = startSketchOn(XZ)
 ///    |> startProfile(at = [0, 0])
 ///    |> line(endAbsolute = [12, 10])
-///    |> line(end = [math::round(7.02986), 0])
+///    |> line(end = [round(7.02986), 0])
 ///    |> yLine(endAbsolute = 0)
 ///    |> close()
 ///
@@ -272,7 +272,7 @@ export fn round(@input: number): number {}
 /// sketch001 = startSketchOn(XZ)
 ///    |> startProfile(at = [0, 0])
 ///    |> line(endAbsolute = [12, 10])
-///    |> line(end = [math::floor(7.02986), 0])
+///    |> line(end = [floor(7.02986), 0])
 ///    |> yLine(endAbsolute = 0)
 ///    |> close()
 ///
@@ -287,7 +287,7 @@ export fn floor(@input: number): number {}
 /// sketch001 = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(endAbsolute = [12, 10])
-///   |> line(end = [math::ceil(7.02986), 0])
+///   |> line(end = [ceil(7.02986), 0])
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
 ///
@@ -303,7 +303,7 @@ export fn ceil(@input: number): number {}
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 70,
-///     length = math::min([15, 31, 4, 13, 22])
+///     length = min([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
@@ -323,7 +323,7 @@ export fn min(
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 70,
-///     length = math::max([15, 31, 4, 13, 22])
+///     length = max([15, 31, 4, 13, 22])
 ///   )
 ///   |> line(end = [20, 0])
 ///   |> close()
@@ -343,7 +343,7 @@ export fn max(
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = math::pow(5, exp = 2),
+///     length = pow(5, exp = 2),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -361,13 +361,13 @@ export fn pow(
 /// Compute the logarithm of the number with respect to an arbitrary base.
 ///
 /// The result might not be correctly rounded owing to implementation
-/// details; `math::log2` can produce more accurate results for base 2,
-/// and `math::log10` can produce more accurate results for base 10.
+/// details; `log2` can produce more accurate results for base 2,
+/// and `log10` can produce more accurate results for base 10.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = [math::log(100, base = 5), 0])
+///   |> line(end = [log(100, base = 5), 0])
 ///   |> line(end = [5, 8])
 ///   |> line(end = [-10, 0])
 ///   |> close()
@@ -387,7 +387,7 @@ export fn log(
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = [math::log2(100), 0])
+///   |> line(end = [log2(100), 0])
 ///   |> line(end = [5, 8])
 ///   |> line(end = [-10, 0])
 ///   |> close()
@@ -402,7 +402,7 @@ export fn log2(@input: number): number {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = [math::log10(100), 0])
+///   |> line(end = [log10(100), 0])
 ///   |> line(end = [5, 8])
 ///   |> line(end = [-10, 0])
 ///   |> close()
@@ -417,7 +417,7 @@ export fn log10(@input: number): number {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = [math::ln(100), 15])
+///   |> line(end = [ln(100), 15])
 ///   |> line(end = [5, -6])
 ///   |> line(end = [-10, -10])
 ///   |> close()
