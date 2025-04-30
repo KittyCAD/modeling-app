@@ -33,10 +33,6 @@ fn lint_lower_camel_case_var(decl: &VariableDeclarator, prog: &AstNode<Program>)
         // Get what it should be.
         let new_name = name.to_case(convert_case::Case::Camel);
 
-        if *name == new_name {
-            panic!("new_name {}", name);
-        }
-
         let mut prog = prog.clone();
         prog.rename_symbol(&new_name, ident.start);
         let recast = prog.recast(&Default::default(), 0);
