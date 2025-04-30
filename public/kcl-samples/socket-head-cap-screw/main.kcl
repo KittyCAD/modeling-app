@@ -10,7 +10,7 @@ boltLength = 1.0
 boltHeadLength = boltDiameter
 boltHeadDiameter = 0.313
 boltHexDrive = 5 / 32
-boltHexFlatLength = boltHexDrive / (2 * math::cos(30deg))
+boltHexFlatLength = boltHexDrive / (2 * cos(30deg))
 
 // Create the head of the cap screw
 boltHead = startSketchOn(XZ)

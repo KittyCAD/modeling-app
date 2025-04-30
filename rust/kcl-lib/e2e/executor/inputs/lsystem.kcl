@@ -5,7 +5,7 @@
 
 fn cond(bools) {
   return fn(a, b) {
-    x = math::min([math::max([-1, a-b]), 1]) + 1
+    x = min([max([-1, a-b]), 1]) + 1
     return bools[x]
   }
 }
@@ -75,8 +75,8 @@ fn setLength(state, q) {
 
 fn Gt2(state) { return setLength(state, state.currentLength * state.factor) }
 fn Lt2(state) { return setLength(state, state.currentLength / state.factor) }
-fn Add(state) { return setAngle(state, math::rem(state.currentAngle - state.angle, divisor = 360)) }
-fn Sub(state) { return setAngle(state, math::rem(state.currentAngle + state.angle, divisor = 360)) }
+fn Add(state) { return setAngle(state, rem(state.currentAngle - state.angle, divisor = 360)) }
+fn Sub(state) { return setAngle(state, rem(state.currentAngle + state.angle, divisor = 360)) }
 
 // Only necessary to get around recursion limitations...
 fn F(state, F) {

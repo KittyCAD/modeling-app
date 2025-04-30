@@ -347,28 +347,28 @@ describe('testing math operators', () => {
     expect(mem['myVar']?.value).toBe(12.5)
   })
   it('with callExpression at start', async () => {
-    const code = 'myVar = math::min([4, 100]) + 2'
+    const code = 'myVar = min([4, 100]) + 2'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with callExpression at end', async () => {
-    const code = 'myVar = 2 + math::min([4, 100])'
+    const code = 'myVar = 2 + min([4, 100])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with nested callExpression', async () => {
-    const code = 'myVar = 2 + math::min([100, legLen(hypotenuse = 5, leg = 3)])'
+    const code = 'myVar = 2 + min([100, legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(6)
   })
   it('with unaryExpression', async () => {
-    const code = 'myVar = -math::min([100, 3])'
+    const code = 'myVar = -min([100, 3])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(-3)
   })
   it('with unaryExpression in callExpression', async () => {
-    const code = 'myVar = math::min([-legLen(hypotenuse = 5, leg = 4), 5])'
-    const code2 = 'myVar = math::min([5 , -legLen(hypotenuse = 5, leg = 4)])'
+    const code = 'myVar = min([-legLen(hypotenuse = 5, leg = 4), 5])'
+    const code2 = 'myVar = min([5 , -legLen(hypotenuse = 5, leg = 4)])'
     const mem = await exe(code)
     const mem2 = await exe(code2)
     expect(mem['myVar']?.value).toBe(-3)
@@ -394,7 +394,7 @@ describe('testing math operators', () => {
     const code = [
       'part001 = startSketchOn(XY)',
       '  |> startProfile(at = [0, 0])',
-      '|> line(end = [-2.21, -legLen(hypotenuse = 5, leg = math::min([3, 999]))])',
+      '|> line(end = [-2.21, -legLen(hypotenuse = 5, leg = min([3, 999]))])',
     ].join('\n')
     const mem = await exe(code)
     const sketch = sketchFromKclValue(mem['part001'], 'part001')
@@ -409,7 +409,7 @@ describe('testing math operators', () => {
       `  |> startProfile(at = [0, 0])`,
       `  |> line(end = [3, 4], tag = $seg01)`,
       `  |> line(end = [`,
-      `  math::min([segLen(seg01), myVar]),`,
+      `  min([segLen(seg01), myVar]),`,
       `  -legLen(hypotenuse = segLen(seg01), leg = myVar)`,
       `])`,
       ``,
@@ -433,8 +433,7 @@ describe('testing math operators', () => {
     expect((removedUnaryExpMemSketch as Sketch).paths?.[1]?.to).toEqual([6, 8])
   })
   it('with nested callExpression and binaryExpression', async () => {
-    const code =
-      'myVar = 2 + math::min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
+    const code = 'myVar = 2 + min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(5)
   })
