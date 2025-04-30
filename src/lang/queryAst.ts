@@ -1082,8 +1082,8 @@ export function findImportNodeAndAlias(
   return undefined
 }
 
-/* Starting form the path to the import node, look for all pipe expressions
- * that uses the import alias. If found, return the pipe expression and the
+/* Starting from the path to the import node, look for all pipe expressions
+ * that use the import alias. If found, return the pipe expression and the
  * path to the pipe node, and the alias. Wrote for the assemblies codemods.
  * TODO: add unit tests, relying on e2e/playwright/point-click-assemblies.spec.ts for now
  */
