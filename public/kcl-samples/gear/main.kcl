@@ -28,7 +28,7 @@ rs = map(
 angles = map(
   rs,
   f = fn(r) {
-    return units::toDegrees(    acos(baseDiameter / 2 / r))
+    return units::toDegrees(    math::acos(baseDiameter / 2 / r))
   },
 )
 
@@ -69,8 +69,8 @@ fn leftInvolute(i, sg) {
 }
 
 fn rightInvolute(i, sg) {
-  x = rs[i] * math::cos(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
-  y = -rs[i] * math::sin(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
+  x = rs[i] * math::cos(-toothAngle + units::toDegrees(math::atan(ys[i] / xs[i])))
+  y = -rs[i] * math::sin(-toothAngle + units::toDegrees(math::atan(ys[i] / xs[i])))
   return line(sg, endAbsolute = [x, y])
 }
 
@@ -95,7 +95,7 @@ keywayWidth = 0.250
 keywayDepth = keywayWidth / 2
 holeDiam = 2
 holeRadius = 1
-startAngle = asin(keywayWidth / 2 / holeRadius)
+startAngle = math::asin(keywayWidth / 2 / holeRadius)
 
 // Sketch the keyway and center hole and extrude
 keyWay = startSketchOn(body, face = END)

@@ -25,7 +25,7 @@ extrude006 = extrude(sketch006, length = 1)
 sketch007 = startSketchOn(extrude006, face = END)
   |> circle(
        center = [
-         1.75 * math::cos(axisJ1) / abs(math::cos(axisJ1)),
+         1.75 * math::cos(axisJ1) / math::abs(math::cos(axisJ1)),
          8
        ],
        radius = 2.75,
@@ -38,14 +38,14 @@ extrude007 = extrude(sketch007, length = 1.5)
 sketch008 = startSketchOn(extrude007, face = END)
   |> circle(
        center = [
-         1.75 * math::cos(axisJ1) / abs(math::cos(axisJ1)),
+         1.75 * math::cos(axisJ1) / math::abs(math::cos(axisJ1)),
          6.75
        ],
        radius = 0.2,
      )
   |> patternCircular2d(
        center = [
-         1.75 * math::cos(axisJ1) / abs(math::cos(axisJ1)),
+         1.75 * math::cos(axisJ1) / math::abs(math::cos(axisJ1)),
          8
        ],
        instances = 4,
@@ -57,7 +57,7 @@ extrude008 = extrude(sketch008, length = 0.2)
 sketch009 = startSketchOn(extrude007, face = END)
   |> circle(
        center = [
-         1.75 * math::cos(axisJ1) / abs(math::cos(axisJ1)),
+         1.75 * math::cos(axisJ1) / math::abs(math::cos(axisJ1)),
          8
        ],
        radius = 0.5,
