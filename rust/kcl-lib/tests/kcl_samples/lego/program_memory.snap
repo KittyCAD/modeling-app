@@ -121,10 +121,8 @@ description: Variables in memory after executing lego.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -133,6 +131,8 @@ description: Variables in memory after executing lego.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -446,10 +446,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -458,6 +456,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -726,10 +726,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -738,6 +736,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1006,10 +1006,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1018,6 +1016,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1286,10 +1286,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1298,6 +1296,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1566,10 +1566,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1578,6 +1576,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -1846,10 +1846,8 @@ description: Variables in memory after executing lego.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1858,6 +1856,8 @@ description: Variables in memory after executing lego.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -2226,10 +2226,8 @@ description: Variables in memory after executing lego.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2238,6 +2236,8 @@ description: Variables in memory after executing lego.kcl
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -2684,10 +2684,8 @@ description: Variables in memory after executing lego.kcl
                           }
                         ],
                         "on": {
-                          "type": "plane",
-                          "id": "[uuid]",
                           "artifactId": "[uuid]",
-                          "value": "XY",
+                          "id": "[uuid]",
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -2696,6 +2694,8 @@ description: Variables in memory after executing lego.kcl
                               "type": "Mm"
                             }
                           },
+                          "type": "plane",
+                          "value": "XY",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
@@ -3136,10 +3136,8 @@ description: Variables in memory after executing lego.kcl
                           }
                         ],
                         "on": {
-                          "type": "plane",
-                          "id": "[uuid]",
                           "artifactId": "[uuid]",
-                          "value": "XY",
+                          "id": "[uuid]",
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -3148,6 +3146,8 @@ description: Variables in memory after executing lego.kcl
                               "type": "Mm"
                             }
                           },
+                          "type": "plane",
+                          "value": "XY",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,

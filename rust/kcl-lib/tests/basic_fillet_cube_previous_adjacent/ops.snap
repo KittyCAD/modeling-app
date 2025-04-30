@@ -7,8 +7,8 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }

@@ -22,9 +22,9 @@ description: Variables in memory after executing angled_line.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 135,
-            "end": 141,
-            "start": 135,
+            "commentStart": 133,
+            "end": 139,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -92,9 +92,9 @@ description: Variables in memory after executing angled_line.kcl
               15.04
             ],
             "tag": {
-              "commentStart": 135,
-              "end": 141,
-              "start": 135,
+              "commentStart": 133,
+              "end": 139,
+              "start": 133,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -185,10 +185,8 @@ description: Variables in memory after executing angled_line.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -197,6 +195,8 @@ description: Variables in memory after executing angled_line.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,

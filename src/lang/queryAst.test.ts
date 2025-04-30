@@ -44,7 +44,7 @@ baseThickHalf = baseThick / 2
 halfArmAngle = armAngle / 2
 
 arrExpShouldNotBeIncluded = [1, 2, 3]
-objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+objExpShouldNotBeIncluded = { a = 1, b = 2, c = 3 }
 
 part001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -651,10 +651,10 @@ sketch001 = startSketchOn(XZ)
   |> line(end = [-3.86, -2.73])
   |> line(end = [-17.67, 0.85])
   |> close()
-bing = { yo: 55 }
+bing = { yo = 55 }
 myNestedVar = [
   {
-  prop:   line(end = [bing.yo, 21], tag = sketch001)
+  prop =   line(end = [bing.yo, 21], tag = sketch001)
 }
 ]
   `

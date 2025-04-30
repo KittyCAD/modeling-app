@@ -40,7 +40,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::atan",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -51,7 +51,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::atan",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -62,7 +62,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "math::atan",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -73,7 +73,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "cos",
+      "name": "sqrt",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -84,7 +84,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "sqrt",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -95,7 +95,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "sqrt",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -106,7 +106,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "sqrt",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -117,7 +117,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -128,7 +128,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -139,7 +139,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -150,7 +150,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -161,7 +161,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "sin",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -172,7 +172,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -183,7 +183,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -194,18 +194,7 @@ description: Operations executed food-service-spatula.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "units::toRadians",
-      "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
-    },
-    "sourceRange": []
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "units::toRadians",
+      "name": "math::sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -830,9 +819,6 @@ description: Operations executed food-service-spatula.kcl
       },
       "sourceRange": []
     }
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

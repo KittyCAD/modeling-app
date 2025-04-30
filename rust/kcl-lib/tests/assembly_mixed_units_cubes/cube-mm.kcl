@@ -1,6 +1,6 @@
 @settings(defaultLengthUnit = mm)
 
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
 cubeMm = startProfile(sketch001, at = [10, 10])
   |> xLine(length = 5)
   |> yLine(length = -5)

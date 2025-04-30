@@ -265,7 +265,7 @@ pub struct Wall {
     /// This is for the sketch-on-face plane, not for the wall itself.  Traverse
     /// to the extrude and/or segment to get the wall's code_ref.
     pub face_code_ref: CodeRef,
-    /// The command ID that got the data for this wall.
+    /// The command ID that got the data for this wall. Used for stable sorting.
     pub cmd_id: uuid::Uuid,
 }
 
@@ -283,6 +283,8 @@ pub struct Cap {
     /// This is for the sketch-on-face plane, not for the cap itself.  Traverse
     /// to the extrude and/or segment to get the cap's code_ref.
     pub face_code_ref: CodeRef,
+    /// The command ID that got the data for this cap. Used for stable sorting.
+    pub cmd_id: uuid::Uuid,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Ord, PartialOrd, Eq, ts_rs::TS)]
@@ -489,6 +491,9 @@ impl PartialOrd for Artifact {
             (Artifact::Cap(a), Artifact::Cap(b)) => {
                 if a.sub_type != b.sub_type {
                     return Some(a.sub_type.cmp(&b.sub_type));
+                }
+                if a.cmd_id != b.cmd_id {
+                    return Some(a.cmd_id.cmp(&b.cmd_id));
                 }
                 if a.sweep_id != b.sweep_id {
                     return Some(a.sweep_id.cmp(&b.sweep_id));
@@ -874,6 +879,7 @@ fn artifacts_to_update(
                         sweep_id: cap.sweep_id,
                         path_ids: cap.path_ids.clone(),
                         face_code_ref: cap.face_code_ref.clone(),
+                        cmd_id: artifact_command.cmd_id,
                     })]);
                 }
                 Some(_) | None => {
@@ -935,6 +941,7 @@ fn artifacts_to_update(
                     sweep_id: cap.sweep_id,
                     path_ids: vec![id],
                     face_code_ref: cap.face_code_ref.clone(),
+                    cmd_id: artifact_command.cmd_id,
                 }));
             }
             return Ok(return_arr);
@@ -1141,6 +1148,7 @@ fn artifacts_to_update(
                             range: sketch_on_face_source_range,
                             path_to_node: Vec::new(),
                         },
+                        cmd_id: artifact_command.cmd_id,
                     }));
                     let Some(Artifact::Sweep(sweep)) = artifacts.get(&path_sweep_id) else {
                         continue;

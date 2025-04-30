@@ -7,9 +7,13 @@ description: Variables in memory after executing loop_tag.kcl
     "type": "Number",
     "value": 7.2,
     "ty": {
-      "type": "Known",
-      "type": "Angle",
-      "type": "Degrees"
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
     }
   },
   "calculatePoint": {
@@ -31,9 +35,9 @@ description: Variables in memory after executing loop_tag.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -56,9 +60,9 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -81,9 +85,9 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -106,9 +110,9 @@ description: Variables in memory after executing loop_tag.kcl
             7.4215
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -131,9 +135,9 @@ description: Variables in memory after executing loop_tag.kcl
             12.239
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -156,9 +160,9 @@ description: Variables in memory after executing loop_tag.kcl
             18.1169
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -181,9 +185,9 @@ description: Variables in memory after executing loop_tag.kcl
             24.9623
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -206,9 +210,9 @@ description: Variables in memory after executing loop_tag.kcl
             32.6675
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -231,9 +235,9 @@ description: Variables in memory after executing loop_tag.kcl
             41.1107
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -256,9 +260,9 @@ description: Variables in memory after executing loop_tag.kcl
             50.159
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -281,9 +285,9 @@ description: Variables in memory after executing loop_tag.kcl
             59.6696
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -306,9 +310,9 @@ description: Variables in memory after executing loop_tag.kcl
             69.4925
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -331,9 +335,9 @@ description: Variables in memory after executing loop_tag.kcl
             79.4727
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -356,9 +360,9 @@ description: Variables in memory after executing loop_tag.kcl
             89.453
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -381,9 +385,9 @@ description: Variables in memory after executing loop_tag.kcl
             99.2759
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -406,9 +410,9 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -431,9 +435,9 @@ description: Variables in memory after executing loop_tag.kcl
             117.8347
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -456,9 +460,9 @@ description: Variables in memory after executing loop_tag.kcl
             126.278
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -481,9 +485,9 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -506,9 +510,9 @@ description: Variables in memory after executing loop_tag.kcl
             140.8286
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -531,9 +535,9 @@ description: Variables in memory after executing loop_tag.kcl
             146.7064
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -556,9 +560,9 @@ description: Variables in memory after executing loop_tag.kcl
             151.524
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -581,9 +585,9 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -606,9 +610,9 @@ description: Variables in memory after executing loop_tag.kcl
             157.6921
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -631,614 +635,614 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -0.0,
-            158.9454
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.0,
-            158.9454
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -9.9211,
-            157.6921
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -9.9211,
-            157.6921
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -19.607,
-            155.2052
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.607,
-            155.2052
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -28.9047,
-            151.524
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -28.9047,
-            151.524
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -37.6678,
-            146.7064
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -37.6678,
-            146.7064
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -45.758,
-            140.8286
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -45.758,
-            140.8286
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -53.0477,
-            133.9831
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -53.0477,
-            133.9831
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -59.4219,
-            126.278
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -59.4219,
-            126.278
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -64.7802,
-            117.8347
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -64.7802,
-            117.8347
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -69.038,
-            108.7864
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -69.038,
-            108.7864
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -72.1281,
-            99.2759
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -72.1281,
-            99.2759
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.002,
-            89.453
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.002,
-            89.453
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.6299,
-            79.4727
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.6299,
-            79.4727
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.002,
-            69.4925
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.002,
-            69.4925
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -72.1281,
-            59.6696
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -72.1281,
-            59.6696
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -69.038,
-            50.159
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -69.038,
-            50.159
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -64.7802,
-            41.1107
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -64.7802,
-            41.1107
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -59.4219,
-            32.6675
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -59.4219,
-            32.6675
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -53.0477,
-            24.9623
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -53.0477,
-            24.9623
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -45.758,
-            18.1169
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -45.758,
-            18.1169
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -37.6678,
-            12.239
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -37.6678,
-            12.239
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -28.9047,
-            7.4215
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -28.9047,
-            7.4215
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -19.607,
-            3.7402
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.607,
-            3.7402
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -9.9211,
-            1.2533
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -9.9211,
-            1.2533
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
           "to": [
             0.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
             0.0
           ],
           "type": "ToPoint",
@@ -1252,7 +1256,7 @@ description: Variables in memory after executing loop_tag.kcl
             "sourceRange": []
           },
           "from": [
-            0.0,
+            -0.0,
             0.0
           ],
           "tag": null,
@@ -1267,10 +1271,8 @@ description: Variables in memory after executing loop_tag.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1279,6 +1281,8 @@ description: Variables in memory after executing loop_tag.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1339,9 +1343,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1352,9 +1356,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1365,9 +1369,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1378,9 +1382,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1391,9 +1395,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1404,9 +1408,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1417,9 +1421,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1430,9 +1434,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1443,9 +1447,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1456,9 +1460,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1469,9 +1473,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1482,9 +1486,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1495,9 +1499,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1508,9 +1512,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1521,9 +1525,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1534,9 +1538,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1547,9 +1551,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1560,9 +1564,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1573,9 +1577,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1586,9 +1590,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1599,9 +1603,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1612,9 +1616,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1625,9 +1629,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1638,9 +1642,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1651,9 +1655,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1664,9 +1668,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1677,9 +1681,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1690,9 +1694,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1703,9 +1707,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1716,9 +1720,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1729,9 +1733,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1742,9 +1746,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1755,9 +1759,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1768,9 +1772,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1781,9 +1785,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1794,9 +1798,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1807,9 +1811,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1820,9 +1824,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1833,9 +1837,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1846,9 +1850,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1859,9 +1863,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1872,9 +1876,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1885,9 +1889,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1898,9 +1902,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1911,9 +1915,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1924,9 +1928,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1937,9 +1941,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1950,9 +1954,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1963,9 +1967,9 @@ description: Variables in memory after executing loop_tag.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -1993,9 +1997,9 @@ description: Variables in memory after executing loop_tag.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2018,9 +2022,9 @@ description: Variables in memory after executing loop_tag.kcl
               1.2533
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2043,9 +2047,9 @@ description: Variables in memory after executing loop_tag.kcl
               3.7402
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2068,9 +2072,9 @@ description: Variables in memory after executing loop_tag.kcl
               7.4215
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2093,9 +2097,9 @@ description: Variables in memory after executing loop_tag.kcl
               12.239
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2118,9 +2122,9 @@ description: Variables in memory after executing loop_tag.kcl
               18.1169
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2143,9 +2147,9 @@ description: Variables in memory after executing loop_tag.kcl
               24.9623
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2168,9 +2172,9 @@ description: Variables in memory after executing loop_tag.kcl
               32.6675
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2193,9 +2197,9 @@ description: Variables in memory after executing loop_tag.kcl
               41.1107
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2218,9 +2222,9 @@ description: Variables in memory after executing loop_tag.kcl
               50.159
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2243,9 +2247,9 @@ description: Variables in memory after executing loop_tag.kcl
               59.6696
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2268,9 +2272,9 @@ description: Variables in memory after executing loop_tag.kcl
               69.4925
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2293,9 +2297,9 @@ description: Variables in memory after executing loop_tag.kcl
               79.4727
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2318,9 +2322,9 @@ description: Variables in memory after executing loop_tag.kcl
               89.453
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2343,9 +2347,9 @@ description: Variables in memory after executing loop_tag.kcl
               99.2759
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2368,9 +2372,9 @@ description: Variables in memory after executing loop_tag.kcl
               108.7864
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2393,9 +2397,9 @@ description: Variables in memory after executing loop_tag.kcl
               117.8347
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2418,9 +2422,9 @@ description: Variables in memory after executing loop_tag.kcl
               126.278
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2443,9 +2447,9 @@ description: Variables in memory after executing loop_tag.kcl
               133.9831
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2468,9 +2472,9 @@ description: Variables in memory after executing loop_tag.kcl
               140.8286
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2493,9 +2497,9 @@ description: Variables in memory after executing loop_tag.kcl
               146.7064
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2518,9 +2522,9 @@ description: Variables in memory after executing loop_tag.kcl
               151.524
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2543,9 +2547,9 @@ description: Variables in memory after executing loop_tag.kcl
               155.2052
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2568,9 +2572,9 @@ description: Variables in memory after executing loop_tag.kcl
               157.6921
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
@@ -2593,614 +2597,614 @@ description: Variables in memory after executing loop_tag.kcl
               158.9454
             ],
             "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -0.0,
-              158.9454
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -0.0,
-              158.9454
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -9.9211,
-              157.6921
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -9.9211,
-              157.6921
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -19.607,
-              155.2052
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -19.607,
-              155.2052
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -28.9047,
-              151.524
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -28.9047,
-              151.524
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -37.6678,
-              146.7064
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -37.6678,
-              146.7064
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -45.758,
-              140.8286
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -45.758,
-              140.8286
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -53.0477,
-              133.9831
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -53.0477,
-              133.9831
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -59.4219,
-              126.278
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -59.4219,
-              126.278
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -64.7802,
-              117.8347
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -64.7802,
-              117.8347
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -69.038,
-              108.7864
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -69.038,
-              108.7864
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -72.1281,
-              99.2759
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -72.1281,
-              99.2759
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -74.002,
-              89.453
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -74.002,
-              89.453
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -74.6299,
-              79.4727
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -74.6299,
-              79.4727
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -74.002,
-              69.4925
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -74.002,
-              69.4925
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -72.1281,
-              59.6696
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -72.1281,
-              59.6696
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -69.038,
-              50.159
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -69.038,
-              50.159
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -64.7802,
-              41.1107
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -64.7802,
-              41.1107
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -59.4219,
-              32.6675
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -59.4219,
-              32.6675
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -53.0477,
-              24.9623
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -53.0477,
-              24.9623
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -45.758,
-              18.1169
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -45.758,
-              18.1169
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -37.6678,
-              12.239
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -37.6678,
-              12.239
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -28.9047,
-              7.4215
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -28.9047,
-              7.4215
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -19.607,
-              3.7402
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -19.607,
-              3.7402
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
-              "type": "TagDeclarator",
-              "value": "problematicTag"
-            },
-            "to": [
-              -9.9211,
-              1.2533
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Mm"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              -9.9211,
-              1.2533
-            ],
-            "tag": {
-              "commentStart": 985,
-              "end": 1000,
-              "start": 985,
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
               "type": "TagDeclarator",
               "value": "problematicTag"
             },
             "to": [
               0.0,
+              158.9454
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              0.0,
+              158.9454
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -9.9211,
+              157.6921
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -9.9211,
+              157.6921
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -19.607,
+              155.2052
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -19.607,
+              155.2052
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -28.9047,
+              151.524
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -28.9047,
+              151.524
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -37.6678,
+              146.7064
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -37.6678,
+              146.7064
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -45.758,
+              140.8286
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -45.758,
+              140.8286
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -53.0477,
+              133.9831
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -53.0477,
+              133.9831
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -59.4219,
+              126.278
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -59.4219,
+              126.278
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -64.7802,
+              117.8347
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -64.7802,
+              117.8347
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -69.038,
+              108.7864
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -69.038,
+              108.7864
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -72.1281,
+              99.2759
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -72.1281,
+              99.2759
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.002,
+              89.453
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.002,
+              89.453
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.6299,
+              79.4727
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.6299,
+              79.4727
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -74.002,
+              69.4925
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -74.002,
+              69.4925
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -72.1281,
+              59.6696
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -72.1281,
+              59.6696
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -69.038,
+              50.159
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -69.038,
+              50.159
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -64.7802,
+              41.1107
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -64.7802,
+              41.1107
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -59.4219,
+              32.6675
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -59.4219,
+              32.6675
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -53.0477,
+              24.9623
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -53.0477,
+              24.9623
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -45.758,
+              18.1169
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -45.758,
+              18.1169
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -37.6678,
+              12.239
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -37.6678,
+              12.239
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -28.9047,
+              7.4215
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -28.9047,
+              7.4215
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -19.607,
+              3.7402
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -19.607,
+              3.7402
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -9.9211,
+              1.2533
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              -9.9211,
+              1.2533
+            ],
+            "tag": {
+              "commentStart": 982,
+              "end": 997,
+              "start": 982,
+              "type": "TagDeclarator",
+              "value": "problematicTag"
+            },
+            "to": [
+              -0.0,
               0.0
             ],
             "type": "ToPoint",
@@ -3214,7 +3218,7 @@ description: Variables in memory after executing loop_tag.kcl
               "sourceRange": []
             },
             "from": [
-              0.0,
+              -0.0,
               0.0
             ],
             "tag": null,
@@ -3229,10 +3233,8 @@ description: Variables in memory after executing loop_tag.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3241,6 +3243,8 @@ description: Variables in memory after executing loop_tag.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -3313,9 +3317,9 @@ description: Variables in memory after executing loop_tag.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3338,9 +3342,9 @@ description: Variables in memory after executing loop_tag.kcl
             1.2533
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3363,9 +3367,9 @@ description: Variables in memory after executing loop_tag.kcl
             3.7402
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3388,9 +3392,9 @@ description: Variables in memory after executing loop_tag.kcl
             7.4215
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3413,9 +3417,9 @@ description: Variables in memory after executing loop_tag.kcl
             12.239
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3438,9 +3442,9 @@ description: Variables in memory after executing loop_tag.kcl
             18.1169
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3463,9 +3467,9 @@ description: Variables in memory after executing loop_tag.kcl
             24.9623
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3488,9 +3492,9 @@ description: Variables in memory after executing loop_tag.kcl
             32.6675
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3513,9 +3517,9 @@ description: Variables in memory after executing loop_tag.kcl
             41.1107
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3538,9 +3542,9 @@ description: Variables in memory after executing loop_tag.kcl
             50.159
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3563,9 +3567,9 @@ description: Variables in memory after executing loop_tag.kcl
             59.6696
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3588,9 +3592,9 @@ description: Variables in memory after executing loop_tag.kcl
             69.4925
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3613,9 +3617,9 @@ description: Variables in memory after executing loop_tag.kcl
             79.4727
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3638,9 +3642,9 @@ description: Variables in memory after executing loop_tag.kcl
             89.453
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3663,9 +3667,9 @@ description: Variables in memory after executing loop_tag.kcl
             99.2759
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3688,9 +3692,9 @@ description: Variables in memory after executing loop_tag.kcl
             108.7864
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3713,9 +3717,9 @@ description: Variables in memory after executing loop_tag.kcl
             117.8347
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3738,9 +3742,9 @@ description: Variables in memory after executing loop_tag.kcl
             126.278
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3763,9 +3767,9 @@ description: Variables in memory after executing loop_tag.kcl
             133.9831
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3788,9 +3792,9 @@ description: Variables in memory after executing loop_tag.kcl
             140.8286
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3813,9 +3817,9 @@ description: Variables in memory after executing loop_tag.kcl
             146.7064
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3838,9 +3842,9 @@ description: Variables in memory after executing loop_tag.kcl
             151.524
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3863,9 +3867,9 @@ description: Variables in memory after executing loop_tag.kcl
             155.2052
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3888,9 +3892,9 @@ description: Variables in memory after executing loop_tag.kcl
             157.6921
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
@@ -3913,614 +3917,614 @@ description: Variables in memory after executing loop_tag.kcl
             158.9454
           ],
           "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -0.0,
-            158.9454
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -0.0,
-            158.9454
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -9.9211,
-            157.6921
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -9.9211,
-            157.6921
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -19.607,
-            155.2052
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.607,
-            155.2052
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -28.9047,
-            151.524
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -28.9047,
-            151.524
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -37.6678,
-            146.7064
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -37.6678,
-            146.7064
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -45.758,
-            140.8286
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -45.758,
-            140.8286
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -53.0477,
-            133.9831
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -53.0477,
-            133.9831
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -59.4219,
-            126.278
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -59.4219,
-            126.278
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -64.7802,
-            117.8347
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -64.7802,
-            117.8347
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -69.038,
-            108.7864
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -69.038,
-            108.7864
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -72.1281,
-            99.2759
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -72.1281,
-            99.2759
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.002,
-            89.453
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.002,
-            89.453
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.6299,
-            79.4727
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.6299,
-            79.4727
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -74.002,
-            69.4925
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -74.002,
-            69.4925
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -72.1281,
-            59.6696
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -72.1281,
-            59.6696
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -69.038,
-            50.159
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -69.038,
-            50.159
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -64.7802,
-            41.1107
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -64.7802,
-            41.1107
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -59.4219,
-            32.6675
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -59.4219,
-            32.6675
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -53.0477,
-            24.9623
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -53.0477,
-            24.9623
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -45.758,
-            18.1169
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -45.758,
-            18.1169
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -37.6678,
-            12.239
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -37.6678,
-            12.239
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -28.9047,
-            7.4215
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -28.9047,
-            7.4215
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -19.607,
-            3.7402
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -19.607,
-            3.7402
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
-            "type": "TagDeclarator",
-            "value": "problematicTag"
-          },
-          "to": [
-            -9.9211,
-            1.2533
-          ],
-          "type": "ToPoint",
-          "units": {
-            "type": "Mm"
-          }
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            -9.9211,
-            1.2533
-          ],
-          "tag": {
-            "commentStart": 985,
-            "end": 1000,
-            "start": 985,
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
             "type": "TagDeclarator",
             "value": "problematicTag"
           },
           "to": [
             0.0,
+            158.9454
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            0.0,
+            158.9454
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            157.6921
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            157.6921
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            155.2052
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            155.2052
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            151.524
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            151.524
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            146.7064
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            146.7064
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            140.8286
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            140.8286
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            133.9831
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            133.9831
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            126.278
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            126.278
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            117.8347
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            117.8347
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            108.7864
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            108.7864
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            99.2759
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            99.2759
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            89.453
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            89.453
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.6299,
+            79.4727
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.6299,
+            79.4727
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -74.002,
+            69.4925
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -74.002,
+            69.4925
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -72.1281,
+            59.6696
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -72.1281,
+            59.6696
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -69.038,
+            50.159
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -69.038,
+            50.159
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -64.7802,
+            41.1107
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -64.7802,
+            41.1107
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -59.4219,
+            32.6675
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -59.4219,
+            32.6675
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -53.0477,
+            24.9623
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -53.0477,
+            24.9623
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -45.758,
+            18.1169
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -45.758,
+            18.1169
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -37.6678,
+            12.239
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -37.6678,
+            12.239
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -28.9047,
+            7.4215
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -28.9047,
+            7.4215
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -19.607,
+            3.7402
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -19.607,
+            3.7402
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -9.9211,
+            1.2533
+          ],
+          "type": "ToPoint",
+          "units": {
+            "type": "Mm"
+          }
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            -9.9211,
+            1.2533
+          ],
+          "tag": {
+            "commentStart": 982,
+            "end": 997,
+            "start": 982,
+            "type": "TagDeclarator",
+            "value": "problematicTag"
+          },
+          "to": [
+            -0.0,
             0.0
           ],
           "type": "ToPoint",
@@ -4530,10 +4534,8 @@ description: Variables in memory after executing loop_tag.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4542,6 +4544,8 @@ description: Variables in memory after executing loop_tag.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -4610,10 +4614,8 @@ description: Variables in memory after executing loop_tag.kcl
       "id": "[uuid]",
       "paths": [],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -4622,6 +4624,8 @@ description: Variables in memory after executing loop_tag.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

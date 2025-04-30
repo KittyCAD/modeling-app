@@ -11,14 +11,18 @@ plateHeight = 0.125
 bendRadius = 3
 
 // Create a function to draw each primary tube with specified lengths and angles
-fn primaryTube(n, angle001: number(deg), length001, length002, length003) {
+fn primaryTube(n, angle001, length001, length002, length003) {
   // Create an index for the function
   pos001 = n * 2
 
   // Define a plane for each sweep path defined by an angle
   sweepPlane = {
     origin = [pos001, 0.0, 0],
-    xAxis = [sin(-angle001), cos(-angle001), 0.0],
+    xAxis = [
+      math::sin(-angle001),
+      math::cos(-angle001),
+      0.0
+    ],
     yAxis = [0.0, 0.0, 1.0],
     zAxis = [1.0, 0.0, 0.0]
   }

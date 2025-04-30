@@ -47,8 +47,8 @@ impl CollectionVisitor {
                                 ImportSelector::None { .. } => {
                                     self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
                                 }
-                                // Only supports glob or whole-module imports for now.
-                                _ => unimplemented!(),
+                                // Only supports glob or whole-module imports for now (make sure the module is re-exported as well as some of the names in it).
+                                _ => {}
                             }
                         }
                         p => return Err(format!("Unexpected import: `{p}`")),

@@ -6,9 +6,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
   "offsetPlane001": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -17,6 +16,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -38,9 +38,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
   "offsetPlane002": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 50.0,
@@ -49,6 +48,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -70,9 +70,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
   "offsetPlane003": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 10.0,
         "y": 0.0,
@@ -81,6 +80,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
@@ -126,10 +126,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -138,6 +136,8 @@ description: Variables in memory after executing artifact_graph_example_code_off
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,

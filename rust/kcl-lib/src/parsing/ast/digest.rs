@@ -527,13 +527,13 @@ impl ElseIf {
 mod test {
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_digest() {
-        let prog1_string = r#"startSketchOn('XY')
+        let prog1_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line([5, 5], %)
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
-        let prog2_string = r#"startSketchOn('XY')
+        let prog2_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 2])
     |> line([5, 5], %)
 "#;
@@ -541,7 +541,7 @@ mod test {
 
         assert!(prog1_digest != prog2_digest);
 
-        let prog3_string = r#"startSketchOn('XY')
+        let prog3_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> line([5, 5], %)
 "#;
@@ -554,12 +554,12 @@ mod test {
     async fn test_annotations_digest() {
         // Settings annotations should be included in the digest.
         let prog1_string = r#"@settings(defaultLengthUnit = in)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"@settings(defaultLengthUnit = mm)
-startSketchOn('XY')
+startSketchOn(XY)
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
 
