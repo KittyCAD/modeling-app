@@ -263,7 +263,7 @@ test.describe(`Testing gizmo, fixture-based`, () => {
           |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 77.9)
           |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
           |> close()
-        const sketch001 = startSketchOn(XZ)
+        sketch001 = startSketchOn(XZ)
           |> circle(center = [818.33, 168.1], radius = 182.8)
           |> extrude(length = 50)
       `
