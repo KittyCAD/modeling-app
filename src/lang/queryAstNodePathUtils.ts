@@ -156,19 +156,6 @@ function moreNodePathFromSourceRange(
       }
     }
   }
-  if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declaration = _node.declaration
-
-    if (declaration.start <= start && declaration.end >= end) {
-      const init = declaration.init
-      if (init.start <= start && init.end >= end) {
-        path.push(['declaration', 'VariableDeclaration'])
-        path.push(['init', ''])
-        return moreNodePathFromSourceRange(init, sourceRange, path)
-      }
-    }
-    return path
-  }
   if (_node.type === 'UnaryExpression' && isInRange) {
     const { argument } = _node
     if (argument.start <= start && argument.end >= end) {
