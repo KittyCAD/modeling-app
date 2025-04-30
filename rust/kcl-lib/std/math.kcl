@@ -47,14 +47,14 @@ export E = 2.71828182845904523536028747135266250_
 /// ```
 export TAU = 6.28318530717958647692528676655900577_
 
-/// Compute the cosine of a number (in radians).
+/// Compute the cosine of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 30,
-///     length = 3 / cos(30deg),
+///     length = 3 / math::cos(30deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -64,14 +64,14 @@ export TAU = 6.28318530717958647692528676655900577_
 @(impl = std_rust)
 export fn cos(@num: number(Angle)): number(_) {}
 
-/// Compute the sine of a number (in radians).
+/// Compute the sine of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 15 / sin(135deg),
+///     length = 15 / math::sin(135deg),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -81,14 +81,14 @@ export fn cos(@num: number(Angle)): number(_) {}
 @(impl = std_rust)
 export fn sin(@num: number(Angle)): number(_) {}
 
-/// Compute the tangent of a number (in radians).
+/// Compute the tangent of a number.
 ///
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 50,
-///     length = 50 * tan((1/2): number(rad)),
+///     length = 50 * math::tan((1/2): number(rad)),
 ///   )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close()
@@ -104,7 +104,7 @@ export fn tan(@num: number(Angle)): number(_) {}
 /// ```
 /// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
-///   |> line(end = polar(angle = 30, length = 5), tag = $thing)
+///   |> line(end = math::polar(angle = 30, length = 5), tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
 ///   |> line(end = [-20, 10])

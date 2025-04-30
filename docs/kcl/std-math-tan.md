@@ -1,10 +1,10 @@
 ---
 title: "std::math::tan"
-excerpt: "Compute the tangent of a number (in radians)."
+excerpt: "Compute the tangent of a number."
 layout: manual
 ---
 
-Compute the tangent of a number (in radians).
+Compute the tangent of a number.
 
 
 
@@ -31,7 +31,7 @@ exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(
     angle = 50,
-    length = 50 * tan((1/2): number(rad)),
+    length = 50 * math::tan((1/2): number(rad)),
   )
   |> yLine(endAbsolute = 0)
   |> close()

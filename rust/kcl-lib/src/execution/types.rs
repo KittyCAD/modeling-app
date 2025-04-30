@@ -2133,19 +2133,19 @@ b = 180 / PI * a + 360
     #[tokio::test(flavor = "multi_thread")]
     async fn cos_coercions() {
         let program = r#"
-a = cos(units::toRadians(30))
+a = math::cos(units::toRadians(30))
 b = 3 / a
-c = cos(30deg)
-d = cos(30)
+c = math::cos(30deg)
+d = math::cos(30)
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        assert_eq!(result.exec_state.errors().len(), 1);
+        assert!(result.exec_state.errors().is_empty());
 
         assert_value_and_type("a", &result, 1.0, NumericType::count());
         assert_value_and_type("b", &result, 3.0, NumericType::default());
         assert_value_and_type("c", &result, 1.0, NumericType::count());
-        assert_value_and_type("d", &result, 0.0, NumericType::count());
+        assert_value_and_type("d", &result, 1.0, NumericType::count());
     }
 
     #[tokio::test(flavor = "multi_thread")]
