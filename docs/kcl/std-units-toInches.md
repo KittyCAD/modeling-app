@@ -8,8 +8,8 @@ Convert a number to inches from its current units.
 
 
 
-```js
-toInches(@num: number(in)): number(in)
+```kcl
+units::toInches(@num: [number](/docs/kcl/types/number)(in)): [number](/docs/kcl/types/number)(in)
 ```
 
 

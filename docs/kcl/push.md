@@ -8,11 +8,11 @@ Append an element to the end of an array.
 
 Returns a new array with the element appended.
 
-```js
+```kcl
 push(
-  array: [KclValue],
-  item: KclValue,
-): KclValue
+  array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue)),
+  item: [KclValue](/docs/kcl/types/KclValue),
+): [KclValue](/docs/kcl/types/KclValue)
 ```
 
 
@@ -30,7 +30,7 @@ push(
 
 ### Examples
 
-```js
+```kcl
 arr = [1, 2, 3]
 new_arr = push(arr, item = 4)
 assert(

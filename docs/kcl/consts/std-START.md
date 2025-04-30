@@ -8,7 +8,7 @@ Identifies the starting face of an extrusion. I.e., the face which is extruded.
 
 
 
-```js
+```kcl
 std::START: string = 'start'
 ```
 

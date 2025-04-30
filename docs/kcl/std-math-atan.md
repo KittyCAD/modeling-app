@@ -8,8 +8,8 @@ Compute the arctangent of a number.
 
 Consider using `atan2()` instead for the true inverse of tangent.
 
-```js
-atan(@num: number(_)): number(rad)
+```kcl
+atan(@num: [number](/docs/kcl/types/number)(_)): [number](/docs/kcl/types/number)(rad)
 ```
 
 
@@ -26,7 +26,7 @@ atan(@num: number(_)): number(rad)
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

@@ -8,8 +8,8 @@ Compute the natural logarithm of the number.
 
 
 
-```js
-ln(@input: number): number
+```kcl
+ln(@input: [number](/docs/kcl/types/number)): [number](/docs/kcl/types/number)
 ```
 
 
@@ -26,7 +26,7 @@ ln(@input: number): number
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [ln(100), 15])

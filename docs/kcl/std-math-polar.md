@@ -9,11 +9,11 @@ layout: manual
 Convert polar/sphere (azimuth, elevation, distance) coordinates to
 cartesian (x/y/z grid) coordinates.
 
-```js
+```kcl
 polar(
-  angle: number(rad),
-  length: number(Length),
-): Point2d
+  angle: [number](/docs/kcl/types/number)(rad),
+  length: [number](/docs/kcl/types/number)(Length),
+): [Point2d](/docs/kcl/types/Point2d)
 ```
 
 
@@ -31,7 +31,7 @@ polar(
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = polar(angle = 30, length = 5), tag = $thing)

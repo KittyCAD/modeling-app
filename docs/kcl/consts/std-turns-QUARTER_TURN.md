@@ -8,7 +8,7 @@ layout: manual
 
 
 
-```js
+```kcl
 std::turns::QUARTER_TURN: number(deg) = 90deg
 ```
 

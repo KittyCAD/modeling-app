@@ -8,8 +8,8 @@ Convert a number to centimeters from its current units.
 
 
 
-```js
-toCentimeters(@num: number(cm)): number(cm)
+```kcl
+units::toCentimeters(@num: [number](/docs/kcl/types/number)(cm)): [number](/docs/kcl/types/number)(cm)
 ```
 
 
