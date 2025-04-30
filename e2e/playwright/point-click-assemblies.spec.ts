@@ -172,6 +172,202 @@ test.describe('Point-and-click assemblies tests', () => {
   )
 
   test(
+    `Can still translate, rotate, and delete inserted parts even with non standard code`,
+    { tag: ['@electron'] },
+    async ({
+      context,
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      cmdBar,
+      tronApp,
+    }) => {
+      if (!tronApp) {
+        fail()
+      }
+
+      page.on('console', console.log)
+
+      await test.step('Setup parts and expect empty assembly scene', async () => {
+        const projectName = 'assembly'
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, projectName)
+          await fsp.mkdir(projectDir, { recursive: true })
+          await Promise.all([
+            fsp.copyFile(
+              executorInputPath('cylinder.kcl'),
+              path.join(projectDir, 'cylinder.kcl')
+            ),
+            fsp.copyFile(
+              testsInputPath('cube.step'),
+              path.join(projectDir, 'cube.step')
+            ),
+            fsp.writeFile(
+              path.join(projectDir, 'main.kcl'),
+              `
+                import "cube.step" as cube
+                import "cylinder.kcl" as cylinder
+                cylinder
+                  |> translate(x = 1)
+                cube
+                  |> rotate(pitch = 2)
+                  |> translate(y = 2)
+                cylinder
+                  |> rotate(roll = 1)
+                cylinder
+                  |> translate(x = 0.1)
+              `
+            ),
+          ])
+        })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.openProject(projectName)
+        await scene.settled(cmdBar)
+        await toolbar.closePane('code')
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Set translate on cylinder', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cylinder', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-translate').click()
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('10')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            X: '0.1',
+            Y: '0',
+            Z: '10',
+          },
+          commandName: 'Translate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+            import "cube.step" as cube
+            import "cylinder.kcl" as cylinder
+            cylinder
+              |> translate(x = 1)
+            cube
+              |> rotate(pitch = 2)
+              |> translate(y = 2)
+            cylinder
+              |> rotate(roll = 1)
+            cylinder
+              |> translate(x = 0.1, y = 0, z = 10)
+          `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Set rotate on cylinder', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cylinder', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('100')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '1',
+            Pitch: '0',
+            Yaw: '100',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+            import "cube.step" as cube
+            import "cylinder.kcl" as cylinder
+            cylinder
+              |> translate(x = 1)
+            cube
+              |> rotate(pitch = 2)
+              |> translate(y = 2)
+            cylinder
+              |> rotate(roll = 1, pitch = 0, yaw = 100)
+            cylinder
+              |> translate(x = 0.1, y = 0, z = 10)
+          `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Set rotate on cube', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-set-rotate').click()
+        await cmdBar.progressCmdBar()
+        await page.keyboard.insertText('200')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Roll: '0',
+            Pitch: '2',
+            Yaw: '200',
+          },
+          commandName: 'Rotate',
+        })
+        await cmdBar.progressCmdBar()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+            import "cube.step" as cube
+            import "cylinder.kcl" as cylinder
+            cylinder
+              |> translate(x = 1)
+            cube
+              |> rotate(roll = 0, pitch = 2, yaw = 200)
+              |> translate(y = 2)
+            cylinder
+              |> rotate(roll = 1, pitch = 0, yaw = 100)
+            cylinder
+              |> translate(x = 0.1, y = 0, z = 10)
+          `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+
+      await test.step('Delete cylinder using the feature tree', async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation('cylinder', 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await toolbar.closePane('feature-tree')
+        await toolbar.openPane('code')
+        await editor.expectEditor.toContain(
+          `
+            import "cube.step" as cube
+            cube
+              |> rotate(roll = 0, pitch = 2, yaw = 200)
+              |> translate(y = 2)
+          `,
+          { shouldNormalise: true }
+        )
+        await toolbar.closePane('code')
+      })
+    }
+  )
+
+  test(
     `Insert the bracket part into an assembly and transform it`,
     { tag: ['@electron'] },
     async ({
