@@ -1,2 +1,2 @@
-let b = true
-let x = b["property"]
+b = true
+x = b["property"]

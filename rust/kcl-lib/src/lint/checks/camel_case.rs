@@ -84,34 +84,10 @@ mod tests {
 
     #[tokio::test]
     async fn z0001_const() {
-        assert_finding!(
-            lint_variables,
-            Z0001,
-            "const Thickness = 0.5",
-            "found 'Thickness'",
-            None
-        );
-        assert_finding!(
-            lint_variables,
-            Z0001,
-            "const THICKNESS = 0.5",
-            "found 'THICKNESS'",
-            None
-        );
-        assert_finding!(
-            lint_variables,
-            Z0001,
-            "const THICC_NES = 0.5",
-            "found 'THICC_NES'",
-            None
-        );
-        assert_finding!(
-            lint_variables,
-            Z0001,
-            "const thicc_nes = 0.5",
-            "found 'thicc_nes'",
-            None
-        );
+        assert_finding!(lint_variables, Z0001, "Thickness = 0.5", "found 'Thickness'", None);
+        assert_finding!(lint_variables, Z0001, "THICKNESS = 0.5", "found 'THICKNESS'", None);
+        assert_finding!(lint_variables, Z0001, "THICC_NES = 0.5", "found 'THICC_NES'", None);
+        assert_finding!(lint_variables, Z0001, "thicc_nes = 0.5", "found 'thicc_nes'", None);
     }
 
     test_finding!(
@@ -120,13 +96,13 @@ mod tests {
         Z0001,
         "\
 // Define constants
-const pipeLength = 40
-const pipeSmallDia = 10
-const pipeLargeDia = 20
-const thickness = 0.5
+pipeLength = 40
+pipeSmallDia = 10
+pipeLargeDia = 20
+thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const Part001 = startSketchOn(XY)
+Part001 = startSketchOn(XY)
   |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
@@ -152,13 +128,13 @@ const Part001 = startSketchOn(XY)
         Z0001,
         "\
 // Define constants
-const pipeLength = 40
-const pipeSmallDia = 10
-const pipeLargeDia = 20
-const thickness = 0.5
+pipeLength = 40
+pipeSmallDia = 10
+pipeLargeDia = 20
+thickness = 0.5
 
 // Create the sketch to be revolved around the y-axis. Use the small diameter, large diameter, length, and thickness to define the sketch.
-const part001 = startSketchOn(XY)
+part001 = startSketchOn(XY)
   |> startProfile(at = [pipeLargeDia - (thickness / 2), 38])
   |> line(end = [thickness, 0])
   |> line(end = [0, -1])
@@ -181,7 +157,7 @@ const part001 = startSketchOn(XY)
         lint_object_properties,
         Z0001,
         "\
-let circ = {angle_start = 0, angle_end = 360, radius = 5}
+circ = {angle_start = 0, angle_end = 360, radius = 5}
 ",
         "found 'angle_start'",
         None

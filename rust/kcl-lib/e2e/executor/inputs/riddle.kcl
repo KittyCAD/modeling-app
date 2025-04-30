@@ -1,12 +1,12 @@
-const ANSWER = 41803
+ANSWER = 41803
 
-fn m = (s) => {
+fn m(s) {
   return (ANSWER * s + 12345) % 214748
 }
-fn p = (xs, ys) => {
-  let ox = 35 - (m(xs) % 70)
-  let oy = 35 - (m(ys) % 70)
-  const r = startSketchOn(XZ)
+fn p(xs, ys) {
+  ox = 35 - (m(xs) % 70)
+  oy = 35 - (m(ys) % 70)
+  r = startSketchOn(XZ)
   |> startProfile(at = [ox, oy])
   |> line(end = [1, 0])
   |> line(end = [0, -1])

@@ -151,7 +151,7 @@ sketch001 = startSketchOn(XY)
     await page.keyboard.press('End')
     await page.keyboard.press('Enter')
     await page.keyboard.press('Enter')
-    await page.keyboard.type('const x = 1')
+    await page.keyboard.type('x = 1')
     await page.keyboard.press('Enter')
 
     await u.openDebugPanel()
@@ -828,7 +828,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     height = 0.500
     dia = 4
 
-    fn squareHole = (l, w) => {
+    fn squareHole(l, w) {
   squareHoleSketch = startSketchOn(XY)
   |> startProfile(at = [-width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, -length / 2])
@@ -870,7 +870,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn(XY)
-  |> circle(center: [0, 0], radius: dia/2)
+  |> circle(center = [0, 0], radius = dia/2)
     |> subtract2d(tool = squareHole(length, width, height))
     |> extrude(length = height)`)
 

@@ -635,8 +635,8 @@ part001 = startSketchOn(XY)
   |> line(end = [0.01, 0.94 + 0]) // partial
   |> xLine(length = 3.03) // partial
   |> angledLine({
-  angle: halfArmAngle,
-  length: 2.45,
+  angle = halfArmAngle,
+  length = 2.45,
 }, %, $seg01bing) // partial
   |> xLine(length = 4.4) // partial
   |> yLine(length = -1) // partial

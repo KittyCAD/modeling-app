@@ -56,7 +56,7 @@ case = startSketchOn(XY)
   )
 
 
-fn m25Screw = (x, y, height) => {
+fn m25Screw(x, y, height) {
   screw = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> circle(center= [x, y], radius=2.5)

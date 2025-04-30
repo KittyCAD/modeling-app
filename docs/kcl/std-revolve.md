@@ -189,7 +189,7 @@ part001 = revolve(
    sketch001,
    axis = {
      direction = [0.0, 1.0],
-     origin: [0.0, 0.0]
+     origin = [0.0, 0.0]
   }
 )
 ```
