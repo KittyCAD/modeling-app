@@ -7,7 +7,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -18,7 +18,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -29,7 +29,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -40,7 +40,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -51,7 +51,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -62,7 +62,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -73,7 +73,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -84,7 +84,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -95,7 +95,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -106,7 +106,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -117,7 +117,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -128,7 +128,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -139,7 +139,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -150,7 +150,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -161,7 +161,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -172,7 +172,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -183,7 +183,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -194,7 +194,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -205,7 +205,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -216,7 +216,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -227,7 +227,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -238,7 +238,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -249,7 +249,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -260,7 +260,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -271,7 +271,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -282,7 +282,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -293,7 +293,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -304,7 +304,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -315,7 +315,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -326,7 +326,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -337,7 +337,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -348,7 +348,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -359,7 +359,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -370,7 +370,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -381,7 +381,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -392,7 +392,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -403,7 +403,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -414,7 +414,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -425,7 +425,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -436,7 +436,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -447,7 +447,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -458,7 +458,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -469,7 +469,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -480,7 +480,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -491,7 +491,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -502,7 +502,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -513,7 +513,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -524,7 +524,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -535,7 +535,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -546,7 +546,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::cos",
+      "name": "cos",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -557,7 +557,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -568,7 +568,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -579,7 +579,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -590,7 +590,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -601,7 +601,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -612,7 +612,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -623,7 +623,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -634,7 +634,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -645,7 +645,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -656,7 +656,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -667,7 +667,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -678,7 +678,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -689,7 +689,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -700,7 +700,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -711,7 +711,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -722,7 +722,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -733,7 +733,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -744,7 +744,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -755,7 +755,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -766,7 +766,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -777,7 +777,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -788,7 +788,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -799,7 +799,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -810,7 +810,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -821,7 +821,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -832,7 +832,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -843,7 +843,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -854,7 +854,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -865,7 +865,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -876,7 +876,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -887,7 +887,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -898,7 +898,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -909,7 +909,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -920,7 +920,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -931,7 +931,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -942,7 +942,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -953,7 +953,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -964,7 +964,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -975,7 +975,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -986,7 +986,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -997,7 +997,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1008,7 +1008,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1019,7 +1019,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1030,7 +1030,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1041,7 +1041,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1052,7 +1052,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1063,7 +1063,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1074,7 +1074,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1085,7 +1085,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
@@ -1096,7 +1096,7 @@ description: Operations executed loop_tag.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
-      "name": "math::sin",
+      "name": "sin",
       "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}

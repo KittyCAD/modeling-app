@@ -8,8 +8,8 @@ import axisJ1, axisJ2, axisJ2ArmWidth, axisJ2ArmLength, axisJ2ArmThickness, plan
 // Create Body of J2 Robot Arm
 sketch011 = startSketchOn(plane003)
   |> startProfile(at = [
-       1.75 - (axisJ2ArmWidth / 2 * math::sin(axisJ2)),
-       8 + axisJ2ArmWidth / 2 * math::cos(axisJ2)
+       1.75 - (axisJ2ArmWidth / 2 * sin(axisJ2)),
+       8 + axisJ2ArmWidth / 2 * cos(axisJ2)
      ])
   |> arc(angleStart = 90 + axisJ2, angleEnd = 270 + axisJ2, radius = axisJ2ArmWidth / 2)
   |> angledLine(angle = axisJ2, length = axisJ2ArmLength)
@@ -26,8 +26,8 @@ extrude012 = extrude(sketch012, length = 0.15)
 sketch013 = startSketchOn(extrude011, face = START)
   |> circle(
        center = [
-         -1.75 - (axisJ2ArmLength * math::cos(axisJ2)),
-         8 + axisJ2ArmLength * math::sin(axisJ2)
+         -1.75 - (axisJ2ArmLength * cos(axisJ2)),
+         8 + axisJ2ArmLength * sin(axisJ2)
        ],
        radius = 1.9,
        tag = $referenceEdge5,
@@ -51,15 +51,15 @@ extrude014 = extrude(sketch014, length = 0.15)
 sketch015 = startSketchOn(extrude013, face = END)
   |> circle(
        center = [
-         -1.75 - ((axisJ2ArmLength - 1) * math::cos(axisJ2)),
-         8 + (axisJ2ArmLength - 1.5) * math::sin(axisJ2)
+         -1.75 - ((axisJ2ArmLength - 1) * cos(axisJ2)),
+         8 + (axisJ2ArmLength - 1.5) * sin(axisJ2)
        ],
        radius = 0.2,
      )
   |> patternCircular2d(
        center = [
-         -1.75 - (axisJ2ArmLength * math::cos(axisJ2)),
-         8 + axisJ2ArmLength * math::sin(axisJ2)
+         -1.75 - (axisJ2ArmLength * cos(axisJ2)),
+         8 + axisJ2ArmLength * sin(axisJ2)
        ],
        instances = 4,
        arcDegrees = 360,
@@ -71,8 +71,8 @@ extrude015 = extrude(sketch015, length = 0.15)
 sketch016 = startSketchOn(extrude011, face = END)
   |> circle(
        center = [
-         1.75 + axisJ2ArmLength * math::cos(axisJ2),
-         8 + axisJ2ArmLength * math::sin(axisJ2)
+         1.75 + axisJ2ArmLength * cos(axisJ2),
+         8 + axisJ2ArmLength * sin(axisJ2)
        ],
        radius = 0.3,
      )
