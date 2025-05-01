@@ -1,6 +1,6 @@
-<img src="public/zoo-logo.svg" style="filter: invert(1)" width="128">
+![Zoo Design Studio](/public/zma-logomark-outlined.png)
 
-# Design Studio
+# Zoo Design Studio
 
 [zoo.dev/modeling-app](https://zoo.dev/modeling-app)
 
