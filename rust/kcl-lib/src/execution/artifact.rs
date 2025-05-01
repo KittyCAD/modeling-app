@@ -780,6 +780,7 @@ fn flatten_modeling_command_responses(
             | OkWebSocketResponseData::Export { .. }
             | OkWebSocketResponseData::MetricsRequest { .. }
             | OkWebSocketResponseData::ModelingSessionData { .. }
+            | OkWebSocketResponseData::Debug { .. }
             | OkWebSocketResponseData::Pong { .. } => {}
         }
     }
