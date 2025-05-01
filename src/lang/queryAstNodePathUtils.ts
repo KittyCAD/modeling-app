@@ -60,7 +60,7 @@ function moreNodePathFromSourceRange(
       unlabeled.end >= end
     ) {
       path.push(['unlabeled', UNLABELED_ARG])
-      return path
+      return moreNodePathFromSourceRange(unlabeled, sourceRange, path)
     }
     if (args && args.length > 0) {
       for (let argIndex = 0; argIndex < args.length; argIndex++) {
