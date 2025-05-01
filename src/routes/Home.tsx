@@ -18,6 +18,7 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { BillingDialog } from '@src/components/BillingDialog'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -331,6 +332,9 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
+            <li className="contents">
+              <BillingDialog />
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"
