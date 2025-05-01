@@ -1408,7 +1408,7 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn thing(x) {
+fn thing(@x) {
   return -x
 }
 
@@ -1429,7 +1429,7 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn thing(x) {
+fn thing(@x) {
   return [0, -x]
 }
 
@@ -1577,7 +1577,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"fn box(arr) {
+        let ast = r#"fn box(@arr) {
  myBox =startSketchOn(XY)
     |> startProfile(at = arr[0])
     |> line(end = [0, arr[1]])

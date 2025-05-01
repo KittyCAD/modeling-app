@@ -124,7 +124,7 @@ fn get_offset(info: &PlaneInfo) -> Option<f64> {
 }
 
 pub fn start_sketch_on_check_specific_plane(node: Node) -> Result<Option<(SourceRange, PlaneName, f64)>> {
-    let Node::CallExpression(call) = node else {
+    let Node::CallExpressionKw(call) = node else {
         return Ok(None);
     };
 
@@ -132,19 +132,15 @@ pub fn start_sketch_on_check_specific_plane(node: Node) -> Result<Option<(Source
         return Ok(None);
     }
 
-    if call.arguments.len() != 1 {
+    let Some(ref unlabeled) = call.inner.unlabeled else {
         // we only look for single-argument object patterns, if there's more
         // than that we don't have a plane decl
         return Ok(None);
-    }
+    };
 
-    let call_source_range = SourceRange::new(
-        call.arguments[0].start(),
-        call.arguments[0].end(),
-        call.arguments[0].module_id(),
-    );
+    let call_source_range = SourceRange::new(unlabeled.start(), unlabeled.end(), unlabeled.module_id());
 
-    let Expr::ObjectExpression(arg) = &call.arguments[0] else {
+    let Expr::ObjectExpression(arg) = &unlabeled else {
         return Ok(None);
     };
 

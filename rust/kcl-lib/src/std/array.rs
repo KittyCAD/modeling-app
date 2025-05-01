@@ -110,7 +110,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
 /// // element of the `arr` parameter. The starting value is 0.
-/// fn sum(arr) { return reduce(arr, initial = 0, f = add) }
+/// fn sum(@arr) { return reduce(arr, initial = 0, f = add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
