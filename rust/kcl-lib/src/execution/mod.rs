@@ -1450,11 +1450,11 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn other_thing(y) {
+fn other_thing(@y) {
   return -y
 }
 
-fn thing(x) {
+fn thing(@x) {
   return other_thing(x)
 }
 
@@ -1490,7 +1490,7 @@ fnBox = box(3, 6, 10)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
-        let ast = r#"fn box(obj) {
+        let ast = r#"fn box(@obj) {
  myBox = startSketchOn(XY)
     |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
@@ -1783,7 +1783,7 @@ fn check(x) {
   assertIs(!x, error = "expected argument to be false")
   return true
 }
-check(false)
+check(x = false)
 "#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
@@ -2154,7 +2154,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn read_tag_version() {
-        let ast = r#"fn bar(t) {
+        let ast = r#"fn bar(@t) {
   return startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> angledLine(

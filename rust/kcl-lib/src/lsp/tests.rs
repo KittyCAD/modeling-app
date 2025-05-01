@@ -895,7 +895,7 @@ async fn test_kcl_lsp_on_hover() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -971,7 +971,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -3891,7 +3891,7 @@ async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -3967,7 +3967,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
