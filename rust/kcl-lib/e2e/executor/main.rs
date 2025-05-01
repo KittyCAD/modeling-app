@@ -197,11 +197,11 @@ fn box(sk1, sk2, scale, plane) {
   return boxsketch
 }
 
-box(0, 0, 5, XY)
-box(10, 23, 8, XZ)
-box(30, 43, 18, -XY)
-thing = box(-12, -15, 10, YZ)
-box(-20, -5, 10, XY)"#;
+box(sk1 = 0, sk2 = 0, scale = 5, plane = XY)
+box(sk1 = 10, sk2 = 23, scale = 8, plane = XZ)
+box(sk1 = 30, sk2 = 43, scale = 18, plane = -XY)
+thing = box(sk1 = -12, sk2 = -15, scale = 10, plane = YZ)
+box(sk1 = -20, sk2 = -5, scale = 10, plane = XY)"#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("different_planes_same_drawing", &result);
@@ -295,7 +295,7 @@ async fn optional_params() {
       return sg
   }
 
-thing = other_circle([2, 2], 20)
+thing = other_circle(pos = [2, 2], radius = 20)
 "#;
     let result = execute_and_snapshot(code, None).await.unwrap();
     assert_out("optional_params", &result);
@@ -303,7 +303,7 @@ thing = other_circle([2, 2], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_rounded_with_holes() {
-    let code = r#"fn tarc(to, sktch, tag?) {
+    let code = r#"fn tarc(@to, sktch, tag?) {
   return tangentialArc(sktch, endAbsolute = to, tag = tag)
 }
 
@@ -311,13 +311,13 @@ fn roundedRectangle(pos, w, l, cornerRadius) {
   rr = startSketchOn(XY)
     |> startProfile(at = [pos[0] - w/2, 0])
     |> line(endAbsolute = [pos[0] - w/2, pos[1] - l/2 + cornerRadius])
-    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], %, $arc0)
+    |> tarc([pos[0] - w/2 + cornerRadius, pos[1] - l/2], sktch=%, tag=$arc0)
     |> line(endAbsolute = [pos[0] + w/2 - cornerRadius, pos[1] - l/2])
-    |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], %)
+    |> tarc([pos[0] + w/2, pos[1] - l/2 + cornerRadius], sktch=%)
     |> line(endAbsolute = [pos[0] + w/2, pos[1] + l/2 - cornerRadius])
-    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], %, $arc2)
+    |> tarc([pos[0] + w/2 - cornerRadius, pos[1] + l/2], sktch=%, tag=$arc2)
     |> line(endAbsolute = [pos[0] - w/2 + cornerRadius, pos[1] + l/2])
-    |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], %)
+    |> tarc([pos[0] - w/2, pos[1] + l/2 - cornerRadius], sktch=%)
     |> close()
   return rr
 }
@@ -325,11 +325,11 @@ fn roundedRectangle(pos, w, l, cornerRadius) {
 holeRadius = 1
 holeIndex = 6
 
-part = roundedRectangle([0, 0], 20, 20, 4)
-  |> subtract2d(tool = circle(center = [-holeIndex, holeIndex], radius= holeRadius))
-  |> subtract2d(tool = circle(center = [holeIndex, holeIndex], radius= holeRadius))
-  |> subtract2d(tool = circle(center = [-holeIndex, -holeIndex], radius= holeRadius))
-  |> subtract2d(tool = circle(center = [holeIndex, -holeIndex], radius= holeRadius))
+part = roundedRectangle(pos=[0, 0], w=20, l=20, cornerRadius=4)
+  |> subtract2d(tool = circle(center = [-holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle(center = [-holeIndex, -holeIndex], radius = holeRadius))
+  |> subtract2d(tool = circle(center = [holeIndex, -holeIndex], radius = holeRadius))
   |> extrude(length = 2)
 "#;
 
@@ -581,7 +581,7 @@ async fn kcl_test_cube_mm() {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -603,7 +603,7 @@ fn cube(pos, scale) {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -625,7 +625,7 @@ fn cube(pos, scale) {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -647,7 +647,7 @@ fn cube(pos, scale) {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -669,7 +669,7 @@ fn cube(pos, scale) {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -691,7 +691,7 @@ fn cube(pos, scale) {
   return sg
 }
 
-myCube = cube([0,0], 10)
+myCube  = cube(pos = [0,0], scale = 10)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -709,7 +709,7 @@ async fn kcl_test_error_sketch_on_arc_face() {
 
   return sg
 }
-part001 = cube([0, 0], 20)
+part001  = cube(pos = [0, 0], scale = 20)
   |> close()
   |> extrude(length = 20)
 
@@ -745,7 +745,7 @@ async fn kcl_test_sketch_on_face_of_face() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close()
     |> extrude(length = 20)
 
@@ -805,7 +805,7 @@ async fn kcl_test_sketch_on_face_circle() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close()
     |> extrude(length = 20)
 
@@ -1151,7 +1151,7 @@ async fn kcl_test_plumbus_fillets() {
   return sg
 }
 
-fn pentagon(len) {
+fn pentagon(@len) {
   sg = startSketchOn(XY)
   |> startProfile(at = [-len / 2, -len / 2])
   |> angledLine(angle = 0, length = len, tag = $a)
@@ -1181,7 +1181,7 @@ fn pentagon(len) {
 p = pentagon(32)
   |> extrude(length = 10)
 
-circle0 = make_circle(p, p.sketch.tags.a, [0, 0], 2.5)
+circle0 = make_circle(ext=p, face=p.sketch.tags.a, pos=[0, 0], radius=2.5)
 plumbus0 = circle0
   |> extrude(length = 10)
   |> fillet(
@@ -1189,7 +1189,7 @@ plumbus0 = circle0
        tags = [circle0.tags.arc1, getOppositeEdge(circle0.tags.arc1)]
      )
 
-circle1 = make_circle(p, p.sketch.tags.b, [0, 0], 2.5)
+circle1 = make_circle(ext=p, face=p.sketch.tags.b, pos=[0, 0], radius=2.5)
 plumbus1 = circle1
    |> extrude(length = 10)
    |> fillet(
@@ -1231,7 +1231,7 @@ async fn kcl_test_member_expression_in_params() {
   return screw
 }
 
-capScrew([0, 0.5, 0], 50, 37.5, 50, 25)
+capScrew(originStart = [0, 0.5, 0], length=50, dia=37.5, capDia=50, capHeadLength=25)
 "#;
 
     let result = execute_and_snapshot(code, None).await.unwrap();
@@ -1327,13 +1327,13 @@ fn squareHole(l, w) {
 
 extrusion = startSketchOn(XY)
   |> circle(center = [0, 0], radius= dia/2 )
-  |> subtract2d(tool = squareHole(length, width, height))
+  |> subtract2d(tool = squareHole(l = length, w = width, h = height))
   |> extrude(length = height)
 "#;
 
     let result = execute_and_snapshot(code, None).await;
     assert!(result.is_err());
-    let expected_msg = "semantic: Expected 2 arguments, got 3";
+    let expected_msg = "semantic: `h` is not an argument of `squareHole`";
     let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
     assert_eq!(err, expected_msg);
 }
@@ -1531,7 +1531,7 @@ async fn kcl_test_linear_pattern3d_filleted_sketch() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
     |> fillet(
@@ -1562,7 +1562,7 @@ async fn kcl_test_circular_pattern3d_filleted_sketch() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
   |> fillet(
@@ -1589,7 +1589,7 @@ async fn kcl_test_circular_pattern3d_chamfered_sketch() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
     |> chamfer(
@@ -1615,7 +1615,7 @@ async fn kcl_test_tag_chamfer_with_more_than_one_edge_should_fail() {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001  = cube(pos = [0,0], scale = 20)
     |> close(tag = $line1)
     |> extrude(length = 20)
   |> chamfer(
@@ -1640,7 +1640,7 @@ part001 = cube([0,0], 20)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_duplicate_tags_should_error() {
-    let code = r#"fn triangle(len) {
+    let code = r#"fn triangle(@len) {
   return startSketchOn(XY)
   |> startProfile(at = [-len / 2, -len / 2])
   |> angledLine(angle = 0, length = len , tag = $a)
@@ -1926,7 +1926,7 @@ example = extrude(exampleSketch, length = 10)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site() {
-    let code = r#"fn someFunction(something) {
+    let code = r#"fn someFunction(@something) {
   startSketchOn(something)
 }
 
@@ -1937,14 +1937,14 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([45, 54, 0]), SourceRange([59, 82, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([46, 55, 0]), SourceRange([60, 83, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
     );
 }
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
-    let code = r#"fn someFunction(something) {
-    fn someNestedFunction(something2) {
+    let code = r#"fn someFunction(@something) {
+    fn someNestedFunction(@something2) {
         startSketchOn(something2)
     }
 
@@ -1958,7 +1958,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([91, 101, 0]), SourceRange([114, 143, 0]), SourceRange([147, 170, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([93, 103, 0]), SourceRange([116, 145, 0]), SourceRange([149, 172, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
     );
 }
 
