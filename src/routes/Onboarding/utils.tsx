@@ -286,7 +286,6 @@ export async function resetCodeAndAdvanceOnboarding({
   codeManager.updateCodeStateEditor(bracket)
   codeManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
-  // TODO: this is not navigating to the correct `/onboarding/blah` path yet
   navigate(
     makeUrlPathRelative(
       joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
