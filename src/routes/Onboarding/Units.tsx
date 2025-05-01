@@ -1,15 +1,10 @@
-import { faArrowRight, faXmark } from '@fortawesome/free-solid-svg-icons'
-
-import { ActionButton } from '@src/components/ActionButton'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { settingsActor, useSettings } from '@src/lib/singletons'
+import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
-  const dismiss = useDismiss()
-  const next = useNextClick(ONBOARDING_SUBPATHS.CAMERA)
   const {
     modeling: { defaultUnit },
   } = useSettings()
@@ -43,28 +38,10 @@ export default function Units() {
             ))}
           </select>
         </SettingsSection>
-        <div className="flex justify-between mt-6">
-          <ActionButton
-            Element="button"
-            onClick={dismiss}
-            iconStart={{
-              icon: faXmark,
-              bgClassName: 'bg-destroy-80',
-              iconClassName:
-                'text-destroy-20 group-hover:text-destroy-10 hover:text-destroy-10',
-            }}
-            className="hover:border-destroy-40"
-          >
-            Dismiss
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            onClick={next}
-            iconStart={{ icon: faArrowRight }}
-          >
-            Next: Camera
-          </ActionButton>
-        </div>
+        <OnboardingButtons
+          currentSlug={ONBOARDING_SUBPATHS.UNITS}
+          className="mt-6"
+        />
       </div>
     </div>
   )
