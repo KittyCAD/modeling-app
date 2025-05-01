@@ -1,5 +1,6 @@
 import { bracketWidthConstantLine } from '@src/lib/exampleKcl'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
 import {
   OnboardingButtons,
   kbdClasses,
@@ -84,9 +85,7 @@ export default function OnboardingInteractiveNumbers() {
             your ideas for how to make it better.
           </p>
         </section>
-        <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.INTERACTIVE_NUMBERS}
-        />
+        <OnboardingButtons currentSlug={onboardingPaths.INTERACTIVE_NUMBERS} />
       </div>
     </div>
   )

@@ -45,7 +45,7 @@ type HelpRoleLabel =
   | 'Ask the community discourse'
   | 'KCL code samples'
   | 'KCL docs'
-  | 'Replay onboarding tutorial'
+  | 'Reset onboarding'
   | 'Show release notes'
   | 'Manage account'
   | 'Get started with Text-to-CAD'

@@ -6,12 +6,16 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { useLspContext } from '@src/components/LspProvider'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
-import { getSettingsFolderPaths } from '@src/lib/desktopFS'
+import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
+import {
+  createAndOpenNewTutorialProject,
+  getSettingsFolderPaths,
+} from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { PATHS } from '@src/lib/paths'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
@@ -24,17 +28,9 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import {
-  codeManager,
-  kclManager,
-  settingsActor,
-  useSettings,
-} from '@src/lib/singletons'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
+import { waitFor } from 'xstate'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -48,6 +44,8 @@ export const AllSettingsFields = forwardRef(
   ) => {
     const location = useLocation()
     const navigate = useNavigate()
+    const { onProjectOpen } = useLspContext()
+    const dotDotSlash = useDotDotSlash()
     const context = useSettings()
 
     const projectPath = useMemo(() => {
@@ -65,18 +63,26 @@ export const AllSettingsFields = forwardRef(
           : undefined
 
       return projectPath
-    }, [location.pathname, isFileSettings])
+    }, [location.pathname])
 
     async function restartOnboarding() {
-      const props = {
-        onboardingStatus: ONBOARDING_SUBPATHS.INDEX,
-        navigate,
-        codeManager,
-        kclManager,
+      settingsActor.send({
+        type: `set.app.onboardingStatus`,
+        data: { level: 'user', value: '' },
+      })
+      await waitFor(settingsActor, (s) => s.matches('idle'), {
+        timeout: 10_000,
+      }).catch(reportRejection)
+
+      if (isFileSettings) {
+        // If we're in a project, first navigate to the onboarding start here
+        // so we can trigger the warning screen if necessary
+        navigate(dotDotSlash(1) + PATHS.ONBOARDING.INDEX)
+      } else {
+        // If we're in the global settings, create a new project and navigate
+        // to the onboarding start in that project
+        await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
       }
-      acceptOnboarding(props).catch((reason) =>
-        catchOnboardingWarnError(reason, props)
-      )
     }
 
     return (

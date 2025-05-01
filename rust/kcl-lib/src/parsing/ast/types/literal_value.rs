@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, str::FromStr};
 
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
@@ -31,6 +31,21 @@ impl LiteralValue {
             Self::String(s) => Some(s),
             _ => None,
         }
+    }
+
+    pub fn is_color(&self) -> Option<csscolorparser::Color> {
+        if let Self::String(s) = self {
+            // Check if the string is a color.
+            if s.starts_with('#') && s.len() == 7 {
+                let Ok(c) = csscolorparser::Color::from_str(s) else {
+                    return None;
+                };
+
+                return Some(c);
+            }
+        }
+
+        None
     }
 }
 

@@ -4,12 +4,13 @@ import { ActionButton } from '@src/components/ActionButton'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { settingsActor, useSettings } from '@src/lib/singletons'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
 import { useDismiss, useNextClick } from '@src/routes/Onboarding/utils'
 
 export default function Units() {
   const dismiss = useDismiss()
-  const next = useNextClick(ONBOARDING_SUBPATHS.CAMERA)
+  const next = useNextClick(onboardingPaths.CAMERA)
   const {
     modeling: { defaultUnit },
   } = useSettings()
