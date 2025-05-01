@@ -114,6 +114,22 @@ test.describe('Point and click for boolean workflows', () => {
 
         await editor.expectEditor.toContain(operation.code)
       })
+
+      await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
+        await toolbar.openPane('feature-tree')
+        const ftOp = await toolbar.getFeatureTreeOperation(operationName, 0)
+        await ftOp.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes in ft and code
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(operation.code)
+        await expect(
+          await toolbar.getFeatureTreeOperation(operationName, 0)
+        ).not.toBeVisible()
+      })
     })
   }
 })

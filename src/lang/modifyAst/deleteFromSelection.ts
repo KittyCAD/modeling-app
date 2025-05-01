@@ -161,6 +161,7 @@ export async function deleteFromSelection(
       varDec.node.init.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
+    selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'helix' ||
     !selection.artifact // aka expected to be a shell at this point
   ) {
@@ -170,6 +171,7 @@ export async function deleteFromSelection(
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
+      selection.artifact.type !== 'compositeSolid' &&
       selection.artifact.type !== 'helix'
     ) {
       const varDecName = varDec.node.id.name
