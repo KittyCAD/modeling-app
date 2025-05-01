@@ -9,7 +9,7 @@ import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { getArgForEnd, getFirstArg } from '@src/lang/std/sketch'
+import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
   getConstraintLevelFromSourceRange,
@@ -682,7 +682,6 @@ export function findUsesOfTagInPipe(
   }
   const node = nodeMeta.node
   if (node.type !== 'CallExpressionKw') return []
-  const tagIndex = node.callee.name.name === 'close' ? 1 : 2
   const tagParam = findKwArg(ARG_TAG, node)
   if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Name'))
     return []

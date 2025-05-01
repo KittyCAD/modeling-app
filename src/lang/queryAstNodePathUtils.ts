@@ -69,7 +69,7 @@ function moreNodePathFromSourceRange(
       path.push(['callee', 'CallExpressionKw'])
       return path
     }
-    if (args.length > 0) {
+    if (args && args.length > 0) {
       for (let argIndex = 0; argIndex < args.length; argIndex++) {
         const arg = args[argIndex].arg
         if (arg.start <= start && arg.end >= end) {
