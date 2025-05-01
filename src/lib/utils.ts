@@ -657,4 +657,16 @@ export async function engineViewIsometricWithoutGeometryPresent({
       },
     },
   })
+
+  /**
+   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+   * to render which makes the axis point in an old direction.
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
 }
