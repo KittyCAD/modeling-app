@@ -9,18 +9,7 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "units::toDegrees",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": -0.0,
-          "ty": {
-            "type": "Known",
-            "type": "Angle",
-            "type": "Radians"
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -31,18 +20,7 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "units::toDegrees",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": -0.0333,
-          "ty": {
-            "type": "Known",
-            "type": "Angle",
-            "type": "Radians"
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -53,34 +31,190 @@ description: Operations executed food-service-spatula.kcl
       "type": "FunctionCall",
       "name": "units::toDegrees",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.0333,
-          "ty": {
-            "type": "Known",
-            "type": "Angle",
-            "type": "Radians"
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "atan",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "atan",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "atan",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "GroupBegin",
@@ -547,17 +681,19 @@ description: Operations executed food-service-spatula.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -670,194 +806,196 @@ description: Operations executed food-service-spatula.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Object",
+          "value": {
+            "origin": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 208.593833,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 75.921946,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "xAxis": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.34202,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": -0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": -0.939693,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "yAxis": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            },
+            "zAxis": {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.939693,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": -0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.34202,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Mm"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Object",
-        "value": {
-          "origin": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 208.593833,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 75.921946,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "xAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.34202,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": -0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": -0.939693,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "yAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          },
-          "zAxis": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Number",
-                "value": 0.939693,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": -0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              {
-                "type": "Number",
-                "value": 0.34202,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Mm"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            ]
-          }
-        }
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -1049,6 +1187,51 @@ description: Operations executed food-service-spatula.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

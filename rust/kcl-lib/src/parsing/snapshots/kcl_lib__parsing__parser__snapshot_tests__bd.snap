@@ -32,6 +32,24 @@ expression: actual
             {
               "commentStart": 38,
               "cond": {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 51,
+                    "end": 57,
+                    "name": {
+                      "commentStart": 51,
+                      "end": 57,
+                      "name": "radius",
+                      "start": 51,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 51,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 46,
@@ -50,24 +68,8 @@ expression: actual
                 "commentStart": 46,
                 "end": 58,
                 "start": 46,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 51,
-                  "end": 57,
-                  "name": {
-                    "commentStart": 51,
-                    "end": 57,
-                    "name": "radius",
-                    "start": 51,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 51,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               "digest": null,
               "end": 84,

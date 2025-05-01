@@ -4,17 +4,19 @@ description: Operations executed poopy-shoe.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -124,17 +126,19 @@ description: Operations executed poopy-shoe.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -169,150 +173,152 @@ description: Operations executed poopy-shoe.kcl
     }
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Object",
+    "labeledArgs": {
+      "planeOrSolid": {
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+          "type": "Object",
+          "value": {
+            "origin": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": -1.4375,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": -1.4375,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            }
-          },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
-            }
-          },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+            },
+            "xAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+              }
+            },
+            "yAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
             }
           }
-        }
-      },
-      "sourceRange": []
-    }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -402,150 +408,152 @@ description: Operations executed poopy-shoe.kcl
     }
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Object",
+    "labeledArgs": {
+      "planeOrSolid": {
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": -3.875,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+          "type": "Object",
+          "value": {
+            "origin": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": -3.875,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            }
-          },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
-            }
-          },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+            },
+            "xAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+              }
+            },
+            "yAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
             }
           }
-        }
-      },
-      "sourceRange": []
-    }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -691,150 +699,152 @@ description: Operations executed poopy-shoe.kcl
     }
   },
   {
-    "labeledArgs": {},
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Object",
+    "labeledArgs": {
+      "planeOrSolid": {
         "value": {
-          "origin": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": -3.875,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+          "type": "Object",
+          "value": {
+            "origin": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": -3.875,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.125,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              }
-            }
-          },
-          "xAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "y": {
-                "type": "Number",
-                "value": -1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
-                  }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.125,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
-            }
-          },
-          "yAxis": {
-            "type": "Object",
-            "value": {
-              "x": {
-                "type": "Number",
-                "value": 1.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+            },
+            "xAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "y": {
+                  "type": "Number",
+                  "value": -1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
-              },
-              "y": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+              }
+            },
+            "yAxis": {
+              "type": "Object",
+              "value": {
+                "x": {
+                  "type": "Number",
+                  "value": 1.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
-                }
-              },
-              "z": {
-                "type": "Number",
-                "value": 0.0,
-                "ty": {
-                  "type": "Default",
-                  "len": {
-                    "type": "Inches"
-                  },
-                  "angle": {
-                    "type": "Degrees"
+                },
+                "y": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
+                  }
+                },
+                "z": {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Default",
+                    "len": {
+                      "type": "Inches"
+                    },
+                    "angle": {
+                      "type": "Degrees"
+                    }
                   }
                 }
               }
             }
           }
-        }
-      },
-      "sourceRange": []
-    }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {

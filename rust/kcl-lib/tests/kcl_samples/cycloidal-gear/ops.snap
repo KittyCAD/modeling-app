@@ -4,43 +4,49 @@ description: Operations executed cycloidal-gear.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -133,29 +139,136 @@ description: Operations executed cycloidal-gear.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "tool": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
     },
-    "name": "subtract2d",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Sketch",
-        "value": {
-          "artifactId": "[uuid]"
-        }
-      },
-      "sourceRange": []
-    }
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sin",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -208,36 +321,63 @@ description: Operations executed cycloidal-gear.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "tool": {
+        "value": {
+          "type": "Sketch",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "subtract2d",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "sketches": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
     "name": "loft",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Sketch",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "GroupBegin",
@@ -245,22 +385,7 @@ description: Operations executed cycloidal-gear.kcl
       "type": "FunctionCall",
       "name": "gearSketch",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -271,22 +396,7 @@ description: Operations executed cycloidal-gear.kcl
       "type": "FunctionCall",
       "name": "gearSketch",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.75,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -297,22 +407,7 @@ description: Operations executed cycloidal-gear.kcl
       "type": "FunctionCall",
       "name": "gearSketch",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 1.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -392,6 +487,42 @@ description: Operations executed cycloidal-gear.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

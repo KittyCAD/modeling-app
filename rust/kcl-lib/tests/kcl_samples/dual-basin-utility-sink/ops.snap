@@ -4,17 +4,19 @@ description: Operations executed dual-basin-utility-sink.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -96,17 +98,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -249,17 +253,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -359,17 +365,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -488,17 +496,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -695,17 +705,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -848,17 +860,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "KclStdLibCall",
@@ -891,17 +905,19 @@ description: Operations executed dual-basin-utility-sink.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {

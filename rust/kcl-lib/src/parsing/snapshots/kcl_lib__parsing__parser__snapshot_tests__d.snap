@@ -51,6 +51,20 @@ expression: actual
               "type": "BinaryExpression"
             },
             {
+              "arguments": [
+                {
+                  "commentStart": 24,
+                  "end": 26,
+                  "raw": "45",
+                  "start": 24,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 45.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 17,
@@ -69,20 +83,8 @@ expression: actual
               "commentStart": 17,
               "end": 27,
               "start": 17,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 24,
-                "end": 26,
-                "raw": "45",
-                "start": 24,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 45.0,
-                  "suffix": "None"
-                }
-              }
+              "type": "CallExpression",
+              "type": "CallExpression"
             }
           ],
           "commentStart": 8,

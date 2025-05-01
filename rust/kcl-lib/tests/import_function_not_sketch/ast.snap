@@ -55,6 +55,7 @@ description: Result of parsing import_function_not_sketch.kcl
                     "commentStart": 0,
                     "end": 0,
                     "left": {
+                      "arguments": [],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -73,9 +74,8 @@ description: Result of parsing import_function_not_sketch.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     },
                     "operator": "-",
                     "right": {

@@ -116,6 +116,24 @@ description: Result of parsing import_async.kcl
             "type": "Identifier"
           },
           "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "XY",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -134,24 +152,8 @@ description: Result of parsing import_async.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "XY",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -454,6 +456,24 @@ description: Result of parsing import_async.kcl
             },
             "operator": "*",
             "right": {
+              "arguments": [
+                {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "pressureAngle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -472,24 +492,8 @@ description: Result of parsing import_async.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "pressureAngle",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              }
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             "start": 0,
             "type": "BinaryExpression",
@@ -960,6 +964,92 @@ description: Result of parsing import_async.kcl
                     "body": [
                       {
                         "argument": {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "left": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": "baseDiameter",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "operator": "/",
+                                    "right": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "raw": "2",
+                                      "start": 0,
+                                      "type": "Literal",
+                                      "type": "Literal",
+                                      "value": {
+                                        "value": 2.0,
+                                        "suffix": "None"
+                                      }
+                                    },
+                                    "start": 0,
+                                    "type": "BinaryExpression",
+                                    "type": "BinaryExpression"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "r",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "callee": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "acos",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -986,90 +1076,8 @@ description: Result of parsing import_async.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "acos",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "baseDiameter",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "r",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         "commentStart": 0,
                         "end": 0,
@@ -1184,6 +1192,56 @@ description: Result of parsing import_async.kcl
                           "commentStart": 0,
                           "end": 0,
                           "left": {
+                            "arguments": [
+                              {
+                                "arguments": [
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "a",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                ],
+                                "callee": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "toRadians",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [
+                                    {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "units",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    }
+                                  ],
+                                  "start": 0,
+                                  "type": "Name"
+                                },
+                                "commentStart": 0,
+                                "end": 0,
+                                "start": 0,
+                                "type": "CallExpression",
+                                "type": "CallExpression"
+                              }
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -1202,38 +1260,13 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "callee": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "toRadians",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [
-                                  {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "units",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  }
-                                ],
-                                "start": 0,
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "CallExpressionKw",
-                              "type": "CallExpressionKw",
-                              "unlabeled": {
+                            "type": "CallExpression",
+                            "type": "CallExpression"
+                          },
+                          "operator": "-",
+                          "right": {
+                            "arguments": [
+                              {
                                 "abs_path": false,
                                 "commentStart": 0,
                                 "end": 0,
@@ -1249,10 +1282,7 @@ description: Result of parsing import_async.kcl
                                 "type": "Name",
                                 "type": "Name"
                               }
-                            }
-                          },
-                          "operator": "-",
-                          "right": {
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -1279,24 +1309,8 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "a",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
+                            "type": "CallExpression",
+                            "type": "CallExpression"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -1440,6 +1454,47 @@ description: Result of parsing import_async.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "arguments": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "expr": {
+                                  "commentStart": 0,
+                                  "computed": true,
+                                  "end": 0,
+                                  "object": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "invas",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "property": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "i",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "start": 0,
+                                "ty": {
+                                  "Rad": null,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "p_type": "Number",
+                                  "start": 0,
+                                  "type": "Primitive"
+                                },
+                                "type": "AscribedExpression",
+                                "type": "AscribedExpression"
+                              }
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -1458,47 +1513,8 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "expr": {
-                                "commentStart": 0,
-                                "computed": true,
-                                "end": 0,
-                                "object": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "invas",
-                                  "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                "property": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "i",
-                                  "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                "start": 0,
-                                "type": "MemberExpression",
-                                "type": "MemberExpression"
-                              },
-                              "start": 0,
-                              "ty": {
-                                "Rad": null,
-                                "commentStart": 0,
-                                "end": 0,
-                                "p_type": "Number",
-                                "start": 0,
-                                "type": "Primitive"
-                              },
-                              "type": "AscribedExpression",
-                              "type": "AscribedExpression"
-                            }
+                            "type": "CallExpression",
+                            "type": "CallExpression"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -1662,6 +1678,47 @@ description: Result of parsing import_async.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "arguments": [
+                              {
+                                "commentStart": 0,
+                                "end": 0,
+                                "expr": {
+                                  "commentStart": 0,
+                                  "computed": true,
+                                  "end": 0,
+                                  "object": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "invas",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "property": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "i",
+                                    "start": 0,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "start": 0,
+                                  "type": "MemberExpression",
+                                  "type": "MemberExpression"
+                                },
+                                "start": 0,
+                                "ty": {
+                                  "Rad": null,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "p_type": "Number",
+                                  "start": 0,
+                                  "type": "Primitive"
+                                },
+                                "type": "AscribedExpression",
+                                "type": "AscribedExpression"
+                              }
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -1680,47 +1737,8 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "expr": {
-                                "commentStart": 0,
-                                "computed": true,
-                                "end": 0,
-                                "object": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "invas",
-                                  "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                "property": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "i",
-                                  "start": 0,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                "start": 0,
-                                "type": "MemberExpression",
-                                "type": "MemberExpression"
-                              },
-                              "start": 0,
-                              "ty": {
-                                "Rad": null,
-                                "commentStart": 0,
-                                "end": 0,
-                                "p_type": "Number",
-                                "start": 0,
-                                "type": "Primitive"
-                              },
-                              "type": "AscribedExpression",
-                              "type": "AscribedExpression"
-                            }
+                            "type": "CallExpression",
+                            "type": "CallExpression"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -1838,6 +1856,24 @@ description: Result of parsing import_async.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -1856,24 +1892,8 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -2445,6 +2465,152 @@ description: Result of parsing import_async.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "arguments": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "left": {
+                              "argument": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "toothAngle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "operator": "-",
+                              "start": 0,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "arguments": [
+                                    {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "left": {
+                                        "commentStart": 0,
+                                        "computed": true,
+                                        "end": 0,
+                                        "object": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "ys",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "i",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "start": 0,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      },
+                                      "operator": "/",
+                                      "right": {
+                                        "commentStart": 0,
+                                        "computed": true,
+                                        "end": 0,
+                                        "object": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "xs",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "i",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "start": 0,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    }
+                                  ],
+                                  "callee": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "atan",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name"
+                                  },
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "start": 0,
+                                  "type": "CallExpression",
+                                  "type": "CallExpression"
+                                }
+                              ],
+                              "callee": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "toDegrees",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [
+                                  {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "units",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  }
+                                ],
+                                "start": 0,
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          }
+                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -2463,148 +2629,8 @@ description: Result of parsing import_async.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "argument": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "toothAngle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "operator": "-",
-                            "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "toDegrees",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "units",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "callee": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "atan",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "CallExpressionKw",
-                              "type": "CallExpressionKw",
-                              "unlabeled": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "computed": true,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "ys",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "i",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 0,
-                                  "computed": true,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "xs",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "i",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            }
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
+                        "type": "CallExpression",
+                        "type": "CallExpression"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -2668,6 +2694,152 @@ description: Result of parsing import_async.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "arguments": [
+                          {
+                            "commentStart": 0,
+                            "end": 0,
+                            "left": {
+                              "argument": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "toothAngle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "operator": "-",
+                              "start": 0,
+                              "type": "UnaryExpression",
+                              "type": "UnaryExpression"
+                            },
+                            "operator": "+",
+                            "right": {
+                              "arguments": [
+                                {
+                                  "arguments": [
+                                    {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "left": {
+                                        "commentStart": 0,
+                                        "computed": true,
+                                        "end": 0,
+                                        "object": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "ys",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "i",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "start": 0,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      },
+                                      "operator": "/",
+                                      "right": {
+                                        "commentStart": 0,
+                                        "computed": true,
+                                        "end": 0,
+                                        "object": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "xs",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "property": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "i",
+                                          "start": 0,
+                                          "type": "Identifier",
+                                          "type": "Identifier"
+                                        },
+                                        "start": 0,
+                                        "type": "MemberExpression",
+                                        "type": "MemberExpression"
+                                      },
+                                      "start": 0,
+                                      "type": "BinaryExpression",
+                                      "type": "BinaryExpression"
+                                    }
+                                  ],
+                                  "callee": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "atan",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name"
+                                  },
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "start": 0,
+                                  "type": "CallExpression",
+                                  "type": "CallExpression"
+                                }
+                              ],
+                              "callee": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "toDegrees",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [
+                                  {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "units",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  }
+                                ],
+                                "start": 0,
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpression",
+                              "type": "CallExpression"
+                            },
+                            "start": 0,
+                            "type": "BinaryExpression",
+                            "type": "BinaryExpression"
+                          }
+                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -2686,148 +2858,8 @@ description: Result of parsing import_async.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "left": {
-                            "argument": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "toothAngle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "operator": "-",
-                            "start": 0,
-                            "type": "UnaryExpression",
-                            "type": "UnaryExpression"
-                          },
-                          "operator": "+",
-                          "right": {
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "toDegrees",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [
-                                {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "units",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                }
-                              ],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "callee": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "atan",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name"
-                              },
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "CallExpressionKw",
-                              "type": "CallExpressionKw",
-                              "unlabeled": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "commentStart": 0,
-                                  "computed": true,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "ys",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "i",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 0,
-                                  "computed": true,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "xs",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "i",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              }
-                            }
-                          },
-                          "start": 0,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        }
+                        "type": "CallExpression",
+                        "type": "CallExpression"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -2997,6 +3029,24 @@ description: Result of parsing import_async.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -3015,24 +3065,8 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -3496,6 +3530,7 @@ description: Result of parsing import_async.kcl
                 }
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -3514,9 +3549,8 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -3974,6 +4008,68 @@ description: Result of parsing import_async.kcl
             "type": "Identifier"
           },
           "init": {
+            "arguments": [
+              {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "left": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "keywayWidth",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  "operator": "/",
+                  "right": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "2",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 2.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                },
+                "operator": "/",
+                "right": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "holeRadius",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              }
+            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -3992,68 +4088,8 @@ description: Result of parsing import_async.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
-                "commentStart": 0,
-                "end": 0,
-                "left": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "keywayWidth",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                },
-                "operator": "/",
-                "right": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "2",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 2.0,
-                    "suffix": "None"
-                  }
-                },
-                "start": 0,
-                "type": "BinaryExpression",
-                "type": "BinaryExpression"
-              },
-              "operator": "/",
-              "right": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "holeRadius",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
-            }
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -4179,6 +4215,24 @@ description: Result of parsing import_async.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "arguments": [
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "startAngle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -4197,24 +4251,8 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "startAngle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
+                            "type": "CallExpression",
+                            "type": "CallExpression"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -4241,6 +4279,24 @@ description: Result of parsing import_async.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "arguments": [
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "startAngle",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            ],
                             "callee": {
                               "abs_path": false,
                               "commentStart": 0,
@@ -4259,24 +4315,8 @@ description: Result of parsing import_async.kcl
                             "commentStart": 0,
                             "end": 0,
                             "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "startAngle",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
+                            "type": "CallExpression",
+                            "type": "CallExpression"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -4520,6 +4560,24 @@ description: Result of parsing import_async.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "arguments": [
+                            {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "startAngle",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -4546,24 +4604,8 @@ description: Result of parsing import_async.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "startAngle",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -4692,6 +4734,24 @@ description: Result of parsing import_async.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "startAngle",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -4718,24 +4778,8 @@ description: Result of parsing import_async.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "startAngle",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     }
                   },
                   {
@@ -4788,6 +4832,7 @@ description: Result of parsing import_async.kcl
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -4806,9 +4851,8 @@ description: Result of parsing import_async.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [

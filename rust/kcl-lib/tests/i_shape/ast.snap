@@ -354,6 +354,24 @@ description: Result of parsing i_shape.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -372,24 +390,8 @@ description: Result of parsing i_shape.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -2777,6 +2779,15 @@ description: Result of parsing i_shape.kcl
                 "unlabeled": null
               },
               {
+                "arguments": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -2795,15 +2806,8 @@ description: Result of parsing i_shape.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
             "commentStart": 0,
@@ -2843,6 +2847,24 @@ description: Result of parsing i_shape.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -2861,24 +2883,8 @@ description: Result of parsing i_shape.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -3577,6 +3583,15 @@ description: Result of parsing i_shape.kcl
                 "unlabeled": null
               },
               {
+                "arguments": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -3595,15 +3610,8 @@ description: Result of parsing i_shape.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "start": 0,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
             "commentStart": 0,

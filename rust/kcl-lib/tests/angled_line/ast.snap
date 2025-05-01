@@ -20,6 +20,24 @@ description: Result of parsing angled_line.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "XY",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -38,24 +56,8 @@ description: Result of parsing angled_line.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": "XY",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [
@@ -383,6 +385,24 @@ description: Result of parsing angled_line.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "arguments": [
+                        {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "seg01",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -401,24 +421,8 @@ description: Result of parsing angled_line.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": "seg01",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     }
                   },
                   {
@@ -543,6 +547,7 @@ description: Result of parsing angled_line.kcl
                 "unlabeled": null
               },
               {
+                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -561,9 +566,8 @@ description: Result of parsing angled_line.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [

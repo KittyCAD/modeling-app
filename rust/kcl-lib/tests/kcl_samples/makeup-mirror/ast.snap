@@ -450,6 +450,74 @@ description: Result of parsing makeup-mirror.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [
+                            {
+                              "arguments": [
+                                {
+                                  "type": "LabeledArg",
+                                  "label": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "offset",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "arg": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "z",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                }
+                              ],
+                              "callee": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "offsetPlane",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name"
+                              },
+                              "commentStart": 0,
+                              "end": 0,
+                              "start": 0,
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "XY",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -468,74 +536,8 @@ description: Result of parsing makeup-mirror.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "arguments": [
-                              {
-                                "type": "LabeledArg",
-                                "label": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "offset",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "arg": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "z",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                }
-                              }
-                            ],
-                            "callee": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "offsetPlane",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name"
-                            },
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "CallExpressionKw",
-                            "type": "CallExpressionKw",
-                            "unlabeled": {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "XY",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [
@@ -1969,6 +1971,24 @@ description: Result of parsing makeup-mirror.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [
+                            {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "plane",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1987,24 +2007,8 @@ description: Result of parsing makeup-mirror.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "plane",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [
@@ -2635,6 +2639,118 @@ description: Result of parsing makeup-mirror.kcl
                       "type": "Identifier"
                     },
                     "init": {
+                      "arguments": [
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "offset",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "left": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "offsetY",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                },
+                                "operator": "-",
+                                "right": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "tiefe",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "start": 0,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "offsetPlane",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name"
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "start": 0,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "plane",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -2653,118 +2769,8 @@ description: Result of parsing makeup-mirror.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "arguments": [
-                          {
-                            "type": "LabeledArg",
-                            "label": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "offset",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "arg": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "left": {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": "offsetY",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              },
-                              "operator": "-",
-                              "right": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "left": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "tiefe",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "operator": "/",
-                                "right": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "raw": "2",
-                                  "start": 0,
-                                  "type": "Literal",
-                                  "type": "Literal",
-                                  "value": {
-                                    "value": 2.0,
-                                    "suffix": "None"
-                                  }
-                                },
-                                "start": 0,
-                                "type": "BinaryExpression",
-                                "type": "BinaryExpression"
-                              },
-                              "start": 0,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
-                        ],
-                        "callee": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "offsetPlane",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name"
-                        },
-                        "commentStart": 0,
-                        "end": 0,
-                        "start": 0,
-                        "type": "CallExpressionKw",
-                        "type": "CallExpressionKw",
-                        "unlabeled": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "plane",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      }
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     },
                     "start": 0,
                     "type": "VariableDeclarator"
@@ -3493,6 +3499,15 @@ description: Result of parsing makeup-mirror.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -3511,17 +3526,19 @@ description: Result of parsing makeup-mirror.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpressionKw",
-                                    "type": "CallExpressionKw",
-                                    "unlabeled": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "start": 0,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
-                                    }
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
                                   },
                                   {
+                                    "arguments": [
+                                      {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "start": 0,
+                                        "type": "PipeSubstitution",
+                                        "type": "PipeSubstitution"
+                                      }
+                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -3540,15 +3557,8 @@ description: Result of parsing makeup-mirror.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpressionKw",
-                                    "type": "CallExpressionKw",
-                                    "unlabeled": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "start": 0,
-                                      "type": "PipeSubstitution",
-                                      "type": "PipeSubstitution"
-                                    }
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
                                   }
                                 ],
                                 "end": 0,
@@ -3581,6 +3591,7 @@ description: Result of parsing makeup-mirror.kcl
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -3599,9 +3610,8 @@ description: Result of parsing makeup-mirror.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [

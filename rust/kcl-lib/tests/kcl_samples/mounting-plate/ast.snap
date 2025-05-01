@@ -203,6 +203,24 @@ description: Result of parsing mounting-plate.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [
+                            {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "XY",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -221,24 +239,8 @@ description: Result of parsing mounting-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "XY",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [
@@ -2585,6 +2587,48 @@ description: Result of parsing mounting-plate.kcl
                       "commentStart": 0,
                       "elements": [
                         {
+                          "arguments": [
+                            {
+                              "commentStart": 0,
+                              "computed": false,
+                              "end": 0,
+                              "object": {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "rs",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "edge1",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 0,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -2603,50 +2647,52 @@ description: Result of parsing mounting-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "object": {
-                              "commentStart": 0,
-                              "computed": false,
-                              "end": 0,
-                              "object": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "rs",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "edge1",
-                              "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
+                          "arguments": [
+                            {
+                              "commentStart": 0,
+                              "computed": false,
+                              "end": 0,
+                              "object": {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "rs",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "edge2",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 0,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -2665,50 +2711,52 @@ description: Result of parsing mounting-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "object": {
-                              "commentStart": 0,
-                              "computed": false,
-                              "end": 0,
-                              "object": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "rs",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "edge2",
-                              "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
+                          "arguments": [
+                            {
+                              "commentStart": 0,
+                              "computed": false,
+                              "end": 0,
+                              "object": {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "rs",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "edge3",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 0,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -2727,50 +2775,52 @@ description: Result of parsing mounting-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "object": {
-                              "commentStart": 0,
-                              "computed": false,
-                              "end": 0,
-                              "object": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "rs",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "edge3",
-                              "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
+                          "arguments": [
+                            {
+                              "commentStart": 0,
+                              "computed": false,
+                              "end": 0,
+                              "object": {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "rs",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "tags",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              },
+                              "property": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "edge4",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "start": 0,
+                              "type": "MemberExpression",
+                              "type": "MemberExpression"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -2789,48 +2839,8 @@ description: Result of parsing mounting-plate.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "commentStart": 0,
-                            "computed": false,
-                            "end": 0,
-                            "object": {
-                              "commentStart": 0,
-                              "computed": false,
-                              "end": 0,
-                              "object": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "rs",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "property": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "tags",
-                                "start": 0,
-                                "type": "Identifier",
-                                "type": "Identifier"
-                              },
-                              "start": 0,
-                              "type": "MemberExpression",
-                              "type": "MemberExpression"
-                            },
-                            "property": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "edge4",
-                              "start": 0,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            },
-                            "start": 0,
-                            "type": "MemberExpression",
-                            "type": "MemberExpression"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         }
                       ],
                       "end": 0,

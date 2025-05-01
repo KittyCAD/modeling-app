@@ -19,6 +19,20 @@ expression: actual
         "init": {
           "body": [
             {
+              "arguments": [
+                {
+                  "commentStart": 10,
+                  "end": 11,
+                  "raw": "1",
+                  "start": 10,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 8,
@@ -37,22 +51,24 @@ expression: actual
               "commentStart": 8,
               "end": 12,
               "start": 8,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 10,
-                "end": 11,
-                "raw": "1",
-                "start": 10,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 1.0,
-                  "suffix": "None"
-                }
-              }
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
+              "arguments": [
+                {
+                  "commentStart": 18,
+                  "end": 19,
+                  "raw": "2",
+                  "start": 18,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                }
+              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 16,
@@ -71,20 +87,8 @@ expression: actual
               "commentStart": 16,
               "end": 20,
               "start": 16,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "commentStart": 18,
-                "end": 19,
-                "raw": "2",
-                "start": 18,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 2.0,
-                  "suffix": "None"
-                }
-              }
+              "type": "CallExpression",
+              "type": "CallExpression"
             }
           ],
           "commentStart": 8,

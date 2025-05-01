@@ -19,6 +19,24 @@ expression: actual
         "init": {
           "body": [
             {
+              "arguments": [
+                {
+                  "abs_path": false,
+                  "commentStart": 25,
+                  "end": 27,
+                  "name": {
+                    "commentStart": 25,
+                    "end": 27,
+                    "name": "XY",
+                    "start": 25,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 25,
+                  "type": "Name",
+                  "type": "Name"
+                }
+              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 11,
@@ -37,24 +55,8 @@ expression: actual
               "commentStart": 11,
               "end": 28,
               "start": 11,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": {
-                "abs_path": false,
-                "commentStart": 25,
-                "end": 27,
-                "name": {
-                  "commentStart": 25,
-                  "end": 27,
-                  "name": "XY",
-                  "start": 25,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 25,
-                "type": "Name",
-                "type": "Name"
-              }
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -365,6 +367,7 @@ expression: actual
               "unlabeled": null
             },
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 223,
@@ -383,9 +386,8 @@ expression: actual
               "commentStart": 223,
               "end": 230,
               "start": 223,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             }
           ],
           "commentStart": 11,

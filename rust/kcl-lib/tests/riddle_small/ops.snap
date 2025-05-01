@@ -9,22 +9,7 @@ description: Operations executed riddle_small.kcl
       "type": "FunctionCall",
       "name": "t",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 205804.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -35,38 +20,25 @@ description: Operations executed riddle_small.kcl
       "type": "FunctionCall",
       "name": "t",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 71816.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {

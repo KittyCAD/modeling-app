@@ -4,30 +4,34 @@ description: Operations executed intersect_cubes.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -218,30 +222,32 @@ description: Operations executed intersect_cubes.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
     "name": "intersect",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "type": "GroupEnd"

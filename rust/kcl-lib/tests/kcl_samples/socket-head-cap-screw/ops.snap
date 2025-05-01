@@ -4,17 +4,30 @@ description: Operations executed socket-head-cap-screw.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -250,5 +263,8 @@ description: Operations executed socket-head-cap-screw.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

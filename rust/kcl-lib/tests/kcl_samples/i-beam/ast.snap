@@ -221,6 +221,32 @@ description: Result of parsing i-beam.kcl
           "init": {
             "body": [
               {
+                "arguments": [
+                  {
+                    "argument": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "XZ",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "operator": "-",
+                    "start": 0,
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -239,32 +265,8 @@ description: Result of parsing i-beam.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "argument": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "XZ",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "commentStart": 0,
-                  "end": 0,
-                  "operator": "-",
-                  "start": 0,
-                  "type": "UnaryExpression",
-                  "type": "UnaryExpression"
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               {
                 "arguments": [

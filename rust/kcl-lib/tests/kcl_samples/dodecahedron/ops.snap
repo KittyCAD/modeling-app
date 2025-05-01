@@ -4,160 +4,184 @@ description: Operations executed dodecahedron.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
-    "labeledArgs": {},
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -549,22 +573,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -575,22 +584,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.1,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -601,22 +595,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.2,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -627,22 +606,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.3,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -653,22 +617,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.4,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -679,22 +628,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.5,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -705,22 +639,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.6,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -731,22 +650,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.7,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -757,22 +661,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.8,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -783,22 +672,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.9,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -809,22 +683,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.11,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -835,382 +694,17 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createFaceTemplate",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 0.12,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Inches"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "labeledArgs": {},
-    "name": "intersect",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Array",
-        "value": [
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          },
-          {
-            "type": "Solid",
-            "value": {
-              "artifactId": "[uuid]"
-            }
-          }
-        ]
-      },
-      "sourceRange": []
-    }
-  },
-  {
-    "type": "GroupBegin",
-    "group": {
-      "type": "FunctionCall",
-      "name": "calculateArrayLength",
-      "functionSourceRange": [],
-      "unlabeledArg": {
+    "labeledArgs": {
+      "solids": {
         "value": {
           "type": "Array",
           "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
             {
               "type": "Solid",
               "value": {
@@ -1226,7 +720,300 @@ description: Operations executed dodecahedron.kcl
           ]
         },
         "sourceRange": []
-      },
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "solids": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            },
+            {
+              "type": "Solid",
+              "value": {
+                "artifactId": "[uuid]"
+              }
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "intersect",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "calculateArrayLength",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
@@ -1237,86 +1024,7 @@ description: Operations executed dodecahedron.kcl
       "type": "FunctionCall",
       "name": "createIntersection",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            }
-          ]
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []

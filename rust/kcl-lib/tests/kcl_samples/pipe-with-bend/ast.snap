@@ -153,6 +153,24 @@ description: Result of parsing pipe-with-bend.kcl
             "type": "Identifier"
           },
           "init": {
+            "arguments": [
+              {
+                "abs_path": false,
+                "commentStart": 0,
+                "end": 0,
+                "name": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "XZ",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 0,
+                "type": "Name",
+                "type": "Name"
+              }
+            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -171,24 +189,8 @@ description: Result of parsing pipe-with-bend.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpressionKw",
-            "type": "CallExpressionKw",
-            "unlabeled": {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "XZ",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
+            "type": "CallExpression",
+            "type": "CallExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"

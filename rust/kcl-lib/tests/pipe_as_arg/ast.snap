@@ -269,6 +269,15 @@ description: Result of parsing pipe_as_arg.kcl
                       }
                     },
                     {
+                      "arguments": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "start": 0,
+                          "type": "PipeSubstitution",
+                          "type": "PipeSubstitution"
+                        }
+                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -287,15 +296,8 @@ description: Result of parsing pipe_as_arg.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "commentStart": 0,
-                        "end": 0,
-                        "start": 0,
-                        "type": "PipeSubstitution",
-                        "type": "PipeSubstitution"
-                      }
+                      "type": "CallExpression",
+                      "type": "CallExpression"
                     }
                   ],
                   "commentStart": 0,

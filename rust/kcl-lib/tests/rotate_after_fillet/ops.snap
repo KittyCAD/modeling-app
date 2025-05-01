@@ -4,17 +4,30 @@ description: Operations executed rotate_after_fillet.kcl
 ---
 [
   {
-    "labeledArgs": {},
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "cos",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "planeOrSolid": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      }
+    },
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": {
-      "value": {
-        "type": "Plane",
-        "artifact_id": "[uuid]"
-      },
-      "sourceRange": []
-    }
+    "unlabeledArg": null
   },
   {
     "labeledArgs": {
@@ -261,6 +274,9 @@ description: Operations executed rotate_after_fillet.kcl
       "labeledArgs": {}
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

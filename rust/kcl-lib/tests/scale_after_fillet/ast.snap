@@ -248,6 +248,20 @@ description: Result of parsing scale_after_fillet.kcl
               },
               "operator": "*",
               "right": {
+                "arguments": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "30deg",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 30.0,
+                      "suffix": "Deg"
+                    }
+                  }
+                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -266,20 +280,8 @@ description: Result of parsing scale_after_fillet.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "30deg",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 30.0,
-                    "suffix": "Deg"
-                  }
-                }
+                "type": "CallExpression",
+                "type": "CallExpression"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -363,6 +365,24 @@ description: Result of parsing scale_after_fillet.kcl
                     "init": {
                       "body": [
                         {
+                          "arguments": [
+                            {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "XZ",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            }
+                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -381,24 +401,8 @@ description: Result of parsing scale_after_fillet.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "XZ",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [
@@ -644,6 +648,24 @@ description: Result of parsing scale_after_fillet.kcl
                                     "type": "Name"
                                   },
                                   {
+                                    "arguments": [
+                                      {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "topEdge",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      }
+                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -662,24 +684,8 @@ description: Result of parsing scale_after_fillet.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpressionKw",
-                                    "type": "CallExpressionKw",
-                                    "unlabeled": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "topEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
                                   }
                                 ],
                                 "end": 0,
@@ -1303,6 +1309,7 @@ description: Result of parsing scale_after_fillet.kcl
                           "unlabeled": null
                         },
                         {
+                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1321,9 +1328,8 @@ description: Result of parsing scale_after_fillet.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpressionKw",
-                          "type": "CallExpressionKw",
-                          "unlabeled": null
+                          "type": "CallExpression",
+                          "type": "CallExpression"
                         },
                         {
                           "arguments": [
@@ -1713,6 +1719,24 @@ description: Result of parsing scale_after_fillet.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
+                                    "arguments": [
+                                      {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "name": "filletEdge",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      }
+                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -1731,24 +1755,8 @@ description: Result of parsing scale_after_fillet.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpressionKw",
-                                    "type": "CallExpressionKw",
-                                    "unlabeled": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "filletEdge",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
                                   }
                                 ],
                                 "end": 0,
@@ -1962,6 +1970,7 @@ description: Result of parsing scale_after_fillet.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1980,9 +1989,8 @@ description: Result of parsing scale_after_fillet.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [

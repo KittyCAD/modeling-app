@@ -205,6 +205,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
+          "arguments": [],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
@@ -223,9 +224,8 @@ description: Result of parsing pipe-flange-assembly.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": null
+          "type": "CallExpression",
+          "type": "CallExpression"
         },
         "preComments": [
           "",
@@ -242,6 +242,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -260,9 +261,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -717,6 +717,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -735,9 +736,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -1351,6 +1351,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1369,9 +1370,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -1846,6 +1846,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1864,9 +1865,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -2350,6 +2350,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -2368,9 +2369,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [
@@ -2658,6 +2658,7 @@ description: Result of parsing pipe-flange-assembly.kcl
         "expression": {
           "body": [
             {
+              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -2676,9 +2677,8 @@ description: Result of parsing pipe-flange-assembly.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpressionKw",
-              "type": "CallExpressionKw",
-              "unlabeled": null
+              "type": "CallExpression",
+              "type": "CallExpression"
             },
             {
               "arguments": [

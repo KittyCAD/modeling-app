@@ -9,22 +9,7 @@ description: Operations executed kw_fn_with_defaults.kcl
       "type": "FunctionCall",
       "name": "increment",
       "functionSourceRange": [],
-      "unlabeledArg": {
-        "value": {
-          "type": "Number",
-          "value": 1.0,
-          "ty": {
-            "type": "Default",
-            "len": {
-              "type": "Mm"
-            },
-            "angle": {
-              "type": "Degrees"
-            }
-          }
-        },
-        "sourceRange": []
-      },
+      "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
