@@ -327,3 +327,73 @@ impl NodePath {
         self.steps.push(step);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::ModuleId;
+
+    fn range(start: usize, end: usize) -> SourceRange {
+        SourceRange::new(start, end, ModuleId::default())
+    }
+
+    #[test]
+    fn test_node_path_from_range() {
+        // Read the contents of the file.
+        let contents = std::fs::read_to_string("tests/misc/cube.kcl").unwrap();
+        let program = crate::Program::parse_no_errs(&contents).unwrap();
+
+        // fn cube(sideLength, center) {
+        //    ^^^^
+        assert_eq!(
+            NodePath::from_range(&program.ast, range(38, 42)).unwrap(),
+            NodePath {
+                steps: vec![Step::ProgramBodyItem { index: 0 }, Step::VariableDeclarationDeclaration],
+            }
+        );
+        // fn cube(sideLength, center) {
+        //                     ^^^^^^
+        assert_eq!(
+            NodePath::from_range(&program.ast, range(55, 61)).unwrap(),
+            NodePath {
+                steps: vec![
+                    Step::ProgramBodyItem { index: 0 },
+                    Step::VariableDeclarationDeclaration,
+                    Step::VariableDeclarationInit,
+                    Step::FunctionExpressionParam { index: 1 }
+                ],
+            }
+        );
+        // |> line(endAbsolute = p1)
+        //                       ^^
+        assert_eq!(
+            NodePath::from_range(&program.ast, range(293, 295)).unwrap(),
+            NodePath {
+                steps: vec![
+                    Step::ProgramBodyItem { index: 0 },
+                    Step::VariableDeclarationDeclaration,
+                    Step::VariableDeclarationInit,
+                    Step::FunctionExpressionBody,
+                    Step::FunctionExpressionBodyItem { index: 7 },
+                    Step::ReturnStatementArg,
+                    Step::PipeBodyItem { index: 2 },
+                    Step::CallKwArg { index: 0 },
+                ],
+            }
+        );
+        // myCube = cube(sideLength = 40, center = [0, 0])
+        //                                             ^
+        assert_eq!(
+            NodePath::from_range(&program.ast, range(485, 486)).unwrap(),
+            NodePath {
+                steps: vec![
+                    Step::ProgramBodyItem { index: 1 },
+                    Step::VariableDeclarationDeclaration,
+                    Step::VariableDeclarationInit,
+                    Step::CallKwArg { index: 1 },
+                    Step::ArrayElement { index: 1 }
+                ],
+            }
+        );
+    }
+}
