@@ -4,8 +4,6 @@ import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
-import { Client } from '@kittycad/lib'
-import { ml } from '@kittycad/lib'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
 import { COOKIE_NAME } from '@src/lib/constants'
@@ -52,6 +50,52 @@ function convertAppRangeToApiRange(
   }
 }
 
+type TextToCadErrorResponse = {
+  error_code: string
+  message: string
+}
+
+async function submitTextToCadRequest(
+  body: {
+    prompt: string
+    source_ranges: Models['SourceRangePrompt_type'][]
+    project_name?: string
+    kcl_version: string
+  },
+  files: KittyCadLibFile[],
+  token: string
+): Promise<TextToCadMultiFileIteration_type | Error> {
+  const formData = new FormData()
+  formData.append('body', JSON.stringify(body))
+
+  files.forEach((file) => {
+    formData.append('files', file.data, file.name)
+  })
+
+  const response = await fetch(
+    `${VITE_KC_API_BASE_URL}/ml/text-to-cad/multi-file/iteration`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  )
+
+  if (!response.ok) {
+    return new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data = await response.json()
+  if ('error_code' in data) {
+    const errorData = data as TextToCadErrorResponse
+    return new Error(errorData.message || 'Unknown error')
+  }
+
+  return data as TextToCadMultiFileIteration_type
+}
+
 export async function submitPromptToEditToQueue({
   prompt,
   selections,
@@ -72,8 +116,6 @@ export async function submitPromptToEditToQueue({
       ? token
       : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
-  const client = new Client(_token)
-
   const kclFilesMap: KclFileMetaMap = {}
   const endPointFiles: KittyCadLibFile[] = []
   projectFiles.forEach((file) => {
@@ -93,9 +135,8 @@ export async function submitPromptToEditToQueue({
 
   // If no selection, use whole file
   if (selections === null) {
-    return ml.create_text_to_cad_multi_file_iteration({
-      client,
-      body: {
+    return submitTextToCadRequest(
+      {
         prompt,
         source_ranges: [],
         project_name:
@@ -104,8 +145,9 @@ export async function submitPromptToEditToQueue({
             : undefined,
         kcl_version: kclManager.kclVersion,
       },
-      files: endPointFiles,
-    })
+      endPointFiles,
+      _token
+    )
   }
 
   // Handle manual code selections and artifact selections differently
@@ -239,9 +281,8 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
-  return ml.create_text_to_cad_multi_file_iteration({
-    client,
-    body: {
+  return submitTextToCadRequest(
+    {
       prompt,
       source_ranges: ranges,
       project_name:
@@ -250,8 +291,9 @@ See later source ranges for more context. about the sweep`,
           : undefined,
       kcl_version: kclManager.kclVersion,
     },
-    files: endPointFiles,
-  })
+    endPointFiles,
+    _token
+  )
 }
 
 export async function getPromptToEditResult(
@@ -309,8 +351,8 @@ export async function doPromptEdit({
   } catch (e: any) {
     return new Error(e.message)
   }
-  if ('error_code' in submitResult) {
-    return new Error(submitResult.message)
+  if (submitResult instanceof Error) {
+    return submitResult
   }
 
   const textToCadComplete = new Promise<
