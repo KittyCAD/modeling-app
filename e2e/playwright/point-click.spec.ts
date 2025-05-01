@@ -6,6 +6,7 @@ import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { bracket } from '@e2e/playwright/fixtures/bracket'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -102,6 +103,102 @@ test.describe('Point-and-click tests', () => {
       await cmdBar.progressCmdBar()
 
       await editor.expectEditor.toContain(expectString)
+    })
+  })
+
+  test('Verify in-pipe extrudes in bracket can be edited', async ({
+    tronApp,
+    context,
+    editor,
+    homePage,
+    page,
+    scene,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, bracket)
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step(`Edit first extrude via feature tree`, async () => {
+      ;(await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: 'width',
+        headerArguments: {
+          Length: '5',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('width - 0.001')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '4.999',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain('extrude(length = width - 0.001)')
+    })
+
+    await test.step(`Edit second extrude via feature tree`, async () => {
+      ;(await toolbar.getFeatureTreeOperation('Extrude', 1)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '-thickness - .01',
+        headerArguments: {
+          Length: '-0.3949',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('-thickness - .01 - 0.001')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '-0.3959',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        'extrude(length = -thickness - .01 - 0.001)'
+      )
+    })
+
+    await test.step(`Edit third extrude via feature tree`, async () => {
+      ;(await toolbar.getFeatureTreeOperation('Extrude', 2)).dblclick()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '-thickness - 0.1',
+        headerArguments: {
+          Length: '-0.4849',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('-thickness - 0.1 - 0.001')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Length: '-0.4859',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        'extrude(length = -thickness - 0.1 - 0.001)'
+      )
     })
   })
 

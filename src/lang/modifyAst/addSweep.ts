@@ -220,12 +220,9 @@ export function addSweep({
 // Utilities
 
 function createSketchExpression(sketches: Expr[]) {
-  let sketchesExpr: Expr | null = null
-  if (sketches.length === 1) {
-    if (sketches[0].type !== 'PipeSubstitution') {
-      sketchesExpr = sketches[0]
-    }
-    // Keep it null if it's a pipe substitution
+  let sketchesExpr: Expr | null | undefined
+  if (sketches.every((s) => s.type === 'PipeSubstitution')) {
+    sketchesExpr = null
   } else {
     sketchesExpr = createArrayExpression(sketches)
   }
