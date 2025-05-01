@@ -1,5 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
