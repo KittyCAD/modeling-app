@@ -54,6 +54,7 @@ import {
   is_points_ccw,
   kcl_lint,
   kcl_settings,
+  node_path_from_range,
   parse_app_settings,
   parse_project_settings,
   parse_wasm,
@@ -61,7 +62,7 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
-import { LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -404,6 +405,35 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
   }
 }
 
+export async function rustImplPathToNode(
+  ast: Program,
+  range: SourceRange
+): Promise<PathToNode> {
+  const nodePath = await nodePathFromRange(ast, range)
+  if (!nodePath) {
+    // When a NodePath can't be found, we use an empty PathToNode.
+    return []
+  }
+  return pathToNodeFromRustNodePath(nodePath)
+}
+
+async function nodePathFromRange(
+  ast: Program,
+  range: SourceRange
+): Promise<NodePath | null> {
+  try {
+    const nodePath: NodePath | null = await node_path_from_range(
+      JSON.stringify(ast),
+      JSON.stringify(range)
+    )
+    return nodePath
+  } catch (e: any) {
+    return Promise.reject(
+      new Error('Caught error getting node path from range', { cause: e })
+    )
+  }
+}
+
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
 }
@@ -508,7 +538,7 @@ function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         break
       case 'CallKwArg':
         pathToNode.push(['arguments', 'CallExpressionKw'])
-        pathToNode.push([step.index, 'index'])
+        pathToNode.push([step.index, ARG_INDEX_FIELD])
         pathToNode.push(['arg', LABELED_ARG_FIELD])
         break
       case 'BinaryLeft':

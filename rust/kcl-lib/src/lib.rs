@@ -236,6 +236,10 @@ impl Program {
         self.ast.lint(rule)
     }
 
+    pub fn node_path_from_range(&self, range: SourceRange) -> Option<NodePath> {
+        NodePath::from_range(&self.ast, range)
+    }
+
     pub fn recast(&self) -> String {
         // Use the default options until we integrate into the UI the ability to change them.
         self.ast.recast(&Default::default(), 0)
