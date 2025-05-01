@@ -147,13 +147,10 @@ export function parseProjectRoute(
  * /dog/cat
  */
 export function joinRouterPaths(...parts: string[]): string {
-  return (
-    '/' +
-    parts
-      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
-      .filter((part) => part.length > 0) // Remove empty segments
-      .join('/')
-  )
+  return `/${parts
+    .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+    .filter((part) => part.length > 0) // Remove empty segments
+    .join('/')}`
 }
 
 /**
