@@ -182,7 +182,7 @@ impl<T> Node<T> {
         self.comment_start = start;
     }
 
-    pub fn map_ref<'a, U: 'a>(&'a self, f: fn(&'a T) -> U) -> Node<U> {
+    pub fn map_ref<'a, U: 'a>(&'a self, f: impl Fn(&'a T) -> U) -> Node<U> {
         Node {
             inner: f(&self.inner),
             start: self.start,
@@ -2327,7 +2327,7 @@ impl Name {
 
     pub fn local_ident(&self) -> Option<Node<&str>> {
         if self.path.is_empty() && !self.abs_path {
-            Some(self.name.map_ref(|n| &n.name))
+            Some(self.name.map_ref(|n| &*n.name))
         } else {
             None
         }

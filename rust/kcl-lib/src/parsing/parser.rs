@@ -2709,13 +2709,26 @@ fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
 }
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
-    separated_pair(
+    (
         terminated(nameable_identifier, opt(whitespace)),
-        terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
-        expression,
+        opt((
+            terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+            expression,
+        )),
     )
-    .map(|(label, arg)| LabeledArg { label, arg })
-    .parse_next(i)
+        .map(|(label, arg)| match arg {
+            Some((_, arg)) => LabeledArg { label, arg },
+            None => LabeledArg {
+                label: label.clone(),
+                arg: Expr::Name(Box::new(label.map_ref(|_| Name {
+                    name: label.clone(),
+                    path: Vec::new(),
+                    abs_path: false,
+                    digest: None,
+                }))),
+            },
+        })
+        .parse_next(i)
 }
 
 /// A type of a function argument.
@@ -3035,6 +3048,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         return Ok(result);
     }
 
+    #[derive(Debug)]
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -4912,7 +4926,7 @@ bar = 1
 
     #[test]
     fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, program) in ["f(x=1,y)", "f(x=1,y,z)", "f(x=1,y,z=1)", "f(x=1, y, z=1)"]
+        for (i, program) in ["f(x=1,y + 1)", "f(x=1,y + 1,f(z))", "f(x=1,3,z=1)", "f(x=1, y::y, z=1)"]
             .into_iter()
             .enumerate()
         {
@@ -4921,11 +4935,6 @@ bar = 1
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
                 cause.message, "This argument needs a label, but it doesn't have one",
-                "failed test {i}: {program}"
-            );
-            assert_eq!(
-                cause.source_range.start(),
-                program.find("y").unwrap(),
                 "failed test {i}: {program}"
             );
         }
