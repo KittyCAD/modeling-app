@@ -366,7 +366,7 @@ export async function doPromptEdit({
 
       while (timeElapsed < MAX_CHECK_TIMEOUT) {
         const check = await getPromptToEditResult(submitResult.id, token)
-        if (check instanceof Error || check.status === 'failed') {
+        if (check instanceof Error || check.status === 'failed' || check.error) {
           reject(check)
           return
         } else if (check.status === 'completed') {
@@ -425,13 +425,8 @@ export async function promptToEditFlow({
   })
   if (err(result)) return Promise.reject(result)
   const oldCodeWebAppOnly = codeManager.code
-  // TODO remove once endpoint isn't returning fake data.
-  const outputs: TextToCadMultiFileIteration_type['outputs'] = {}
-  Object.entries(result.outputs).forEach(([key, value]) => {
-    outputs[key] = value + '\n// yoyo a comment'
-  })
 
-  if (!isDesktop() && Object.values(outputs).length > 1) {
+  if (!isDesktop() && Object.values(result.outputs).length > 1) {
     const toastId = uuidv4()
     toast.error(
       (t) => (
@@ -482,14 +477,14 @@ export async function promptToEditFlow({
 
   if (isDesktop()) {
     // write all of the outputs to disk
-    for (const [relativePath, fileContents] of Object.entries(outputs)) {
+    for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
       window.electron.writeFile(
         window.electron.join(basePath, relativePath),
         fileContents
       )
     }
   } else {
-    const newCode = outputs['main.kcl']
+    const newCode = result.outputs['main.kcl']
     codeManager.updateCodeEditor(newCode)
     const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
     const ranges: SelectionRange[] = diff.insertRanges.map((range) =>
