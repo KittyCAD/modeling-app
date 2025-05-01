@@ -24,7 +24,6 @@ export class HomePageFixture {
   projectTextName!: Locator
   sortByDateBtn!: Locator
   sortByNameBtn!: Locator
-  tutorialBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -44,7 +43,6 @@ export class HomePageFixture {
 
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
-    this.tutorialBtn = this.page.getByTestId('home-tutorial-button')
   }
 
   private _serialiseSortBy = async (): Promise<

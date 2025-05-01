@@ -14,7 +14,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
+    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
+    FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -388,6 +389,99 @@ impl Node<Program> {
         }
 
         true
+    }
+
+    /// Find all the color strings in the program.
+    /// For example `appearance(color = "#ff0000")`
+    /// This is to fulfill the `documentColor` request in LSP.
+    pub fn document_color<'a>(&'a self, code: &str) -> Result<Vec<ColorInformation>> {
+        let colors = Rc::new(RefCell::new(vec![]));
+
+        let add_color = |literal: &Node<Literal>| {
+            // Check if the string is a color.
+            if let Some(c) = literal.value.is_color() {
+                let color = ColorInformation {
+                    range: literal.as_source_range().to_lsp_range(code),
+                    color: tower_lsp::lsp_types::Color {
+                        red: c.r,
+                        green: c.g,
+                        blue: c.b,
+                        alpha: c.a,
+                    },
+                };
+                if colors.borrow().iter().any(|c| *c == color) {
+                    return;
+                }
+                colors.borrow_mut().push(color);
+            }
+        };
+
+        // The position must be within the variable declaration.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::CallExpressionKw(call) => {
+                    if call.inner.callee.inner.name.inner.name == "appearance" {
+                        for arg in &call.arguments {
+                            if arg.label.inner.name == "color" {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
+                                }
+                            }
+                        }
+                    }
+                }
+                crate::walk::Node::Literal(literal) => {
+                    // Check if the literal is a color.
+                    add_color(literal);
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let colors = colors.take();
+        Ok(colors)
+    }
+
+    /// This is to fulfill the `colorPresentation` request in LSP.
+    pub fn color_presentation<'a>(
+        &'a self,
+        color: &Color,
+        pos_start: usize,
+        pos_end: usize,
+    ) -> Result<Option<ColorPresentation>> {
+        let found = Rc::new(RefCell::new(false));
+        // Find the literal with the same start and end.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::Literal(literal) => {
+                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                        found.replace(true);
+                        return Ok(true);
+                    }
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let found = found.take();
+        if !found {
+            return Ok(None);
+        }
+
+        let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
+        Ok(Some(ColorPresentation {
+            // The label will be what they replace the color with.
+            label: new_color.to_hex_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }))
     }
 }
 
