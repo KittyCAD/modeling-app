@@ -1,5 +1,9 @@
 @no_std
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// Any value.
+@(impl = primitive)
+export type any
 
 /// A number
 ///
@@ -57,7 +61,7 @@ export type string
 /// tagged object. The syntax for this is `myTag`.
 /// 
 /// In the example above we use the tag identifier to get the angle of the segment
-/// `segAng(rectangleSegmentA001, %)`.
+/// `segAng(rectangleSegmentA001)`.
 ///
 /// ### Tag Scope
 ///
@@ -84,8 +88,8 @@ export type string
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// rect([20, 0])
+/// rect(origin = [0, 0])
+/// rect(origin = [20, 0])
 /// ```
 ///
 /// Those tags would only be available in the `rect` function and not globally.
@@ -103,17 +107,19 @@ export type string
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99
-///        , %, $rectangleSegmentB001)
+///          tag = $rectangleSegmentB001,
+///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001)
-///        , %, $rectangleSegmentC001)
+///          tag = $rectangleSegmentC001,
+///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// myRect = rect([20, 0])
+/// rect(origin = [0, 0])
+/// myRect = rect(origin = [20, 0])
 /// 
 /// myRect
 ///   |> extrude(length = 10)
@@ -234,13 +240,13 @@ export type Edge
 
 /// A point in two dimensional space.
 ///
-/// `Point2d` is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value
+/// `Point2d` is an alias for a two-element array of [number](/docs/kcl-std/types/std-types-number)s. To write a value
 /// with type `Point2d`, use an array, e.g., `[0, 0]` or `[5.0, 3.14]`.
 export type Point2d = [number(Length); 2]
 
 /// A point in three dimensional space.
 ///
-/// `Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
+/// `Point3d` is an alias for a three-element array of [number](/docs/kcl-std/types/std-types-number)s. To write a value
 /// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
 export type Point3d = [number(Length); 3]
 

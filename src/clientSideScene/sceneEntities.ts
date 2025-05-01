@@ -26,7 +26,6 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
 import type { Models } from '@kittycad/lib/dist/types/src'
-import type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
@@ -119,6 +118,7 @@ import {
   createNodeFromExprSnippet,
   getInsertIndex,
   insertNewStartProfileAt,
+  mutateKwArgOnly,
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
@@ -764,10 +764,10 @@ export class SceneEntities {
         )
 
         let seg: Group
-        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+        const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
           maybeModdedAst,
           segPathToNode,
-          ['CallExpression', 'CallExpressionKw']
+          ['CallExpressionKw']
         )
         if (err(_node1)) {
           this.tearDownSketch({ removeAxis: false })
@@ -1091,8 +1091,8 @@ export class SceneEntities {
             resolvedFunctionName = 'tangentialArc'
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
-            //   |> tangentialArcTo([5, -10], %, $arc001)
-            //   |> angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+            //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
+            //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
 
             const previousSegmentPathToNode = getNodePathFromSourceRange(
               modifiedAst,
@@ -2241,19 +2241,13 @@ export class SceneEntities {
               ),
             ])
 
-            const arcToCallExp = getNodeFromPath<CallExpression>(
+            const arcToCallExp = getNodeFromPath<CallExpressionKw>(
               modded,
               mod.pathToNode,
-              'CallExpression'
+              'CallExpressionKw'
             )
             if (err(arcToCallExp)) return
-            const firstArg = arcToCallExp.node.arguments[0]
-            if (firstArg.type !== 'ObjectExpression') return
-            for (const prop of firstArg.properties) {
-              if (prop.key.type === 'Identifier' && prop.key.name === 'end') {
-                prop.value = originCoords
-              }
-            }
+            mutateKwArgOnly(ARG_END_ABSOLUTE, arcToCallExp.node, originCoords)
 
             const moddedResult = addCloseToPipe({
               node: modded,
@@ -2903,16 +2897,15 @@ export class SceneEntities {
       Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
       Number(sketchNodePaths[0][1][0])
 
-    const _node = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
-      return
+    if (node.type !== 'CallExpressionKw') return
 
     let modded:
       | {
@@ -3335,12 +3328,11 @@ export class SceneEntities {
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
-          const _node = getNodeFromPath<
-            Node<CallExpression | CallExpressionKw>
-          >(updatedAst, parent.userData.pathToNode, [
-            'CallExpressionKw',
-            'CallExpression',
-          ])
+          const _node = getNodeFromPath<Node<CallExpressionKw>>(
+            updatedAst,
+            parent.userData.pathToNode,
+            ['CallExpressionKw']
+          )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
           this.editorManager.setHighlightRange([

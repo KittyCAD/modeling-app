@@ -11,10 +11,12 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
+pub use path::NodePath;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
+    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
+    FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -25,7 +27,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
+    execution::{
+        annotations,
+        types::{ArrayLen, UnitAngle, UnitLen},
+        KclValue, Metadata, TagIdentifier,
+    },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -34,6 +40,7 @@ use crate::{
 mod condition;
 mod literal_value;
 mod none;
+mod path;
 
 #[derive(Debug)]
 pub enum Definition<'a> {
@@ -156,6 +163,10 @@ impl<T> Node<T> {
 
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        self.as_source_range().contains_range(range)
     }
 
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
@@ -347,12 +358,28 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_meta_settings(&self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<UnitLen>,
+        angle_units: Option<UnitAngle>,
+    ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                node.inner = Annotation::new_from_meta_settings(&settings);
+                if let Some(len) = length_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_LENGTH,
+                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    );
+                }
+                if let Some(angle) = angle_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_ANGLE,
+                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                    );
+                }
+
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -362,9 +389,21 @@ impl Node<Program> {
         }
 
         if !found {
-            new_program
-                .inner_attrs
-                .push(Node::no_src(Annotation::new_from_meta_settings(&settings)));
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(len) = length_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_LENGTH,
+                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+            if let Some(angle) = angle_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_ANGLE,
+                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
         }
 
         Ok(new_program)
@@ -388,6 +427,99 @@ impl Node<Program> {
         }
 
         true
+    }
+
+    /// Find all the color strings in the program.
+    /// For example `appearance(color = "#ff0000")`
+    /// This is to fulfill the `documentColor` request in LSP.
+    pub fn document_color<'a>(&'a self, code: &str) -> Result<Vec<ColorInformation>> {
+        let colors = Rc::new(RefCell::new(vec![]));
+
+        let add_color = |literal: &Node<Literal>| {
+            // Check if the string is a color.
+            if let Some(c) = literal.value.is_color() {
+                let color = ColorInformation {
+                    range: literal.as_source_range().to_lsp_range(code),
+                    color: tower_lsp::lsp_types::Color {
+                        red: c.r,
+                        green: c.g,
+                        blue: c.b,
+                        alpha: c.a,
+                    },
+                };
+                if colors.borrow().iter().any(|c| *c == color) {
+                    return;
+                }
+                colors.borrow_mut().push(color);
+            }
+        };
+
+        // The position must be within the variable declaration.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::CallExpressionKw(call) => {
+                    if call.inner.callee.inner.name.inner.name == "appearance" {
+                        for arg in &call.arguments {
+                            if arg.label.inner.name == "color" {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
+                                }
+                            }
+                        }
+                    }
+                }
+                crate::walk::Node::Literal(literal) => {
+                    // Check if the literal is a color.
+                    add_color(literal);
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let colors = colors.take();
+        Ok(colors)
+    }
+
+    /// This is to fulfill the `colorPresentation` request in LSP.
+    pub fn color_presentation<'a>(
+        &'a self,
+        color: &Color,
+        pos_start: usize,
+        pos_end: usize,
+    ) -> Result<Option<ColorPresentation>> {
+        let found = Rc::new(RefCell::new(false));
+        // Find the literal with the same start and end.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::Literal(literal) => {
+                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                        found.replace(true);
+                        return Ok(true);
+                    }
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let found = found.take();
+        if !found {
+            return Ok(None);
+        }
+
+        let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
+        Ok(Some(ColorPresentation {
+            // The label will be what they replace the color with.
+            label: new_color.to_hex_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }))
     }
 }
 
@@ -440,6 +572,16 @@ impl Program {
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.get_expr_for_position(pos),
             BodyItem::ReturnStatement(return_statement) => Some(&return_statement.argument),
         }
+    }
+
+    /// Checks if the ast has any import statements.    
+    pub fn has_import_statements(&self) -> bool {
+        for item in &self.body {
+            if let BodyItem::ImportStatement(_) = item {
+                return true;
+            }
+        }
+        false
     }
 
     pub fn in_comment(&self, pos: usize) -> bool {
@@ -724,6 +866,11 @@ impl BodyItem {
         }
     }
 
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let item_range = SourceRange::from(self);
+        item_range.contains_range(range)
+    }
+
     pub(crate) fn set_attrs(&mut self, attr: NodeList<Annotation>) {
         match self {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
@@ -817,7 +964,6 @@ pub enum Expr {
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     PipeExpression(BoxNode<PipeExpression>),
     PipeSubstitution(BoxNode<PipeSubstitution>),
@@ -863,7 +1009,6 @@ impl Expr {
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
-            Expr::CallExpression(_call_exp) => None,
             Expr::CallExpressionKw(_call_exp) => None,
             Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
@@ -891,7 +1036,6 @@ impl Expr {
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
@@ -912,7 +1056,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.start,
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
-            Expr::CallExpression(call_expression) => call_expression.start,
             Expr::CallExpressionKw(call_expression) => call_expression.start,
             Expr::PipeExpression(pipe_expression) => pipe_expression.start,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
@@ -935,7 +1078,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.end,
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
-            Expr::CallExpression(call_expression) => call_expression.end,
             Expr::CallExpressionKw(call_expression) => call_expression.end,
             Expr::PipeExpression(pipe_expression) => pipe_expression.end,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
@@ -951,6 +1093,11 @@ impl Expr {
         }
     }
 
+    fn contains_range(&self, range: &SourceRange) -> bool {
+        let expr_range = SourceRange::from(self);
+        expr_range.contains_range(range)
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
@@ -961,7 +1108,6 @@ impl Expr {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
             Expr::FunctionExpression(_function_identifier) => {}
-            Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
@@ -990,7 +1136,6 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
-            Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
             Expr::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
             Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
@@ -1005,16 +1150,6 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
-        }
-    }
-
-    pub fn has_substitution_arg(&self) -> bool {
-        match self {
-            Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
-            Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
-            Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
-            Expr::AscribedExpression(expr) => expr.expr.has_substitution_arg(),
-            _ => false,
         }
     }
 
@@ -1065,6 +1200,20 @@ impl From<Expr> for SourceRange {
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
         Self::new(value.start(), value.end(), value.module_id())
+    }
+}
+
+impl From<&BinaryPart> for Expr {
+    fn from(value: &BinaryPart) -> Self {
+        match value {
+            BinaryPart::Literal(literal) => Expr::Literal(literal.clone()),
+            BinaryPart::Name(name) => Expr::Name(name.clone()),
+            BinaryPart::BinaryExpression(binary_expression) => Expr::BinaryExpression(binary_expression.clone()),
+            BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
+            BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
+            BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+        }
     }
 }
 
@@ -1126,7 +1275,6 @@ pub enum BinaryPart {
     Literal(BoxNode<Literal>),
     Name(BoxNode<Name>),
     BinaryExpression(BoxNode<BinaryExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
@@ -1152,7 +1300,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.get_constraint_level(),
             BinaryPart::Name(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
-            BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
@@ -1166,9 +1313,6 @@ impl BinaryPart {
             BinaryPart::Name(_) => {}
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.replace_value(source_range, new_value)
-            }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.replace_value(source_range, new_value)
             }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.replace_value(source_range, new_value)
@@ -1186,7 +1330,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.start,
             BinaryPart::Name(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
-            BinaryPart::CallExpression(call_expression) => call_expression.start,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
@@ -1199,7 +1342,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.end,
             BinaryPart::Name(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
-            BinaryPart::CallExpression(call_expression) => call_expression.end,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
@@ -1214,9 +1356,6 @@ impl BinaryPart {
             BinaryPart::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.rename_identifiers(old_name, new_name)
@@ -1429,6 +1568,15 @@ pub struct Annotation {
 }
 
 impl Annotation {
+    // Creates a named annotation with an empty (but present) property list, `@name()`.
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Annotation {
+            name: Some(Identifier::new(name)),
+            properties: Some(vec![]),
+            digest: None,
+        })
+    }
+
     pub fn is_inner(&self) -> bool {
         self.name.is_some()
     }
@@ -1437,22 +1585,16 @@ impl Annotation {
         self.name.as_ref().map(|n| &*n.name)
     }
 
-    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
-        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
-            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
-        )];
-
-        if settings.default_angle_units != Default::default() {
-            properties.push(ObjectProperty::new(
-                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
-            ));
-        }
-        Annotation {
-            name: Some(Identifier::new(annotations::SETTINGS)),
-            properties: Some(properties),
-            digest: None,
+    pub(crate) fn add_or_update(&mut self, label: &str, value: Expr) {
+        match &mut self.properties {
+            Some(props) => match props.iter_mut().find(|p| p.key.name == label) {
+                Some(p) => {
+                    p.value = value;
+                    p.digest = None;
+                }
+                None => props.push(ObjectProperty::new(Identifier::new(label), value)),
+            },
+            None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
 }
@@ -1711,18 +1853,6 @@ pub struct ExpressionStatement {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
-pub struct CallExpression {
-    pub callee: Node<Name>,
-    pub arguments: Vec<Expr>,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub digest: Option<Digest>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Name>,
@@ -1746,34 +1876,9 @@ pub struct LabeledArg {
     pub arg: Expr,
 }
 
-impl From<Node<CallExpression>> for Expr {
-    fn from(call_expression: Node<CallExpression>) -> Self {
-        Expr::CallExpression(Box::new(call_expression))
-    }
-}
-
 impl From<Node<CallExpressionKw>> for Expr {
     fn from(call_expression: Node<CallExpressionKw>) -> Self {
         Expr::CallExpressionKw(Box::new(call_expression))
-    }
-}
-
-impl Node<CallExpression> {
-    /// Return the constraint level for this call expression.
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.arguments.is_empty() {
-            return ConstraintLevel::Ignore {
-                source_ranges: vec![self.into()],
-            };
-        }
-
-        // Iterate over the arguments and get the constraint level for each one.
-        let mut constraint_levels = ConstraintLevels::new();
-        for arg in &self.arguments {
-            constraint_levels.push(arg.get_constraint_level());
-        }
-
-        constraint_levels.get_constraint_level(self.into())
     }
 }
 
@@ -1796,38 +1901,6 @@ impl Node<CallExpressionKw> {
     }
 }
 
-impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
-        Ok(Node::no_src(Self {
-            callee: Name::new(name),
-            arguments,
-            digest: None,
-        }))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for arg in &mut self.arguments {
-            arg.replace_value(source_range, new_value.clone());
-        }
-    }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.callee.rename(old_name, new_name);
-
-        for arg in &mut self.arguments {
-            arg.rename_identifiers(old_name, new_name);
-        }
-    }
-}
-
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
@@ -1845,13 +1918,6 @@ impl CallExpressionKw {
             .iter()
             .map(|e| (None, e))
             .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg.arg, Expr::PipeSubstitution(_)))
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -2701,6 +2767,11 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<MemberObject> for SourceRange {
@@ -2736,6 +2807,11 @@ impl LiteralIdentifier {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
         }
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 
@@ -3255,6 +3331,11 @@ impl Parameter {
     pub fn optional(&self) -> bool {
         self.default_value.is_some()
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<&Parameter> for SourceRange {
@@ -3645,11 +3726,11 @@ mod tests {
     fn test_get_lsp_folding_ranges() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3657,7 +3738,7 @@ blah = 1
 foo = false
 baz = {a = 1, b = "thing"}
 
-fn ghi(x) {
+fn ghi(@x) {
   return x
 }
 
@@ -3667,24 +3748,24 @@ ghi("things")
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 27);
-        assert_eq!(folding_ranges[0].end_line, 126);
+        assert_eq!(folding_ranges[0].end_line, 123);
         assert_eq!(
             folding_ranges[0].collapsed_text,
             Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 145);
-        assert_eq!(folding_ranges[1].end_line, 244);
+        assert_eq!(folding_ranges[1].start_line, 142);
+        assert_eq!(folding_ranges[1].end_line, 238);
         assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
-        assert_eq!(folding_ranges[2].start_line, 350);
-        assert_eq!(folding_ranges[2].end_line, 363);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 345);
+        assert_eq!(folding_ranges[2].end_line, 358);
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(@x) {".to_string()));
     }
 
     #[test]
     fn test_get_lsp_symbols() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3710,12 +3791,12 @@ h = 30
 
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
-  |> arc({
+  |> arc(
        angle_end = 360,
        angle_start = 0,
        radius = r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -3731,12 +3812,12 @@ h = 30
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
   // comment
-  |> arc({
+  |> arc(
        angle_end= 360,
        angle_start= 0,
        radius= r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -4011,7 +4092,7 @@ cylinder = startSketchOn(-XZ)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
-        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let some_program_string = r#"some_func({thing = true, other_thing = false})"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // We want to get the bool and verify it is a bool.
@@ -4029,14 +4110,17 @@ cylinder = startSketchOn(-XZ)
             panic!("expected a function!");
         };
 
-        let Expr::CallExpression(ce) = expression else {
-            panic!("expected a function!");
-        };
+        let oe = match expression {
+            Expr::CallExpressionKw(ce) => {
+                assert!(ce.unlabeled.is_some());
 
-        assert!(!ce.arguments.is_empty());
+                let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
+                    panic!("expected a object!");
+                };
+                oe
+            }
 
-        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
-            panic!("expected a object!");
+            other => panic!("expected a CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);
@@ -4087,10 +4171,7 @@ startSketchOn(XY)"#;
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4119,10 +4200,7 @@ startSketchOn(XY)
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4157,10 +4235,7 @@ startSketchOn(XY)
         let program = crate::parsing::top_level_parse(code).unwrap();
 
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Cm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();

@@ -13,7 +13,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import type { CallExpressionKw } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
@@ -34,6 +34,8 @@ import type {
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
+import { localModuleSafePathSplit } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -60,7 +62,8 @@ export function useEngineConnectionSubscriptions() {
           }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0][0] !== 0 &&
+          (editorManager.highlightRange[0] &&
+            editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
           editorManager.setHighlightRange([defaultSourceRange()])
@@ -146,7 +149,7 @@ export function useEngineConnectionSubscriptions() {
                 }
 
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'defaultPlane',
                     planeId: planeId,
@@ -163,7 +166,7 @@ export function useEngineConnectionSubscriptions() {
                 const planeInfo =
                   await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'offsetPlane',
                     zAxis: [
@@ -192,7 +195,7 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
 
-              // Artifact is likely an extrusion face
+              // Artifact is likely an sweep face
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
@@ -207,7 +210,7 @@ export function useEngineConnectionSubscriptions() {
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = importDetails.value.split('/')
+                    const paths = localModuleSafePathSplit(importDetails.value)
                     const fileName = paths[paths.length - 1]
                     showSketchOnImportToast(fileName)
                   } else if (
@@ -282,23 +285,17 @@ export function useEngineConnectionSubscriptions() {
                   }
                 }
                 if (!chamferInfo) return null
-                const segmentCallExpr = getNodeFromPath<
-                  CallExpression | CallExpressionKw
-                >(
+                const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
                   kclManager.ast,
                   chamferInfo?.segment.codeRef.pathToNode || [],
-                  ['CallExpression', 'CallExpressionKw']
+                  ['CallExpressionKw']
                 )
                 if (err(segmentCallExpr)) return null
-                if (
-                  segmentCallExpr.node.type !== 'CallExpression' &&
-                  segmentCallExpr.node.type !== 'CallExpressionKw'
-                )
+                if (segmentCallExpr.node.type !== 'CallExpressionKw')
                   return null
-                const sketchNodeArgs =
-                  segmentCallExpr.node.type == 'CallExpression'
-                    ? segmentCallExpr.node.arguments
-                    : segmentCallExpr.node.arguments.map((la) => la.arg)
+                const sketchNodeArgs = segmentCallExpr.node.arguments.map(
+                  (la) => la.arg
+                )
                 const tagDeclarator = sketchNodeArgs.find(
                   ({ type }) => type === 'TagDeclarator'
                 )
@@ -322,15 +319,31 @@ export function useEngineConnectionSubscriptions() {
                     }
                   : { type: 'wall' }
 
+              if (err(extrusion)) {
+                return Promise.reject(
+                  new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+                )
+              }
+
+              const lastChild =
+                findAllChildrenAndOrderByPlaceInCode(
+                  { type: 'sweep', ...extrusion },
+                  kclManager.artifactGraph
+                )[0] || null
+              const lastChildCodeRef =
+                lastChild?.type === 'compositeSolid'
+                  ? lastChild.codeRef.range
+                  : null
+
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
                     kclManager.ast,
-                    extrusion.codeRef.range
+                    lastChildCodeRef || extrusion.codeRef.range
                   )
                 : []
 
               sceneInfra.modelingSend({
-                type: 'Select default plane',
+                type: 'Select sketch plane',
                 data: {
                   type: 'extrudeFace',
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],

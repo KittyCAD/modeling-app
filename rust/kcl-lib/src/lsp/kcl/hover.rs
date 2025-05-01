@@ -89,7 +89,6 @@ impl Expr {
             Expr::FunctionExpression(function_expression) => {
                 function_expression.get_hover_value_for_position(pos, code, opts)
             }
-            Expr::CallExpression(call_expression) => call_expression.get_hover_value_for_position(pos, code, opts),
             Expr::CallExpressionKw(call_expression) => call_expression.get_hover_value_for_position(pos, code, opts),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_hover_value_for_position(pos, code, opts),
             Expr::ArrayExpression(array_expression) => array_expression.get_hover_value_for_position(pos, code, opts),
@@ -144,9 +143,6 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(binary_expression) => {
                 binary_expression.get_hover_value_for_position(pos, code, opts)
             }
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.get_hover_value_for_position(pos, code, opts)
-            }
             BinaryPart::CallExpressionKw(call_expression) => {
                 call_expression.get_hover_value_for_position(pos, code, opts)
             }
@@ -158,35 +154,6 @@ impl BinaryPart {
                 member_expression.get_hover_value_for_position(pos, code, opts)
             }
         }
-    }
-}
-
-impl CallExpression {
-    fn get_hover_value_for_position(&self, pos: usize, code: &str, opts: &HoverOpts) -> Option<Hover> {
-        let callee_source_range: SourceRange = self.callee.clone().into();
-        if callee_source_range.contains(pos) {
-            return Some(Hover::Function {
-                name: self.callee.to_string(),
-                range: callee_source_range.to_lsp_range(code),
-            });
-        }
-
-        for (index, arg) in self.arguments.iter().enumerate() {
-            let source_range: SourceRange = arg.into();
-            if source_range.contains(pos) {
-                return if opts.prefer_sig {
-                    Some(Hover::Signature {
-                        name: self.callee.to_string(),
-                        parameter_index: index as u32,
-                        range: source_range.to_lsp_range(code),
-                    })
-                } else {
-                    arg.get_hover_value_for_position(pos, code, opts)
-                };
-            }
-        }
-
-        None
     }
 }
 

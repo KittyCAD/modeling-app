@@ -2,7 +2,7 @@
 // A guide for routing a notch into a cross bar.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 routerDiameter = 12.7

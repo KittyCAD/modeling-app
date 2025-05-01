@@ -23,10 +23,12 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
+  IS_ML_EXPERIMENTAL,
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  ML_EXPERIMENTAL_MESSAGE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -62,27 +64,20 @@ export type ModelingCommandSchema = {
   Extrude: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    selection: Selections // & { type: 'face' } would be cool to lock that down
-    // result: (typeof EXTRUSION_RESULTS)[number]
-    distance: KclCommandValue
+    // KCL stdlib arguments
+    sketches: Selections
+    length: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // Arguments
-    target: Selections
-    trajectory: Selections
-    sectional: boolean
+    // KCL stdlib arguments
+    sketches: Selections
+    path: Selections
+    sectional?: boolean
   }
   Loft: {
-    selection: Selections
-  }
-  Shell: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections
-    thickness: KclCommandValue
+    sketches: Selections
   }
   Revolve: {
     // Enables editing workflow
@@ -90,10 +85,17 @@ export type ModelingCommandSchema = {
     // Flow arg
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
-    selection: Selections
+    sketches: Selections
     angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+  }
+  Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
+    selection: Selections
+    thickness: KclCommandValue
   }
   Fillet: {
     // Enables editing workflow
@@ -386,26 +388,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
-        multiple: false, // TODO: multiple selection
+        multiple: true,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      // result: {
-      //   inputType: 'options',
-      //   defaultValue: 'add',
-      //   skip: true,
-      //   required: true,
-      //   options: EXTRUSION_RESULTS.map((r) => ({
-      //     name: r,
-      //     isCurrent: r === 'add',
-      //     value: r,
-      //   })),
-      // },
-      distance: {
+      length: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
@@ -424,26 +414,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         skip: true,
         inputType: 'text',
         required: false,
+        hidden: true,
       },
-      target: {
+      sketches: {
         inputType: 'selection',
-        selectionTypes: ['solid2d'],
+        selectionTypes: ['solid2d', 'segment'],
+        multiple: true,
         required: true,
-        skip: true,
-        multiple: false,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      trajectory: {
+      path: {
         inputType: 'selection',
         selectionTypes: ['segment'],
         required: true,
-        skip: true,
         multiple: false,
         validation: sweepValidator,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       sectional: {
         inputType: 'options',
+        skip: true,
+        defaultValue: false,
+        hidden: false,
         required: true,
         options: [
           { name: 'False', value: false },
@@ -456,42 +448,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Loft: {
     description: 'Create a 3D body by blending between two or more sketches',
     icon: 'loft',
-    needsReview: false,
+    needsReview: true,
     args: {
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
-        skip: false,
         validation: loftValidator,
-      },
-    },
-  },
-  Shell: {
-    description: 'Hollow out a 3D solid.',
-    icon: 'shell',
-    needsReview: true,
-    args: {
-      nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-      },
-      selection: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
-        multiple: true,
-        required: true,
-        validation: shellValidator,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      thickness: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
       },
     },
   },
@@ -507,12 +471,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: false,
       },
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
-        multiple: false, // TODO: multiple selection
+        multiple: true,
         required: true,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axisOrEdge: {
@@ -551,6 +514,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       angle: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+    },
+  },
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
     },
@@ -964,8 +954,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Prompt-to-edit': {
-    description: 'Use Zoo AI to edit your kcl',
+    description: 'Use Zoo AI to edit your parts and code.',
     icon: 'chat',
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
       selection: {
         inputType: 'selectionMixed',
@@ -989,6 +980,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       prompt: {
         inputType: 'text',
         required: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },

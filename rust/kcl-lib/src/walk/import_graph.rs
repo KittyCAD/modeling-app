@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
@@ -8,6 +7,7 @@ use anyhow::Result;
 
 use crate::{
     errors::KclErrorDetails,
+    execution::typed_path::TypedPath,
     modules::{ModulePath, ModuleRepr},
     parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
     walk::{Node, Visitable},
@@ -21,8 +21,9 @@ type Dependency = (String, String);
 
 type Graph = Vec<Dependency>;
 
-type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath, ModuleRepr);
-type Universe = HashMap<String, DependencyInfo>;
+pub(crate) type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath, ModuleRepr);
+pub(crate) type UniverseMap = HashMap<TypedPath, AstNode<ImportStatement>>;
+pub(crate) type Universe = HashMap<String, DependencyInfo>;
 
 /// Process a number of programs, returning the graph of dependencies.
 ///
@@ -184,7 +185,7 @@ pub(crate) async fn import_universe(
     repr: &ModuleRepr,
     out: &mut Universe,
     exec_state: &mut ExecState,
-) -> Result<HashMap<PathBuf, crate::parsing::ast::types::Node<ImportStatement>>, KclError> {
+) -> Result<UniverseMap, KclError> {
     let modules = import_dependencies(repr, ctx)?;
     let mut module_imports = HashMap::new();
     for (filename, import_stmt, module_path) in modules {

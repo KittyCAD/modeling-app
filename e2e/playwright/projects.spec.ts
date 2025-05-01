@@ -837,7 +837,7 @@ test.describe(`Project management commands`, () => {
         name: 'Submit command',
       })
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No Projects found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -949,7 +949,7 @@ test.describe(`Project management commands`, () => {
         name: 'Submit command',
       })
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No Projects found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1265,7 +1265,7 @@ test(
     })
 
     await test.step('Check that the home page is empty', async () => {
-      await expect(page.getByText('No Projects found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
     })
 
     await test.step('Check we can still create a project', async () => {
@@ -1434,8 +1434,8 @@ test(
     // Constants and locators
     const projectLinks = page.getByTestId('project-link')
 
-    // expect to see text "No Projects found"
-    await expect(page.getByText('No Projects found')).toBeVisible()
+    // expect to see text "No projects found"
+    await expect(page.getByText('No projects found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(projectLinks.getByText('project-000')).toBeVisible()
@@ -1693,7 +1693,7 @@ test(
 
       await homePage.projectsLoaded()
 
-      await expect(page.getByText('No Projects found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'project-000' })

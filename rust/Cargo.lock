@@ -714,6 +714,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "csscolorparser"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46f9a16a848a7fb95dd47ce387ac1ee9a6df879ba784b815537fcd388a1a8288"
+dependencies = [
+ "phf",
+]
+
+[[package]]
 name = "darling"
 version = "0.20.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1806,7 +1815,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "anyhow",
  "clap",
@@ -1817,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1836,7 +1845,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1845,7 +1854,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.65"
+version = "0.2.66"
 dependencies = [
  "anyhow",
  "clap",
@@ -1866,7 +1875,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "anyhow",
  "clap",
@@ -1886,7 +1895,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.65"
+version = "0.2.66"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1899,6 +1908,7 @@ dependencies = [
  "console_error_panic_hook",
  "convert_case",
  "criterion",
+ "csscolorparser",
  "dashmap 6.1.0",
  "dhat",
  "expectorate",
@@ -1945,6 +1955,7 @@ dependencies = [
  "ts-rs",
  "twenty-twenty",
  "tynm",
+ "typed-path",
  "url",
  "uuid",
  "validator",
@@ -1959,7 +1970,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.65"
+version = "0.3.66"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1974,7 +1985,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1987,7 +1998,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2001,8 +2012,9 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.65"
+version = "0.1.66"
 dependencies = [
+ "anyhow",
  "bson",
  "console_error_panic_hook",
  "data-encoding",
@@ -2014,13 +2026,16 @@ dependencies = [
  "kcl-lib",
  "kittycad",
  "kittycad-modeling-cmds",
+ "pretty_assertions",
  "serde_json",
  "tokio",
  "toml",
  "tower-lsp",
+ "typed-path",
  "uuid",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "wasm-bindgen-test",
  "wasm-streams",
  "web-sys",
 ]
@@ -2064,9 +2079,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.114"
+version = "0.2.115"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "681ce29b9da92aa6f8bfc003ccb79a9f1a84368e064d68684327b3181dfe16ec"
+checksum = "e95dfcade93787f8a7529ad7b9b81f038823e273e7684297085ef720962b7497"
 dependencies = [
  "anyhow",
  "chrono",
@@ -2306,6 +2321,16 @@ checksum = "f7c44f8e672c00fe5308fa235f821cb4198414e1c77935c1ab6948d3fd78550e"
 dependencies = [
  "mime",
  "unicase",
+]
+
+[[package]]
+name = "minicov"
+version = "0.3.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f27fe9f1cc3c22e1687f9446c2083c4c5fc7f0bcf1c7a86bdbded14985895b4b"
+dependencies = [
+ "cc",
+ "walkdir",
 ]
 
 [[package]]
@@ -2628,6 +2653,48 @@ dependencies = [
  "once_cell",
  "pest",
  "sha2",
+]
+
+[[package]]
+name = "phf"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1fd6780a80ae0c52cc120a26a1a42c1ae51b247a253e4e06113d23d2c2edd078"
+dependencies = [
+ "phf_macros",
+ "phf_shared",
+]
+
+[[package]]
+name = "phf_generator"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3c80231409c20246a13fddb31776fb942c38553c51e871f8cbd687a4cfb5843d"
+dependencies = [
+ "phf_shared",
+ "rand 0.8.5",
+]
+
+[[package]]
+name = "phf_macros"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f84ac04429c13a7ff43785d75ad27569f2951ce0ffd30a3321230db2fc727216"
+dependencies = [
+ "phf_generator",
+ "phf_shared",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
+]
+
+[[package]]
+name = "phf_shared"
+version = "0.11.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "67eabc2ef2a60eb7faa00097bd1ffdb5bd28e62bf39990626a582201b7a754e5"
+dependencies = [
+ "siphasher",
 ]
 
 [[package]]
@@ -3576,6 +3643,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bbbb5d9659141646ae647b42fe094daf6c6192d1620870b449d9557f748b2daa"
 
 [[package]]
+name = "siphasher"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56199f7ddabf13fe5074ce809e7d3f42b42ae711800501b5b16ea82ad029c39d"
+
+[[package]]
 name = "slab"
 version = "0.4.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4329,6 +4402,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "typed-path"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c462d18470a2857aa657d338af5fa67170bb48bcc80a296710ce3b0802a32566"
+
+[[package]]
 name = "typenum"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4583,6 +4662,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1a05d73b933a847d6cccdda8f838a22ff101ad9bf93e33684f39c1f5f0eece3d"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "wasm-bindgen-test"
+version = "0.3.50"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "66c8d5e33ca3b6d9fa3b4676d774c5778031d27a578c2b007f905acf816152c3"
+dependencies = [
+ "js-sys",
+ "minicov",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "wasm-bindgen-test-macro",
+]
+
+[[package]]
+name = "wasm-bindgen-test-macro"
+version = "0.3.50"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "17d5042cc5fa009658f9a7333ef24291b1291a25b6382dd68862a7f3b969f69b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.100",
 ]
 
 [[package]]

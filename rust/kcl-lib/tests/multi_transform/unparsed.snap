@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing multi_transform.kcl
 ---
-fn transform(i) {
+fn transform(@i) {
   return [
     { translate = [30 * i, 0, 0] },
     { rotation = { angle = 45 * i } }

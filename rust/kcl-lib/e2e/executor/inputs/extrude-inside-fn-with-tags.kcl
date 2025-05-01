@@ -48,7 +48,7 @@ fn bracketSketch(w, d, t) {
 }
 
 // build the body of the bracket
-bs = bracketSketch(width, depth, thk)
+bs = bracketSketch(w = width, d = depth, t = thk)
 bracketBody = bs
   |> fillet(
        radius = radius,

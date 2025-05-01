@@ -2201,7 +2201,8 @@ description: Variables in memory after executing import_async.kcl
     }
   },
   "leftInvolute": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "module": {
     "type": "Number",
@@ -2263,7 +2264,8 @@ description: Variables in memory after executing import_async.kcl
     }
   },
   "rightInvolute": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "rs": {
     "type": "MixedArray",
@@ -3598,7 +3600,7 @@ description: Variables in memory after executing import_async.kcl
   },
   "screw": {
     "type": "Module",
-    "value": 8
+    "value": 1
   },
   "start": {
     "type": "Sketch",

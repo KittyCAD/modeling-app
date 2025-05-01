@@ -2,7 +2,7 @@
 // The plastic case for the front of the walkie talkie
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters and Zoo logo
 import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
@@ -62,10 +62,10 @@ case = startSketchOn(XZ)
   |> subtract2d(tool = squareHolePatternSketch)
 
   // Create the Zoo logo
-  |> subtract2d(tool = zLogo(startSketchOn(XZ), [-.30, -1.825], .20))
-  |> subtract2d(tool = oLogo(startSketchOn(XZ), [-.075, -1.825], .20))
-  |> subtract2d(tool = oLogo2(startSketchOn(XZ), [-.075, -1.825], .20))
-  |> subtract2d(tool = oLogo(startSketchOn(XZ), [.175, -1.825], .20))
-  |> subtract2d(tool = oLogo2(startSketchOn(XZ), [.175, -1.825], .20))
+  |> subtract2d(tool = zLogo(surface = startSketchOn(XZ), origin = [-.30, -1.825], scale = .20))
+  |> subtract2d(tool = oLogo(surface = startSketchOn(XZ), origin = [-.075, -1.825], scale = .20))
+  |> subtract2d(tool = oLogo2(surface = startSketchOn(XZ), origin = [-.075, -1.825], scale = .20))
+  |> subtract2d(tool = oLogo(surface = startSketchOn(XZ), origin = [.175, -1.825], scale = .20))
+  |> subtract2d(tool = oLogo2(surface = startSketchOn(XZ), origin = [.175, -1.825], scale = .20))
 extrude(case, length = -0.0625)
   |> appearance(color = '#D0FF01', metalness = 0, roughness = 50)

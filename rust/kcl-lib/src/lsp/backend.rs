@@ -11,6 +11,7 @@ use tower_lsp::lsp_types::{
     TextDocumentItem, WorkspaceFolder,
 };
 
+use crate::execution::typed_path::TypedPath;
 use crate::fs::FileSystem;
 
 /// A trait for the backend of the language server.
@@ -75,18 +76,13 @@ where
         self.inner_on_change(params, false).await;
     }
 
-    async fn update_from_disk<P: AsRef<std::path::Path> + std::marker::Send>(&self, path: P) -> Result<()> {
+    async fn update_from_disk(&self, path: &TypedPath) -> Result<()> {
         // Read over all the files in the directory and add them to our current code map.
-        let files = self.fs().get_all_files(path.as_ref(), Default::default()).await?;
+        let files = self.fs().get_all_files(path, Default::default()).await?;
         for file in files {
             // Read the file.
             let contents = self.fs().read(&file, Default::default()).await?;
-            let file_path = format!(
-                "file://{}",
-                file.as_path()
-                    .to_str()
-                    .ok_or_else(|| anyhow::anyhow!("could not get name of file: {:?}", file))?
-            );
+            let file_path = format!("file://{}", file.to_string_lossy());
             self.insert_code_map(file_path, contents).await;
         }
 
@@ -139,7 +135,7 @@ where
         }
         for added in params.event.added {
             // Try to read all the files in the project.
-            let project_dir = added.uri.to_string().replace("file://", "");
+            let project_dir = TypedPath::from(&added.uri.to_string().replace("file://", ""));
             if let Err(err) = self.update_from_disk(&project_dir).await {
                 self.client()
                     .log_message(

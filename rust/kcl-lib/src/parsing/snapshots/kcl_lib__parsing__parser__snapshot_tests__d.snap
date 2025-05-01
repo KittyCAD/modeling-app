@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 30,
+        "end": 27,
         "id": {
           "commentStart": 0,
           "end": 5,
@@ -51,27 +51,6 @@ expression: actual
               "type": "BinaryExpression"
             },
             {
-              "arguments": [
-                {
-                  "commentStart": 24,
-                  "end": 26,
-                  "raw": "45",
-                  "start": 24,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 45.0,
-                    "suffix": "None"
-                  }
-                },
-                {
-                  "commentStart": 28,
-                  "end": 29,
-                  "start": 28,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
-                }
-              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 17,
@@ -88,14 +67,26 @@ expression: actual
                 "type": "Name"
               },
               "commentStart": 17,
-              "end": 30,
+              "end": 27,
               "start": 17,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "commentStart": 24,
+                "end": 26,
+                "raw": "45",
+                "start": 24,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 45.0,
+                  "suffix": "None"
+                }
+              }
             }
           ],
           "commentStart": 8,
-          "end": 30,
+          "end": 27,
           "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -103,7 +94,7 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 30,
+      "end": 27,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -111,6 +102,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 30,
+  "end": 27,
   "start": 0
 }

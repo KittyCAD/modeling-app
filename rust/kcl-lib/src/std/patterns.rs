@@ -96,7 +96,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
-/// fn transform(id) {
+/// fn transform(@id) {
 ///   return { translate = [4 * id, 0, 0] }
 /// }
 ///
@@ -110,7 +110,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // Each instance will be shifted along the X axis,
 /// // with a gap between the original (at x = 0) and the first replica
 /// // (at x = 8). This is because `id` starts at 1.
-/// fn transform(id) {
+/// fn transform(@id) {
 ///   return { translate = [4 * (1+id), 0, 0] }
 /// }
 ///
@@ -140,7 +140,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// width = 20
-/// fn transform(i) {
+/// fn transform(@i) {
 ///   return {
 ///     // Move down each time.
 ///     translate = [0, 0, -i * width],
@@ -155,7 +155,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// myCubes =
-///   cube(width, [100,0])
+///   cube(length = width, center = [100,0])
 ///   |> patternTransform(instances = 25, transform = transform)
 /// ```
 ///
@@ -180,7 +180,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// width = 20
-/// fn transform(i) {
+/// fn transform(@i) {
 ///   return {
 ///     translate = [0, 0, -i * width],
 ///     rotation = {
@@ -191,7 +191,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   }
 /// }
 /// myCubes =
-///   cube(width, [100,100])
+///   cube(length = width, center = [100,100])
 ///   |> patternTransform(instances = 4, transform = transform)
 /// ```
 /// ```no_run
@@ -201,7 +201,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// t = 0.005 // taper factor [0-1)
 /// // Defines how to modify each layer of the vase.
 /// // Each replica is shifted up the Z axis, and has a smoothly-varying radius
-/// fn transform(replicaId) {
+/// fn transform(@replicaId) {
 ///   scale = r * abs(1 - (t * replicaId)) * (5 + cos((replicaId / 8): number(rad)))
 ///   return {
 ///     translate = [0, 0, replicaId * 10],
@@ -219,7 +219,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// vase = layer() |> patternTransform(instances = 100, transform = transform)
 /// ```
 /// ```
-/// fn transform(i) {
+/// fn transform(@i) {
 ///   // Transform functions can return multiple transforms. They'll be applied in order.
 ///   return [
 ///     { translate = [30 * i, 0, 0] },
@@ -247,7 +247,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_transform<'a>(
     solids: Vec<Solid>,
@@ -282,7 +283,7 @@ async fn inner_pattern_transform<'a>(
 /// Just like patternTransform, but works on 2D sketches not 3D solids.
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
-/// fn transform(id) {
+/// fn transform(@id) {
 ///   return { translate = [4 * id, 0] }
 /// }
 ///
@@ -300,7 +301,8 @@ async fn inner_pattern_transform<'a>(
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_pattern_transform_2d<'a>(
     sketches: Vec<Sketch>,
@@ -872,7 +874,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
         axis = { docs = "The axis of the pattern. A 2D vector." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_linear_3d(
     solids: Vec<Solid>,
@@ -1069,7 +1072,8 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
@@ -1184,7 +1188,8 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["solid"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(

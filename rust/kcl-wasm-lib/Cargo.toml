@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.65"
+version = "0.1.66"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -43,6 +43,14 @@ features = [
 
 [features]
 dhat-heap = ["kcl-lib/dhat-heap"]
+
+[dev-dependencies]
+anyhow.workspace = true
+pretty_assertions = "1.4.1"
+wasm-bindgen-test = "0.3.50"
+
+[dependencies]
+typed-path = "0.11.0"
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]

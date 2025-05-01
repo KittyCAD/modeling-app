@@ -83,9 +83,9 @@ pub enum KclValue {
         value: Box<Helix>,
     },
     ImportedGeometry(ImportedGeometry),
-    #[ts(skip)]
     Function {
-        #[serde(skip)]
+        #[serde(serialize_with = "function_value_stub")]
+        #[ts(type = "null")]
         value: FunctionSource,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -107,6 +107,13 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+}
+
+fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_unit()
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -261,20 +268,6 @@ impl KclValue {
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
         }
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
-        let KclValue::Function {
-            value: FunctionSource::User { ast, .. },
-            ..
-        } = self
-        else {
-            return None;
-        };
-        // TODO: It would be nice if we could extract the source range starting
-        // at the fn, but that's the variable declaration.
-        Some(ast.as_source_range())
     }
 
     #[allow(unused)]

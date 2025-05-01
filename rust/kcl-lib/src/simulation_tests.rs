@@ -282,6 +282,7 @@ fn assert_common_snapshots(
             insta::assert_json_snapshot!("ops", operations, {
                 "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
                 "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+                "[].*.unlabeledArg.value.value" => rounded_redaction(4),
                 "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
                 "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
                 ".**.sourceRange" => Vec::new(),
@@ -2688,6 +2689,27 @@ mod clone_w_fillets {
 }
 mod clone_w_shell {
     const TEST_NAME: &str = "clone_w_shell";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod involute_circular_units {
+    const TEST_NAME: &str = "involute_circular_units";
 
     /// Test parsing KCL.
     #[test]

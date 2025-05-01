@@ -17,4 +17,4 @@ fn cube(length, center) {
   |> extrude(length = length)
 }
 
-myCube = cube(40, [0,0])
+myCube = cube(length=40, center=[0,0])

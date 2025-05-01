@@ -6,54 +6,8 @@ expression: actual
   "body": [
     {
       "commentStart": 0,
-      "end": 15,
+      "end": 12,
       "expression": {
-        "arguments": [
-          {
-            "commentStart": 5,
-            "elements": [
-              {
-                "commentStart": 6,
-                "end": 7,
-                "raw": "0",
-                "start": 6,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 0.0,
-                  "suffix": "None"
-                }
-              },
-              {
-                "abs_path": false,
-                "commentStart": 9,
-                "end": 10,
-                "name": {
-                  "commentStart": 9,
-                  "end": 10,
-                  "name": "l",
-                  "start": 9,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 9,
-                "type": "Name",
-                "type": "Name"
-              }
-            ],
-            "end": 11,
-            "start": 5,
-            "type": "ArrayExpression",
-            "type": "ArrayExpression"
-          },
-          {
-            "commentStart": 13,
-            "end": 14,
-            "start": 13,
-            "type": "PipeSubstitution",
-            "type": "PipeSubstitution"
-          }
-        ],
         "callee": {
           "abs_path": false,
           "commentStart": 0,
@@ -70,10 +24,47 @@ expression: actual
           "type": "Name"
         },
         "commentStart": 0,
-        "end": 15,
+        "end": 12,
         "start": 0,
-        "type": "CallExpression",
-        "type": "CallExpression"
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": {
+          "commentStart": 5,
+          "elements": [
+            {
+              "commentStart": 6,
+              "end": 7,
+              "raw": "0",
+              "start": 6,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 0.0,
+                "suffix": "None"
+              }
+            },
+            {
+              "abs_path": false,
+              "commentStart": 9,
+              "end": 10,
+              "name": {
+                "commentStart": 9,
+                "end": 10,
+                "name": "l",
+                "start": 9,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 9,
+              "type": "Name",
+              "type": "Name"
+            }
+          ],
+          "end": 11,
+          "start": 5,
+          "type": "ArrayExpression",
+          "type": "ArrayExpression"
+        }
       },
       "start": 0,
       "type": "ExpressionStatement",
@@ -81,6 +72,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 15,
+  "end": 12,
   "start": 0
 }

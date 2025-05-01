@@ -97,7 +97,7 @@ The following will need to be run when checking out a new commit and guarantees 
 ```bash
 npm install
 npm run build:wasm
-npm start # or npm run build:local && npm run serve for slower but more production-like build
+npm start
 ```
 
 ## Before submitting a PR
@@ -300,130 +300,16 @@ Which will run our suite of [Vitest unit](https://vitest.dev/) and [React Testin
 
 ### Rust tests
 
-**Dependencies**
+Prepare these system dependencies:
 
-- `KITTYCAD_API_TOKEN`
-- `cargo-nextest`
-- `just`
+- Set `$KITTYCAD_API_TOKEN` from https://dev.zoo.dev/account/api-tokens
+- Install `just` following [these instructions](https://just.systems/man/en/packages.html)
 
-#### Setting KITTYCAD_API_TOKEN
-
-Use the production zoo.dev token, set this environment variable before running the tests
-
-#### Installing cargonextest
+then run tests that target the KCL language:
 
 ```
-cd rust
-cargo search cargo-nextest
-cargo install cargo-nextest
+npm run test:rust
 ```
-
-#### just
-
-install [`just`](https://github.com/casey/just?tab=readme-ov-file#pre-built-binaries)
-
-#### Running the tests
-
-```bash
-# With just
-# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
-# Make sure you installed cargo-nextest
-# Make sure you installed just
-cd rust
-just test
-```
-
-```bash
-# Without just
-# Make sure KITTYCAD_API_TOKEN=<prod zoo.dev token> is set
-# Make sure you installed cargo-nextest
-cd rust
-export RUST_BRACKTRACE="full" && cargo nextest run --workspace --test-threads=1
-```
-
-Where `XXX` is an API token from the production engine (NOT the dev environment).
-
-We recommend using [nextest](https://nexte.st/) to run the Rust tests (its faster and is used in CI). Once installed, run the tests using
-
-```
-cd rust
-KITTYCAD_API_TOKEN=XXX cargo run nextest
-```
-
-### Mapping CI CD jobs to local commands
-
-When you see the CI CD fail on jobs you may wonder three things
-
-- Do I have a bug in my code?
-- Is the test flaky?
-- Is there a bug in `main`?
-
-To answer these questions the following commands will give you confidence to locate the issue.
-
-#### Static Analysis
-
-Part of the CI CD pipeline performs static analysis on the code. Use the following commands to mimic the CI CD jobs.
-
-The following set of commands should get us closer to one and done commands to instantly retest issues.
-
-```
-npm run test-setup
-```
-
-> Gotcha, are packages up to date and is the wasm built?
-
-```
-npm run tsc
-npm run fmt:check
-npm run lint
-npm run test:unit:local
-```
-
-> Gotcha: Our unit tests have integration tests in them. You need to run a localhost server to run the unit tests.
-
-#### E2E Tests
-
-**Playwright Electron**
-
-These E2E tests run in electron. There are tests that are skipped if they are ran in a windows, linux, or macos environment. We can use playwright tags to implement test skipping.
-
-```
-npm run test:playwright:electron:local
-npm run test:playwright:electron:windows:local
-npm run test:playwright:electron:macos:local
-npm run test:playwright:electron:ubuntu:local
-```
-
-> Why does it say local? The CI CD commands that run in the pipeline cannot be ran locally. A single command will not properly setup the testing environment locally.
-
-#### Some notes on CI
-
-The tests are broken into snapshot tests and non-snapshot tests, and they run in that order, they automatically commit new snap shots, so if you see an image commit check it was an intended change. If we have non-determinism in the snapshots such that they are always committing new images, hopefully this annoyance makes us fix them asap, if you notice this happening let Kurt know. But for the odd occasion `git reset --hard HEAD~ && git push -f` is your friend.
-
-How to interpret failing playwright tests?
-If your tests fail, click through to the action and see that the tests failed on a line that includes `await page.getByTestId('loading').waitFor({ state: 'detached' })`, this means the test fail because the stream never started. It's you choice if you want to re-run the test, or ignore the failure.
-
-We run on ubuntu and macos, because safari doesn't work on linux because of the dreaded "no RTCPeerConnection variable" error. But linux runs first and then macos for the same reason that we limit the number of parallel tests to 1 because we limit stream connections per user, so tests would start failing we if let them run together.
-
-If something fails on CI you can download the artifact, unzip it and then open `playwright-report/data/<UUID>.zip` with https://trace.playwright.dev/ to see what happened.
-
-#### Getting started writing a playwright test in our app
-
-Besides following the instructions above and using the playwright docs, our app is weird because of the whole stream thing, which means our testing is weird. Because we've just figured out this stuff and therefore docs might go stale quick here's a 15min vid/tutorial
-
-https://github.com/KittyCAD/modeling-app/assets/29681384/6f5e8e85-1003-4fd9-be7f-f36ce833942d
-
-<details>
-
-<summary>
-PS: for the debug panel, the following JSON is useful for snapping the camera
-</summary>
-
-```JSON
-{"type":"modeling_cmd_req","cmd_id":"054e5472-e5e9-4071-92d7-1ce3bac61956","cmd":{"type":"default_camera_look_at","center":{"x":15,"y":0,"z":0},"up":{"x":0,"y":0,"z":1},"vantage":{"x":30,"y":30,"z":30}}}
-```
-
-</details>
 
 ### Logging
 

@@ -18,29 +18,30 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind, CompletionOptions,
-        CompletionParams, CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
+        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
+        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
         DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
         DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
-        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
-        DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
-        FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
-        InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
-        MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
-        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
-        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
-        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
+        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
+        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
+        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
+        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
+        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
+        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
 
 use crate::{
-    docs::kcl_doc::DocData,
+    docs::kcl_doc::ModData,
     errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
@@ -515,7 +516,7 @@ impl Backend {
                             }
                             return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                         }
-                        crate::walk::Node::CallExpression(call_expr) => {
+                        crate::walk::Node::CallExpressionKw(call_expr) => {
                             let sr: SourceRange = (&call_expr.callee).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
@@ -827,6 +828,39 @@ impl Backend {
 
         Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
+
+    /// Returns the new string for the code after rename.
+    pub fn inner_prepare_rename(
+        &self,
+        params: &TextDocumentPositionParams,
+        new_name: &str,
+    ) -> RpcResult<Option<(String, String)>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(None);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
+
+        // Parse the ast.
+        // I don't know if we need to do this again since it should be updated in the context.
+        // But I figure better safe than sorry since this will write back out to the file.
+        let module_id = ModuleId::default();
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+            return Ok(None);
+        };
+
+        // Let's convert the position to a character index.
+        let pos = position_to_char_index(params.position, current_code);
+        // Now let's perform the rename on the ast.
+        ast.rename_symbol(new_name, pos);
+        // Now recast it.
+        let recast = ast.recast(&Default::default(), 0);
+
+        Ok(Some((current_code.to_string(), recast)))
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -838,6 +872,7 @@ impl LanguageServer for Backend {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                color_provider: Some(ColorProviderCapability::Simple(true)),
                 code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
                     code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
                     resolve_provider: Some(false),
@@ -1459,42 +1494,37 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
-        let filename = params.text_document_position.text_document.uri.to_string();
-
-        let Some(current_code) = self.code_map.get(&filename) else {
-            return Ok(None);
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Some((current_code, new_code)) =
+            self.inner_prepare_rename(&params.text_document_position, &params.new_name)?
+        else {
             return Ok(None);
         };
 
-        // Parse the ast.
-        // I don't know if we need to do this again since it should be updated in the context.
-        // But I figure better safe than sorry since this will write back out to the file.
-        let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
-            return Ok(None);
-        };
-
-        // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, current_code);
-        // Now let's perform the rename on the ast.
-        ast.rename_symbol(&params.new_name, pos);
-        // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len(), module_id);
-        let range = source_range.to_lsp_range(current_code);
+        let source_range = SourceRange::new(0, current_code.len(), ModuleId::default());
+        let range = source_range.to_lsp_range(&current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,
                 vec![TextEdit {
-                    new_text: recast,
+                    new_text: new_code,
                     range,
                 }],
             )])),
             document_changes: None,
             change_annotations: None,
         }))
+    }
+
+    async fn prepare_rename(&self, params: TextDocumentPositionParams) -> RpcResult<Option<PrepareRenameResponse>> {
+        if self
+            .inner_prepare_rename(&params, "someNameNoOneInTheirRightMindWouldEverUseForTesting")?
+            .is_none()
+        {
+            return Ok(None);
+        }
+
+        // Return back to the client, that it is safe to use the rename behavior.
+        Ok(Some(PrepareRenameResponse::DefaultBehavior { default_behavior: true }))
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> RpcResult<Option<Vec<FoldingRange>>> {
@@ -1552,12 +1582,61 @@ impl LanguageServer for Backend {
 
         Ok(Some(actions))
     }
+
+    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        // Get the colors from the ast.
+        let Ok(colors) = ast.ast.document_color(current_code) else {
+            return Ok(vec![]);
+        };
+
+        Ok(colors)
+    }
+
+    async fn color_presentation(&self, params: ColorPresentationParams) -> RpcResult<Vec<ColorPresentation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        let pos_start = position_to_char_index(params.range.start, current_code);
+        let pos_end = position_to_char_index(params.range.end, current_code);
+
+        // Get the colors from the ast.
+        let Ok(Some(presentation)) = ast.ast.color_presentation(&params.color, pos_start, pos_end) else {
+            return Ok(vec![]);
+        };
+
+        Ok(vec![presentation])
+    }
 }
 
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(
     stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
+    kcl_std: &ModData,
 ) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
     let combined = stdlib.combined();
@@ -1566,8 +1645,10 @@ pub fn get_completions_from_stdlib(
         completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
-    for d in kcl_std {
-        completions.insert(d.name().to_owned(), d.to_completion_item());
+    for d in kcl_std.all_docs() {
+        if let Some(ci) = d.to_completion_item() {
+            completions.insert(d.name().to_owned(), ci);
+        }
     }
 
     let variable_kinds = VariableKind::to_completion_items();
@@ -1579,7 +1660,7 @@ pub fn get_completions_from_stdlib(
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocData]) -> HashMap<String, SignatureHelp> {
+pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
     let combined = stdlib.combined();
 
@@ -1587,7 +1668,7 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
 
-    for d in kcl_std {
+    for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
             signatures.insert(d.name().to_owned(), sig);
         }
@@ -1599,7 +1680,7 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
 /// Get signatures from our stdlib.
 pub fn get_arg_maps_from_stdlib(
     stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
+    kcl_std: &ModData,
 ) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
     let combined = stdlib.combined();
@@ -1633,7 +1714,7 @@ pub fn get_arg_maps_from_stdlib(
         }
     }
 
-    for _d in kcl_std {
+    for _d in kcl_std.all_docs() {
         // TODO add KCL std fns
     }
 
@@ -1661,4 +1742,49 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_position_to_char_index_first_line() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(0, 3);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 3);
+    }
+
+    #[test]
+    fn test_position_to_char_index() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(1, 4);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 15);
+    }
+
+    #[test]
+    fn test_position_to_char_index_with_newline() {
+        let code = r#"def foo():
+
+return 42"#;
+        let position = Position::new(2, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 12);
+    }
+
+    #[test]
+    fn test_position_to_char_at_end() {
+        let code = r#"def foo():
+return 42"#;
+
+        let position = Position::new(1, 8);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 19);
+    }
 }

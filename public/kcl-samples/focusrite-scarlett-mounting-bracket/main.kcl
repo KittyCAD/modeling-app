@@ -2,7 +2,7 @@
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // define parameters
 radius = 6.0
@@ -14,17 +14,6 @@ holeDiam = 5
 tabLength = 25
 tabWidth = 12
 tabThk = 4
-
-// Define a rectangular shape func
-fn rectShape(pos, w, l) {
-  rr = startSketchOn(XY)
-    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
-    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
-    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
-    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
-    |> close(tag = $edge04)
-  return rr
-}
 
 // Define the bracket plane
 bracketPlane = {
@@ -50,7 +39,7 @@ fn bracketSketch(w, d, t) {
 }
 
 // Build the body of the bracket
-bs = bracketSketch(width, depth, thk)
+bs = bracketSketch(w = width, d = depth, t = thk)
 bracketBody = bs
   |> extrude(length = length + 2 * thk)
   |> fillet(

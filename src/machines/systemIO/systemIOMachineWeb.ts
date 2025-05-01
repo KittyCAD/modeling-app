@@ -7,6 +7,7 @@ import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsU
 import { err } from '@src/lib/trap'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
+import { engineStreamZoomToFit } from '@src/lib/utils'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -17,7 +18,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedFileName: string
+          requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
@@ -40,9 +41,25 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         input.rootContext.codeManager.updateCodeStateEditor(codeToWrite)
         await input.rootContext.codeManager.writeToFile()
         await input.rootContext.kclManager.executeCode()
+
+        // Needed for zoom_to_fit to work until #6545 is fixed:
+        // https://github.com/KittyCAD/modeling-app/issues/6545
+        await input.rootContext.kclManager.hidePlanes()
+
+        // Alternatively, this makes it work too:
+        // await engineViewIsometricWithGeometryPresent({
+        //   engineCommandManager: input.rootContext.engineCommandManager,
+        //   padding: 0.2,
+        // })
+
+        await engineStreamZoomToFit({
+          engineCommandManager: input.rootContext.engineCommandManager,
+          padding: 0.2,
+        })
+
         return {
           message: 'File overwritten successfully',
-          fileName: input.requestedFileName,
+          fileName: input.requestedFileNameWithExtension,
           projectName: '',
           subRoute: input.requestedSubRoute || '',
         }

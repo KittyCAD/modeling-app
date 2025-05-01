@@ -1,3 +1,4 @@
 [codespell]
 ignore-words-list: crate,everytime,inout,co-ordinate,ot,nwo,atleast,ue,afterall,ser,fromM,FromM
-skip: **/target,node_modules,build,dist,./out,**/Cargo.lock,./docs/kcl/*.md,./e2e/playwright/lib/console-error-whitelist.ts,.package-lock.json,**/package-lock.json,./openapi/*.json,./packages/codemirror-lang-kcl/test/all.test.ts,./public/kcl-samples,./rust/kcl-lib/tests/kcl_samples,tsconfig.tsbuildinfo,./src/lib/machine-api.d.ts
+skip: **/target,node_modules,build,dist,./out,**/Cargo.lock,./docs/**/*.md,./e2e/playwright/lib/console-error-whitelist.ts,.package-lock.json,**/package-lock.json,./openapi/*.json,./packages/codemirror-lang-kcl/test/all.test.ts,./public/kcl-samples,./rust/kcl-lib/tests/kcl_samples,tsconfig.tsbuildinfo,./src/lib/machine-api.d.ts,./test-results,./playwright-report,./kcl-book/book
+

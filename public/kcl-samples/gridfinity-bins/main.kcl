@@ -2,7 +2,7 @@
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 binLength = 41.5
@@ -27,7 +27,7 @@ countBinHeight = 2
 height = firstStep + secondStep + thirdStep
 
 // Define a function which builds the profile of the baseplate bin
-fn face(plane) {
+fn face(@plane) {
   faceSketch = startSketchOn(plane)
     |> startProfile(at = [binBaseLength + binTol, 0])
     |> yLine(length = height)

@@ -253,7 +253,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedFileName: DEFAULT_PROJECT_KCL_FILE,
+        requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
         requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING.INDEX,
@@ -286,10 +286,9 @@ export async function resetCodeAndAdvanceOnboarding({
   codeManager.updateCodeStateEditor(bracket)
   codeManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
-  // TODO: this is not navigating to the correct `/onboarding/blah` path yet
   navigate(
     makeUrlPathRelative(
-      `${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(onboardingStatus)}`
+      joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
     )
   )
 }

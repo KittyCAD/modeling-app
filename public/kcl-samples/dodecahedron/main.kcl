@@ -2,13 +2,13 @@
 // A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the a dodecahedron with a series of intersects.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define the dihedral angle for a regular dodecahedron
 dihedral = 116.565
 
 // Create a face template function that makes a large thin cube
-fn createFaceTemplate(dither) {
+fn createFaceTemplate(@dither) {
   baseSketch = startSketchOn(XY)
     |> startProfile(at = [-1000 - dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, -1000 - dither])
@@ -62,7 +62,7 @@ dodecFaces = map(
   },
 )
 
-fn calculateArrayLength(arr) {
+fn calculateArrayLength(@arr) {
   return reduce(
     arr,
     initial = 0,
@@ -72,7 +72,7 @@ fn calculateArrayLength(arr) {
   )
 }
 
-fn createIntersection(solids) {
+fn createIntersection(@solids) {
   fn reduceIntersect(previous, current) {
     return intersect([previous, current])
   }

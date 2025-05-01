@@ -28,9 +28,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1735,
-            "end": 1741,
-            "start": 1735,
+            "commentStart": 2009,
+            "end": 2015,
+            "start": 2009,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -62,9 +62,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1909,
-            "end": 1915,
-            "start": 1909,
+            "commentStart": 2183,
+            "end": 2189,
+            "start": 2183,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -75,9 +75,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1958,
-            "end": 1964,
-            "start": 1958,
+            "commentStart": 2232,
+            "end": 2238,
+            "start": 2232,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -88,9 +88,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1997,
-            "end": 2003,
-            "start": 1997,
+            "commentStart": 2271,
+            "end": 2277,
+            "start": 2271,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -122,9 +122,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2181,
-            "end": 2187,
-            "start": 2181,
+            "commentStart": 2455,
+            "end": 2461,
+            "start": 2455,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -135,9 +135,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2238,
-            "end": 2244,
-            "start": 2238,
+            "commentStart": 2512,
+            "end": 2518,
+            "start": 2512,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -148,9 +148,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2288,
-            "end": 2294,
-            "start": 2288,
+            "commentStart": 2562,
+            "end": 2568,
+            "start": 2562,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -192,9 +192,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1735,
-              "end": 1741,
-              "start": 1735,
+              "commentStart": 2009,
+              "end": 2015,
+              "start": 2009,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -289,9 +289,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1909,
-              "end": 1915,
-              "start": 1909,
+              "commentStart": 2183,
+              "end": 2189,
+              "start": 2183,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -314,9 +314,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 1958,
-              "end": 1964,
-              "start": 1958,
+              "commentStart": 2232,
+              "end": 2238,
+              "start": 2232,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -339,9 +339,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 1997,
-              "end": 2003,
-              "start": 1997,
+              "commentStart": 2271,
+              "end": 2277,
+              "start": 2271,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -436,9 +436,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2181,
-              "end": 2187,
-              "start": 2181,
+              "commentStart": 2455,
+              "end": 2461,
+              "start": 2455,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -461,9 +461,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "commentStart": 2238,
-              "end": 2244,
-              "start": 2238,
+              "commentStart": 2512,
+              "end": 2518,
+              "start": 2512,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -486,9 +486,9 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "commentStart": 2288,
-              "end": 2294,
-              "start": 2288,
+              "commentStart": 2562,
+              "end": 2568,
+              "start": 2562,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -774,7 +774,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     }
   },
   "primaryTube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "primaryTubeDiameter": {
     "type": "Number",

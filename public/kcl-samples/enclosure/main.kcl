@@ -2,7 +2,7 @@
 // An enclosure body and sealing lid for storing items
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 length = 175
@@ -34,7 +34,7 @@ extrude001 = extrude(sketch001, length = height)
   |> shell(faces = [END], thickness = wallThickness)
 
 // Define a function to create the internal structure to secure a fastener at each corner
-fn function001(originStart) {
+fn function001(@originStart) {
   // Create a plane to sketch on shell interior
   plane001 = {
     origin = [0.0, 0.0, wallThickness],

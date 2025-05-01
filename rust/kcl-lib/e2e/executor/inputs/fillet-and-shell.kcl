@@ -24,25 +24,25 @@ connectorPadding = 4
 
 miniHdmiHole = startSketchOn(XY)
   |> startProfile(at = [0, border + miniHdmiDistance - (miniHdmiWidth / 2)])
-  |> lineTo([
+  |> line(endAbsolute = [
        0,
        border + miniHdmiDistance + miniHdmiWidth / 2
-     ], %)
-  |> lineTo([
+     ])
+  |> line(endAbsolute = [
        1,
        border + miniHdmiDistance + miniHdmiWidth / 2
-     ], %)
-  |> lineTo([
+     ])
+  |> line(endAbsolute = [
        1,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ], %)
+     ])
   |> close()
 
 case = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  |> line(endAbsolute = [caseWidth, 0], $edge1)
-  |> line(endAbsolute = [caseWidth, caseLength], $edge2)
-  |> line(endAbsolute = [0, caseLength], $edge3)
+  |> line(endAbsolute = [caseWidth, 0], tag = $edge1)
+  |> line(endAbsolute = [caseWidth, caseLength], tag = $edge2)
+  |> line(endAbsolute = [0, caseLength], tag = $edge3)
   |> close(tag = $edge4)
   |> extrude(length = caseHeight)
   |> fillet(
@@ -65,15 +65,15 @@ fn m25Screw(x, y, height) {
   return screw
 }
 
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
 
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
 
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
 
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
 
 shell(
-  faces = ['end'],
+  faces = [END],
   thickness = caseThickness
 )

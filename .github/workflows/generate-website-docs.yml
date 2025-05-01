@@ -38,15 +38,13 @@ jobs:
         run: |
           mkdir -p documentation/content/pages/docs/kcl/
           # cleanup old
-          rm -rf documentation/content/pages/docs/kcl/*.md
-          rm -rf documentation/content/pages/docs/kcl/types
-          rm -rf documentation/content/pages/docs/kcl/settings
-          rm -rf documentation/content/pages/docs/kcl/consts
+          rm -rf documentation/content/pages/docs/kcl-std
+          rm -rf documentation/content/pages/docs/kcl-lang
           # move new
-          mv -f docs/kcl/*.md documentation/content/pages/docs/kcl/
-          mv -f docs/kcl/types documentation/content/pages/docs/kcl/
-          mv -f docs/kcl/settings documentation/content/pages/docs/kcl/
-          mv -f docs/kcl/consts documentation/content/pages/docs/kcl/
+          mv -f docs/kcl-std documentation/content/pages/docs
+          mv -f docs/kcl-lang documentation/content/pages/docs
+          # We don't need the README
+          rm documentation/content/pages/docs/kcl-std/README.md
       - name: move kcl-samples
         shell: bash
         run: |

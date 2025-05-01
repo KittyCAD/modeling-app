@@ -2,7 +2,7 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
@@ -72,14 +72,14 @@ fn fanBlade(offsetHeight, startAngle: number(deg)) {
 }
 
 // Loft the fan blade cross sections into a single blade, then pattern them about the fan center
-loft([
-       fanBlade(4.5, 50),
-       fanBlade((fanHeight - 2 - 4) / 2, 30),
-       fanBlade(fanHeight - 2, 0)
-     ])
+crossSections = [
+  fanBlade(offsetHeight = 4.5, startAngle = 50),
+  fanBlade(offsetHeight = (fanHeight - 2 - 4) / 2, startAngle = 30),
+  fanBlade(offsetHeight = fanHeight - 2, startAngle = 0)
+]
+loft(crossSections)
   |> appearance(color = "#f3e2d8")
   |> patternCircular3d(
-       %,
        instances = 9,
        axis = [0, 0, 1],
        center = [0, 0, 0],

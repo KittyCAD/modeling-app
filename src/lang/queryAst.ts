@@ -2,29 +2,31 @@ import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpressi
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
-
-import { ARG_TAG } from '@src/lang/constants'
-import { createLocalName } from '@src/lang/create'
+import { createLocalName, createPipeSubstitution } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { getArgForEnd, getFirstArg } from '@src/lang/std/sketch'
+import {
+  codeRefFromRange,
+  getArtifactOfTypes,
+} from '@src/lang/std/artifactGraph'
+import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
-import { findKwArg, topLevelRange } from '@src/lang/util'
+import { topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
   ArtifactGraph,
   BinaryExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
   Identifier,
+  Literal,
+  Name,
   ObjectExpression,
   ObjectProperty,
   PathToNode,
@@ -52,6 +54,8 @@ import { getAngle, isArray } from '@src/lib/utils'
 
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import type { UnaryExpression } from 'typescript'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -222,15 +226,6 @@ export function traverse(
         [index, 'index'],
       ])
     )
-  } else if (_node.type === 'CallExpression') {
-    _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpression']])
-    _node.arguments.forEach((arg, index) =>
-      _traverse(arg, [
-        ...pathToNode,
-        ['arguments', 'CallExpression'],
-        [index, 'index'],
-      ])
-    )
   } else if (_node.type === 'CallExpressionKw') {
     _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
     if (_node.unlabeled !== null) {
@@ -239,14 +234,16 @@ export function traverse(
         ['unlabeled', 'Unlabeled arg'],
       ])
     }
-    _node.arguments.forEach((arg, index) =>
-      _traverse(arg.arg, [
-        ...pathToNode,
-        ['arguments', 'CallExpressionKw'],
-        [index, ARG_INDEX_FIELD],
-        ['arg', LABELED_ARG_FIELD],
-      ])
-    )
+    if (_node.arguments) {
+      _node.arguments.forEach((arg, index) =>
+        _traverse(arg.arg, [
+          ...pathToNode,
+          ['arguments', 'CallExpressionKw'],
+          [index, ARG_INDEX_FIELD],
+          ['arg', LABELED_ARG_FIELD],
+        ])
+      )
+    }
   } else if (_node.type === 'BinaryExpression') {
     _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])
@@ -398,11 +395,13 @@ export function isNodeSafeToReplacePath(
   const acceptedNodeTypes: SyntaxType[] = [
     'BinaryExpression',
     'Name',
-    'CallExpression',
+    'CallExpressionKw',
     'Literal',
     'UnaryExpression',
   ]
-  const _node1 = getNodeFromPath(ast, path, acceptedNodeTypes)
+  const _node1 = getNodeFromPath<
+    BinaryExpression | Name | CallExpressionKw | Literal | UnaryExpression
+  >(ast, path, acceptedNodeTypes)
   if (err(_node1)) return _node1
   const { node: value, deepPath: outPath } = _node1
 
@@ -436,6 +435,10 @@ export function isNodeSafeToReplacePath(
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
+  // TODO:
+  // In addition to checking explicitly if there's a %,
+  // also check if this function requires an unlabeled param, but the call doesn't set one,
+  // so it defaults to %.
   const isIdentifierCallee = path[path.length - 1][0] !== 'callee'
   return {
     isSafe:
@@ -465,7 +468,7 @@ export function isNodeSafeToReplace(
 export function isTypeInValue(node: Expr, syntaxType: SyntaxType): boolean {
   if (node.type === syntaxType) return true
   if (node.type === 'BinaryExpression') return isTypeInBinExp(node, syntaxType)
-  if (node.type === 'CallExpression') return isTypeInCallExp(node, syntaxType)
+  if (node.type === 'CallExpressionKw') return isTypeInCallExp(node, syntaxType)
   if (node.type === 'ArrayExpression') return isTypeInArrayExp(node, syntaxType)
   return false
 }
@@ -485,11 +488,19 @@ function isTypeInBinExp(
 }
 
 function isTypeInCallExp(
-  node: CallExpression,
+  node: CallExpressionKw,
   syntaxType: SyntaxType
 ): boolean {
   if (node.callee.type === syntaxType) return true
-  return node.arguments.some((arg) => isTypeInValue(arg, syntaxType))
+  const matchUnlabeled =
+    node.unlabeled !== null && isTypeInValue(node.unlabeled, syntaxType)
+  if (matchUnlabeled) {
+    return true
+  }
+  const matchLabeled =
+    node.arguments &&
+    node.arguments.some((arg) => isTypeInValue(arg.arg, syntaxType))
+  return matchLabeled
 }
 
 function isTypeInArrayExp(
@@ -521,10 +532,10 @@ export function isLinesParallelAndConstrained(
       ast,
       secondaryLine?.codeRef?.range
     )
-    const _secondaryNode = getNodeFromPath<CallExpression | CallExpressionKw>(
+    const _secondaryNode = getNodeFromPath<CallExpressionKw>(
       ast,
       secondaryPath,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(_secondaryNode)) return _secondaryNode
     const secondaryNode = _secondaryNode.node
@@ -565,10 +576,7 @@ export function isLinesParallelAndConstrained(
       Math.abs(primaryAngle - secondaryAngleAlt) < EPSILON
 
     // is secondary line fully constrain, or has constrain type of 'angle'
-    const secondaryFirstArg =
-      secondaryNode.type === 'CallExpression'
-        ? getFirstArg(secondaryNode)
-        : getArgForEnd(secondaryNode)
+    const secondaryFirstArg = getArgForEnd(secondaryNode)
     if (err(secondaryFirstArg)) return secondaryFirstArg
 
     const isAbsolute = false // ADAM: TODO
@@ -677,29 +685,23 @@ export function findUsesOfTagInPipe(
     'segEndY',
     'segLen',
   ]
-  const nodeMeta = getNodeFromPath<CallExpression | CallExpressionKw>(
-    ast,
-    pathToNode,
-    ['CallExpression', 'CallExpressionKw']
-  )
+  const nodeMeta = getNodeFromPath<CallExpressionKw>(ast, pathToNode, [
+    'CallExpressionKw',
+  ])
   if (err(nodeMeta)) {
     console.error(nodeMeta)
     return []
   }
   const node = nodeMeta.node
-  if (node.type !== 'CallExpressionKw' && node.type !== 'CallExpression')
+  if (node.type !== 'CallExpressionKw') return []
+  // TODO: Handle all tags declared in a function, e.g.
+  // a function may declare extrude(length = 1, tag = $myShape, tagStart = $myShapeBase)
+  const args: Expr[] = node.arguments?.map((labeledArg) => labeledArg.arg) ?? []
+  const tagParam = args.find((arg) => arg?.type === 'TagDeclarator')
+  if (tagParam === undefined) {
     return []
-  const tagIndex = node.callee.name.name === 'close' ? 1 : 2
-  const tagParam =
-    node.type === 'CallExpression'
-      ? node.arguments[tagIndex]
-      : findKwArg(ARG_TAG, node)
-  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Name'))
-    return []
-  const tag =
-    tagParam?.type === 'TagDeclarator'
-      ? String(tagParam.value)
-      : tagParam.name.name
+  }
+  const tag = String(tagParam.value)
 
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
@@ -715,15 +717,21 @@ export function findUsesOfTagInPipe(
   traverse(varDec.node, {
     enter: (node) => {
       if (
-        (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw') ||
+        node.type !== 'CallExpressionKw' ||
         !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
-      const tagArg =
-        node.type === 'CallExpression'
-          ? node.arguments[0]
-          : findKwArg(ARG_TAG, node)
-      if (tagArg !== undefined) {
+      // Get all the args
+      const args: Expr[] =
+        node.arguments?.map((labeledArg) => labeledArg.arg) ?? []
+      if (node.unlabeled !== null) {
+        args.push(node.unlabeled)
+      }
+      for (const tagArg of args) {
+        if (!('type' in tagArg)) {
+          continue
+        }
+        // TODO: COnsider removing this 'name' and see if anything breaks.
         if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
         const tagArgValue =
           tagArg.type === 'TagDeclarator'
@@ -759,7 +767,7 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   traverse(pipeExpression, {
     enter(node) {
       if (
-        (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
+        node.type === 'CallExpressionKw' &&
         (node.callee.name.name === 'extrude' ||
           node.callee.name.name === 'revolve')
       ) {
@@ -771,17 +779,17 @@ export function hasSketchPipeBeenExtruded(selection: Selection, ast: Program) {
   if (!extruded) {
     traverse(ast as any, {
       enter(node) {
-        if (
-          node.type === 'CallExpression' &&
-          node.callee.type === 'Name' &&
-          (node.callee.name.name === 'extrude' ||
-            node.callee.name.name === 'revolve' ||
-            node.callee.name.name === 'loft') &&
-          node.arguments?.[1]?.type === 'Name' &&
-          node.arguments[1].name.name === varDec.id.name
-        ) {
-          extruded = true
-        }
+        // if (
+        //   node.type === 'CallExpression' &&
+        //   node.callee.type === 'Name' &&
+        //   (node.callee.name.name === 'extrude' ||
+        //     node.callee.name.name === 'revolve' ||
+        //     node.callee.name.name === 'loft') &&
+        //   node.arguments?.[1]?.type === 'Name' &&
+        //   node.arguments[1].name.name === varDec.id.name
+        // ) {
+        //   extruded = true
+        // }
         if (
           node.type === 'CallExpressionKw' &&
           node.callee.type === 'Name' &&
@@ -814,29 +822,25 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         let hasCircle = false
         for (const pipe of node.init.body) {
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'startProfile'
           ) {
             hasStartProfileAt = true
           }
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'startSketchOn'
           ) {
             hasStartSketchOn = true
           }
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'close'
           ) {
             hasClose = true
           }
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'circle'
           ) {
             hasCircle = true
@@ -849,14 +853,14 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
         ) {
           theMap[node.id.name] = true
         }
-      } else if (
-        node.type === 'CallExpression' &&
-        (node.callee.name.name === 'extrude' ||
-          node.callee.name.name === 'revolve') &&
-        node.arguments[1]?.type === 'Name' &&
-        theMap?.[node?.arguments?.[1]?.name.name]
-      ) {
-        delete theMap[node.arguments[1].name.name]
+        // } else if (
+        //   node.type === 'CallExpression' &&
+        //   (node.callee.name.name === 'extrude' ||
+        //     node.callee.name.name === 'revolve') &&
+        //   node.arguments[1]?.type === 'Name' &&
+        //   theMap?.[node?.arguments?.[1]?.name.name]
+        // ) {
+        //   delete theMap[node.arguments[1].name.name]
       } else if (
         node.type === 'CallExpressionKw' &&
         (node.callee.name.name === 'extrude' ||
@@ -881,8 +885,7 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
       ) {
         for (const pipe of node.init.body) {
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'extrude'
           ) {
             theMap[node.id.name] = true
@@ -890,12 +893,9 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
           }
         }
       } else if (
-        (node.type === 'CallExpression' &&
-          node.callee.name.name === 'extrude' &&
-          node.arguments[1]?.type === 'Name') ||
-        (node.type === 'CallExpressionKw' &&
-          node.callee.name.name === 'extrude' &&
-          node.unlabeled?.type === 'Name')
+        node.type === 'CallExpressionKw' &&
+        node.callee.name.name === 'extrude' &&
+        node.unlabeled?.type === 'Name'
       ) {
         theMap[node.moduleId] = true
       }
@@ -935,13 +935,10 @@ export function getBodyIndex(pathToNode: PathToNode): number | Error {
 }
 
 export function isCallExprWithName(
-  expr: Expr | CallExpression | CallExpressionKw,
+  expr: Expr | CallExpressionKw,
   name: string
-): expr is CallExpression | CallExpressionKw {
-  if (
-    (expr.type === 'CallExpression' || expr.type === 'CallExpressionKw') &&
-    expr.callee.type === 'Name'
-  ) {
+): expr is CallExpressionKw {
+  if (expr.type === 'CallExpressionKw' && expr.callee.type === 'Name') {
     return expr.callee.name.name === name
   }
   return false
@@ -1057,6 +1054,125 @@ export const valueOrVariable = (variable: KclCommandValue) => {
   return 'variableName' in variable
     ? variable.variableIdentifierAst
     : variable.valueAst
+}
+
+// Go from a selection of sketches to a list of KCL expressions that
+// can be used to create KCL sweep call declarations.
+export function getSketchExprsFromSelection(
+  selection: Selections,
+  ast: Node<Program>,
+  nodeToEdit?: PathToNode
+): Error | Expr[] {
+  const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
+    const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
+    const sketchVariable = getNodeFromPath<VariableDeclarator>(
+      ast,
+      path,
+      'VariableDeclarator'
+    )
+    if (err(sketchVariable)) {
+      return []
+    }
+
+    if (sketchVariable.node.id) {
+      const name = sketchVariable.node?.id.name
+      if (nodeToEdit) {
+        const result = getNodeFromPath<VariableDeclarator>(
+          ast,
+          nodeToEdit,
+          'VariableDeclarator'
+        )
+        if (
+          !err(result) &&
+          result.node.type === 'VariableDeclarator' &&
+          name === result.node.id.name
+        ) {
+          // Pointing to same variable case
+          return createPipeSubstitution()
+        }
+      }
+      // Pointing to different variable case
+      return createLocalName(name)
+    } else {
+      // No variable case
+      return createPipeSubstitution()
+    }
+  })
+
+  if (sketches.length === 0) {
+    return new Error("Couldn't map selections to program references")
+  }
+
+  return sketches
+}
+
+// Go from the sketches argument in a KCL sweep call declaration
+// to a list of graph selections, useful for edit flows.
+// Somewhat of an inverse of getSketchExprsFromSelection.
+export function getSketchSelectionsFromOperation(
+  operation: Operation,
+  artifactGraph: ArtifactGraph
+): Error | Selections {
+  const error = new Error("Couldn't retrieve sketches from operation")
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+    return error
+  }
+
+  let sketches: OpKclValue[] = []
+  if (operation.unlabeledArg?.value.type === 'Sketch') {
+    sketches = [operation.unlabeledArg.value]
+  } else if (operation.unlabeledArg?.value.type === 'Array') {
+    sketches = operation.unlabeledArg.value.value
+  } else {
+    return error
+  }
+
+  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
+    // We have to go a little roundabout to get from the original artifact
+    // to the solid2DId that we need to pass to the Extrude command.
+    if (sketch.type !== 'Sketch') {
+      return []
+    }
+
+    const pathArtifact = getArtifactOfTypes(
+      {
+        key: sketch.value.artifactId,
+        types: ['path'],
+      },
+      artifactGraph
+    )
+    if (
+      err(pathArtifact) ||
+      pathArtifact.type !== 'path' ||
+      !pathArtifact.solid2dId
+    ) {
+      return []
+    }
+
+    const solid2DArtifact = getArtifactOfTypes(
+      {
+        key: pathArtifact.solid2dId,
+        types: ['solid2d'],
+      },
+      artifactGraph
+    )
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+      return []
+    }
+
+    return {
+      artifact: solid2DArtifact,
+      codeRef: pathArtifact.codeRef,
+    }
+  })
+  if (graphSelections.length === 0) {
+    return error
+  }
+
+  return {
+    graphSelections,
+    otherSelections: [],
+  }
 }
 
 export function findImportNodeAndAlias(

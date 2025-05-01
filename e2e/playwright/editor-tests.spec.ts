@@ -871,14 +871,18 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center = [0, 0], radius = dia/2)
-    |> subtract2d(tool = squareHole(length, width, height))
+    |> subtract2d(tool = squareHole(l = length, w = width, height))
     |> extrude(length = height)`)
 
     // error in gutter
     await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
     await page.hover('.cm-lint-marker-error:first-child')
     await expect(
-      page.getByText('Expected 2 arguments, got 3').first()
+      page
+        .getByText(
+          'TODO ADAM: find the right error Expected 2 arguments, got 3'
+        )
+        .first()
     ).toBeVisible()
 
     // Make sure there are two diagnostics
@@ -1081,6 +1085,9 @@ sketch001 = startSketchOn(XZ)
     page,
     context,
     homePage,
+    toolbar,
+    cmdBar,
+    scene,
   }) => {
     const u = await getUtils(page)
     await context.addInitScript(async () => {
@@ -1124,17 +1131,30 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(100)
 
     await page.getByText('startProfile(at = [4.61, -14.01])').click()
-    await expect(page.getByRole('button', { name: 'Extrude' })).toBeVisible()
-    await page.getByRole('button', { name: 'Extrude' }).click()
-
-    await expect(page.getByTestId('command-bar')).toBeVisible()
-    await page.waitForTimeout(100)
-
-    await page.getByRole('button', { name: 'arrow right Continue' }).click()
-    await page.waitForTimeout(100)
-    await expect(page.getByText('Confirm Extrude')).toBeVisible()
-    await page.getByRole('button', { name: 'checkmark Submit command' }).click()
-    await page.waitForTimeout(100)
+    await toolbar.extrudeButton.click()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Sketches: '1 face',
+        Length: '',
+      },
+      highlightedHeaderArg: 'length',
+      commandName: 'Extrude',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: {
+        Sketches: '1 face',
+        Length: '5',
+      },
+      commandName: 'Extrude',
+    })
+    await cmdBar.progressCmdBar()
+    await scene.settled(cmdBar)
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(

@@ -6262,7 +6262,8 @@ description: Variables in memory after executing kitt.kcl
     }
   },
   "kitEar": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "kitEarDepth": {
     "type": "Number",
@@ -6342,7 +6343,7 @@ description: Variables in memory after executing kitt.kcl
       }
     }
   },
-  "kitEyeHeihgt": {
+  "kitEyeHeight": {
     "type": "Number",
     "value": 23.0,
     "ty": {
@@ -13308,7 +13309,8 @@ description: Variables in memory after executing kitt.kcl
     }
   },
   "kitLeg": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "kitLegOffset": {
     "type": "Number",
@@ -22321,7 +22323,8 @@ description: Variables in memory after executing kitt.kcl
     }
   },
   "pixelBox": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "seg01": {
     "type": "TagIdentifier",

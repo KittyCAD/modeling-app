@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.65"
+version = "0.2.66"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -31,6 +31,7 @@ clap = { version = "4.5.36", default-features = false, optional = true, features
     "derive",
 ] }
 convert_case = "0.8.0"
+csscolorparser = "0.7.0"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
@@ -95,6 +96,7 @@ instant = { version = "0.1.13", features = ["wasm-bindgen", "inaccurate"] }
 js-sys = { version = "0.3.72" }
 tokio = { workspace = true, features = ["sync", "time"] }
 tower-lsp = { workspace = true, features = ["runtime-agnostic"] }
+typed-path = "0.11.0"
 wasm-bindgen = "0.2.99"
 wasm-bindgen-futures = "0.4.49"
 wasm-timer = { package = "zduny-wasm-timer", version = "0.2.5" }

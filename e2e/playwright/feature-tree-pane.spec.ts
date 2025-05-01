@@ -3,7 +3,7 @@ import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
+const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
 }
 export fn triangle() {
@@ -229,7 +229,7 @@ test.describe('Feature Tree pane', () => {
     const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
-    const newConstantName = 'distance001'
+    const newConstantName = 'length001'
     const expectedCode = `${newConstantName} = 23
     sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
@@ -270,12 +270,12 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Extrude',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: initialInput,
         headerArguments: {
-          Distance: initialInput,
+          Length: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'length',
       })
     })
 
@@ -290,7 +290,7 @@ test.describe('Feature Tree pane', () => {
         stage: 'review',
         headerArguments: {
           // The calculated value is shown in the argument summary
-          Distance: initialInput,
+          Length: initialInput,
         },
         commandName: 'Extrude',
       })

@@ -2,9 +2,9 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
-  createCallExpression,
   createIdentifier,
   createLiteral,
+  createLiteralMaybeSuffix,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -36,6 +36,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
+import { assertNotErr } from '@src/unitTestUtils'
 
 beforeAll(async () => {
   await initPromise
@@ -51,7 +52,8 @@ describe('Testing createLiteral', () => {
   })
   it('should create a literal number with units', () => {
     const lit: LiteralValue = { value: 5, suffix: 'Mm' }
-    const result = createLiteral(lit)
+    const result = createLiteralMaybeSuffix(lit)
+    assertNotErr(result)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('Mm')
@@ -69,16 +71,6 @@ describe('Testing createIdentifier', () => {
     const result = createIdentifier('myVar')
     expect(result.type).toBe('Identifier')
     expect(result.name).toBe('myVar')
-  })
-})
-describe('Testing createCallExpression', () => {
-  it('should create a call expression', () => {
-    const result = createCallExpression('myFunc', [createLiteral(5)])
-    expect(result.type).toBe('CallExpression')
-    expect(result.callee.type).toBe('Name')
-    expect(result.callee.name.name).toBe('myFunc')
-    expect(result.arguments[0].type).toBe('Literal')
-    expect((result.arguments[0] as any).value.value).toBe(5)
   })
 })
 describe('Testing createObjectExpression', () => {
@@ -313,12 +305,12 @@ describe('Testing giveSketchFnCallTag', () => {
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `fn ${fnName} (x) {
+  const fn = (fnName: string) => `fn ${fnName} (@x) {
   return x
 }
 `
   const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
-fn ghi(x) {
+fn ghi(@x) {
     return 2
 }
 abc = 3
@@ -655,6 +647,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
       const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThanOrEqual(0)
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
@@ -769,7 +762,6 @@ describe('Testing removeSingleConstraintInfo', () => {
             key: value as any,
           }
         } else if (key === 'labeledArgArrayItem') {
-          console.log()
           argPosition = {
             type: 'labeledArgArrayItem',
             key: value as any,
@@ -1055,22 +1047,22 @@ describe('Testing splitPipedProfile', () => {
     part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
   // comment 2
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
 // comment 3
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const expectedCodeAfter = `// comment 1
 sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
   // comment 2
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
 // comment 3
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const ast = assertParse(codeBefore)
@@ -1094,10 +1086,10 @@ extrude001 = extrude(5, part001)
   it('should return error for already split pipe', () => {
     const codeBefore = `sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const ast = assertParse(codeBefore)
