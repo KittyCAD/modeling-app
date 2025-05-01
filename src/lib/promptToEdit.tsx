@@ -366,7 +366,11 @@ export async function doPromptEdit({
 
       while (timeElapsed < MAX_CHECK_TIMEOUT) {
         const check = await getPromptToEditResult(submitResult.id, token)
-        if (check instanceof Error || check.status === 'failed' || check.error) {
+        if (
+          check instanceof Error ||
+          check.status === 'failed' ||
+          check.error
+        ) {
           reject(check)
           return
         } else if (check.status === 'completed') {
