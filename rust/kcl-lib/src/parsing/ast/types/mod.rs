@@ -4123,14 +4123,22 @@ cylinder = startSketchOn(-XZ)
             panic!("expected a function!");
         };
 
-        let Expr::CallExpressionKw(ce) = expression else {
-            panic!("expected a function!");
-        };
+        let oe = match expression {
+            Expr::CallExpressionKw(ce) => {
+                assert!(ce.unlabeled.is_some());
 
-        assert!(ce.unlabeled.is_some());
-
-        let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
-            panic!("expected a object!");
+                let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
+                    panic!("expected a object!");
+                };
+                oe
+            }
+            Expr::CallExpression(ce) => {
+                let Expr::ObjectExpression(ref oe) = (ce.arguments).first().unwrap() else {
+                    panic!("expected an object!");
+                };
+                oe
+            }
+            other => panic!("expected a Call or CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);
