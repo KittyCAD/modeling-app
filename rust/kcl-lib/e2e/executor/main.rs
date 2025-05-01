@@ -2038,6 +2038,17 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
 
     ctx.close().await;
 }
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_default_param_for_unlabeled() {
+    let code = r#"fn myExtrude(@sk, len) {
+  return extrude(sk, length = len)
+}
+
+sketch001 = startSketchOn(XY)
+|> circle(center = [0, 0], radius = 93.75)
+|> myExtrude(len = 40)"#;
+    let _ = execute_and_snapshot(code, None).await.unwrap();
+}
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_better_type_names() {

@@ -2187,7 +2187,15 @@ fn assign_args_to_params_kw(
                 .mut_stack()
                 .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
-            let Some(unlabeled) = args.unlabeled.take() else {
+            // TODO: Get the actual source range.
+            // Part of https://github.com/KittyCAD/modeling-app/issues/6613
+            let pipe_value_source_range = Default::default();
+            let default_unlabeled = exec_state
+                .mod_local
+                .pipe_value
+                .clone()
+                .map(|val| Arg::new(val, pipe_value_source_range));
+            let Some(unlabeled) = args.unlabeled.take().or(default_unlabeled) else {
                 let param_name = &param.identifier.name;
                 return Err(if args.labeled.contains_key(param_name) {
                     KclError::Semantic(KclErrorDetails {
