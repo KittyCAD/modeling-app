@@ -324,7 +324,7 @@ export class KclManager {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
-        { settings: await jsAppSettings() },
+        await jsAppSettings(),
         this.singletons.codeManager.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {

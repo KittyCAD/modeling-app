@@ -1,6 +1,9 @@
 import type { Page } from '@playwright/test'
 
 import type { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
+import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import {
   PERSIST_MODELING_CONTEXT,
   TEST_COLORS,
@@ -13,14 +16,21 @@ test.setTimeout(120000)
 
 async function doBasicSketch(
   page: Page,
-  homePage: HomePageFixture,
-  openPanes: string[]
+  openPanes: string[],
+  fixtures: {
+    homePage: HomePageFixture
+    cmdBar: CmdBarFixture
+    scene: SceneFixture
+    editor: EditorFixture
+  }
 ) {
+  const { cmdBar, scene, homePage, editor } = fixtures
   const u = await getUtils(page)
   await page.setBodyDimensions({ width: 1200, height: 500 })
   const PUR = 400 / 37.5 //pixeltoUnitRatio
 
   await homePage.goToModelingScene()
+  await scene.settled(cmdBar)
   await u.waitForPageLoad()
   await page.waitForTimeout(1000)
   await u.openDebugPanel()
@@ -51,7 +61,13 @@ async function doBasicSketch(
   }
   await u.closeDebugPanel()
 
-  await page.waitForTimeout(1000) // TODO detect animation ending, or disable animation
+  // wait for line button to have aria-pressed as proxy for sketch mode
+  await expect
+    .poll(async () => page.getByTestId('line').getAttribute('aria-pressed'), {
+      timeout: 10_000,
+    })
+    .toBe('true')
+  await page.waitForTimeout(200)
 
   const startXPx = 600
   await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
@@ -144,22 +160,35 @@ async function doBasicSketch(
 
   // Open the code pane.
   await u.openKclCodePanel()
-  await expect(
-    u.codeLocator
-  ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
-    commonPoints.startAt
-  })
+  await editor.expectEditor.toContain(
+    `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${
+      commonPoints.startAt
+    })
   |> xLine(length = ${commonPoints.num1}, tag = $seg01)
   |> yLine(length = ${commonPoints.num1 + 0.01})
-  |> xLine(length = -segLen(seg01))`)
+  |> xLine(length = -segLen(seg01))`,
+    { shouldNormalise: true }
+  )
 }
 
 test.describe('Basic sketch', () => {
-  test('code pane open at start', async ({ page, homePage }) => {
-    await doBasicSketch(page, homePage, ['code'])
+  test('code pane open at start', async ({
+    page,
+    homePage,
+    cmdBar,
+    scene,
+    editor,
+  }) => {
+    await doBasicSketch(page, ['code'], { cmdBar, scene, homePage, editor })
   })
 
-  test('code pane closed at start', async ({ page, homePage }) => {
+  test('code pane closed at start', async ({
+    page,
+    homePage,
+    cmdBar,
+    scene,
+    editor,
+  }) => {
     // Load the app with the code panes
     await page.addInitScript(async (persistModelingContext) => {
       localStorage.setItem(
@@ -167,6 +196,6 @@ test.describe('Basic sketch', () => {
         JSON.stringify({ openPanes: [] })
       )
     }, PERSIST_MODELING_CONTEXT)
-    await doBasicSketch(page, homePage, [])
+    await doBasicSketch(page, [], { cmdBar, scene, homePage, editor })
   })
 })

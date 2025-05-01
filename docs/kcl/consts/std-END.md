@@ -8,7 +8,7 @@ Identifies the ending face of an extrusion. I.e., the new face created by an ext
 
 
 
-```js
+```kcl
 std::END: string = 'end'
 ```
 

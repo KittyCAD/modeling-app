@@ -15,8 +15,8 @@ use crate::{
     execution::{
         kcl_value::FunctionSource,
         types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitLen, UnitType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
-        Solid, TagIdentifier,
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PlaneInfo, Sketch,
+        SketchSurface, Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -116,6 +116,17 @@ impl TyF64 {
         angle.adjust_to(self.n, UnitAngle::Degrees).0
     }
 
+    pub fn to_radians(&self) -> f64 {
+        let angle = match self.ty {
+            NumericType::Default { angle, .. } => angle,
+            NumericType::Known(UnitType::Angle(angle)) => angle,
+            _ => unreachable!(),
+        };
+
+        assert_ne!(angle, UnitAngle::Unknown);
+
+        angle.adjust_to(self.n, UnitAngle::Radians).0
+    }
     pub fn count(n: f64) -> Self {
         Self {
             n,
@@ -973,11 +984,11 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         // Case 0: actual plane
         if let KclValue::Plane { value } = arg {
-            return Some(Self::Plane {
-                origin: value.origin,
-                x_axis: value.x_axis,
-                y_axis: value.y_axis,
-            });
+            return Some(Self::Plane(PlaneInfo {
+                origin: value.info.origin,
+                x_axis: value.info.x_axis,
+                y_axis: value.info.y_axis,
+            }));
         }
         // Case 1: predefined plane
         if let Some(s) = arg.as_str() {
@@ -997,7 +1008,7 @@ impl<'a> FromKclValue<'a> for super::sketch::PlaneData {
         let origin = plane.get("origin").and_then(FromKclValue::from_kcl_val)?;
         let x_axis = plane.get("xAxis").and_then(FromKclValue::from_kcl_val)?;
         let y_axis = plane.get("yAxis").and_then(FromKclValue::from_kcl_val)?;
-        Some(Self::Plane { origin, x_axis, y_axis })
+        Some(Self::Plane(PlaneInfo { origin, x_axis, y_axis }))
     }
 }
 

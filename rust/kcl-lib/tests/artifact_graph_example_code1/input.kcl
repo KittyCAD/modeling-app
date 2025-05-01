@@ -1,4 +1,4 @@
-sketch001 = startSketchOn('XY')
+sketch001 = startSketchOn(XY)
   |> startProfile(at = [-5, -5])
   |> line(end = [0, 10])
   |> line(end = [10.55, 0], tag = $seg01)

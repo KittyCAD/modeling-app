@@ -7,7 +7,7 @@ description: Operations executed axial-fan.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "fanHousing",
+      "name": "fan-housing.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -16,7 +16,7 @@ description: Operations executed axial-fan.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "motor",
+      "name": "motor.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -25,7 +25,7 @@ description: Operations executed axial-fan.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "fan",
+      "name": "fan.kcl",
       "moduleId": 0
     },
     "sourceRange": []

@@ -179,7 +179,7 @@ export type Sketch
 /// When you define a solid to a variable like:
 ///
 /// ```kcl,inline
-/// myPart = startSketchOn('XY')
+/// myPart = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
@@ -198,7 +198,7 @@ export type Sketch
 ///
 /// ```kcl,inline
 /// fn createPart() {
-///    return startSketchOn('XY')
+///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
 ///         |> line(end = [24, 0])
 ///         |> line(end = [0, -24])

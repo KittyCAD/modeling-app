@@ -692,7 +692,7 @@ description: Operations executed exhaust-manifold.kcl
               "value": [
                 {
                   "type": "Number",
-                  "value": -0.42577929156507266,
+                  "value": -0.4257792915650726,
                   "ty": {
                     "type": "Known",
                     "type": "Count"

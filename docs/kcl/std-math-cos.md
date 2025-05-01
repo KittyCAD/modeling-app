@@ -1,15 +1,15 @@
 ---
 title: "std::math::cos"
-excerpt: "Compute the cosine of a number (in radians)."
+excerpt: "Compute the cosine of a number."
 layout: manual
 ---
 
-Compute the cosine of a number (in radians).
+Compute the cosine of a number.
 
 
 
-```js
-cos(@num: number(Angle)): number(_)
+```kcl
+cos(@num: [number](/docs/kcl/types/number)(Angle)): [number](/docs/kcl/types/number)(_)
 ```
 
 
@@ -26,7 +26,7 @@ cos(@num: number(Angle)): number(_)
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> angledLine(

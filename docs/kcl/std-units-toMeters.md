@@ -8,8 +8,8 @@ Convert a number to meters from its current units.
 
 
 
-```js
-toMeters(@num: number(m)): number(m)
+```kcl
+units::toMeters(@num: [number](/docs/kcl/types/number)(m)): [number](/docs/kcl/types/number)(m)
 ```
 
 

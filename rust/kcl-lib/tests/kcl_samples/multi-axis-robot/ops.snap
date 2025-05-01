@@ -7,7 +7,7 @@ description: Operations executed multi-axis-robot.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "robotArmBase",
+      "name": "robot-arm-base.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -16,7 +16,7 @@ description: Operations executed multi-axis-robot.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "rotatingBase",
+      "name": "robot-rotating-base.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -25,7 +25,7 @@ description: Operations executed multi-axis-robot.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "j2RobotArm",
+      "name": "robot-arm-j2.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -34,7 +34,7 @@ description: Operations executed multi-axis-robot.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "j3RobotArm",
+      "name": "robot-arm-j3.kcl",
       "moduleId": 0
     },
     "sourceRange": []

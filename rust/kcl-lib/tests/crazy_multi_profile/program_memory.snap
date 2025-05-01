@@ -138,10 +138,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -150,6 +148,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -474,10 +474,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XZ",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -486,6 +484,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -731,10 +731,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -743,6 +741,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
@@ -895,10 +895,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -907,6 +905,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -1158,10 +1158,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1170,6 +1168,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1520,10 +1520,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1532,6 +1530,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -1863,10 +1863,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1875,6 +1873,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2149,10 +2149,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2161,6 +2159,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2486,10 +2486,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2498,6 +2496,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -2632,10 +2632,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2644,6 +2642,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
@@ -2770,10 +2770,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2782,6 +2780,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
@@ -2908,10 +2908,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -2920,6 +2918,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
@@ -2995,10 +2995,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3007,6 +3005,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
@@ -3158,10 +3158,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -3170,6 +3168,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
@@ -3470,10 +3470,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XZ",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -3482,6 +3480,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
@@ -3689,10 +3689,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3701,6 +3699,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": -1.0,
             "y": 0.0,
@@ -3764,9 +3764,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
   "sketch001": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -3775,6 +3774,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "type": "Mm"
         }
       },
+      "value": "XZ",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
@@ -3948,10 +3948,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             }
           ],
           "on": {
-            "type": "plane",
-            "id": "[uuid]",
             "artifactId": "[uuid]",
-            "value": "XZ",
+            "id": "[uuid]",
             "origin": {
               "x": 0.0,
               "y": 0.0,
@@ -3960,6 +3958,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "type": "Mm"
               }
             },
+            "type": "plane",
+            "value": "XZ",
             "xAxis": {
               "x": 1.0,
               "y": 0.0,
@@ -4027,9 +4027,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
   "sketch003": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "XZ",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -4038,6 +4037,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "type": "Mm"
         }
       },
+      "value": "XZ",
       "xAxis": {
         "x": -1.0,
         "y": 0.0,

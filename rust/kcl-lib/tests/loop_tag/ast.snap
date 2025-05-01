@@ -122,53 +122,38 @@ description: Result of parsing loop_tag.kcl
           "init": {
             "commentStart": 0,
             "end": 0,
-            "expr": {
+            "left": {
               "commentStart": 0,
               "end": 0,
-              "left": {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "360",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 360.0,
-                  "suffix": "None"
-                }
-              },
-              "operator": "/",
-              "right": {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "numSides",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              },
+              "raw": "360",
               "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 360.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "/",
+            "right": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "numSides",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
             },
             "start": 0,
-            "ty": {
-              "Deg": null,
-              "commentStart": 0,
-              "end": 0,
-              "p_type": "Number",
-              "start": 0,
-              "type": "Primitive"
-            },
-            "type": "AscribedExpression",
-            "type": "AscribedExpression"
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"

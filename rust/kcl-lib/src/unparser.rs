@@ -1406,7 +1406,7 @@ bar = [0 + 1 .. ten]
 
     #[test]
     fn test_recast_space_in_fn_call() {
-        let some_program_string = r#"fn thing = (x) => {
+        let some_program_string = r#"fn thing (x) {
     return x + 1
 }
 
@@ -1611,8 +1611,8 @@ depth = 45.0
 thk = 5
 hole_diam = 5
 // define a rectangular shape func
-fn rectShape = (pos, w, l) => {
-  rr = startSketchOn('xy')
+fn rectShape(pos, w, l) {
+  rr = startSketchOn(XY)
     |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
@@ -1634,10 +1634,10 @@ scarlett_body = rectShape([0, 0], width, length)
 ]
    )
   // build the bracket sketch around the body
-fn bracketSketch = (w, d, t) => {
+fn bracketSketch(w, d, t) {
   s = startSketchOn({
          plane: {
-  origin: { x = 0, y = length / 2 + thk, z = 0 },
+  origin = { x = 0, y = length / 2 + thk, z = 0 },
   x_axis = { x = 1, y = 0, z = 0 },
   y_axis = { x = 0, y = 0, z = 1 },
   z_axis = { x = 0, y = 1, z = 0 }
@@ -1669,7 +1669,7 @@ bracket_body = bracketSketch(width, depth, thk)
   // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
        plane: {
-  origin: { x = 0, y = 0, z = depth + thk },
+  origin = { x = 0, y = 0, z = depth + thk },
   x_axis = { x = 1, y = 0, z = 0 },
   y_axis = { x = 0, y = 1, z = 0 },
   z_axis = { x = 0, y = 0, z = 1 }
@@ -1840,7 +1840,7 @@ tabs_l = startSketchOn({
 
     #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
-        let some_program_string = r#"fn cube = (pos, scale) => {
+        let some_program_string = r#"fn cube(pos, scale) {
    sg = startSketchOn(XY)
   |> startProfileAt(pos, %)
   |> line([0, scale], %)
@@ -1949,7 +1949,7 @@ cube(0, 0) as cub
 
     #[test]
     fn test_recast_comment_in_a_fn_block() {
-        let some_program_string = r#"fn myFn = () => {
+        let some_program_string = r#"fn myFn() {
   // this is a comment
   yo = { a = { b = { c = '123' } } } /* block
   comment */
@@ -2271,7 +2271,7 @@ blah = 1
 foo = false
 baz = {a: 1, part001: "thing"}
 
-fn ghi = (part001) => {
+fn ghi(part001) {
   return part001
 }
 "#;
@@ -2300,11 +2300,11 @@ fn ghi(part001) {
 
     #[test]
     fn test_recast_after_rename_fn_args() {
-        let some_program_string = r#"fn ghi = (x, y, z) => {
+        let some_program_string = r#"fn ghi(x, y, z) {
   return x
 }"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("newName", 10);
+        program.rename_symbol("newName", 7);
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -2480,8 +2480,8 @@ type baz = Foo | Bar
 
     #[test]
     fn recast_nested_fn() {
-        let some_program_string = r#"fn f = () => {
-  return fn() => {
+        let some_program_string = r#"fn f() {
+  return fn() {
   return 1
 }
 }"#;

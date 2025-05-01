@@ -8,8 +8,8 @@ Compute the ending point of the provided line segment.
 
 
 
-```js
-segEnd(tag: TagIdentifier): [number]
+```kcl
+segEnd(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number))
 ```
 
 
@@ -17,7 +17,7 @@ segEnd(tag: TagIdentifier): [number]
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| [`tag`](/docs/kcl/types/tag) | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
@@ -26,7 +26,7 @@ segEnd(tag: TagIdentifier): [number]
 
 ### Examples
 
-```js
+```kcl
 w = 15
 cube = startSketchOn(XY)
   |> startProfile(at = [0, 0])

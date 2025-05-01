@@ -7,7 +7,7 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "carRotor",
+      "name": "car-wheel.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -16,7 +16,7 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "carWheel",
+      "name": "car-rotor.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -25,7 +25,25 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "lugNut",
+      "name": "brake-caliper.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "lug-nut.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "car-tire.kcl",
       "moduleId": 0
     },
     "sourceRange": []
@@ -183,19 +201,13 @@ description: Operations executed car-wheel-assembly.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "brakeCaliper",
+      "name": "parameters.kcl",
       "moduleId": 0
     },
     "sourceRange": []
   },
   {
-    "type": "GroupBegin",
-    "group": {
-      "type": "ModuleInstance",
-      "name": "carTire",
-      "moduleId": 0
-    },
-    "sourceRange": []
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

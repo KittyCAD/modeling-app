@@ -24,7 +24,11 @@ import { findUsesOfTagInPipe } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { InputArgKeys, SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type {
+  InputArg,
+  InputArgKeys,
+  SimplifiedArgDetails,
+} from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type { Identifier, Literal, LiteralValue } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
@@ -309,16 +313,16 @@ describe('Testing giveSketchFnCallTag', () => {
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `fn ${fnName} = (x) => {
+  const fn = (fnName: string) => `fn ${fnName} (x) {
   return x
 }
 `
   const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
-fn ghi = (x) => {
+fn ghi(x) {
     return 2
 }
-const abc = 3
-const identifierGuy = 5
+abc = 3
+identifierGuy = 5
 yo = 5 + 6
 part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
@@ -686,19 +690,19 @@ describe('Testing removeSingleConstraintInfo', () => {
   |> /*4*/ angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
   |> angledLineThatIntersects(angle = 3.14 + 0, intersectTag = a, offset = 0 + 0)
   |> tangentialArc(endAbsolute = [3.14 + 0, 13.14 + 0])`
-    test.each([
-      [' line(end = [3 + 0, 4])', 'arrayIndex', 1, ''],
+    const cases: [string, InputArg['type'], number | string, string][] = [
+      [' line(end = [3 + 0, 4])', 'arrayItem', 1, ''],
       [
         '/*0*/ angledLine(angle = 3, length = 3.14 + 0)',
         'labeledArg',
         'angle',
         '',
       ],
-      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayIndex', 0, ''],
-      ['xLine(endAbsolute = 8)', '', '', '/*xAbs*/'],
-      ['yLine(endAbsolute = 5)', '', '', '/*yAbs*/'],
-      ['yLine(length = 3.14, tag = $a)', '', '', '/*yRel*/'],
-      ['xLine(length = 3.14)', '', '', '/*xRel*/'],
+      ['line(endAbsolute = [6.14 + 0, 3.14 + 0])', 'arrayItem', 0, ''],
+      ['xLine(endAbsolute = 8)', 'singleValue', '', '/*xAbs*/'],
+      ['yLine(endAbsolute = 5)', 'singleValue', '', '/*yAbs*/'],
+      ['yLine(length = 3.14, tag = $a)', 'singleValue', '', '/*yRel*/'],
+      ['xLine(length = 3.14)', 'singleValue', '', '/*xRel*/'],
       [
         '/*1*/ angledLine(angle = 3, lengthX = 3.14 + 0)',
         'labeledArg',
@@ -731,11 +735,12 @@ describe('Testing removeSingleConstraintInfo', () => {
       ],
       [
         'tangentialArc(endAbsolute = [3.14 + 0, 13.14])',
-        'labeledArg',
+        'labeledArgArrayItem',
         'endAbsolute',
         '',
       ],
-    ] as const)(
+    ]
+    test.each(cases)(
       'stdlib fn: %s',
       async (expectedFinish, key, value, commentLabel) => {
         const ast = assertParse(code)
@@ -749,19 +754,26 @@ describe('Testing removeSingleConstraintInfo', () => {
         const range = topLevelRange(start + 1, start + lineOfInterest.length)
         const pathToNode = getNodePathFromSourceRange(ast, range)
         let argPosition: SimplifiedArgDetails
-        if (key === 'arrayIndex' && typeof value === 'number') {
+        if (key === 'arrayItem' && typeof value === 'number') {
           argPosition = {
             type: 'arrayItem',
             index: value === 0 ? 0 : 1,
           }
-        } else if (key === '') {
+        } else if (key === 'singleValue') {
           argPosition = {
             type: 'singleValue',
           }
-        } else if (key === 'labeledArg') {
+        } else if (key === 'labeledArg' && typeof value === 'string') {
           argPosition = {
             type: 'labeledArg',
-            key: value,
+            key: value as any,
+          }
+        } else if (key === 'labeledArgArrayItem') {
+          console.log()
+          argPosition = {
+            type: 'labeledArgArrayItem',
+            key: value as any,
+            index: 1,
           }
         } else {
           throw new Error('argPosition is undefined')
@@ -876,7 +888,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-3.86, -2.73])
     //   |> line(end = [-17.67, 0.85])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 10)`,
+    // extrude001 = extrude(sketch001, length = 10)`,
     //         codeAfter: `sketch001 = startSketchOn(XZ)
     //   |> startProfile(at = [3.29, 7.86])
     //   |> line(end = [2.48, 2.44])
@@ -904,7 +916,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-8.54, -2.51])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 5)
+    // extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])
@@ -958,7 +970,7 @@ sketch003 = startSketchOn(XZ)
     //   |> line(end = [-8.54, -2.51])
     //   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     //   |> close()
-    // const extrude001 = extrude(sketch001, length = 5)
+    // extrude001 = extrude(sketch001, length = 5)
     // sketch002 = startSketchOn(extrude001, face = seg01)
     //   |> startProfile(at = [-12.55, 2.89])
     //   |> line(end = [3.02, 1.9])

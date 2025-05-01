@@ -41,7 +41,7 @@ expression: actual
       "commentStart": 14,
       "declaration": {
         "commentStart": 14,
-        "end": 30,
+        "end": 31,
         "id": {
           "commentStart": 14,
           "end": 17,
@@ -51,7 +51,7 @@ expression: actual
         },
         "init": {
           "commentStart": 20,
-          "end": 30,
+          "end": 31,
           "properties": [
             {
               "commentStart": 22,
@@ -84,7 +84,7 @@ expression: actual
             },
             {
               "commentStart": 25,
-              "end": 29,
+              "end": 30,
               "key": {
                 "commentStart": 25,
                 "end": 26,
@@ -95,10 +95,10 @@ expression: actual
               "start": 25,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 28,
-                "end": 29,
+                "commentStart": 29,
+                "end": 30,
                 "raw": "4",
-                "start": 28,
+                "start": 29,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -115,7 +115,7 @@ expression: actual
         "start": 14,
         "type": "VariableDeclarator"
       },
-      "end": 30,
+      "end": 31,
       "kind": "const",
       "start": 14,
       "type": "VariableDeclaration",
@@ -123,6 +123,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 30,
+  "end": 31,
   "start": 0
 }

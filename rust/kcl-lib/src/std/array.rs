@@ -27,7 +27,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// ```no_run
 /// r = 10 // radius
 /// fn drawCircle(id) {
-///   return startSketchOn("XY")
+///   return startSketchOn(XY)
 ///     |> circle( center= [id * 2 * r, 0], radius= r)
 /// }
 ///
@@ -45,7 +45,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// circles = map(
 ///   [1..3],
 ///   f = fn(id) {
-///     return startSketchOn("XY")
+///     return startSketchOn(XY)
 ///       |> circle( center= [id * 2 * r, 0], radius= r)
 ///   }
 /// )
@@ -140,10 +140,10 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // Declare a function that sketches a decagon.
 /// fn decagon(radius) {
 ///   // Each side of the decagon is turned this many radians from the previous angle.
-///   stepAngle = (1/10) * TAU
+///   stepAngle = ((1/10) * TAU): number(rad)
 ///
 ///   // Start the decagon sketch at this point.
-///   startOfDecagonSketch = startSketchOn('XY')
+///   startOfDecagonSketch = startSketchOn(XY)
 ///     |> startProfile(at = [(cos(0)*radius), (sin(0) * radius)])
 ///
 ///   // Use a `reduce` to draw the remaining decagon sides.
@@ -163,8 +163,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// /*
 /// The `decagon` above is basically like this pseudo-code:
 /// fn decagon(radius):
-///     stepAngle = (1/10) * TAU
-///     plane = startSketchOn('XY')
+///     stepAngle = ((1/10) * TAU): number(rad)
+///     plane = startSketchOn(XY)
 ///     startOfDecagonSketch = startProfile(plane, at = [(cos(0)*radius), (sin(0) * radius)])
 ///
 ///     // Here's the reduce part.

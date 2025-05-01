@@ -228,9 +228,11 @@ export class SceneFixture {
   }
 
   connectionEstablished = async () => {
-    const timeout = 30000
-    await expect(this.networkToggleConnected).toBeVisible({ timeout })
-    await expect(this.engineConnectionsSpinner).not.toBeVisible()
+    const timeout = 30_000
+    await Promise.all([
+      expect(this.networkToggleConnected).toBeVisible({ timeout }),
+      expect(this.engineConnectionsSpinner).not.toBeVisible({ timeout }),
+    ])
   }
 
   settled = async (cmdBar: CmdBarFixture) => {

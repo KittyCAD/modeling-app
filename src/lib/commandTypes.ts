@@ -41,6 +41,12 @@ export interface KclExpressionWithVariable extends KclExpression {
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
 
+export type FileFilter = {
+  name: string
+  extensions: string[]
+}
+export type FiltersConfig = FileFilter[]
+
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
 }>
@@ -96,6 +102,7 @@ export type Command<
   description?: string
   icon?: Icon
   hide?: PLATFORM[number]
+  hideFromSearch?: boolean
 }
 
 export type CommandConfig<
@@ -373,6 +380,7 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
+      filters: FiltersConfig
     }
   | {
       inputType: 'text'

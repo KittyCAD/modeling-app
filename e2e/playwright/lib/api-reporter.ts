@@ -14,9 +14,6 @@ class MyAPIReporter implements Reporter {
     await Promise.all(this.pendingRequests)
 
     if (this.allResults.length === 0) {
-      if (!process.env.CI) {
-        console.error('TAB API - No results to process')
-      }
       return
     }
 

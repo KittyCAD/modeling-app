@@ -7,7 +7,7 @@ layout: manual
 A point in two dimensional space.
 
 ```kcl
-type Point2d = [number(Length); 2]
+type [Point2d](/docs/kcl/types/Point2d) = [[number](/docs/kcl/types/number)(Length); 2]
 ```
 
 [`Point2d`](/docs/kcl/types/Point2d) is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value

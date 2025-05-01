@@ -843,10 +843,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "YZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -855,6 +853,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -1192,10 +1192,8 @@ description: Variables in memory after executing poopy-shoe.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "YZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1204,6 +1202,8 @@ description: Variables in memory after executing poopy-shoe.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": -1.0,
@@ -1616,10 +1616,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "YZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -1628,6 +1626,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "YZ",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,
@@ -1781,10 +1781,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": -1.4375,
@@ -1793,6 +1791,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Inches"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -2573,10 +2573,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "YZ",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -2585,6 +2583,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "YZ",
                 "xAxis": {
                   "x": 0.0,
                   "y": -1.0,
@@ -2875,10 +2875,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": -3.875,
             "y": 0.0,
@@ -2887,6 +2885,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Inches"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -3271,10 +3271,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "Custom",
+                "id": "[uuid]",
                 "origin": {
                   "x": -3.875,
                   "y": 0.0,
@@ -3283,6 +3281,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "type": "Inches"
                   }
                 },
+                "type": "plane",
+                "value": "Custom",
                 "xAxis": {
                   "x": 0.0,
                   "y": 1.0,
@@ -4241,10 +4241,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                       }
                     ],
                     "on": {
-                      "type": "plane",
-                      "id": "[uuid]",
                       "artifactId": "[uuid]",
-                      "value": "YZ",
+                      "id": "[uuid]",
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -4253,6 +4251,8 @@ description: Variables in memory after executing poopy-shoe.kcl
                           "type": "Mm"
                         }
                       },
+                      "type": "plane",
+                      "value": "YZ",
                       "xAxis": {
                         "x": 0.0,
                         "y": -1.0,
@@ -4505,10 +4505,8 @@ description: Variables in memory after executing poopy-shoe.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": -3.875,
             "y": 0.0,
@@ -4517,6 +4515,8 @@ description: Variables in memory after executing poopy-shoe.kcl
               "type": "Inches"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": -1.0,

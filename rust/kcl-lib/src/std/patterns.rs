@@ -101,7 +101,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 ///
 /// // Sketch 4 cylinders.
-/// sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
@@ -111,10 +111,10 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// // with a gap between the original (at x = 0) and the first replica
 /// // (at x = 8). This is because `id` starts at 1.
 /// fn transform(id) {
-///   return { translate: [4 * (1+id), 0, 0] }
+///   return { translate = [4 * (1+id), 0, 0] }
 /// }
 ///
-/// sketch001 = startSketchOn('XZ')
+/// sketch001 = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 2)
 ///   |> extrude(length = 5)
 ///   |> patternTransform(instances = 4, transform = transform)
@@ -129,7 +129,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///
-///   return startSketchOn('XY')
+///   return startSketchOn(XY)
 ///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)
@@ -169,7 +169,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
 ///   
-///   return startSketchOn('XY')
+///   return startSketchOn(XY)
 ///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
 ///   |> line(endAbsolute = p2)
@@ -210,7 +210,7 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// }
 /// // Each layer is just a pretty thin cylinder.
 /// fn layer() {
-///   return startSketchOn("XY") // or some other plane idk
+///   return startSketchOn(XY) // or some other plane idk
 ///     |> circle(center = [0, 0], radius = 1, tag = $tag1)
 ///     |> extrude(length = h)
 /// }
@@ -222,11 +222,11 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
 /// fn transform(i) {
 ///   // Transform functions can return multiple transforms. They'll be applied in order.
 ///   return [
-///     { translate: [30 * i, 0, 0] },
-///     { rotation: { angle: 45 * i } },
+///     { translate = [30 * i, 0, 0] },
+///     { rotation = { angle = 45 * i } },
 ///   ]
 /// }
-/// startSketchOn('XY')
+/// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> polygon(
 ///        radius = 10,
@@ -283,12 +283,12 @@ async fn inner_pattern_transform<'a>(
 /// ```no_run
 /// // Each instance will be shifted along the X axis.
 /// fn transform(id) {
-///   return { translate: [4 * id, 0] }
+///   return { translate = [4 * id, 0] }
 /// }
 ///
 /// // Sketch 4 circles.
-/// sketch001 = startSketchOn('XZ')
-///   |> circle(center= [0, 0], radius= 2)
+/// sketch001 = startSketchOn(XZ)
+///   |> circle(center = [0, 0], radius= 2)
 ///   |> patternTransform2d(instances = 4, transform = transform)
 /// ```
 #[stdlib {
@@ -715,7 +715,7 @@ pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 1)
 ///   |> patternLinear2d(
 ///        axis = [1, 0],
@@ -794,7 +794,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// of distance between each repetition, some specified number of times.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 2])
 ///   |> line(end = [3, 1])
@@ -812,8 +812,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 /// ///
 /// ```no_run
 /// // Pattern a whole sketch on face.
-/// let size = 100
-/// const case = startSketchOn('XY')
+/// size = 100
+/// case = startSketchOn(XY)
 ///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
@@ -821,11 +821,11 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, face = END)
+/// thing1 = startSketchOn(case, face = END)
 ///     |> circle(center = [-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
-/// const thing2 = startSketchOn(case, face = END)
+/// thing2 = startSketchOn(case, face = END)
 ///     |> circle(center = [size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
@@ -840,8 +840,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///
 /// ```no_run
 /// // Pattern an object on a face.
-/// let size = 100
-/// const case = startSketchOn('XY')
+/// size = 100
+/// case = startSketchOn(XY)
 ///     |> startProfile(at = [-size, -size])
 ///     |> line(end = [2 * size, 0])
 ///     |> line(end = [0, 2 * size])
@@ -849,7 +849,7 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
 ///     |> close(%)
 ///     |> extrude(length = 65)
 ///
-/// const thing1 = startSketchOn(case, face = END)
+/// thing1 = startSketchOn(case, face = END)
 ///     |> circle(center =[-size / 2, -size / 2], radius = 25)
 ///     |> extrude(length = 50)
 ///
@@ -1043,7 +1043,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [.5, 25])
 ///   |> line(end = [0, 5])
 ///   |> line(end = [-1, 0])
@@ -1159,7 +1159,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> circle(center = [0, 0], radius = 1)
 ///
 /// example = extrude(exampleSketch, length = -5)
