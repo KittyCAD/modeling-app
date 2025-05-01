@@ -1,5 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -195,7 +195,6 @@ const Home = () => {
       splitKey: '|',
     }
   )
-  const ref = useRef<HTMLDivElement>(null)
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -204,9 +203,9 @@ const Home = () => {
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
+    <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader showToolbar={false} />
-      <div className="overflow-hidden flex-1 home-layout max-w-4xl xl:max-w-7xl mb-12 px-4 mx-auto mt-24 lg:px-0">
+      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
@@ -215,7 +214,7 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="lg:row-start-1 -row-end-1 flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 lg:flex flex-col justify-between">
           <ul className="flex flex-col">
             {needsToOnboard(location, onboardingStatus) && (
               <li className="flex group">
@@ -399,53 +398,55 @@ function HomeHeader({
 
   return (
     <section {...rest}>
-      <div className="flex justify-between items-center select-none">
+      <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
         <div className="flex gap-8 items-center">
           <h1 className="text-3xl font-bold">Projects</h1>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <ProjectSearchBar setQuery={setQuery} />
-          <small>Sort by</small>
-          <ActionButton
-            Element="button"
-            data-testid="home-sort-by-name"
-            className={`text-xs border-primary/10 ${
-              !sort.includes('name')
-                ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                : ''
-            }`}
-            onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-            iconStart={{
-              icon: getSortIcon(sort, 'name'),
-              bgClassName: 'bg-transparent',
-              iconClassName: !sort.includes('name')
-                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                : '',
-            }}
-          >
-            Name
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            data-testid="home-sort-by-modified"
-            className={`text-xs border-primary/10 ${
-              !isSortByModified
-                ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                : ''
-            }`}
-            onClick={() =>
-              setSearchParams(getNextSearchParams(sort, 'modified'))
-            }
-            iconStart={{
-              icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
-              bgClassName: 'bg-transparent',
-              iconClassName: !isSortByModified
-                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                : '',
-            }}
-          >
-            Last Modified
-          </ActionButton>
+          <div className="flex gap-2 items-center">
+            <small>Sort by</small>
+            <ActionButton
+              Element="button"
+              data-testid="home-sort-by-name"
+              className={`text-xs border-primary/10 ${
+                !sort.includes('name')
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }`}
+              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
+              iconStart={{
+                icon: getSortIcon(sort, 'name'),
+                bgClassName: 'bg-transparent',
+                iconClassName: !sort.includes('name')
+                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  : '',
+              }}
+            >
+              Name
+            </ActionButton>
+            <ActionButton
+              Element="button"
+              data-testid="home-sort-by-modified"
+              className={`text-xs border-primary/10 ${
+                !isSortByModified
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }`}
+              onClick={() =>
+                setSearchParams(getNextSearchParams(sort, 'modified'))
+              }
+              iconStart={{
+                icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
+                bgClassName: 'bg-transparent',
+                iconClassName: !isSortByModified
+                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  : '',
+              }}
+            >
+              Last Modified
+            </ActionButton>
+          </div>
         </div>
       </div>
       <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
@@ -502,7 +503,7 @@ function ProjectGrid({
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {searchResults.sort(getSortFunction(sort)).map((project) => (
                 <ProjectCard
                   key={project.name}
