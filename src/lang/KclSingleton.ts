@@ -738,7 +738,14 @@ export class KclManager {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
   }
 
-  // Determines if there is no KCL code which means it is executing a blank KCL file
+  /**
+   * Determines if there is no code to execute. If there is a @settings annotation
+   * that adds to the overall ast.start and ast.end but not the body which is the program
+   *
+   *
+   * If you need to know if there is any program code or not, use this function otherwise
+   * use _isAstEmpty
+   */
   isAstBodyEmpty(ast: Node<Program>) {
     return ast.body.length === 0
   }

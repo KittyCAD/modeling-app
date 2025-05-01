@@ -554,7 +554,7 @@ export function computeIsometricQuaternionForEmptyScene() {
   const quaternion = new THREE.Quaternion()
   quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
 
-  // Optionally align up vector using a lookAt matrix
+  // Align up vector using a lookAt matrix
   const m = new THREE.Matrix4()
   m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
   quaternion.setFromRotationMatrix(m)
