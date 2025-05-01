@@ -697,16 +697,11 @@ export function findUsesOfTagInPipe(
   // TODO: Handle all tags declared in a function, e.g.
   // a function may declare extrude(length = 1, tag = $myShape, tagStart = $myShapeBase)
   const args: Expr[] = node.arguments?.map((labeledArg) => labeledArg.arg) ?? []
-  const tagParam = args.find(
-    (arg) => arg?.type === 'TagDeclarator' || arg?.type === 'Name'
-  )
+  const tagParam = args.find((arg) => arg?.type === 'TagDeclarator')
   if (tagParam === undefined) {
     return []
   }
-  const tag =
-    tagParam?.type === 'TagDeclarator'
-      ? String(tagParam.value)
-      : tagParam.name.name
+  const tag = String(tagParam.value)
 
   const varDec = getNodeFromPath<Node<VariableDeclaration>>(
     ast,
@@ -736,6 +731,7 @@ export function findUsesOfTagInPipe(
         if (!('type' in tagArg)) {
           continue
         }
+        // TODO: COnsider removing this 'name' and see if anything breaks.
         if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
         const tagArgValue =
           tagArg.type === 'TagDeclarator'

@@ -641,11 +641,11 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
-      console.error('ADAM')
       const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
       const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThanOrEqual(0)
       const range = topLevelRange(start, start + lineOfInterest.length)
       const pathToNode = getNodePathFromSourceRange(ast, range)
       const dependentSegments = findUsesOfTagInPipe(ast, pathToNode)
@@ -760,7 +760,6 @@ describe('Testing removeSingleConstraintInfo', () => {
             key: value as any,
           }
         } else if (key === 'labeledArgArrayItem') {
-          console.log()
           argPosition = {
             type: 'labeledArgArrayItem',
             key: value as any,
