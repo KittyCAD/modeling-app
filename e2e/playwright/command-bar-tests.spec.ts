@@ -36,14 +36,13 @@ test.describe('Command bar tests', () => {
 
     // Click the line of code for xLine.
     await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-    await page.waitForTimeout(100)
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
       currentArgKey: 'selection',
-      currentArgValue: '1 path',
+      currentArgValue: '',
       headerArguments: {
         Selection: '',
         Length: '',
@@ -56,7 +55,7 @@ test.describe('Command bar tests', () => {
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Selection: '1 path',
+        Selection: '1 segment',
         Length: '5',
       },
     })

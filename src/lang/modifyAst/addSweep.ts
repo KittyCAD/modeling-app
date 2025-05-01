@@ -14,6 +14,7 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import { getNodeFromPath, valueOrVariable } from '@src/lang/queryAst'
+import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type {
   CallExpressionKw,
@@ -248,12 +249,15 @@ function insertVariable(
 }
 
 function createPathToNode(modifiedAst: Node<Program>): PathToNode {
+  const argIndex = 0 // first kwarg for all sweeps here
   return [
     ['body', ''],
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 }
 
