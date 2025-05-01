@@ -8,7 +8,7 @@
 dihedral = 116.565
 
 // Create a face template function that makes a large thin cube
-fn createFaceTemplate(dither) {
+fn createFaceTemplate(@dither) {
   baseSketch = startSketchOn(XY)
     |> startProfile(at = [-1000 - dither, -1000 - dither])
     |> line(endAbsolute = [1000 + dither, -1000 - dither])
@@ -62,7 +62,7 @@ dodecFaces = map(
   },
 )
 
-fn calculateArrayLength(arr) {
+fn calculateArrayLength(@arr) {
   return reduce(
     arr,
     initial = 0,
@@ -72,7 +72,7 @@ fn calculateArrayLength(arr) {
   )
 }
 
-fn createIntersection(solids) {
+fn createIntersection(@solids) {
   fn reduceIntersect(previous, current) {
     return intersect([previous, current])
   }

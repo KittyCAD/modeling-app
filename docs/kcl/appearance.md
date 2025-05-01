@@ -72,9 +72,9 @@ fn cube(center) {
     |> extrude(length = 10)
 }
 
-example0 = cube([0, 0])
-example1 = cube([20, 0])
-example2 = cube([40, 0])
+example0 = cube(center = [0, 0])
+example1 = cube(center = [20, 0])
+example2 = cube(center = [40, 0])
 
 appearance(
   [example0, example1],

@@ -36,7 +36,7 @@ patternTransform2d(
 
 ```kcl
 // Each instance will be shifted along the X axis.
-fn transform(id) {
+fn transform(@id) {
   return { translate = [4 * id, 0] }
 }
 

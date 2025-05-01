@@ -12,7 +12,7 @@ numSides = 50
 angleIncrement = 360 / numSides
 
 // Function to calculate the coordinates of a point on the circle
-fn calculatePoint(index) {
+fn calculatePoint(@index) {
   angle = index * angleIncrement
   x = radius * cos(angle)
   y = radius * sin(angle)

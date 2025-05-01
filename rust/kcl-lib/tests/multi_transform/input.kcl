@@ -1,4 +1,4 @@
-fn transform(i) {
+fn transform(@i) {
   return [
     { translate = [30 * i, 0, 0] },
     { rotation = { angle = 45 * i } }

@@ -42,10 +42,10 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> extrude(length = radius)
 /// }
 ///
-/// cylinder(1, line1)
-/// cylinder(2, line2)
-/// cylinder(3, line3)
-/// cylinder(4, line4)
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
 /// ```
 #[stdlib {
     name = "segEnd",
@@ -178,10 +178,10 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> extrude(length = radius)
 /// }
 ///
-/// cylinder(1, line1)
-/// cylinder(2, line2)
-/// cylinder(3, line3)
-/// cylinder(4, line4)
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
 /// ```
 #[stdlib {
     name = "segStart",

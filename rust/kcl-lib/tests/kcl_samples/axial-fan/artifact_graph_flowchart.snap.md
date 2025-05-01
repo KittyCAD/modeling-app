@@ -177,7 +177,7 @@ flowchart LR
   129["Sweep Extrusion<br>[333, 353, 10]"]
   130["Sweep Extrusion<br>[543, 564, 10]"]
   131["Sweep Revolve<br>[764, 846, 11]"]
-  132["Sweep Loft<br>[2259, 2379, 11]"]
+  132["Sweep Loft<br>[2454, 2473, 11]"]
   133[Wall]
   134[Wall]
   135[Wall]

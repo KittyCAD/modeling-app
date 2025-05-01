@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 73,
+        "end": 68,
         "id": {
           "commentStart": 0,
           "end": 2,
@@ -62,17 +62,17 @@ expression: actual
               "arguments": [
                 {
                   "abs_path": false,
-                  "commentStart": 45,
-                  "end": 48,
+                  "commentStart": 43,
+                  "end": 46,
                   "name": {
-                    "commentStart": 45,
-                    "end": 48,
+                    "commentStart": 43,
+                    "end": 46,
                     "name": "pos",
-                    "start": 45,
+                    "start": 43,
                     "type": "Identifier"
                   },
                   "path": [],
-                  "start": 45,
+                  "start": 43,
                   "type": "Name",
                   "type": "Name"
                 }
@@ -80,11 +80,11 @@ expression: actual
               "callee": {
                 "abs_path": false,
                 "commentStart": 30,
-                "end": 44,
+                "end": 42,
                 "name": {
                   "commentStart": 30,
-                  "end": 44,
-                  "name": "startProfileAt",
+                  "end": 42,
+                  "name": "startProfile",
                   "start": 30,
                   "type": "Identifier"
                 },
@@ -93,7 +93,7 @@ expression: actual
                 "type": "Name"
               },
               "commentStart": 30,
-              "end": 49,
+              "end": 47,
               "start": 30,
               "type": "CallExpression",
               "type": "CallExpression"
@@ -101,13 +101,13 @@ expression: actual
             {
               "arguments": [
                 {
-                  "commentStart": 58,
+                  "commentStart": 56,
                   "elements": [
                     {
-                      "commentStart": 59,
-                      "end": 60,
+                      "commentStart": 57,
+                      "end": 58,
                       "raw": "0",
-                      "start": 59,
+                      "start": 57,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -118,65 +118,58 @@ expression: actual
                     {
                       "argument": {
                         "abs_path": false,
-                        "commentStart": 63,
-                        "end": 68,
+                        "commentStart": 61,
+                        "end": 66,
                         "name": {
-                          "commentStart": 63,
-                          "end": 68,
+                          "commentStart": 61,
+                          "end": 66,
                           "name": "scale",
-                          "start": 63,
+                          "start": 61,
                           "type": "Identifier"
                         },
                         "path": [],
-                        "start": 63,
+                        "start": 61,
                         "type": "Name",
                         "type": "Name"
                       },
-                      "commentStart": 62,
-                      "end": 68,
+                      "commentStart": 60,
+                      "end": 66,
                       "operator": "-",
-                      "start": 62,
+                      "start": 60,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   ],
-                  "end": 69,
-                  "start": 58,
+                  "end": 67,
+                  "start": 56,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                },
-                {
-                  "commentStart": 71,
-                  "end": 72,
-                  "start": 71,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
                 }
               ],
               "callee": {
                 "abs_path": false,
-                "commentStart": 53,
-                "end": 57,
+                "commentStart": 51,
+                "end": 55,
                 "name": {
-                  "commentStart": 53,
-                  "end": 57,
+                  "commentStart": 51,
+                  "end": 55,
                   "name": "line",
-                  "start": 53,
+                  "start": 51,
                   "type": "Identifier"
                 },
                 "path": [],
-                "start": 53,
+                "start": 51,
                 "type": "Name"
               },
-              "commentStart": 53,
-              "end": 73,
-              "start": 53,
+              "commentStart": 51,
+              "end": 68,
+              "start": 51,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
           "commentStart": 5,
-          "end": 73,
+          "end": 68,
           "start": 5,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -184,7 +177,7 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 73,
+      "end": 68,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -192,6 +185,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 73,
+  "end": 68,
   "start": 0
 }
