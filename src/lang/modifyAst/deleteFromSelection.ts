@@ -25,7 +25,6 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   KclValue,
   PathToNode,
@@ -222,10 +221,10 @@ export async function deleteFromSelection(
         varDec.node.type === 'CallExpression' ||
         varDec.node.type === 'CallExpressionKw'
       ) {
-        const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
+        const callExp = getNodeFromPath<CallExpressionKw>(
           astClone,
           pathToNode,
-          ['CallExpression', 'CallExpressionKw']
+          ['CallExpressionKw']
         )
         if (err(callExp)) return callExp
         extrudeNameToDelete = callExp.node.callee.name.name

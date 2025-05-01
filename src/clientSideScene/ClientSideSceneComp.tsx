@@ -27,7 +27,6 @@ import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
 import type {
-  CallExpression,
   CallExpressionKw,
   Expr,
   PathToNode,
@@ -548,10 +547,10 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath<CallExpression | CallExpressionKw>(
+              const _node1 = getNodeFromPath< CallExpressionKw>(
                 pResult.program,
                 pathToNode,
-                ['CallExpression', 'CallExpressionKw'],
+                ['CallExpressionKw'],
                 true
               )
               if (trap(_node1)) return Promise.reject(_node1)
@@ -573,7 +572,7 @@ const ConstraintSymbol = ({
               // Code editor will be updated in the modelingMachine.
               const newCode = recast(modifiedAst)
               if (err(newCode)) return
-              await codeManager.updateCodeEditor(newCode)
+              codeManager.updateCodeEditor(newCode)
             } catch (e) {
               console.log('error', e)
             }

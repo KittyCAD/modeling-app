@@ -2,7 +2,6 @@ import type { Name } from '@rust/kcl-lib/bindings/Name'
 
 import {
   createArrayExpression,
-  createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -210,29 +209,6 @@ yo2 = hmm([identifierGuy + 5])`
     const { modifiedAst } = replaced
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`yo2 = hmm([replaceName])`)
-  })
-
-  describe('testing isTypeInValue', () => {
-    it('finds the pipeSubstituion', () => {
-      const val = createCallExpression('yoyo', [
-        createArrayExpression([
-          createLiteral(1),
-          createCallExpression('yoyo2', [createPipeSubstitution()]),
-          createLiteral('hey'),
-        ]),
-      ])
-      expect(isTypeInValue(val, 'PipeSubstitution')).toBe(true)
-    })
-    it('There is no pipeSubstituion', () => {
-      const val = createCallExpression('yoyo', [
-        createArrayExpression([
-          createLiteral(1),
-          createCallExpression('yoyo2', [createLiteral(5)]),
-          createLiteral('hey'),
-        ]),
-      ])
-      expect(isTypeInValue(val, 'PipeSubstitution')).toBe(false)
-    })
   })
 })
 

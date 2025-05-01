@@ -25,7 +25,6 @@ import {
 import {
   createArrayExpression,
   createBinaryExpression,
-  createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -71,7 +70,6 @@ import {
   topLevelRange,
 } from '@src/lang/util'
 import type {
-  CallExpression,
   CallExpressionKw,
   Expr,
   Path,
@@ -118,28 +116,6 @@ export function getCoordsFromPaths(skGroup: Sketch, index = 0): Coords2d {
   return [0, 0]
 }
 
-export function createFirstArg(
-  sketchFn: ToolTip,
-  val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
-): Expr | Error {
-  if (isArray(val)) {
-    if (
-      [
-        'angledLine',
-        'angledLineOfXLength',
-        'angledLineOfYLength',
-        'angledLineToX',
-        'angledLineToY',
-        'angledLineThatIntersects',
-      ].includes(sketchFn)
-    )
-      return createArrayExpression(val)
-  } else {
-    if (['xLine', 'xLineTo', 'yLine', 'yLineTo'].includes(sketchFn)) return val
-  }
-  return new Error('Missing sketch line type')
-}
-
 type AbbreviatedInput =
   | ArrayItemInput<any>['index']
   | ObjectPropertyInput<any>['key']
@@ -179,7 +155,7 @@ const constrainInfo = (
 }
 
 const commonConstraintInfoHelper = (
-  callExp: CallExpression | CallExpressionKw,
+  callExp: CallExpressionKw,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
   stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInputs: [
@@ -198,13 +174,10 @@ const commonConstraintInfoHelper = (
   pathToNode: PathToNode,
   filterValue?: string
 ) => {
-  if (callExp.type !== 'CallExpression' && callExp.type !== 'CallExpressionKw')
-    return []
+  if (callExp.type !== 'CallExpressionKw') return []
   const firstArg: [Expr | undefined, { [key: string]: Expr } | undefined] =
     (() => {
       switch (callExp.type) {
-        case 'CallExpression':
-          return [callExp.arguments[0], undefined]
         case 'CallExpressionKw':
           if (callExp.callee.name.name === 'angledLine') {
             const angleVal = findKwArg(ARG_ANGLE, callExp)
@@ -256,8 +229,6 @@ const commonConstraintInfoHelper = (
     const isArr = firstArgInner?.type === 'ArrayExpression'
     const argIndex = (() => {
       switch (callExp.type) {
-        case 'CallExpression':
-          return 0
         case 'CallExpressionKw':
           return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
       }
@@ -1517,7 +1488,7 @@ export const arc: SketchLineHelperKw = {
     const { center, radius, from, to } = segmentInput
     const _node = { ...node }
 
-    const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpressionKw>(
       _node,
       pathToNode,
       'PipeExpression'
@@ -1575,7 +1546,7 @@ export const arc: SketchLineHelperKw = {
       }
     }
 
-    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+    if (replaceExistingCallback && pipe.type !== 'CallExpressionKw') {
       const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
       const result = replaceExistingCallback([
         {
@@ -2404,15 +2375,19 @@ export const angledLine: SketchLineHelperKw = {
     const newAngleVal = snaps?.previousArcTag
       ? snaps.negativeTangentDirection
         ? createBinaryExpression([
-            createCallExpression('tangentToEnd', [
+            createCallExpressionStdLibKw(
+              'tangentToEnd',
               createLocalName(snaps?.previousArcTag),
-            ]),
+              []
+            ),
             '+',
             createLocalName('turns::HALF_TURN'),
           ])
-        : createCallExpression('tangentToEnd', [
+        : createCallExpressionStdLibKw(
+            'tangentToEnd',
             createLocalName(snaps?.previousArcTag),
-          ])
+            []
+          )
       : createLiteral(roundOff(getAngle(from, to), 0))
     const newLengthVal = createLiteral(roundOff(getLength(from, to), 2))
     const newLine = createCallExpressionStdLibKw('angledLine', null, [
@@ -3447,7 +3422,7 @@ export function addCallExpressionsToPipe({
   node: Node<Program>
   variables: VariableMap
   pathToNode: PathToNode
-  expressions: Node<CallExpression | CallExpressionKw>[]
+  expressions: Node<CallExpressionKw | CallExpressionKw>[]
 }) {
   const _node: Node<Program> = structuredClone(node)
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
@@ -3726,26 +3701,15 @@ function addTagKw(): addTagFn {
     // is a keyword or positional call.
     // In fact, even something like `close(%)` could be either (because we allow 1 unlabeled
     // starting param).
-    const callExpr = getNodeFromPath<Node<CallExpressionKw | CallExpression>>(
+    const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
       _node,
       pathToNode,
-      ['CallExpressionKw', 'CallExpression']
+      ['CallExpressionKw']
     )
     if (err(callExpr)) return callExpr
 
     // If the original node is a call expression, we'll need to change it to a call with keyword args.
-    const primaryCallExp: CallExpressionKw =
-      callExpr.node.type === 'CallExpressionKw'
-        ? callExpr.node
-        : {
-            type: 'CallExpressionKw',
-            callee: callExpr.node.callee,
-            unlabeled: callExpr.node.arguments.length
-              ? callExpr.node.arguments[0]
-              : null,
-            nonCodeMeta: nonCodeMetaEmpty(),
-            arguments: [],
-          }
+    const primaryCallExp: CallExpressionKw = callExpr.node
     const tagArg = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
       tagArg || createTagDeclarator(findUniqueName(_node, 'seg', 2))
@@ -3758,7 +3722,7 @@ function addTagKw(): addTagFn {
     // If we changed the node, we must replace the old node with the new node in the AST.
     const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
     if (mustReplaceNode) {
-      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, false, {
+      getNodeFromPath(_node, pathToNode, ['CallExpressionKw'], false, false, {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,
@@ -3800,17 +3764,6 @@ export function getXComponent(
   return [sign * xComponent, sign * yComponent]
 }
 
-function getFirstArgValuesForXYFns(callExpression: CallExpression):
-  | {
-      val: [Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  // used for lineTo, line
-  const firstArg = callExpression.arguments[0]
-  return getValuesForXYFns(firstArg)
-}
-
 function getValuesForXYFns(arg: Expr):
   | {
       val: [Expr, Expr]
@@ -3829,63 +3782,6 @@ function getValuesForXYFns(arg: Expr):
     }
   }
   return new Error('expected ArrayExpression or ObjectExpression')
-}
-
-function getFirstArgValuesForAngleFns(callExpression: CallExpression):
-  | {
-      val: [Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  // used for angledLine, angledLineOfXLength, angledLineToX, angledLineOfYLength, angledLineToY
-  const firstArg = callExpression.arguments[0]
-  if (firstArg.type === 'ArrayExpression') {
-    return { val: [firstArg.elements[0], firstArg.elements[1]] }
-  }
-  if (firstArg.type === 'ObjectExpression') {
-    const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-    const angle = firstArg.properties.find((p) => p.key.name === 'angle')?.value
-    const secondArgName = ['angledLineToX', 'angledLineToY'].includes(
-      callExpression?.callee?.name.name as ToolTip
-    )
-      ? 'to'
-      : 'length'
-    const length = firstArg.properties.find(
-      (p) => p.key.name === secondArgName
-    )?.value
-    if (angle && length) {
-      return { val: [angle, length], tag }
-    }
-  }
-  return new Error('expected ArrayExpression or ObjectExpression')
-}
-
-function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
-  val: Expr
-  tag?: Expr
-} {
-  // used for xLine, yLine, xLineTo, yLineTo
-  const firstArg = callExpression.arguments[0]
-  if (firstArg.type !== 'ObjectExpression') {
-    return { val: firstArg }
-  }
-  const tag = firstArg.properties.find((p) => p.key.name === 'tag')?.value
-  const secondArgName = ['xLineTo', 'yLineTo'].includes(
-    // const secondArgName = ['xLineTo', 'yLineTo', 'angledLineToX', 'angledLineToY'].includes(
-    callExpression?.callee?.name.name
-  )
-    ? 'to'
-    : 'length'
-  const length = firstArg.properties.find(
-    (p) => p.key.name === secondArgName
-  )?.value
-  if (length) {
-    return { val: length, tag }
-  }
-  console.warn('expected ArrayExpression or ObjectExpression')
-  return {
-    val: createLiteral(1),
-  }
 }
 
 export const getAngledLine = (
@@ -4097,34 +3993,6 @@ export function getArgForEnd(lineCall: CallExpressionKw):
     default:
       return new Error(`unknown function ${name}`)
   }
-}
-
-export function getFirstArg(callExp: CallExpression):
-  | {
-      val: Expr | [Expr, Expr] | [Expr, Expr, Expr]
-      tag?: Expr
-    }
-  | Error {
-  const name = callExp?.callee?.name.name
-  if (
-    [
-      'angledLine',
-      'angledLineOfXLength',
-      'angledLineToX',
-      'angledLineOfYLength',
-      'angledLineToY',
-    ].includes(name)
-  ) {
-    return getFirstArgValuesForAngleFns(callExp)
-  }
-  if (['xLine', 'yLine', 'xLineTo', 'yLineTo'].includes(name)) {
-    return getFirstArgValuesForXYLineFns(callExp)
-  }
-  if (['tangentialArc'].includes(name)) {
-    // TODO probably needs it's own implementation
-    return getFirstArgValuesForXYFns(callExp)
-  }
-  return new Error('unexpected call expression: ' + name)
 }
 
 /** A determining arg is one that determines the line, e.g. for xLine it's either 'length' or 'endAbsolute'

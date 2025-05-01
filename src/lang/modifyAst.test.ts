@@ -2,7 +2,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
-  createCallExpression,
+  createCallExpressionStdLibKw,
   createIdentifier,
   createLiteral,
   createObjectExpression,
@@ -73,7 +73,7 @@ describe('Testing createIdentifier', () => {
 })
 describe('Testing createCallExpression', () => {
   it('should create a call expression', () => {
-    const result = createCallExpression('myFunc', [createLiteral(5)])
+    const result = createCallExpressionStdLibKw('myFunc', createLiteral(5), [])
     expect(result.type).toBe('CallExpression')
     expect(result.callee.type).toBe('Name')
     expect(result.callee.name.name).toBe('myFunc')
@@ -651,6 +651,7 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65, length = ${
       ],
     ])(`%s`, async (_, line, [replace1, replace2]) => {
       const code = makeCode(line)
+      console.error('ADAM')
       const ast = assertParse(code)
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = line
@@ -1055,22 +1056,22 @@ describe('Testing splitPipedProfile', () => {
     part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
   // comment 2
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
 // comment 3
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const expectedCodeAfter = `// comment 1
 sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
   // comment 2
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
 // comment 3
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const ast = assertParse(codeBefore)
@@ -1094,10 +1095,10 @@ extrude001 = extrude(5, part001)
   it('should return error for already split pipe', () => {
     const codeBefore = `sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
   |> close(%)
-extrude001 = extrude(5, part001)
+extrude001 = extrude(part001, length = 5)
     `
 
     const ast = assertParse(codeBefore)

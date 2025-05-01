@@ -44,7 +44,6 @@ export function absDistanceInfo({
         : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
-      'CallExpression',
       'CallExpressionKw',
     ])
     if (err(tmp)) return tmp
