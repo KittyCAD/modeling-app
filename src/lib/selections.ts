@@ -19,7 +19,6 @@ import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Program,
@@ -354,10 +353,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node

@@ -19,28 +19,28 @@ beforeAll(async () => {
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001,at=[105.55, 105.55])
-  |> xLine(332.55, %, $seg01)
-  |> yLine(-310.12, %, $seg02)
-  |> xLine(-373.65, %)
+profile001 = startProfile(sketch001, at = [105.55, 105.55])
+  |> xLine(length = 332.55, tag = $seg01)
+  |> yLine(length = -310.12, tag = $seg02)
+  |> xLine(length = -373.65)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 500)
 
-sketch002 = startSketchOn(extrude001, seg01)
-profile002 = startProfile(sketch002,at=[-321.34, 361.76])
+sketch002 = startSketchOn(extrude001, tag = seg01)
+profile002 = startProfile(sketch002, at = [-321.34, 361.76])
   |> line(end = [109.03, -61.79])
   |> line(end = [-124.48, -132.65])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 500)
-sketch005 = startSketchOn(extrude002, 'END')
+sketch005 = startSketchOn(extrude002, tag = 'END')
 profile006 = circle(sketch005,
   center = [-292.57, 302.55],
   radius = 25.89
 )
-sketch004 = startSketchOn(extrude001, seg02)
-profile005 = startProfile(sketch004,at=[36.1, 174.49])
+sketch004 = startSketchOn(extrude001, tag = seg02)
+profile005 = startProfile(sketch004, at = [36.1, 174.49])
   |> angledLine(angle = 0, length = 22.33, tag = $rectangleSegmentA003)
   |> angledLine(
        angle = segAng(rectangleSegmentA003) - 90,
@@ -52,8 +52,8 @@ profile005 = startProfile(sketch004,at=[36.1, 174.49])
      )
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, seg02)
-profile003 = startProfile(sketch003,at=[-115.59, 439.4])
+sketch003 = startSketchOn(extrude001, tag = seg02)
+profile003 = startProfile(sketch003, at = [-115.59, 439.4])
   |> angledLine(angle = 0, length = 130.08, tag = $rectangleSegmentA002)
   |> angledLine(
        angle = segAng(rectangleSegmentA002) - 90,
@@ -1130,7 +1130,7 @@ profile004 = circle(sketch003,
     [
       'segment 2',
       {
-        snippet: 'yLine(-310.12, %, $seg02)',
+        snippet: 'yLine(length = -310.12, tag = $seg02)',
         artifactDetails: {
           type: 'segment',
           range: [149, 149, 0],
@@ -1142,7 +1142,7 @@ profile004 = circle(sketch003,
     [
       'sketch on face plane selection',
       {
-        snippet: 'sketch002 = startSketchOn(extrude001, seg01)',
+        snippet: 'sketch002 = startSketchOn(extrude001, tag = seg01)',
         artifactDetails: {
           type: 'wall',
           range: [340, 340, 0],
@@ -1170,7 +1170,7 @@ profile004 = circle(sketch003,
     [
       'path selection for a sketch on face',
       {
-        snippet: 'profile002 = startProfile(sketch002,at=[-321.34, 361.76])',
+        snippet: 'profile002 = startProfile(sketch002, at = [-321.34, 361.76])',
         artifactDetails: {
           type: 'solid2d',
           range: [398, 398, 0],
@@ -1182,7 +1182,7 @@ profile004 = circle(sketch003,
     [
       'startSketch on for a end cap that is also sketch on face on face',
       {
-        snippet: "sketch005 = startSketchOn(extrude002, 'END')",
+        snippet: "sketch005 = startSketchOn(extrude002, tag = 'END')",
         artifactDetails: {
           type: 'cap',
           subType: 'end',
