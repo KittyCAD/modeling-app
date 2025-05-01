@@ -9,7 +9,7 @@ Get the shared edge between two faces.
 
 
 ```kcl
-getCommon[Edge](/docs/kcl/types/Edge)(faces: [[TagIdentifier](/docs/kcl/types#tag-identifier)]): Uuid
+getCommonEdge(faces: [[TagIdentifier]](/docs/kcl/types#TagIdentifier)): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getCommon[Edge](/docs/kcl/types/Edge)(faces: [[TagIdentifier](/docs/kcl/types#ta
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[TagIdentifier]` | The tags of the faces you want to find the common edge between | Yes |
+| `faces` | [`[TagIdentifier]`](/docs/kcl/types#TagIdentifier) | The tags of the faces you want to find the common edge between | Yes |
 
 ### Returns
 

@@ -17,10 +17,10 @@ This is important to understand because if you were to then sketch on the result
 The point is if you want to export the result of a sketch on a face, you only need to export the final Solid that was created from the sketch on the face, since it will include all the parent faces and Solids.
 
 ```kcl
-start[Sketch](/docs/kcl/types/Sketch)On(
-  planeOr[Solid](/docs/kcl/types/Solid): [[Sketch](/docs/kcl/types/Sketch)Data](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)Data),
-  face?: [[Face](/docs/kcl/types/Face)Tag](/docs/kcl/types/[Face](/docs/kcl/types/Face)Tag),
-): [[Sketch](/docs/kcl/types/Sketch)Surface](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)Surface)
+startSketchOn(
+  planeOrSolid: [Plane](/docs/kcl/types/std-types-Plane) | [Solid](/docs/kcl/types/std-types-Solid),
+  face?: [TagIdentifier](/docs/kcl/types#TagIdentifier) | [Start](/docs/kcl/types#Start) | [End](/docs/kcl/types#End),
+): [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face)
 ```
 
 
@@ -28,12 +28,12 @@ start[Sketch](/docs/kcl/types/Sketch)On(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `planeOrSolid` | [`SketchData`](/docs/kcl/types/SketchData) | The plane or solid to sketch on | Yes |
-| `face` | [`FaceTag`](/docs/kcl/types/FaceTag) | Identify a face of a solid if a solid is specified as the input argument (`plane_or_solid`) | No |
+| `planeOrSolid` | [`Plane`](/docs/kcl/types/std-types-Plane) or [`Solid`](/docs/kcl/types/std-types-Solid) | The plane or solid to sketch on | Yes |
+| `face` | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) or [`Start`](/docs/kcl/types#Start) or [`End`](/docs/kcl/types#End) | Identify a face of a solid if a solid is specified as the input argument (`plane_or_solid`) | No |
 
 ### Returns
 
-[`SketchSurface`](/docs/kcl/types/SketchSurface) - A sketch type.
+[`Plane`](/docs/kcl/types/std-types-Plane) or [`Face`](/docs/kcl/types/std-types-Face) - A sketch type.
 
 
 ### Examples

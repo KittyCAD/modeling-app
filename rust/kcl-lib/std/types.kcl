@@ -1,6 +1,10 @@
 @no_std
 @settings(defaultLengthUnit = mm)
 
+/// Any value.
+@(impl = primitive)
+export type any
+
 /// A number
 ///
 /// May be signed or unsigned, an integer or decimal value.

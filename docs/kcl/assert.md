@@ -10,14 +10,14 @@ Check a value meets some expected conditions at runtime. Program terminates with
 
 ```kcl
 assert(
-  actual: [number](/docs/kcl/types/number),
-  isGreaterThan?: [number](/docs/kcl/types/number),
-  isLessThan?: [number](/docs/kcl/types/number),
-  isGreaterThanOrEqual?: [number](/docs/kcl/types/number),
-  isLessThanOrEqual?: [number](/docs/kcl/types/number),
-  isEqualTo?: [number](/docs/kcl/types/number),
-  tolerance?: [number](/docs/kcl/types/number),
-  error?: String,
+  actual: [number](/docs/kcl/types/std-types-number),
+  isGreaterThan?: [number](/docs/kcl/types/std-types-number),
+  isLessThan?: [number](/docs/kcl/types/std-types-number),
+  isGreaterThanOrEqual?: [number](/docs/kcl/types/std-types-number),
+  isLessThanOrEqual?: [number](/docs/kcl/types/std-types-number),
+  isEqualTo?: [number](/docs/kcl/types/std-types-number),
+  tolerance?: [number](/docs/kcl/types/std-types-number),
+  error?: [string](/docs/kcl/types/std-types-string),
 ): ()
 ```
 
@@ -26,14 +26,14 @@ assert(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `actual` | [`number`](/docs/kcl/types/number) | Value to check. It will be compared with one of the comparison arguments. | Yes |
-| `isGreaterThan` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is greater than this. | No |
-| `isLessThan` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is less than this. | No |
-| `isGreaterThanOrEqual` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is greater than or equal to this. | No |
-| `isLessThanOrEqual` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
-| `isEqualTo` | [`number`](/docs/kcl/types/number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
-| `tolerance` | [`number`](/docs/kcl/types/number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
-| `error` | `String` | If the value was false, the program will terminate with this error message | No |
+| `actual` | [`number`](/docs/kcl/types/std-types-number) | Value to check. It will be compared with one of the comparison arguments. | Yes |
+| `isGreaterThan` | [`number`](/docs/kcl/types/std-types-number) | Comparison argument. If given, checks the `actual` value is greater than this. | No |
+| `isLessThan` | [`number`](/docs/kcl/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than this. | No |
+| `isGreaterThanOrEqual` | [`number`](/docs/kcl/types/std-types-number) | Comparison argument. If given, checks the `actual` value is greater than or equal to this. | No |
+| `isLessThanOrEqual` | [`number`](/docs/kcl/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
+| `isEqualTo` | [`number`](/docs/kcl/types/std-types-number) | Comparison argument. If given, checks the `actual` value is less than or equal to this. | No |
+| `tolerance` | [`number`](/docs/kcl/types/std-types-number) | If `isEqualTo` is used, this is the tolerance to allow for the comparison. This tolerance is used because KCL's number system has some floating-point imprecision when used with very large decimal places. | No |
+| `error` | [`string`](/docs/kcl/types/std-types-string) | If the value was false, the program will terminate with this error message | No |
 
 ### Returns
 

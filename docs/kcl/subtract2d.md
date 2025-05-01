@@ -10,9 +10,9 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 ```kcl
 subtract2d(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  tool: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  tool: [[Sketch]](/docs/kcl/types/std-types-Sketch),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -20,12 +20,12 @@ subtract2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `tool` | [`[Sketch]`](/docs/kcl/types/Sketch) | The shape(s) which should be cut out of the sketch. | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `tool` | [`[Sketch]`](/docs/kcl/types/std-types-Sketch) | The shape(s) which should be cut out of the sketch. | Yes |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

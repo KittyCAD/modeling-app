@@ -9,7 +9,7 @@ Compute the ending point of the provided line segment.
 
 
 ```kcl
-segEnd(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number))
+segEnd(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [Point2d](/docs/kcl/types/std-types-Point2d)
 ```
 
 
@@ -17,11 +17,11 @@ segEnd(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [[[number](/docs/k
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
-[`[number]`](/docs/kcl/types/number)
+[`Point2d`](/docs/kcl/types/std-types-Point2d)
 
 
 ### Examples

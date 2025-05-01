@@ -10,12 +10,12 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount of dista
 
 ```kcl
 patternLinear3d(
-  solids: [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)),
-  instances: integer,
-  distance: [number](/docs/kcl/types/number),
-  axis: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  useOriginal?: [bool](/docs/kcl/types/bool),
-): [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid))
+  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
+  instances: [number](/docs/kcl/types/std-types-number),
+  distance: [number](/docs/kcl/types/std-types-number),
+  axis: [Point3d](/docs/kcl/types/std-types-Point3d),
+  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
+): [[Solid]](/docs/kcl/types/std-types-Solid)
 ```
 
 
@@ -23,15 +23,15 @@ patternLinear3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solid(s) to duplicate | Yes |
-| `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
-| `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |
-| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `solids` | [`[Solid]`](/docs/kcl/types/std-types-Solid) | The solid(s) to duplicate | Yes |
+| `instances` | [`number`](/docs/kcl/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `distance` | [`number`](/docs/kcl/types/std-types-number) | Distance between each repetition. Also known as 'spacing'. | Yes |
+| `axis` | [`Point3d`](/docs/kcl/types/std-types-Point3d) | The axis of the pattern. A 2D vector. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/std-types-Solid)
 
 
 ### Examples
