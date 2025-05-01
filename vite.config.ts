@@ -9,19 +9,7 @@ import { configDefaults, defineConfig } from 'vitest/config'
 import MillionLint from '@million/lint'
 
 export default defineConfig(({ command, mode }) => {
-  const isDev = command === 'serve'
-  const isTest = mode === 'test' || process.env.VITEST === 'true'
-  const isE2E =
-    mode === 'e2e' || // when we start Vite with `--mode e2e`
-    process.env.PLAYWRIGHT === 'true' // set by the script below
-  // 1️⃣  Electron hints:
-  //   • electron-vite & vite-plugin-electron set VITE_DEV_SERVER_URL during dev  :contentReference[oaicite:0]{index=0}
-  //   • packaged apps have process.versions.electron
-  const isElectron =
-    mode === 'electron' || // if you start Vite with --mode electron
-    process.env.ELECTRON === 'true' || // if you add your own env var
-    !!process.env.VITE_DEV_SERVER_URL || // electron-vite dev flag
-    !!process.versions?.electron // packaged / main-process detection
+  const runMillion = process.env.RUN_MILLION
 
   return {
     server: {
@@ -98,7 +86,7 @@ export default defineConfig(({ command, mode }) => {
         // The function to generate import names of top-level await promise in each chunk module
         promiseImportName: (i) => `__tla_${i}`,
       }),
-      isDev && !isTest && !isE2E && !isElectron && MillionLint.vite(),
+      runMillion && MillionLint.vite(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],
