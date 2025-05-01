@@ -21,6 +21,7 @@ import {
   executorInputPath,
   getUtils,
   networkingMasks,
+  settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -510,7 +511,15 @@ test.describe(
           )
           await fsp.writeFile(
             tempSettingsFilePath,
-            `[settings.app]\nthemeColor = "${color}"`
+            settingsToToml({
+              settings: {
+                app: {
+                  appearance: {
+                    color: parseFloat(color),
+                  },
+                },
+              },
+            })
           )
         }
 

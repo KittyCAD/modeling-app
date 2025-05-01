@@ -1113,7 +1113,13 @@ async fn test_kcl_lsp_signature_help() {
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "startSketchOn");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"startSketchOn(
+  planeOrSolid: SketchData,
+  face?: FaceTag,
+): SketchSurface"#
+        );
     } else {
         panic!("Expected signature help");
     }
@@ -1196,7 +1202,17 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "extrude");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     } else {
         panic!("Expected signature help");
     }
@@ -1284,7 +1300,17 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "extrude");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     } else {
         panic!("Expected signature help");
     }
@@ -1367,7 +1393,17 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "extrude");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     } else {
         panic!("Expected signature help");
     }
@@ -1455,7 +1491,17 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "extrude");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     } else {
         panic!("Expected signature help");
     }
