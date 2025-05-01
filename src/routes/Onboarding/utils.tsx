@@ -289,7 +289,7 @@ export async function resetCodeAndAdvanceOnboarding({
   // TODO: this is not navigating to the correct `/onboarding/blah` path yet
   navigate(
     makeUrlPathRelative(
-      `${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(onboardingStatus)}`
+      joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
     )
   )
 }
