@@ -3706,6 +3706,9 @@ function addTagKw(): addTagFn {
     const isTagExisting = !!tagArg
     if (!isTagExisting) {
       const labeledArg = createLabeledArg(ARG_TAG, tagDeclarator)
+      if (primaryCallExp.arguments === undefined) {
+        primaryCallExp.arguments = []
+      }
       primaryCallExp.arguments.push(labeledArg)
     }
 
