@@ -1744,8 +1744,9 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use pretty_assertions::assert_eq;
+
+    use super::*;
 
     #[test]
     fn test_position_to_char_index_first_line() {
