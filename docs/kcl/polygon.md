@@ -10,12 +10,12 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 ```kcl
 polygon(
-  sketchSurfaceOrGroup: [[Sketch](/docs/kcl/types/Sketch)OrSurface](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)OrSurface),
-  radius: [number](/docs/kcl/types/number),
+  sketchSurfaceOrGroup: [Sketch](/docs/kcl/types/std-types-Sketch) | [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
+  radius: [number](/docs/kcl/types/std-types-number),
   numSides: u64,
-  center: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  inscribed?: [bool](/docs/kcl/types/bool),
-): [Sketch](/docs/kcl/types/Sketch)
+  center: [Point2d](/docs/kcl/types/std-types-Point2d),
+  inscribed?: [bool](/docs/kcl/types/std-types-bool),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -23,15 +23,15 @@ polygon(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on | Yes |
-| `radius` | [`number`](/docs/kcl/types/number) | The radius of the polygon | Yes |
+| `sketchSurfaceOrGroup` | [`Sketch`](/docs/kcl/types/std-types-Sketch) or [`Plane`](/docs/kcl/types/std-types-Plane) or [`Face`](/docs/kcl/types/std-types-Face) | Plane or surface to sketch on | Yes |
+| `radius` | [`number`](/docs/kcl/types/std-types-number) | The radius of the polygon | Yes |
 | `numSides` | `u64` | The number of sides in the polygon | Yes |
-| `center` | [`[number]`](/docs/kcl/types/number) | The center point of the polygon | Yes |
-| `inscribed` | [`bool`](/docs/kcl/types/bool) | Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius | No |
+| `center` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | The center point of the polygon | Yes |
+| `inscribed` | [`bool`](/docs/kcl/types/std-types-bool) | Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

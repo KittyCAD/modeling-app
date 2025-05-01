@@ -16,12 +16,12 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ```kcl
 scale(
-  objects: [[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry),
-  x?: [number](/docs/kcl/types/number),
-  y?: [number](/docs/kcl/types/number),
-  z?: [number](/docs/kcl/types/number),
-  global?: [bool](/docs/kcl/types/bool),
-): [[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry)
+  objects: [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
+  x?: [number](/docs/kcl/types/std-types-number),
+  y?: [number](/docs/kcl/types/std-types-number),
+  z?: [number](/docs/kcl/types/std-types-number),
+  global?: [bool](/docs/kcl/types/std-types-bool),
+): [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
 ```
 
 
@@ -29,15 +29,15 @@ scale(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
-| `x` | [`number`](/docs/kcl/types/number) | The scale factor for the x axis. Default is 1 if not provided. | No |
-| `y` | [`number`](/docs/kcl/types/number) | The scale factor for the y axis. Default is 1 if not provided. | No |
-| `z` | [`number`](/docs/kcl/types/number) | The scale factor for the z axis. Default is 1 if not provided. | No |
-| `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `objects` | [`[Solid]`](/docs/kcl/types/std-types-Solid) or [`[Sketch]`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `x` | [`number`](/docs/kcl/types/std-types-number) | The scale factor for the x axis. Default is 1 if not provided. | No |
+| `y` | [`number`](/docs/kcl/types/std-types-number) | The scale factor for the y axis. Default is 1 if not provided. | No |
+| `z` | [`number`](/docs/kcl/types/std-types-number) | The scale factor for the z axis. Default is 1 if not provided. | No |
+| `global` | [`bool`](/docs/kcl/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid, sketch, or an imported geometry.
+[`[Solid]`](/docs/kcl/types/std-types-Solid) or [`[Sketch]`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
 
 
 ### Examples

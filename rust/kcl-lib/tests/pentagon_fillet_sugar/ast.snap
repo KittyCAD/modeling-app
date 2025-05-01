@@ -917,15 +917,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                         "unlabeled": null
                       },
                       {
-                        "arguments": [
-                          {
-                            "commentStart": 0,
-                            "end": 0,
-                            "start": 0,
-                            "type": "PipeSubstitution",
-                            "type": "PipeSubstitution"
-                          }
-                        ],
+                        "arguments": [],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -1017,40 +1009,60 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "init": {
             "arguments": [
               {
-                "argument": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "raw": "200",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 200.0,
-                    "suffix": "None"
-                  }
-                },
-                "commentStart": 0,
-                "end": 0,
-                "operator": "-",
-                "start": 0,
-                "type": "UnaryExpression",
-                "type": "UnaryExpression"
-              },
-              {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "c",
+                  "name": "x",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "arg": {
+                  "argument": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "200",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 200.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "commentStart": 0,
+                  "end": 0,
+                  "operator": "-",
+                  "start": 0,
+                  "type": "UnaryExpression",
+                  "type": "UnaryExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "face",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "c",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               }
             ],
             "callee": {
@@ -1071,8 +1083,9 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -1365,32 +1378,52 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "init": {
             "arguments": [
               {
-                "commentStart": 0,
-                "end": 0,
-                "raw": "200",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": {
-                  "value": 200.0,
-                  "suffix": "None"
-                }
-              },
-              {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
+                "type": "LabeledArg",
+                "label": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "a",
+                  "name": "x",
                   "start": 0,
                   "type": "Identifier"
                 },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "200",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 200.0,
+                    "suffix": "None"
+                  }
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": "face",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "a",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               }
             ],
             "callee": {
@@ -1411,8 +1444,9 @@ description: Result of parsing pentagon_fillet_sugar.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": null
           },
           "start": 0,
           "type": "VariableDeclarator"

@@ -4,6 +4,7 @@ import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import { commandBarActor } from '@src/lib/singletons'
 import { useHotkeys } from 'react-hotkeys-hook'
+import { useKclContext } from '@src/lang/KclProvider'
 
 const shareHotkey = 'mod+alt+s'
 const onShareClick = () =>
@@ -19,11 +20,16 @@ export const ShareButton = () => {
     scopes: ['modeling'],
   })
 
+  const kclContext = useKclContext()
+  const disabled = kclContext.ast.body.some((n) => n.type === 'ImportStatement')
+
   return (
     <button
       type="button"
       onClick={onShareClick}
+      disabled={disabled}
       className="flex gap-1 items-center py-0 pl-0.5 pr-1.5 m-0 bg-chalkboard-10/80 dark:bg-chalkboard-100/50 hover:bg-chalkboard-10 dark:hover:bg-chalkboard-100 border border-solid active:border-primary"
+      data-testid="share-button"
     >
       <CustomIcon name="link" className="w-5 h-5" />
       <span className="flex-1">Share</span>
@@ -31,10 +37,16 @@ export const ShareButton = () => {
         position="bottom-right"
         contentClassName="max-w-none flex items-center gap-4"
       >
-        <span className="flex-1">Share part via Zoo link</span>
-        <kbd className="hotkey text-xs capitalize">
-          {hotkeyDisplay(shareHotkey, platform)}
-        </kbd>
+        <span className="flex-1">
+          {disabled
+            ? `Share links are not currently supported for multi-file assemblies`
+            : `Share part via Zoo link`}
+        </span>
+        {!disabled && (
+          <kbd className="hotkey text-xs capitalize">
+            {hotkeyDisplay(shareHotkey, platform)}
+          </kbd>
+        )}
       </Tooltip>
     </button>
   )

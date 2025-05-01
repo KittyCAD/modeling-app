@@ -6342,7 +6342,7 @@ description: Variables in memory after executing kitt.kcl
       }
     }
   },
-  "kitEyeHeihgt": {
+  "kitEyeHeight": {
     "type": "Number",
     "value": 23.0,
     "ty": {

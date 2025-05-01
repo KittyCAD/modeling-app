@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment along the 'x' axis.
 
 
 ```kcl
-segStartX(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [number](/docs/kcl/types/number)
+segStartX(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [number](/docs/kcl/types/std-types-number)
 ```
 
 
@@ -17,11 +17,11 @@ segStartX(tag: [TagIdentifier](/docs/kcl/types#tag-identifier)): [number](/docs/
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `tag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The line segment being queried by its tag | Yes |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The line segment being queried by its tag | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl/types/number)
+[`number`](/docs/kcl/types/std-types-number)
 
 
 ### Examples

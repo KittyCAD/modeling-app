@@ -50,7 +50,8 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
                   "name": "ignored",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

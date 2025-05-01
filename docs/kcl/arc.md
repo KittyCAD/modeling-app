@@ -12,14 +12,14 @@ Unless this makes a lot of sense and feels like what you're looking for to const
 
 ```kcl
 arc(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  angleStart?: [number](/docs/kcl/types/number),
-  angleEnd?: [number](/docs/kcl/types/number),
-  radius?: [number](/docs/kcl/types/number),
-  interiorAbsolute?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  endAbsolute?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  angleStart?: [number](/docs/kcl/types/std-types-number),
+  angleEnd?: [number](/docs/kcl/types/std-types-number),
+  radius?: [number](/docs/kcl/types/std-types-number),
+  interiorAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  endAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -27,17 +27,17 @@ arc(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `angleStart` | [`number`](/docs/kcl/types/number) | Where along the circle should this arc start? | No |
-| `angleEnd` | [`number`](/docs/kcl/types/number) | Where along the circle should this arc end? | No |
-| `radius` | [`number`](/docs/kcl/types/number) | How large should the circle be? | No |
-| `interiorAbsolute` | [`[number]`](/docs/kcl/types/number) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
-| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `angleStart` | [`number`](/docs/kcl/types/std-types-number) | Where along the circle should this arc start? | No |
+| `angleEnd` | [`number`](/docs/kcl/types/std-types-number) | Where along the circle should this arc end? | No |
+| `radius` | [`number`](/docs/kcl/types/std-types-number) | How large should the circle be? | No |
+| `interiorAbsolute` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
+| `endAbsolute` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd` | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

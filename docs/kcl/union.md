@@ -10,9 +10,9 @@ Union two or more solids into a single solid.
 
 ```kcl
 union(
-  solids: [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)),
-  tolerance?: [number](/docs/kcl/types/number),
-): [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid))
+  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
+  tolerance?: [number](/docs/kcl/types/std-types-number),
+): [[Solid]](/docs/kcl/types/std-types-Solid)
 ```
 
 
@@ -20,12 +20,12 @@ union(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solids to union. | Yes |
-| `tolerance` | [`number`](/docs/kcl/types/number) | The tolerance to use for the union operation. | No |
+| `solids` | [`[Solid]`](/docs/kcl/types/std-types-Solid) | The solids to union. | Yes |
+| `tolerance` | [`number`](/docs/kcl/types/std-types-number) | The tolerance to use for the union operation. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/std-types-Solid)
 
 
 ### Examples
@@ -44,8 +44,8 @@ fn cube(center, size) {
     |> extrude(length = 10)
 }
 
-part001 = cube([0, 0], 10)
-part002 = cube([7, 3], 5)
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
   |> translate(z = 1)
 
 unionedPart = union([part001, part002])
@@ -69,8 +69,8 @@ fn cube(center, size) {
     |> extrude(length = 10)
 }
 
-part001 = cube([0, 0], 10)
-part002 = cube([7, 3], 5)
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
   |> translate(z = 1)
 
 // This is the equivalent of: union([part001, part002])
@@ -95,8 +95,8 @@ fn cube(center, size) {
     |> extrude(length = 10)
 }
 
-part001 = cube([0, 0], 10)
-part002 = cube([7, 3], 5)
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
   |> translate(z = 1)
 
   // This is the equivalent of: union([part001, part002])

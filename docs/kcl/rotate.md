@@ -28,14 +28,14 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```kcl
 rotate(
-  objects: [[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry),
-  roll?: [number](/docs/kcl/types/number),
-  pitch?: [number](/docs/kcl/types/number),
-  yaw?: [number](/docs/kcl/types/number),
-  axis?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  angle?: [number](/docs/kcl/types/number),
-  global?: [bool](/docs/kcl/types/bool),
-): [[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)Or[Sketch](/docs/kcl/types/Sketch)OrImportedGeometry)
+  objects: [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
+  roll?: [number](/docs/kcl/types/std-types-number),
+  pitch?: [number](/docs/kcl/types/std-types-number),
+  yaw?: [number](/docs/kcl/types/std-types-number),
+  axis?: [[number]](/docs/kcl/types/std-types-number),
+  angle?: [number](/docs/kcl/types/std-types-number),
+  global?: [bool](/docs/kcl/types/std-types-bool),
+): [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
 ```
 
 
@@ -43,17 +43,17 @@ rotate(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
-| `roll` | [`number`](/docs/kcl/types/number) | The roll angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
-| `pitch` | [`number`](/docs/kcl/types/number) | The pitch angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
-| `yaw` | [`number`](/docs/kcl/types/number) | The yaw angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
-| `axis` | [`[number]`](/docs/kcl/types/number) | The axis to rotate around. Must be used with `angle`. | No |
-| `angle` | [`number`](/docs/kcl/types/number) | The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360. | No |
-| `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
+| `objects` | [`[Solid]`](/docs/kcl/types/std-types-Solid) or [`[Sketch]`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
+| `roll` | [`number`](/docs/kcl/types/std-types-number) | The roll angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
+| `pitch` | [`number`](/docs/kcl/types/std-types-number) | The pitch angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
+| `yaw` | [`number`](/docs/kcl/types/std-types-number) | The yaw angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
+| `axis` | [`[number]`](/docs/kcl/types/std-types-number) | The axis to rotate around. Must be used with `angle`. | No |
+| `angle` | [`number`](/docs/kcl/types/std-types-number) | The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360. | No |
+| `global` | [`bool`](/docs/kcl/types/std-types-bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid, sketch, or an imported geometry.
+[`[Solid]`](/docs/kcl/types/std-types-Solid) or [`[Sketch]`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
 
 
 ### Examples

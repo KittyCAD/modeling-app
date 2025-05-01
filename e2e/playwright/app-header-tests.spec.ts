@@ -1,4 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { join } from 'path'
+import * as fsp from 'fs/promises'
 
 test.describe('Electron app header tests', () => {
   test(
@@ -43,4 +45,33 @@ test.describe('Electron app header tests', () => {
       await expect(userSettingsButton).toHaveText(text)
     }
   )
+
+  test('Share button is disabled when imports are present', async ({
+    page,
+    context,
+    homePage,
+    toolbar,
+  }) => {
+    const projectName = 'share-disabled-for-imports'
+    await context.folderSetupFn(async (dir) => {
+      const testDir = join(dir, projectName)
+      await fsp.mkdir(testDir, { recursive: true })
+
+      await fsp.writeFile(join(testDir, 'deps.kcl'), 'export x = 42')
+      await fsp.writeFile(join(testDir, 'main.kcl'), 'import x from "deps.kcl"')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.openProject(projectName)
+    const shareButton = page.getByTestId('share-button')
+
+    // Open deps.kcl (which has no imports) and verify share button is enabled
+    await toolbar.fileTreeBtn.click()
+    await toolbar.openFile('deps.kcl')
+    await expect(shareButton).not.toBeDisabled()
+
+    // Open main.kcl (which has an import) and verify share button is disabled
+    await toolbar.openFile('main.kcl')
+    await expect(shareButton).toBeDisabled()
+  })
 })
