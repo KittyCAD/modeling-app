@@ -1,63 +1,66 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from 'react'
 import {
   type NavigateFunction,
   type useLocation,
   useNavigate,
-} from "react-router-dom";
-import { waitFor } from "xstate";
+} from 'react-router-dom'
+import { waitFor } from 'xstate'
 
-import { ActionButton } from "@src/components/ActionButton";
-import { CustomIcon } from "@src/components/CustomIcon";
-import Tooltip from "@src/components/Tooltip";
-import { useAbsoluteFilePath } from "@src/hooks/useAbsoluteFilePath";
-import { useNetworkContext } from "@src/hooks/useNetworkContext";
-import { NetworkHealthState } from "@src/hooks/useNetworkStatus";
-import { EngineConnectionStateType } from "@src/lang/std/engineConnection";
-import { bracket } from "@src/lib/exampleKcl";
-import makeUrlPathRelative from "@src/lib/makeUrlPathRelative";
-import { joinRouterPaths, PATHS } from "@src/lib/paths";
+import { ActionButton } from '@src/components/ActionButton'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
+import { bracket } from '@src/lib/exampleKcl'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {
   codeManager,
   editorManager,
   kclManager,
   systemIOActor,
-} from "@src/lib/singletons";
-import { reportRejection, trap } from "@src/lib/trap";
-import { settingsActor } from "@src/lib/singletons";
-import { isKclEmptyOrOnlySettings, parse, resultIsOk } from "@src/lang/wasm";
-import { updateModelingState } from "@src/lang/modelingWorkflows";
+} from '@src/lib/singletons'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { settingsActor } from '@src/lib/singletons'
+import { isKclEmptyOrOnlySettings, parse, resultIsOk } from '@src/lang/wasm'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   DEFAULT_PROJECT_KCL_FILE,
   EXECUTION_TYPE_REAL,
   ONBOARDING_PROJECT_NAME,
-} from "@src/lib/constants";
-import toast from "react-hot-toast";
-import type CodeManager from "@src/lang/codeManager";
-import type { OnboardingStatus } from "@rust/kcl-lib/bindings/OnboardingStatus";
-import { isDesktop } from "@src/lib/isDesktop";
-import type { KclManager } from "@src/lang/KclSingleton";
-import { Logo } from "@src/components/Logo";
-import { SystemIOMachineEvents } from "@src/machines/systemIO/utils";
-import { ONBOARDING_SUBPATHS } from "@src/lib/onboardingPaths";
+} from '@src/lib/constants'
+import toast from 'react-hot-toast'
+import type CodeManager from '@src/lang/codeManager'
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { KclManager } from '@src/lang/KclSingleton'
+import { Logo } from '@src/components/Logo'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  isOnboardingSubPath,
+  ONBOARDING_SUBPATHS,
+} from '@src/lib/onboardingPaths'
 
 export const kbdClasses =
-  "py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2";
+  'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 // Get the 1-indexed step number of the current onboarding step
 function useStepNumber(
-  slug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS],
+  slug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
 ) {
-  return slug ? Object.values(ONBOARDING_SUBPATHS).indexOf(slug) + 1 : -1;
+  return slug ? Object.values(ONBOARDING_SUBPATHS).indexOf(slug) + 1 : -1
 }
 
 export function useDemoCode() {
-  const { overallState, immediateState } = useNetworkContext();
+  const { overallState, immediateState } = useNetworkContext()
 
   useEffect(() => {
     async function setCodeToDemoIfNeeded() {
       // Don't run if the editor isn't loaded or the code is already the bracket
       if (!editorManager.editorView || codeManager.code === bracket) {
-        return;
+        return
       }
       // Don't run if the network isn't healthy or the connection isn't established
       if (
@@ -65,62 +68,75 @@ export function useDemoCode() {
         overallState === NetworkHealthState.Issue ||
         immediateState.type !== EngineConnectionStateType.ConnectionEstablished
       ) {
-        return;
+        return
       }
-      const pResult = parse(bracket);
+      const pResult = parse(bracket)
       if (trap(pResult) || !resultIsOk(pResult)) {
-        return Promise.reject(pResult);
+        return Promise.reject(pResult)
       }
-      const ast = pResult.program;
+      const ast = pResult.program
       await updateModelingState(ast, EXECUTION_TYPE_REAL, {
         kclManager: kclManager,
         editorManager: editorManager,
         codeManager: codeManager,
-      });
+      })
     }
 
-    setCodeToDemoIfNeeded().catch(reportRejection);
-  }, [editorManager.editorView, immediateState.type, overallState]);
+    setCodeToDemoIfNeeded().catch(reportRejection)
+  }, [editorManager.editorView, immediateState.type, overallState])
 }
 
-export function useNextClick(newStatus: string) {
-  const filePath = useAbsoluteFilePath();
-  const navigate = useNavigate();
+export function useNextClick(newStatus: OnboardingStatus) {
+  const filePath = useAbsoluteFilePath()
+  const navigate = useNavigate()
 
   return useCallback(() => {
+    if (!isOnboardingSubPath(newStatus)) {
+      return new Error(
+        `Failed to navigate to invalid onboarding status ${newStatus}`
+      )
+    }
     settingsActor.send({
-      type: "set.app.onboardingStatus",
-      data: { level: "user", value: newStatus },
-    });
-    navigate(filePath + PATHS.ONBOARDING.INDEX.slice(0, -1) + newStatus);
-  }, [filePath, newStatus, navigate]);
+      type: 'set.app.onboardingStatus',
+      data: { level: 'user', value: newStatus },
+    })
+    navigate(joinRouterPaths(filePath, PATHS.ONBOARDING.INDEX, newStatus))
+  }, [filePath, newStatus, navigate])
 }
 
 export function useDismiss() {
-  const filePath = useAbsoluteFilePath();
-  const send = settingsActor.send;
-  const navigate = useNavigate();
+  const filePath = useAbsoluteFilePath()
+  const send = settingsActor.send
+  const navigate = useNavigate()
 
-  const settingsCallback = useCallback(() => {
-    send({
-      type: "set.app.onboardingStatus",
-      data: { level: "user", value: "dismissed" },
-    });
-    waitFor(settingsActor, (state) => state.matches("idle"))
-      .then(() => {
-        navigate(filePath);
-        toast.success(
-          "Click the question mark in the lower-right corner if you ever want to redo the tutorial!",
-          {
-            duration: 5_000,
-          },
-        );
+  const settingsCallback = useCallback(
+    (
+      dismissalType:
+        | Extract<OnboardingStatus, 'completed' | 'dismissed'>
+        | undefined = 'dismissed'
+    ) => {
+      send({
+        type: 'set.app.onboardingStatus',
+        data: { level: 'user', value: dismissalType },
       })
-      .catch(reportRejection);
-  }, [send, filePath, navigate]);
+      waitFor(settingsActor, (state) => state.matches('idle'))
+        .then(() => {
+          navigate(filePath)
+          toast.success(
+            'Click the question mark in the lower-right corner if you ever want to redo the tutorial!',
+            {
+              duration: 5_000,
+            }
+          )
+        })
+        .catch(reportRejection)
+    },
+    [send, filePath, navigate]
+  )
 
-  return settingsCallback;
+  return settingsCallback
 }
+
 export function OnboardingButtons({
   currentSlug,
   className,
@@ -128,29 +144,33 @@ export function OnboardingButtons({
   onNextOverride,
   ...props
 }: {
-  currentSlug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS];
-  className?: string;
-  dismissClassName?: string;
-  onNextOverride?: () => void;
+  currentSlug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
+  className?: string
+  dismissClassName?: string
+  onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const onboardingPathsArray = Object.values(ONBOARDING_SUBPATHS);
-  const dismiss = useDismiss();
-  const stepNumber = useStepNumber(currentSlug);
+  const onboardingPathsArray = Object.values(ONBOARDING_SUBPATHS)
+  const dismiss = useDismiss()
+  const stepNumber = useStepNumber(currentSlug)
   const previousStep =
-    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber];
-  const goToPrevious = useNextClick(previousStep ?? ONBOARDING_SUBPATHS.INDEX);
+    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber]
   const nextStep =
     !stepNumber || stepNumber === onboardingPathsArray.length
       ? null
-      : onboardingPathsArray[stepNumber];
-  // TODO: replace with `??` once I prove this is where things went wrong
-  const goToNext = useNextClick(nextStep + ONBOARDING_SUBPATHS.INDEX);
+      : onboardingPathsArray[stepNumber]
+
+  const previousOnboardingStatus: OnboardingStatus =
+    previousStep ?? ONBOARDING_SUBPATHS.INDEX
+  const nextOnboardingStatus: OnboardingStatus = nextStep ?? 'completed'
+
+  const goToPrevious = useNextClick(previousOnboardingStatus)
+  const goToNext = useNextClick(nextOnboardingStatus)
 
   return (
     <>
       <button
         type="button"
-        onClick={dismiss}
+        onClick={() => dismiss()}
         className={`group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ${
           dismissClassName
         }`}
@@ -165,21 +185,21 @@ export function OnboardingButtons({
         </Tooltip>
       </button>
       <div
-        className={`flex items-center justify-between ${className ?? ""}`}
+        className={`flex items-center justify-between ${className ?? ''}`}
         {...props}
       >
         <ActionButton
           Element="button"
           onClick={() => (previousStep ? goToPrevious() : dismiss())}
           iconStart={{
-            icon: previousStep ? "arrowLeft" : "close",
-            className: "text-chalkboard-10",
-            bgClassName: "bg-destroy-80 group-hover:bg-destroy-80",
+            icon: previousStep ? 'arrowLeft' : 'close',
+            className: 'text-chalkboard-10',
+            bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           }}
           className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
           data-testid="onboarding-prev"
         >
-          {previousStep ? "Back" : "Dismiss"}
+          {previousStep ? 'Back' : 'Dismiss'}
         </ActionButton>
         {stepNumber !== undefined && (
           <p className="font-mono text-xs text-center m-0">
@@ -191,33 +211,36 @@ export function OnboardingButtons({
           Element="button"
           onClick={() => {
             if (nextStep) {
-              onNextOverride ? onNextOverride() : goToNext();
+              const result = onNextOverride ? onNextOverride() : goToNext()
+              if (err(result)) {
+                reportRejection(result)
+              }
             } else {
-              dismiss();
+              dismiss('completed')
             }
           }}
           iconStart={{
-            icon: nextStep ? "arrowRight" : "checkmark",
-            bgClassName: "dark:bg-chalkboard-80",
+            icon: nextStep ? 'arrowRight' : 'checkmark',
+            bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
           data-testid="onboarding-next"
         >
-          {nextStep ? "Next" : "Finish"}
+          {nextStep ? 'Next' : 'Finish'}
         </ActionButton>
       </div>
     </>
-  );
+  )
 }
 
 export interface OnboardingUtilDeps {
-  onboardingStatus: OnboardingStatus;
-  codeManager: CodeManager;
-  kclManager: KclManager;
-  navigate: NavigateFunction;
+  onboardingStatus: OnboardingStatus
+  codeManager: CodeManager
+  kclManager: KclManager
+  navigate: NavigateFunction
 }
 
-export const ERROR_MUST_WARN = "Must warn user before overwrite";
+export const ERROR_MUST_WARN = 'Must warn user before overwrite'
 
 /**
  * Accept to begin the onboarding tutorial,
@@ -234,19 +257,19 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
         requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING.INDEX,
-          deps.onboardingStatus,
+          deps.onboardingStatus
         ),
       },
-    });
-    return Promise.resolve();
+    })
+    return Promise.resolve()
   }
 
-  const isCodeResettable = hasResetReadyCode(deps.codeManager);
+  const isCodeResettable = hasResetReadyCode(deps.codeManager)
   if (isCodeResettable) {
-    return resetCodeAndAdvanceOnboarding(deps);
+    return resetCodeAndAdvanceOnboarding(deps)
   }
 
-  return Promise.reject(new Error(ERROR_MUST_WARN));
+  return Promise.reject(new Error(ERROR_MUST_WARN))
 }
 
 /**
@@ -260,57 +283,57 @@ export async function resetCodeAndAdvanceOnboarding({
   navigate,
 }: OnboardingUtilDeps) {
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(bracket);
-  codeManager.writeToFile().catch(reportRejection);
-  kclManager.executeCode().catch(reportRejection);
+  codeManager.updateCodeStateEditor(bracket)
+  codeManager.writeToFile().catch(reportRejection)
+  kclManager.executeCode().catch(reportRejection)
   // TODO: this is not navigating to the correct `/onboarding/blah` path yet
   navigate(
     makeUrlPathRelative(
-      `${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(onboardingStatus)}`,
-    ),
-  );
+      `${PATHS.ONBOARDING.INDEX}${makeUrlPathRelative(onboardingStatus)}`
+    )
+  )
 }
 
 function hasResetReadyCode(codeManager: CodeManager) {
   return (
     isKclEmptyOrOnlySettings(codeManager.code) || codeManager.code === bracket
-  );
+  )
 }
 
 export function needsToOnboard(
   location: ReturnType<typeof useLocation>,
-  onboardingStatus: OnboardingStatus,
+  onboardingStatus: OnboardingStatus
 ) {
   return (
     !location.pathname.includes(PATHS.ONBOARDING.INDEX) &&
     (onboardingStatus.length === 0 ||
-      !(onboardingStatus === "completed" || onboardingStatus === "dismissed"))
-  );
+      !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed'))
+  )
 }
 
-export const ONBOARDING_TOAST_ID = "onboarding-toast";
+export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
 export function onDismissOnboardingInvite() {
   settingsActor.send({
-    type: "set.app.onboardingStatus",
-    data: { level: "user", value: "dismissed" },
-  });
-  toast.dismiss(ONBOARDING_TOAST_ID);
+    type: 'set.app.onboardingStatus',
+    data: { level: 'user', value: 'dismissed' },
+  })
+  toast.dismiss(ONBOARDING_TOAST_ID)
   toast.success(
-    "Click the question mark in the lower-right corner if you ever want to do the tutorial!",
+    'Click the question mark in the lower-right corner if you ever want to do the tutorial!',
     {
       duration: 5_000,
-    },
-  );
+    }
+  )
 }
 
 export function TutorialRequestToast(props: OnboardingUtilDeps) {
   function onAccept() {
     acceptOnboarding(props)
       .then(() => {
-        toast.dismiss(ONBOARDING_TOAST_ID);
+        toast.dismiss(ONBOARDING_TOAST_ID)
       })
-      .catch((reason) => catchOnboardingWarnError(reason, props));
+      .catch((reason) => catchOnboardingWarnError(reason, props))
   }
 
   return (
@@ -330,7 +353,7 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "close",
+              icon: 'close',
             }}
             data-negative-button="dismiss"
             name="dismiss"
@@ -341,7 +364,7 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "checkmark",
+              icon: 'checkmark',
             }}
             name="accept"
             onClick={onAccept}
@@ -351,7 +374,7 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 /**
@@ -360,24 +383,24 @@ export function TutorialRequestToast(props: OnboardingUtilDeps) {
  */
 export async function catchOnboardingWarnError(
   err: Error,
-  props: OnboardingUtilDeps,
+  props: OnboardingUtilDeps
 ) {
   if (err instanceof Error && err.message === ERROR_MUST_WARN) {
     toast.success(TutorialWebConfirmationToast(props), {
       id: ONBOARDING_TOAST_ID,
       duration: Number.POSITIVE_INFINITY,
       icon: null,
-    });
+    })
   } else {
-    toast.dismiss(ONBOARDING_TOAST_ID);
-    return reportRejection(err);
+    toast.dismiss(ONBOARDING_TOAST_ID)
+    return reportRejection(err)
   }
 }
 
 export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
   function onAccept() {
-    toast.dismiss(ONBOARDING_TOAST_ID);
-    resetCodeAndAdvanceOnboarding(props).catch(reportRejection);
+    toast.dismiss(ONBOARDING_TOAST_ID)
+    resetCodeAndAdvanceOnboarding(props).catch(reportRejection)
   }
 
   return (
@@ -398,7 +421,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "close",
+              icon: 'close',
             }}
             data-negative-button="dismiss"
             name="dismiss"
@@ -409,7 +432,7 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
           <ActionButton
             Element="button"
             iconStart={{
-              icon: "checkmark",
+              icon: 'checkmark',
             }}
             name="accept"
             onClick={onAccept}
@@ -419,5 +442,5 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

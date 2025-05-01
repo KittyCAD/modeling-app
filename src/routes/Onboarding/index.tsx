@@ -71,7 +71,7 @@ export const onboardingRoutes = [
 
 const Onboarding = () => {
   const dismiss = useDismiss()
-  useHotkeys('esc', dismiss)
+  useHotkeys('esc', () => dismiss())
 
   return (
     <div className="content" data-testid="onboarding-content">
