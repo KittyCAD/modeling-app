@@ -22,6 +22,12 @@ import type {
 } from '@src/lib/types'
 import { settingsActor } from '@src/lib/singletons'
 
+export const telemetryLoader: LoaderFunction = async ({
+  params,
+}): Promise<null> => {
+  return null
+}
+
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {

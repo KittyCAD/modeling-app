@@ -1,11 +1,124 @@
-import { APP_NAME } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import { Themes, getSystemTheme } from '@src/lib/theme'
-import { useSettings } from '@src/lib/singletons'
-import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { useEffect, useState } from 'react'
+import { useNavigate, useRouteLoaderData } from 'react-router-dom'
 
-export default function Introduction() {
+import { useLspContext } from '@src/components/LspProvider'
+import { useFileContext } from '@src/hooks/useFileContext'
+import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
+import { APP_NAME } from '@src/lib/constants'
+import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
+import { bracket } from '@src/lib/exampleKcl'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS } from '@src/lib/paths'
+import { codeManager, kclManager } from '@src/lib/singletons'
+import { Themes, getSystemTheme } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import type { IndexLoaderData } from '@src/lib/types'
+import { useSettings } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
+
+/**
+ * Show either a welcome screen or a warning screen
+ * depending on if the user has code in the editor.
+ */
+export default function OnboardingIntroduction() {
+  const [shouldShowWarning, setShouldShowWarning] = useState(
+    !isKclEmptyOrOnlySettings(codeManager.code) && codeManager.code !== bracket
+  )
+
+  return shouldShowWarning ? (
+    <OnboardingResetWarning setShouldShowWarning={setShouldShowWarning} />
+  ) : (
+    <OnboardingIntroductionInner />
+  )
+}
+
+interface OnboardingResetWarningProps {
+  setShouldShowWarning: (arg: boolean) => void
+}
+
+function OnboardingResetWarning(props: OnboardingResetWarningProps) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-content-center bg-chalkboard-110/50">
+      <div className="relative max-w-3xl p-8 rounded bg-chalkboard-10 dark:bg-chalkboard-90">
+        {!isDesktop() ? (
+          <OnboardingWarningWeb {...props} />
+        ) : (
+          <OnboardingWarningDesktop {...props} />
+        )}
+      </div>
+    </div>
+  )
+}
+
+function OnboardingWarningDesktop(props: OnboardingResetWarningProps) {
+  const navigate = useNavigate()
+  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { context: fileContext } = useFileContext()
+  const { onProjectClose, onProjectOpen } = useLspContext()
+
+  async function onAccept() {
+    onProjectClose(
+      loaderData.file || null,
+      fileContext.project.path || null,
+      false
+    )
+    await createAndOpenNewTutorialProject({ onProjectOpen, navigate })
+    props.setShouldShowWarning(false)
+  }
+
+  return (
+    <>
+      <h1 className="flex flex-wrap items-center gap-4 text-3xl font-bold">
+        Would you like to create a new project?
+      </h1>
+      <section className="my-12">
+        <p className="my-4">
+          You have some content in this project that we don't want to overwrite.
+          If you would like to create a new project, please click the button
+          below.
+        </p>
+      </section>
+      <OnboardingButtons
+        className="mt-6"
+        onNextOverride={() => {
+          onAccept().catch(reportRejection)
+        }}
+      />
+    </>
+  )
+}
+
+function OnboardingWarningWeb(props: OnboardingResetWarningProps) {
+  useEffect(() => {
+    async function beforeNavigate() {
+      // We do want to update both the state and editor here.
+      codeManager.updateCodeStateEditor(bracket)
+      await codeManager.writeToFile()
+
+      await kclManager.executeCode()
+      props.setShouldShowWarning(false)
+    }
+    return () => {
+      beforeNavigate().catch(reportRejection)
+    }
+  }, [])
+  return (
+    <>
+      <h1 className="text-3xl font-bold text-warn-80 dark:text-warn-10">
+        Replaying onboarding resets your code
+      </h1>
+      <p className="my-4">
+        We see you have some of your own code written in this project. Please
+        save it somewhere else before continuing the onboarding.
+      </p>
+      <OnboardingButtons className="mt-6" />
+    </>
+  )
+}
+
+function OnboardingIntroductionInner() {
   // Reset the code to the bracket code
   useDemoCode()
 
@@ -69,7 +182,7 @@ export default function Introduction() {
           </p>
         </section>
         <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.INDEX}
+          currentSlug={onboardingPaths.INDEX}
           className="mt-6"
         />
       </div>
