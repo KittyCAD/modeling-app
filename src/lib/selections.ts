@@ -584,6 +584,7 @@ function getBestCandidate(
     return undefined
   }
 
+  // TODO: We think the problem is here?
   for (const entry of entries) {
     // Segments take precedence
     if (entry.artifact.type === 'segment') {
@@ -643,6 +644,8 @@ export function codeToIdSelections(
       }
 
       // Direct artifact case
+      console.warn('ADAM: Selection', selection)
+      console.warn('ADAM: codeRef', selection.codeRef)
       if (selection.artifact?.id) {
         return [createSelectionToEngine(selection, selection.artifact.id)]
       }
