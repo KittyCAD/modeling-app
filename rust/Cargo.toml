@@ -36,7 +36,7 @@ dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.9.0"
 kittycad = { version = "0.3.36", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.114", features = ["ts-rs", "websocket"] }
+kittycad-modeling-cmds = { version = "0.2.115", features = ["ts-rs", "websocket"] }
 lazy_static = "1.5.0"
 miette = "7.5.0"
 pyo3 = { version = "0.24.1" }
@@ -60,6 +60,6 @@ lossy_float_literal = "warn"
 result_large_err = "allow"
 
 # Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
-[patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "paultag/debug" }
+#[patch.crates-io]
+#kittycad-modeling-cmds = { path = "../../../modeling-api/modeling-cmds" }
 #kittycad-modeling-session = { path = "../../../modeling-api/modeling-session" }
