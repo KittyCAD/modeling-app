@@ -318,7 +318,7 @@ describe('Testing moveValueIntoNewVariable', () => {
 }
 `
   const code = `${fn('def')}${fn('jkl')}${fn('hmm')}
-fn ghi(x) {
+fn ghi(@x) {
     return 2
 }
 abc = 3

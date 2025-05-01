@@ -70,7 +70,7 @@ log(5, myVar)
       '  return a + b',
       '}',
       'theVar = 60',
-      'magicNum = funcN(9, theVar)',
+      'magicNum = funcN(a = 9, b = theVar)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -106,7 +106,7 @@ log(5, myVar)
   })
   it('recast BinaryExpression piped into CallExpression', () => {
     const code = [
-      'fn myFn(a) {',
+      'fn myFn(@a) {',
       '  return a + 1',
       '}',
       'myVar = 5 + 1',
