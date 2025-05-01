@@ -14,3 +14,9 @@ export const ONBOARDING_SUBPATHS: Record<string, OnboardingStatus> = {
   SKETCHING: '/sketching',
   FUTURE_WORK: '/future-work',
 } as const
+
+export const isOnboardingSubPath = (
+  input: string
+): input is OnboardingStatus => {
+  return Object.values(ONBOARDING_SUBPATHS).includes(input as OnboardingStatus)
+}
