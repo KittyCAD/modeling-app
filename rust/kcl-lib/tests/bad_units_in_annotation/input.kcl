@@ -17,12 +17,12 @@ fn createAtom(center, radius) {
 }
 
 // Create the oxygen atom at the origin
-oxygenAtom = createAtom([0, 0], oxygenRadius)
+oxygenAtom = createAtom(center = [0, 0], radius = oxygenRadius)
 
 // Calculate the positions of the hydrogen atoms
 hydrogenOffsetX = oxygenHydrogenDistance * cos(toRadians(bondAngle / 2))
 hydrogenOffsetY = oxygenHydrogenDistance * sin(toRadians(bondAngle / 2))
 
 // Create the hydrogen atoms
-hydrogenAtom1 = createAtom([hydrogenOffsetX, hydrogenOffsetY], hydrogenRadius)
-hydrogenAtom2 = createAtom([-hydrogenOffsetX, hydrogenOffsetY], hydrogenRadius)
+hydrogenAtom1 = createAtom(center = [hydrogenOffsetX, hydrogenOffsetY], radius = hydrogenRadius)
+hydrogenAtom2 = createAtom(center = [-hydrogenOffsetX, hydrogenOffsetY], radius = hydrogenRadius)

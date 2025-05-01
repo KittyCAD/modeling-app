@@ -10,11 +10,11 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```kcl
 appearance(
-  solids: [[Solid](/docs/kcl/types/Solid)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)OrImportedGeometry),
-  color: String,
-  metalness?: [number](/docs/kcl/types/number),
-  roughness?: [number](/docs/kcl/types/number),
-): [[Solid](/docs/kcl/types/Solid)OrImportedGeometry](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)OrImportedGeometry)
+  solids: [[Solid]](/docs/kcl/types/std-types-Solid) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
+  color: [string](/docs/kcl/types/std-types-string),
+  metalness?: [number](/docs/kcl/types/std-types-number),
+  roughness?: [number](/docs/kcl/types/std-types-number),
+): [[Solid]](/docs/kcl/types/std-types-Solid) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
 ```
 
 
@@ -22,14 +22,14 @@ appearance(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid(s) whose appearance is being set | Yes |
-| `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
-| `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
-| `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
+| `solids` | [`[Solid]`](/docs/kcl/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) | The solid(s) whose appearance is being set | Yes |
+| `color` | [`string`](/docs/kcl/types/std-types-string) | Color of the new material, a hex string like '#ff0000' | Yes |
+| `metalness` | [`number`](/docs/kcl/types/std-types-number) | Metalness of the new material, a percentage like 95.7. | No |
+| `roughness` | [`number`](/docs/kcl/types/std-types-number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
-[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
+[`[Solid]`](/docs/kcl/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples
@@ -72,9 +72,9 @@ fn cube(center) {
     |> extrude(length = 10)
 }
 
-example0 = cube([0, 0])
-example1 = cube([20, 0])
-example2 = cube([40, 0])
+example0 = cube(center = [0, 0])
+example1 = cube(center = [20, 0])
+example2 = cube(center = [40, 0])
 
 appearance(
   [example0, example1],

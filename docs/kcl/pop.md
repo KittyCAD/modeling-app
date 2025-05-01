@@ -9,7 +9,7 @@ Remove the last element from an array.
 Returns a new array with the last element removed.
 
 ```kcl
-pop(array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue))): [KclValue](/docs/kcl/types/KclValue)
+pop(array: [[any]](/docs/kcl/types/std-types-any)): [any](/docs/kcl/types/std-types-any)
 ```
 
 
@@ -17,11 +17,11 @@ pop(array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to pop from. Must not be empty. | Yes |
+| `array` | [`[any]`](/docs/kcl/types/std-types-any) | The array to pop from. Must not be empty. | Yes |
 
 ### Returns
 
-[`KclValue`](/docs/kcl/types/KclValue) - Any KCL value.
+[`any`](/docs/kcl/types/std-types-any) - Any KCL value.
 
 
 ### Examples

@@ -9,7 +9,7 @@ Get the opposite edge to the edge given.
 
 
 ```kcl
-getOpposite[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/types#tag-identifier)): Uuid
+getOppositeEdge(edge: [TagIdentifier](/docs/kcl/types#TagIdentifier)): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getOpposite[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/types#ta
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the edge you want to find the opposite edge of. | Yes |
+| `edge` | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The tag of the edge you want to find the opposite edge of. | Yes |
 
 ### Returns
 

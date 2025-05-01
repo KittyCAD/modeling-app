@@ -1,7 +1,5 @@
 import type { PlatformPath } from 'path'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import {

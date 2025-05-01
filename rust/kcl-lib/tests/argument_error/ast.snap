@@ -55,7 +55,8 @@ description: Result of parsing argument_error.kcl
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -77,53 +78,47 @@ description: Result of parsing argument_error.kcl
         "expression": {
           "arguments": [
             {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
                 "name": "f",
                 "start": 0,
                 "type": "Identifier"
               },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            },
-            {
-              "commentStart": 0,
-              "elements": [
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "0",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 0.0,
-                    "suffix": "None"
+              "arg": {
+                "commentStart": 0,
+                "elements": [
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "commentStart": 0,
+                    "end": 0,
+                    "raw": "1",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 1.0,
+                      "suffix": "None"
+                    }
                   }
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "1",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 1.0,
-                    "suffix": "None"
-                  }
-                }
-              ],
-              "end": 0,
-              "start": 0,
-              "type": "ArrayExpression",
-              "type": "ArrayExpression"
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              }
             }
           ],
           "callee": {
@@ -144,8 +139,24 @@ description: Result of parsing argument_error.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "f",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",

@@ -19,6 +19,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { secrets } from '@e2e/playwright/secrets'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {

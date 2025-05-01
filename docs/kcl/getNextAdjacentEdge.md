@@ -9,7 +9,7 @@ Get the next adjacent edge to the edge given.
 
 
 ```kcl
-getNextAdjacent[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/types#tag-identifier)): Uuid
+getNextAdjacentEdge(edge: [TagIdentifier](/docs/kcl/types#TagIdentifier)): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getNextAdjacent[Edge](/docs/kcl/types/Edge)(edge: [TagIdentifier](/docs/kcl/type
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the edge you want to find the next adjacent edge of. | Yes |
+| `edge` | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The tag of the edge you want to find the next adjacent edge of. | Yes |
 
 ### Returns
 

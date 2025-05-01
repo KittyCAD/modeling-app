@@ -10,12 +10,12 @@ Draw an angled line from the current origin, constructing a line segment such th
 
 ```kcl
 angledLineThatIntersects(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  angle: [number](/docs/kcl/types/number),
-  intersectTag: [TagIdentifier](/docs/kcl/types#tag-identifier),
-  offset?: [number](/docs/kcl/types/number),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  angle: [number](/docs/kcl/types/std-types-number),
+  intersectTag: [TagIdentifier](/docs/kcl/types#TagIdentifier),
+  offset?: [number](/docs/kcl/types/std-types-number),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -23,15 +23,15 @@ angledLineThatIntersects(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `angle` | [`number`](/docs/kcl/types/number) | Which angle should the line be drawn at? | Yes |
-| `intersectTag` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the line to intersect with | Yes |
-| `offset` | [`number`](/docs/kcl/types/number) | The offset from the intersecting line. Defaults to 0. | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `angle` | [`number`](/docs/kcl/types/std-types-number) | Which angle should the line be drawn at? | Yes |
+| `intersectTag` | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The tag of the line to intersect with | Yes |
+| `offset` | [`number`](/docs/kcl/types/std-types-number) | The offset from the intersecting line. Defaults to 0. | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

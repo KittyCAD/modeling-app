@@ -10,9 +10,9 @@ Construct a line segment from the current origin back to the profile's origin, e
 
 ```kcl
 close(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -20,12 +20,12 @@ close(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | The sketch you want to close | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | The sketch you want to close | Yes |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

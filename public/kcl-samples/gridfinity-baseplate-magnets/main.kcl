@@ -22,7 +22,7 @@ countBinLength = 3
 height = firstStep + secondStep + thirdStep
 
 // Define a function which builds the profile of the baseplate bin
-fn face(plane) {
+fn face(@plane) {
   faceSketch = startSketchOn(plane)
     |> startProfile(at = [0, 0])
     |> yLine(length = height)
@@ -84,7 +84,7 @@ basePlateCorners = patternLinear3d(
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // Create the center cutout for the magnet profile
-fn magnetCenterCutout(plane) {
+fn magnetCenterCutout(@plane) {
   magnetSketch = startSketchOn(plane)
     |> startProfile(at = [
          firstStep + thirdStep,
@@ -111,7 +111,7 @@ fn magnetCenterCutout(plane) {
 }
 
 // Create the outside profile of the magnets
-fn magnetBase(plane) {
+fn magnetBase(@plane) {
   magnetBaseSketch = startSketchOn(plane)
     |> startProfile(at = [0, 0])
     |> xLine(length = binLength, tag = $line001)

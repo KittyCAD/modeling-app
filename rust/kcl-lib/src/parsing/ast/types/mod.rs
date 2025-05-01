@@ -3739,11 +3739,11 @@ mod tests {
     fn test_get_lsp_folding_ranges() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3751,7 +3751,7 @@ blah = 1
 foo = false
 baz = {a = 1, b = "thing"}
 
-fn ghi(x) {
+fn ghi(@x) {
   return x
 }
 
@@ -3761,24 +3761,24 @@ ghi("things")
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 27);
-        assert_eq!(folding_ranges[0].end_line, 126);
+        assert_eq!(folding_ranges[0].end_line, 123);
         assert_eq!(
             folding_ranges[0].collapsed_text,
             Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 145);
-        assert_eq!(folding_ranges[1].end_line, 244);
+        assert_eq!(folding_ranges[1].start_line, 142);
+        assert_eq!(folding_ranges[1].end_line, 238);
         assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
-        assert_eq!(folding_ranges[2].start_line, 350);
-        assert_eq!(folding_ranges[2].end_line, 363);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 345);
+        assert_eq!(folding_ranges[2].end_line, 358);
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(@x) {".to_string()));
     }
 
     #[test]
     fn test_get_lsp_symbols() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3804,12 +3804,12 @@ h = 30
 
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
-  |> arc({
+  |> arc(
        angle_end = 360,
        angle_start = 0,
        radius = r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -3825,12 +3825,12 @@ h = 30
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
   // comment
-  |> arc({
+  |> arc(
        angle_end= 360,
        angle_start= 0,
        radius= r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -4105,7 +4105,7 @@ cylinder = startSketchOn(-XZ)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
-        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let some_program_string = r#"some_func({thing = true, other_thing = false})"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // We want to get the bool and verify it is a bool.
@@ -4123,14 +4123,22 @@ cylinder = startSketchOn(-XZ)
             panic!("expected a function!");
         };
 
-        let Expr::CallExpression(ce) = expression else {
-            panic!("expected a function!");
-        };
+        let oe = match expression {
+            Expr::CallExpressionKw(ce) => {
+                assert!(ce.unlabeled.is_some());
 
-        assert!(!ce.arguments.is_empty());
-
-        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
-            panic!("expected a object!");
+                let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
+                    panic!("expected a object!");
+                };
+                oe
+            }
+            Expr::CallExpression(ce) => {
+                let Expr::ObjectExpression(ref oe) = (ce.arguments).first().unwrap() else {
+                    panic!("expected an object!");
+                };
+                oe
+            }
+            other => panic!("expected a Call or CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);

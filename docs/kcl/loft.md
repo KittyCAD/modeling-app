@@ -10,14 +10,14 @@ The sketches need to closed and on the same plane.
 
 ```kcl
 loft(
-  sketches: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
-  vDegree: NonZeroU32,
-  bezApproximateRational: [bool](/docs/kcl/types/bool),
-  baseCurveIndex?: integer,
-  tolerance?: [number](/docs/kcl/types/number),
-  tagStart?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-  tagEnd?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Solid](/docs/kcl/types/Solid)
+  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
+  vDegree: [number](/docs/kcl/types/std-types-number),
+  bezApproximateRational: [bool](/docs/kcl/types/std-types-bool),
+  baseCurveIndex?: [number](/docs/kcl/types/std-types-number),
+  tolerance?: [number](/docs/kcl/types/std-types-number),
+  tagStart?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+  tagEnd?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Solid](/docs/kcl/types/std-types-Solid)
 ```
 
 
@@ -25,17 +25,17 @@ loft(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketches to loft. Must include at least 2 sketches. | Yes |
-| `vDegree` | `NonZeroU32` | Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified. | Yes |
-| `bezApproximateRational` | [`bool`](/docs/kcl/types/bool) | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
-| `baseCurveIndex` | `integer` | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
-| `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for the loft operation. | No |
-| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the loft, i.e. the original sketch | No |
-| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the loft, i.e. the last sketch | No |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/std-types-Sketch) | Which sketches to loft. Must include at least 2 sketches. | Yes |
+| `vDegree` | [`number`](/docs/kcl/types/std-types-number) | Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction. This defaults to 2, if not specified. | Yes |
+| `bezApproximateRational` | [`bool`](/docs/kcl/types/std-types-bool) | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
+| `baseCurveIndex` | [`number`](/docs/kcl/types/std-types-number) | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
+| `tolerance` | [`number`](/docs/kcl/types/std-types-number) | Tolerance for the loft operation. | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | A named tag for the face at the start of the loft, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | A named tag for the face at the end of the loft, i.e. the last sketch | No |
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`Solid`](/docs/kcl/types/std-types-Solid)
 
 
 ### Examples

@@ -37,7 +37,15 @@ kitHeadElevation = kitBodyElevation + kitBodyHeight - kitHeadOffset - kitHeadHei
 
 kitHeadWidth = kitBodyWidth - (kitHeadOffset * 2)
 kitHeadDepth = 3
-kitHead = pixelBox(kitBody, END, -kitHeadWidth / 2, kitHeadElevation, kitHeadWidth, kitHeadHeight, kitHeadDepth)
+kitHead = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = END,
+  positionY = -kitHeadWidth / 2,
+  positionZ = kitHeadElevation,
+  width = kitHeadWidth,
+  height = kitHeadHeight,
+  depth = kitHeadDepth,
+)
 kitFaceElevation = kitHeadElevation + 2
 
 // 3. Kitty Face
@@ -67,17 +75,49 @@ kitFace = startSketchOn(kitHead, face = END)
 
 // 3.1.1 Kitty Left Eye
 kitEyeDepth = 0.5
-kitEyeHeihgt = kitFaceElevation + 7
+kitEyeHeight = kitFaceElevation + 7
 kitEyeOffset = 7
 
 // 3.1.2 Kitty Right Eye
-kitLeftEye1 = pixelBox(kitFace, START, -kitEyeOffset, kitEyeHeihgt, 1, 1, kitEyeDepth)
+kitLeftEye1 = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = -kitEyeOffset,
+  positionZ = kitEyeHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
 
 // 3.2 Kitty Nose
-kitLeftEye2 = pixelBox(kitFace, START, -kitEyeOffset + 1, kitEyeHeihgt + 1, 3, 1, kitEyeDepth)
-kitLeftEye3 = pixelBox(kitFace, START, -kitEyeOffset + 4, kitEyeHeihgt, 1, 1, kitEyeDepth)
-kitRightEye = pixelBox(kitFace, START, kitEyeOffset - 3, kitEyeHeihgt - 1, 2, 4, kitEyeDepth)
-kitNoseElevation = kitEyeHeihgt - 5
+kitLeftEye2 = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = -kitEyeOffset + 1,
+  positionZ = kitEyeHeight + 1,
+  width = 3,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitLeftEye3 = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = -kitEyeOffset + 4,
+  positionZ = kitEyeHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitRightEye = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = kitEyeOffset - 3,
+  positionZ = kitEyeHeight - 1,
+  width = 2,
+  height = 4,
+  depth = kitEyeDepth,
+)
+kitNoseElevation = kitEyeHeight - 5
 kitNose = startSketchOn(kitFace, face = START)
   |> startProfile(at = [-2, kitNoseElevation]) // H V
   |> line(end = [0, 1]) // lower-left up
@@ -97,13 +137,45 @@ kitNose = startSketchOn(kitFace, face = START)
 
 // 3.3 Kitty Mouth
 kitMouthOffset = 4
-kitMouthHeight = kitEyeHeihgt - 3
-kitMouthUpLeft = pixelBox(kitFace, START, -kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
+kitMouthHeight = kitEyeHeight - 3
+kitMouthUpLeft = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = -kitMouthOffset,
+  positionZ = kitMouthHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
 
 // 4. Kitty Belly
-kitMouthDownLeft = pixelBox(kitFace, START, -kitMouthOffset + 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
-kitMouthUpRight = pixelBox(kitFace, START, kitMouthOffset, kitMouthHeight, 1, 1, kitEyeDepth)
-kitMouthDownRight = pixelBox(kitFace, START, kitMouthOffset - 1, kitMouthHeight - 1, 1, 1, kitEyeDepth)
+kitMouthDownLeft = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = -kitMouthOffset + 1,
+  positionZ = kitMouthHeight - 1,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitMouthUpRight = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = kitMouthOffset,
+  positionZ = kitMouthHeight,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
+kitMouthDownRight = pixelBox(
+  kitExtrude = kitFace,
+  extrudeTag = START,
+  positionY = kitMouthOffset - 1,
+  positionZ = kitMouthHeight - 1,
+  width = 1,
+  height = 1,
+  depth = kitEyeDepth,
+)
 kitBellyElevation = kitBodyElevation + 1
 
 kitBellyHeight = kitHeadElevation - kitBellyElevation - 1
@@ -111,7 +183,15 @@ kitBellyHeight = kitHeadElevation - kitBellyElevation - 1
 // 4.1 Kitty VHS
 kitBellyWidth = kitHeadWidth
 kitBellyDepth = kitHeadDepth
-kitBelly = pixelBox(kitBody, END, -kitBellyWidth / 2, kitBellyElevation, kitBellyWidth, kitBellyHeight, kitBellyDepth)
+kitBelly = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = END,
+  positionY = -kitBellyWidth / 2,
+  positionZ = kitBellyElevation,
+  width = kitBellyWidth,
+  height = kitBellyHeight,
+  depth = kitBellyDepth,
+)
 kitVHSelevation = kitBellyElevation + 1
 
 kitVHSheight = 2
@@ -119,7 +199,15 @@ kitVHSheight = 2
 // 4.2 Kitty Floppy
 kitVHSwidth = 8
 kitVHSdepth = 1
-kitVHS = pixelBox(kitBelly, END, -kitVHSwidth / 2, kitVHSelevation, kitVHSwidth, kitVHSheight, kitVHSdepth)
+kitVHS = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = -kitVHSwidth / 2,
+  positionZ = kitVHSelevation,
+  width = kitVHSwidth,
+  height = kitVHSheight,
+  depth = kitVHSdepth,
+)
 kitFloppyElevation = kitBellyElevation + 1
 kitFloppyHeight = 1
 
@@ -128,9 +216,33 @@ kitFloppyOffset = kitBellyWidth / 2 - 1
 kitFloppyDepth = 2
 
 // 4.3 Kitty Belly Button
-kitFloppy1 = pixelBox(kitBelly, END, -kitFloppyOffset, kitFloppyElevation, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
-kitFloppy2 = pixelBox(kitBelly, END, -kitFloppyOffset, kitFloppyElevation + 2, kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
-kitFloppy3 = pixelBox(kitBelly, END, kitFloppyOffset, kitFloppyElevation, -kitFloppyWidth, kitFloppyHeight, -kitFloppyDepth)
+kitFloppy1 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = -kitFloppyOffset,
+  positionZ = kitFloppyElevation,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
+kitFloppy2 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = -kitFloppyOffset,
+  positionZ = kitFloppyElevation + 2,
+  width = kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
+kitFloppy3 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = kitFloppyOffset,
+  positionZ = kitFloppyElevation,
+  width = -kitFloppyWidth,
+  height = kitFloppyHeight,
+  depth = -kitFloppyDepth,
+)
 kitBellyButtonOffset = kitHeadWidth / 2 - 3
 kitBellyButtonElevation = kitHeadElevation - 1
 
@@ -139,18 +251,50 @@ kitBellyButtonWidth = 2
 // 4.4 Kitty Buttons
 kitBellyButtonHeight = 1
 kitBellyButtonDepth = kitHeadDepth + 1
-kitBellyButton = pixelBox(kitBody, END, -kitBellyButtonOffset, kitBellyButtonElevation, kitBellyButtonWidth, kitBellyButtonHeight, kitBellyButtonDepth)
+kitBellyButton = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = END,
+  positionY = -kitBellyButtonOffset,
+  positionZ = kitBellyButtonElevation,
+  width = kitBellyButtonWidth,
+  height = kitBellyButtonHeight,
+  depth = kitBellyButtonDepth,
+)
 
 kitButtonWidth = 1
 kitButtonHeight = 2
 kitButtonDepth = kitFloppyDepth
 kitButtonElevation = kitFloppyElevation + 2
 
-kitButton1 = pixelBox(kitBelly, END, kitFloppyOffset, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
+kitButton1 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = kitFloppyOffset,
+  positionZ = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
 
 // 5. Kitty Legs
-kitButton2 = pixelBox(kitBelly, END, kitFloppyOffset - kitButtonWidth - 1, kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
-kitButton3 = pixelBox(kitBelly, END, kitFloppyOffset - (2 * (kitButtonWidth + 1)), kitFloppyElevation + 2, -kitButtonWidth, kitButtonHeight, -kitButtonDepth)
+kitButton2 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = kitFloppyOffset - kitButtonWidth - 1,
+  positionZ = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
+kitButton3 = pixelBox(
+  kitExtrude = kitBelly,
+  extrudeTag = END,
+  positionY = kitFloppyOffset - (2 * (kitButtonWidth + 1)),
+  positionZ = kitFloppyElevation + 2,
+  width = -kitButtonWidth,
+  height = kitButtonHeight,
+  depth = -kitButtonDepth,
+)
 
 kitShoeWidth = 7
 kitShoeLength = 10
@@ -175,14 +319,22 @@ fn kitLeg(offsetFront, offsetSide) {
   kitPantsFrontWidth = kitPantsWidth
   kitPantsHeight = kitBodyElevation - kitShoeHeight
 
-  kitPants = pixelBox(kitShoe, END, kitPantsOffsetSide, kitPantsOffsetFront, kitPantsFrontWidth, kitPantsWidth, kitPantsHeight)
+  kitPants = pixelBox(
+    kitExtrude = kitShoe,
+    extrudeTag = END,
+    positionY = kitPantsOffsetSide,
+    positionZ = kitPantsOffsetFront,
+    width = kitPantsFrontWidth,
+    height = kitPantsWidth,
+    depth = kitPantsHeight,
+  )
 
   return kitShoe
 }
 kitLegOffset = 3
 
-kitRightLeg = kitLeg(0, kitLegOffset)
-kitLeftLeg = kitLeg(0, -kitLegOffset - kitShoeWidth)
+kitRightLeg = kitLeg(offsetFront = 0, offsetSide = kitLegOffset)
+kitLeftLeg = kitLeg(offsetFront = 0, offsetSide = -kitLegOffset - kitShoeWidth)
 
 // 6. Kitty Ears
 kitEarWidth = 8
@@ -192,24 +344,56 @@ kitEarHeight = 2
 fn kitEar(earOffsetFront, earOffsetSide) {
   kitNewEarOffsetFront = kitBodyDepth - earOffsetFront
   kitNewEarOffsetSide = -(kitBodyWidth / 2 - earOffsetSide)
-  baseVolume = pixelBox(kitBody, seg01, kitNewEarOffsetSide, kitNewEarOffsetFront, kitEarWidth, -kitEarDepth, kitEarHeight)
+  baseVolume = pixelBox(
+    kitExtrude = kitBody,
+    extrudeTag = seg01,
+    positionY = kitNewEarOffsetSide,
+    positionZ = kitNewEarOffsetFront,
+    width = kitEarWidth,
+    height = -kitEarDepth,
+    depth = kitEarHeight,
+  )
 
   secondOffset = 1
-  secondLevel = pixelBox(baseVolume, END, kitNewEarOffsetSide + secondOffset, kitNewEarOffsetFront - 0.01, kitEarWidth - (secondOffset * 2), -kitEarDepth + secondOffset * 2, kitEarHeight)
+  secondLevel = pixelBox(
+    kitExtrude = baseVolume,
+    extrudeTag = END,
+    positionY = kitNewEarOffsetSide + secondOffset,
+    positionZ = kitNewEarOffsetFront - 0.01,
+    width = kitEarWidth - (secondOffset * 2),
+    height = -kitEarDepth + secondOffset * 2,
+    depth = kitEarHeight,
+  )
 
   thirdOffset = 2
-  thirdLevel = pixelBox(secondLevel, END, kitNewEarOffsetSide + thirdOffset, kitNewEarOffsetFront - 0.02, kitEarWidth - (thirdOffset * 2), -kitEarDepth + thirdOffset * 2, kitEarHeight)
+  thirdLevel = pixelBox(
+    kitExtrude = secondLevel,
+    extrudeTag = END,
+    positionY = kitNewEarOffsetSide + thirdOffset,
+    positionZ = kitNewEarOffsetFront - 0.02,
+    width = kitEarWidth - (thirdOffset * 2),
+    height = -kitEarDepth + thirdOffset * 2,
+    depth = kitEarHeight,
+  )
 
   fourthOffset = 3
-  fourthLevel = pixelBox(thirdLevel, END, kitNewEarOffsetSide + fourthOffset, kitNewEarOffsetFront - 0.03, kitEarWidth - (fourthOffset * 2), -kitEarDepth + fourthOffset * 2, kitEarHeight)
+  fourthLevel = pixelBox(
+    kitExtrude = thirdLevel,
+    extrudeTag = END,
+    positionY = kitNewEarOffsetSide + fourthOffset,
+    positionZ = kitNewEarOffsetFront - 0.03,
+    width = kitEarWidth - (fourthOffset * 2),
+    height = -kitEarDepth + fourthOffset * 2,
+    depth = kitEarHeight,
+  )
 
   return baseVolume
 }
 kitEarOffsetFront = 4
 kitEarOffsetSide = 1
 
-kitRightEar = kitEar(kitEarOffsetFront, kitEarOffsetSide)
-kitLeftEar = kitEar(kitEarOffsetFront, kitBodyWidth - kitEarWidth - kitEarOffsetSide)
+kitRightEar = kitEar(earOffsetFront = kitEarOffsetFront, earOffsetSide = kitEarOffsetSide)
+kitLeftEar = kitEar(earOffsetFront = kitEarOffsetFront, earOffsetSide = kitBodyWidth - kitEarWidth - kitEarOffsetSide)
 
 // 7. Kitty Side
 // 7.1 Grill
@@ -228,19 +412,75 @@ grillColumnE = grillColumnA - 4
 grillHoleSize = 1
 grillHoleDepth = -2
 
-grillHoleAB = pixelBox(kitBody, seg02, grillRowA, grillColumnB, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleAB = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowA,
+  positionZ = grillColumnB,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleAD = pixelBox(kitBody, seg02, grillRowA, grillColumnD, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleAD = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowA,
+  positionZ = grillColumnD,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleBA = pixelBox(kitBody, seg02, grillRowB, grillColumnA, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleBA = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowB,
+  positionZ = grillColumnA,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleBC = pixelBox(kitBody, seg02, grillRowB, grillColumnC, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleBC = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowB,
+  positionZ = grillColumnC,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleBE = pixelBox(kitBody, seg02, grillRowB, grillColumnE, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleBE = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowB,
+  positionZ = grillColumnE,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleCB = pixelBox(kitBody, seg02, grillRowC, grillColumnB, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleCB = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowC,
+  positionZ = grillColumnB,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
-grillHoleCD = pixelBox(kitBody, seg02, grillRowC, grillColumnD, grillHoleSize, grillHoleSize, grillHoleDepth)
+grillHoleCD = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = grillRowC,
+  positionZ = grillColumnD,
+  width = grillHoleSize,
+  height = grillHoleSize,
+  depth = grillHoleDepth,
+)
 
 // 7.2 Kitty Vent
 kitVentElevation = kitBodyElevation + 1
@@ -249,8 +489,32 @@ kitVentHoleWidth = 1
 kitVentHoleHeight = 4
 kitVentHoleDepth = grillHoleDepth
 
-kitVentA = pixelBox(kitBody, seg02, kitVentElevation, kitVentOffset, kitVentHoleHeight, kitVentHoleWidth, kitVentHoleDepth)
+kitVentA = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = kitVentElevation,
+  positionZ = kitVentOffset,
+  width = kitVentHoleHeight,
+  height = kitVentHoleWidth,
+  depth = kitVentHoleDepth,
+)
 
-kitVentB = pixelBox(kitBody, seg02, kitVentElevation, kitVentOffset + 2, kitVentHoleHeight, kitVentHoleWidth, kitVentHoleDepth)
+kitVentB = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = kitVentElevation,
+  positionZ = kitVentOffset + 2,
+  width = kitVentHoleHeight,
+  height = kitVentHoleWidth,
+  depth = kitVentHoleDepth,
+)
 
-kitVentC = pixelBox(kitBody, seg02, kitVentElevation, kitVentOffset + 4, kitVentHoleHeight, kitVentHoleWidth, kitVentHoleDepth)
+kitVentC = pixelBox(
+  kitExtrude = kitBody,
+  extrudeTag = seg02,
+  positionY = kitVentElevation,
+  positionZ = kitVentOffset + 4,
+  width = kitVentHoleHeight,
+  height = kitVentHoleWidth,
+  depth = kitVentHoleDepth,
+)

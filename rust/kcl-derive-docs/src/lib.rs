@@ -792,15 +792,21 @@ fn rust_type_to_openapi_type(t: &str) -> String {
     if t.starts_with("Option<") {
         t = t.replace("Option<", "").replace('>', "");
     }
+
+    if t == "[TyF64;2]" {
+        return "Point2d".to_owned();
+    }
+    if t == "[TyF64;3]" {
+        return "Point3d".to_owned();
+    }
+
     if let Some((inner_type, _length)) = parse_array_type(&t) {
         t = format!("[{inner_type}]")
     }
 
-    if t == "f64" || t == "TyF64" {
+    if t == "f64" || t == "TyF64" || t == "u32" || t == "NonZeroU32" {
         return "number".to_string();
-    } else if t == "u32" {
-        return "integer".to_string();
-    } else if t == "str" {
+    } else if t == "str" || t == "String" {
         return "string".to_string();
     } else {
         return t.replace("f64", "number").replace("TyF64", "number").to_string();

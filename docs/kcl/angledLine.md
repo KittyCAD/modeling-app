@@ -10,15 +10,15 @@ Draw a line segment relative to the current origin using the polar measure of so
 
 ```kcl
 angledLine(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  angle: [number](/docs/kcl/types/number),
-  length?: [number](/docs/kcl/types/number),
-  lengthX?: [number](/docs/kcl/types/number),
-  lengthY?: [number](/docs/kcl/types/number),
-  endAbsoluteX?: [number](/docs/kcl/types/number),
-  endAbsoluteY?: [number](/docs/kcl/types/number),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  angle: [number](/docs/kcl/types/std-types-number),
+  length?: [number](/docs/kcl/types/std-types-number),
+  lengthX?: [number](/docs/kcl/types/std-types-number),
+  lengthY?: [number](/docs/kcl/types/std-types-number),
+  endAbsoluteX?: [number](/docs/kcl/types/std-types-number),
+  endAbsoluteY?: [number](/docs/kcl/types/std-types-number),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -26,18 +26,18 @@ angledLine(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `angle` | [`number`](/docs/kcl/types/number) | Which angle should the line be drawn at? | Yes |
-| `length` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| `lengthX` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| `lengthY` | [`number`](/docs/kcl/types/number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| `endAbsoluteX` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| `endAbsoluteY` | [`number`](/docs/kcl/types/number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `angle` | [`number`](/docs/kcl/types/std-types-number) | Which angle should the line be drawn at? | Yes |
+| `length` | [`number`](/docs/kcl/types/std-types-number) | Draw the line this distance along the given angle. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `lengthX` | [`number`](/docs/kcl/types/std-types-number) | Draw the line this distance along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `lengthY` | [`number`](/docs/kcl/types/std-types-number) | Draw the line this distance along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `endAbsoluteX` | [`number`](/docs/kcl/types/std-types-number) | Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| `endAbsoluteY` | [`number`](/docs/kcl/types/std-types-number) | Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given. | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

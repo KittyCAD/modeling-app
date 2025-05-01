@@ -10,9 +10,9 @@ Returns a new array with the element appended.
 
 ```kcl
 push(
-  array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue)),
-  item: [KclValue](/docs/kcl/types/KclValue),
-): [KclValue](/docs/kcl/types/KclValue)
+  array: [[any]](/docs/kcl/types/std-types-any),
+  item: [any](/docs/kcl/types/std-types-any),
+): [any](/docs/kcl/types/std-types-any)
 ```
 
 
@@ -20,12 +20,12 @@ push(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array which you're adding a new item to. | Yes |
-| `item` | [`KclValue`](/docs/kcl/types/KclValue) | The new item to add to the array | Yes |
+| `array` | [`[any]`](/docs/kcl/types/std-types-any) | The array which you're adding a new item to. | Yes |
+| `item` | [`any`](/docs/kcl/types/std-types-any) | The new item to add to the array | Yes |
 
 ### Returns
 
-[`KclValue`](/docs/kcl/types/KclValue) - Any KCL value.
+[`any`](/docs/kcl/types/std-types-any) - Any KCL value.
 
 
 ### Examples

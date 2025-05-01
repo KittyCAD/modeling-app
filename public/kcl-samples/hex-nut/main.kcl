@@ -25,4 +25,4 @@ fn hexNut(start, thk, innerDia) {
 }
 
 // Create a hex nut
-hexNut([0, 0], thickness, diameter)
+hexNut(start = [0, 0], thk = thickness, innerDia = diameter)

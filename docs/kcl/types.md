@@ -9,10 +9,6 @@ layout: manual
 All these types can be nested in various forms where nesting applies. Like
 arrays can hold objects and vice versa.
 
-## Boolean
-
-`true` or `false` work when defining values.
-
 ## Constant declaration
 
 Constants are defined with a name and a value, like so:
@@ -23,7 +19,7 @@ myBool = false
 
 Currently you cannot redeclare a constant.
 
-## Array
+## Arrays
 
 An array is defined with `[]` braces. What is inside the brackets can
 be of any type. For example, the following is completely valid:
@@ -36,7 +32,7 @@ If you want to get a value from an array you can use the index like so:
 `myArray[0]`.
 
 
-## Object
+## Objects
 
 An object is defined with `{}` braces. Here is an example object:
 
@@ -46,6 +42,15 @@ myObj = { a = 0, b = "thing" }
 
 We support two different ways of getting properties from objects, you can call
 `myObj.a` or `myObj["a"]` both work.
+
+## `ImportedGeometry`
+
+Using `import` you can import geometry defined using other CAD software. In KCL,
+these objects have type `ImportedGeometry` and can mostly be treated like any
+other solid (they can be rotated, scaled, etc.), although there is no access to
+their internal components. See the [modules and imports docs](modules) for more
+detail on importing geometry.
+
 
 ## Binary expressions
 
@@ -176,7 +181,7 @@ Check the docs page for each function and look at its examples to see.
 
 Tags are used to give a name (tag) to a specific path.
 
-### Tag Declaration
+### `TagDeclarator`
 
 The syntax for declaring a tag is `$myTag` you would use it in the following
 way:
@@ -199,7 +204,7 @@ startSketchOn(XZ)
   |> close()
 ```
 
-### Tag Identifier
+### `TagIdentifier`
 
 As per the example above you can use the tag identifier to get a reference to the 
 tagged object. The syntax for this is `myTag`.
@@ -207,6 +212,16 @@ tagged object. The syntax for this is `myTag`.
 In the example above we use the tag identifier to get the angle of the segment
 `segAng(rectangleSegmentA001, %)`.
 
+### `Start`
+
+There is a special tag, `START` (with type `Start`, although under the cover, it's a string)
+for identifying the face of a solid which was the start of an extrusion (i.e., the surface which
+is extruded).
+
+### `End`
+
+There is a special tag, `END` (with type `End`, although under the cover, it's a string)
+for identifying the face of a solid which was finishes an extrusion.
 
 ### Tag Scope
 
@@ -234,8 +249,8 @@ fn rect(origin) {
     |> close()
 }
 
-rect([0, 0])
-rect([20, 0])
+rect(origin = [0, 0])
+rect(origin = [20, 0])
 ``` 
 
 Those tags would only be available in the `rect` function and not globally.
@@ -264,8 +279,8 @@ fn rect(origin) {
     |> close()
 }
 
-rect([0, 0])
-myRect = rect([20, 0])
+rect(origin = [0, 0])
+myRect = rect(origin = [20, 0])
 
 myRect
   |> extrude(length = 10)

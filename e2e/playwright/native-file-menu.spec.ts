@@ -446,7 +446,7 @@ test.describe(
           // Core dump and refresh magic number timeout
           await page.waitForTimeout(7000)
           const actual = page.getByText(
-            'No Projects found, ready to make your first one?'
+            'No projects found, ready to make your first one?'
           )
           await expect(actual).toBeVisible()
         })

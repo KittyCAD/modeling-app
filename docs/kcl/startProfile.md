@@ -10,10 +10,10 @@ Start a new profile at a given point.
 
 ```kcl
 startProfile(
-  sketchSurface: [[Sketch](/docs/kcl/types/Sketch)Surface](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)Surface),
-  at: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketchSurface: [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
+  at: [Point2d](/docs/kcl/types/std-types-Point2d),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -21,13 +21,13 @@ startProfile(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSurface` | [`SketchSurface`](/docs/kcl/types/SketchSurface) | What to start the profile on | Yes |
-| `at` | [`[number]`](/docs/kcl/types/number) | Where to start the profile. An absolute point. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Tag this first starting point | No |
+| `sketchSurface` | [`Plane`](/docs/kcl/types/std-types-Plane) or [`Face`](/docs/kcl/types/std-types-Face) | What to start the profile on | Yes |
+| `at` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | Where to start the profile. An absolute point. | Yes |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Tag this first starting point | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples
