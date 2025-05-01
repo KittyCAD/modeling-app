@@ -116,7 +116,8 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
+  ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
@@ -183,8 +184,8 @@ const appMachine = setup({
           input: {
             ...BILLING_CONTEXT_DEFAULTS,
             urlUserService: VITE_KC_API_BASE_URL,
-          }
-        })
+          },
+        }),
     }),
   ],
 })
@@ -229,8 +230,7 @@ export const engineStreamActor =
 
 export const commandBarActor = appActor.getSnapshot().context.commandBarActor!
 
-export const billingActor =
-  appActor.getSnapshot().context.billingActor!
+export const billingActor = appActor.getSnapshot().context.billingActor!
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state
