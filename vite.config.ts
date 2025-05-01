@@ -8,8 +8,9 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
 import MillionLint from '@million/lint'
 
-export default defineConfig(({ command }) => {
-  const isDevMode = command === 'serve'
+export default defineConfig(({ command, mode }) => {
+  const isDev = command === 'serve'
+  const isTest = mode === 'test' || process.env.VITEST === 'true'
 
   return {
     server: {
@@ -86,7 +87,7 @@ export default defineConfig(({ command }) => {
         // The function to generate import names of top-level await promise in each chunk module
         promiseImportName: (i) => `__tla_${i}`,
       }),
-      isDevMode && MillionLint.vite(),
+      isDev && !isTest && MillionLint.vite(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],
