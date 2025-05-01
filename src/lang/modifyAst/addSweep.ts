@@ -220,9 +220,11 @@ export function addSweep({
 // Utilities
 
 function createSketchExpression(sketches: Expr[]) {
-  let sketchesExpr: Expr | null | undefined
+  let sketchesExpr: Expr | null = null
   if (sketches.every((s) => s.type === 'PipeSubstitution')) {
-    sketchesExpr = null
+    // Keeping null so we don't even put it the % sign
+  } else if (sketches.length === 1) {
+    sketchesExpr = sketches[0]
   } else {
     sketchesExpr = createArrayExpression(sketches)
   }
