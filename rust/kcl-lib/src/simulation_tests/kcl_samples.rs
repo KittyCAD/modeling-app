@@ -219,6 +219,7 @@ struct KclMetadata {
     multiple_files: bool,
     title: String,
     description: String,
+    files: Vec<String>
 }
 
 // Function to read and parse .kcl files
@@ -268,6 +269,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         multiple_files: files.len() > 1,
         title,
         description,
+        files: files.to_vec()
     })
 }
 

@@ -1,11 +1,11 @@
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
-import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
+import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -107,35 +107,47 @@ export function createApplicationCommands({
         const uniqueNameIfNeeded = isProjectNew
           ? getUniqueProjectName(requestedProjectName, folders)
           : requestedProjectName
-
-        if (data.source === 'kcl-samples' && data.sample) {
+        const kclSample = findKclSample(data.sample)
+        if (kclSample && kclSample.files.length > 1) {
           const pathParts = data.sample.split('/')
           const projectPathPart = pathParts[0]
-          const primaryKclFile = pathParts[1]
-          const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
+          const files = kclSample.files
 
-          const sampleCodeUrl =
-            (isDesktop() ? '.' : '') +
-            `/kcl-samples/${encodeURIComponent(
-              projectPathPart
-            )}/${encodeURIComponent(primaryKclFile)}`
-
-          fetch(sampleCodeUrl)
-            .then(async (codeResponse) => {
-              if (!codeResponse.ok) {
-                console.error(
-                  'Failed to fetch sample code:',
-                  codeResponse.statusText
-                )
-                return Promise.reject(new Error('Failed to fetch sample code'))
+          const filePromises = files.map((file) => {
+            const sampleCodeUrl =
+              (isDesktop() ? '.' : '') +
+              `/kcl-samples/${encodeURIComponent(
+                projectPathPart
+              )}/${encodeURIComponent(file)}`
+            return fetch(sampleCodeUrl).then((response) => {
+              return {
+                response,
+                file,
+                projectName: projectPathPart,
               }
-              const code = await codeResponse.text()
-              systemIOActor.send({
-                type: SystemIOMachineEvents.importFileFromURL,
-                data: {
-                  requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileName: folderNameBecomesKCLFileName,
+            })
+          })
+
+          const requestedFiles: RequestedKCLFile[] = []
+          // If any fetches fail from the KCL Code download we will instantly reject
+          // No cleanup required since the fetch response is in memory
+          // TODO: Try to catch if there is a failure then delete the root folder and show error
+          Promise.all(filePromises)
+            .then(async (responses) => {
+              for (let i = 0; i < responses.length; i++) {
+                const response = responses[i]
+                const code = await response.response.text()
+                requestedFiles.push({
                   requestedCode: code,
+                  requestedFileName: response.file,
+                  requestedProjectName: requestedProjectName,
+                })
+              }
+              systemIOActor.send({
+                type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+                data: {
+                  files: requestedFiles,
+                  requestedProjectName: requestedProjectName,
                 },
               })
             })
@@ -246,7 +258,7 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: kclSamplesManifestWithNoMultipleFiles.map((sample) => {
+        options: everyKclSample.map((sample) => {
           return {
             value: sample.pathFromProjectDirectoryToFirstFile,
             name: sample.title,
