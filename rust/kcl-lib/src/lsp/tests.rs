@@ -4220,8 +4220,8 @@ sketch001 = startSketchOn(XY)
         result,
         vec![tower_lsp::lsp_types::ColorInformation {
             range: tower_lsp::lsp_types::Range {
-                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-                end: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
             },
             color: tower_lsp::lsp_types::Color {
                 red: 1.0,

@@ -861,29 +861,6 @@ impl Backend {
 
         Ok(Some((current_code.to_string(), recast)))
     }
-
-    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
-        let filename = params.text_document.uri.to_string();
-
-        let Some(current_code) = self.code_map.get(&filename) else {
-            return Ok(vec![]);
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
-            return Ok(vec![]);
-        };
-
-        // Get the ast from our map.
-        let Some(ast) = self.ast_map.get(&filename) else {
-            return Ok(vec![]);
-        };
-
-        // Get the colors from the ast.
-        let Ok(colors) = ast.ast.document_color(current_code) else {
-            return Ok(vec![]);
-        };
-
-        Ok(colors)
-    }
 }
 
 #[tower_lsp::async_trait]
@@ -1604,6 +1581,29 @@ impl LanguageServer for Backend {
             .collect();
 
         Ok(Some(actions))
+    }
+
+    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        // Get the colors from the ast.
+        let Ok(colors) = ast.ast.document_color(current_code) else {
+            return Ok(vec![]);
+        };
+
+        Ok(colors)
     }
 }
 
