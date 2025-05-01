@@ -2,7 +2,6 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-export const IS_PLAYWRIGHT_KEY = 'playwright'
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
@@ -188,3 +187,6 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
+
+/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+export const IS_PLAYWRIGHT_KEY = 'playwright'

@@ -11,3 +11,4 @@
   6) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts -> src/components/Toolbar/angleLengthInfo.ts
   7) src/lib/singletons.ts -> src/clientSideScene/sceneEntities.ts -> src/clientSideScene/segments.ts
   8) src/hooks/useModelingContext.ts -> src/components/ModelingMachineProvider.tsx -> src/components/Toolbar/Intersect.tsx -> src/components/SetHorVertDistanceModal.tsx -> src/lib/useCalculateKclExpression.ts
+  9) src/routes/Onboarding/index.tsx -> src/routes/Onboarding/Camera.tsx -> src/routes/Onboarding/utils.tsx

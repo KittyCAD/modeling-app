@@ -1,11 +1,18 @@
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { settingsActor, useSettings } from '@src/lib/singletons'
-import { OnboardingButtons } from '@src/routes/Onboarding/utils'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
+import {
+  OnboardingButtons,
+  useDismiss,
+  useNextClick,
+} from '@src/routes/Onboarding/utils'
 
 export default function Units() {
+  useDismiss()
+  useNextClick(onboardingPaths.STREAMING)
   const {
     modeling: { mouseControls },
   } = useSettings()
@@ -59,7 +66,7 @@ export default function Units() {
           </ul>
         </SettingsSection>
         <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.CAMERA}
+          currentSlug={onboardingPaths.CAMERA}
           dismissClassName="right-auto left-full"
         />
       </div>
