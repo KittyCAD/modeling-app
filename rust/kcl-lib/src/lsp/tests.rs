@@ -4232,3 +4232,87 @@ sketch001 = startSketchOn(XY)
         }]
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_color_presentation() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let text = r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: text.to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+
+    // Send color presentation request.
+    let result = server
+        .color_presentation(tower_lsp::lsp_types::ColorPresentationParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 1.0,
+                alpha: 1.0,
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorPresentation {
+            label: "#ff00ff".to_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }]
+    );
+}

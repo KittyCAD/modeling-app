@@ -18,17 +18,17 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorProviderCapability, CompletionItem,
-        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
-        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
-        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
-        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
-        DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
-        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
-        DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
-        FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
-        InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
-        MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
+        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
+        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
+        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
+        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
+        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
+        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
+        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
         RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
         SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
         SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
@@ -1605,6 +1605,32 @@ impl LanguageServer for Backend {
 
         Ok(colors)
     }
+
+    async fn color_presentation(&self, params: ColorPresentationParams) -> RpcResult<Vec<ColorPresentation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        let pos_start = position_to_char_index(params.range.start, current_code);
+        let pos_end = position_to_char_index(params.range.end, current_code);
+
+        // Get the colors from the ast.
+        let Ok(Some(presentation)) = ast.ast.color_presentation(&params.color, pos_start, pos_end) else {
+            return Ok(vec![]);
+        };
+
+        Ok(vec![presentation])
+    }
 }
 
 /// Get completions from our stdlib.
@@ -1714,4 +1740,48 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn test_position_to_char_index_first_line() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(0, 3);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 3);
+    }
+
+    #[test]
+    fn test_position_to_char_index() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(1, 4);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 15);
+    }
+
+    #[test]
+    fn test_position_to_char_index_with_newline() {
+        let code = r#"def foo():
+
+return 42"#;
+        let position = Position::new(2, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 12);
+    }
+
+    #[test]
+    fn test_position_to_char_at_end() {
+        let code = r#"def foo():
+return 42"#;
+
+        let position = Position::new(1, 8);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 19);
+    }
 }

@@ -6,7 +6,6 @@ use std::{
     fmt,
     ops::{Deref, DerefMut, RangeInclusive},
     rc::Rc,
-    str::FromStr,
     sync::{Arc, Mutex},
 };
 
@@ -15,7 +14,8 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    ColorInformation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
+    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
+    FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -398,26 +398,21 @@ impl Node<Program> {
         let colors = Rc::new(RefCell::new(vec![]));
 
         let add_color = |literal: &Node<Literal>| {
-            if let LiteralValue::String(ref s) = literal.value {
-                // Check if the string is a color.
-                if s.starts_with('#') && s.len() == 7 {
-                    let Ok(c) = csscolorparser::Color::from_str(s) else {
-                        return;
-                    };
-                    let color = ColorInformation {
-                        range: literal.as_source_range().to_lsp_range(code),
-                        color: tower_lsp::lsp_types::Color {
-                            red: c.r,
-                            green: c.g,
-                            blue: c.b,
-                            alpha: c.a,
-                        },
-                    };
-                    if colors.borrow().iter().any(|c| *c == color) {
-                        return;
-                    }
-                    colors.borrow_mut().push(color);
+            // Check if the string is a color.
+            if let Some(c) = literal.value.is_color() {
+                let color = ColorInformation {
+                    range: literal.as_source_range().to_lsp_range(code),
+                    color: tower_lsp::lsp_types::Color {
+                        red: c.r,
+                        green: c.g,
+                        blue: c.b,
+                        alpha: c.a,
+                    },
+                };
+                if colors.borrow().iter().any(|c| *c == color) {
+                    return;
                 }
+                colors.borrow_mut().push(color);
             }
         };
 
@@ -449,6 +444,44 @@ impl Node<Program> {
 
         let colors = colors.take();
         Ok(colors)
+    }
+
+    /// This is to fulfill the `colorPresentation` request in LSP.
+    pub fn color_presentation<'a>(
+        &'a self,
+        color: &Color,
+        pos_start: usize,
+        pos_end: usize,
+    ) -> Result<Option<ColorPresentation>> {
+        let found = Rc::new(RefCell::new(false));
+        // Find the literal with the same start and end.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::Literal(literal) => {
+                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                        found.replace(true);
+                        return Ok(true);
+                    }
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let found = found.take();
+        if !found {
+            return Ok(None);
+        }
+
+        let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
+        Ok(Some(ColorPresentation {
+            // The label will be what they replace the color with.
+            label: new_color.to_hex_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }))
     }
 }
 
