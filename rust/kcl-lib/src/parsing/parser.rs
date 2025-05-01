@@ -14,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{AscribedExpression, CallExpression, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -2030,7 +2030,6 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
         bool_value.map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
-        fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         array,
@@ -2050,7 +2049,6 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
         bool_value.map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
-        fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
@@ -2711,13 +2709,6 @@ fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-/// Arguments are passed into a function.
-fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
-    separated(0.., expression, comma_sep)
-        .context(expected("function arguments"))
-        .parse_next(i)
-}
-
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
     separated_pair(
         terminated(nameable_identifier, opt(whitespace)),
@@ -2986,11 +2977,7 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
 
 /// Either a positional or keyword function call.
 fn fn_call_pos_or_kw(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
-        fn_call.map(Box::new).map(Expr::CallExpression),
-        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
-    ))
-    .parse_next(i)
+    alt((fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),)).parse_next(i)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
@@ -3001,43 +2988,6 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
         Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
         None => Ok(expr),
     }
-}
-
-fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
-    let fn_name = name(i)?;
-    opt(whitespace).parse_next(i)?;
-    let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let args = arguments(i)?;
-    let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
-
-    let result = Node::new_node(
-        fn_name.start,
-        end,
-        fn_name.module_id,
-        CallExpression {
-            callee: fn_name,
-            arguments: args,
-            digest: None,
-        },
-    );
-
-    let callee_str = result.callee.name.name.to_string();
-    if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
-        ParseContext::warn(
-            CompilationError::err(
-                result.as_source_range(),
-                format!("Calling `{}` is deprecated, prefer using `{}`.", callee_str, suggestion),
-            )
-            .with_suggestion(
-                format!("Replace `{}` with `{}`", callee_str, suggestion),
-                suggestion,
-                None,
-                Tag::Deprecated,
-            ),
-        );
-    }
-
-    Ok(result)
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
@@ -3229,18 +3179,6 @@ mod tests {
             assert_reserved(word);
         }
         assert_reserved("import");
-    }
-
-    #[test]
-    fn parse_args() {
-        for (i, (test, expected_len)) in [("someVar", 1), ("5, 3", 2), (r#""a""#, 1)].into_iter().enumerate() {
-            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            let actual = match arguments.parse(tokens.as_slice()) {
-                Ok(x) => x,
-                Err(e) => panic!("Failed test {i}, could not parse function arguments from \"{test}\": {e:?}"),
-            };
-            assert_eq!(actual.len(), expected_len, "failed test {i}");
-        }
     }
 
     #[test]
