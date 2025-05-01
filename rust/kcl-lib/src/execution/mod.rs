@@ -1623,7 +1623,7 @@ answer = returnX()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
         let text = r#"type MyTy = [number; 2]
-fn foo(x: MyTy) {
+fn foo(@x: MyTy) {
     return x[0]
 }
 
@@ -1961,7 +1961,7 @@ bracket = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_function_no_return() {
-        let ast = r#"fn test(origin) {
+        let ast = r#"fn test(@origin) {
   origin
 }
 
