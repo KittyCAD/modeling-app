@@ -296,10 +296,7 @@ export function emptyExecState(): ExecState {
   }
 }
 
-export function execStateFromRust(
-  execOutcome: RustExecOutcome,
-  program: Node<Program>
-): ExecState {
+export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
   // Translate NodePath to PathToNode.
   for (const [_id, artifact] of artifactGraph) {
