@@ -13,7 +13,7 @@ This doesn't really have much utility unless you need the equivalent of a double
 Really only use this function if YOU ARE SURE you need it. In most cases you do not need clone and using a pattern with `instance = 2` is more appropriate.
 
 ```kcl
-clone(geometry: [GeometryWithImportedGeometry](/docs/kcl/types/GeometryWithImportedGeometry)): [GeometryWithImportedGeometry](/docs/kcl/types/GeometryWithImportedGeometry)
+clone(geometry: [Solid](/docs/kcl/types/std-types-Solid) | [Sketch](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)): [Solid](/docs/kcl/types/std-types-Solid) | [Sketch](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
 ```
 
 
@@ -21,11 +21,11 @@ clone(geometry: [GeometryWithImportedGeometry](/docs/kcl/types/GeometryWithImpor
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `geometry` | [`GeometryWithImportedGeometry`](/docs/kcl/types/GeometryWithImportedGeometry) | The sketch, solid, or imported geometry to be cloned | Yes |
+| `geometry` | [`Solid`](/docs/kcl/types/std-types-Solid) or [`Sketch`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) | The sketch, solid, or imported geometry to be cloned | Yes |
 
 ### Returns
 
-[`GeometryWithImportedGeometry`](/docs/kcl/types/GeometryWithImportedGeometry) - A geometry including an imported geometry.
+[`Solid`](/docs/kcl/types/std-types-Solid) or [`Sketch`](/docs/kcl/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl/types#ImportedGeometry) - A geometry including an imported geometry.
 
 
 ### Examples

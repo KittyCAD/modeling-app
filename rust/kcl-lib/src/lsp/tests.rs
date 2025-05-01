@@ -895,7 +895,7 @@ async fn test_kcl_lsp_on_hover() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -971,7 +971,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -1016,7 +1016,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
@@ -2027,7 +2027,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -2035,7 +2035,7 @@ sphere = startSketchOn(XZ)
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -2056,7 +2056,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
                     .to_string(),
             },
         })
@@ -2090,7 +2090,7 @@ outsideRevolve = startSketchOn(XZ)
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
                 line: 50,
-                character: 29
+                character: 22
             }
         }
     );
@@ -2117,7 +2117,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -2128,7 +2128,7 @@ sphere = startSketchOn(XZ)
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -2152,7 +2152,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
     );
 }
 
@@ -3891,7 +3891,7 @@ async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -3967,7 +3967,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -4012,7 +4012,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),

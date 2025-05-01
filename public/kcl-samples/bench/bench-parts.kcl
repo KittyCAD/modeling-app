@@ -6,7 +6,7 @@
 
 export dividerThickness = 4
 
-fn dividerSketch(plane) {
+fn dividerSketch(@plane) {
   sketch000 = startSketchOn(plane)
     |> startProfile(at = [-16.82, 21.2])
     |> line(end = [-0.13, -1.27])
@@ -33,7 +33,7 @@ fn dividerSketch(plane) {
   return sketch000
 }
 
-export fn divider(plane) {
+export fn divider(@plane) {
   right = dividerSketch(plane)
     |> extrude(length = dividerThickness / 2)
   left = dividerSketch(plane)
@@ -43,7 +43,7 @@ export fn divider(plane) {
   return 0
 }
 
-fn connectorSketch(plane, start) {
+fn connectorSketch(@plane, start) {
   sketch001 = startSketchOn(plane)
     |> startProfile(at = start)
     |> polygon(
@@ -55,15 +55,15 @@ fn connectorSketch(plane, start) {
   return sketch001
 }
 
-export fn connector(plane, length) {
-  connectorSketch(plane, [-12, 8])
+export fn connector(@plane, length) {
+  connectorSketch(plane, start = [-12, 8])
     |> extrude(length = length)
-  connectorSketch(plane, [16, 8])
+  connectorSketch(plane, start = [16, 8])
     |> extrude(length = length)
   return 0
 }
 
-fn seatSlatSketch(plane) {
+fn seatSlatSketch(@plane) {
   sketch003 = startSketchOn(plane)
     |> startProfile(at = [-7, 19])
     |> line(end = [-10, 0.5])
@@ -77,13 +77,13 @@ fn seatSlatSketch(plane) {
   return sketch003
 }
 
-export fn seatSlats(plane, length) {
+export fn seatSlats(@plane, length) {
   seatSlatSketch(plane)
     |> extrude(length = length)
   return 0
 }
 
-fn backSlatsSketch(plane) {
+fn backSlatsSketch(@plane) {
   sketch004 = startSketchOn(plane)
     |> startProfile(at = [22, 38.5])
     |> angledLine(angle = 173, length = 2)
@@ -97,13 +97,13 @@ fn backSlatsSketch(plane) {
   return sketch004
 }
 
-export fn backSlats(plane, length) {
+export fn backSlats(@plane, length) {
   b = backSlatsSketch(plane)
     |> extrude(length = length)
   return b
 }
 
-fn armRestPath(plane) {
+fn armRestPath(@plane) {
   sketch005 = startSketchOn(plane)
     |> startProfile(at = [20, 33])
     |> xLine(length = -20)
@@ -111,7 +111,7 @@ fn armRestPath(plane) {
   return sketch005
 }
 
-fn armRestProfile(plane, offset) {
+fn armRestProfile(@plane, offset) {
   sketch006 = startSketchOn(plane)
     |> startProfile(at = [offset, 32.4])
     |> xLine(length = 1.3)
@@ -124,9 +124,9 @@ fn armRestProfile(plane, offset) {
   return sketch006
 }
 
-export fn armRest(plane, offset) {
+export fn armRest(@plane, offset) {
   path = armRestPath(  offsetPlane(plane, offset = offset))
-  profile = armRestProfile(  offsetPlane(-XZ, offset = 20), -offset)
+  profile = armRestProfile(  offsetPlane(-XZ, offset = 20), offset = -offset)
   sweep(profile, path = path)
   return 0
 }

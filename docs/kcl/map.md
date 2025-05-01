@@ -6,13 +6,13 @@ layout: manual
 
 Apply a function to every element of a list.
 
-Given a list like `[a, b, c]`, and a function like `f`, returns `[f(a), f(b), f(c)]`
+Given a list like `[[a, b, c]]`, and a function like `f`, returns `[[f(a), f(b), f(c)]]`
 
 ```kcl
 map(
-  array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue)),
+  array: [[any]](/docs/kcl/types/std-types-any),
   f: FunctionSource,
-): [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue))
+): [[any]](/docs/kcl/types/std-types-any)
 ```
 
 
@@ -20,19 +20,19 @@ map(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | Input array. The output array is this input array, but every element has had the function `f` run on it. | Yes |
+| `array` | [`[any]`](/docs/kcl/types/std-types-any) | Input array. The output array is this input array, but every element has had the function `f` run on it. | Yes |
 | `f` | `FunctionSource` | A function. The output array is just the input array, but `f` has been run on every item. | Yes |
 
 ### Returns
 
-[`[KclValue]`](/docs/kcl/types/KclValue)
+[`[any]`](/docs/kcl/types/std-types-any)
 
 
 ### Examples
 
 ```kcl
 r = 10 // radius
-fn drawCircle(id) {
+fn drawCircle(@id) {
   return startSketchOn(XY)
     |> circle(center = [id * 2 * r, 0], radius = r)
 }

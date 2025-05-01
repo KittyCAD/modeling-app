@@ -2143,7 +2143,8 @@ description: Result of parsing enclosure.kcl
                   "name": "originStart",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

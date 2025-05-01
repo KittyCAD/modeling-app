@@ -9,7 +9,7 @@ serverDepth = 31
 width = 21.53
 
 // simple caster model at each corner
-fn caster(originStart) {
+fn caster(@originStart) {
   plane001c = {
       origin = [
         -(3.543 - 2.756) / 2 + originStart[0],
@@ -1330,7 +1330,7 @@ extrude012rl = extrude(sketch012rl, length = -thickness)
 
 // GENERATE SERVER MODELS
 // Define planes so the server can be moved
-fn streamServer(serverPos) {
+fn streamServer(@serverPos) {
   planeXYs = {
       origin = [0, 0 + 2, 4.114 + 1 + serverPos * 1.75],
       xAxis = [1.0, 0.0, 0.0],

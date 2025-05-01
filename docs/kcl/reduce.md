@@ -10,10 +10,10 @@ Take a starting value. Then, for each element of an array, calculate the next va
 
 ```kcl
 reduce(
-  array: [[[KclValue](/docs/kcl/types/KclValue)]](/docs/kcl/types/[KclValue](/docs/kcl/types/KclValue)),
-  initial: [KclValue](/docs/kcl/types/KclValue),
+  array: [[any]](/docs/kcl/types/std-types-any),
+  initial: [any](/docs/kcl/types/std-types-any),
   f: FunctionSource,
-): [KclValue](/docs/kcl/types/KclValue)
+): [any](/docs/kcl/types/std-types-any)
 ```
 
 
@@ -21,13 +21,13 @@ reduce(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
-| `initial` | [`KclValue`](/docs/kcl/types/KclValue) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
+| `array` | [`[any]`](/docs/kcl/types/std-types-any) | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
+| `initial` | [`any`](/docs/kcl/types/std-types-any) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
 | `f` | `FunctionSource` | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
 
 ### Returns
 
-[`KclValue`](/docs/kcl/types/KclValue) - Any KCL value.
+[`any`](/docs/kcl/types/std-types-any) - Any KCL value.
 
 
 ### Examples
@@ -41,7 +41,7 @@ fn add(a, b) {
 // This function adds an array of numbers.
 // It uses the `reduce` function, to call the `add` function on every
 // element of the `arr` parameter. The starting value is 0.
-fn sum(arr) {
+fn sum(@arr) {
   return reduce(arr, initial = 0, f = add)
 }
 
@@ -91,7 +91,7 @@ assert(
 
 ```kcl
 // Declare a function that sketches a decagon.
-fn decagon(radius) {
+fn decagon(@radius) {
   // Each side of the decagon is turned this many radians from the previous angle.
   stepAngle = (1 / 10 * TAU): number(rad)
 

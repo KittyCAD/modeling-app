@@ -10,12 +10,12 @@ Construct a circle derived from 3 points.
 
 ```kcl
 circleThreePoint(
-  sketchSurfaceOrGroup: [[Sketch](/docs/kcl/types/Sketch)OrSurface](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)OrSurface),
-  p1: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  p2: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  p3: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketchSurfaceOrGroup: [Sketch](/docs/kcl/types/std-types-Sketch) | [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
+  p1: [Point2d](/docs/kcl/types/std-types-Point2d),
+  p2: [Point2d](/docs/kcl/types/std-types-Point2d),
+  p3: [Point2d](/docs/kcl/types/std-types-Point2d),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -23,15 +23,15 @@ circleThreePoint(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSurfaceOrGroup` | [`SketchOrSurface`](/docs/kcl/types/SketchOrSurface) | Plane or surface to sketch on. | Yes |
-| `p1` | [`[number]`](/docs/kcl/types/number) | 1st point to derive the circle. | Yes |
-| `p2` | [`[number]`](/docs/kcl/types/number) | 2nd point to derive the circle. | Yes |
-| `p3` | [`[number]`](/docs/kcl/types/number) | 3rd point to derive the circle. | Yes |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Identifier for the circle to reference elsewhere. | No |
+| `sketchSurfaceOrGroup` | [`Sketch`](/docs/kcl/types/std-types-Sketch) or [`Plane`](/docs/kcl/types/std-types-Plane) or [`Face`](/docs/kcl/types/std-types-Face) | Plane or surface to sketch on. | Yes |
+| `p1` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | 1st point to derive the circle. | Yes |
+| `p2` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | 2nd point to derive the circle. | Yes |
+| `p3` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | 3rd point to derive the circle. | Yes |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Identifier for the circle to reference elsewhere. | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

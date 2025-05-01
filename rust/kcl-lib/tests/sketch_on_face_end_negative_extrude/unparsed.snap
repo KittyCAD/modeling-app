@@ -11,7 +11,7 @@ fn cube(pos, scale) {
 
   return sg
 }
-part001 = cube([0, 0], 20)
+part001 = cube(pos = [0, 0], scale = 20)
   |> close(%)
   |> extrude(length = 20)
 

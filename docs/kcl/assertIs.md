@@ -10,8 +10,8 @@ Asserts that a value is the boolean value true.
 
 ```kcl
 assertIs(
-  actual: [bool](/docs/kcl/types/bool),
-  error?: String,
+  actual: [bool](/docs/kcl/types/std-types-bool),
+  error?: [string](/docs/kcl/types/std-types-string),
 ): ()
 ```
 
@@ -20,8 +20,8 @@ assertIs(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `actual` | [`bool`](/docs/kcl/types/bool) | Value to check. If this is the boolean value true, assert passes. Otherwise it fails. | Yes |
-| `error` | `String` | If the value was false, the program will terminate with this error message | No |
+| `actual` | [`bool`](/docs/kcl/types/std-types-bool) | Value to check. If this is the boolean value true, assert passes. Otherwise it fails. | Yes |
+| `error` | [`string`](/docs/kcl/types/std-types-string) | If the value was false, the program will terminate with this error message | No |
 
 ### Returns
 

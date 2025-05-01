@@ -42,10 +42,34 @@ fn primaryTube(n, angle001, length001, length002, length003) {
 }
 
 // Draw a primary tube for each cylinder with specified lengths and angles
-primaryTube(0, 0, 3, 6, 5)
-primaryTube(1, 1, 3, 6, 5)
-primaryTube(2, 24.3, 5, 5, 3)
-primaryTube(3, 25.2, 5, 5, 3)
+primaryTube(
+  n = 0,
+  angle001 = 0,
+  length001 = 3,
+  length002 = 6,
+  length003 = 5,
+)
+primaryTube(
+  n = 1,
+  angle001 = 1,
+  length001 = 3,
+  length002 = 6,
+  length003 = 5,
+)
+primaryTube(
+  n = 2,
+  angle001 = 24.3,
+  length001 = 5,
+  length002 = 5,
+  length003 = 3,
+)
+primaryTube(
+  n = 3,
+  angle001 = 25.2,
+  length001 = 5,
+  length002 = 5,
+  length003 = 3,
+)
 
 // Create the mounting flange for the header
 flangeSketch = startSketchOn(XY)

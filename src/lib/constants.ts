@@ -187,3 +187,6 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
+
+/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+export const IS_PLAYWRIGHT_KEY = 'playwright'
