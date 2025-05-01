@@ -1,2 +1,2 @@
-let obj = {key: 123}
-let num = obj[3]
+obj = {key: 123}
+num = obj[3]

@@ -7,52 +7,22 @@ description: Operations executed assembly_non_default_units.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "other1",
+      "name": "other1.kcl",
       "moduleId": 0
     },
     "sourceRange": []
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XZ"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "other2",
+      "name": "other2.kcl",
       "moduleId": 0
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XZ"
-        },
-        "sourceRange": []
-      }
-    },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

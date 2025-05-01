@@ -257,13 +257,13 @@ test.describe(`Testing gizmo, fixture-based`, () => {
       localStorage.setItem(
         'persistCode',
         `@settings(defaultLengthUnit = in)
-        const sketch002 = startSketchOn(XZ)
+        sketch002 = startSketchOn(XZ)
           |> startProfile(at = [-108.83, -57.48])
           |> angledLine(angle = 0, length = 105.13, tag = $rectangleSegmentA001)
           |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 77.9)
           |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
           |> close()
-        const sketch001 = startSketchOn(XZ)
+        sketch001 = startSketchOn(XZ)
           |> circle(center = [818.33, 168.1], radius = 182.8)
           |> extrude(length = 50)
       `

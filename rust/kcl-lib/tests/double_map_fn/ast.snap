@@ -79,7 +79,8 @@ description: Result of parsing double_map_fn.kcl
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

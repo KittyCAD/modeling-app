@@ -1,6 +1,10 @@
 @no_std
 @settings(defaultLengthUnit = mm)
 
+/// Any value.
+@(impl = primitive)
+export type any
+
 /// A number
 ///
 /// May be signed or unsigned, an integer or decimal value.
@@ -84,8 +88,8 @@ export type string
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// rect([20, 0])
+/// rect(origin = [0, 0])
+/// rect(origin = [20, 0])
 /// ```
 ///
 /// Those tags would only be available in the `rect` function and not globally.
@@ -112,8 +116,8 @@ export type string
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// myRect = rect([20, 0])
+/// rect(origin = [0, 0])
+/// myRect = rect(origin = [20, 0])
 /// 
 /// myRect
 ///   |> extrude(length = 10)
@@ -179,7 +183,7 @@ export type Sketch
 /// When you define a solid to a variable like:
 ///
 /// ```kcl,inline
-/// myPart = startSketchOn('XY')
+/// myPart = startSketchOn(XY)
 ///     |> startProfile(at = [-12, 12])
 ///     |> line(end = [24, 0])
 ///     |> line(end = [0, -24])
@@ -198,7 +202,7 @@ export type Sketch
 ///
 /// ```kcl,inline
 /// fn createPart() {
-///    return startSketchOn('XY')
+///    return startSketchOn(XY)
 ///         |> startProfile(at = [-12, 12])
 ///         |> line(end = [24, 0])
 ///         |> line(end = [0, -24])

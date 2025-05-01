@@ -1,16 +1,16 @@
 // This tests computed properties. 
 
-const arr = [0, 0, 0, 10]
-const i = 3
-const ten = arr[i]
+arr = [0, 0, 0, 10]
+i = 3
+ten = arr[i]
 
 assert(ten, isEqualTo = 10, error = "oops")
 
-const p = "foo"
-const obj = {
+p = "foo"
+obj = {
   foo: 1,
   bar: 0,
 }
-const one = obj[p]
+one = obj[p]
 
 assert(one, isEqualTo = 1, error = "oops")

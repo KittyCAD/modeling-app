@@ -249,10 +249,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -261,6 +259,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -474,10 +474,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -486,6 +484,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -699,10 +699,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -711,6 +709,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -924,10 +924,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -936,6 +934,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1149,10 +1149,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1161,6 +1159,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1374,10 +1374,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1386,6 +1384,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1599,10 +1599,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1611,6 +1609,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -1824,10 +1824,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1836,6 +1834,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2049,10 +2049,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2061,6 +2059,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2274,10 +2274,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2286,6 +2284,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2499,10 +2499,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2511,6 +2509,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2724,10 +2724,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2736,6 +2734,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -2949,10 +2949,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2961,6 +2959,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3174,10 +3174,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3186,6 +3184,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3399,10 +3399,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3411,6 +3409,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3624,10 +3624,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3636,6 +3634,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -3849,10 +3849,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3861,6 +3859,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4074,10 +4074,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4086,6 +4084,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4299,10 +4299,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4311,6 +4309,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4524,10 +4524,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4536,6 +4534,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4749,10 +4749,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4761,6 +4759,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -4974,10 +4974,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4986,6 +4984,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5199,10 +5199,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5211,6 +5209,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5424,10 +5424,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5436,6 +5434,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -5503,9 +5503,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -5516,9 +5516,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -5529,9 +5529,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -5542,9 +5542,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -5565,9 +5565,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -5590,9 +5590,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -5615,9 +5615,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -5640,9 +5640,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -5657,10 +5657,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5669,6 +5667,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -5823,9 +5823,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -5836,9 +5836,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -5849,9 +5849,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -5862,9 +5862,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -5885,9 +5885,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -5910,9 +5910,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -5935,9 +5935,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -5960,9 +5960,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -5977,10 +5977,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -5989,6 +5987,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6143,9 +6143,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6156,9 +6156,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6169,9 +6169,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6182,9 +6182,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6205,9 +6205,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6230,9 +6230,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6255,9 +6255,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6280,9 +6280,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6297,10 +6297,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6309,6 +6307,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6463,9 +6463,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6476,9 +6476,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6489,9 +6489,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6502,9 +6502,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6525,9 +6525,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6550,9 +6550,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6575,9 +6575,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6600,9 +6600,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6617,10 +6617,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6629,6 +6627,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -6783,9 +6783,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6796,9 +6796,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6809,9 +6809,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6822,9 +6822,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6845,9 +6845,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6870,9 +6870,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6895,9 +6895,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6920,9 +6920,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6937,10 +6937,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -6949,6 +6947,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7103,9 +7103,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2386,
-                "end": 2394,
-                "start": 2386,
+                "commentStart": 2387,
+                "end": 2395,
+                "start": 2387,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7116,9 +7116,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2456,
-                "end": 2464,
-                "start": 2456,
+                "commentStart": 2457,
+                "end": 2465,
+                "start": 2457,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7129,9 +7129,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2515,
-                "end": 2523,
-                "start": 2515,
+                "commentStart": 2516,
+                "end": 2524,
+                "start": 2516,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7142,9 +7142,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2542,
-                "end": 2550,
-                "start": 2542,
+                "commentStart": 2543,
+                "end": 2551,
+                "start": 2543,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7165,9 +7165,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2386,
-                  "end": 2394,
-                  "start": 2386,
+                  "commentStart": 2387,
+                  "end": 2395,
+                  "start": 2387,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7190,9 +7190,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2456,
-                  "end": 2464,
-                  "start": 2456,
+                  "commentStart": 2457,
+                  "end": 2465,
+                  "start": 2457,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7215,9 +7215,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2515,
-                  "end": 2523,
-                  "start": 2515,
+                  "commentStart": 2516,
+                  "end": 2524,
+                  "start": 2516,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7240,9 +7240,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2542,
-                  "end": 2550,
-                  "start": 2542,
+                  "commentStart": 2543,
+                  "end": 2551,
+                  "start": 2543,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7257,10 +7257,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -7269,6 +7267,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
@@ -7605,10 +7605,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7617,6 +7615,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -7830,10 +7830,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7842,6 +7840,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8055,10 +8055,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8067,6 +8065,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8280,10 +8280,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8292,6 +8290,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8505,10 +8505,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8517,6 +8515,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8730,10 +8730,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8742,6 +8740,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -8955,10 +8955,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8967,6 +8965,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9180,10 +9180,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9192,6 +9190,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9405,10 +9405,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9417,6 +9415,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9630,10 +9630,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9642,6 +9640,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -9855,10 +9855,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9867,6 +9865,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10080,10 +10080,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10092,6 +10090,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10305,10 +10305,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10317,6 +10315,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10530,10 +10530,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10542,6 +10540,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10755,10 +10755,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10767,6 +10765,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -10980,10 +10980,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10992,6 +10990,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11205,10 +11205,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11217,6 +11215,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11430,10 +11430,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11442,6 +11440,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11655,10 +11655,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11667,6 +11665,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -11880,10 +11880,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11892,6 +11890,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12105,10 +12105,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12117,6 +12115,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12330,10 +12330,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12342,6 +12340,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12555,10 +12555,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12567,6 +12565,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12780,10 +12780,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12792,6 +12790,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -12882,9 +12882,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4455,
-            "end": 4463,
-            "start": 4455,
+            "commentStart": 4456,
+            "end": 4464,
+            "start": 4456,
             "type": "TagDeclarator",
             "value": "line010"
           },
@@ -12895,9 +12895,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4534,
-            "end": 4542,
-            "start": 4534,
+            "commentStart": 4535,
+            "end": 4543,
+            "start": 4535,
             "type": "TagDeclarator",
             "value": "line011"
           },
@@ -12908,9 +12908,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4593,
-            "end": 4601,
-            "start": 4593,
+            "commentStart": 4594,
+            "end": 4602,
+            "start": 4594,
             "type": "TagDeclarator",
             "value": "line012"
           },
@@ -12921,9 +12921,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4620,
-            "end": 4628,
-            "start": 4620,
+            "commentStart": 4621,
+            "end": 4629,
+            "start": 4621,
             "type": "TagDeclarator",
             "value": "line013"
           },
@@ -12944,9 +12944,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4455,
-              "end": 4463,
-              "start": 4455,
+              "commentStart": 4456,
+              "end": 4464,
+              "start": 4456,
               "type": "TagDeclarator",
               "value": "line010"
             },
@@ -12969,9 +12969,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4534,
-              "end": 4542,
-              "start": 4534,
+              "commentStart": 4535,
+              "end": 4543,
+              "start": 4535,
               "type": "TagDeclarator",
               "value": "line011"
             },
@@ -12994,9 +12994,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4593,
-              "end": 4601,
-              "start": 4593,
+              "commentStart": 4594,
+              "end": 4602,
+              "start": 4594,
               "type": "TagDeclarator",
               "value": "line012"
             },
@@ -13019,9 +13019,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4620,
-              "end": 4628,
-              "start": 4620,
+              "commentStart": 4621,
+              "end": 4629,
+              "start": 4621,
               "type": "TagDeclarator",
               "value": "line013"
             },
@@ -13036,10 +13036,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -13048,6 +13046,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -13369,10 +13369,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13381,6 +13379,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13594,10 +13594,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13606,6 +13604,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -13819,10 +13819,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -13831,6 +13829,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14044,10 +14044,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -14056,6 +14054,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -14295,9 +14295,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2386,
-                      "end": 2394,
-                      "start": 2386,
+                      "commentStart": 2387,
+                      "end": 2395,
+                      "start": 2387,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -14308,9 +14308,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2456,
-                      "end": 2464,
-                      "start": 2456,
+                      "commentStart": 2457,
+                      "end": 2465,
+                      "start": 2457,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -14321,9 +14321,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2515,
-                      "end": 2523,
-                      "start": 2515,
+                      "commentStart": 2516,
+                      "end": 2524,
+                      "start": 2516,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -14334,9 +14334,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2542,
-                      "end": 2550,
-                      "start": 2542,
+                      "commentStart": 2543,
+                      "end": 2551,
+                      "start": 2543,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -14357,9 +14357,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2386,
-                        "end": 2394,
-                        "start": 2386,
+                        "commentStart": 2387,
+                        "end": 2395,
+                        "start": 2387,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -14382,9 +14382,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2456,
-                        "end": 2464,
-                        "start": 2456,
+                        "commentStart": 2457,
+                        "end": 2465,
+                        "start": 2457,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -14407,9 +14407,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2515,
-                        "end": 2523,
-                        "start": 2515,
+                        "commentStart": 2516,
+                        "end": 2524,
+                        "start": 2516,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -14432,9 +14432,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2542,
-                        "end": 2550,
-                        "start": 2542,
+                        "commentStart": 2543,
+                        "end": 2551,
+                        "start": 2543,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -14449,10 +14449,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -14461,6 +14459,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -14715,9 +14715,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2386,
-                      "end": 2394,
-                      "start": 2386,
+                      "commentStart": 2387,
+                      "end": 2395,
+                      "start": 2387,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -14728,9 +14728,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2456,
-                      "end": 2464,
-                      "start": 2456,
+                      "commentStart": 2457,
+                      "end": 2465,
+                      "start": 2457,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -14741,9 +14741,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2515,
-                      "end": 2523,
-                      "start": 2515,
+                      "commentStart": 2516,
+                      "end": 2524,
+                      "start": 2516,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -14754,9 +14754,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2542,
-                      "end": 2550,
-                      "start": 2542,
+                      "commentStart": 2543,
+                      "end": 2551,
+                      "start": 2543,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -14777,9 +14777,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2386,
-                        "end": 2394,
-                        "start": 2386,
+                        "commentStart": 2387,
+                        "end": 2395,
+                        "start": 2387,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -14802,9 +14802,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2456,
-                        "end": 2464,
-                        "start": 2456,
+                        "commentStart": 2457,
+                        "end": 2465,
+                        "start": 2457,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -14827,9 +14827,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2515,
-                        "end": 2523,
-                        "start": 2515,
+                        "commentStart": 2516,
+                        "end": 2524,
+                        "start": 2516,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -14852,9 +14852,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2542,
-                        "end": 2550,
-                        "start": 2542,
+                        "commentStart": 2543,
+                        "end": 2551,
+                        "start": 2543,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -14869,10 +14869,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -14881,6 +14879,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -15135,9 +15135,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2386,
-                      "end": 2394,
-                      "start": 2386,
+                      "commentStart": 2387,
+                      "end": 2395,
+                      "start": 2387,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -15148,9 +15148,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2456,
-                      "end": 2464,
-                      "start": 2456,
+                      "commentStart": 2457,
+                      "end": 2465,
+                      "start": 2457,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -15161,9 +15161,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2515,
-                      "end": 2523,
-                      "start": 2515,
+                      "commentStart": 2516,
+                      "end": 2524,
+                      "start": 2516,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -15174,9 +15174,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2542,
-                      "end": 2550,
-                      "start": 2542,
+                      "commentStart": 2543,
+                      "end": 2551,
+                      "start": 2543,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -15197,9 +15197,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2386,
-                        "end": 2394,
-                        "start": 2386,
+                        "commentStart": 2387,
+                        "end": 2395,
+                        "start": 2387,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -15222,9 +15222,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2456,
-                        "end": 2464,
-                        "start": 2456,
+                        "commentStart": 2457,
+                        "end": 2465,
+                        "start": 2457,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -15247,9 +15247,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2515,
-                        "end": 2523,
-                        "start": 2515,
+                        "commentStart": 2516,
+                        "end": 2524,
+                        "start": 2516,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -15272,9 +15272,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2542,
-                        "end": 2550,
-                        "start": 2542,
+                        "commentStart": 2543,
+                        "end": 2551,
+                        "start": 2543,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -15289,10 +15289,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -15301,6 +15299,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -15555,9 +15555,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2386,
-                      "end": 2394,
-                      "start": 2386,
+                      "commentStart": 2387,
+                      "end": 2395,
+                      "start": 2387,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -15568,9 +15568,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2456,
-                      "end": 2464,
-                      "start": 2456,
+                      "commentStart": 2457,
+                      "end": 2465,
+                      "start": 2457,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -15581,9 +15581,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2515,
-                      "end": 2523,
-                      "start": 2515,
+                      "commentStart": 2516,
+                      "end": 2524,
+                      "start": 2516,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -15594,9 +15594,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2542,
-                      "end": 2550,
-                      "start": 2542,
+                      "commentStart": 2543,
+                      "end": 2551,
+                      "start": 2543,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -15617,9 +15617,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2386,
-                        "end": 2394,
-                        "start": 2386,
+                        "commentStart": 2387,
+                        "end": 2395,
+                        "start": 2387,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -15642,9 +15642,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2456,
-                        "end": 2464,
-                        "start": 2456,
+                        "commentStart": 2457,
+                        "end": 2465,
+                        "start": 2457,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -15667,9 +15667,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2515,
-                        "end": 2523,
-                        "start": 2515,
+                        "commentStart": 2516,
+                        "end": 2524,
+                        "start": 2516,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -15692,9 +15692,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2542,
-                        "end": 2550,
-                        "start": 2542,
+                        "commentStart": 2543,
+                        "end": 2551,
+                        "start": 2543,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -15709,10 +15709,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XY",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -15721,6 +15719,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XY",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
@@ -16119,10 +16119,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -16131,6 +16129,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16344,10 +16344,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -16356,6 +16354,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16569,10 +16569,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -16581,6 +16579,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16794,10 +16794,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -16806,6 +16804,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
@@ -16870,9 +16870,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2386,
-            "end": 2394,
-            "start": 2386,
+            "commentStart": 2387,
+            "end": 2395,
+            "start": 2387,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -16883,9 +16883,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2456,
-            "end": 2464,
-            "start": 2456,
+            "commentStart": 2457,
+            "end": 2465,
+            "start": 2457,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -16896,9 +16896,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2515,
-            "end": 2523,
-            "start": 2515,
+            "commentStart": 2516,
+            "end": 2524,
+            "start": 2516,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -16909,9 +16909,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2542,
-            "end": 2550,
-            "start": 2542,
+            "commentStart": 2543,
+            "end": 2551,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -16932,9 +16932,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "commentStart": 2386,
-              "end": 2394,
-              "start": 2386,
+              "commentStart": 2387,
+              "end": 2395,
+              "start": 2387,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -16957,9 +16957,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "commentStart": 2456,
-              "end": 2464,
-              "start": 2456,
+              "commentStart": 2457,
+              "end": 2465,
+              "start": 2457,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -16982,9 +16982,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "commentStart": 2515,
-              "end": 2523,
-              "start": 2515,
+              "commentStart": 2516,
+              "end": 2524,
+              "start": 2516,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -17007,9 +17007,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "commentStart": 2542,
-              "end": 2550,
-              "start": 2542,
+              "commentStart": 2543,
+              "end": 2551,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -17024,10 +17024,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -17036,6 +17034,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -17341,10 +17341,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -17353,6 +17351,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
@@ -17566,10 +17566,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -17578,6 +17576,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,

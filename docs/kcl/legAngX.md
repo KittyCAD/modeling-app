@@ -8,11 +8,11 @@ Compute the angle of the given leg for x.
 
 
 
-```js
+```kcl
 legAngX(
-  hypotenuse: number,
-  leg: number,
-): number
+  hypotenuse: [number](/docs/kcl/types/std-types-number),
+  leg: [number](/docs/kcl/types/std-types-number),
+): [number](/docs/kcl/types/std-types-number)
 ```
 
 ### Tags
@@ -24,17 +24,17 @@ legAngX(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `hypotenuse` | [`number`](/docs/kcl/types/number) | The length of the triangle's hypotenuse | Yes |
-| `leg` | [`number`](/docs/kcl/types/number) | The length of one of the triangle's legs (i.e. non-hypotenuse side) | Yes |
+| `hypotenuse` | [`number`](/docs/kcl/types/std-types-number) | The length of the triangle's hypotenuse | Yes |
+| `leg` | [`number`](/docs/kcl/types/std-types-number) | The length of one of the triangle's legs (i.e. non-hypotenuse side) | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl/types/number)
+[`number`](/docs/kcl/types/std-types-number)
 
 
 ### Examples
 
-```js
+```kcl
 legAngX(hypotenuse = 5, leg = 3)
 ```
 

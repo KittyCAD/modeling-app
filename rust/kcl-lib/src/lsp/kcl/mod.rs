@@ -18,23 +18,24 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind, CompletionOptions,
-        CompletionParams, CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
+        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorPresentation, ColorPresentationParams,
+        ColorProviderCapability, CompletionItem, CompletionItemKind, CompletionOptions, CompletionParams,
+        CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
         DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
         DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
-        DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
-        DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
-        FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
-        InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams, InsertTextFormat,
-        MarkupContent, MarkupKind, MessageType, OneOf, Position, RelatedFullDocumentDiagnosticReport,
-        RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier, SemanticTokenType, SemanticTokens,
-        SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions, SemanticTokensParams,
-        SemanticTokensRegistrationOptions, SemanticTokensResult, SemanticTokensServerCapabilities, ServerCapabilities,
-        SignatureHelp, SignatureHelpOptions, SignatureHelpParams, StaticRegistrationOptions, TextDocumentItem,
-        TextDocumentRegistrationOptions, TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions,
-        TextEdit, WorkDoneProgressOptions, WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities,
-        WorkspaceServerCapabilities,
+        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams,
+        DocumentDiagnosticReport, DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams,
+        DocumentSymbol, DocumentSymbolParams, DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams,
+        FoldingRangeProviderCapability, FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams,
+        HoverProviderCapability, InitializeParams, InitializeResult, InitializedParams, InlayHint, InlayHintParams,
+        InsertTextFormat, MarkupContent, MarkupKind, MessageType, OneOf, Position, PrepareRenameResponse,
+        RelatedFullDocumentDiagnosticReport, RenameFilesParams, RenameParams, SemanticToken, SemanticTokenModifier,
+        SemanticTokenType, SemanticTokens, SemanticTokensFullOptions, SemanticTokensLegend, SemanticTokensOptions,
+        SemanticTokensParams, SemanticTokensRegistrationOptions, SemanticTokensResult,
+        SemanticTokensServerCapabilities, ServerCapabilities, SignatureHelp, SignatureHelpOptions, SignatureHelpParams,
+        StaticRegistrationOptions, TextDocumentItem, TextDocumentPositionParams, TextDocumentRegistrationOptions,
+        TextDocumentSyncCapability, TextDocumentSyncKind, TextDocumentSyncOptions, TextEdit, WorkDoneProgressOptions,
+        WorkspaceEdit, WorkspaceFolder, WorkspaceFoldersServerCapabilities, WorkspaceServerCapabilities,
     },
     Client, LanguageServer,
 };
@@ -532,6 +533,23 @@ impl Backend {
                                 return Ok(false);
                             }
                         }
+                        crate::walk::Node::CallExpressionKw(call_expr) => {
+                            let sr: SourceRange = (&call_expr.callee).into();
+                            if sr.contains(source_range.start()) {
+                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
+                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
+                                    Some(index) => index,
+                                    None => token_type_index,
+                                };
+
+                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
+                                    // This is a stdlib function.
+                                    return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
+                                }
+
+                                return Ok(false);
+                            }
+                        }
                         _ => {}
                     }
                     Ok(true)
@@ -827,6 +845,39 @@ impl Backend {
 
         Ok(custom_notifications::UpdateCanExecuteResponse {})
     }
+
+    /// Returns the new string for the code after rename.
+    pub fn inner_prepare_rename(
+        &self,
+        params: &TextDocumentPositionParams,
+        new_name: &str,
+    ) -> RpcResult<Option<(String, String)>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(None);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(None);
+        };
+
+        // Parse the ast.
+        // I don't know if we need to do this again since it should be updated in the context.
+        // But I figure better safe than sorry since this will write back out to the file.
+        let module_id = ModuleId::default();
+        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+            return Ok(None);
+        };
+
+        // Let's convert the position to a character index.
+        let pos = position_to_char_index(params.position, current_code);
+        // Now let's perform the rename on the ast.
+        ast.rename_symbol(new_name, pos);
+        // Now recast it.
+        let recast = ast.recast(&Default::default(), 0);
+
+        Ok(Some((current_code.to_string(), recast)))
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -838,6 +889,7 @@ impl LanguageServer for Backend {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                color_provider: Some(ColorProviderCapability::Simple(true)),
                 code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
                     code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
                     resolve_provider: Some(false),
@@ -1287,6 +1339,69 @@ impl LanguageServer for Backend {
 
         let pos = position_to_char_index(params.text_document_position_params.position, current_code);
 
+        // Get the character at the position.
+        let Some(ch) = current_code.chars().nth(pos) else {
+            return Ok(None);
+        };
+
+        let check_char = |ch: char| {
+            // If  we are on a (, then get the string in front of the (
+            // and try to get the signature.
+            // We do these before the ast check because we might not have a valid ast.
+            if ch == '(' {
+                // If the current character is not a " " then get the next space after
+                // our position so we can split on that.
+                // Find the next space after the current position.
+                let next_space = if ch != ' ' {
+                    if let Some(next_space) = current_code[pos..].find(' ') {
+                        pos + next_space
+                    } else if let Some(next_space) = current_code[pos..].find('(') {
+                        pos + next_space
+                    } else {
+                        pos
+                    }
+                } else {
+                    pos
+                };
+                let p2 = std::cmp::max(pos, next_space);
+
+                let last_word = current_code[..p2].split_whitespace().last()?;
+
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            } else if ch == ',' {
+                // If we have a comma, then get the string in front of
+                // the closest ( and try to get the signature.
+
+                // Find the last ( before the comma.
+                let last_paren = current_code[..pos].rfind('(')?;
+                // Get the string in front of the (.
+                let last_word = current_code[..last_paren].split_whitespace().last()?;
+                // Get the function name.
+                return self.stdlib_signatures.get(last_word);
+            }
+
+            None
+        };
+
+        if let Some(signature) = check_char(ch) {
+            return Ok(Some(signature.clone()));
+        }
+
+        // Check if we have context.
+        if let Some(context) = params.context {
+            if let Some(character) = context.trigger_character {
+                for character in character.chars() {
+                    // Check if we are on a ( or a ,.
+                    if character == '(' || character == ',' {
+                        if let Some(signature) = check_char(character) {
+                            return Ok(Some(signature.clone()));
+                        }
+                    }
+                }
+            }
+        }
+
         // Let's iterate over the AST and find the node that contains the cursor.
         let Some(ast) = self.ast_map.get(&filename) else {
             return Ok(None);
@@ -1396,42 +1511,37 @@ impl LanguageServer for Backend {
     }
 
     async fn rename(&self, params: RenameParams) -> RpcResult<Option<WorkspaceEdit>> {
-        let filename = params.text_document_position.text_document.uri.to_string();
-
-        let Some(current_code) = self.code_map.get(&filename) else {
-            return Ok(None);
-        };
-        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+        let Some((current_code, new_code)) =
+            self.inner_prepare_rename(&params.text_document_position, &params.new_name)?
+        else {
             return Ok(None);
         };
 
-        // Parse the ast.
-        // I don't know if we need to do this again since it should be updated in the context.
-        // But I figure better safe than sorry since this will write back out to the file.
-        let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
-            return Ok(None);
-        };
-
-        // Let's convert the position to a character index.
-        let pos = position_to_char_index(params.text_document_position.position, current_code);
-        // Now let's perform the rename on the ast.
-        ast.rename_symbol(&params.new_name, pos);
-        // Now recast it.
-        let recast = ast.recast(&Default::default(), 0);
-        let source_range = SourceRange::new(0, current_code.len() - 1, module_id);
-        let range = source_range.to_lsp_range(current_code);
+        let source_range = SourceRange::new(0, current_code.len(), ModuleId::default());
+        let range = source_range.to_lsp_range(&current_code);
         Ok(Some(WorkspaceEdit {
             changes: Some(HashMap::from([(
                 params.text_document_position.text_document.uri,
                 vec![TextEdit {
-                    new_text: recast,
+                    new_text: new_code,
                     range,
                 }],
             )])),
             document_changes: None,
             change_annotations: None,
         }))
+    }
+
+    async fn prepare_rename(&self, params: TextDocumentPositionParams) -> RpcResult<Option<PrepareRenameResponse>> {
+        if self
+            .inner_prepare_rename(&params, "someNameNoOneInTheirRightMindWouldEverUseForTesting")?
+            .is_none()
+        {
+            return Ok(None);
+        }
+
+        // Return back to the client, that it is safe to use the rename behavior.
+        Ok(Some(PrepareRenameResponse::DefaultBehavior { default_behavior: true }))
     }
 
     async fn folding_range(&self, params: FoldingRangeParams) -> RpcResult<Option<Vec<FoldingRange>>> {
@@ -1488,6 +1598,55 @@ impl LanguageServer for Backend {
             .collect();
 
         Ok(Some(actions))
+    }
+
+    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        // Get the colors from the ast.
+        let Ok(colors) = ast.ast.document_color(current_code) else {
+            return Ok(vec![]);
+        };
+
+        Ok(colors)
+    }
+
+    async fn color_presentation(&self, params: ColorPresentationParams) -> RpcResult<Vec<ColorPresentation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        let pos_start = position_to_char_index(params.range.start, current_code);
+        let pos_end = position_to_char_index(params.range.end, current_code);
+
+        // Get the colors from the ast.
+        let Ok(Some(presentation)) = ast.ast.color_presentation(&params.color, pos_start, pos_end) else {
+            return Ok(vec![]);
+        };
+
+        Ok(vec![presentation])
     }
 }
 
@@ -1590,7 +1749,7 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
         }
     }
 
-    char_position
+    std::cmp::min(char_position, code.len() - 1)
 }
 
 async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
@@ -1598,4 +1757,49 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let value = mem.0.get(name, SourceRange::default()).ok()?;
 
     Some(f(value))
+}
+
+#[cfg(test)]
+mod tests {
+    use pretty_assertions::assert_eq;
+
+    use super::*;
+
+    #[test]
+    fn test_position_to_char_index_first_line() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(0, 3);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 3);
+    }
+
+    #[test]
+    fn test_position_to_char_index() {
+        let code = r#"def foo():
+return 42"#;
+        let position = Position::new(1, 4);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 15);
+    }
+
+    #[test]
+    fn test_position_to_char_index_with_newline() {
+        let code = r#"def foo():
+
+return 42"#;
+        let position = Position::new(2, 0);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 12);
+    }
+
+    #[test]
+    fn test_position_to_char_at_end() {
+        let code = r#"def foo():
+return 42"#;
+
+        let position = Position::new(1, 8);
+        let index = position_to_char_index(position, code);
+        assert_eq!(index, 19);
+    }
 }

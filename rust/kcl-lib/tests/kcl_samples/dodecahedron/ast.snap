@@ -943,7 +943,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "dither",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -2501,7 +2502,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "arr",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -2963,7 +2965,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "solids",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

@@ -1,25 +1,25 @@
 // Lego Brick
 
-const lbumps = 10 // number of bumps long
-const wbumps = 6 // number of bumps wide
+lbumps = 10 // number of bumps long
+wbumps = 6 // number of bumps wide
 
-const pitch = 8.0
-const clearance = 0.1
-const bumpDiam = 4.8
-const bumpHeight = 1.8
-const height = 3.2
+pitch = 8.0
+clearance = 0.1
+bumpDiam = 4.8
+bumpHeight = 1.8
+height = 3.2
 
 
-const t = (pitch - (2 * clearance) - bumpDiam) / 2.0
-const postDiam = pitch - t // works out to 6.5
-const total_length = lbumps * pitch - (2.0 * clearance)
-const total_width = wbumps * pitch - (2.0 * clearance)
+t = (pitch - (2 * clearance) - bumpDiam) / 2.0
+postDiam = pitch - t // works out to 6.5
+total_length = lbumps * pitch - (2.0 * clearance)
+total_width = wbumps * pitch - (2.0 * clearance)
 
-const lSegments = total_length / (lbumps + 1)
-const wSegments = total_width / (wbumps + 1)
+lSegments = total_length / (lbumps + 1)
+wSegments = total_width / (wbumps + 1)
 
 // make the base
-const s = startSketchOn(XY)
+s = startSketchOn(XY)
   |> startProfile(at = [-total_width / 2, -total_length / 2])
   |> line(end = [total_width, 0])
   |> line(end = [0, total_length])
@@ -27,7 +27,7 @@ const s = startSketchOn(XY)
   |> close()
   |> extrude(length = height)
 
-const shellExtrude = startSketchOn(s, face = "start")
+shellExtrude = startSketchOn(s, face = "start")
   |> startProfile(at = [-(total_width / 2 - t), -(total_length / 2 - t)])
   |> line(end = [total_width - (2 * t), 0])
   |> line(end = [0, total_length - (2 * t)])
@@ -35,7 +35,7 @@ const shellExtrude = startSketchOn(s, face = "start")
   |> close()
   |> extrude(length = -(height - t))
 
-const peg = startSketchOn(s, face = "end")
+peg = startSketchOn(s, face = "end")
   |> circle( center= [
        -(total_width / 2 - wSegments),
        -(total_length / 2 - lSegments)

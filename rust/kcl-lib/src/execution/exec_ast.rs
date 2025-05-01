@@ -3,6 +3,8 @@ use std::collections::HashMap;
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::cad_op::{Group, OpArg, OpKclValue, Operation};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -27,11 +29,6 @@ use crate::{
         FunctionKind,
     },
     CompilationError,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{
-    execution::cad_op::{Group, OpArg, OpKclValue, Operation},
-    parsing::ast::types::BoxNode,
 };
 
 enum StatementKind<'a> {
@@ -519,19 +516,9 @@ impl ExecutorContext {
     async fn exec_module_for_result(
         &self,
         module_id: ModuleId,
-        #[cfg(feature = "artifact-graph")] module_name: &BoxNode<Name>,
         exec_state: &mut ExecState,
         source_range: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
-        #[cfg(feature = "artifact-graph")]
-        exec_state.global.operations.push(Operation::GroupBegin {
-            group: Group::ModuleInstance {
-                name: module_name.to_string(),
-                module_id,
-            },
-            source_range,
-        });
-
         let path = exec_state.global.module_infos[&module_id].path.clone();
         let mut repr = exec_state.global.module_infos[&module_id].take_repr();
         // DON'T EARLY RETURN! We need to restore the module repr
@@ -569,9 +556,6 @@ impl ExecutorContext {
         };
 
         exec_state.global.module_infos[&module_id].restore_repr(repr);
-
-        #[cfg(feature = "artifact-graph")]
-        exec_state.global.operations.push(Operation::GroupEnd);
 
         result
     }
@@ -626,7 +610,6 @@ impl ExecutorContext {
                 if let KclValue::Module { value: module_id, meta } = value {
                     self.exec_module_for_result(
                         module_id,
-                        #[cfg(feature = "artifact-graph")] name, 
                         exec_state,
                         metadata.source_range
                         ).await?
@@ -1168,14 +1151,14 @@ impl Node<UnaryExpression> {
             }
             KclValue::Plane { value } => {
                 let mut plane = value.clone();
-                if plane.x_axis.x != 0.0 {
-                    plane.x_axis.x *= -1.0;
+                if plane.info.x_axis.x != 0.0 {
+                    plane.info.x_axis.x *= -1.0;
                 }
-                if plane.x_axis.y != 0.0 {
-                    plane.x_axis.y *= -1.0;
+                if plane.info.x_axis.y != 0.0 {
+                    plane.info.x_axis.y *= -1.0;
                 }
-                if plane.x_axis.z != 0.0 {
-                    plane.x_axis.z *= -1.0;
+                if plane.info.x_axis.z != 0.0 {
+                    plane.info.x_axis.z *= -1.0;
                 }
 
                 plane.value = PlaneType::Uninit;
@@ -2204,7 +2187,15 @@ fn assign_args_to_params_kw(
                 .mut_stack()
                 .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
-            let Some(unlabeled) = args.unlabeled.take() else {
+            // TODO: Get the actual source range.
+            // Part of https://github.com/KittyCAD/modeling-app/issues/6613
+            let pipe_value_source_range = Default::default();
+            let default_unlabeled = exec_state
+                .mod_local
+                .pipe_value
+                .clone()
+                .map(|val| Arg::new(val, pipe_value_source_range));
+            let Some(unlabeled) = args.unlabeled.take().or(default_unlabeled) else {
                 let param_name = &param.identifier.name;
                 return Err(if args.labeled.contains_key(param_name) {
                     KclError::Semantic(KclErrorDetails {
@@ -2694,9 +2685,9 @@ p2 = -p
             .unwrap()
         {
             KclValue::Plane { value } => {
-                assert_eq!(value.x_axis.x, -1.0);
-                assert_eq!(value.x_axis.y, 0.0);
-                assert_eq!(value.x_axis.z, 0.0);
+                assert_eq!(value.info.x_axis.x, -1.0);
+                assert_eq!(value.info.x_axis.y, 0.0);
+                assert_eq!(value.info.x_axis.z, 0.0);
             }
             _ => unreachable!(),
         }

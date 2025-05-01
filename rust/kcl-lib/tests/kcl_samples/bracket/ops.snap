@@ -4,6 +4,17 @@ description: Operations executed bracket.kcl
 ---
 [
   {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "sqrt",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
     "labeledArgs": {
       "planeOrSolid": {
         "value": {
@@ -341,5 +352,8 @@ description: Operations executed bracket.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

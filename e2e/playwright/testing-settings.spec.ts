@@ -21,6 +21,7 @@ import {
   executorInputPath,
   getUtils,
   networkingMasks,
+  settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -158,8 +159,6 @@ test.describe(
       page,
       homePage,
     }) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const u = await getUtils(page)
       await page.setBodyDimensions({ width: 1200, height: 500 })
       await homePage.goToModelingScene()
@@ -512,7 +511,15 @@ test.describe(
           )
           await fsp.writeFile(
             tempSettingsFilePath,
-            `[settings.app]\nthemeColor = "${color}"`
+            settingsToToml({
+              settings: {
+                app: {
+                  appearance: {
+                    color: parseFloat(color),
+                  },
+                },
+              },
+            })
           )
         }
 
@@ -531,8 +538,6 @@ test.describe(
       `Closing settings modal should go back to the original file being viewed`,
       { tag: '@electron' },
       async ({ context, page }, testInfo) => {
-        // TODO: fix this test on windows after the electron migration
-        test.skip(process.platform === 'win32', 'Skip on windows')
         await context.folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
@@ -598,8 +603,6 @@ test.describe(
 
     test('Changing modeling default unit', async ({ page, homePage }) => {
       await test.step(`Test setup`, async () => {
-        // TODO: fix this test on windows after the electron migration
-        test.skip(process.platform === 'win32', 'Skip on windows')
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         const toastMessage = page.getByText(
@@ -760,8 +763,6 @@ test.describe(
       scene,
       cmdBar,
     }) => {
-      // TODO: fix this test on windows after the electron migration
-      test.skip(process.platform === 'win32', 'Skip on windows')
       const u = await getUtils(page)
       await context.addInitScript(() => {
         localStorage.setItem(

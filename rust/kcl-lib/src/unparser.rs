@@ -1125,27 +1125,27 @@ d = 1
 
 fn rect(x, y, w, h) {
   startSketchOn(XY)
-    |> startProfileAt([x, y], %)
+    |> startProfile(at = [x, y])
     |> xLine(length = w)
     |> yLine(length = h)
     |> xLine(length = -w)
     |> close()
-    |> extrude(d, %)
+    |> extrude(d)
 }
 
 fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
   startSketchOn(XY)
-    |> startProfileAt([x1, y1], %)
+    |> startProfile(at = [x1, y1])
     |> line(endAbsolute = [x2, y2])
     |> line(endAbsolute = [x3, y3])
     |> line(endAbsolute = [x4, y4])
     |> close()
-    |> extrude(d, %)
+    |> extrude(d)
 }
 
 fn crosshair(x, y) {
   startSketchOn(XY)
-    |> startProfileAt([x, y], %)
+    |> startProfile(at = [x, y])
     |> yLine(length = 1)
     |> yLine(length = -2)
     |> yLine(length = 1)
@@ -1159,11 +1159,30 @@ fn z(z_x, z_y) {
   z_corner = s * 2
   z_w = z_end_w + 2 * z_corner
   z_h = z_w * 1.08130081300813
-  rect(z_x, z_y, z_end_w, -z_end_h)
-  rect(z_x + z_w, z_y, -z_corner, -z_corner)
-  rect(z_x + z_w, z_y - z_h, -z_end_w, z_end_h)
-  rect(z_x, z_y - z_h, z_corner, z_corner)
-  quad(z_x, z_y - z_h + z_corner, z_x + z_w - z_corner, z_y, z_x + z_w, z_y - z_corner, z_x + z_corner, z_y - z_h)
+  rect(
+    z_x,
+    a = z_y,
+    b = z_end_w,
+    c = -z_end_h,
+  )
+  rect(
+    z_x + z_w,
+    a = z_y,
+    b = -z_corner,
+    c = -z_corner,
+  )
+  rect(
+    z_x + z_w,
+    a = z_y - z_h,
+    b = -z_end_w,
+    c = z_end_h,
+  )
+  rect(
+    z_x,
+    a = z_y - z_h,
+    b = z_corner,
+    c = z_corner,
+  )
 }
 
 fn o(c_x, c_y) {
@@ -1175,61 +1194,45 @@ fn o(c_x, c_y) {
   a = 7
 
   // Start point for the top sketch
-  o_x1 = c_x + o_r * cos((45 + a) / 360 * tau())
-  o_y1 = c_y + o_r * sin((45 + a) / 360 * tau())
+  o_x1 = c_x + o_r * cos((45 + a) / 360 * TAU)
+  o_y1 = c_y + o_r * sin((45 + a) / 360 * TAU)
 
   // Start point for the bottom sketch
-  o_x2 = c_x + o_r * cos((225 + a) / 360 * tau())
-  o_y2 = c_y + o_r * sin((225 + a) / 360 * tau())
+  o_x2 = c_x + o_r * cos((225 + a) / 360 * TAU)
+  o_y2 = c_y + o_r * sin((225 + a) / 360 * TAU)
 
   // End point for the bottom startSketch
-  o_x3 = c_x + o_r * cos((45 - a) / 360 * tau())
-  o_y3 = c_y + o_r * sin((45 - a) / 360 * tau())
+  o_x3 = c_x + o_r * cos((45 - a) / 360 * TAU)
+  o_y3 = c_y + o_r * sin((45 - a) / 360 * TAU)
 
   // Where is the center?
   // crosshair(c_x, c_y)
 
 
   startSketchOn(XY)
-    |> startProfileAt([o_x1, o_y1], %)
-    |> arc({
-         radius = o_r,
-         angle_start = 45 + a,
-         angle_end = 225 - a
-       }, %)
+    |> startProfile(at = [o_x1, o_y1])
+    |> arc(radius = o_r, angle_start = 45 + a, angle_end = 225 - a)
     |> angledLine(angle = 45, length = o_r - i_r)
-    |> arc({
-         radius = i_r,
-         angle_start = 225 - a,
-         angle_end = 45 + a
-       }, %)
+    |> arc(radius = i_r, angle_start = 225 - a, angle_end = 45 + a)
     |> close()
-    |> extrude(d, %)
+    |> extrude(d)
 
   startSketchOn(XY)
-    |> startProfileAt([o_x2, o_y2], %)
-    |> arc({
-         radius = o_r,
-         angle_start = 225 + a,
-         angle_end = 360 + 45 - a
-       }, %)
+    |> startProfile(at = [o_x2, o_y2])
+    |> arc(radius = o_r, angle_start = 225 + a, angle_end = 360 + 45 - a)
     |> angledLine(angle = 225, length = o_r - i_r)
-    |> arc({
-         radius = i_r,
-         angle_start = 45 - a,
-         angle_end = 225 + a - 360
-       }, %)
+    |> arc(radius = i_r, angle_start = 45 - a, angle_end = 225 + a - 360)
     |> close()
-    |> extrude(d, %)
+    |> extrude(d)
 }
 
 fn zoo(x0, y0) {
-  z(x0, y0)
-  o(x0 + s * 20, y0 - (s * 6.7))
-  o(x0 + s * 35, y0 - (s * 6.7))
+  z(x = x0, y = y0)
+  o(x = x0 + s * 20, y = y0 - (s * 6.7))
+  o(x = x0 + s * 35, y = y0 - (s * 6.7))
 }
 
-zoo(zoo_x, zoo_y)
+zoo(x = zoo_x, y = zoo_y)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1250,32 +1253,32 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
-  |> line([0, thickness + sphereDia / 2], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, -sphereDia], %)
-  |> line([overHangLength - thickness, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
+  |> line(end = [0, thickness + sphereDia / 2])
+  |> line(end = [overHangLength, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-overHangLength + thickness, 0])
+  |> line(end = [0, -sphereDia])
+  |> line(end = [overHangLength - thickness, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
-     ], %)
-  |> line([sphereDia - 0.1, 0], %)
-  |> arc({
+     ])
+  |> line(end = [sphereDia - 0.1, 0])
+  |> arc(
        angle_start = 0,
        angle_end = -180,
        radius = sphereDia / 2 - 0.05
-     }, %)
+     )
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1286,20 +1289,21 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        insideDia / 2 + thickness + sphereDia,
        0
-     ], %)
-  |> line([0, sphereDia / 2], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -2 * thickness - sphereDia], %)
-  |> line([-overHangLength, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength - thickness, 0], %)
+       ]
+     )
+  |> line(end = [0, sphereDia / 2])
+  |> line(end = [-overHangLength + thickness, 0])
+  |> line(end = [0, thickness])
+  |> line(end = [overHangLength, 0])
+  |> line(end = [0, -2 * thickness - sphereDia])
+  |> line(end = [-overHangLength, 0])
+  |> line(end = [0, thickness])
+  |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#;
+  |> revolve(axis = Y)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -1316,32 +1320,28 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
-  |> line([0, thickness + sphereDia / 2], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, -sphereDia], %)
-  |> line([overHangLength - thickness, 0], %)
-  |> line([0, -thickness], %)
-  |> line([-overHangLength, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
+  |> line(end = [0, thickness + sphereDia / 2])
+  |> line(end = [overHangLength, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-overHangLength + thickness, 0])
+  |> line(end = [0, -sphereDia])
+  |> line(end = [overHangLength - thickness, 0])
+  |> line(end = [0, -thickness])
+  |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
-     ], %)
-  |> line([sphereDia - 0.1, 0], %)
-  |> arc({
-       angle_start = 0,
-       angle_end = -180,
-       radius = sphereDia / 2 - 0.05
-     }, %)
+     ])
+  |> line(end = [sphereDia - 0.1, 0])
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1352,20 +1352,20 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        insideDia / 2 + thickness + sphereDia,
        0
-     ], %)
-  |> line([0, sphereDia / 2], %)
-  |> line([-overHangLength + thickness, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength, 0], %)
-  |> line([0, -2 * thickness - sphereDia], %)
-  |> line([-overHangLength, 0], %)
-  |> line([0, thickness], %)
-  |> line([overHangLength - thickness, 0], %)
+     ])
+  |> line(end = [0, sphereDia / 2])
+  |> line(end = [-overHangLength + thickness, 0])
+  |> line(end = [0, thickness])
+  |> line(end = [overHangLength, 0])
+  |> line(end = [0, -2 * thickness - sphereDia])
+  |> line(end = [-overHangLength, 0])
+  |> line(end = [0, thickness])
+  |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 "#
         );
     }
@@ -1406,7 +1406,7 @@ bar = [0 + 1 .. ten]
 
     #[test]
     fn test_recast_space_in_fn_call() {
-        let some_program_string = r#"fn thing = (x) => {
+        let some_program_string = r#"fn thing (x) {
     return x + 1
 }
 
@@ -1458,7 +1458,7 @@ f = [1, 2, 3]: [number; 1+]
         let some_program_string = r#"bing = { yo = 55 }
 myNestedVar = [
   {
-  prop:   line([bing.yo, 21], sketch001)
+  prop:   line(a = [bing.yo, 21], b = sketch001)
 }
 ]
 "#;
@@ -1470,7 +1470,7 @@ myNestedVar = [
             r#"bing = { yo = 55 }
 myNestedVar = [
   {
-  prop = line([bing.yo, 21], sketch001)
+  prop = line(a = [bing.yo, 21], b = sketch001)
 }
 ]
 "#
@@ -1502,10 +1502,10 @@ myNestedVar = [
     fn test_recast_shebang() {
         let some_program_string = r#"#!/usr/local/env zoo kcl
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#;
 
@@ -1517,10 +1517,10 @@ part001 = startSketchOn(XY)
             r#"#!/usr/local/env zoo kcl
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#
         );
@@ -1533,10 +1533,10 @@ part001 = startSketchOn(XY)
 
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#;
 
@@ -1548,10 +1548,10 @@ part001 = startSketchOn(XY)
             r#"#!/usr/local/env zoo kcl
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#
         );
@@ -1563,10 +1563,10 @@ part001 = startSketchOn(XY)
         
 // Yo yo my comments.
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#;
 
@@ -1579,10 +1579,10 @@ part001 = startSketchOn(XY)
 
 // Yo yo my comments.
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
-  |> line([20, 0], %)
-  |> line([0, 20], %)
-  |> line([-20, 0], %)
+  |> startProfile(at = [-10, -10])
+  |> line(end = [20, 0])
+  |> line(end = [0, 20])
+  |> line(end = [-20, 0])
   |> close()
 "#
         );
@@ -1611,9 +1611,9 @@ depth = 45.0
 thk = 5
 hole_diam = 5
 // define a rectangular shape func
-fn rectShape = (pos, w, l) => {
-  rr = startSketchOn('xy')
-    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+fn rectShape(pos, w, l) {
+  rr = startSketchOn(XY)
+    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
     |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
@@ -1622,8 +1622,8 @@ fn rectShape = (pos, w, l) => {
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
-scarlett_body = rectShape([0, 0], width, length)
-  |> extrude(depth, %)
+scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
+  |> extrude(depth)
   |> fillet(
        radius = radius,
        tags = [
@@ -1634,16 +1634,16 @@ scarlett_body = rectShape([0, 0], width, length)
 ]
    )
   // build the bracket sketch around the body
-fn bracketSketch = (w, d, t) => {
+fn bracketSketch(w, d, t) {
   s = startSketchOn({
-         plane: {
-  origin: { x = 0, y = length / 2 + thk, z = 0 },
+         plane = {
+  origin = { x = 0, y = length / 2 + thk, z = 0 },
   x_axis = { x = 1, y = 0, z = 0 },
   y_axis = { x = 0, y = 0, z = 1 },
   z_axis = { x = 0, y = 1, z = 0 }
 }
        })
-    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
     |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
@@ -1655,8 +1655,8 @@ fn bracketSketch = (w, d, t) => {
   return s
 }
 // build the body of the bracket
-bracket_body = bracketSketch(width, depth, thk)
-  |> extrude(length + 10, %)
+bracket_body = bracketSketch(w = width, d = depth, t = thk)
+  |> extrude(length + 10)
   |> fillet(
        radius = radius,
        tags = [
@@ -1668,26 +1668,26 @@ bracket_body = bracketSketch(width, depth, thk)
      )
   // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
-       plane: {
-  origin: { x = 0, y = 0, z = depth + thk },
+       plane = {
+  origin = { x = 0, y = 0, z = depth + thk },
   x_axis = { x = 1, y = 0, z = 0 },
   y_axis = { x = 0, y = 1, z = 0 },
   z_axis = { x = 0, y = 0, z = 1 }
 }
      })
-  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
-  |> line([10, -5], %)
-  |> line([0, -10], %)
-  |> line([-10, -5], %)
+  |> startProfile(at = [width / 2 + thk, length / 2 + thk])
+  |> line(end = [10, -5])
+  |> line(end = [0, -10])
+  |> line(end = [-10, -5])
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
        radius = hole_diam / 2
-     ), %)
-  |> extrude(-thk, %)
+     ))
+  |> extrude(-thk)
   |> patternLinear3d(
        axis = [0, -1, 0],
        repetitions = 1,
@@ -1695,26 +1695,26 @@ tabs_r = startSketchOn({
      )
   // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
-       plane: {
+       plane = {
   origin = { x = 0, y = 0, z = depth + thk },
   x_axis = { x = 1, y = 0, z = 0 },
   y_axis = { x = 0, y = 1, z = 0 },
   z_axis = { x = 0, y = 0, z = 1 }
 }
      })
-  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
-  |> line([-10, -5], %)
-  |> line([0, -10], %)
-  |> line([10, -5], %)
+  |> startProfile(at = [-width / 2 - thk, length / 2 + thk])
+  |> line(end = [-10, -5])
+  |> line(end = [0, -10])
+  |> line(end = [10, -5])
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
        radius = hole_diam / 2
-     ), %)
-  |> extrude(-thk, %)
+     ))
+  |> extrude(-thk)
   |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -1735,7 +1735,7 @@ hole_diam = 5
 // define a rectangular shape func
 fn rectShape(pos, w, l) {
   rr = startSketchOn(XY)
-    |> startProfileAt([pos[0] - (w / 2), pos[1] - (l / 2)], %)
+    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge1)
     |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge2)
     |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge3)
@@ -1744,8 +1744,8 @@ fn rectShape(pos, w, l) {
 }
 // build the body of the focusrite scarlett solo gen 4
 // only used for visualization
-scarlett_body = rectShape([0, 0], width, length)
-  |> extrude(depth, %)
+scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
+  |> extrude(depth)
   |> fillet(
        radius = radius,
        tags = [
@@ -1765,7 +1765,7 @@ fn bracketSketch(w, d, t) {
            z_axis = { x = 0, y = 1, z = 0 }
          }
        })
-    |> startProfileAt([-w / 2 - t, d + t], %)
+    |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
     |> line(endAbsolute = [w / 2 + t, d + t], tag = $edge3)
@@ -1777,8 +1777,8 @@ fn bracketSketch(w, d, t) {
   return s
 }
 // build the body of the bracket
-bracket_body = bracketSketch(width, depth, thk)
-  |> extrude(length + 10, %)
+bracket_body = bracketSketch(w = width, d = depth, t = thk)
+  |> extrude(length + 10)
   |> fillet(
        radius = radius,
        tags = [
@@ -1797,19 +1797,19 @@ tabs_r = startSketchOn({
          z_axis = { x = 0, y = 0, z = 1 }
        }
      })
-  |> startProfileAt([width / 2 + thk, length / 2 + thk], %)
-  |> line([10, -5], %)
-  |> line([0, -10], %)
-  |> line([-10, -5], %)
+  |> startProfile(at = [width / 2 + thk, length / 2 + thk])
+  |> line(end = [10, -5])
+  |> line(end = [0, -10])
+  |> line(end = [-10, -5])
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          width / 2 + thk + hole_diam,
          length / 2 - hole_diam
        ],
        radius = hole_diam / 2,
-     ), %)
-  |> extrude(-thk, %)
+     ))
+  |> extrude(-thk)
   |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
@@ -1820,19 +1820,19 @@ tabs_l = startSketchOn({
          z_axis = { x = 0, y = 0, z = 1 }
        }
      })
-  |> startProfileAt([-width / 2 - thk, length / 2 + thk], %)
-  |> line([-10, -5], %)
-  |> line([0, -10], %)
-  |> line([10, -5], %)
+  |> startProfile(at = [-width / 2 - thk, length / 2 + thk])
+  |> line(end = [-10, -5])
+  |> line(end = [0, -10])
+  |> line(end = [10, -5])
   |> close()
-  |> hole(circle(
+  |> subtract2d(tool = circle(
        center = [
          -width / 2 - thk - hole_diam,
          length / 2 - hole_diam
        ],
        radius = hole_diam / 2,
-     ), %)
-  |> extrude(-thk, %)
+     ))
+  |> extrude(-thk)
   |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#
         );
@@ -1840,14 +1840,14 @@ tabs_l = startSketchOn({
 
     #[test]
     fn test_recast_nested_var_declaration_in_fn_body() {
-        let some_program_string = r#"fn cube = (pos, scale) => {
+        let some_program_string = r#"fn cube(pos, scale) {
    sg = startSketchOn(XY)
-  |> startProfileAt(pos, %)
-  |> line([0, scale], %)
-  |> line([scale, 0], %)
-  |> line([0, -scale], %)
+  |> startProfile(at = pos)
+  |> line(end = [0, scale])
+  |> line(end = [scale, 0])
+  |> line(end = [0, -scale])
   |> close()
-  |> extrude(scale, %)
+  |> extrude(scale)
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1856,12 +1856,12 @@ tabs_l = startSketchOn({
             recasted,
             r#"fn cube(pos, scale) {
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
     |> close()
-    |> extrude(scale, %)
+    |> extrude(scale)
 }
 "#
         );
@@ -1873,15 +1873,15 @@ tabs_l = startSketchOn({
   x = dfsfs + dfsfsd as y
 
   sg = startSketchOn(XY)
-    |> startProfileAt(pos, %) as foo
-    |> line([0, scale], %)
-    |> line([scale, 0], %) as bar
-    |> line([0 as baz, -scale] as qux, %)
+    |> startProfile(at = pos) as foo
+    |> line([0, scale])
+    |> line([scale, 0]) as bar
+    |> line([0 as baz, -scale] as qux)
     |> close()
-    |> extrude(scale, %)
+    |> extrude(length = scale)
 }
 
-cube(0, 0) as cub
+cube(pos = 0, scale = 0) as cub
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1892,18 +1892,18 @@ cube(0, 0) as cub
     #[test]
     fn test_recast_with_bad_indentation() {
         let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-              |> line([0.4900857016, -0.0240763666], %)
-    |> line([0.6804562304, 0.9087880491], %)"#;
+  |> startProfile(at = [0.0, 5.0])
+              |> line(end = [0.4900857016, -0.0240763666])
+    |> line(end = [0.6804562304, 0.9087880491])"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-  |> line([0.4900857016, -0.0240763666], %)
-  |> line([0.6804562304, 0.9087880491], %)
+  |> startProfile(at = [0.0, 5.0])
+  |> line(end = [0.4900857016, -0.0240763666])
+  |> line(end = [0.6804562304, 0.9087880491])
 "#
         );
     }
@@ -1911,45 +1911,45 @@ cube(0, 0) as cub
     #[test]
     fn test_recast_with_bad_indentation_and_inline_comment() {
         let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-              |> line([0.4900857016, -0.0240763666], %) // hello world
-    |> line([0.6804562304, 0.9087880491], %)"#;
+  |> startProfile(at = [0.0, 5.0])
+              |> line(end = [0.4900857016, -0.0240763666]) // hello world
+    |> line(end = [0.6804562304, 0.9087880491])"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-  |> line([0.4900857016, -0.0240763666], %) // hello world
-  |> line([0.6804562304, 0.9087880491], %)
+  |> startProfile(at = [0.0, 5.0])
+  |> line(end = [0.4900857016, -0.0240763666]) // hello world
+  |> line(end = [0.6804562304, 0.9087880491])
 "#
         );
     }
     #[test]
     fn test_recast_with_bad_indentation_and_line_comment() {
         let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-              |> line([0.4900857016, -0.0240763666], %)
+  |> startProfile(at = [0.0, 5.0])
+              |> line(end = [0.4900857016, -0.0240763666])
         // hello world
-    |> line([0.6804562304, 0.9087880491], %)"#;
+    |> line(end = [0.6804562304, 0.9087880491])"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-  |> line([0.4900857016, -0.0240763666], %)
+  |> startProfile(at = [0.0, 5.0])
+  |> line(end = [0.4900857016, -0.0240763666])
   // hello world
-  |> line([0.6804562304, 0.9087880491], %)
+  |> line(end = [0.6804562304, 0.9087880491])
 "#
         );
     }
 
     #[test]
     fn test_recast_comment_in_a_fn_block() {
-        let some_program_string = r#"fn myFn = () => {
+        let some_program_string = r#"fn myFn() {
   // this is a comment
   yo = { a = { b = { c = '123' } } } /* block
   comment */
@@ -2085,7 +2085,7 @@ thing = 'foo'
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let program = crate::parsing::top_level_parse(test_program).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2094,7 +2094,7 @@ mySk1 = startSketchOn(XY)
             r#"/* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
 "#
         );
     }
@@ -2103,7 +2103,7 @@ mySk1 = startSketchOn(XY)
     fn test_recast_lots_of_comments() {
         let some_program_string = r#"// comment at start
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   // comment here
   |> line(endAbsolute = [0, 1], tag = $myTag)
@@ -2112,10 +2112,10 @@ mySk1 = startSketchOn(XY)
   here
   */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
-  |> rx(45, %)
+  |> ry(45)
+  |> rx(45)
 // one more for good measure"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2124,7 +2124,7 @@ mySk1 = startSketchOn(XY)
             recasted,
             r#"// comment at start
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   // comment here
   |> line(endAbsolute = [0, 1], tag = $myTag)
@@ -2132,10 +2132,10 @@ mySk1 = startSketchOn(XY)
   /* and
   here */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
-  |> rx(45, %)
+  |> ry(45)
+  |> rx(45)
 // one more for good measure
 "#
         );
@@ -2223,10 +2223,10 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-  |> angledLine(angle = -foo(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-  |> angledLine(angle = -bar(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
+  |> angledLine(angle = -foo(x = seg01, y = myVar, z = %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+  |> angledLine(angle = -bar(x = seg01, y = myVar, z = %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2241,10 +2241,10 @@ myVar3 = 6
 myAng = 40
 myAng2 = 134
 part001 = startSketchOn(XY)
-   |> startProfileAt([0, 0], %)
-   |> line([1, 3.82], %, $seg01) // ln-should-get-tag
-   |> angledLine(angle = -foo(seg01, myVar, %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
-   |> angledLine(angle = -bar(seg01, myVar, %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
+   |> startProfile(at = [0, 0])
+   |> line(end = [1, 3.82], tag = $seg01) // ln-should-get-tag
+   |> angledLine(angle = -foo(x = seg01, y = myVar, z = %), length = myVar) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
+   |> angledLine(angle = -bar(x = seg01, y = myVar, z = %), length = myVar) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2262,8 +2262,8 @@ part001 = startSketchOn(XY)
     #[test]
     fn test_recast_after_rename_std() {
         let some_program_string = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
-    |> line([0.4900857016, -0.0240763666], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
+    |> line(end = [0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -2271,7 +2271,7 @@ blah = 1
 foo = false
 baz = {a: 1, part001: "thing"}
 
-fn ghi = (part001) => {
+fn ghi(part001) {
   return part001
 }
 "#;
@@ -2282,8 +2282,8 @@ fn ghi = (part001) => {
         assert_eq!(
             recasted,
             r#"mySuperCoolPart = startSketchOn(XY)
-  |> startProfileAt([0.0, 5.0], %)
-  |> line([0.4900857016, -0.0240763666], %)
+  |> startProfile(at = [0.0, 5.0])
+  |> line(end = [0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [mySuperCoolPart, 0.0]
@@ -2300,11 +2300,11 @@ fn ghi(part001) {
 
     #[test]
     fn test_recast_after_rename_fn_args() {
-        let some_program_string = r#"fn ghi = (x, y, z) => {
+        let some_program_string = r#"fn ghi(x, y, z) {
   return x
 }"#;
         let mut program = crate::parsing::top_level_parse(some_program_string).unwrap();
-        program.rename_symbol("newName", 10);
+        program.rename_symbol("newName", 7);
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
@@ -2319,24 +2319,24 @@ fn ghi(part001) {
     #[test]
     fn test_recast_trailing_comma() {
         let some_program_string = r#"startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> arc({
     radius = 1,
     angle_start = 0,
     angle_end = 180,
-  }, %)"#;
+  })"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
         assert_eq!(
             recasted,
             r#"startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> arc({
        radius = 1,
        angle_start = 0,
        angle_end = 180
-     }, %)
+     })
 "#
         );
     }
@@ -2348,12 +2348,12 @@ l = 8
 h = 10
 
 firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, -l], %)
+  |> startProfile(at = [0,0])
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, -l])
   |> close()
-  |> extrude(h, %)
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2365,12 +2365,12 @@ l = 8
 h = 10
 
 firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, -l], %)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, -l])
   |> close()
-  |> extrude(h, %)
+  |> extrude(h)
 "#
         );
     }
@@ -2385,12 +2385,12 @@ h = 10
 // It has multiple lines
 // And it's really long
 firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0,0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, -l], %)
+  |> startProfile(at = [0,0])
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, -l])
   |> close()
-  |> extrude(h, %)
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -2405,12 +2405,12 @@ h = 10
 // It has multiple lines
 // And it's really long
 firstExtrude = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> line([0, l], %)
-  |> line([w, 0], %)
-  |> line([0, -l], %)
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, l])
+  |> line(end = [w, 0])
+  |> line(end = [0, -l])
   |> close()
-  |> extrude(h, %)
+  |> extrude(h)
 "#
         );
     }
@@ -2430,11 +2430,11 @@ firstExtrude = startSketchOn(XY)
 thickness = 0.5
 
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
-  |> line([0, -(wallMountL - thickness)], %)
-  |> line([0, -(5 - thickness)], %)
-  |> line([0, -(5 - 1)], %)
-  |> line([0, -(-5 - 1)], %)"#;
+  |> startProfile(at = [0, 0])
+  |> line(end = [0, -(wallMountL - thickness)])
+  |> line(end = [0, -(5 - thickness)])
+  |> line(end = [0, -(5 - 1)])
+  |> line(end = [0, -(-5 - 1)])"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         let recasted = program.recast(&Default::default(), 0);
@@ -2480,8 +2480,8 @@ type baz = Foo | Bar
 
     #[test]
     fn recast_nested_fn() {
-        let some_program_string = r#"fn f = () => {
-  return fn() => {
+        let some_program_string = r#"fn f() {
+  return fn() {
   return 1
 }
 }"#;
@@ -2560,9 +2560,13 @@ sketch002 = startSketchOn({
 
     #[test]
     fn unparse_fn_unnamed() {
-        let input = r#"squares_out = reduce(arr, 0: number, fn(i, squares) {
-  return 1
-})
+        let input = r#"squares_out = reduce(
+  arr,
+  n = 0: number,
+  f = fn(i, squares) {
+    return 1
+  },
+)
 "#;
         let ast = crate::parsing::top_level_parse(input).unwrap();
         let actual = ast.recast(&FormatOptions::new(), 0);

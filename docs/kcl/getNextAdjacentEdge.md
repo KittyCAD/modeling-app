@@ -8,8 +8,8 @@ Get the next adjacent edge to the edge given.
 
 
 
-```js
-getNextAdjacentEdge(edge: TagIdentifier): Uuid
+```kcl
+getNextAdjacentEdge(edge: [TagIdentifier](/docs/kcl/types#TagIdentifier)): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getNextAdjacentEdge(edge: TagIdentifier): Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `edge` | [`TagIdentifier`](/docs/kcl/types#tag-identifier) | The tag of the edge you want to find the next adjacent edge of. | Yes |
+| `edge` | [`TagIdentifier`](/docs/kcl/types#TagIdentifier) | The tag of the edge you want to find the next adjacent edge of. | Yes |
 
 ### Returns
 
@@ -26,7 +26,7 @@ getNextAdjacentEdge(edge: TagIdentifier): Uuid
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])

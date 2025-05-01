@@ -8,14 +8,14 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of dis
 
 
 
-```js
+```kcl
 patternLinear2d(
-  sketches: [Sketch],
-  instances: integer,
-  distance: number,
-  axis: [number],
-  useOriginal?: bool,
-): [Sketch]
+  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
+  instances: [number](/docs/kcl/types/std-types-number),
+  distance: [number](/docs/kcl/types/std-types-number),
+  axis: [Point2d](/docs/kcl/types/std-types-Point2d),
+  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
+): [[Sketch]](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -23,20 +23,20 @@ patternLinear2d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | The sketch(es) to duplicate | Yes |
-| `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
-| `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
-| `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |
-| `useOriginal` | [`bool`](/docs/kcl/types/bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/std-types-Sketch) | The sketch(es) to duplicate | Yes |
+| `instances` | [`number`](/docs/kcl/types/std-types-number) | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
+| `distance` | [`number`](/docs/kcl/types/std-types-number) | Distance between each repetition. Also known as 'spacing'. | Yes |
+| `axis` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | The axis of the pattern. A 2D vector. | Yes |
+| `useOriginal` | [`bool`](/docs/kcl/types/std-types-bool) | If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false. | No |
 
 ### Returns
 
-[`[Sketch]`](/docs/kcl/types/Sketch)
+[`[Sketch]`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> circle(center = [0, 0], radius = 1)
   |> patternLinear2d(axis = [1, 0], instances = 7, distance = 4)

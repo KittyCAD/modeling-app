@@ -3361,7 +3361,7 @@ profile001 = startProfile(sketch001, at = [-20, 20])
       const testPoint = { x: 590, y: 400 }
       const extrudeColor: [number, number, number] = [100, 100, 100]
       const sketchColor: [number, number, number] = [140, 140, 140]
-      const defaultPlaneColor: [number, number, number] = [50, 50, 100]
+      const defaultPlaneColor: [number, number, number] = [88, 44, 45]
 
       const deleteOperation = async (operationButton: Locator) => {
         if (shouldUseKeyboard) {
@@ -3405,7 +3405,11 @@ profile001 = startProfile(sketch001, at = [-20, 20])
         )
         await deleteOperation(operationButton)
         await editor.expectEditor.toContain('')
-        await scene.expectPixelColor(defaultPlaneColor, testPoint, 20)
+        // Cannot use test point anymore because the camera's position has been
+        // reset and the rest of the test doesn't need to change just to check
+        // if the scene is cleared.
+        // Check that the scene is cleared
+        await scene.expectPixelColor(defaultPlaneColor, { x: 574, y: 342 }, 20)
       })
     })
   })
@@ -3664,7 +3668,7 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
     sketch002 = startSketchOn(XY)
       |> startProfile(at = [-2.02, 1.79])
       |> xLine(length = 2.6)
-    sketch001 = startSketchOn('-XY')
+    sketch001 = startSketchOn(-XY)
       |> startProfile(at = [-0.48, 1.25])
       |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
       |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)

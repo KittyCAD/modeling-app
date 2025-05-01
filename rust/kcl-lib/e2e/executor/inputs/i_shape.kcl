@@ -1,13 +1,13 @@
-let d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]
-let width = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]
-let length = 120.0
-let hand_thickness = 24.0
-let corner_radius = 5.0
+d_wrist_circumference = [22.8, 10.7, 16.4, 18.5]
+width = d_wrist_circumference[0] + d_wrist_circumference[1] + d_wrist_circumference[2] + d_wrist_circumference[3]
+length = 120.0
+hand_thickness = 24.0
+corner_radius = 5.0
 
 // At first I thought this was going to be symmetric,
 // but I measured intentionally to not be symmetric,
 // because your wrist isn't a perfect cylindrical surface
-let brace_base = startSketchOn(XY)
+brace_base = startSketchOn(XY)
   |> startProfile(at = [corner_radius, 0])
   |> line(end = [width - corner_radius, 0.0])
   |> tangentialArc(end = [corner_radius, corner_radius])
@@ -35,7 +35,7 @@ let brace_base = startSketchOn(XY)
   |> tangentialArc(end = [corner_radius, -corner_radius])
   |> close()
 
-let inner = startSketchOn(XY)
+inner = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> xLine(length = 1.0)
   |> tangentialArc(end = [corner_radius, corner_radius])
@@ -47,7 +47,7 @@ let inner = startSketchOn(XY)
   |> tangentialArc(end = [corner_radius, -corner_radius])
   |> close()
 
-let final = brace_base
+final = brace_base
   |> subtract2d(tool = inner)
   |> extrude(length = 3.0)
 

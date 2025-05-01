@@ -1,7 +1,7 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { getNodeFromPath, findPipesWithImportAlias } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -1402,13 +1402,26 @@ export async function enterTranslateFlow({
   let x: KclExpression | undefined = undefined
   let y: KclExpression | undefined = undefined
   let z: KclExpression | undefined = undefined
-  const pipe = getNodeFromPath<PipeExpression>(
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
     'PipeExpression'
   )
-  if (!err(pipe) && pipe.node.body) {
-    const translate = pipe.node.body.find(
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    // Look for the last pipe with the import alias and a call to translate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'translate')
+    pipe = pipes.at(-1)?.expression
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const translate = pipe.body.find(
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'translate'
     )
     if (translate?.type === 'CallExpressionKw') {
@@ -1451,13 +1464,26 @@ export async function enterRotateFlow({
   let roll: KclExpression | undefined = undefined
   let pitch: KclExpression | undefined = undefined
   let yaw: KclExpression | undefined = undefined
-  const pipe = getNodeFromPath<PipeExpression>(
+  const pipeLookupFromOperation = getNodeFromPath<PipeExpression>(
     kclManager.ast,
     nodeToEdit,
     'PipeExpression'
   )
-  if (!err(pipe) && pipe.node.body) {
-    const rotate = pipe.node.body.find(
+  let pipe: PipeExpression | undefined
+  const ast = kclManager.ast
+  if (
+    err(pipeLookupFromOperation) ||
+    pipeLookupFromOperation.node.type !== 'PipeExpression'
+  ) {
+    // Look for the last pipe with the import alias and a call to rotate
+    const pipes = findPipesWithImportAlias(ast, nodeToEdit, 'rotate')
+    pipe = pipes.at(-1)?.expression
+  } else {
+    pipe = pipeLookupFromOperation.node
+  }
+
+  if (pipe) {
+    const rotate = pipe.body.find(
       (n) => n.type === 'CallExpressionKw' && n.callee.name.name === 'rotate'
     )
     if (rotate?.type === 'CallExpressionKw') {

@@ -8,13 +8,13 @@ Draw a line relative to the current origin to a specified distance away from the
 
 
 
-```js
+```kcl
 yLine(
-  sketch: Sketch,
-  length?: number,
-  endAbsolute?: number,
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  length?: [number](/docs/kcl/types/std-types-number),
+  endAbsolute?: [number](/docs/kcl/types/std-types-number),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -22,19 +22,19 @@ yLine(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `length` | [`number`](/docs/kcl/types/number) | How far away along the Y axis should this line go? Incompatible with `endAbsolute`. | No |
-| `endAbsolute` | [`number`](/docs/kcl/types/number) | Which absolute Y value should this line go to? Incompatible with `length`. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `length` | [`number`](/docs/kcl/types/std-types-number) | How far away along the Y axis should this line go? Incompatible with `endAbsolute`. | No |
+| `endAbsolute` | [`number`](/docs/kcl/types/std-types-number) | Which absolute Y value should this line go to? Incompatible with `length`. | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> yLine(length = 15)

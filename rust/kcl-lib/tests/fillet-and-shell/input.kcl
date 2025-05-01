@@ -38,7 +38,7 @@ miniHdmiHole = startSketchOn(XY)
      ])
   |> close(%)
 
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [caseWidth, 0], tag = $edge1)
   |> line(endAbsolute = [caseWidth, caseLength], tag = $edge2)
@@ -56,7 +56,7 @@ case = startSketchOn('XY')
      )
 
 fn m25Screw(x, y, height) {
-  screw = startSketchOn("XY")
+  screw = startSketchOn(XY)
     |> startProfile(at = [0, 0])
     |> circle(center = [x, y], radius = 2.5)
     |> subtract2d(tool = circle(center = [x, y], radius = 1.25))
@@ -64,12 +64,9 @@ fn m25Screw(x, y, height) {
   return screw
 }
 
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
-
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
-
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
-
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
 
 shell(case, faces = ['end'], thickness = caseThickness)

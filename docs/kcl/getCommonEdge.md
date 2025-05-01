@@ -8,8 +8,8 @@ Get the shared edge between two faces.
 
 
 
-```js
-getCommonEdge(faces: [TagIdentifier]): Uuid
+```kcl
+getCommonEdge(faces: [[TagIdentifier]](/docs/kcl/types#TagIdentifier)): Uuid
 ```
 
 
@@ -17,7 +17,7 @@ getCommonEdge(faces: [TagIdentifier]): Uuid
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `faces` | `[TagIdentifier]` | The tags of the faces you want to find the common edge between | Yes |
+| `faces` | [`[TagIdentifier]`](/docs/kcl/types#TagIdentifier) | The tags of the faces you want to find the common edge between | Yes |
 
 ### Returns
 
@@ -26,7 +26,7 @@ getCommonEdge(faces: [TagIdentifier]): Uuid
 
 ### Examples
 
-```js
+```kcl
 // Get an edge shared between two faces, created after a chamfer.
 
 

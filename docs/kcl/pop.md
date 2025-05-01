@@ -8,8 +8,8 @@ Remove the last element from an array.
 
 Returns a new array with the last element removed.
 
-```js
-pop(array: [KclValue]): KclValue
+```kcl
+pop(array: [[any]](/docs/kcl/types/std-types-any)): [any](/docs/kcl/types/std-types-any)
 ```
 
 
@@ -17,16 +17,16 @@ pop(array: [KclValue]): KclValue
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `array` | [`[KclValue]`](/docs/kcl/types/KclValue) | The array to pop from. Must not be empty. | Yes |
+| `array` | [`[any]`](/docs/kcl/types/std-types-any) | The array to pop from. Must not be empty. | Yes |
 
 ### Returns
 
-[`KclValue`](/docs/kcl/types/KclValue) - Any KCL value.
+[`any`](/docs/kcl/types/std-types-any) - Any KCL value.
 
 
 ### Examples
 
-```js
+```kcl
 arr = [1, 2, 3, 4]
 new_arr = pop(arr)
 assert(

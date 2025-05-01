@@ -24,13 +24,13 @@ async fn inner_offset_plane(
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Plane, KclError> {
-    let mut plane = Plane::from_plane_data(plane, exec_state);
+    let mut plane = Plane::from_plane_data(plane, exec_state)?;
     // Though offset planes might be derived from standard planes, they are not
     // standard planes themselves.
     plane.value = PlaneType::Custom;
 
-    let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
-    plane.origin += normal * offset.to_length_units(plane.origin.units);
+    let normal = plane.info.x_axis.axes_cross_product(&plane.info.y_axis);
+    plane.info.origin += normal * offset.to_length_units(plane.info.origin.units);
     make_offset_plane_in_engine(&plane, exec_state, args).await?;
 
     Ok(plane)
@@ -53,10 +53,10 @@ async fn make_offset_plane_in_engine(plane: &Plane, exec_state: &mut ExecState, 
         plane.id,
         ModelingCmd::from(mcmd::MakePlane {
             clobber: false,
-            origin: plane.origin.into(),
+            origin: plane.info.origin.into(),
             size: LengthUnit(default_size),
-            x_axis: plane.x_axis.into(),
-            y_axis: plane.y_axis.into(),
+            x_axis: plane.info.x_axis.into(),
+            y_axis: plane.info.y_axis.into(),
             hide: Some(false),
         }),
     )

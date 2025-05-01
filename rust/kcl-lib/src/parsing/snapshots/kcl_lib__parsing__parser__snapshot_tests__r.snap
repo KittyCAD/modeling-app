@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 20,
+        "end": 22,
         "id": {
           "commentStart": 0,
           "end": 3,
@@ -18,11 +18,11 @@ expression: actual
         },
         "init": {
           "commentStart": 6,
-          "end": 20,
+          "end": 22,
           "properties": [
             {
               "commentStart": 8,
-              "end": 12,
+              "end": 13,
               "key": {
                 "commentStart": 8,
                 "end": 9,
@@ -33,10 +33,10 @@ expression: actual
               "start": 8,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 11,
-                "end": 12,
+                "commentStart": 12,
+                "end": 13,
                 "raw": "1",
-                "start": 11,
+                "start": 12,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -46,22 +46,22 @@ expression: actual
               }
             },
             {
-              "commentStart": 14,
-              "end": 18,
+              "commentStart": 15,
+              "end": 20,
               "key": {
-                "commentStart": 14,
-                "end": 15,
+                "commentStart": 15,
+                "end": 16,
                 "name": "b",
-                "start": 14,
+                "start": 15,
                 "type": "Identifier"
               },
-              "start": 14,
+              "start": 15,
               "type": "ObjectProperty",
               "value": {
-                "commentStart": 17,
-                "end": 18,
+                "commentStart": 19,
+                "end": 20,
                 "raw": "2",
-                "start": 17,
+                "start": 19,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -78,60 +78,60 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 20,
+      "end": 22,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     },
     {
-      "commentStart": 25,
+      "commentStart": 27,
       "declaration": {
-        "commentStart": 25,
-        "end": 42,
+        "commentStart": 27,
+        "end": 44,
         "id": {
-          "commentStart": 25,
-          "end": 31,
+          "commentStart": 27,
+          "end": 33,
           "name": "height",
-          "start": 25,
+          "start": 27,
           "type": "Identifier"
         },
         "init": {
-          "commentStart": 34,
+          "commentStart": 36,
           "computed": false,
-          "end": 42,
+          "end": 44,
           "object": {
-            "commentStart": 34,
-            "end": 37,
+            "commentStart": 36,
+            "end": 39,
             "name": "obj",
-            "start": 34,
+            "start": 36,
             "type": "Identifier",
             "type": "Identifier"
           },
           "property": {
-            "commentStart": 38,
-            "end": 41,
+            "commentStart": 40,
+            "end": 43,
             "raw": "\"a\"",
-            "start": 38,
+            "start": 40,
             "type": "Literal",
             "type": "Literal",
             "value": "a"
           },
-          "start": 34,
+          "start": 36,
           "type": "MemberExpression",
           "type": "MemberExpression"
         },
-        "start": 25,
+        "start": 27,
         "type": "VariableDeclarator"
       },
-      "end": 42,
+      "end": 44,
       "kind": "const",
-      "start": 25,
+      "start": 27,
       "type": "VariableDeclaration",
       "type": "VariableDeclaration"
     }
   ],
   "commentStart": 0,
-  "end": 42,
+  "end": 44,
   "start": 0
 }

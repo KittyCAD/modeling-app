@@ -1,11 +1,14 @@
-use std::collections::HashMap;
-
 use anyhow::Result;
 
 use crate::{
+    engine::{PlaneName, DEFAULT_PLANE_INFO},
     errors::Suggestion,
+    execution::{types::UnitLen, PlaneInfo, Point3d},
     lint::rule::{def_finding, Discovered, Finding},
-    parsing::ast::types::{BinaryPart, Expr, LiteralValue, ObjectExpression, UnaryOperator},
+    parsing::ast::types::{
+        BinaryPart, CallExpression, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program,
+        UnaryOperator,
+    },
     walk::Node,
     SourceRange,
 };
@@ -27,137 +30,26 @@ use offsetPlane where possible.
 "
 );
 
-pub fn lint_should_be_offset_plane(node: Node) -> Result<Vec<Discovered>> {
-    let Node::CallExpression(call) = node else {
+pub fn lint_should_be_offset_plane(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+    let Some((call_source_range, plane_name, offset)) = start_sketch_on_check_specific_plane(node)? else {
         return Ok(vec![]);
     };
-
-    if call.inner.callee.inner.name.name != "startSketchOn" {
+    // We don't care about the default planes.
+    if offset == 0.0 {
         return Ok(vec![]);
     }
-
-    if call.arguments.len() != 1 {
-        // we only look for single-argument object patterns, if there's more
-        // than that we don't have a plane decl
-        return Ok(vec![]);
-    }
-
-    let Expr::ObjectExpression(arg) = &call.arguments[0] else {
-        return Ok(vec![]);
-    };
-
-    let mut origin: Option<(f64, f64, f64)> = None;
-    let mut x_vec: Option<(f64, f64, f64)> = None;
-    let mut y_vec: Option<(f64, f64, f64)> = None;
-
-    for property in &arg.inner.properties {
-        let Expr::ObjectExpression(ref point) = property.inner.value else {
-            return Ok(vec![]);
-        };
-
-        let Some((x, y, z)) = get_xyz(&point.inner) else {
-            return Ok(vec![]);
-        };
-
-        let property_name = &property.inner.key.inner.name;
-
-        match property_name.as_str() {
-            "origin" => origin = Some((x, y, z)),
-            "xAxis" => x_vec = Some((x, y, z)),
-            "yAxis" => y_vec = Some((x, y, z)),
-            _ => {
-                continue;
-            }
-        };
-    }
-
-    let Some(origin) = origin else { return Ok(vec![]) };
-    let Some(x_vec) = x_vec else { return Ok(vec![]) };
-    let Some(y_vec) = y_vec else { return Ok(vec![]) };
-
-    if [origin.0, origin.1, origin.2].iter().filter(|v| **v == 0.0).count() < 2 {
-        return Ok(vec![]);
-    }
-    // two of the origin values are 0, 0; let's work it out and check
-    // what's **up**
-
-    /// This will attempt to very poorly translate orientation to a letter
-    /// if it's possible to do so. The engine will norm these vectors, so
-    /// we'll just use logic off 0 for now, but this sucks, generally speaking.
-    fn vector_to_letter<'a>(x: f64, y: f64, z: f64) -> Option<&'a str> {
-        if x > 0.0 && y == 0.0 && z == 0.0 {
-            return Some("X");
-        }
-        if x < 0.0 && y == 0.0 && z == 0.0 {
-            return Some("-X");
-        }
-
-        if x == 0.0 && y > 0.0 && z == 0.0 {
-            return Some("Y");
-        }
-        if x == 0.0 && y < 0.0 && z == 0.0 {
-            return Some("-Y");
-        }
-
-        if x == 0.0 && y == 0.0 && z > 0.0 {
-            return Some("Z");
-        }
-        if x == 0.0 && y == 0.0 && z < 0.0 {
-            return Some("-Z");
-        }
-
-        None
-    }
-
-    let allowed_planes = HashMap::from([
-        // allowed built-in planes
-        ("XY".to_owned(), true),
-        ("-XY".to_owned(), true),
-        ("XZ".to_owned(), true),
-        ("-XZ".to_owned(), true),
-        ("YZ".to_owned(), true),
-        ("-YZ".to_owned(), true),
-    ]);
-    // Currently, the engine **ONLY** accepts[1] the following:
-    //
-    // XY
-    // -XY
-    // XZ
-    // -XZ
-    // YZ
-    // -YZ
-    //
-    // [1]: https://zoo.dev/docs/kcl/types/PlaneData
-
-    let plane_name = format!(
-        "{}{}",
-        vector_to_letter(x_vec.0, x_vec.1, x_vec.2).unwrap_or(""),
-        vector_to_letter(y_vec.0, y_vec.1, y_vec.2).unwrap_or(""),
-    );
-
-    if !allowed_planes.contains_key(&plane_name) {
-        return Ok(vec![]);
-    };
-
-    let call_source_range = SourceRange::new(
-        call.arguments[0].start(),
-        call.arguments[0].end(),
-        call.arguments[0].module_id(),
-    );
-
-    let offset = get_offset(origin, x_vec, y_vec);
-    let suggestion = offset.map(|offset| Suggestion {
+    let suggestion = Suggestion {
         title: "use offsetPlane instead".to_owned(),
         insert: format!("offsetPlane({}, offset = {})", plane_name, offset),
         source_range: call_source_range,
-    });
+    };
     Ok(vec![Z0003.at(
         format!(
             "custom plane in startSketchOn; offsetPlane from {} would work here",
             plane_name
         ),
         call_source_range,
-        suggestion,
+        Some(suggestion),
     )])
 }
 
@@ -205,33 +97,203 @@ fn get_xyz(point: &ObjectExpression) -> Option<(f64, f64, f64)> {
     Some((x?, y?, z?))
 }
 
-fn get_offset(origin: (f64, f64, f64), x_axis: (f64, f64, f64), y_axis: (f64, f64, f64)) -> Option<f64> {
+fn get_offset(info: &PlaneInfo) -> Option<f64> {
     // Check which number is not a 1 or -1, or zero.
     // Return that back out since that is the offset.
 
     // This is a bit of a hack, but it works for now.
     // We can do better later.
-    if origin.0 != 1.0 && origin.0 != -1.0 && origin.0 != 0.0 {
-        return Some(origin.0);
-    } else if origin.1 != 1.0 && origin.1 != -1.0 && origin.1 != 0.0 {
-        return Some(origin.1);
-    } else if origin.2 != 1.0 && origin.2 != -1.0 && origin.2 != 0.0 {
-        return Some(origin.2);
-    } else if x_axis.0 != 1.0 && x_axis.0 != -1.0 && x_axis.0 != 0.0 {
-        return Some(x_axis.0);
-    } else if x_axis.1 != 1.0 && x_axis.1 != -1.0 && x_axis.1 != 0.0 {
-        return Some(x_axis.1);
-    } else if x_axis.2 != 1.0 && x_axis.2 != -1.0 && x_axis.2 != 0.0 {
-        return Some(x_axis.2);
-    } else if y_axis.0 != 1.0 && y_axis.0 != -1.0 && y_axis.0 != 0.0 {
-        return Some(y_axis.0);
-    } else if y_axis.1 != 1.0 && y_axis.1 != -1.0 && y_axis.1 != 0.0 {
-        return Some(y_axis.1);
-    } else if y_axis.2 != 1.0 && y_axis.2 != -1.0 && y_axis.2 != 0.0 {
-        return Some(y_axis.2);
+    if info.origin.x != 1.0 && info.origin.x != -1.0 && info.origin.x != 0.0 {
+        return Some(info.origin.x);
+    } else if info.origin.y != 1.0 && info.origin.y != -1.0 && info.origin.y != 0.0 {
+        return Some(info.origin.y);
+    } else if info.origin.z != 1.0 && info.origin.z != -1.0 && info.origin.z != 0.0 {
+        return Some(info.origin.z);
+    } else if info.x_axis.x != 1.0 && info.x_axis.x != -1.0 && info.x_axis.x != 0.0 {
+        return Some(info.x_axis.x);
+    } else if info.x_axis.y != 1.0 && info.x_axis.y != -1.0 && info.x_axis.y != 0.0 {
+        return Some(info.x_axis.y);
+    } else if info.x_axis.z != 1.0 && info.x_axis.z != -1.0 && info.x_axis.z != 0.0 {
+        return Some(info.x_axis.z);
+    } else if info.y_axis.x != 1.0 && info.y_axis.x != -1.0 && info.y_axis.x != 0.0 {
+        return Some(info.y_axis.x);
+    } else if info.y_axis.y != 1.0 && info.y_axis.y != -1.0 && info.y_axis.y != 0.0 {
+        return Some(info.y_axis.y);
+    } else if info.y_axis.z != 1.0 && info.y_axis.z != -1.0 && info.y_axis.z != 0.0 {
+        return Some(info.y_axis.z);
     }
 
     None
+}
+
+pub fn start_sketch_on_check_specific_plane(node: Node) -> Result<Option<(SourceRange, PlaneName, f64)>> {
+    match node {
+        Node::CallExpression(node) => start_sketch_on_check_specific_plane_pos(node),
+        Node::CallExpressionKw(node) => start_sketch_on_check_specific_plane_kw(node),
+        _ => Ok(None),
+    }
+}
+
+pub fn start_sketch_on_check_specific_plane_pos(
+    call: &AstNode<CallExpression>,
+) -> Result<Option<(SourceRange, PlaneName, f64)>> {
+    if call.inner.callee.inner.name.name != "startSketchOn" {
+        return Ok(None);
+    }
+
+    if call.arguments.len() != 1 {
+        // we only look for single-argument object patterns, if there's more
+        // than that we don't have a plane decl
+        return Ok(None);
+    }
+
+    let call_source_range = SourceRange::new(
+        call.arguments[0].start(),
+        call.arguments[0].end(),
+        call.arguments[0].module_id(),
+    );
+
+    let Expr::ObjectExpression(arg) = &call.arguments[0] else {
+        return Ok(None);
+    };
+    common(arg, call_source_range)
+}
+
+pub fn start_sketch_on_check_specific_plane_kw(
+    call: &AstNode<CallExpressionKw>,
+) -> Result<Option<(SourceRange, PlaneName, f64)>> {
+    if call.inner.callee.inner.name.name != "startSketchOn" {
+        return Ok(None);
+    }
+
+    let Some(ref unlabeled) = call.inner.unlabeled else {
+        // we only look for single-argument object patterns, if there's more
+        // than that we don't have a plane decl
+        return Ok(None);
+    };
+
+    let call_source_range = SourceRange::new(unlabeled.start(), unlabeled.end(), unlabeled.module_id());
+
+    let Expr::ObjectExpression(arg) = &unlabeled else {
+        return Ok(None);
+    };
+    common(arg, call_source_range)
+}
+
+pub fn common(
+    arg: &AstNode<ObjectExpression>,
+    call_source_range: SourceRange,
+) -> Result<Option<(SourceRange, PlaneName, f64)>> {
+    let mut origin: Option<Point3d> = None;
+    let mut x_vec: Option<Point3d> = None;
+    let mut y_vec: Option<Point3d> = None;
+
+    for property in &arg.inner.properties {
+        let Expr::ObjectExpression(ref point) = property.inner.value else {
+            return Ok(None);
+        };
+
+        let Some((x, y, z)) = get_xyz(&point.inner) else {
+            return Ok(None);
+        };
+
+        let property_name = &property.inner.key.inner.name;
+
+        match property_name.as_str() {
+            "origin" => {
+                origin = Some(Point3d {
+                    x,
+                    y,
+                    z,
+                    units: UnitLen::Mm,
+                })
+            }
+            "xAxis" => {
+                x_vec = Some(Point3d {
+                    x,
+                    y,
+                    z,
+                    units: UnitLen::Unknown,
+                })
+            }
+            "yAxis" => {
+                y_vec = Some(Point3d {
+                    x,
+                    y,
+                    z,
+                    units: UnitLen::Unknown,
+                })
+            }
+            _ => {
+                continue;
+            }
+        };
+    }
+
+    let (Some(origin), Some(x_vec), Some(y_vec)) = (origin, x_vec, y_vec) else {
+        return Ok(None);
+    };
+
+    if [origin.x, origin.y, origin.z].iter().filter(|v| **v == 0.0).count() < 2 {
+        return Ok(None);
+    }
+
+    let plane_info = PlaneInfo {
+        origin,
+        x_axis: x_vec,
+        y_axis: y_vec,
+    };
+
+    // Return early if we have a default plane.
+    if let Some((name, _)) = DEFAULT_PLANE_INFO.iter().find(|(_, plane)| **plane == plane_info) {
+        return Ok(Some((call_source_range, *name, 0.0)));
+    }
+
+    let normalized_plane_info = normalize_plane_info(&plane_info);
+
+    println!("normalized plane info: {:?}", normalized_plane_info);
+
+    // Check our default planes.
+    let Some((matched_plane_name, _)) = DEFAULT_PLANE_INFO
+        .iter()
+        .find(|(_, plane)| **plane == normalized_plane_info)
+    else {
+        return Ok(None);
+    };
+
+    let Some(offset) = get_offset(&plane_info) else {
+        return Ok(None);
+    };
+
+    Ok(Some((call_source_range, *matched_plane_name, offset)))
+}
+
+// Clone the plane info and normalize any number that is not zero to 1.0 or -1.0 (if negative)
+// so we can compare it to the built-in planes.
+fn normalize_plane_info(plane_info: &PlaneInfo) -> PlaneInfo {
+    let mut normalized_plane_info = plane_info.clone();
+    normalized_plane_info.origin = Point3d {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+        units: normalized_plane_info.origin.units,
+    };
+    normalized_plane_info.y_axis.x = if normalized_plane_info.y_axis.x != 0.0 {
+        normalized_plane_info.y_axis.x.signum()
+    } else {
+        0.0
+    };
+    normalized_plane_info.y_axis.y = if normalized_plane_info.y_axis.y != 0.0 {
+        normalized_plane_info.y_axis.y.signum()
+    } else {
+        0.0
+    };
+    normalized_plane_info.y_axis.z = if normalized_plane_info.y_axis.z != 0.0 {
+        normalized_plane_info.y_axis.z.signum()
+    } else {
+        0.0
+    };
+    normalized_plane_info
 }
 
 #[cfg(test)]
@@ -262,6 +324,19 @@ startSketchOn({
         "\
 startSketchOn({
     origin = { x = 10, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+})
+"
+    );
+
+    test_no_finding!(
+        z0003_default_plane,
+        lint_should_be_offset_plane,
+        Z0003,
+        "\
+startSketchOn({
+    origin = { x = 0, y = 0, z = 0 },
     xAxis = { x = 1, y = 0, z = 0 },
     yAxis = { x = 0, y = 0, z = 1 },
 })

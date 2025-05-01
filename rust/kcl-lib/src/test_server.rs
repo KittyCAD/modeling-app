@@ -21,7 +21,7 @@ pub struct RequestBody {
 pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> Result<image::DynamicImage, ExecError> {
     let ctx = new_context(true, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program, false)
+    let res = do_execute_and_snapshot(&ctx, program)
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error);
@@ -32,13 +32,13 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
 #[cfg(test)]
-pub async fn execute_and_snapshot_ast_single_threaded(
+pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
     with_export_step: bool,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage, Option<Vec<u8>>), ExecErrorWithState> {
     let ctx = new_context(true, current_file).await?;
-    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast, true).await {
+    let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
         Err(err) => {
             // If there was an error executing the program, return it.
@@ -73,7 +73,7 @@ pub async fn execute_and_snapshot_no_auth(
 ) -> Result<(image::DynamicImage, EnvironmentRef), ExecError> {
     let ctx = new_context(false, current_file).await?;
     let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
-    let res = do_execute_and_snapshot(&ctx, program, false)
+    let res = do_execute_and_snapshot(&ctx, program)
         .await
         .map(|(_, env_ref, snap)| (snap, env_ref))
         .map_err(|err| err.error);
@@ -84,15 +84,12 @@ pub async fn execute_and_snapshot_no_auth(
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
-    single_threaded: bool,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
-    let result = if single_threaded {
-        ctx.run_single_threaded(&program, &mut exec_state).await
-    } else {
-        ctx.run(&program, &mut exec_state).await
-    }
-    .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
+    let result = ctx
+        .run(&program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
     for e in exec_state.errors() {
         if e.severity.is_err() {
             return Err(ExecErrorWithState::new(

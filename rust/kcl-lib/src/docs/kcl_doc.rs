@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fmt, str::FromStr};
+use std::{collections::HashMap, fmt, str::FromStr};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -9,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -17,19 +17,41 @@ use crate::{
 
 pub fn walk_prelude() -> Vec<DocData> {
     let mut visitor = CollectionVisitor::default();
-    visitor.visit_module("prelude", "").unwrap();
-    visitor.result
+    visitor.visit_module("prelude", "", WalkForNames::All).unwrap();
+    visitor.result.into_values().collect()
 }
 
 #[derive(Debug, Clone, Default)]
 struct CollectionVisitor {
     name: String,
-    result: Vec<DocData>,
+    result: HashMap<String, DocData>,
     id: usize,
 }
 
+#[derive(Clone, Debug)]
+enum WalkForNames<'a> {
+    All,
+    Selected(Vec<&'a str>),
+}
+
+impl<'a> WalkForNames<'a> {
+    fn contains(&self, name: &str) -> bool {
+        match self {
+            WalkForNames::All => true,
+            WalkForNames::Selected(names) => names.contains(&name),
+        }
+    }
+
+    fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
+        match self {
+            WalkForNames::All => WalkForNames::Selected(names.collect()),
+            WalkForNames::Selected(mine) => WalkForNames::Selected(names.filter(|n| mine.contains(n)).collect()),
+        }
+    }
+}
+
 impl CollectionVisitor {
-    fn visit_module(&mut self, name: &str, preferred_prefix: &str) -> Result<(), String> {
+    fn visit_module(&mut self, name: &str, preferred_prefix: &str, names: WalkForNames) -> Result<(), String> {
         let old_name = std::mem::replace(&mut self.name, name.to_owned());
         let source = crate::modules::read_std(name).unwrap();
         let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
@@ -38,23 +60,29 @@ impl CollectionVisitor {
         self.id += 1;
 
         for n in &parsed.body {
+            if n.visibility() != ItemVisibility::Export {
+                continue;
+            }
             match n {
-                crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
-                    match &import.path {
-                        crate::parsing::ast::types::ImportPath::Std { path } => {
-                            match import.selector {
-                                ImportSelector::Glob(..) => self.visit_module(&path[1], "")?,
-                                ImportSelector::None { .. } => {
-                                    self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
-                                }
-                                // Only supports glob or whole-module imports for now.
-                                _ => unimplemented!(),
+                crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
+                    crate::parsing::ast::types::ImportPath::Std { path } => match &import.selector {
+                        ImportSelector::Glob(..) => self.visit_module(&path[1], "", names.clone())?,
+                        ImportSelector::None { .. } => {
+                            let name = import.module_name().unwrap();
+                            if names.contains(&name) {
+                                self.visit_module(&path[1], &format!("{}::", name), WalkForNames::All)?;
                             }
                         }
-                        p => return Err(format!("Unexpected import: `{p}`")),
+                        ImportSelector::List { items } => {
+                            self.visit_module(&path[1], "", names.intersect(items.iter().map(|n| &*n.name.name)))?
+                        }
+                    },
+                    p => return Err(format!("Unexpected import: `{p}`")),
+                },
+                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) => {
+                    if !names.contains(var.name()) {
+                        continue;
                     }
-                }
-                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
                     let qual_name = if self.name == "prelude" {
                         "std::".to_owned()
                     } else {
@@ -66,6 +94,10 @@ impl CollectionVisitor {
                             DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix, name))
                         }
                     };
+                    let key = format!("I:{}", dd.qual_name());
+                    if self.result.contains_key(&key) {
+                        continue;
+                    }
 
                     dd.with_meta(&var.outer_attrs);
                     for a in &var.outer_attrs {
@@ -73,15 +105,22 @@ impl CollectionVisitor {
                     }
                     dd.with_comments(n.get_comments());
 
-                    self.result.push(dd);
+                    self.result.insert(key, dd);
                 }
-                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
+                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) => {
+                    if !names.contains(ty.name()) {
+                        continue;
+                    }
                     let qual_name = if self.name == "prelude" {
                         "std::".to_owned()
                     } else {
                         format!("std::{}::", self.name)
                     };
                     let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix, name));
+                    let key = format!("T:{}", dd.qual_name());
+                    if self.result.contains_key(&key) {
+                        continue;
+                    }
 
                     dd.with_meta(&ty.outer_attrs);
                     for a in &ty.outer_attrs {
@@ -89,7 +128,7 @@ impl CollectionVisitor {
                     }
                     dd.with_comments(n.get_comments());
 
-                    self.result.push(dd);
+                    self.result.insert(key, dd);
                 }
                 _ => {}
             }
@@ -116,6 +155,23 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
+    pub fn preferred_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.preferred_name,
+            DocData::Const(c) => &c.preferred_name,
+            DocData::Ty(t) => &t.preferred_name,
+        }
+    }
+
+    pub fn qual_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.qual_name,
+            DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => &t.qual_name,
+        }
+    }
+
     /// The name of the module in which the item is declared, e.g., `sketch`
     #[allow(dead_code)]
     pub fn module_name(&self) -> &str {
@@ -129,18 +185,18 @@ impl DocData {
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.name.clone()),
+            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
         }
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => t.name.clone(),
+            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
         }
     }
 
@@ -349,8 +405,6 @@ pub struct FnData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
 
     pub module_name: String,
 }
@@ -369,16 +423,6 @@ impl FnData {
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
 
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &expr.return_type {
-            collect_type_names(&mut referenced_types, t);
-        }
-        for p in &expr.params {
-            if let Some(t) = &p.type_ {
-                collect_type_names(&mut referenced_types, t);
-            }
-        }
-
         FnData {
             preferred_name: format!("{preferred_prefix}{name}"),
             name,
@@ -394,7 +438,6 @@ impl FnData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
             module_name: module_name.to_owned(),
         }
     }
@@ -675,8 +718,6 @@ pub struct TyData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
 
     pub module_name: String,
 }
@@ -690,10 +731,6 @@ impl TyData {
     ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &ty.alias {
-            collect_type_names(&mut referenced_types, t);
-        }
 
         TyData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -709,7 +746,6 @@ impl TyData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
             module_name: module_name.to_owned(),
         }
     }
@@ -1002,35 +1038,6 @@ impl ApplyMeta for ArgData {
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
         unreachable!();
-    }
-}
-
-fn collect_type_names(acc: &mut HashSet<String>, ty: &Type) {
-    match ty {
-        Type::Primitive(primitive_type) => {
-            acc.insert(collect_type_names_from_primitive(primitive_type));
-        }
-        Type::Array { ty, .. } => {
-            collect_type_names(acc, ty);
-        }
-        Type::Union { tys } => tys.iter().for_each(|t| {
-            acc.insert(collect_type_names_from_primitive(t));
-        }),
-        Type::Object { properties } => properties.iter().for_each(|p| {
-            if let Some(t) = &p.type_ {
-                collect_type_names(acc, t)
-            }
-        }),
-    }
-}
-
-fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
-    match ty {
-        PrimitiveType::String => "string".to_owned(),
-        PrimitiveType::Number(_) => "number".to_owned(),
-        PrimitiveType::Boolean => "bool".to_owned(),
-        PrimitiveType::Tag => "tag".to_owned(),
-        PrimitiveType::Named(id) => id.name.clone(),
     }
 }
 

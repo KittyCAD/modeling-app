@@ -1,43 +1,43 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[36, 61, 0]"]
-    3["Segment<br>[67, 97, 0]"]
-    4["Segment<br>[103, 131, 0]"]
-    5["Segment<br>[137, 145, 0]"]
+    2["Path<br>[34, 59, 0]"]
+    3["Segment<br>[65, 95, 0]"]
+    4["Segment<br>[101, 129, 0]"]
+    5["Segment<br>[135, 143, 0]"]
     6[Solid2d]
   end
-  1["Plane<br>[10, 30, 0]"]
-  7["Sweep Extrusion<br>[151, 174, 0]"]
+  1["Plane<br>[10, 28, 0]"]
+  7["Sweep Extrusion<br>[149, 172, 0]"]
   8[Wall]
   9[Wall]
   10[Wall]
   11["Cap Start"]
   12["Cap End"]
   13["SweepEdge Opposite"]
-  14["SweepEdge Adjacent"]
+  14["SweepEdge Opposite"]
   15["SweepEdge Opposite"]
   16["SweepEdge Adjacent"]
-  17["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
   18["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
   2 --- 5
-  2 ---- 7
   2 --- 6
-  3 --- 10
-  3 --- 17
-  3 --- 18
+  2 ---- 7
+  3 --- 9
   3 x--> 11
-  4 --- 9
-  4 --- 15
-  4 --- 16
+  3 --- 15
+  3 --- 17
+  4 --- 8
   4 x--> 11
-  5 --- 8
-  5 --- 13
-  5 --- 14
+  4 --- 13
+  4 --- 18
+  5 --- 10
   5 x--> 11
+  5 --- 14
+  5 --- 16
   7 --- 8
   7 --- 9
   7 --- 10
@@ -50,15 +50,15 @@ flowchart LR
   7 --- 17
   7 --- 18
   13 <--x 8
-  13 <--x 12
-  14 <--x 8
-  14 <--x 10
+  17 <--x 8
+  18 <--x 8
   15 <--x 9
-  15 <--x 12
-  16 <--x 8
   16 <--x 9
-  17 <--x 10
-  17 <--x 12
-  18 <--x 9
+  17 <--x 9
+  14 <--x 10
+  16 <--x 10
   18 <--x 10
+  13 <--x 12
+  14 <--x 12
+  15 <--x 12
 ```

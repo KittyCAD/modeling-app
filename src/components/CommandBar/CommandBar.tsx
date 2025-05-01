@@ -144,7 +144,16 @@ export const CommandBar = () => {
             data-testid="command-bar"
           >
             {commandBarState.matches('Selecting command') ? (
-              <CommandComboBox options={commands} />
+              <CommandComboBox
+                options={commands.filter((command) => {
+                  return (
+                    // By default everything is undefined
+                    // If marked explicitly as false hide
+                    command.hideFromSearch === undefined ||
+                    command.hideFromSearch === false
+                  )
+                })}
+              />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (

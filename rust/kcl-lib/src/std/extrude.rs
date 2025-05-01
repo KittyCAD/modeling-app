@@ -59,7 +59,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// extruded in the same direction.
 ///
 /// ```no_run
-/// example = startSketchOn('XZ')
+/// example = startSketchOn(XZ)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> arc(
@@ -80,7 +80,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
@@ -102,7 +102,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
@@ -124,7 +124,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 /// ```
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
+/// exampleSketch = startSketchOn(XZ)
 ///   |> startProfile(at = [-10, 0])
 ///   |> arc(
 ///     angleStart = 120,
@@ -337,14 +337,18 @@ pub(crate) async fn do_post_extrude<'a>(
         let next_adjacent_edge_uuid = exec_state.next_uuid();
         let get_all_edge_faces_opposite_uuid = exec_state.next_uuid();
         let get_all_edge_faces_next_uuid = exec_state.next_uuid();
-        #[cfg(test)]
-        let single_threaded = exec_state.single_threaded;
-        #[cfg(all(not(test), not(target_arch = "wasm32")))]
+        #[cfg(any(not(test), not(feature = "artifact-graph"), not(target_arch = "wasm32")))]
+        #[allow(unused_variables)]
         let single_threaded = false;
         // When running in vitest, we need to run this in a single thread.
         // Because their workers are complete shit.
-        #[cfg(all(target_arch = "wasm32", not(test)))]
+        #[cfg(target_arch = "wasm32")]
         let single_threaded = crate::wasm::vitest::running_in_vitest();
+        // If we are running in a test, for the arifact graph to be deterministic and not fail
+        // after say a fillet runs concurrently, we need to make sure that the
+        // async tasks are done before we return.
+        #[cfg(all(test, feature = "artifact-graph", not(target_arch = "wasm32")))]
+        let single_threaded = true;
 
         // Get faces for original edge
         // Since this one is batched we can just run it.

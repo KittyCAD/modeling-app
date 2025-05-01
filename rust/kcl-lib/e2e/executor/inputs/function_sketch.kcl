@@ -1,5 +1,5 @@
-fn box = (h, l, w) => {
- const myBox = startSketchOn(XY)
+fn box(h, l, w) {
+ myBox = startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> line(end = [0, l])
     |> line(end = [w, 0])
@@ -10,4 +10,4 @@ fn box = (h, l, w) => {
   return myBox
 }
 
-const fnBox = box(3, 6, 10)
+fnBox = box(h = 3, l = 6, w = 10)

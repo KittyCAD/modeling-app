@@ -4,18 +4,15 @@ description: Operations executed import_side_effect.kcl
 ---
 [
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XY"
-        },
-        "sourceRange": []
-      }
+    "type": "GroupBegin",
+    "group": {
+      "type": "ModuleInstance",
+      "name": "export_side_effect.kcl",
+      "moduleId": 0
     },
-    "name": "startSketchOn",
-    "sourceRange": [],
-    "type": "StdLibCall",
-    "unlabeledArg": null
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

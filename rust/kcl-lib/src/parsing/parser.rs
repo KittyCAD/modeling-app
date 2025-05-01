@@ -14,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, CallExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -24,13 +24,12 @@ use crate::{
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-            BoxNode, CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr,
-            ExpressionStatement, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
-            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-            MemberObject, Name, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-            ObjectProperty, Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement,
-            Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration,
-            VariableDeclarator, VariableKind,
+            BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
+            FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility,
+            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeList,
+            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -936,7 +935,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     );
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(
+        ParseContext::err(
             CompilationError::err(
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
@@ -1221,20 +1220,10 @@ fn if_expr(i: &mut TokenSlice) -> PResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let (result, has_arrow) = function_decl.parse_next(i)?;
+    let result = function_decl.parse_next(i)?;
     if fn_tok.is_none() {
-        if has_arrow {
-            ParseContext::warn(
-                CompilationError::err(
-                    result.as_source_range().start_as_range(),
-                    "Missing `fn` in function declaration",
-                )
-                .with_suggestion("Add `fn`", "fn", None, Tag::None),
-            );
-        } else {
-            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-            return Err(ErrMode::Cut(err.into()));
-        }
+        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+        return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1244,7 +1233,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
+fn function_decl(i: &mut TokenSlice) -> PResult<Node<FunctionExpression>> {
     fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -1255,8 +1244,6 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     let start = open.start;
     let params = parameters(i)?;
     close_paren(i)?;
-    ignore_whitespace(i);
-    let arrow = opt(big_arrow).parse_next(i)?;
     ignore_whitespace(i);
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
@@ -1282,18 +1269,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow =
-        if let Some(arrow) = arrow {
-            ParseContext::warn(
-                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
-                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
-            );
-            true
-        } else {
-            false
-        };
-
-    Ok((result, has_arrow))
+    Ok(result)
 }
 
 /// E.g. `person.name`
@@ -2140,7 +2116,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             ignore_whitespace(i);
 
             let val = function_decl
-                .map(|t| Box::new(t.0))
+                .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
                 .parse_next(i);
@@ -2174,7 +2150,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
             if let Some((_, tok)) = decl_token {
                 let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
-                ParseContext::warn(
+                ParseContext::err(
                     CompilationError::err(
                         tok.as_source_range(),
                         format!(
@@ -2582,12 +2558,6 @@ fn some_brace(symbol: &'static str, i: &mut TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
-/// Parse a => operator.
-fn big_arrow(i: &mut TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "=>"))
-        .context(expected("the => symbol, used for declaring functions"))
-        .parse_next(i)
-}
 /// Parse a |> operator.
 fn pipe_operator(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, PIPE_OPERATOR))
@@ -3076,6 +3046,46 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
+    // Special case: no args
+    let early_close = peek(close_paren).parse_next(i);
+    if early_close.is_ok() {
+        let cl = close_paren.parse_next(i)?;
+        let result = Node::new_node(
+            fn_name.start,
+            cl.end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Default::default(),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
+    // Special case: one arg (unlabeled)
+    let early_close = peek((expression, opt(whitespace), close_paren)).parse_next(i);
+    if early_close.is_ok() {
+        let first_expression = expression.parse_next(i)?;
+        ignore_whitespace(i);
+        let end = close_paren.parse_next(i)?.end;
+        let result = Node::new_node(
+            fn_name.start,
+            end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Some(first_expression),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -3313,7 +3323,7 @@ mod tests {
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.body[0].get_comments();
         let comment0 = expr.body.body[1].get_comments();
@@ -3330,7 +3340,7 @@ mod tests {
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -3399,7 +3409,7 @@ mySk1 = startSketchOn(XY)
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
             expr.body.non_code_meta.start_nodes,
             vec![Node::new(
@@ -3863,7 +3873,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4133,8 +4143,8 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_parse_half_pipe_small() {
         assert_err_contains(
-            "secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+            "secondExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
   |",
             "Unexpected token: |",
         );
@@ -4198,7 +4208,7 @@ height = [obj["a"] -1, 0]"#;
 
     #[test]
     fn test_anon_fn() {
-        crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+        crate::parsing::top_level_parse("foo(num=42, closure=fn(x) { return x + 1 })").unwrap();
     }
 
     #[test]
@@ -4226,16 +4236,16 @@ height = [obj["a"] -1, 0]"#;
     fn test_parse_half_pipe() {
         let code = "height = 10
 
-firstExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
-  |> line([0, 8], %)
-  |> line([20, 0], %)
-  |> line([0, -8], %)
+firstExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
+  |> line(at = [0, 8])
+  |> line(at = [20, 0])
+  |> line(at = [0, -8])
   |> close()
   |> extrude(length=2)
 
-secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+secondExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
   |";
         assert_err_contains(code, "Unexpected token: |");
     }
@@ -4505,8 +4515,8 @@ e
         let code = r#"/// Compute the cosine of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///        angle = 30,
 ///        length = 3 / cos(toRadians(30)),
@@ -4546,7 +4556,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
 
     #[test]
     fn error_underscore() {
-        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
+        let (_, errs) = assert_no_fatal("_foo(a=_blah, b=_)");
         assert_eq!(errs.len(), 3, "found: {errs:#?}");
     }
 
@@ -4559,7 +4569,7 @@ export fn cos(num: number(rad)): number(_) {}"#;
     #[test]
     fn zero_param_function() {
         let code = r#"
-        fn firstPrimeNumber = () => {
+        fn firstPrimeNumber() {
             return 2
         }
         firstPrimeNumber()
@@ -4648,26 +4658,6 @@ thing(false)
     }
 
     #[test]
-    fn test_error_define_function_as_var() {
-        for name in ["var", "let", "const"] {
-            let some_program_string = format!(
-                r#"{} thing = (param) => {{
-    return true
-}}
-
-thing(false)
-"#,
-                name
-            );
-            assert_err(
-                &some_program_string,
-                "Expected a `fn` variable kind, found: `const`",
-                [0, name.len()],
-            );
-        }
-    }
-
-    #[test]
     fn test_error_define_var_as_function() {
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
@@ -4677,12 +4667,12 @@ thing(false)
 
     #[test]
     fn random_words_fail() {
-        let test_program = r#"part001 = startSketchOn('-XZ')
-    |> startProfileAt([8.53, 11.8], %)
+        let test_program = r#"part001 = startSketchOn(-XZ)
+    |> startProfile(at = [8.53, 11.8])
     asdasd asdasd
-    |> line([11.12, -14.82], %)
-    |> line([-13.27, -6.98], %)
-    |> line([-5.09, 12.33], %)
+    |> line(at = [11.12, -14.82])
+    |> line(at = [-13.27, -6.98])
+    |> line(at = [-5.09, 12.33])
     asdasd
 "#;
         let _ = crate::parsing::top_level_parse(test_program).unwrap_errs();
@@ -4690,18 +4680,18 @@ thing(false)
 
     #[test]
     fn test_member_expression_sketch() {
-        let some_program_string = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn('XY')
-  |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+        let some_program_string = r#"fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+  |> startProfile(pos)
+    |> line(at = [0, scale])
+    |> line(at = [scale, 0])
+    |> line(at = [0, -scale])
 
   return sg
 }
 
-b1 = cube([0,0], 10)
-b2 = cube([3,3], 4)
+b1 = cube(pos=[0,0], scale=10)
+b2 = cube(pos=[3,3], scale=4)
 
 pt1 = b1[0]
 pt2 = b2[0]
@@ -4718,18 +4708,18 @@ let other_thing = 2 * cos(3)"#;
 
     #[test]
     fn test_negative_arguments() {
-        let some_program_string = r#"fn box = (p, h, l, w) => {
- myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
+        let some_program_string = r#"fn box(p, h, l, w) {
+ myBox = startSketchOn(XY)
+    |> startProfile(p)
+    |> line(at = [0, l])
+    |> line(at = [w, 0])
+    |> line(at = [0, -l])
     |> close()
     |> extrude(length=h)
 
   return myBox
 }
-let myBox = box([0,0], -3, -16, -10)
+let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
@@ -4745,106 +4735,106 @@ let myBox = box([0,0], -3, -16, -10)
 
     #[test]
     fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $xLine)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(%, end = [5, 5], tag = $xLine)
 "#;
         assert_err(
             some_program_string,
             "Cannot assign a tag to a reserved keyword: xLine",
-            [76, 82],
+            [86, 92],
         );
     }
 
     #[test]
     fn test_parse_empty_tag_brace() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_empty_tag_whitespace() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $ ,01)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
 
     #[test]
     fn test_parse_empty_tag_comma() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $,)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
             "Tag names must not start with a number. Tag starts with `01`",
-            [74, 76],
+            [72, 74],
         );
     }
     #[test]
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line(%, $var01)"#;
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $!var,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a bang", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_dollar() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $$,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a dollar", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_fn() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $fn,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
+        assert_err(some_program_string, "Tag names must not start with a keyword", [67, 69]);
     }
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $//
     ,01)
     "#;
         assert_err(
             some_program_string,
             "Tag names must not start with a lineComment",
-            [69, 71],
+            [67, 69],
         );
     }
 
     #[test]
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $sketching)
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 5], tag = $sketching)
     "#;
         assert_no_err(some_program_string);
     }
@@ -4852,21 +4842,21 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45, 119.09)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 67],
+            [52, 60],
         );
     }
     #[test]
     fn test_parse_array_missing_comma() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 119.09])"#;
         assert_err(
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between elements.",
-            [52, 65],
+            [53, 66],
         );
     }
     #[test]
@@ -4874,21 +4864,21 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 $struct])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [52, 53],
         );
     }
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [}])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [52, 53],
         );
     }
 
@@ -4966,67 +4956,6 @@ bar = 1
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between properties.",
             [54, 89],
-        );
-    }
-
-    #[test]
-    fn warn_object_expr() {
-        let some_program_string = "{ foo: bar }";
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
-        assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
-    }
-
-    #[test]
-    fn warn_fn_decl() {
-        let some_program_string = r#"fn foo = () => {
-    return 0
-}"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
-        // real life we might reformat after applying suggestions.
-        assert_eq!(
-            replaced,
-            r#"fn foo  ()  {
-    return 0
-}"#
-        );
-
-        let some_program_string = r#"myMap = map([0..5], (n) => {
-    return n * 2
-})"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"myMap = map([0..5], fn(n)  {
-    return n * 2
-})"#
-        );
-    }
-
-    #[test]
-    fn warn_const() {
-        let some_program_string = r#"const foo = 0
-let bar = 1
-var baz = 2
-"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 3);
-        let replaced = errs[2].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"foo = 0
-bar = 1
-baz = 2
-"#
         );
     }
 
@@ -5185,22 +5114,22 @@ mod snapshot_tests {
     snapshot_test!(
         a,
         r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
-    |> line([5, -15], %)
+    |> startProfileAt(at = [0, 0])
+    |> line(at = [0, 10])
+    |> tangentialArc(end = [-5, 5])
+    |> line(at = [5, -15])
     |> extrude(length=10)
 "#
     );
-    snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
+    snapshot_test!(b, "myVar = min(x=5 , y=-legLen(5, z=4))"); // Space before comma
 
-    snapshot_test!(c, "myVar = min(-legLen(5, 4), 5)");
-    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45, %)");
-    snapshot_test!(e, "let x = 1 * (3 - 4)");
+    snapshot_test!(c, "myVar = min(x=-legLen(a=5, b=4), y=5)");
+    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45)");
+    snapshot_test!(e, "x = 1 * (3 - 4)");
     snapshot_test!(f, r#"x = 1 // this is an inline comment"#);
     snapshot_test!(
         g,
-        r#"fn x = () => {
+        r#"fn x() {
         return sg
         return sg
       }"#
@@ -5208,32 +5137,32 @@ mod snapshot_tests {
     snapshot_test!(d2, r#"x = -leg2 + thickness"#);
     snapshot_test!(
         h,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = 1 - obj.a"#
     );
     snapshot_test!(
         i,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
      height = 1 - obj["a"]"#
     );
     snapshot_test!(
         j,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"] - 1"#
     );
     snapshot_test!(
         k,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [1 - obj["a"], 0]"#
     );
     snapshot_test!(
         l,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [obj["a"] - 1, 0]"#
     );
     snapshot_test!(
         m,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = {a = 1, b = 2 }
     height = [obj["a"] -1, 0]"#
     );
     snapshot_test!(n, "height = 1 - obj.a");
@@ -5242,7 +5171,7 @@ mod snapshot_tests {
     snapshot_test!(q, r#"height = [ obj["a"], 0 ]"#);
     snapshot_test!(
         r,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"]"#
     );
     snapshot_test!(s, r#"prop = yo["one"][two]"#);
@@ -5251,11 +5180,11 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
-    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfile(pos)"#);
     snapshot_test!(
         z,
         "sg = startSketchOn(XY)
-    |> startProfileAt(pos) |> line([0, -scale], %)"
+    |> startProfile(pos) |> line([0, -scale])"
     );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
@@ -5263,14 +5192,14 @@ mod snapshot_tests {
     snapshot_test!(
         ad,
         r#"
-    fn firstPrimeNumber = () => {
+    fn firstPrimeNumber() {
         return 2
     }
     firstPrimeNumber()"#
     );
     snapshot_test!(
         ae,
-        r#"fn thing = (param) => {
+        r#"fn thing(param) {
         return true
     }
     thing(false)"#
@@ -5278,7 +5207,7 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchOn(XY)
-        |> startProfileAt([0,0], %)
+        |> startProfile(at = [0,0])
         |> line(endAbsolute = [0, 1], tag = $myPath)
         |> line(endAbsolute = [1, 1])
         |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -5286,24 +5215,24 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ag,
-        "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %) |> line(endAbsolute = [1, 1]) |> close()"
+        "mySketch = startSketchOn(XY) |> startProfile(at = [0,0]) |> line(endAbsolute = [1, 1]) |> close()"
     );
-    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfileAt(p, %)");
-    snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
+    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfile(at = p)");
+    snapshot_test!(ai, r#"myBox = f(1) |> g(2)"#);
     snapshot_test!(
         aj,
-        r#"myBox = startSketchOn(XY) |> startProfileAt(p, %) |> line(end = [0, l])"#
+        r#"myBox = startSketchOn(XY) |> startProfile(at = p) |> line(end = [0, l])"#
     );
     snapshot_test!(ak, "line(endAbsolute = [0, 1])");
-    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %)");
-    snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
+    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfile(at = [0,0])");
+    snapshot_test!(aq, "log(number = 5, msg = \"hello\", id=aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
-    snapshot_test!(at, "line([0, l], %)");
+    snapshot_test!(at, "line([0, l])");
     snapshot_test!(au, include_str!("../../e2e/executor/inputs/cylinder.kcl"));
-    snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
+    snapshot_test!(av, "fn f(angle?) { return default(maybe=angle, otherwise=360) }");
     snapshot_test!(
         aw,
-        "let numbers = [
+        "numbers = [
             1,
             // A,
             // B,
@@ -5312,7 +5241,7 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ax,
-        "let numbers = [
+        "numbers = [
             1,
             2,
             // A,
@@ -5329,7 +5258,7 @@ mod snapshot_tests {
     );
     snapshot_test!(
         az,
-        "let props = {
+        "props = {
             a: 1,
             // b: 2,
             c: 3
@@ -5359,14 +5288,14 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
-    snapshot_test!(be, "let x = 3 == 3");
-    snapshot_test!(bf, "let x = 3 != 3");
+    snapshot_test!(be, "x = 3 == 3");
+    snapshot_test!(bf, "x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
-    snapshot_test!(bh, "obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(bh, "obj = {center = [10, 10], radius =5}");
     snapshot_test!(
         bi,
         r#"x = 3
-        obj = { x, y: 4}"#
+        obj = { x, y = 4}"#
     );
     snapshot_test!(bj, "true");
     snapshot_test!(bk, "truee");

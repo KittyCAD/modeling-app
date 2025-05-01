@@ -14,4 +14,9 @@ fn box(p, h, l, w) {
   return myBox
 }
 
-thing = box([0, 0], 3, 6, 10)
+thing = box(
+  p = [0, 0],
+  h = 3,
+  l = 6,
+  w = 10,
+)

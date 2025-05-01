@@ -8,8 +8,8 @@ fn cube(center) {
     |> extrude(length = 10)
 }
 
-part001 = cube([0, 0])
-part002 = startSketchOn('XY')
+part001 = cube(center = [0, 0])
+part002 = startSketchOn(XY)
   |> circle(center = [2, 2], radius = 2)
   |> extrude(length = 5)
 

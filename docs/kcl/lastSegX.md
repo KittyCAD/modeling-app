@@ -8,8 +8,8 @@ Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 
 
 
-```js
-lastSegX(sketch: Sketch): number
+```kcl
+lastSegX(sketch: [Sketch](/docs/kcl/types/std-types-Sketch)): [number](/docs/kcl/types/std-types-number)
 ```
 
 
@@ -17,16 +17,16 @@ lastSegX(sketch: Sketch): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | The sketch whose line segment is being queried | Yes |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | The sketch whose line segment is being queried | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl/types/number)
+[`number`](/docs/kcl/types/std-types-number)
 
 
 ### Examples
 
-```js
+```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> line(end = [5, 0])

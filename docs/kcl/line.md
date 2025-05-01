@@ -8,13 +8,13 @@ Extend the current sketch with a new straight line.
 
 
 
-```js
+```kcl
 line(
-  sketch: Sketch,
-  endAbsolute?: [number],
-  end?: [number],
-  tag?: TagDeclarator,
-): Sketch
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  endAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  end?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -22,19 +22,19 @@ line(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Which absolute point should this line go to? Incompatible with `end`. | No |
-| `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
-| [`tag`](/docs/kcl/types/tag) | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this line | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `endAbsolute` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | Which absolute point should this line go to? Incompatible with `end`. | No |
+| `end` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`. | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this line | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples
 
-```js
+```kcl
 triangle = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   // The END argument means it ends at exactly [10, 0].

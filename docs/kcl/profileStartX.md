@@ -8,8 +8,8 @@ Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 
 
 
-```js
-profileStartX(profile: Sketch): number
+```kcl
+profileStartX(profile: [Sketch](/docs/kcl/types/std-types-Sketch)): [number](/docs/kcl/types/std-types-number)
 ```
 
 
@@ -17,16 +17,16 @@ profileStartX(profile: Sketch): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `profile` | [`Sketch`](/docs/kcl/types/Sketch) | Profile whose start is being used | Yes |
+| `profile` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Profile whose start is being used | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl/types/number)
+[`number`](/docs/kcl/types/std-types-number)
 
 
 ### Examples
 
-```js
+```kcl
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [5, 2])
   |> angledLine(angle = -26.6, length = 50)

@@ -33,6 +33,7 @@ use kcmc::{
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
@@ -42,7 +43,7 @@ use uuid::Uuid;
 use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
     SourceRange,
 };
 
@@ -50,6 +51,40 @@ lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
 
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
+
+    pub static ref DEFAULT_PLANE_INFO: IndexMap<PlaneName, PlaneInfo> = IndexMap::from([
+            (PlaneName::Xy,PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegXy,
+           PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+            }),
+            (PlaneName::Xz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegXz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::Yz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegYz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            ]);
 }
 
 #[derive(Default, Debug)]
@@ -608,31 +643,23 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn make_default_plane(
         &self,
         plane_id: uuid::Uuid,
-        x_axis: Point3d,
-        y_axis: Point3d,
+        info: &PlaneInfo,
         color: Option<Color>,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            units: UnitLen::Mm,
-        }
-        .into();
 
         self.batch_modeling_cmd(
             plane_id,
             source_range,
             &ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
-                origin: default_origin,
+                origin: info.origin.into(),
                 size: LengthUnit(default_size),
-                x_axis: x_axis.into(),
-                y_axis: y_axis.into(),
+                x_axis: info.x_axis.into(),
+                y_axis: info.y_axis.into(),
                 hide: Some(true),
             }),
         )
@@ -656,22 +683,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: Vec<(PlaneName, Uuid, Point3d, Point3d, Option<Color>)> = vec![
+        let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -682,18 +697,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -704,18 +707,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -723,64 +714,23 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     a: 0.4,
                 }),
             ),
-            (
-                PlaneName::NegXy,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: -1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
-            (
-                PlaneName::NegYz,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: 0.0,
-                    y: -1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
-            (
-                PlaneName::NegXz,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: -1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
+            (PlaneName::NegXy, id_generator.next_uuid(), None),
+            (PlaneName::NegYz, id_generator.next_uuid(), None),
+            (PlaneName::NegXz, id_generator.next_uuid(), None),
         ];
 
         let mut planes = HashMap::new();
-        for (name, plane_id, x_axis, y_axis, color) in plane_settings {
+        for (name, plane_id, color) in plane_settings {
+            let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
+                // We should never get here.
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to get default plane info for: {:?}", name),
+                    source_ranges: vec![source_range],
+                })
+            })?;
             planes.insert(
                 name,
-                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range, id_generator)
+                self.make_default_plane(plane_id, info, color, source_range, id_generator)
                     .await?,
             );
         }
@@ -907,21 +857,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn close(&self);
 }
 
-#[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Display, FromStr)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneName {
     /// The XY plane.
+    #[display("XY")]
     Xy,
     /// The opposite side of the XY plane.
+    #[display("-XY")]
     NegXy,
     /// The XZ plane.
+    #[display("XZ")]
     Xz,
     /// The opposite side of the XZ plane.
+    #[display("-XZ")]
     NegXz,
     /// The YZ plane.
+    #[display("YZ")]
     Yz,
     /// The opposite side of the YZ plane.
+    #[display("-YZ")]
     NegYz,
 }
 

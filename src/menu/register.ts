@@ -92,12 +92,17 @@ export function modelingMenuCallbackMostActions(
       }).catch(reportRejection)
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       navigate(filePath + PATHS.SETTINGS_USER + '#defaultUnit')
-    } else if (data.menuLabel === 'File.Load external model') {
+    } else if (data.menuLabel === 'File.Add file to project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
         data: {
-          groupId: 'code',
-          name: 'load-external-model',
+          name: 'add-kcl-file-to-project',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
         },
       })
     } else if (data.menuLabel === 'File.Export current part') {
@@ -257,9 +262,17 @@ export function modelingMenuCallbackMostActions(
         },
       })
     } else if (data.menuLabel === 'Design.Create with Zoo Text-To-CAD') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
       commandBarActor.send({
         type: 'Find and select command',
-        data: { name: 'Text-to-CAD', groupId: 'modeling' },
+        data: {
+          name: 'Text-to-CAD',
+          groupId: 'application',
+          argDefaultValues: {
+            method: 'existingProject',
+            projectName: currentProject?.name,
+          },
+        },
       })
     } else if (data.menuLabel === 'Design.Modify with Zoo Text-To-CAD') {
       commandBarActor.send({

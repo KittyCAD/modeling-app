@@ -13,14 +13,14 @@ beforeAll(async () => {
 
 describe('test executor', () => {
   it('test assigning two variables, the second summing with the first', async () => {
-    const code = `const myVar = 5
-const newVar = myVar + 1`
+    const code = `myVar = 5
+newVar = myVar + 1`
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(5)
     expect(mem['newVar']?.value).toBe(6)
   })
   it('test assigning a var with a string', async () => {
-    const code = `const myVar = "a str"`
+    const code = `myVar = "a str"`
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe('a str')
   })
@@ -32,21 +32,21 @@ const newVar = myVar + 1`
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe('a str another str')
   })
-  it('fn funcN = () => {} execute', async () => {
+  it('fn funcN() {} execute', async () => {
     const mem = await exe(
       [
-        'fn funcN = (a, b) => {',
+        'fn funcN(a, b) {',
         '  return a + b',
         '}',
-        'const theVar = 60',
-        'const magicNum = funcN(9, theVar)',
+        'theVar = 60',
+        'magicNum = funcN(9, theVar)',
       ].join('\n')
     )
     expect(mem['theVar']?.value).toBe(60)
     expect(mem['magicNum']?.value).toBe(69)
   })
   it('sketch declaration', async () => {
-    let code = `const mySketch = startSketchOn(XY)
+    let code = `mySketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(endAbsolute = [0,2], tag = $myPath)
   |> line(endAbsolute = [2,3])
@@ -73,8 +73,8 @@ const newVar = myVar + 1`
           id: expect.any(String),
         },
         tag: {
-          end: 109,
-          start: 102,
+          end: 103,
+          start: 96,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'myPath',
@@ -101,8 +101,8 @@ const newVar = myVar + 1`
           id: expect.any(String),
         },
         tag: {
-          end: 190,
-          start: 180,
+          end: 184,
+          start: 174,
           commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'rightPath',
@@ -113,8 +113,8 @@ const newVar = myVar + 1`
 
   it('pipe binary expression into call expression', async () => {
     const code = [
-      'fn myFn = (a) => { return a + 1 }',
-      'const myVar = 5 + 1 |> myFn(%)',
+      'fn myFn(a) { return a + 1 }',
+      'myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(7)
@@ -149,7 +149,7 @@ const newVar = myVar + 1`
   it('execute pipe sketch into call expression', async () => {
     // Enable rotations #152
     const code = [
-      'const mySk1 = startSketchOn(XY)',
+      'mySk1 = startSketchOn(XY)',
       '  |> startProfile(at = [0,0])',
       '  |> line(endAbsolute = [1,1])',
       '  |> line(endAbsolute = [0, 1], tag = $myPath)',
@@ -200,8 +200,8 @@ const newVar = myVar + 1`
               id: expect.any(String),
             },
             tag: {
-              end: 138,
-              start: 131,
+              end: 132,
+              start: 125,
               commentStart: expect.any(Number),
               type: 'TagDeclarator',
               value: 'myPath',
@@ -229,9 +229,7 @@ const newVar = myVar + 1`
     })
   })
   it('execute array expression', async () => {
-    const code = ['const three = 3', "const yo = [1, '2', three, 4 + 5]"].join(
-      '\n'
-    )
+    const code = ['three = 3', "yo = [1, '2', three, 4 + 5]"].join('\n')
     const mem = await exe(code)
     // TODO path to node is probably wrong here, zero indexes are not correct
     expect(mem['three']).toEqual({
@@ -263,8 +261,8 @@ const newVar = myVar + 1`
   })
   it('execute object expression', async () => {
     const code = [
-      'const three = 3',
-      "const yo = {aStr: 'str', anum: 2, identifier: three, binExp: 4 + 5}",
+      'three = 3',
+      "yo = {aStr = 'str', anum = 2, identifier = three, binExp = 4 + 5}",
     ].join('\n')
     const mem = await exe(code)
     expect(mem['yo']).toEqual({
@@ -293,9 +291,7 @@ const newVar = myVar + 1`
     })
   })
   it('execute memberExpression', async () => {
-    const code = ["const yo = {a: {b: '123'}}", 'const myVar = yo.a.b'].join(
-      '\n'
-    )
+    const code = ["yo = {a = {b = '123'}}", 'myVar = yo.a.b'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']).toEqual({
       type: 'String',
@@ -306,47 +302,47 @@ const newVar = myVar + 1`
 
 describe('testing math operators', () => {
   it('can sum', async () => {
-    const code = ['const myVar = 1 + 2'].join('\n')
+    const code = ['myVar = 1 + 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(3)
   })
   it('can subtract', async () => {
-    const code = ['const myVar = 1 - 2'].join('\n')
+    const code = ['myVar = 1 - 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(-1)
   })
   it('can multiply', async () => {
-    const code = ['const myVar = 1 * 2'].join('\n')
+    const code = ['myVar = 1 * 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(2)
   })
   it('can divide', async () => {
-    const code = ['const myVar = 1 / 2'].join('\n')
+    const code = ['myVar = 1 / 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(0.5)
   })
   it('can modulus', async () => {
-    const code = ['const myVar = 5 % 2'].join('\n')
+    const code = ['myVar = 5 % 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(1)
   })
   it('can do multiple operations', async () => {
-    const code = ['const myVar = 1 + 2 * 3'].join('\n')
+    const code = ['myVar = 1 + 2 * 3'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(7)
   })
   it('big example with parans', async () => {
-    const code = ['const myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
+    const code = ['myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(7.4)
   })
   it('with identifier', async () => {
-    const code = ['const yo = 6', 'const myVar = yo / 2'].join('\n')
+    const code = ['yo = 6', 'myVar = yo / 2'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(3)
   })
   it('with lots of testing', async () => {
-    const code = ['const myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
+    const code = ['myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
     const mem = await exe(code)
     expect(mem['myVar']?.value).toBe(12.5)
   })
@@ -379,7 +375,7 @@ describe('testing math operators', () => {
     expect(mem['myVar']?.value).toBe(mem2['myVar']?.value)
   })
   it('with unaryExpression in ArrayExpression', async () => {
-    const code = 'const myVar = [1,-legLen(hypotenuse = 5, leg = 4)]'
+    const code = 'myVar = [1,-legLen(hypotenuse = 5, leg = 4)]'
     const mem = await exe(code)
     expect(mem['myVar']?.value).toEqual([
       {
@@ -408,8 +404,8 @@ describe('testing math operators', () => {
   })
   it('test that % substitution feeds down CallExp->ArrExp->UnaryExp->CallExp', async () => {
     const code = [
-      `const myVar = 3`,
-      `const part001 = startSketchOn(XY)`,
+      `myVar = 3`,
+      `part001 = startSketchOn(XY)`,
       `  |> startProfile(at = [0, 0])`,
       `  |> line(end = [3, 4], tag = $seg01)`,
       `  |> line(end = [`,
@@ -442,7 +438,7 @@ describe('testing math operators', () => {
     expect(mem['myVar']?.value).toBe(5)
   })
   it('can do power of math', async () => {
-    const code = 'const myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
+    const code = 'myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
     const mem = await exe(code)
     expect(mem['myNeg2']?.value).toBe(-2)
   })
@@ -450,8 +446,8 @@ describe('testing math operators', () => {
 
 describe('Testing Errors', () => {
   it('should throw an error when a variable is not defined', async () => {
-    const code = `const myVar = 5
-const theExtrude = startSketchOn(XY)
+    const code = `myVar = 5
+theExtrude = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [-2.4, 5])
   |> line(end = myVarZ)
@@ -462,7 +458,7 @@ const theExtrude = startSketchOn(XY)
       new KCLError(
         'undefined_value',
         '`myVarZ` is not defined',
-        topLevelRange(127, 133),
+        topLevelRange(115, 121),
         expect.any(Object),
         expect.any(Object),
         expect.any(Object),

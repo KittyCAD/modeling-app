@@ -1,6 +1,6 @@
-offsetPlane001 = offsetPlane("XY", offset = 20)
-offsetPlane002 = offsetPlane("XZ", offset = -50)
-offsetPlane003 = offsetPlane("YZ", offset = 10)
+offsetPlane001 = offsetPlane(XY, offset = 20)
+offsetPlane002 = offsetPlane(XZ, offset = -50)
+offsetPlane003 = offsetPlane(YZ, offset = 10)
 
 sketch002 = startSketchOn(offsetPlane001)
   |> startProfile(at = [0, 0])
