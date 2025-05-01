@@ -24,6 +24,8 @@ import type {
   Expr,
   ExpressionStatement,
   Identifier,
+  Literal,
+  Name,
   ObjectExpression,
   ObjectProperty,
   PathToNode,
@@ -51,6 +53,7 @@ import { getAngle, isArray } from '@src/lib/utils'
 
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -396,7 +399,9 @@ export function isNodeSafeToReplacePath(
     'Literal',
     'UnaryExpression',
   ]
-  const _node1 = getNodeFromPath(ast, path, acceptedNodeTypes)
+  const _node1 = getNodeFromPath<
+    BinaryExpression | Name | CallExpressionKw | Literal | UnaryExpression
+  >(ast, path, acceptedNodeTypes)
   if (err(_node1)) return _node1
   const { node: value, deepPath: outPath } = _node1
 
@@ -430,6 +435,10 @@ export function isNodeSafeToReplacePath(
   }
 
   const hasPipeSub = isTypeInValue(finVal as Expr, 'PipeSubstitution')
+  // TODO:
+  // In addition to checking explicitly if there's a %,
+  // also check if this function requires an unlabeled param, but the call doesn't set one,
+  // so it defaults to %.
   const isIdentifierCallee = path[path.length - 1][0] !== 'callee'
   return {
     isSafe:
@@ -485,10 +494,13 @@ function isTypeInCallExp(
   if (node.callee.type === syntaxType) return true
   const matchUnlabeled =
     node.unlabeled !== null && isTypeInValue(node.unlabeled, syntaxType)
-  const matchLabeled = node.arguments.some((arg) =>
-    isTypeInValue(arg.arg, syntaxType)
-  )
-  return matchLabeled || matchUnlabeled
+  if (matchUnlabeled) {
+    return true
+  }
+  const matchLabeled =
+    node.arguments &&
+    node.arguments.some((arg) => isTypeInValue(arg.arg, syntaxType))
+  return matchLabeled
 }
 
 function isTypeInArrayExp(
@@ -682,9 +694,15 @@ export function findUsesOfTagInPipe(
   }
   const node = nodeMeta.node
   if (node.type !== 'CallExpressionKw') return []
-  const tagParam = findKwArg(ARG_TAG, node)
-  if (!(tagParam?.type === 'TagDeclarator' || tagParam?.type === 'Name'))
+  // TODO: Handle all tags declared in a function, e.g.
+  // a function may declare extrude(length = 1, tag = $myShape, tagStart = $myShapeBase)
+  const args: Expr[] = node.arguments?.map((labeledArg) => labeledArg.arg) ?? []
+  const tagParam = args.find(
+    (arg) => arg?.type === 'TagDeclarator' || arg?.type === 'Name'
+  )
+  if (tagParam === undefined) {
     return []
+  }
   const tag =
     tagParam?.type === 'TagDeclarator'
       ? String(tagParam.value)
@@ -708,8 +726,16 @@ export function findUsesOfTagInPipe(
         !stdlibFunctionsThatTakeTagInputs.includes(node.callee.name.name)
       )
         return
-      const tagArg = findKwArg(ARG_TAG, node)
-      if (tagArg !== undefined) {
+      // Get all the args
+      const args: Expr[] =
+        node.arguments?.map((labeledArg) => labeledArg.arg) ?? []
+      if (node.unlabeled !== null) {
+        args.push(node.unlabeled)
+      }
+      for (const tagArg of args) {
+        if (!('type' in tagArg)) {
+          continue
+        }
         if (!(tagArg.type === 'TagDeclarator' || tagArg.type === 'Name')) return
         const tagArgValue =
           tagArg.type === 'TagDeclarator'

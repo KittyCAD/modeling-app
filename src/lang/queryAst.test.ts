@@ -4,7 +4,6 @@ import {
   createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLiteral,
   createPipeSubstitution,
 } from '@src/lang/create'
 import {
@@ -16,7 +15,6 @@ import {
   hasExtrudeSketch,
   hasSketchPipeBeenExtruded,
   isNodeSafeToReplace,
-  isTypeInValue,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -53,6 +51,7 @@ part001 = startSketchOn(XY)
 variableBelowShouldNotBeIncluded = 3
 `
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
 
@@ -78,7 +77,7 @@ variableBelowShouldNotBeIncluded = 3
 describe('testing argIsNotIdentifier', () => {
   const code = `part001 = startSketchOn(XY)
 |> startProfile(at = [-1.2, 4.83])
-|> line(end = [2.8, 0])
+|> line(%, end = [2.8, 0])
 |> angledLine(angle = 100 + 100, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
 |> angledLine(angle = def('yo'), length = 3.09)
@@ -89,6 +88,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('100 + 100') + 2
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -105,6 +105,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe Identifier', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('abc')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -117,6 +118,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe CallExpressionKw', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('def')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -133,6 +135,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find an UNsafe CallExpressionKw, as it has a PipeSubstitution', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('ghi')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const range = topLevelRange(rangeStart, rangeStart)
     const result = isNodeSafeToReplace(ast, range)
     if (err(result)) throw result
@@ -142,7 +145,13 @@ yo2 = hmm([identifierGuy + 5])`
   })
   it('find an UNsafe Identifier, as it is a callee', () => {
     const ast = assertParse(code)
-    const rangeStart = code.indexOf('ine(end = [2.8,')
+    // TODO:
+    // This should really work even without the % being explicitly set here,
+    // because the unlabeled arg will default to %. However, the `isNodeSafeToReplacePath`
+    // function doesn't yet check for this (because it cannot differentiate between
+    // a function that relies on this default unlabeled arg, and a function with no unlabeled arg)
+    const rangeStart = code.indexOf('ine(%, end = [2.8,')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -151,12 +160,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe(
-      'line(end = [2.8, 0])'
+      'line(%, end = [2.8, 0])'
     )
   })
   it("find a safe BinaryExpression that's assigned to a variable", () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('5 + 6') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -173,6 +183,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('jkl') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -189,10 +200,10 @@ yo2 = hmm([identifierGuy + 5])`
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
-  it('find a safe BinaryExpression within a CallExpression', () => {
+  it('find a safe BinaryExpression within a CallExpressionKw', () => {
     const ast = assertParse(code)
-
     const rangeStart = code.indexOf('identifierGuy') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -426,6 +437,7 @@ describe('Testing findUsesOfTagInPipe', () => {
     const lineOfInterest = `198.85], tag = $seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    expect(characterIndex).toBeGreaterThanOrEqual(0)
     const pathToNode = getNodePathFromSourceRange(
       ast,
       topLevelRange(characterIndex, characterIndex)
@@ -666,26 +678,26 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)`
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])`
     const ast = assertParse(openSketch)
     expect(ast.start).toEqual(0)
-    expect(ast.end).toEqual(243)
+    expect(ast.end).toEqual(231)
   })
   it('should find the location to add new lineTo', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)`
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])`
     const ast = assertParse(openSketch)
 
     const sketchSnippet = `startProfile(at = [0.02, 0.22])`
@@ -723,12 +735,12 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const expectedCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0.02, 0.22])
   |> xLine(length = 0.39)
-  |> line([0.02, -0.17], %)
+  |> line([0.02, -0.17])
   |> yLine(length = -0.15)
-  |> line([-0.21, -0.02], %)
+  |> line([-0.21, -0.02])
   |> xLine(length = -0.15)
-  |> line([-0.02, 0.21], %)
-  |> line([-0.08, 0.05], %)
+  |> line([-0.02, 0.21])
+  |> line([-0.08, 0.05])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 `
     expect(recasted).toEqual(expectedCode)
@@ -737,13 +749,13 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
 |> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])
+|> lineTo([profileStartX(%), profileStartY(%)])
 `
     const ast = assertParse(openSketch)
     const sketchSnippet = `startProfile(at = [0.02, 0.22])`
@@ -763,13 +775,13 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     const expectedCode = `sketch001 = startSketchOn(XZ)
   |> startProfile(at = [0.02, 0.22])
   |> xLine(length = 0.39)
-  |> line([0.02, -0.17], %)
+  |> line([0.02, -0.17])
   |> yLine(length = -0.15)
-  |> line([-0.21, -0.02], %)
+  |> line([-0.21, -0.02])
   |> xLine(length = -0.15)
-  |> line([-0.02, 0.21], %)
-  |> line([-0.08, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line([-0.02, 0.21])
+  |> line([-0.08, 0.05])
+  |> lineTo([profileStartX(%), profileStartY(%)])
   |> close()
 `
     expect(recasted).toEqual(expectedCode)
