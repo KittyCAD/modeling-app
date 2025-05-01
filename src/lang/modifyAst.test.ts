@@ -303,7 +303,7 @@ describe('Testing giveSketchFnCallTag', () => {
 })
 
 describe('Testing moveValueIntoNewVariable', () => {
-  const fn = (fnName: string) => `fn ${fnName} (x) {
+  const fn = (fnName: string) => `fn ${fnName} (@x) {
   return x
 }
 `
