@@ -38,19 +38,16 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { Logo } from '@src/components/Logo'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import {
-  isOnboardingSubPath,
-  ONBOARDING_SUBPATHS,
-} from '@src/lib/onboardingPaths'
+import { isOnboardingPath, onboardingPaths } from '@src/lib/onboardingPaths'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 // Get the 1-indexed step number of the current onboarding step
 function useStepNumber(
-  slug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
+  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
 ) {
-  return slug ? Object.values(ONBOARDING_SUBPATHS).indexOf(slug) + 1 : -1
+  return slug ? Object.values(onboardingPaths).indexOf(slug) + 1 : -1
 }
 
 export function useDemoCode() {
@@ -91,7 +88,7 @@ export function useNextClick(newStatus: OnboardingStatus) {
   const navigate = useNavigate()
 
   return useCallback(() => {
-    if (!isOnboardingSubPath(newStatus)) {
+    if (!isOnboardingPath(newStatus)) {
       return new Error(
         `Failed to navigate to invalid onboarding status ${newStatus}`
       )
@@ -144,12 +141,12 @@ export function OnboardingButtons({
   onNextOverride,
   ...props
 }: {
-  currentSlug?: (typeof ONBOARDING_SUBPATHS)[keyof typeof ONBOARDING_SUBPATHS]
+  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
   className?: string
   dismissClassName?: string
   onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const onboardingPathsArray = Object.values(ONBOARDING_SUBPATHS)
+  const onboardingPathsArray = Object.values(onboardingPaths)
   const dismiss = useDismiss()
   const stepNumber = useStepNumber(currentSlug)
   const previousStep =
@@ -160,7 +157,7 @@ export function OnboardingButtons({
       : onboardingPathsArray[stepNumber]
 
   const previousOnboardingStatus: OnboardingStatus =
-    previousStep ?? ONBOARDING_SUBPATHS.INDEX
+    previousStep ?? onboardingPaths.INDEX
   const nextOnboardingStatus: OnboardingStatus = nextStep ?? 'completed'
 
   const goToPrevious = useNextClick(previousOnboardingStatus)

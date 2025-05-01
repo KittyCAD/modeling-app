@@ -1,5 +1,5 @@
 import { isDesktop } from '@src/lib/isDesktop'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/lib/onboardingPaths'
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
 
 export default function ProjectMenu() {
@@ -55,7 +55,7 @@ export default function ProjectMenu() {
             </>
           )}
         </section>
-        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.PROJECT_MENU} />
+        <OnboardingButtons currentSlug={onboardingPaths.PROJECT_MENU} />
       </div>
     </div>
   )

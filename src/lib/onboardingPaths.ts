@@ -1,22 +1,43 @@
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
-export const ONBOARDING_SUBPATHS: Record<string, OnboardingStatus> = {
-  INDEX: '/',
-  CAMERA: '/camera',
-  STREAMING: '/streaming',
-  EDITOR: '/editor',
-  PARAMETRIC_MODELING: '/parametric-modeling',
-  INTERACTIVE_NUMBERS: '/interactive-numbers',
-  COMMAND_K: '/command-k',
-  USER_MENU: '/user-menu',
-  PROJECT_MENU: '/project-menu',
-  EXPORT: '/export',
-  SKETCHING: '/sketching',
-  FUTURE_WORK: '/future-work',
+// companion to "desktop routes" in `OnboardingRoutes` enum in Rust
+enum DesktopOnboardingStatus {
+  DesktopWelcome = '/desktop',
+  DesktopScene = '/desktop/scene',
+  DesktopToolbar = '/desktop/toolbar',
+  DesktopTextToCadWelcome = '/desktop/text-to-cad',
+  DesktopTextToCadPrompt = '/desktop/text-to-cad-prompt',
+  DesktopFeatureTreePane = '/desktop/feature-tree-pane',
+  DesktopCodePane = '/desktop/code-pane',
+  DesktopProjectFilesPane = '/desktop/project-pane',
+  DesktopOtherPanes = '/desktop/other-panes',
+  DesktopPromptToEditWelcome = '/desktop/prompt-to-edit',
+  DesktopPromptToEditPrompt = '/desktop/prompt-to-edit-prompt',
+  DesktopPromptToEditResult = '/desktop/prompt-to-edit-result',
+  DesktopImports = '/desktop/imports',
+  DesktopExports = '/desktop/exports',
+  DesktopConclusion = '/desktop/conclusion',
+}
+
+// companion to "web routes" in `OnboardingRoutes` enum in Rust
+enum WebOnboardingStatus {
+  BrowserWelcome = '/browser',
+  BrowserScene = '/browser/scene',
+  BrowserToolbar = '/browser/toolbar',
+  BrowserTextToCadWelcome = '/browser/text-to-cad',
+  BrowserTextToCadPrompt = '/browser/text-to-cad-prompt',
+  BrowserFeatureTreePane = '/browser/feature-tree-pane',
+  BrowserPromptToEditWelcome = '/browser/prompt-to-edit',
+  BrowserPromptToEditPrompt = '/browser/prompt-to-edit-prompt',
+  BrowserPromptToEditResult = '/browser/prompt-to-edit-result',
+  BrowserConclusion = '/browser/conclusion',
+}
+
+export const onboardingPaths = {
+  desktop: DesktopOnboardingStatus,
+  web: WebOnboardingStatus,
 } as const
 
-export const isOnboardingSubPath = (
-  input: string
-): input is OnboardingStatus => {
-  return Object.values(ONBOARDING_SUBPATHS).includes(input as OnboardingStatus)
+export const isOnboardingPath = (input: unknown): input is OnboardingStatus => {
+  return Object.values(onboardingPaths).includes(input as OnboardingStatus)
 }

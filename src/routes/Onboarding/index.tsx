@@ -15,7 +15,7 @@ import Sketching from '@src/routes/Onboarding/Sketching'
 import Streaming from '@src/routes/Onboarding/Streaming'
 import UserMenu from '@src/routes/Onboarding/UserMenu'
 import { useDismiss } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/lib/onboardingPaths'
 
 export const onboardingRoutes = [
   {
@@ -23,48 +23,48 @@ export const onboardingRoutes = [
     element: <Introduction />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.CAMERA),
+    path: makeUrlPathRelative(onboardingPaths.CAMERA),
     element: <Camera />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.STREAMING),
+    path: makeUrlPathRelative(onboardingPaths.STREAMING),
     element: <Streaming />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.EDITOR),
+    path: makeUrlPathRelative(onboardingPaths.EDITOR),
     element: <CodeEditor />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.PARAMETRIC_MODELING),
+    path: makeUrlPathRelative(onboardingPaths.PARAMETRIC_MODELING),
     element: <ParametricModeling />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.INTERACTIVE_NUMBERS),
+    path: makeUrlPathRelative(onboardingPaths.INTERACTIVE_NUMBERS),
     element: <InteractiveNumbers />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.COMMAND_K),
+    path: makeUrlPathRelative(onboardingPaths.COMMAND_K),
     element: <CmdK />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.USER_MENU),
+    path: makeUrlPathRelative(onboardingPaths.USER_MENU),
     element: <UserMenu />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.PROJECT_MENU),
+    path: makeUrlPathRelative(onboardingPaths.PROJECT_MENU),
     element: <ProjectMenu />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.EXPORT),
+    path: makeUrlPathRelative(onboardingPaths.EXPORT),
     element: <Export />,
   },
   // Export / conversion API
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.SKETCHING),
+    path: makeUrlPathRelative(onboardingPaths.SKETCHING),
     element: <Sketching />,
   },
   {
-    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.FUTURE_WORK),
+    path: makeUrlPathRelative(onboardingPaths.FUTURE_WORK),
     element: <FutureWork />,
   },
 ]
