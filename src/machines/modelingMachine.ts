@@ -3314,10 +3314,7 @@ export const modelingMachine = setup({
             'Artifact graph emptied': 'hidePlanes',
           },
 
-          entry: [
-            'show default planes',
-            'reset camera position',
-          ],
+          entry: ['show default planes', 'reset camera position'],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',
         },
