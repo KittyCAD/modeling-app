@@ -1016,7 +1016,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
@@ -4012,7 +4012,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),

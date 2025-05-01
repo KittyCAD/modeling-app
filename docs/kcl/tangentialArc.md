@@ -10,13 +10,13 @@ When using radius and angle, draw a curved line segment along part of an imagina
 
 ```kcl
 tangentialArc(
-  sketch: [Sketch](/docs/kcl/types/Sketch),
-  endAbsolute?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  end?: [[[number](/docs/kcl/types/number)]](/docs/kcl/types/[number](/docs/kcl/types/number)),
-  radius?: [number](/docs/kcl/types/number),
-  angle?: [number](/docs/kcl/types/number),
-  tag?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [Sketch](/docs/kcl/types/Sketch)
+  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
+  endAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  end?: [Point2d](/docs/kcl/types/std-types-Point2d),
+  radius?: [number](/docs/kcl/types/std-types-number),
+  angle?: [number](/docs/kcl/types/std-types-number),
+  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [Sketch](/docs/kcl/types/std-types-Sketch)
 ```
 
 
@@ -24,16 +24,16 @@ tangentialArc(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketch` | [`Sketch`](/docs/kcl/types/Sketch) | Which sketch should this path be added to? | Yes |
-| `endAbsolute` | [`[number]`](/docs/kcl/types/number) | Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`. | No |
-| `end` | [`[number]`](/docs/kcl/types/number) | How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`. | No |
-| `radius` | [`number`](/docs/kcl/types/number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`. | No |
-| `angle` | [`number`](/docs/kcl/types/number) | Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`. | No |
-| `tag` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | Create a new tag which refers to this arc | No |
+| `sketch` | [`Sketch`](/docs/kcl/types/std-types-Sketch) | Which sketch should this path be added to? | Yes |
+| `endAbsolute` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | Which absolute point should this arc go to? Incompatible with `end`, `radius`, and `offset`. | No |
+| `end` | [`Point2d`](/docs/kcl/types/std-types-Point2d) | How far away (along the X and Y axes) should this arc go? Incompatible with `endAbsolute`, `radius`, and `offset`. | No |
+| `radius` | [`number`](/docs/kcl/types/std-types-number) | Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`. | No |
+| `angle` | [`number`](/docs/kcl/types/std-types-number) | Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`. | No |
+| [`tag`](/docs/kcl/types/std-types-tag) | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | Create a new tag which refers to this arc | No |
 
 ### Returns
 
-[`Sketch`](/docs/kcl/types/Sketch)
+[`Sketch`](/docs/kcl/types/std-types-Sketch)
 
 
 ### Examples

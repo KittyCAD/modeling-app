@@ -12,13 +12,13 @@ You can provide more than one sketch to sweep, and they will all be swept along 
 
 ```kcl
 sweep(
-  sketches: [[[Sketch](/docs/kcl/types/Sketch)]](/docs/kcl/types/[Sketch](/docs/kcl/types/Sketch)),
-  path: Sweep[Path](/docs/kcl/types/Path),
-  sectional?: [bool](/docs/kcl/types/bool),
-  tolerance?: [number](/docs/kcl/types/number),
-  tagStart?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-  tagEnd?: [TagDeclarator](/docs/kcl/types#tag-declaration),
-): [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid))
+  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
+  path: [Sketch](/docs/kcl/types/std-types-Sketch) | [Helix](/docs/kcl/types/std-types-Helix),
+  sectional?: [bool](/docs/kcl/types/std-types-bool),
+  tolerance?: [number](/docs/kcl/types/std-types-number),
+  tagStart?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+  tagEnd?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
+): [[Solid]](/docs/kcl/types/std-types-Solid)
 ```
 
 
@@ -26,16 +26,16 @@ sweep(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | The sketch or set of sketches that should be swept in space | Yes |
-| `path` | [`SweepPath`](/docs/kcl/types/SweepPath) | The path to sweep the sketch along | Yes |
-| `sectional` | [`bool`](/docs/kcl/types/bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
-| `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for this operation | No |
-| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the sweep, i.e. the original sketch | No |
-| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the sweep | No |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/std-types-Sketch) | The sketch or set of sketches that should be swept in space | Yes |
+| `path` | [`Sketch`](/docs/kcl/types/std-types-Sketch) or [`Helix`](/docs/kcl/types/std-types-Helix) | The path to sweep the sketch along | Yes |
+| `sectional` | [`bool`](/docs/kcl/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
+| `tolerance` | [`number`](/docs/kcl/types/std-types-number) | Tolerance for this operation | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | A named tag for the face at the start of the sweep, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#TagDeclarator) | A named tag for the face at the end of the sweep | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/std-types-Solid)
 
 
 ### Examples

@@ -10,10 +10,10 @@ Performs a boolean subtraction operation, removing the volume of one or more too
 
 ```kcl
 subtract(
-  solids: [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)),
-  tools: [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid)),
-  tolerance?: [number](/docs/kcl/types/number),
-): [[[Solid](/docs/kcl/types/Solid)]](/docs/kcl/types/[Solid](/docs/kcl/types/Solid))
+  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
+  tools: [[Solid]](/docs/kcl/types/std-types-Solid),
+  tolerance?: [number](/docs/kcl/types/std-types-number),
+): [[Solid]](/docs/kcl/types/std-types-Solid)
 ```
 
 
@@ -21,13 +21,13 @@ subtract(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solids to use as the base to subtract from. | Yes |
-| `tools` | [`[Solid]`](/docs/kcl/types/Solid) | The solids to subtract. | Yes |
-| `tolerance` | [`number`](/docs/kcl/types/number) | The tolerance to use for the subtraction operation. | No |
+| `solids` | [`[Solid]`](/docs/kcl/types/std-types-Solid) | The solids to use as the base to subtract from. | Yes |
+| `tools` | [`[Solid]`](/docs/kcl/types/std-types-Solid) | The solids to subtract. | Yes |
+| `tolerance` | [`number`](/docs/kcl/types/std-types-number) | The tolerance to use for the subtraction operation. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/std-types-Solid)
 
 
 ### Examples
