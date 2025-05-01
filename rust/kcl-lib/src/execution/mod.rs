@@ -1298,16 +1298,16 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"fn def(x) {
+        let ast = r#"fn def(@x) {
   return x
 }
-fn ghi(x) {
+fn ghi(@x) {
   return x
 }
-fn jkl(x) {
+fn jkl(@x) {
   return x
 }
-fn hmm(x) {
+fn hmm(@x) {
   return x
 }
 
@@ -1483,7 +1483,7 @@ firstExtrude = startSketchOn(XY)
   return myBox
 }
 
-fnBox = box(3, 6, 10)"#;
+fnBox = box(h = 3, l = 6, w = 10)"#;
 
         parse_execute(ast).await.unwrap();
     }
