@@ -7,6 +7,7 @@ import type {
 } from '@kittycad/codemirror-lsp-client'
 import {
   lspCodeActionEvent,
+  lspColorUpdateEvent,
   lspFormatCodeEvent,
   lspPlugin,
   lspRenameEvent,
@@ -87,6 +88,8 @@ export class KclPlugin implements PluginValue {
       else if (tr.annotation(lspRenameEvent.type)) {
         isRelevant = true
       } else if (tr.annotation(lspCodeActionEvent.type)) {
+        isRelevant = true
+      } else if (tr.annotation(lspColorUpdateEvent.type)) {
         isRelevant = true
       }
 

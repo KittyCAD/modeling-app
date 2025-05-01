@@ -6,6 +6,7 @@ export enum LspAnnotation {
   Diagnostics = 'diagnostics',
   Rename = 'rename',
   CodeAction = 'code-action',
+  ColorUpdate = 'color-update',
 }
 
 const lspEvent = Annotation.define<LspAnnotation>()
@@ -14,3 +15,4 @@ export const lspFormatCodeEvent = lspEvent.of(LspAnnotation.FormatCode)
 export const lspDiagnosticsEvent = lspEvent.of(LspAnnotation.Diagnostics)
 export const lspRenameEvent = lspEvent.of(LspAnnotation.Rename)
 export const lspCodeActionEvent = lspEvent.of(LspAnnotation.CodeAction)
+export const lspColorUpdateEvent = lspEvent.of(LspAnnotation.ColorUpdate)

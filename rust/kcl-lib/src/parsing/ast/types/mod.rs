@@ -438,8 +438,15 @@ impl Node<Program> {
         let add_color = |literal: &Node<Literal>| {
             // Check if the string is a color.
             if let Some(c) = literal.value.is_color() {
+                let source_range = literal.as_source_range();
+                // We subtract 1 from either side because of the "'s in the literal.
+                let fixed_source_range = SourceRange::new(
+                    source_range.start() + 1,
+                    source_range.end() - 1,
+                    source_range.module_id(),
+                );
                 let color = ColorInformation {
-                    range: literal.as_source_range().to_lsp_range(code),
+                    range: fixed_source_range.to_lsp_range(code),
                     color: tower_lsp::lsp_types::Color {
                         red: c.r,
                         green: c.g,
@@ -498,7 +505,11 @@ impl Node<Program> {
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             match node {
                 crate::walk::Node::Literal(literal) => {
-                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                    // Account for the quotes in the literal.
+                    if (literal.start + 1) == pos_start
+                        && (literal.end - 1) == pos_end
+                        && literal.value.is_color().is_some()
+                    {
                         found.replace(true);
                         return Ok(true);
                     }

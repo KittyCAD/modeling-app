@@ -8,7 +8,6 @@ import type {
 import type * as LSP from 'vscode-languageserver-protocol'
 
 import { kclPlugin } from '@src/editor/plugins/lsp/kcl'
-import { colorPicker } from '@src/editor/plugins/lsp/kcl/colors'
 
 export interface LanguageOptions {
   workspaceFolders: LSP.WorkspaceFolder[]
@@ -22,7 +21,6 @@ export interface LanguageOptions {
 
 export function kcl(options: LanguageOptions) {
   return new LanguageSupport(KclLanguage, [
-    colorPicker,
     kclPlugin({
       documentUri: options.documentUri,
       workspaceFolders: options.workspaceFolders,

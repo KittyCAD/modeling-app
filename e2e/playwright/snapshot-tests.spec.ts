@@ -834,7 +834,13 @@ test('theme persists', async ({ page, context }) => {
 })
 
 test.describe('code color goober', { tag: '@snapshot' }, () => {
-  test('code color goober', async ({ page, context, scene, cmdBar }) => {
+  test('code color goober', async ({
+    page,
+    context,
+    scene,
+    cmdBar,
+    editor,
+  }) => {
     const u = await getUtils(page)
     await context.addInitScript(async () => {
       localStorage.setItem(
@@ -879,6 +885,7 @@ sweepSketch = startSketchOn(XY)
     context,
     scene,
     cmdBar,
+    editor,
   }) => {
     const u = await getUtils(page)
     await context.addInitScript(async () => {
