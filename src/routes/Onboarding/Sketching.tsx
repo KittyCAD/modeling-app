@@ -1,7 +1,9 @@
 import { useEffect } from 'react'
+
 import { codeManager, kclManager } from '@src/lib/singletons'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
+
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export default function Sketching() {
   useEffect(() => {
@@ -40,7 +42,7 @@ export default function Sketching() {
           always just modifying and generating code in Zoo Design Studio.
         </p>
         <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.SKETCHING}
+          currentSlug={onboardingPaths.SKETCHING}
           className="mt-6"
         />
       </div>

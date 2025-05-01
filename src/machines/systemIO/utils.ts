@@ -8,7 +8,6 @@ export enum SystemIOMachineActors {
   deleteProject = 'delete project',
   createKCLFile = 'create kcl file',
   checkReadWrite = 'check read write',
-  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   deleteKCLFile = 'delete kcl delete',
 }
@@ -22,7 +21,6 @@ export enum SystemIOMachineStates {
   deletingProject = 'deletingProject',
   creatingKCLFile = 'creatingKCLFile',
   checkingReadWrite = 'checkingReadWrite',
-  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'importFileFromURL',
   deletingKCLFile = 'deletingKCLFile',
 }
@@ -43,7 +41,6 @@ export enum SystemIOMachineEvents {
   createKCLFile = 'create kcl file',
   setDefaultProjectFolderName = 'set default project folder name',
   done_checkReadWrite = donePrefix + 'check read write',
-  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
@@ -77,7 +74,7 @@ export type SystemIOContext = {
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
   requestedProjectName: { name: string }
-  requestedFileName: { project: string; file: string; subRoute?: string }
+  requestedFileName: { project: string; file: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
   requestedTextToCadGeneration: {
