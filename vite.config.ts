@@ -11,6 +11,9 @@ import MillionLint from '@million/lint'
 export default defineConfig(({ command, mode }) => {
   const isDev = command === 'serve'
   const isTest = mode === 'test' || process.env.VITEST === 'true'
+  const isE2E =
+    mode === 'e2e' || // when we start Vite with `--mode e2e`
+    process.env.PLAYWRIGHT === 'true' // set by the script below
 
   return {
     server: {
@@ -87,7 +90,7 @@ export default defineConfig(({ command, mode }) => {
         // The function to generate import names of top-level await promise in each chunk module
         promiseImportName: (i) => `__tla_${i}`,
       }),
-      isDev && !isTest && MillionLint.vite(),
+      isDev && !isTest && !isE2E && MillionLint.vite(),
     ],
     worker: {
       plugins: () => [viteTsconfigPaths()],
