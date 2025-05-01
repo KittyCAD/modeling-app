@@ -18,11 +18,12 @@ use tower_lsp::{
     jsonrpc::Result as RpcResult,
     lsp_types::{
         CodeAction, CodeActionKind, CodeActionOptions, CodeActionOrCommand, CodeActionParams,
-        CodeActionProviderCapability, CodeActionResponse, CompletionItem, CompletionItemKind, CompletionOptions,
-        CompletionParams, CompletionResponse, CreateFilesParams, DeleteFilesParams, Diagnostic, DiagnosticOptions,
-        DiagnosticServerCapabilities, DiagnosticSeverity, DidChangeConfigurationParams, DidChangeTextDocumentParams,
-        DidChangeWatchedFilesParams, DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams,
-        DidOpenTextDocumentParams, DidSaveTextDocumentParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
+        CodeActionProviderCapability, CodeActionResponse, ColorInformation, ColorProviderCapability, CompletionItem,
+        CompletionItemKind, CompletionOptions, CompletionParams, CompletionResponse, CreateFilesParams,
+        DeleteFilesParams, Diagnostic, DiagnosticOptions, DiagnosticServerCapabilities, DiagnosticSeverity,
+        DidChangeConfigurationParams, DidChangeTextDocumentParams, DidChangeWatchedFilesParams,
+        DidChangeWorkspaceFoldersParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams,
+        DidSaveTextDocumentParams, DocumentColorParams, DocumentDiagnosticParams, DocumentDiagnosticReport,
         DocumentDiagnosticReportResult, DocumentFilter, DocumentFormattingParams, DocumentSymbol, DocumentSymbolParams,
         DocumentSymbolResponse, Documentation, FoldingRange, FoldingRangeParams, FoldingRangeProviderCapability,
         FullDocumentDiagnosticReport, Hover as LspHover, HoverContents, HoverParams, HoverProviderCapability,
@@ -860,6 +861,29 @@ impl Backend {
 
         Ok(Some((current_code.to_string(), recast)))
     }
+
+    async fn document_color(&self, params: DocumentColorParams) -> RpcResult<Vec<ColorInformation>> {
+        let filename = params.text_document.uri.to_string();
+
+        let Some(current_code) = self.code_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+        let Ok(current_code) = std::str::from_utf8(&current_code) else {
+            return Ok(vec![]);
+        };
+
+        // Get the ast from our map.
+        let Some(ast) = self.ast_map.get(&filename) else {
+            return Ok(vec![]);
+        };
+
+        // Get the colors from the ast.
+        let Ok(colors) = ast.ast.document_color(current_code) else {
+            return Ok(vec![]);
+        };
+
+        Ok(colors)
+    }
 }
 
 #[tower_lsp::async_trait]
@@ -871,6 +895,7 @@ impl LanguageServer for Backend {
 
         Ok(InitializeResult {
             capabilities: ServerCapabilities {
+                color_provider: Some(ColorProviderCapability::Simple(true)),
                 code_action_provider: Some(CodeActionProviderCapability::Options(CodeActionOptions {
                     code_action_kinds: Some(vec![CodeActionKind::QUICKFIX]),
                     resolve_provider: Some(false),

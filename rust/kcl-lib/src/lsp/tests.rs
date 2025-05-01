@@ -4181,3 +4181,54 @@ async fn test_kcl_lsp_prepare_rename() {
         PrepareRenameResponse::DefaultBehavior { default_behavior: true }
     );
 }
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_document_color() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+                end: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+}
