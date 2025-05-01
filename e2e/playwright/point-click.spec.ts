@@ -3317,23 +3317,6 @@ extrude002 = extrude(sketch002, length = 50)
       toolbar,
       cmdBar,
     }) => {
-      await page.addInitScript(() => {
-        document.addEventListener('click', (event) => {
-          const marker = document.createElement('div')
-          marker.style.position = 'absolute'
-          marker.style.border = '2px solid red'
-          marker.style.borderRadius = '50%'
-          marker.style.width = '10px'
-          marker.style.height = '10px'
-          marker.style.top = `${event.clientY - 5}px`
-          marker.style.left = `${event.clientX - 5}px`
-          marker.style.zIndex = 10000
-          marker.style.pointerEvents = 'none'
-          document.body.appendChild(marker)
-          setTimeout(() => marker.remove(), 1000)
-          console.log(`Click at: (${event.clientX}, ${event.clientY})`)
-        })
-      })
       const sketchCode = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [-20, 20])
     |> xLine(length = 40)
@@ -3359,7 +3342,7 @@ profile001 = startProfile(sketch001, at = [-20, 20])
       const testPoint = { x: 590, y: 400 }
       const extrudeColor: [number, number, number] = [100, 100, 100]
       const sketchColor: [number, number, number] = [140, 140, 140]
-      const defaultPlaneColor: [number, number, number] = [50, 50, 100]
+      const defaultPlaneColor: [number, number, number] = [88, 44, 45]
 
       const deleteOperation = async (operationButton: Locator) => {
         if (shouldUseKeyboard) {
@@ -3407,7 +3390,7 @@ profile001 = startProfile(sketch001, at = [-20, 20])
         // reset and the rest of the test doesn't need to change just to check
         // if the scene is cleared.
         // Check that the scene is cleared
-        await scene.expectPixelColor([88, 44, 45], { x: 574, y: 342 }, 20)
+        await scene.expectPixelColor(defaultPlaneColor, { x: 574, y: 342 }, 20)
       })
     })
   })
