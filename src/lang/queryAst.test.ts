@@ -114,7 +114,7 @@ yo2 = hmm([identifierGuy + 5])`
     expect(result.value?.type).toBe('Name')
     expect(code.slice(result.value.start, result.value.end)).toBe('abc')
   })
-  it('find a safe CallExpression', () => {
+  it('find a safe CallExpressionKw', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('def')
     const result = isNodeSafeToReplace(
@@ -123,21 +123,21 @@ yo2 = hmm([identifierGuy + 5])`
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
-    expect(result.value?.type).toBe('CallExpression')
+    expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe("def('yo')")
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
-  it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
+  it('find an UNsafe CallExpressionKw, as it has a PipeSubstitution', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('ghi')
     const range = topLevelRange(rangeStart, rangeStart)
     const result = isNodeSafeToReplace(ast, range)
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
-    expect(result.value?.type).toBe('CallExpression')
+    expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe('ghi(%)')
   })
   it('find an UNsafe Identifier, as it is a callee', () => {

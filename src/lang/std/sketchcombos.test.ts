@@ -91,17 +91,6 @@ function getConstraintTypeFromSourceHelper(
   }
   const expr = item.expression
   switch (expr.type) {
-    case 'CallExpression': {
-      const arg = expr.arguments[0]
-      if (arg.type !== 'ArrayExpression') {
-        return new Error(
-          'expected first arg to be array but it was ' + arg.type
-        )
-      }
-      const args = arg.elements as [Expr, Expr]
-      const fnName = expr.callee.name.name as ToolTip
-      return getConstraintType(args, fnName, false)
-    }
     case 'CallExpressionKw': {
       const end = findKwArg(ARG_END, expr)
       const endAbsolute = findKwArg(ARG_END_ABSOLUTE, expr)
@@ -124,9 +113,7 @@ function getConstraintTypeFromSourceHelper(
       return new Error('arg did not have any key named elements')
     }
     default:
-      return new Error(
-        'must be a call (positional or keyword but it was) ' + expr.type
-      )
+      return new Error('must be a KCL function call, but it was ' + expr.type)
   }
 }
 
@@ -143,9 +130,6 @@ function getConstraintTypeFromSourceHelper2(
   let arg
   let isAbsolute = false
   switch (callExpr.type) {
-    case 'CallExpression':
-      arg = callExpr.arguments[0]
-      break
     case 'CallExpressionKw':
       const argEnd = getArgForEnd(callExpr)
       if (err(argEnd)) {

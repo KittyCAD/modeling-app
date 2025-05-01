@@ -2381,10 +2381,7 @@ export const modelingMachine = setup({
             })
           }
 
-          if (
-            extrudeNode.node.declaration.init.type === 'CallExpression' ||
-            extrudeNode.node.declaration.init.type === 'CallExpressionKw'
-          ) {
+          if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
             pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
           } else if (
             segmentNode.node.declaration.init.type === 'PipeExpression'

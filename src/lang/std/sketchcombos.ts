@@ -2270,7 +2270,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'Literal':
     case 'Name':
     case 'BinaryExpression':
-    case 'CallExpression':
     case 'CallExpressionKw':
     case 'UnaryExpression':
     case 'MemberExpression':

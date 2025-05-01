@@ -215,10 +215,7 @@ export function modifyAstWithEdgeTreatmentAndTag(
 
     let pathToEdgeTreatmentNode: PathToNode
 
-    if (
-      extrudeDeclarator.init.type === 'CallExpression' ||
-      extrudeDeclarator.init.type === 'CallExpressionKw'
-    ) {
+    if (extrudeDeclarator.init.type === 'CallExpressionKw') {
       // 1. case when no edge treatment exists
 
       // modify ast with new edge treatment call by mutating the extrude node

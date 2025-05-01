@@ -177,34 +177,23 @@ export async function deleteFromSelection(
           if (node.type === 'VariableDeclaration') {
             const dec = node.declaration
             if (
-              (dec.init.type === 'CallExpression' &&
-                (dec.init.callee.name.name === 'extrude' ||
-                  dec.init.callee.name.name === 'revolve') &&
-                dec.init.arguments?.[1].type === 'Name' &&
-                dec.init.arguments?.[1].name.name === varDecName) ||
-              (dec.init.type === 'CallExpressionKw' &&
-                (dec.init.callee.name.name === 'extrude' ||
-                  dec.init.callee.name.name === 'revolve') &&
-                dec.init.unlabeled?.type === 'Name' &&
-                dec.init.unlabeled?.name.name === varDecName)
+              dec.init.type === 'CallExpressionKw' &&
+              (dec.init.callee.name.name === 'extrude' ||
+                dec.init.callee.name.name === 'revolve') &&
+              dec.init.unlabeled?.type === 'Name' &&
+              dec.init.unlabeled?.name.name === varDecName
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
             }
             if (
-              (dec.init.type === 'CallExpressionKw' &&
-                dec.init.callee.name.name === 'loft' &&
-                dec.init.unlabeled !== null &&
-                dec.init.unlabeled.type === 'ArrayExpression' &&
-                dec.init.unlabeled.elements.some(
-                  (a) => a.type === 'Name' && a.name.name === varDecName
-                )) ||
-              (dec.init.type === 'CallExpression' &&
-                dec.init.callee.name.name === 'loft' &&
-                dec.init.arguments?.[0].type === 'ArrayExpression' &&
-                dec.init.arguments?.[0].elements.some(
-                  (a) => a.type === 'Name' && a.name.name === varDecName
-                ))
+              dec.init.type === 'CallExpressionKw' &&
+              dec.init.callee.name.name === 'loft' &&
+              dec.init.unlabeled !== null &&
+              dec.init.unlabeled.type === 'ArrayExpression' &&
+              dec.init.unlabeled.elements.some(
+                (a) => a.type === 'Name' && a.name.name === varDecName
+              )
             ) {
               pathToNode = path
               extrudeNameToDelete = dec.id.name
@@ -217,10 +206,7 @@ export async function deleteFromSelection(
       pathToNode = selection.codeRef.pathToNode
       if (varDec.node.type === 'VariableDeclarator') {
         extrudeNameToDelete = varDec.node.id.name
-      } else if (
-        varDec.node.type === 'CallExpression' ||
-        varDec.node.type === 'CallExpressionKw'
-      ) {
+      } else if (varDec.node.type === 'CallExpressionKw') {
         const callExp = getNodeFromPath<CallExpressionKw>(
           astClone,
           pathToNode,
@@ -421,8 +407,7 @@ export async function deleteFromSelection(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
     )
     if (
-      (pipeBody[0].type === 'CallExpression' ||
-        pipeBody[0].type === 'CallExpressionKw') &&
+      pipeBody[0].type === 'CallExpressionKw' &&
       doNotDeleteProfileIfItHasBeenExtruded &&
       (pipeBody[0].callee.name.name === 'startSketchOn' ||
         pipeBody[0].callee.name.name === 'startProfile')
@@ -434,8 +419,7 @@ export async function deleteFromSelection(
     }
   } else if (
     // single expression profiles
-    (varDec.node.init.type === 'CallExpressionKw' ||
-      varDec.node.init.type === 'CallExpression') &&
+    varDec.node.init.type === 'CallExpressionKw' &&
     ['circleThreePoint', 'circle'].includes(varDec.node.init.callee.name.name)
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number

@@ -222,7 +222,7 @@ export function traverse(
       ])
     )
   } else if (_node.type === 'CallExpression') {
-    throw new Error('No more CallExpressions in KCL!')
+    throw new Error('No more CallExpression in KCL!')
   } else if (_node.type === 'CallExpressionKw') {
     _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
     if (_node.unlabeled !== null) {
@@ -863,8 +863,7 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
       ) {
         for (const pipe of node.init.body) {
           if (
-            (pipe.type === 'CallExpressionKw' ||
-              pipe.type === 'CallExpression') &&
+            pipe.type === 'CallExpressionKw' &&
             pipe.callee.name.name === 'extrude'
           ) {
             theMap[node.id.name] = true
@@ -872,12 +871,9 @@ export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
           }
         }
       } else if (
-        (node.type === 'CallExpression' &&
-          node.callee.name.name === 'extrude' &&
-          node.arguments[1]?.type === 'Name') ||
-        (node.type === 'CallExpressionKw' &&
-          node.callee.name.name === 'extrude' &&
-          node.unlabeled?.type === 'Name')
+        node.type === 'CallExpressionKw' &&
+        node.callee.name.name === 'extrude' &&
+        node.unlabeled?.type === 'Name'
       ) {
         theMap[node.moduleId] = true
       }

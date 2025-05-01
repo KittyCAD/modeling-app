@@ -71,16 +71,6 @@ describe('Testing createIdentifier', () => {
     expect(result.name).toBe('myVar')
   })
 })
-describe('Testing createCallExpression', () => {
-  it('should create a call expression', () => {
-    const result = createCallExpressionStdLibKw('myFunc', createLiteral(5), [])
-    expect(result.type).toBe('CallExpression')
-    expect(result.callee.type).toBe('Name')
-    expect(result.callee.name.name).toBe('myFunc')
-    expect(result.arguments[0].type).toBe('Literal')
-    expect((result.arguments[0] as any).value.value).toBe(5)
-  })
-})
 describe('Testing createObjectExpression', () => {
   it('should create an object expression', () => {
     const result = createObjectExpression({

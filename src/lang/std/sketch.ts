@@ -377,7 +377,10 @@ const horzVertConstraintInfoHelper = (
     [argIndex, ARG_INDEX_FIELD],
     ['arg', LABELED_ARG_FIELD],
   ]
-  const pathToCallee: PathToNode = [...pathToNode, ['callee', 'CallExpression']]
+  const pathToCallee: PathToNode = [
+    ...pathToNode,
+    ['callee', 'CallExpressionKw'],
+  ]
   return [
     constrainInfo(
       inputConstrainTypes[0],
@@ -1035,7 +1038,7 @@ export const tangentialArc: SketchLineHelperKw = {
             pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
           ),
           ['body', 'PipeExpression'],
-          [pipe.body.length - 1, 'CallExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
         ],
       }
     } else {
@@ -1590,7 +1593,7 @@ export const arc: SketchLineHelperKw = {
             0,
             pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
           ),
-          [pipe.body.length - 1, 'CallExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
         ],
         valueUsedInTransform,
       }
@@ -1605,7 +1608,7 @@ export const arc: SketchLineHelperKw = {
             0,
             pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
           ),
-          [pipe.body.length - 1, 'CallExpression'],
+          [pipe.body.length - 1, 'CallExpressionKw'],
         ],
       }
     } else {
@@ -3587,36 +3590,23 @@ function addTagToChamfer(
 
     // e.g. chamfer(tags: [getOppositeEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // Note: Single unlabeled arg calls could be either CallExpression or
-    // CallExpressionKw.
     const tagMatchesOppositeTagType =
       edgeCutMeta?.subType === 'opposite' &&
-      ((tag.type === 'CallExpression' &&
-        tag.callee.name.name === 'getOppositeEdge' &&
-        tag.arguments[0].type === 'Name' &&
-        tag.arguments[0].name.name === edgeCutMeta.tagName) ||
-        (tag.type === 'CallExpressionKw' &&
-          tag.callee.name.name === 'getOppositeEdge' &&
-          tag.unlabeled?.type === 'Name' &&
-          tag.unlabeled.name.name === edgeCutMeta.tagName))
+      tag.type === 'CallExpressionKw' &&
+      tag.callee.name.name === 'getOppositeEdge' &&
+      tag.unlabeled?.type === 'Name' &&
+      tag.unlabeled.name.name === edgeCutMeta.tagName
     if (tagMatchesOppositeTagType) return true
 
     // e.g. chamfer(tags: [getNextAdjacentEdge(tagOfInterest), tag2])
     //                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // Note: Single unlabeled arg calls could be either CallExpression or
-    // CallExpressionKw.
     const tagMatchesAdjacentTagType =
       edgeCutMeta?.subType === 'adjacent' &&
-      ((tag.type === 'CallExpression' &&
-        (tag.callee.name.name === 'getNextAdjacentEdge' ||
-          tag.callee.name.name === 'getPrevAdjacentEdge') &&
-        tag.arguments[0].type === 'Name' &&
-        tag.arguments[0].name.name === edgeCutMeta.tagName) ||
-        (tag.type === 'CallExpressionKw' &&
-          (tag.callee.name.name === 'getNextAdjacentEdge' ||
-            tag.callee.name.name === 'getPrevAdjacentEdge') &&
-          tag.unlabeled?.type === 'Name' &&
-          tag.unlabeled.name.name === edgeCutMeta.tagName))
+      tag.type === 'CallExpressionKw' &&
+      (tag.callee.name.name === 'getNextAdjacentEdge' ||
+        tag.callee.name.name === 'getPrevAdjacentEdge') &&
+      tag.unlabeled?.type === 'Name' &&
+      tag.unlabeled.name.name === edgeCutMeta.tagName
     if (tagMatchesAdjacentTagType) return true
     return false
   })

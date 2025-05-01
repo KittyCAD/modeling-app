@@ -36,10 +36,7 @@ export function setAppearance({
     [createLabeledArg('color', createLiteral(color))]
   )
   // Modify the expression
-  if (
-    declarator.init.type === 'CallExpression' ||
-    declarator.init.type === 'CallExpressionKw'
-  ) {
+  if (declarator.init.type === 'CallExpressionKw') {
     // 1. case when no appearance exists, mutate in place
     declarator.init = createPipeExpression([declarator.init, call])
   } else if (declarator.init.type === 'PipeExpression') {
