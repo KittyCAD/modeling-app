@@ -4513,4 +4513,244 @@ extrude001 = extrude(profile001, length = 1)
       )
     })
   })
+
+  test('Point-and-click multi-profile sweeps', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const initialCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [3, 0], radius = 1)
+profile002 = circle(sketch001, center = [6, 0], radius = 1)
+path001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 2)
+  `
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, initialCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    // Unfortunately can't select thru code for multi profile yet
+    const emptyPoint = { x: 900, y: 250 }
+    const profile001Point = { x: 470, y: 270 }
+    const profile002Point = { x: 670, y: 270 }
+    const [clickProfile001Point] = scene.makeMouseHelpers(
+      profile001Point.x,
+      profile001Point.y
+    )
+    const [clickProfile002Point] = scene.makeMouseHelpers(
+      profile002Point.x,
+      profile002Point.y
+    )
+
+    await test.step('Extrude through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await clickProfile001Point()
+      await page.keyboard.down('Shift')
+      await clickProfile002Point()
+      await page.waitForTimeout(500)
+      await page.keyboard.up('Shift')
+      await toolbar.extrudeButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Sketches: '',
+          Length: '',
+        },
+        highlightedHeaderArg: 'sketches',
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'length',
+        currentArgValue: '5',
+        headerArguments: {
+          Sketches: '2 faces',
+          Length: '',
+        },
+        highlightedHeaderArg: 'length',
+        commandName: 'Extrude',
+      })
+      await page.keyboard.insertText('1')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Sketches: '2 faces',
+          Length: '1',
+        },
+        commandName: 'Extrude',
+      })
+      await cmdBar.progressCmdBar()
+      await scene.settled(cmdBar)
+
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `extrude001 = extrude([profile001, profile002], length = 1)`,
+        { shouldNormalise: true }
+      )
+      await editor.closePane()
+    })
+
+    await test.step('Delete extrude via feature tree selection', async () => {
+      const op = await toolbar.getFeatureTreeOperation('Extrude', 0)
+      await op.click({ button: 'right' })
+      await page.getByTestId('context-menu-delete').click()
+      await scene.settled(cmdBar)
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.not.toContain(
+        `extrude001 = extrude([profile001, profile002], length = 1)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Sweep through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await clickProfile001Point()
+      await page.keyboard.down('Shift')
+      await clickProfile002Point()
+      await page.waitForTimeout(500)
+      await page.keyboard.up('Shift')
+      await toolbar.sweepButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Sketches: '',
+          Path: '',
+          Sectional: '',
+        },
+        highlightedHeaderArg: 'sketches',
+        commandName: 'Sweep',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'path',
+        currentArgValue: '',
+        headerArguments: {
+          Sketches: '2 faces',
+          Path: '',
+          Sectional: '',
+        },
+        highlightedHeaderArg: 'path',
+        commandName: 'Sweep',
+      })
+      await toolbar.openPane('code')
+      await page.getByText('yLine(length = 2)').click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Sketches: '2 faces',
+          Path: '1 segment',
+          Sectional: '',
+        },
+        commandName: 'Sweep',
+      })
+      await cmdBar.progressCmdBar()
+      await scene.settled(cmdBar)
+
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `sweep001 = sweep([profile001, profile002], path = path001)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete sweep via feature tree selection', async () => {
+      await editor.closePane()
+      const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
+      await op.click({ button: 'right' })
+      await page.getByTestId('context-menu-delete').click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(
+        `sweep001 = sweep([profile001, profile002], path = path001)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Revolve through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await clickProfile001Point()
+      await page.keyboard.down('Shift')
+      await clickProfile002Point()
+      await page.waitForTimeout(500)
+      await page.keyboard.up('Shift')
+      await page.waitForTimeout(500)
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('Revolve')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'axisOrEdge',
+        currentArgValue: '',
+        headerArguments: {
+          Sketches: '2 faces',
+          AxisOrEdge: 'axis',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'axisOrEdge',
+        commandName: 'Revolve',
+      })
+      await cmdBar.selectOption({ name: 'Edge' }).click()
+      await page.getByText('yLine(length = 2)').click()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'angle',
+        currentArgValue: '5',
+        headerArguments: {
+          Sketches: '2 faces',
+          AxisOrEdge: 'edge',
+          Edge: '1 segment',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'angle',
+        commandName: 'Revolve',
+      })
+      await page.keyboard.insertText('180')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Sketches: '2 faces',
+          AxisOrEdge: 'edge',
+          Edge: '1 segment',
+          Angle: '180',
+        },
+        commandName: 'Revolve',
+      })
+      await cmdBar.progressCmdBar()
+      await scene.settled(cmdBar)
+
+      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(
+        `revolve001 = revolve([profile001, profile002], axis = X, angle = 180)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('Delete revolve via feature tree selection', async () => {
+      await editor.closePane()
+      const op = await toolbar.getFeatureTreeOperation('Revolve', 0)
+      await op.click({ button: 'right' })
+      await page.getByTestId('context-menu-delete').click()
+      await scene.settled(cmdBar)
+      await editor.expectEditor.not.toContain(
+        `revolve001 = revolve([profile001, profile002], axis = XY, angle = 180)`,
+        { shouldNormalise: true }
+      )
+    })
+  })
 })
