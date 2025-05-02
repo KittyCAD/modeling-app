@@ -32,6 +32,7 @@ const sharedBulkCreateWorkflow = async ({
     context: SystemIOContext
     files: RequestedKCLFile[]
     rootContext: AppMachineContext
+    override?: boolean
   }
 }) => {
   const configuration = await readAppSettingsFile()
@@ -64,17 +65,20 @@ const sharedBulkCreateWorkflow = async ({
       input.context.projectDirectoryPath,
       newProjectName
     )
-    const { name: newFileName } = getNextFileName({
-      entryName: requestedFileName,
-      baseDir,
-    })
+    // If override is true, use the requested filename directly
+    const fileName = input.override
+      ? requestedFileName
+      : getNextFileName({
+          entryName: requestedFileName,
+          baseDir,
+        }).name
 
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
       requestedCode,
       configuration,
-      newFileName
+      fileName
     )
   }
   return {
@@ -335,9 +339,15 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
           requestedProjectName: string
+          override?: boolean
         }
       }) => {
-        const message = await sharedBulkCreateWorkflow({ input })
+        const message = await sharedBulkCreateWorkflow({
+          input: {
+            ...input,
+            override: input.override,
+          },
+        })
         message.projectName = input.requestedProjectName
         return message
       }

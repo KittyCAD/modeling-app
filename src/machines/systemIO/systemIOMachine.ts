@@ -83,6 +83,7 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedKCLFile[]
             requestedProjectName: string
+            override?: boolean
           }
         }
       | {
@@ -623,6 +624,7 @@ export const systemIOMachine = setup({
             files: event.data.files,
             rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
+            override: event.data.override,
           }
         },
         onDone: {

@@ -149,7 +149,7 @@ export const ModelingMachineProvider = ({
     app: { allowOrbitInSketchMode },
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
-  const { context } = useFileContext()
+  const { context, send: fileSend } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
@@ -1819,6 +1819,7 @@ export const ModelingMachineProvider = ({
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
             basePath,
+            fileSend: fileSend,
           })
         }),
       },

@@ -12,7 +12,10 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 
-import { ToastPromptToEditCadSuccess } from '@src/components/ToastTextToCad'
+import {
+  ToastPromptToEditCadSuccess,
+  writeOverFilesAndExecute,
+} from '@src/components/ToastTextToCad'
 import { modelingMachineEvent } from '@src/editor/manager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -24,6 +27,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -478,15 +482,22 @@ export async function promptToEditFlow({
     )
     return
   }
-
   if (isDesktop()) {
-    // write all of the outputs to disk
+    const requestedFiles: RequestedKCLFile[] = []
+
+    const projectNameTODO = basePath.split('/').slice(-1)[0]
     for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
-      window.electron.writeFile(
-        window.electron.join(basePath, relativePath),
-        fileContents
-      )
+      requestedFiles.push({
+        requestedCode: fileContents,
+        requestedFileName: relativePath,
+        requestedProjectName: projectNameTODO,
+      })
     }
+
+    await writeOverFilesAndExecute({
+      requestedFiles,
+      projectNameTODO,
+    })
   } else {
     const newCode = result.outputs['main.kcl']
     codeManager.updateCodeEditor(newCode)

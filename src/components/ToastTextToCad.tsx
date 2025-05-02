@@ -29,10 +29,14 @@ import { PATHS } from '@src/lib/paths'
 import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
 import type { FileMeta } from '@src/lib/types'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -518,22 +522,38 @@ export function ToastPromptToEditCadSuccess({
             data-negative-button={'reject'}
             name={'Reject'}
             onClick={() => {
-              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              // revert to before the prompt-to-edit
-              if (isDesktop()) {
-                for (const file of oldFiles) {
-                  if (file.type !== 'kcl') {
-                    // only need to write the kcl files
-                    // as the endpoint would have never overwritten other file types
-                    continue
+              void (async () => {
+                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+                // revert to before the prompt-to-edit
+                if (isDesktop()) {
+                  const requestedFiles: RequestedKCLFile[] = []
+                  let projectName = ''
+                  for (const file of oldFiles) {
+                    if (file.type !== 'kcl') {
+                      // only need to write the kcl files
+                      // as the endpoint would have never overwritten other file types
+                      continue
+                    }
+                    projectName = file.absPath
+                      .split(window.electron.path.sep)
+                      .slice(-2)[0]
+                    requestedFiles.push({
+                      requestedCode: file.fileContents,
+                      requestedFileName: file.relPath,
+                      requestedProjectName: projectName,
+                    })
                   }
-                  window.electron.writeFile(file.absPath, file.fileContents)
+                  toast.dismiss(toastId)
+                  await writeOverFilesAndExecute({
+                    requestedFiles: requestedFiles,
+                    projectNameTODO: projectName,
+                  })
+                } else {
+                  codeManager.updateCodeEditor(oldCode)
+                  kclManager.executeCode().catch(reportRejection)
+                  toast.dismiss(toastId)
                 }
-              } else {
-                codeManager.updateCodeEditor(oldCode)
-                kclManager.executeCode().catch(reportRejection)
-              }
-              toast.dismiss(toastId)
+              })()
             }}
           >
             {'Reject'}
@@ -567,4 +587,37 @@ export function ToastPromptToEditCadSuccess({
       </div>
     </div>
   )
+}
+
+export const writeOverFilesAndExecute = async ({
+  requestedFiles,
+  projectNameTODO,
+}: {
+  requestedFiles: RequestedKCLFile[]
+  projectNameTODO: string
+}) => {
+  // Create a promise that resolves when the bulk create operation completes
+  const bulkCreatePromise = new Promise((resolve) => {
+    const subscription = systemIOActor.subscribe((state) => {
+      if (state.matches(SystemIOMachineStates.idle)) {
+        subscription.unsubscribe()
+        resolve(undefined)
+      }
+    })
+  })
+
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: requestedFiles,
+      requestedProjectName: projectNameTODO,
+      override: true,
+    },
+  })
+
+  // Wait for the bulk create operation to complete
+  await bulkCreatePromise
+
+  // Now execute the code after all files are written
+  await kclManager.executeCode()
 }
