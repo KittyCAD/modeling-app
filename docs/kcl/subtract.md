@@ -10,10 +10,10 @@ Performs a boolean subtraction operation, removing the volume of one or more too
 
 ```kcl
 subtract(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
-  tools: [[Solid]](/docs/kcl/types/std-types-Solid),
-  tolerance?: [number](/docs/kcl/types/std-types-number),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  solids: [Solid],
+  tools: [Solid],
+  tolerance?: number,
+): [Solid]
 ```
 
 

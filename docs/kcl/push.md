@@ -10,9 +10,9 @@ Returns a new array with the element appended.
 
 ```kcl
 push(
-  array: [[any]](/docs/kcl/types/std-types-any),
-  item: [any](/docs/kcl/types/std-types-any),
-): [any](/docs/kcl/types/std-types-any)
+  array: [any],
+  item: any,
+): any
 ```
 
 

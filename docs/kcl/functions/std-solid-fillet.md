@@ -12,12 +12,12 @@ will smoothly blend the transition.
 
 ```kcl
 fillet(
-  @solid: [Solid](/docs/kcl/types/std-types-Solid),
+  @solid: Solid,
   radius: number(Length),
-  tags: [[Edge; 1+]](/docs/kcl/types/std-types-Edge),
+  tags: [Edge; 1+],
   tolerance?: number(Length),
-  tag?: [tag](/docs/kcl/types/std-types-tag),
-): [Solid](/docs/kcl/types/std-types-Solid)
+  tag?: tag,
+): Solid
 ```
 
 

@@ -10,14 +10,14 @@ The sketches need to closed and on the same plane.
 
 ```kcl
 loft(
-  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  vDegree: [number](/docs/kcl/types/std-types-number),
-  bezApproximateRational: [bool](/docs/kcl/types/std-types-bool),
-  baseCurveIndex?: [number](/docs/kcl/types/std-types-number),
-  tolerance?: [number](/docs/kcl/types/std-types-number),
-  tagStart?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-  tagEnd?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Solid](/docs/kcl/types/std-types-Solid)
+  sketches: [Sketch],
+  vDegree: number,
+  bezApproximateRational: bool,
+  baseCurveIndex?: number,
+  tolerance?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
+): Solid
 ```
 
 

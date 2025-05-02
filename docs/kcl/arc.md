@@ -12,14 +12,14 @@ Unless this makes a lot of sense and feels like what you're looking for to const
 
 ```kcl
 arc(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  angleStart?: [number](/docs/kcl/types/std-types-number),
-  angleEnd?: [number](/docs/kcl/types/std-types-number),
-  radius?: [number](/docs/kcl/types/std-types-number),
-  interiorAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
-  endAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  angleStart?: number,
+  angleEnd?: number,
+  radius?: number,
+  interiorAbsolute?: Point2d,
+  endAbsolute?: Point2d,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

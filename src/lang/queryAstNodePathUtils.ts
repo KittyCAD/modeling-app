@@ -2,7 +2,11 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import {
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
+  UNLABELED_ARG,
+} from '@src/lang/queryAstConstants'
 import type {
   Expr,
   ExpressionStatement,
@@ -38,6 +42,7 @@ function moreNodePathFromSourceRange(
   if (
     (_node.type === 'Name' ||
       _node.type === 'Literal' ||
+      _node.type === 'Identifier' ||
       _node.type === 'TagDeclarator') &&
     isInRange
   ) {
@@ -64,12 +69,20 @@ function moreNodePathFromSourceRange(
   }
 
   if (_node.type === 'CallExpressionKw' && isInRange) {
-    const { callee, arguments: args } = _node
+    const { callee, arguments: args, unlabeled } = _node
     if (callee.type === 'Name' && callee.start <= start && callee.end >= end) {
       path.push(['callee', 'CallExpressionKw'])
       return path
     }
-    if (args.length > 0) {
+    if (
+      unlabeled !== null &&
+      unlabeled.start <= start &&
+      unlabeled.end >= end
+    ) {
+      path.push(['unlabeled', UNLABELED_ARG])
+      return moreNodePathFromSourceRange(unlabeled, sourceRange, path)
+    }
+    if (args && args.length > 0) {
       for (let argIndex = 0; argIndex < args.length; argIndex++) {
         const arg = args[argIndex].arg
         if (arg.start <= start && arg.end >= end) {
@@ -156,19 +169,6 @@ function moreNodePathFromSourceRange(
       }
     }
   }
-  if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declaration = _node.declaration
-
-    if (declaration.start <= start && declaration.end >= end) {
-      const init = declaration.init
-      if (init.start <= start && init.end >= end) {
-        path.push(['declaration', 'VariableDeclaration'])
-        path.push(['init', ''])
-        return moreNodePathFromSourceRange(init, sourceRange, path)
-      }
-    }
-    return path
-  }
   if (_node.type === 'UnaryExpression' && isInRange) {
     const { argument } = _node
     if (argument.start <= start && argument.end >= end) {
@@ -254,6 +254,29 @@ function moreNodePathFromSourceRange(
       path.push(['body', 'IfExpression'])
       return getNodePathFromSourceRange(final_else, sourceRange, path)
     }
+    return path
+  }
+
+  if (_node.type === 'LabelledExpression' && isInRange) {
+    const { expr, label } = _node
+    if (expr.start <= start && expr.end >= end) {
+      path.push(['expr', 'LabelledExpression'])
+      return moreNodePathFromSourceRange(expr, sourceRange, path)
+    }
+    if (label.start <= start && label.end >= end) {
+      path.push(['label', 'LabelledExpression'])
+      return moreNodePathFromSourceRange(label, sourceRange, path)
+    }
+    return path
+  }
+
+  if (_node.type === 'AscribedExpression' && isInRange) {
+    const { expr } = _node
+    if (expr.start <= start && expr.end >= end) {
+      path.push(['expr', 'AscribedExpression'])
+      return moreNodePathFromSourceRange(expr, sourceRange, path)
+    }
+    // TODO: Check the type annotation.
     return path
   }
 

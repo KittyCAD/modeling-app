@@ -9,7 +9,7 @@ Compute the angle (in degrees) of the provided line segment.
 
 
 ```kcl
-segAng(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [number](/docs/kcl/types/std-types-number)
+segAng(tag: TagIdentifier): number
 ```
 
 
