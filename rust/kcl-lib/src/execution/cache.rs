@@ -275,9 +275,10 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
 
 #[cfg(test)]
 mod tests {
+    use pretty_assertions::assert_eq;
+
     use super::*;
     use crate::execution::{parse_execute, parse_execute_with_project_dir, ExecTestResults};
-    use pretty_assertions::assert_eq;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {

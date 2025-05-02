@@ -787,6 +787,7 @@ impl ExecutorContext {
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
+        #[allow(unused_variables)]
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
             (universe, universe_map)
         } else {
