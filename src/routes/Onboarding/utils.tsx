@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import {
   type NavigateFunction,
+  Outlet,
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
@@ -38,16 +39,23 @@ import { isDesktop } from '@src/lib/isDesktop'
 import type { KclManager } from '@src/lang/KclSingleton'
 import { Logo } from '@src/components/Logo'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { isOnboardingPath, onboardingPaths } from '@src/lib/onboardingPaths'
+import {
+  isOnboardingPath,
+  OnboardingPath,
+  onboardingPaths,
+  onboardingStartPath,
+} from '@src/lib/onboardingPaths'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
 
 // Get the 1-indexed step number of the current onboarding step
-function useStepNumber(
-  slug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+function getStepNumber(
+  slug?: OnboardingPath,
+  platform: keyof typeof onboardingPaths = 'browser'
 ) {
-  return slug ? Object.values(onboardingPaths).indexOf(slug) + 1 : -1
+  return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
 }
 
 export function useDemoCode() {
@@ -97,7 +105,9 @@ export function useNextClick(newStatus: OnboardingStatus) {
       type: 'set.app.onboardingStatus',
       data: { level: 'user', value: newStatus },
     })
-    navigate(joinRouterPaths(filePath, PATHS.ONBOARDING.INDEX, newStatus))
+    const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
+    console.log('FRANK gonna navigate', targetRoute)
+    navigate(targetRoute)
   }, [filePath, newStatus, navigate])
 }
 
@@ -136,29 +146,38 @@ export function useDismiss() {
 
 export function OnboardingButtons({
   currentSlug,
+  platform = 'browser',
   className,
   dismissClassName,
   onNextOverride,
   ...props
 }: {
-  currentSlug?: (typeof onboardingPaths)[keyof typeof onboardingPaths]
+  currentSlug?: OnboardingPath
+  platform?: keyof typeof onboardingPaths
   className?: string
   dismissClassName?: string
   onNextOverride?: () => void
 } & React.HTMLAttributes<HTMLDivElement>) {
-  const onboardingPathsArray = Object.values(onboardingPaths)
+  const onboardingPathsArray = Object.values(onboardingPaths[platform])
   const dismiss = useDismiss()
-  const stepNumber = useStepNumber(currentSlug)
+  const stepNumber = getStepNumber(currentSlug, platform)
   const previousStep =
-    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber]
+    !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber - 2]
   const nextStep =
     !stepNumber || stepNumber === onboardingPathsArray.length
       ? null
       : onboardingPathsArray[stepNumber]
 
-  const previousOnboardingStatus: OnboardingStatus =
-    previousStep ?? onboardingPaths.INDEX
+  const previousOnboardingStatus: OnboardingStatus = previousStep ?? 'dismissed'
   const nextOnboardingStatus: OnboardingStatus = nextStep ?? 'completed'
+
+  console.log('FRANK what do we have here?', {
+    currentSlug,
+    stepNumber,
+    previousStep,
+    previousOnboardingStatus,
+    onboardingPathsArray,
+  })
 
   const goToPrevious = useNextClick(previousOnboardingStatus)
   const goToNext = useNextClick(nextOnboardingStatus)
@@ -244,6 +263,10 @@ export const ERROR_MUST_WARN = 'Must warn user before overwrite'
  * depending on the platform and the state of the user's code.
  */
 export async function acceptOnboarding(deps: OnboardingUtilDeps) {
+  // Non-path statuses should be coerced to the start path
+  const onboardingStatus = !isOnboardingPath(deps.onboardingStatus)
+    ? onboardingStartPath
+    : deps.onboardingStatus
   if (isDesktop()) {
     /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
     systemIOActor.send({
@@ -252,10 +275,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
         requestedCode: bracket,
-        requestedSubRoute: joinRouterPaths(
-          PATHS.ONBOARDING.INDEX,
-          deps.onboardingStatus
-        ),
+        requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
       },
     })
     return Promise.resolve()
@@ -279,13 +299,17 @@ export async function resetCodeAndAdvanceOnboarding({
   kclManager,
   navigate,
 }: OnboardingUtilDeps) {
+  // Non-path statuses should be coerced to the start path
+  const resolvedOnboardingStatus = !isOnboardingPath(onboardingStatus)
+    ? onboardingStartPath
+    : onboardingStatus
   // We do want to update both the state and editor here.
   codeManager.updateCodeStateEditor(bracket)
   codeManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
-      joinRouterPaths(PATHS.ONBOARDING.INDEX, onboardingStatus)
+      joinRouterPaths(PATHS.ONBOARDING, resolvedOnboardingStatus)
     )
   )
 }
@@ -301,7 +325,7 @@ export function needsToOnboard(
   onboardingStatus: OnboardingStatus
 ) {
   return (
-    !location.pathname.includes(PATHS.ONBOARDING.INDEX) &&
+    !location.pathname.includes(PATHS.ONBOARDING) &&
     (onboardingStatus.length === 0 ||
       !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed'))
   )

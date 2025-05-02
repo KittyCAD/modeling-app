@@ -1,7 +1,7 @@
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import type { DeepPartial } from '@src/lib/types'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/lib/onboardingPaths'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 

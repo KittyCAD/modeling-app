@@ -3,7 +3,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { useSettings } from '@src/lib/singletons'
 import { OnboardingButtons, useDemoCode } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/lib/onboardingPaths'
 
 export default function OnboardingParametricModeling() {
   useDemoCode()
@@ -71,9 +71,7 @@ export default function OnboardingParametricModeling() {
             </figcaption>
           </figure>
         </section>
-        <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.PARAMETRIC_MODELING}
-        />
+        <OnboardingButtons currentSlug={onboardingPaths.PARAMETRIC_MODELING} />
       </div>
     </div>
   )

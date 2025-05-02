@@ -2,7 +2,7 @@ import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { type BaseUnit, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { settingsActor, useSettings } from '@src/lib/singletons'
 import { OnboardingButtons } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/lib/onboardingPaths'
 
 export default function Units() {
   const {
@@ -39,7 +39,7 @@ export default function Units() {
           </select>
         </SettingsSection>
         <OnboardingButtons
-          currentSlug={ONBOARDING_SUBPATHS.UNITS}
+          currentSlug={onboardingPaths.UNITS}
           className="mt-6"
         />
       </div>
