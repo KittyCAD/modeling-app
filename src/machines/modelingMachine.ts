@@ -73,8 +73,6 @@ import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
   applyUnionFromTargetOperatorSelections,
-  findAllChildrenAndOrderByPlaceInCode,
-  getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
@@ -85,6 +83,7 @@ import {
   setTranslate,
   setRotate,
   insertExpressionNode,
+  retrievePathToNodeFromTransformSelection,
 } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
@@ -2773,25 +2772,16 @@ export const modelingMachine = setup({
         const { x, y, z, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, modifiedAst)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
@@ -2860,25 +2850,16 @@ export const modelingMachine = setup({
         const { roll, pitch, yaw, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, modifiedAst)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
@@ -2946,25 +2927,16 @@ export const modelingMachine = setup({
         const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, ast)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         const returnEarly = true
