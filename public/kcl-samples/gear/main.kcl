@@ -28,7 +28,7 @@ rs = map(
 angles = map(
   rs,
   f = fn(r) {
-    return units::toDegrees(    acos(baseDiameter / 2 / r))
+    return units::toDegrees(acos(baseDiameter / 2 / r))
   },
 )
 

@@ -460,17 +460,6 @@ function hasTag(node: ObjectExpression, tag: Name | CallExpressionKw): boolean {
             element.type === 'Name' && element.name.name === tag.name.name
         )
       }
-      // if selection is an adjacent or opposite edge:
-      // if (tag.type === 'CallExpression') {
-      //   return prop.value.elements.some(
-      //     (element) =>
-      //       element.type === 'CallExpression' &&
-      //       element.callee.name.name === tag.callee.name.name && // edge location
-      //       element.arguments[0].type === 'Name' &&
-      //       tag.arguments[0].type === 'Name' &&
-      //       element.arguments[0].name.name === tag.arguments[0].name.name // tag name
-      //   )
-      // }
       if (tag.type === 'CallExpressionKw') {
         return prop.value.elements.some((element) => {
           if (element.type !== 'CallExpressionKw') {
