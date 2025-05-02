@@ -291,7 +291,7 @@ export function getAxisExpressionAndIndex(
     ) {
       axisDeclaration = axisSelection.codeRef.pathToNode
       if (!axisDeclaration)
-        return new Error('Expected to fine axis declaration')
+        return new Error('Expected to find axis declaration')
       const axisIndexInPathToNode =
         axisDeclaration.findIndex((a) => a[0] === 'body') + 1
       const value = axisDeclaration[axisIndexInPathToNode][0]
