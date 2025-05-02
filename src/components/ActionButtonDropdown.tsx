@@ -13,7 +13,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
     shortcut?: string
     onClick: () => void
     disabled?: boolean
-    status?: 'available' | 'unavailable' | 'kcl-only'
+    status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   }[]
 }
 
@@ -100,6 +100,9 @@ export function ActionButtonDropdown({
                     <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
                       {item.shortcut}
                     </kbd>
+                  ) : null}
+                  {item.status === 'experimental' ? (
+                    <CustomIcon name="beaker" className="w-4 h-4" />
                   ) : null}
                 </button>
               </li>
