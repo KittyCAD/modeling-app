@@ -1818,8 +1818,6 @@ export const ModelingMachineProvider = ({
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
-            basePath,
-            fileSend: fileSend,
           })
         }),
       },

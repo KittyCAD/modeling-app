@@ -413,7 +413,6 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
-  basePath,
 }: {
   prompt: string
   selections: Selections
@@ -421,7 +420,6 @@ export async function promptToEditFlow({
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
-  basePath: string
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -485,18 +483,17 @@ export async function promptToEditFlow({
   if (isDesktop()) {
     const requestedFiles: RequestedKCLFile[] = []
 
-    const projectNameTODO = basePath.split('/').slice(-1)[0]
     for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
       requestedFiles.push({
         requestedCode: fileContents,
         requestedFileName: relativePath,
-        requestedProjectName: projectNameTODO,
+        requestedProjectName: projectName,
       })
     }
 
     await writeOverFilesAndExecute({
       requestedFiles,
-      projectNameTODO,
+      projectName,
     })
   } else {
     const newCode = result.outputs['main.kcl']

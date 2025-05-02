@@ -33,7 +33,10 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
+import {
+  useProjectDirectoryPath,
+  useRequestedProjectName,
+} from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
 import type { FileMeta } from '@src/lib/types'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
@@ -494,6 +497,7 @@ export function ToastPromptToEditCadSuccess({
   token?: string
 }) {
   const modelId = data.id
+  const requestedProjectName = useRequestedProjectName()
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -527,26 +531,22 @@ export function ToastPromptToEditCadSuccess({
                 // revert to before the prompt-to-edit
                 if (isDesktop()) {
                   const requestedFiles: RequestedKCLFile[] = []
-                  let projectName = ''
                   for (const file of oldFiles) {
                     if (file.type !== 'kcl') {
                       // only need to write the kcl files
                       // as the endpoint would have never overwritten other file types
                       continue
                     }
-                    projectName = file.absPath
-                      .split(window.electron.path.sep)
-                      .slice(-2)[0]
                     requestedFiles.push({
                       requestedCode: file.fileContents,
                       requestedFileName: file.relPath,
-                      requestedProjectName: projectName,
+                      requestedProjectName: requestedProjectName.name,
                     })
                   }
                   toast.dismiss(toastId)
                   await writeOverFilesAndExecute({
                     requestedFiles: requestedFiles,
-                    projectNameTODO: projectName,
+                    projectName: requestedProjectName.name,
                   })
                 } else {
                   codeManager.updateCodeEditor(oldCode)
@@ -591,10 +591,10 @@ export function ToastPromptToEditCadSuccess({
 
 export const writeOverFilesAndExecute = async ({
   requestedFiles,
-  projectNameTODO,
+  projectName: projectNameTODO,
 }: {
   requestedFiles: RequestedKCLFile[]
-  projectNameTODO: string
+  projectName: string
 }) => {
   // Create a promise that resolves when the bulk create operation completes
   const bulkCreatePromise = new Promise((resolve) => {
