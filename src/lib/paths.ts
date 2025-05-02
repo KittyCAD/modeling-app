@@ -1,7 +1,5 @@
 import type { PlatformPath } from 'path'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import {
@@ -14,7 +12,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -27,7 +25,7 @@ const prependRoutes =
   }
 
 type OnboardingPaths = {
-  [K in keyof typeof ONBOARDING_SUBPATHS]: `/onboarding${(typeof ONBOARDING_SUBPATHS)[K]}`
+  [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
 }
 
 const SETTINGS = '/settings'
@@ -48,9 +46,7 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(ONBOARDING_SUBPATHS)(
-    '/onboarding'
-  ) as OnboardingPaths,
+  ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
@@ -137,57 +133,4 @@ export function parseProjectRoute(
     currentFileName: currentFileName,
     currentFilePath: currentFilePath,
   }
-}
-
-/**
- * Joins any number of arguments of strings to create a Router level path that is safe
- * A path will be created of the format /value/value1/value2
- * Filters out '/', ''
- * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
- * /dog/cat
- */
-export function joinRouterPaths(...parts: string[]): string {
-  return (
-    '/' +
-    parts
-      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
-      .filter((part) => part.length > 0) // Remove empty segments
-      .join('/')
-  )
-}
-
-/**
- * Joins any number of arguments of strings to create a OS level path that is safe
- * A path will be created of the format /value/value1/value2
- * or \value\value1\value2 for POSIX OSes like Windows
- * Filters out the separator slashes
- * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
- * /dog/cat
- * or \dog\cat on POSIX
- */
-export function joinOSPaths(...parts: string[]): string {
-  const sep = window.electron?.sep || '/'
-  const regexSep = sep === '/' ? '/' : '\\'
-  return (
-    (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
-    parts
-      .map((part) =>
-        part.replace(new RegExp(`^${regexSep}+|${regexSep}+$`, 'g'), '')
-      ) // Remove leading/trailing slashes
-      .filter((part) => part.length > 0) // Remove empty segments
-      .join(sep)
-  )
-}
-
-export function safeEncodeForRouterPaths(dynamicValue: string): string {
-  return `${encodeURIComponent(dynamicValue)}`
-}
-
-/**
- * /dog/cat/house.kcl gives you house.kcl
- * \dog\cat\house.kcl gives you house.kcl
- * Works on all OS!
- */
-export function getStringAfterLastSeparator(path: string): string {
-  return path.split(window.electron.sep).pop() || ''
 }

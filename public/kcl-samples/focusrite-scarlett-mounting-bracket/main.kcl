@@ -15,17 +15,6 @@ tabLength = 25
 tabWidth = 12
 tabThk = 4
 
-// Define a rectangular shape func
-fn rectShape(pos, w, l) {
-  rr = startSketchOn(XY)
-    |> startProfile(at = [pos[0] - (w / 2), pos[1] - (l / 2)])
-    |> line(endAbsolute = [pos[0] + w / 2, pos[1] - (l / 2)], tag = $edge01)
-    |> line(endAbsolute = [pos[0] + w / 2, pos[1] + l / 2], tag = $edge02)
-    |> line(endAbsolute = [pos[0] - (w / 2), pos[1] + l / 2], tag = $edge03)
-    |> close(tag = $edge04)
-  return rr
-}
-
 // Define the bracket plane
 bracketPlane = {
   origin = { x = 0, y = length / 2 + thk, z = 0 },
@@ -50,7 +39,7 @@ fn bracketSketch(w, d, t) {
 }
 
 // Build the body of the bracket
-bs = bracketSketch(width, depth, thk)
+bs = bracketSketch(w = width, d = depth, t = thk)
 bracketBody = bs
   |> extrude(length = length + 2 * thk)
   |> fillet(

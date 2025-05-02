@@ -547,19 +547,10 @@ export class LanguageServerPlugin implements PluginValue {
 
     try {
       // First check if rename is possible at this position
-      const prepareResult = await this.client
-        .textDocumentPrepareRename({
-          textDocument: { uri: this.getDocUri() },
-          position: { line, character },
-        })
-        .catch(() => {
-          // In case prepareRename is not supported,
-          // we fallback to the default implementation
-          return this.prepareRenameFallback(view, {
-            line,
-            character,
-          })
-        })
+      let prepareResult = this.prepareRenameFallback(view, {
+        line,
+        character,
+      })
 
       if (!prepareResult || 'defaultBehavior' in prepareResult) {
         showErrorMessage(view, 'Cannot rename this symbol')

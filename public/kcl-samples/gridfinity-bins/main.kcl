@@ -27,7 +27,7 @@ countBinHeight = 2
 height = firstStep + secondStep + thirdStep
 
 // Define a function which builds the profile of the baseplate bin
-fn face(plane) {
+fn face(@plane) {
   faceSketch = startSketchOn(plane)
     |> startProfile(at = [binBaseLength + binTol, 0])
     |> yLine(length = height)

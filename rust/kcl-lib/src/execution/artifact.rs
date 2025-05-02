@@ -15,7 +15,7 @@ use uuid::Uuid;
 use crate::{
     errors::KclErrorDetails,
     parsing::ast::types::{Node, Program},
-    KclError, SourceRange,
+    KclError, NodePath, SourceRange,
 };
 
 #[cfg(test)]
@@ -120,6 +120,7 @@ where
 #[serde(rename_all = "camelCase")]
 pub struct CodeRef {
     pub range: SourceRange,
+    pub node_path: NodePath,
     // TODO: We should implement this in Rust.
     #[serde(default, serialize_with = "serialize_dummy_path_to_node")]
     #[ts(type = "Array<[string | number, string]>")]
@@ -130,6 +131,7 @@ impl CodeRef {
     pub fn placeholder(range: SourceRange) -> Self {
         Self {
             range,
+            node_path: Default::default(),
             path_to_node: Vec::new(),
         }
     }
@@ -780,6 +782,7 @@ fn flatten_modeling_command_responses(
             | OkWebSocketResponseData::Export { .. }
             | OkWebSocketResponseData::MetricsRequest { .. }
             | OkWebSocketResponseData::ModelingSessionData { .. }
+            | OkWebSocketResponseData::Debug { .. }
             | OkWebSocketResponseData::Pong { .. } => {}
         }
     }
@@ -824,15 +827,21 @@ fn artifacts_to_update(
     artifact_command: &ArtifactCommand,
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
     path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
-    _ast: &Node<Program>,
+    ast: &Node<Program>,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
     // TODO: Build path-to-node from artifact_command source range.  Right now,
     // we're serializing an empty array, and the TS wrapper fills it in with the
-    // correct value.
+    // correct value based on NodePath.
     let path_to_node = Vec::new();
-
     let range = artifact_command.range;
+    let node_path = NodePath::from_range(ast, range).unwrap_or_default();
+    let code_ref = CodeRef {
+        range,
+        node_path,
+        path_to_node,
+    };
+
     let uuid = artifact_command.cmd_id;
     let id = ArtifactId::new(uuid);
 
@@ -854,7 +863,7 @@ fn artifacts_to_update(
             return Ok(vec![Artifact::Plane(Plane {
                 id,
                 path_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             })]);
         }
         ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
@@ -890,7 +899,7 @@ fn artifacts_to_update(
                     return Ok(vec![Artifact::Plane(Plane {
                         id: entity_id.into(),
                         path_ids,
-                        code_ref: CodeRef { range, path_to_node },
+                        code_ref,
                     })]);
                 }
             }
@@ -911,15 +920,15 @@ fn artifacts_to_update(
                 seg_ids: Vec::new(),
                 sweep_id: None,
                 solid2d_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
-                let code_ref = plane.code_ref.clone();
+                let plane_code_ref = plane.code_ref.clone();
                 return_arr.push(Artifact::Plane(Plane {
                     id: (*current_plane_id).into(),
                     path_ids: vec![id],
-                    code_ref,
+                    code_ref: plane_code_ref,
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
@@ -959,7 +968,7 @@ fn artifacts_to_update(
                 surface_id: None,
                 edge_ids: Vec::new(),
                 edge_cut_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
                 common_surface_ids: Vec::new(),
             }));
             let path = artifacts.get(&path_id);
@@ -1000,7 +1009,7 @@ fn artifacts_to_update(
                 path_id: target,
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             let path = artifacts.get(&target);
             if let Some(Artifact::Path(path)) = path {
@@ -1028,7 +1037,7 @@ fn artifacts_to_update(
                 })?),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             for section_id in &loft_cmd.section_ids {
                 let path = artifacts.get(&ArtifactId::new(*section_id));
@@ -1094,6 +1103,7 @@ fn artifacts_to_update(
                     path_ids: Vec::new(),
                     face_code_ref: CodeRef {
                         range: sketch_on_face_source_range,
+                        node_path: NodePath::from_range(ast, sketch_on_face_source_range).unwrap_or_default(),
                         path_to_node: Vec::new(),
                     },
                     cmd_id: artifact_command.cmd_id,
@@ -1146,6 +1156,7 @@ fn artifacts_to_update(
                         path_ids: Vec::new(),
                         face_code_ref: CodeRef {
                             range: sketch_on_face_source_range,
+                            node_path: NodePath::from_range(ast, sketch_on_face_source_range).unwrap_or_default(),
                             path_to_node: Vec::new(),
                         },
                         cmd_id: artifact_command.cmd_id,
@@ -1254,7 +1265,7 @@ fn artifacts_to_update(
                 consumed_edge_id: cmd.edge_id.into(),
                 edge_ids: Vec::new(),
                 surface_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             }));
             let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
@@ -1270,7 +1281,7 @@ fn artifacts_to_update(
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: None,
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             })];
             return Ok(return_arr);
         }
@@ -1279,7 +1290,7 @@ fn artifacts_to_update(
             let return_arr = vec![Artifact::Helix(Helix {
                 id,
                 axis_id: Some(edge_id),
-                code_ref: CodeRef { range, path_to_node },
+                code_ref,
             })];
             // We could add the reverse graph edge connecting from the edge to
             // the helix here, but it's not useful right now.
@@ -1356,10 +1367,7 @@ fn artifacts_to_update(
                         sub_type,
                         solid_ids: solid_ids.clone(),
                         tool_ids: tool_ids.clone(),
-                        code_ref: CodeRef {
-                            range,
-                            path_to_node: path_to_node.clone(),
-                        },
+                        code_ref: code_ref.clone(),
                     })
                 })
                 .collect::<Vec<_>>();

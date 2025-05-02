@@ -7,6 +7,8 @@ import {
   useRouteLoaderData,
 } from 'react-router-dom'
 
+import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
+
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
@@ -16,7 +18,7 @@ import { markOnce } from '@src/lib/performance'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
-import { settingsActor } from '@src/lib/singletons'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 export const RouteProviderContext = createContext({})
 
@@ -30,6 +32,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const navigation = useNavigation()
   const navigate = useNavigate()
   const location = useLocation()
+  const settings = useSettings()
 
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
@@ -43,9 +46,35 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       markOnce('code/willLoadHome')
     } else if (isFile) {
       markOnce('code/willLoadFile')
+
+      /**
+       * TODO: Move to XState. This block has been moved from routerLoaders
+       * and is borrowing the `isFile` logic from the rest of this
+       * telemetry-focused `useEffect`. Once `appMachine` knows about
+       * the current route and navigation, this can be moved into settingsMachine
+       * to fire as soon as the user settings have been read.
+       */
+      const onboardingStatus: OnboardingStatus =
+        settings.app.onboardingStatus.current || ''
+      // '' is the initial state, 'completed' and 'dismissed' are the final states
+      const needsToOnboard =
+        onboardingStatus.length === 0 ||
+        !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
+      const shouldRedirectToOnboarding = isFile && needsToOnboard
+
+      if (
+        shouldRedirectToOnboarding &&
+        settingsActor.getSnapshot().matches('idle')
+      ) {
+        navigate(
+          (first ? location.pathname : navigation.location?.pathname) +
+            PATHS.ONBOARDING.INDEX +
+            onboardingStatus.slice(1)
+        )
+      }
     }
     setFirstState(false)
-  }, [first, navigation, location.pathname])
+  }, [navigation])
 
   useEffect(() => {
     if (!isDesktop()) return

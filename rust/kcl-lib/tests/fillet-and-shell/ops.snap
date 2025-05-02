@@ -416,7 +416,56 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": 7.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "y": {
+          "value": {
+            "type": "Number",
+            "value": 7.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -427,7 +476,56 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": 7.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "y": {
+          "value": {
+            "type": "Number",
+            "value": 65.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -438,7 +536,56 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": 30.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "y": {
+          "value": {
+            "type": "Number",
+            "value": 65.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -449,7 +596,56 @@ description: Operations executed fillet-and-shell.kcl
       "name": "m25Screw",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "height": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": 30.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "y": {
+          "value": {
+            "type": "Number",
+            "value": 7.5,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },

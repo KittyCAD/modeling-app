@@ -12,11 +12,31 @@ layout: manual
 * [`{{name}}`](kcl/{{file_name}})
 {{/each}}
 
-### Standard library
+### Functions
 
-{{#each modules}}
-* **{{name}}**
 {{#each functions}}
+* **{{name}}**
+{{#each items}}
+  * [`{{name}}`](kcl/{{file_name}})
+{{/each}}
+{{/each}}
+
+### Constants
+
+{{#each consts}}
+* **{{name}}**
+{{#each items}}
+  * [`{{name}}`](kcl/{{file_name}})
+{{/each}}
+{{/each}}
+
+### Types
+
+See also the [types overview](types)
+
+{{#each types}}
+* **{{name}}**
+{{#each items}}
   * [`{{name}}`](kcl/{{file_name}})
 {{/each}}
 {{/each}}

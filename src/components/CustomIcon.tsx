@@ -854,14 +854,6 @@ const CustomIconMap = {
       />
     </svg>
   ),
-  play: (
-    <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path
-        d="M14.2842 9.83887L14.2617 10.6758L7.76172 14.6758L7 14.25V5.75L7.78418 5.33887L14.2842 9.83887ZM8 13.3555L13.0859 10.2246L8 6.70312V13.3555Z"
-        fill="currentColor"
-      />
-    </svg>
-  ),
   rotate: (
     <svg
       viewBox="0 0 20 20"

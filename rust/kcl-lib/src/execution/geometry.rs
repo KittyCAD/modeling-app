@@ -8,12 +8,11 @@ use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use crate::engine::{PlaneName, DEFAULT_PLANE_INFO};
-use crate::errors::KclErrorDetails;
 #[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::{
-    errors::KclError,
+    engine::{PlaneName, DEFAULT_PLANE_INFO},
+    errors::{KclError, KclErrorDetails},
     execution::{types::NumericType, ExecState, ExecutorContext, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::{args::TyF64, sketch::PlaneData},

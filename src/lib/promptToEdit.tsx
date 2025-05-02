@@ -4,8 +4,6 @@ import type { Models } from '@kittycad/lib'
 import { VITE_KC_API_BASE_URL } from '@src/env'
 import { diffLines } from 'diff'
 import toast from 'react-hot-toast'
-import { Client } from '@kittycad/lib'
-import { ml } from '@kittycad/lib'
 import type { TextToCadMultiFileIteration_type } from '@kittycad/lib/dist/types/src/models'
 import { getCookie, TOKEN_PERSIST_KEY } from '@src/machines/authMachine'
 import { COOKIE_NAME } from '@src/lib/constants'
@@ -14,7 +12,10 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 
-import { ToastPromptToEditCadSuccess } from '@src/components/ToastTextToCad'
+import {
+  ToastPromptToEditCadSuccess,
+  writeOverFilesAndExecute,
+} from '@src/components/ToastTextToCad'
 import { modelingMachineEvent } from '@src/editor/manager'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -26,6 +27,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { File as KittyCadLibFile } from '@kittycad/lib/dist/types/src/models'
 import type { FileMeta } from '@src/lib/types'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 
 type KclFileMetaMap = {
   [execStateFileNamesIndex: number]: Extract<FileMeta, { type: 'kcl' }>
@@ -52,6 +54,52 @@ function convertAppRangeToApiRange(
   }
 }
 
+type TextToCadErrorResponse = {
+  error_code: string
+  message: string
+}
+
+async function submitTextToCadRequest(
+  body: {
+    prompt: string
+    source_ranges: Models['SourceRangePrompt_type'][]
+    project_name?: string
+    kcl_version: string
+  },
+  files: KittyCadLibFile[],
+  token: string
+): Promise<TextToCadMultiFileIteration_type | Error> {
+  const formData = new FormData()
+  formData.append('body', JSON.stringify(body))
+
+  files.forEach((file) => {
+    formData.append('files', file.data, file.name)
+  })
+
+  const response = await fetch(
+    `${VITE_KC_API_BASE_URL}/ml/text-to-cad/multi-file/iteration`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    }
+  )
+
+  if (!response.ok) {
+    return new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  const data = await response.json()
+  if ('error_code' in data) {
+    const errorData = data as TextToCadErrorResponse
+    return new Error(errorData.message || 'Unknown error')
+  }
+
+  return data as TextToCadMultiFileIteration_type
+}
+
 export async function submitPromptToEditToQueue({
   prompt,
   selections,
@@ -72,8 +120,6 @@ export async function submitPromptToEditToQueue({
       ? token
       : getCookie(COOKIE_NAME) || localStorage?.getItem(TOKEN_PERSIST_KEY) || ''
 
-  const client = new Client(_token)
-
   const kclFilesMap: KclFileMetaMap = {}
   const endPointFiles: KittyCadLibFile[] = []
   projectFiles.forEach((file) => {
@@ -93,9 +139,8 @@ export async function submitPromptToEditToQueue({
 
   // If no selection, use whole file
   if (selections === null) {
-    return ml.create_text_to_cad_multi_file_iteration({
-      client,
-      body: {
+    return submitTextToCadRequest(
+      {
         prompt,
         source_ranges: [],
         project_name:
@@ -104,8 +149,9 @@ export async function submitPromptToEditToQueue({
             : undefined,
         kcl_version: kclManager.kclVersion,
       },
-      files: endPointFiles,
-    })
+      endPointFiles,
+      _token
+    )
   }
 
   // Handle manual code selections and artifact selections differently
@@ -239,9 +285,8 @@ See later source ranges for more context. about the sweep`,
       }
       return prompts
     })
-  return ml.create_text_to_cad_multi_file_iteration({
-    client,
-    body: {
+  return submitTextToCadRequest(
+    {
       prompt,
       source_ranges: ranges,
       project_name:
@@ -250,8 +295,9 @@ See later source ranges for more context. about the sweep`,
           : undefined,
       kcl_version: kclManager.kclVersion,
     },
-    files: endPointFiles,
-  })
+    endPointFiles,
+    _token
+  )
 }
 
 export async function getPromptToEditResult(
@@ -307,10 +353,12 @@ export async function doPromptEdit({
       projectName,
     })
   } catch (e: any) {
+    toast.dismiss(toastId)
     return new Error(e.message)
   }
-  if ('error_code' in submitResult) {
-    return new Error(submitResult.message)
+  if (submitResult instanceof Error) {
+    toast.dismiss(toastId)
+    return submitResult
   }
 
   const textToCadComplete = new Promise<
@@ -324,7 +372,11 @@ export async function doPromptEdit({
 
       while (timeElapsed < MAX_CHECK_TIMEOUT) {
         const check = await getPromptToEditResult(submitResult.id, token)
-        if (check instanceof Error || check.status === 'failed') {
+        if (
+          check instanceof Error ||
+          check.status === 'failed' ||
+          check.error
+        ) {
           reject(check)
           return
         } else if (check.status === 'completed') {
@@ -363,7 +415,6 @@ export async function promptToEditFlow({
   token,
   artifactGraph,
   projectName,
-  basePath,
 }: {
   prompt: string
   selections: Selections
@@ -371,7 +422,6 @@ export async function promptToEditFlow({
   token?: string
   artifactGraph: ArtifactGraph
   projectName: string
-  basePath: string
 }) {
   const result = await doPromptEdit({
     prompt,
@@ -381,15 +431,13 @@ export async function promptToEditFlow({
     artifactGraph,
     projectName,
   })
-  if (err(result)) return Promise.reject(result)
+  if (err(result))  {
+    toast.error('Failed to modify.')
+    return Promise.reject(result)
+  }
   const oldCodeWebAppOnly = codeManager.code
-  // TODO remove once endpoint isn't returning fake data.
-  const outputs: TextToCadMultiFileIteration_type['outputs'] = {}
-  Object.entries(result.outputs).forEach(([key, value]) => {
-    outputs[key] = value + '\n// yoyo a comment'
-  })
 
-  if (!isDesktop() && Object.values(outputs).length > 1) {
+  if (!isDesktop() && Object.values(result.outputs).length > 1) {
     const toastId = uuidv4()
     toast.error(
       (t) => (
@@ -437,17 +485,23 @@ export async function promptToEditFlow({
     )
     return
   }
-
   if (isDesktop()) {
-    // write all of the outputs to disk
-    for (const [relativePath, fileContents] of Object.entries(outputs)) {
-      window.electron.writeFile(
-        window.electron.join(basePath, relativePath),
-        fileContents
-      )
+    const requestedFiles: RequestedKCLFile[] = []
+
+    for (const [relativePath, fileContents] of Object.entries(result.outputs)) {
+      requestedFiles.push({
+        requestedCode: fileContents,
+        requestedFileName: relativePath,
+        requestedProjectName: projectName,
+      })
     }
+
+    await writeOverFilesAndExecute({
+      requestedFiles,
+      projectName,
+    })
   } else {
-    const newCode = outputs['main.kcl']
+    const newCode = result.outputs['main.kcl']
     codeManager.updateCodeEditor(newCode)
     const diff = reBuildNewCodeWithRanges(oldCodeWebAppOnly, newCode)
     const ranges: SelectionRange[] = diff.insertRanges.map((range) =>

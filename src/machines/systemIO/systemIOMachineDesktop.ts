@@ -14,13 +14,79 @@ import {
 } from '@src/lib/desktopFS'
 import type { Project } from '@src/lib/project'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import type {
+  RequestedKCLFile,
+  SystemIOContext,
+} from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+
+const sharedBulkCreateWorkflow = async ({
+  input,
+}: {
+  input: {
+    context: SystemIOContext
+    files: RequestedKCLFile[]
+    rootContext: AppMachineContext
+    override?: boolean
+  }
+}) => {
+  const configuration = await readAppSettingsFile()
+  for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
+    const file = input.files[fileIndex]
+    const requestedProjectName = file.requestedProjectName
+    const requestedFileName = file.requestedFileName
+    const requestedCode = file.requestedCode
+    const folders = input.context.folders
+
+    let newProjectName = requestedProjectName
+
+    if (!newProjectName) {
+      newProjectName = getUniqueProjectName(
+        input.context.defaultProjectFolderName,
+        input.context.folders
+      )
+    }
+
+    const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
+    if (needsInterpolated) {
+      const nextIndex = getNextProjectIndex(newProjectName, folders)
+      newProjectName = interpolateProjectNameWithIndex(
+        newProjectName,
+        nextIndex
+      )
+    }
+
+    const baseDir = window.electron.join(
+      input.context.projectDirectoryPath,
+      newProjectName
+    )
+    // If override is true, use the requested filename directly
+    const fileName = input.override
+      ? requestedFileName
+      : getNextFileName({
+          entryName: requestedFileName,
+          baseDir,
+        }).name
+
+    // Create the project around the file if newProject
+    await createNewProjectDirectory(
+      newProjectName,
+      requestedCode,
+      configuration,
+      fileName
+    )
+  }
+  return {
+    message: 'Batch create success',
+    fileName: '',
+    projectName: '',
+  }
+}
 
 export const systemIOMachineDesktop = systemIOMachine.provide({
   actors: {
@@ -158,7 +224,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
           requestedCode: string
           rootContext: AppMachineContext
-          requestedSubRoute?: string
         }
       }) => {
         const requestedProjectName = input.requestedProjectName
@@ -207,7 +272,6 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: 'File created successfully',
           fileName: newFileName,
           projectName: newProjectName,
-          subRoute: input.requestedSubRoute || '',
         }
       }
     ),
@@ -251,6 +315,41 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           projectName: input.requestedProjectName,
           fileName: input.requestedFileName,
         }
+      }
+    ),
+    [SystemIOMachineActors.bulkCreateKCLFiles]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+        }
+      }) => {
+        return await sharedBulkCreateWorkflow({ input })
+      }
+    ),
+    [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+          requestedProjectName: string
+          override?: boolean
+        }
+      }) => {
+        const message = await sharedBulkCreateWorkflow({
+          input: {
+            ...input,
+            override: input.override,
+          },
+        })
+        message.projectName = input.requestedProjectName
+        return message
       }
     ),
   },

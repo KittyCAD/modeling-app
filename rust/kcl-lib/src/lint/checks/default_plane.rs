@@ -2,12 +2,13 @@ use anyhow::Result;
 
 use crate::{
     errors::Suggestion,
-    lint::rule::{def_finding, Discovered, Finding},
+    lint::{
+        checks::offset_plane::start_sketch_on_check_specific_plane,
+        rule::{def_finding, Discovered, Finding},
+    },
     parsing::ast::types::{Node as AstNode, Program},
     walk::Node,
 };
-
-use super::offset_plane::start_sketch_on_check_specific_plane;
 
 def_finding!(
     Z0002,

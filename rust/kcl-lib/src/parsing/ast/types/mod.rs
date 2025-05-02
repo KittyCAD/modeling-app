@@ -11,10 +11,12 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
+pub use path::NodePath;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
+    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
+    FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -34,6 +36,7 @@ use crate::{
 mod condition;
 mod literal_value;
 mod none;
+mod path;
 
 #[derive(Debug)]
 pub enum Definition<'a> {
@@ -156,6 +159,10 @@ impl<T> Node<T> {
 
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        self.as_source_range().contains_range(range)
     }
 
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
@@ -388,6 +395,99 @@ impl Node<Program> {
         }
 
         true
+    }
+
+    /// Find all the color strings in the program.
+    /// For example `appearance(color = "#ff0000")`
+    /// This is to fulfill the `documentColor` request in LSP.
+    pub fn document_color<'a>(&'a self, code: &str) -> Result<Vec<ColorInformation>> {
+        let colors = Rc::new(RefCell::new(vec![]));
+
+        let add_color = |literal: &Node<Literal>| {
+            // Check if the string is a color.
+            if let Some(c) = literal.value.is_color() {
+                let color = ColorInformation {
+                    range: literal.as_source_range().to_lsp_range(code),
+                    color: tower_lsp::lsp_types::Color {
+                        red: c.r,
+                        green: c.g,
+                        blue: c.b,
+                        alpha: c.a,
+                    },
+                };
+                if colors.borrow().iter().any(|c| *c == color) {
+                    return;
+                }
+                colors.borrow_mut().push(color);
+            }
+        };
+
+        // The position must be within the variable declaration.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::CallExpressionKw(call) => {
+                    if call.inner.callee.inner.name.inner.name == "appearance" {
+                        for arg in &call.arguments {
+                            if arg.label.inner.name == "color" {
+                                // Get the value of the argument.
+                                if let Expr::Literal(literal) = &arg.arg {
+                                    add_color(literal);
+                                }
+                            }
+                        }
+                    }
+                }
+                crate::walk::Node::Literal(literal) => {
+                    // Check if the literal is a color.
+                    add_color(literal);
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let colors = colors.take();
+        Ok(colors)
+    }
+
+    /// This is to fulfill the `colorPresentation` request in LSP.
+    pub fn color_presentation<'a>(
+        &'a self,
+        color: &Color,
+        pos_start: usize,
+        pos_end: usize,
+    ) -> Result<Option<ColorPresentation>> {
+        let found = Rc::new(RefCell::new(false));
+        // Find the literal with the same start and end.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::Literal(literal) => {
+                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                        found.replace(true);
+                        return Ok(true);
+                    }
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let found = found.take();
+        if !found {
+            return Ok(None);
+        }
+
+        let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
+        Ok(Some(ColorPresentation {
+            // The label will be what they replace the color with.
+            label: new_color.to_hex_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }))
     }
 }
 
@@ -724,6 +824,11 @@ impl BodyItem {
         }
     }
 
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let item_range = SourceRange::from(self);
+        item_range.contains_range(range)
+    }
+
     pub(crate) fn set_attrs(&mut self, attr: NodeList<Annotation>) {
         match self {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
@@ -951,6 +1056,11 @@ impl Expr {
         }
     }
 
+    fn contains_range(&self, range: &SourceRange) -> bool {
+        let expr_range = SourceRange::from(self);
+        expr_range.contains_range(range)
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
@@ -1065,6 +1175,21 @@ impl From<Expr> for SourceRange {
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
         Self::new(value.start(), value.end(), value.module_id())
+    }
+}
+
+impl From<&BinaryPart> for Expr {
+    fn from(value: &BinaryPart) -> Self {
+        match value {
+            BinaryPart::Literal(literal) => Expr::Literal(literal.clone()),
+            BinaryPart::Name(name) => Expr::Name(name.clone()),
+            BinaryPart::BinaryExpression(binary_expression) => Expr::BinaryExpression(binary_expression.clone()),
+            BinaryPart::CallExpression(call_expression) => Expr::CallExpression(call_expression.clone()),
+            BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
+            BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
+            BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+        }
     }
 }
 
@@ -2701,6 +2826,11 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<MemberObject> for SourceRange {
@@ -2736,6 +2866,11 @@ impl LiteralIdentifier {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
         }
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 
@@ -3255,6 +3390,11 @@ impl Parameter {
     pub fn optional(&self) -> bool {
         self.default_value.is_some()
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<&Parameter> for SourceRange {
@@ -3645,11 +3785,11 @@ mod tests {
     fn test_get_lsp_folding_ranges() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3657,7 +3797,7 @@ blah = 1
 foo = false
 baz = {a = 1, b = "thing"}
 
-fn ghi(x) {
+fn ghi(@x) {
   return x
 }
 
@@ -3667,24 +3807,24 @@ ghi("things")
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 27);
-        assert_eq!(folding_ranges[0].end_line, 126);
+        assert_eq!(folding_ranges[0].end_line, 123);
         assert_eq!(
             folding_ranges[0].collapsed_text,
             Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 145);
-        assert_eq!(folding_ranges[1].end_line, 244);
+        assert_eq!(folding_ranges[1].start_line, 142);
+        assert_eq!(folding_ranges[1].end_line, 238);
         assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
-        assert_eq!(folding_ranges[2].start_line, 350);
-        assert_eq!(folding_ranges[2].end_line, 363);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 345);
+        assert_eq!(folding_ranges[2].end_line, 358);
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(@x) {".to_string()));
     }
 
     #[test]
     fn test_get_lsp_symbols() {
         let code = r#"part001 = startSketchOn(XY)
   |> startProfile(at = [0.0000000000, 5.0000000000])
-    |> line([0.4900857016, -0.0240763666], %)
+    |> line([0.4900857016, -0.0240763666])
 
 part002 = "part002"
 things = [part001, 0.0]
@@ -3710,12 +3850,12 @@ h = 30
 
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
-  |> arc({
+  |> arc(
        angle_end = 360,
        angle_start = 0,
        radius = r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -3731,12 +3871,12 @@ h = 30
 cylinder = startSketchOn(-XZ)
   |> startProfile(at = [50, 0])
   // comment
-  |> arc({
+  |> arc(
        angle_end= 360,
        angle_start= 0,
        radius= r
-     }, %)
-  |> extrude(h, %)
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -4011,7 +4151,7 @@ cylinder = startSketchOn(-XZ)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
-        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let some_program_string = r#"some_func({thing = true, other_thing = false})"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // We want to get the bool and verify it is a bool.
@@ -4029,14 +4169,22 @@ cylinder = startSketchOn(-XZ)
             panic!("expected a function!");
         };
 
-        let Expr::CallExpression(ce) = expression else {
-            panic!("expected a function!");
-        };
+        let oe = match expression {
+            Expr::CallExpressionKw(ce) => {
+                assert!(ce.unlabeled.is_some());
 
-        assert!(!ce.arguments.is_empty());
-
-        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
-            panic!("expected a object!");
+                let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
+                    panic!("expected a object!");
+                };
+                oe
+            }
+            Expr::CallExpression(ce) => {
+                let Expr::ObjectExpression(ref oe) = (ce.arguments).first().unwrap() else {
+                    panic!("expected an object!");
+                };
+                oe
+            }
+            other => panic!("expected a Call or CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);

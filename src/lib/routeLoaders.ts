@@ -21,6 +21,13 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { settingsActor } from '@src/lib/singletons'
+import { NAVIGATION_COMPLETE_EVENT } from '@src/machines/systemIO/utils'
+
+export const telemetryLoader: LoaderFunction = async ({
+  params,
+}): Promise<null> => {
+  return null
+}
 
 export const fileLoader: LoaderFunction = async (
   routerData
@@ -83,6 +90,7 @@ export const fileLoader: LoaderFunction = async (
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
       codeManager.updateCodeStateEditor(code, true)
+      window.dispatchEvent(new CustomEvent(NAVIGATION_COMPLETE_EVENT))
     }
 
     // Set the file system manager to the project path

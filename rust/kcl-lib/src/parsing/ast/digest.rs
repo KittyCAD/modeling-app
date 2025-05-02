@@ -529,13 +529,13 @@ mod test {
     async fn test_parse_digest() {
         let prog1_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 2])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
 
@@ -543,7 +543,7 @@ mod test {
 
         let prog3_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 

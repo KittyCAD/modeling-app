@@ -1807,7 +1807,7 @@ export const ModelingMachineProvider = ({
             const MB20 = 2 ** 20 * 20
             if (uploadSize > MB20) {
               toast.error(
-                "Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files"
+                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
               )
             }
           }
@@ -1818,7 +1818,6 @@ export const ModelingMachineProvider = ({
             token,
             artifactGraph: kclManager.artifactGraph,
             projectName: context.project.name,
-            basePath,
           })
         }),
       },

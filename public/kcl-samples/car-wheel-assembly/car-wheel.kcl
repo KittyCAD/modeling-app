@@ -121,8 +121,8 @@ fn spoke(spokeGap, spokeAngle, spokeThickness) {
   return spokePattern
 }
 
-spoke(spokeGap, spokeAngle, spokeThickness)
-spoke(-spokeGap, -spokeAngle, -spokeThickness)
+spoke(spokeGap = spokeGap, spokeAngle = spokeAngle, spokeThickness = spokeThickness)
+spoke(spokeGap = -spokeGap, spokeAngle = -spokeAngle, spokeThickness = -spokeThickness)
 
 // Define and revolve wheel exterior
 startSketchOn(XY)

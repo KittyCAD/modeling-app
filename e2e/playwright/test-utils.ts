@@ -5,7 +5,7 @@ import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { COOKIE_NAME } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
@@ -19,6 +19,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { secrets } from '@e2e/playwright/secrets'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {

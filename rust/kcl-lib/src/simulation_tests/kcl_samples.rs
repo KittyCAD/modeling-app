@@ -51,6 +51,7 @@ async fn unparse_test(test: &Test) {
         .map(|file| {
             tokio::spawn(async move {
                 let contents = tokio::fs::read_to_string(&file).await.unwrap();
+                eprintln!("{}", file.display());
                 let program = crate::Program::parse_no_errs(&contents).unwrap();
                 let recast = program.recast_with_options(&Default::default());
 

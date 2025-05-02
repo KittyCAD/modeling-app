@@ -29,10 +29,18 @@ import { PATHS } from '@src/lib/paths'
 import { codeManager, kclManager, systemIOActor } from '@src/lib/singletons'
 import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import { reportRejection } from '@src/lib/trap'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useProjectDirectoryPath } from '@src/machines/systemIO/hooks'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+  NAVIGATION_COMPLETE_EVENT,
+} from '@src/machines/systemIO/utils'
+import {
+  useProjectDirectoryPath,
+  useRequestedProjectName,
+} from '@src/machines/systemIO/hooks'
 import { commandBarActor } from '@src/lib/singletons'
 import type { FileMeta } from '@src/lib/types'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 
 const CANVAS_SIZE = 128
 const PROMPT_TRUNCATE_LENGTH = 128
@@ -490,6 +498,7 @@ export function ToastPromptToEditCadSuccess({
   token?: string
 }) {
   const modelId = data.id
+  const requestedProjectName = useRequestedProjectName()
 
   return (
     <div className="flex gap-4 min-w-80">
@@ -518,22 +527,34 @@ export function ToastPromptToEditCadSuccess({
             data-negative-button={'reject'}
             name={'Reject'}
             onClick={() => {
-              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              // revert to before the prompt-to-edit
-              if (isDesktop()) {
-                for (const file of oldFiles) {
-                  if (file.type !== 'kcl') {
-                    // only need to write the kcl files
-                    // as the endpoint would have never overwritten other file types
-                    continue
+              void (async () => {
+                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
+                // revert to before the prompt-to-edit
+                if (isDesktop()) {
+                  const requestedFiles: RequestedKCLFile[] = []
+                  for (const file of oldFiles) {
+                    if (file.type !== 'kcl') {
+                      // only need to write the kcl files
+                      // as the endpoint would have never overwritten other file types
+                      continue
+                    }
+                    requestedFiles.push({
+                      requestedCode: file.fileContents,
+                      requestedFileName: file.relPath,
+                      requestedProjectName: requestedProjectName.name,
+                    })
                   }
-                  window.electron.writeFile(file.absPath, file.fileContents)
+                  toast.dismiss(toastId)
+                  await writeOverFilesAndExecute({
+                    requestedFiles: requestedFiles,
+                    projectName: requestedProjectName.name,
+                  })
+                } else {
+                  codeManager.updateCodeEditor(oldCode)
+                  kclManager.executeCode().catch(reportRejection)
+                  toast.dismiss(toastId)
                 }
-              } else {
-                codeManager.updateCodeEditor(oldCode)
-                kclManager.executeCode().catch(reportRejection)
-              }
-              toast.dismiss(toastId)
+              })()
             }}
           >
             {'Reject'}
@@ -567,4 +588,51 @@ export function ToastPromptToEditCadSuccess({
       </div>
     </div>
   )
+}
+
+export const writeOverFilesAndExecute = async ({
+  requestedFiles,
+  projectName,
+}: {
+  requestedFiles: RequestedKCLFile[]
+  projectName: string
+}) => {
+  // Create a promise that resolves when the bulk create operation completes
+  const bulkCreatePromise = new Promise((resolve) => {
+    const subscription = systemIOActor.subscribe((state) => {
+      if (state.matches(SystemIOMachineStates.idle)) {
+        subscription.unsubscribe()
+        resolve(undefined)
+      }
+    })
+  })
+
+  // Create a promise that resolves when navigation completes
+  const navigationPromise = new Promise<void>((resolve) => {
+    const handleNavigationComplete = (event: CustomEvent) => {
+      window.removeEventListener(
+        NAVIGATION_COMPLETE_EVENT,
+        handleNavigationComplete as EventListener
+      )
+      resolve()
+    }
+    window.addEventListener(
+      NAVIGATION_COMPLETE_EVENT,
+      handleNavigationComplete as EventListener
+    )
+  })
+
+  systemIOActor.send({
+    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+    data: {
+      files: requestedFiles,
+      requestedProjectName: projectName,
+      override: true,
+    },
+  })
+
+  // Wait for both the bulk create operation and navigation to complete
+  await Promise.all([bulkCreatePromise, navigationPromise])
+
+  await kclManager.executeCode()
 }

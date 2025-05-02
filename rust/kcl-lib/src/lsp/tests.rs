@@ -3,8 +3,8 @@ use std::collections::{BTreeMap, HashMap};
 use pretty_assertions::assert_eq;
 use tower_lsp::{
     lsp_types::{
-        CodeActionKind, CodeActionOrCommand, Diagnostic, SemanticTokenModifier, SemanticTokenType, TextEdit,
-        WorkspaceEdit,
+        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
+        SemanticTokenType, TextEdit, WorkspaceEdit,
     },
     LanguageServer,
 };
@@ -895,7 +895,7 @@ async fn test_kcl_lsp_on_hover() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -971,7 +971,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -1016,7 +1016,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
@@ -2027,7 +2027,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -2035,7 +2035,7 @@ sphere = startSketchOn(XZ)
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -2056,7 +2056,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
                     .to_string(),
             },
         })
@@ -2090,7 +2090,7 @@ outsideRevolve = startSketchOn(XZ)
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
                 line: 50,
-                character: 29
+                character: 22
             }
         }
     );
@@ -2117,7 +2117,7 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
@@ -2128,7 +2128,7 @@ sphere = startSketchOn(XZ)
   |> line(end = [sphereDia - 0.1, 0])
   |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -2152,7 +2152,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
     );
 }
 
@@ -3891,7 +3891,7 @@ async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
@@ -3967,7 +3967,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -4012,7 +4012,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
@@ -4144,5 +4144,175 @@ async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
             disabled: None,
             data: None,
         })
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_prepare_rename() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let result = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        PrepareRenameResponse::DefaultBehavior { default_behavior: true }
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_document_color() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_color_presentation() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let text = r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: text.to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+
+    // Send color presentation request.
+    let result = server
+        .color_presentation(tower_lsp::lsp_types::ColorPresentationParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 1.0,
+                alpha: 1.0,
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorPresentation {
+            label: "#ff00ff".to_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }]
     );
 }
