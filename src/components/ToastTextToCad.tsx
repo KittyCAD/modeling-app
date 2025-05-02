@@ -31,8 +31,6 @@ import { sendTelemetry } from '@src/lib/textToCadTelemetry'
 import { reportRejection } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
-  SystemIOMachineStates,
-  NAVIGATION_COMPLETE_EVENT,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import {
