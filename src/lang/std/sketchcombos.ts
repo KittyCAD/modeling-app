@@ -145,7 +145,7 @@ function createCallWrapper(
   val: [Expr, Expr] | Expr,
   tag?: Expr,
   valueUsedInTransform?: number
-): CreatedSketchExprResult {
+): CreatedSketchExprResult | Error {
   if (isArray(val)) {
     if (tooltip === 'line') {
       const labeledArgs = [createLabeledArg('end', createArrayExpression(val))]
@@ -251,7 +251,9 @@ function createCallWrapper(
     }
   }
 
-  throw new Error('ADAM: unreachable')
+  return new Error(
+    `Unexpected tooltip or it didn't match the value: tooltip=${tooltip}, val=${JSON.stringify(val)}`
+  )
 }
 
 /**
