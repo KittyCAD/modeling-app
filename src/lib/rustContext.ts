@@ -87,7 +87,7 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, node)
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 
@@ -161,29 +161,13 @@ export default class RustContext {
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
 
-    const ast: Node<Program> = {
-      body: [],
-      shebang: null,
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      nonCodeMeta: {
-        nonCodeNodes: {},
-        startNodes: [],
-      },
-      innerAttrs: [],
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-    }
-
     try {
       const result = await instance.bustCacheAndResetScene(
         JSON.stringify(settings),
         path
       )
       /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, ast)
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 

@@ -20,6 +20,7 @@ import type {
   is_points_ccw as IsPointsCcw,
   kcl_lint as KclLint,
   kcl_settings as KclSettings,
+  node_path_from_range as NodePathFromRange,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
   parse_wasm as ParseWasm,
@@ -59,6 +60,9 @@ export const format_number: typeof FormatNumber = (...args) => {
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)
+}
+export const node_path_from_range: typeof NodePathFromRange = (...args) => {
+  return getModule().node_path_from_range(...args)
 }
 export const is_points_ccw: typeof IsPointsCcw = (...args) => {
   return getModule().is_points_ccw(...args)
