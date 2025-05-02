@@ -74,6 +74,7 @@ import {
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
   EXECUTION_TYPE_MOCK,
+  FILE_EXT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
@@ -1765,22 +1766,31 @@ export const ModelingMachineProvider = ({
                   recursivelyPushFilePromises(file.children)
                   continue
                 }
-                const absPath = file.path
-                const relPath = window.electron.path.relative(basePath, absPath)
+
+                const absolutePathToFileNameWithExtension = file.path
+                const fileNameWithExtension = window.electron.path.relative(
+                  basePath,
+                  absolutePathToFileNameWithExtension
+                )
+
                 const filePromise = window.electron
-                  .readFile(absPath)
+                  .readFile(absolutePathToFileNameWithExtension)
                   .then((file): FileMeta => {
                     uploadSize += file.byteLength
                     const decoder = new TextDecoder('utf-8')
-                    const fileType = window.electron.path.extname(absPath)
-                    if (fileType === '.kcl') {
+                    const fileType = window.electron.path.extname(
+                      absolutePathToFileNameWithExtension
+                    )
+                    if (fileType === FILE_EXT) {
                       return {
                         type: 'kcl',
-                        absPath,
-                        relPath,
+                        absPath: absolutePathToFileNameWithExtension,
+                        relPath: fileNameWithExtension,
                         fileContents: decoder.decode(file),
                         execStateFileNamesIndex:
-                          execStateNameToIndexMap[absPath],
+                          execStateNameToIndexMap[
+                            absolutePathToFileNameWithExtension
+                          ],
                       }
                     }
                     const blob = new Blob([file], {
@@ -1788,7 +1798,7 @@ export const ModelingMachineProvider = ({
                     })
                     return {
                       type: 'other',
-                      relPath,
+                      relPath: fileNameWithExtension,
                       data: blob,
                     }
                   })

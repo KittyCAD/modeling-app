@@ -32,8 +32,8 @@ import { reportRejection } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
-    NAVIGATION_COMPLETE_EVENT,
-    waitForIdleState,
+  NAVIGATION_COMPLETE_EVENT,
+  waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import {
   useProjectDirectoryPath,
@@ -558,7 +558,7 @@ export function ToastPromptToEditCadSuccess({
               })()
             }}
           >
-            {'Reject'}
+            {'Revert'}
           </ActionButton>
 
           <ActionButton
@@ -588,7 +588,7 @@ export function ToastPromptToEditCadSuccess({
                 })
             }}
           >
-            Accept
+            Continue
           </ActionButton>
         </div>
       </div>
@@ -611,6 +611,7 @@ export const writeOverFilesAndExecute = async ({
       override: true,
     },
   })
+
   // to await the result of the send event above
-  await waitForIdleState({systemIOActor})
+  await waitForIdleState({ systemIOActor })
 }
