@@ -4,10 +4,10 @@ import { SystemIOMachineActors } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 import { newKclFile } from '@src/lang/project'
 import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsUtils'
-import { err } from '@src/lib/trap'
+import { err, reportRejection } from '@src/lib/trap'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
-import { uuidv4 } from '@src/lib/utils'
+import { sceneInfra } from '@src/lib/singletons'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -41,16 +41,21 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         await input.rootContext.codeManager.writeToFile()
         await input.rootContext.kclManager.executeCode()
 
-        await input.rootContext.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
+        // TODO wait for the test to work
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+
+        // await input.rootContext.engineCommandManager.sendSceneCommand({
+        //   type: 'modeling_cmd_req',
+        //   cmd_id: uuidv4(),
+        //   cmd: {
+        //     type: 'zoom_to_fit',
+        //     object_ids: [], // leave empty to zoom to all objects
+        //     padding: 0.2, // padding around the objects
+        //     animated: false, // don't animate the zoom for now
+        //   },
+        // })
+
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
 
         return {
           message: 'File overwritten successfully',
