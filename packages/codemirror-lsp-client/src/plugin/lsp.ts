@@ -48,6 +48,7 @@ import { isArray } from '../lib/utils'
 import lspGoToDefinitionExt from './go-to-definition'
 import lspRenameExt from './rename'
 import lspSignatureHelpExt from './signature-help'
+import lspColorsExt from './colors'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -532,6 +533,37 @@ export class LanguageServerPlugin implements PluginValue {
         ],
       },
     })
+  }
+
+  async requestDocumentColors() {
+    if (
+      !(this.client.getServerCapabilities().colorProvider && this.client.ready)
+    ) {
+      return
+    }
+
+    const result = await this.client.textDocumentDocumentColor({
+      textDocument: { uri: this.getDocUri() },
+    })
+
+    if (!result) return
+    return result
+  }
+
+  async requestColorPresentation(color: LSP.Color, range: LSP.Range) {
+    if (
+      !(this.client.getServerCapabilities().colorProvider && this.client.ready)
+    ) {
+      return
+    }
+
+    const result = await this.client.textDocumentColorPresentation({
+      textDocument: { uri: this.getDocUri() },
+      color,
+      range,
+    })
+    if (!result) return
+    return result
   }
 
   async requestRename(
@@ -1318,6 +1350,7 @@ export class LanguageServerPluginSpec
     return [
       linter(null),
       lspAutocompleteExt(plugin),
+      lspColorsExt(plugin),
       lspFormatExt(plugin),
       lspGoToDefinitionExt(plugin),
       lspHoverExt(plugin),

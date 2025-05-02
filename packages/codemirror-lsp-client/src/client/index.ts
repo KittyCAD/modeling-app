@@ -41,6 +41,14 @@ interface LSPRequestMap {
     LSP.DefinitionParams,
     LSP.Definition | LSP.DefinitionLink[] | null,
   ]
+  'textDocument/documentColor': [
+    LSP.DocumentColorParams,
+    LSP.ColorInformation[] | null,
+  ]
+  'textDocument/colorPresentation': [
+    LSP.ColorPresentationParams,
+    LSP.ColorPresentation[] | null,
+  ]
 }
 
 // Client to server
@@ -227,6 +235,22 @@ export class LanguageServerClient {
       return null
     }
     return await this.request('textDocument/definition', params)
+  }
+
+  async textDocumentDocumentColor(params: LSP.DocumentColorParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.colorProvider) {
+      return null
+    }
+    return await this.request('textDocument/documentColor', params)
+  }
+
+  async textDocumentColorPresentation(params: LSP.ColorPresentationParams) {
+    const serverCapabilities = this.getServerCapabilities()
+    if (!serverCapabilities.colorProvider) {
+      return null
+    }
+    return await this.request('textDocument/colorPresentation', params)
   }
 
   attachPlugin(plugin: LanguageServerPlugin) {
