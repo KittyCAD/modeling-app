@@ -58,6 +58,7 @@ bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.
     cargo build -p kcl-bumper
     ./target/debug/kcl-bumper --bump {{bump}}
+    cargo check -p kcl-bumper # this way Cargo.lock gets updated
 
 publish-kcl version:
     git tag kcl-{{version}} -m "Release kcl-{{version}}"
