@@ -21,23 +21,21 @@ import {
   createArrayExpression,
   createBinaryExpression,
   createBinaryExpressionWithUnary,
-  createCallExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
   createName,
-  createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
 } from '@src/lang/create'
+import type { createObjectExpression } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  createFirstArg,
   fnNameToTooltip,
   fnNameToToolTipFromSegment,
   getAngledLine,
@@ -46,7 +44,6 @@ import {
   getArgForEnd,
   getCircle,
   getConstraintInfoKw,
-  getFirstArg,
   isAbsoluteLine,
   replaceSketchLine,
   tooltipToFnName,
@@ -66,7 +63,6 @@ import type {
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type {
   BinaryPart,
-  CallExpression,
   CallExpressionKw,
   Expr,
   LabeledArg,
@@ -80,12 +76,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import {
-  cleanErrs,
-  err,
-  isErr as _isErr,
-  isNotErr as _isNotErr,
-} from '@src/lib/trap'
+import { err, isErr as _isErr, isNotErr as _isNotErr } from '@src/lib/trap'
 import {
   allLabels,
   getAngle,
@@ -154,7 +145,7 @@ function createCallWrapper(
   val: [Expr, Expr] | Expr,
   tag?: Expr,
   valueUsedInTransform?: number
-): CreatedSketchExprResult {
+): CreatedSketchExprResult | Error {
   if (isArray(val)) {
     if (tooltip === 'line') {
       const labeledArgs = [createLabeledArg('end', createArrayExpression(val))]
@@ -245,7 +236,7 @@ function createCallWrapper(
       if (err(fnName)) {
         console.error(fnName)
         return {
-          callExp: createCallExpression('', []),
+          callExp: createCallExpressionStdLibKw('', null, []),
           valueUsedInTransform: 0,
         }
       }
@@ -260,52 +251,9 @@ function createCallWrapper(
     }
   }
 
-  const args =
-    tooltip === 'circle'
-      ? []
-      : [createFirstArg(tooltip, val), createPipeSubstitution()]
-  if (tag) {
-    args.push(tag)
-  }
-
-  const [hasErr, argsWOutErr] = cleanErrs(args)
-  if (hasErr) {
-    console.error(args)
-    return {
-      callExp: createCallExpression('', []),
-      valueUsedInTransform: 0,
-    }
-  }
-
-  return {
-    callExp: createCallExpression(tooltip, argsWOutErr),
-    valueUsedInTransform,
-  }
-}
-
-/**
- * Abstracts creation of a callExpression ready for use for a sketchCombo transform
- * Assume it exists within a pipe and adds the pipe substitution
- * @param tool line, lineTo, angledLine, etc
- * @param val The first argument to the function
- * @param tag
- * @param valueUsedInTransform
- * @returns
- */
-function createStdlibCallExpression(
-  tool: ToolTip,
-  val: Expr,
-  tag?: Expr,
-  valueUsedInTransform?: number
-): CreatedSketchExprResult {
-  const args = [val, createPipeSubstitution()]
-  if (tag) {
-    args.push(tag)
-  }
-  return {
-    callExp: createCallExpression(tool, args),
-    valueUsedInTransform,
-  }
+  return new Error(
+    `Unexpected tooltip or it didn't match the value: tooltip=${tooltip}, val=${JSON.stringify(val)}`
+  )
 }
 
 /**
@@ -1296,7 +1244,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpression | CallExpressionKw,
+  sketchFnExp: CallExpressionKw,
   constraintType: ConstraintType
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name.name as ToolTip
@@ -1345,17 +1293,14 @@ export function getRemoveConstraintsTransform(
   }
   const isAbsolute =
     // isAbsolute doesn't matter if the call is positional.
-    sketchFnExp.type === 'CallExpression' ? false : isAbsoluteLine(sketchFnExp)
+    isAbsoluteLine(sketchFnExp)
   if (err(isAbsolute)) {
     console.error(isAbsolute)
     return false
   }
 
   // check if the function is locked down and so can't be transformed
-  const firstArg =
-    sketchFnExp.type === 'CallExpression'
-      ? getFirstArg(sketchFnExp)
-      : getArgForEnd(sketchFnExp)
+  const firstArg = getArgForEnd(sketchFnExp)
   if (err(firstArg)) {
     return false
   }
@@ -1394,19 +1339,14 @@ export function removeSingleConstraint({
   inputDetails: SimplifiedArgDetails
   ast: Program
 }): TransformInfo | false {
-  const callExp = getNodeFromPath<CallExpression | CallExpressionKw>(
-    ast,
-    pathToCallExp,
-    ['CallExpression', 'CallExpressionKw']
-  )
+  const callExp = getNodeFromPath<CallExpressionKw>(ast, pathToCallExp, [
+    'CallExpressionKw',
+  ])
   if (err(callExp)) {
     console.error(callExp)
     return false
   }
-  if (
-    callExp.node.type !== 'CallExpression' &&
-    callExp.node.type !== 'CallExpressionKw'
-  ) {
+  if (callExp.node.type !== 'CallExpressionKw') {
     console.error(new Error('Invalid node type'))
     return false
   }
@@ -1556,30 +1496,22 @@ export function removeSingleConstraint({
           const literal = rawArg?.overrideExpr ?? rawArg?.expr
           return (arg.index === inputToReplace.index && literal) || argExpr
         })
-        if (callExp.node.type === 'CallExpression') {
-          return createStdlibCallExpression(
-            callExp.node.callee.name.name as any,
-            createArrayExpression(values),
+        // It's a kw call.
+        const isAbsolute = callExp.node.callee.name.name == 'lineTo'
+        if (isAbsolute) {
+          const args = [
+            createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
+          ]
+          return createStdlibCallExpressionKw('line', args, tag)
+        } else {
+          const args = [
+            createLabeledArg(ARG_END, createArrayExpression(values)),
+          ]
+          return createStdlibCallExpressionKw(
+            callExp.node.callee.name.name as ToolTip,
+            args,
             tag
           )
-        } else {
-          // It's a kw call.
-          const isAbsolute = callExp.node.callee.name.name == 'lineTo'
-          if (isAbsolute) {
-            const args = [
-              createLabeledArg(ARG_END_ABSOLUTE, createArrayExpression(values)),
-            ]
-            return createStdlibCallExpressionKw('line', args, tag)
-          } else {
-            const args = [
-              createLabeledArg(ARG_END, createArrayExpression(values)),
-            ]
-            return createStdlibCallExpressionKw(
-              callExp.node.callee.name.name as ToolTip,
-              args,
-              tag
-            )
-          }
         }
       }
       if (
@@ -1675,28 +1607,14 @@ export function removeSingleConstraint({
         Object.entries(arrayInput).forEach(([key, value]) => {
           createObjParam[key] = createArrayExpression(value)
         })
-        if (
-          callExp.node.callee.name.name === 'circleThreePoint' &&
-          callExp.node.type === 'CallExpressionKw'
-        ) {
-          // it's kwarg
-          const inputPlane = callExp.node.unlabeled as Expr
-          return createStdlibCallExpressionKw(
-            callExp.node.callee.name.name as any,
-            kwArgInput,
-            tag,
-            undefined,
-            inputPlane
-          )
-        }
-        const objExp = createObjectExpression({
-          ...createObjParam,
-          ...objInput,
-        })
-        return createStdlibCallExpression(
+        // it's kwarg
+        const inputPlane = callExp.node.unlabeled as Expr
+        return createStdlibCallExpressionKw(
           callExp.node.callee.name.name as any,
-          objExp,
-          tag
+          kwArgInput,
+          tag,
+          undefined,
+          inputPlane
         )
       }
 
@@ -1708,63 +1626,6 @@ export function removeSingleConstraint({
     },
   }
   return transform
-}
-
-function getTransformMapPath(
-  sketchFnExp: CallExpression,
-  constraintType: ConstraintType
-):
-  | {
-      toolTip: ToolTip
-      lineInputType: LineInputsType | 'free'
-      constraintType: ConstraintType
-    }
-  | false {
-  const name = sketchFnExp.callee.name.name as ToolTip
-  if (!toolTips.includes(name)) {
-    return false
-  }
-  if (name === 'arcTo') {
-    return false
-  }
-
-  // check if the function is locked down and so can't be transformed
-  const firstArg = getFirstArg(sketchFnExp)
-  if (err(firstArg)) {
-    console.error(firstArg)
-    return false
-  }
-
-  if (isNotLiteralArrayOrStatic(firstArg.val)) {
-    return false
-  }
-
-  // check if the function has no constraints
-  if (isLiteralArrayOrStatic(firstArg.val)) {
-    const info = transformMap?.[name]?.free?.[constraintType]
-    if (info)
-      return {
-        toolTip: name,
-        lineInputType: 'free',
-        constraintType,
-      }
-    // if (info) return info
-  }
-
-  // check what constraints the function has
-  const lineInputType = getConstraintType(firstArg.val, name, false)
-  if (lineInputType) {
-    const info = transformMap?.[name]?.[lineInputType]?.[constraintType]
-    if (info)
-      return {
-        toolTip: name,
-        lineInputType,
-        constraintType,
-      }
-    // if (info) return info
-  }
-
-  return false
 }
 
 function getTransformMapPathKw(
@@ -1838,18 +1699,6 @@ function getTransformMapPathKw(
   return false
 }
 
-export function getTransformInfo(
-  sketchFnExp: CallExpression,
-  constraintType: ConstraintType
-): TransformInfo | false {
-  const path = getTransformMapPath(sketchFnExp, constraintType)
-  if (!path) return false
-  const { toolTip, lineInputType, constraintType: _constraintType } = path
-  const info = transformMap?.[toolTip]?.[lineInputType]?.[_constraintType]
-  if (!info) return false
-  return info
-}
-
 export function getTransformInfoKw(
   sketchFnExp: CallExpressionKw,
   constraintType: ConstraintType
@@ -1903,10 +1752,7 @@ export function getTransformInfos(
   constraintType: ConstraintType
 ): TransformInfo[] {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, [
-      'CallExpression',
-      'CallExpressionKw',
-    ])
+    getNodeFromPath<Expr>(ast, codeRef.pathToNode, ['CallExpressionKw'])
   )
 
   try {
@@ -1917,9 +1763,6 @@ export function getTransformInfos(
       }
 
       const node = nodeMeta.node
-      if (node?.type === 'CallExpression') {
-        return getTransformInfo(node, constraintType)
-      }
 
       if (node?.type === 'CallExpressionKw') {
         return getTransformInfoKw(node, constraintType)
@@ -1952,7 +1795,7 @@ export function getRemoveConstraintsTransforms(
     }
 
     const node = nodeMeta.node
-    if (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') {
+    if (node?.type === 'CallExpressionKw') {
       return getRemoveConstraintsTransform(node, constraintType)
     }
 
@@ -2318,9 +2161,9 @@ export function getConstraintLevelFromSourceRange(
   if (err(ast)) return ast
   let partsOfCallNode = (() => {
     const path = getNodePathFromSourceRange(ast, cursorRange)
-    const nodeMeta = getNodeFromPath<
-      Node<CallExpression> | Node<CallExpressionKw>
-    >(ast, path, ['CallExpression', 'CallExpressionKw'])
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(ast, path, [
+      'CallExpressionKw',
+    ])
     if (err(nodeMeta)) return nodeMeta
 
     const { node: sketchFnExp } = nodeMeta
@@ -2328,8 +2171,6 @@ export function getConstraintLevelFromSourceRange(
     const range: [number, number] = [sketchFnExp.start, sketchFnExp.end]
     const firstArg = (() => {
       switch (nodeMeta.node.type) {
-        case 'CallExpression':
-          return getFirstArg(nodeMeta.node)
         case 'CallExpressionKw':
           if (name === 'circle') {
             return getCircle(nodeMeta.node)
@@ -2426,7 +2267,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'Literal':
     case 'Name':
     case 'BinaryExpression':
-    case 'CallExpression':
     case 'CallExpressionKw':
     case 'UnaryExpression':
     case 'MemberExpression':

@@ -6,7 +6,6 @@ import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { findKwArgAny, topLevelRange } from '@src/lang/util'
 import type {
-  CallExpression,
   CallExpressionKw,
   Expr,
   LabeledArg,
@@ -97,14 +96,14 @@ export function isSketchVariablesLinked(
   const part001 = startSketchOn(XY)
     |> startProfile(at=[0, 0])
     |> xLine(endAbsolute = 1.69)
-    |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
+    |> line(end = [myVar, 0.38]) // ❗ <- cursor in this fn call (the primary)
     |> line(end = [0.41, baz])
     |> xLine(length = 0.91)
     |> angledLine(angle = 37, length = 2)
   const yo = line(end = [myVar, 0.38], tag = part001)
     |> line(end = [1, 1])
   const yo2 = line(end = [myVar, 0.38], tag = yo)
-    |> line(end = [1, 1]) // ❗️ <- and cursor here (secondary) is linked to the one above through variables
+    |> line(end = [1, 1]) // ❗ <- and cursor here (secondary) is linked to the one above through variables
   */
   const secondaryVarName = secondaryVarDec?.id?.name
   if (!secondaryVarName) return false
@@ -112,17 +111,11 @@ export function isSketchVariablesLinked(
   const { init } = secondaryVarDec
   if (
     !init ||
-    !(
-      init.type === 'CallExpression' ||
-      init.type === 'CallExpressionKw' ||
-      init.type === 'PipeExpression'
-    )
+    !(init.type === 'CallExpressionKw' || init.type === 'PipeExpression')
   )
     return false
   const firstCallExp = // first in pipe expression or just the call expression
-    init?.type === 'PipeExpression'
-      ? (init?.body[0] as CallExpression | CallExpressionKw)
-      : init
+    init?.type === 'PipeExpression' ? (init?.body[0] as CallExpressionKw) : init
   if (
     !firstCallExp ||
     !toolTips.includes(firstCallExp?.callee?.name.name as ToolTip)
@@ -133,8 +126,6 @@ export function isSketchVariablesLinked(
   // rename this var.
   const secondArg = (() => {
     switch (firstCallExp.type) {
-      case 'CallExpression':
-        return firstCallExp?.arguments[1]
       case 'CallExpressionKw':
         return findKwArgAny(DETERMINING_ARGS, firstCallExp)
     }

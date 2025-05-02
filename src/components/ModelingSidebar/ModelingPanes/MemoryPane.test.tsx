@@ -12,7 +12,7 @@ describe('processMemory', () => {
     // Enable rotations #152
     const code = `
   myVar = 5
-  fn myFn(a) {
+  fn myFn(@a) {
     return a - 2
   }
   otherVar = myFn(5)

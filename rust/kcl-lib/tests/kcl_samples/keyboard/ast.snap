@@ -694,24 +694,6 @@ description: Result of parsing keyboard.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "YZ",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  }
-                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -730,8 +712,24 @@ description: Result of parsing keyboard.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "YZ",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -1155,15 +1153,6 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1182,19 +1171,17 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
                         },
                         {
-                          "arguments": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1213,8 +1200,15 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
                         }
                       ],
                       "end": 0,
@@ -1265,7 +1259,6 @@ description: Result of parsing keyboard.kcl
                 "unlabeled": null
               },
               {
-                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -1284,8 +1277,9 @@ description: Result of parsing keyboard.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -1422,24 +1416,6 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg01",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1458,28 +1434,26 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg01",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg03",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1498,8 +1472,24 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg03",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "abs_path": false,
@@ -2531,20 +2521,6 @@ description: Result of parsing keyboard.kcl
                       }
                     },
                     {
-                      "arguments": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "raw": "7deg",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 7.0,
-                            "suffix": "Deg"
-                          }
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -2563,8 +2539,20 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "7deg",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 7.0,
+                          "suffix": "Deg"
+                        }
+                      }
                     }
                   ],
                   "end": 0,
@@ -2678,24 +2666,6 @@ description: Result of parsing keyboard.kcl
                       "type": "Identifier"
                     },
                     "init": {
-                      "arguments": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "plane001",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -2714,8 +2684,24 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "plane001",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
                     },
                     "start": 0,
                     "type": "VariableDeclarator"
@@ -3141,24 +3127,6 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "left": {
-                                  "arguments": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "rectangleSegmentA001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
@@ -3177,8 +3145,24 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "rectangleSegmentA001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
                                 },
                                 "operator": "+",
                                 "right": {
@@ -3366,24 +3350,6 @@ description: Result of parsing keyboard.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "arguments": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "rectangleSegmentA001",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -3402,8 +3368,24 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "rectangleSegmentA001",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
                               }
                             },
                             {
@@ -3417,24 +3399,6 @@ description: Result of parsing keyboard.kcl
                               },
                               "arg": {
                                 "argument": {
-                                  "arguments": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "rectangleSegmentA001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
@@ -3453,8 +3417,24 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "rectangleSegmentA001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
                                 },
                                 "commentStart": 0,
                                 "end": 0,
@@ -3589,15 +3569,6 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "elements": [
                                   {
-                                    "arguments": [
-                                      {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "start": 0,
-                                        "type": "PipeSubstitution",
-                                        "type": "PipeSubstitution"
-                                      }
-                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -3616,19 +3587,17 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
+                                    "type": "CallExpressionKw",
+                                    "type": "CallExpressionKw",
+                                    "unlabeled": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "start": 0,
+                                      "type": "PipeSubstitution",
+                                      "type": "PipeSubstitution"
+                                    }
                                   },
                                   {
-                                    "arguments": [
-                                      {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "start": 0,
-                                        "type": "PipeSubstitution",
-                                        "type": "PipeSubstitution"
-                                      }
-                                    ],
                                     "callee": {
                                       "abs_path": false,
                                       "commentStart": 0,
@@ -3647,8 +3616,15 @@ description: Result of parsing keyboard.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "start": 0,
-                                    "type": "CallExpression",
-                                    "type": "CallExpression"
+                                    "type": "CallExpressionKw",
+                                    "type": "CallExpressionKw",
+                                    "unlabeled": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "start": 0,
+                                      "type": "PipeSubstitution",
+                                      "type": "PipeSubstitution"
+                                    }
                                   }
                                 ],
                                 "end": 0,
@@ -3699,7 +3675,6 @@ description: Result of parsing keyboard.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -3718,8 +3693,9 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -8952,20 +8928,6 @@ description: Result of parsing keyboard.kcl
                       }
                     },
                     {
-                      "arguments": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "raw": "7deg",
-                          "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 7.0,
-                            "suffix": "Deg"
-                          }
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -8984,8 +8946,20 @@ description: Result of parsing keyboard.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "raw": "7deg",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 7.0,
+                          "suffix": "Deg"
+                        }
+                      }
                     }
                   ],
                   "end": 0,
@@ -9101,24 +9075,6 @@ description: Result of parsing keyboard.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "plane002",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -9137,8 +9093,24 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "plane002",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -10237,24 +10209,6 @@ description: Result of parsing keyboard.kcl
                               },
                               "arg": {
                                 "argument": {
-                                  "arguments": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "seg1",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
                                   "callee": {
                                     "abs_path": false,
                                     "commentStart": 0,
@@ -10273,8 +10227,24 @@ description: Result of parsing keyboard.kcl
                                   "commentStart": 0,
                                   "end": 0,
                                   "start": 0,
-                                  "type": "CallExpression",
-                                  "type": "CallExpression"
+                                  "type": "CallExpressionKw",
+                                  "type": "CallExpressionKw",
+                                  "unlabeled": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "seg1",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
                                 },
                                 "commentStart": 0,
                                 "end": 0,
@@ -10337,24 +10307,6 @@ description: Result of parsing keyboard.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "arguments": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "seg3",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -10373,8 +10325,24 @@ description: Result of parsing keyboard.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "seg3",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
                               }
                             }
                           ],
@@ -10658,7 +10626,6 @@ description: Result of parsing keyboard.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -10677,8 +10644,9 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -10916,24 +10884,6 @@ description: Result of parsing keyboard.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "plane002",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -10952,8 +10902,24 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "plane002",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -11587,7 +11553,6 @@ description: Result of parsing keyboard.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -11606,8 +11571,9 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [
@@ -11750,24 +11716,6 @@ description: Result of parsing keyboard.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "plane002",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -11786,8 +11734,24 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "plane002",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -12429,7 +12393,6 @@ description: Result of parsing keyboard.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -12448,8 +12411,9 @@ description: Result of parsing keyboard.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [

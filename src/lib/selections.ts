@@ -19,7 +19,6 @@ import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Program,
@@ -354,10 +353,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node
@@ -513,8 +512,11 @@ export function canSubmitSelectionArg(
 }
 
 /**
- * Find the index of the last range where range[0] < targetStart
- * This is used as a starting point for linear search of overlapping ranges
+ * Find the index of the last range where range.start < targetStart. When there
+ * are ranges with equal start positions just before the targetStart, the first
+ * one is returned. The returned index can be used as a starting point for
+ * linear search of overlapping ranges.
+ *
  * @param index The sorted array of ranges to search through
  * @param targetStart The start position to compare against
  * @returns The index of the last range where range[0] < targetStart
@@ -523,6 +525,10 @@ export function findLastRangeStartingBefore(
   index: ArtifactIndex,
   targetStart: number
 ): number {
+  if (index.length === 0) {
+    return 0
+  }
+
   let left = 0
   let right = index.length - 1
   let lastValidIndex = 0
@@ -541,7 +547,21 @@ export function findLastRangeStartingBefore(
     }
   }
 
-  return lastValidIndex
+  // We may have passed the correct index. Consider what happens when there are
+  // duplicates. We found the last one, but earlier ones need to be checked too.
+  let resultIndex = lastValidIndex
+  let resultRange = index[resultIndex].range
+  for (let i = lastValidIndex - 1; i >= 0; i--) {
+    const range = index[i].range
+    if (range[0] === resultRange[0]) {
+      resultIndex = i
+      resultRange = range
+    } else {
+      break
+    }
+  }
+
+  return resultIndex
 }
 
 function findOverlappingArtifactsFromIndex(

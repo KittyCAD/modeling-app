@@ -6,8 +6,7 @@ use crate::{
     execution::{types::UnitLen, PlaneInfo, Point3d},
     lint::rule::{def_finding, Discovered, Finding},
     parsing::ast::types::{
-        BinaryPart, CallExpression, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program,
-        UnaryOperator,
+        BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
     },
     walk::Node,
     SourceRange,
@@ -128,35 +127,9 @@ fn get_offset(info: &PlaneInfo) -> Option<f64> {
 
 pub fn start_sketch_on_check_specific_plane(node: Node) -> Result<Option<(SourceRange, PlaneName, f64)>> {
     match node {
-        Node::CallExpression(node) => start_sketch_on_check_specific_plane_pos(node),
         Node::CallExpressionKw(node) => start_sketch_on_check_specific_plane_kw(node),
         _ => Ok(None),
     }
-}
-
-pub fn start_sketch_on_check_specific_plane_pos(
-    call: &AstNode<CallExpression>,
-) -> Result<Option<(SourceRange, PlaneName, f64)>> {
-    if call.inner.callee.inner.name.name != "startSketchOn" {
-        return Ok(None);
-    }
-
-    if call.arguments.len() != 1 {
-        // we only look for single-argument object patterns, if there's more
-        // than that we don't have a plane decl
-        return Ok(None);
-    }
-
-    let call_source_range = SourceRange::new(
-        call.arguments[0].start(),
-        call.arguments[0].end(),
-        call.arguments[0].module_id(),
-    );
-
-    let Expr::ObjectExpression(arg) = &call.arguments[0] else {
-        return Ok(None);
-    };
-    common(arg, call_source_range)
 }
 
 pub fn start_sketch_on_check_specific_plane_kw(

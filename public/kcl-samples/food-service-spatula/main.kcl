@@ -28,7 +28,7 @@ fn slot(sketch1, start, end, width) {
     if end[0] < start[0] {
       units::toDegrees(atan((end[1] - start[1]) / (end[0] - start[0]))) + 180
     } else {
-      units::toDegrees(      atan((end[1] - start[1]) / (end[0] - start[0])))
+      units::toDegrees(atan((end[1] - start[1]) / (end[0] - start[0])))
     }
   }
   dist = sqrt(pow(end[1] - start[1], exp = 2) + pow(end[0] - start[0], exp = 2))

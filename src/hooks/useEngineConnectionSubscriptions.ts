@@ -13,7 +13,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import type { CallExpressionKw } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
@@ -282,23 +282,17 @@ export function useEngineConnectionSubscriptions() {
                   }
                 }
                 if (!chamferInfo) return null
-                const segmentCallExpr = getNodeFromPath<
-                  CallExpression | CallExpressionKw
-                >(
+                const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
                   kclManager.ast,
                   chamferInfo?.segment.codeRef.pathToNode || [],
-                  ['CallExpression', 'CallExpressionKw']
+                  ['CallExpressionKw']
                 )
                 if (err(segmentCallExpr)) return null
-                if (
-                  segmentCallExpr.node.type !== 'CallExpression' &&
-                  segmentCallExpr.node.type !== 'CallExpressionKw'
-                )
+                if (segmentCallExpr.node.type !== 'CallExpressionKw')
                   return null
-                const sketchNodeArgs =
-                  segmentCallExpr.node.type == 'CallExpression'
-                    ? segmentCallExpr.node.arguments
-                    : segmentCallExpr.node.arguments.map((la) => la.arg)
+                const sketchNodeArgs = segmentCallExpr.node.arguments.map(
+                  (la) => la.arg
+                )
                 const tagDeclarator = sketchNodeArgs.find(
                   ({ type }) => type === 'TagDeclarator'
                 )
