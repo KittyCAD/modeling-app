@@ -7,7 +7,6 @@ import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
-import { C } from 'vitest/dist/chunks/reporters.d.79o4mouw'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
