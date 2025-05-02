@@ -4,19 +4,17 @@ description: Operations executed pentagon_fillet_sugar.kcl
 ---
 [
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -105,7 +103,32 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "name": "circl",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "c",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": -200.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -197,7 +220,32 @@ description: Operations executed pentagon_fillet_sugar.kcl
       "name": "circl",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "face": {
+          "value": {
+            "type": "TagIdentifier",
+            "value": "a",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        },
+        "x": {
+          "value": {
+            "type": "Number",
+            "value": 200.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },

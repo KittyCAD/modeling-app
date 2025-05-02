@@ -71,24 +71,6 @@ description: Result of parsing dodecahedron.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "XY",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -107,8 +89,24 @@ description: Result of parsing dodecahedron.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "XY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -607,7 +605,6 @@ description: Result of parsing dodecahedron.kcl
                           "unlabeled": null
                         },
                         {
-                          "arguments": [],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -626,8 +623,9 @@ description: Result of parsing dodecahedron.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         }
                       ],
                       "commentStart": 0,
@@ -943,7 +941,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "dither",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -2014,36 +2013,6 @@ description: Result of parsing dodecahedron.kcl
                         "argument": {
                           "body": [
                             {
-                              "arguments": [
-                                {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "object": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": "rotation",
-                                    "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  },
-                                  "property": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "raw": "3",
-                                    "start": 0,
-                                    "type": "Literal",
-                                    "type": "Literal",
-                                    "value": {
-                                      "value": 3.0,
-                                      "suffix": "None"
-                                    }
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                }
-                              ],
                               "callee": {
                                 "abs_path": false,
                                 "commentStart": 0,
@@ -2062,8 +2031,36 @@ description: Result of parsing dodecahedron.kcl
                               "commentStart": 0,
                               "end": 0,
                               "start": 0,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": {
+                                "commentStart": 0,
+                                "computed": false,
+                                "end": 0,
+                                "object": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": "rotation",
+                                  "start": 0,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "property": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "raw": "3",
+                                  "start": 0,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 0,
+                                "type": "MemberExpression",
+                                "type": "MemberExpression"
+                              }
                             },
                             {
                               "arguments": [
@@ -2501,7 +2498,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "arr",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -2549,49 +2547,6 @@ description: Result of parsing dodecahedron.kcl
                         "body": [
                           {
                             "argument": {
-                              "arguments": [
-                                {
-                                  "commentStart": 0,
-                                  "elements": [
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "previous",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "current",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    }
-                                  ],
-                                  "end": 0,
-                                  "start": 0,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              ],
                               "callee": {
                                 "abs_path": false,
                                 "commentStart": 0,
@@ -2610,8 +2565,49 @@ description: Result of parsing dodecahedron.kcl
                               "commentStart": 0,
                               "end": 0,
                               "start": 0,
-                              "type": "CallExpression",
-                              "type": "CallExpression"
+                              "type": "CallExpressionKw",
+                              "type": "CallExpressionKw",
+                              "unlabeled": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "previous",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "current",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                ],
+                                "end": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
                             },
                             "commentStart": 0,
                             "end": 0,
@@ -2677,24 +2673,6 @@ description: Result of parsing dodecahedron.kcl
                       "commentStart": 0,
                       "end": 0,
                       "left": {
-                        "arguments": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "solids",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -2713,8 +2691,24 @@ description: Result of parsing dodecahedron.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "solids",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
                       },
                       "operator": "-",
                       "right": {
@@ -2800,24 +2794,6 @@ description: Result of parsing dodecahedron.kcl
                       "type": "Identifier"
                     },
                     "init": {
-                      "arguments": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "solids",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -2836,8 +2812,24 @@ description: Result of parsing dodecahedron.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "solids",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
                     },
                     "start": 0,
                     "type": "VariableDeclarator"
@@ -2963,7 +2955,8 @@ description: Result of parsing dodecahedron.kcl
                   "name": "solids",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,
@@ -2983,24 +2976,6 @@ description: Result of parsing dodecahedron.kcl
         "commentStart": 0,
         "end": 0,
         "expression": {
-          "arguments": [
-            {
-              "abs_path": false,
-              "commentStart": 0,
-              "end": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "dodecFaces",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
-              "start": 0,
-              "type": "Name",
-              "type": "Name"
-            }
-          ],
           "callee": {
             "abs_path": false,
             "commentStart": 0,
@@ -3019,8 +2994,24 @@ description: Result of parsing dodecahedron.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "dodecFaces",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "preComments": [
           "",

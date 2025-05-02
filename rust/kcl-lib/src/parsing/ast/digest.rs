@@ -2,11 +2,11 @@ use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
-    CallExpression, CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression,
-    Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression,
-    Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty,
-    Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type,
-    TypeDeclaration, UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
+    CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, Identifier, IfExpression,
+    ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
+    LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty, Parameter,
+    PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
+    UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
 };
 
 /// Position-independent digest of the AST node.
@@ -132,7 +132,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.compute_digest(),
             Expr::BinaryExpression(be) => be.compute_digest(),
             Expr::FunctionExpression(fe) => fe.compute_digest(),
-            Expr::CallExpression(ce) => ce.compute_digest(),
             Expr::CallExpressionKw(ce) => ce.compute_digest(),
             Expr::PipeExpression(pe) => pe.compute_digest(),
             Expr::PipeSubstitution(ps) => ps.compute_digest(),
@@ -159,7 +158,6 @@ impl BinaryPart {
             BinaryPart::Literal(lit) => lit.compute_digest(),
             BinaryPart::Name(id) => id.compute_digest(),
             BinaryPart::BinaryExpression(be) => be.compute_digest(),
-            BinaryPart::CallExpression(ce) => ce.compute_digest(),
             BinaryPart::CallExpressionKw(ce) => ce.compute_digest(),
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
@@ -480,16 +478,6 @@ impl PipeExpression {
     });
 }
 
-impl CallExpression {
-    compute_digest!(|slf, hasher| {
-        hasher.update(slf.callee.compute_digest());
-        hasher.update(slf.arguments.len().to_ne_bytes());
-        for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.compute_digest());
-        }
-    });
-}
-
 impl CallExpressionKw {
     compute_digest!(|slf, hasher| {
         hasher.update(slf.callee.compute_digest());
@@ -529,13 +517,13 @@ mod test {
     async fn test_parse_digest() {
         let prog1_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog1_digest = crate::parsing::top_level_parse(prog1_string).unwrap().compute_digest();
 
         let prog2_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 2])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog2_digest = crate::parsing::top_level_parse(prog2_string).unwrap().compute_digest();
 
@@ -543,7 +531,7 @@ mod test {
 
         let prog3_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
-    |> line([5, 5], %)
+    |> line([5, 5])
 "#;
         let prog3_digest = crate::parsing::top_level_parse(prog3_string).unwrap().compute_digest();
 

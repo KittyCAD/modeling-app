@@ -263,20 +263,6 @@ impl KclValue {
         }
     }
 
-    #[cfg(feature = "artifact-graph")]
-    pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
-        let KclValue::Function {
-            value: FunctionSource::User { ast, .. },
-            ..
-        } = self
-        else {
-            return None;
-        };
-        // TODO: It would be nice if we could extract the source range starting
-        // at the fn, but that's the variable declaration.
-        Some(ast.as_source_range())
-    }
-
     #[allow(unused)]
     pub(crate) fn none() -> Self {
         Self::KclNone {

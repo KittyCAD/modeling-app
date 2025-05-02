@@ -1,4 +1,4 @@
-fn rect(origin) {
+fn rect(@origin) {
   return startSketchOn(XZ)
   |> startProfile(at = origin)
   |> angledLine(

@@ -33,6 +33,13 @@ import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import {
+  engineStreamZoomToFit,
+  engineViewIsometricWithGeometryPresent,
+  engineViewIsometricWithoutGeometryPresent,
+} from '@src/lib/utils'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -159,21 +166,33 @@ export const EngineStream = (props: {
 
     console.log('firstPlay true, zoom to fit')
     kmp
-      .then(() =>
-        // It makes sense to also call zoom to fit here, when a new file is
-        // loaded for the first time, but not overtaking the work kevin did
-        // so the camera isn't moving all the time.
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      )
+      .then(async () => {
+        // Gotcha: Playwright E2E tests will be zoom_to_fit, when you try to recreate the e2e test manually
+        // your localhost will do view_isometric. Turn this boolean on to have the same experience when manually
+        // debugging e2e tests
+
+        // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
+        // written with zoom_to_fit with padding 0.1
+        const padding = 0.1
+        if (isPlaywright()) {
+          await engineStreamZoomToFit({ engineCommandManager, padding })
+        } else {
+          // If the scene is empty you cannot use view_isometric, it will not move the camera
+          if (kclManager.isAstBodyEmpty(kclManager.ast)) {
+            await engineViewIsometricWithoutGeometryPresent({
+              engineCommandManager,
+              unit:
+                kclManager.fileSettings.defaultLengthUnit ||
+                DEFAULT_DEFAULT_LENGTH_UNIT,
+            })
+          } else {
+            await engineViewIsometricWithGeometryPresent({
+              engineCommandManager,
+              padding,
+            })
+          }
+        }
+      })
       .catch(trap)
   }
 

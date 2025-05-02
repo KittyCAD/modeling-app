@@ -49,8 +49,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// unionedPart = union([part001, part002])
@@ -71,8 +71,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
@@ -94,8 +94,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
@@ -199,8 +199,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// intersectedPart = intersect([part001, part002])
@@ -221,8 +221,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: intersect([part001, part002])
@@ -332,8 +332,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// subtractedPart = subtract([part001], tools=[part002])
@@ -354,8 +354,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: subtract([part001], tools=[part002])

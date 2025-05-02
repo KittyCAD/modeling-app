@@ -34,6 +34,7 @@
     "@kittycad/lib": "2.0.28",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.1",
+    "@million/lint": "^1.0.14",
     "@react-hook/resize-observer": "^2.0.1",
     "@replit/codemirror-interact": "^6.3.1",
     "@ts-stack/markdown": "^1.5.0",

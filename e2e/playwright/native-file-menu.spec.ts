@@ -446,11 +446,11 @@ test.describe(
           // Core dump and refresh magic number timeout
           await page.waitForTimeout(7000)
           const actual = page.getByText(
-            'No Projects found, ready to make your first one?'
+            'No projects found, ready to make your first one?'
           )
           await expect(actual).toBeVisible()
         })
-        test('Home.Help.Reset onboarding', async ({
+        test('Home.Help.Replay onboarding tutorial', async ({
           tronApp,
           cmdBar,
           page,
@@ -464,7 +464,7 @@ test.describe(
                 await tronApp.electron.evaluate(async ({ app }) => {
                   if (!app || !app.applicationMenu) return false
                   const menu = app.applicationMenu.getMenuItemById(
-                    'Help.Reset onboarding'
+                    'Help.Replay onboarding tutorial'
                   )
                   if (!menu) {
                     return false
@@ -2339,7 +2339,7 @@ test.describe(
           await scene.connectionEstablished()
           await expect(toolbar.startSketchBtn).toBeVisible()
         })
-        test('Modeling.Help.Reset onboarding', async ({
+        test('Modeling.Help.Replay onboarding tutorial', async ({
           tronApp,
           cmdBar,
           page,
@@ -2358,7 +2358,7 @@ test.describe(
           await tronApp.electron.evaluate(async ({ app }) => {
             if (!app || !app.applicationMenu) fail()
             const menu = app.applicationMenu.getMenuItemById(
-              'Help.Reset onboarding'
+              'Help.Replay onboarding tutorial'
             )
             if (!menu) fail()
             menu.click()

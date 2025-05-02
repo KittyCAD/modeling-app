@@ -5,7 +5,9 @@ use crate::{
     errors::Suggestion,
     execution::{types::UnitLen, PlaneInfo, Point3d},
     lint::rule::{def_finding, Discovered, Finding},
-    parsing::ast::types::{BinaryPart, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator},
+    parsing::ast::types::{
+        BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
+    },
     walk::Node,
     SourceRange,
 };
@@ -124,30 +126,37 @@ fn get_offset(info: &PlaneInfo) -> Option<f64> {
 }
 
 pub fn start_sketch_on_check_specific_plane(node: Node) -> Result<Option<(SourceRange, PlaneName, f64)>> {
-    let Node::CallExpression(call) = node else {
-        return Ok(None);
-    };
+    match node {
+        Node::CallExpressionKw(node) => start_sketch_on_check_specific_plane_kw(node),
+        _ => Ok(None),
+    }
+}
 
+pub fn start_sketch_on_check_specific_plane_kw(
+    call: &AstNode<CallExpressionKw>,
+) -> Result<Option<(SourceRange, PlaneName, f64)>> {
     if call.inner.callee.inner.name.name != "startSketchOn" {
         return Ok(None);
     }
 
-    if call.arguments.len() != 1 {
+    let Some(ref unlabeled) = call.inner.unlabeled else {
         // we only look for single-argument object patterns, if there's more
         // than that we don't have a plane decl
         return Ok(None);
-    }
-
-    let call_source_range = SourceRange::new(
-        call.arguments[0].start(),
-        call.arguments[0].end(),
-        call.arguments[0].module_id(),
-    );
-
-    let Expr::ObjectExpression(arg) = &call.arguments[0] else {
-        return Ok(None);
     };
 
+    let call_source_range = SourceRange::new(unlabeled.start(), unlabeled.end(), unlabeled.module_id());
+
+    let Expr::ObjectExpression(arg) = &unlabeled else {
+        return Ok(None);
+    };
+    common(arg, call_source_range)
+}
+
+pub fn common(
+    arg: &AstNode<ObjectExpression>,
+    call_source_range: SourceRange,
+) -> Result<Option<(SourceRange, PlaneName, f64)>> {
     let mut origin: Option<Point3d> = None;
     let mut x_vec: Option<Point3d> = None;
     let mut y_vec: Option<Point3d> = None;

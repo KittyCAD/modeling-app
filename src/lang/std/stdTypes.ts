@@ -13,7 +13,6 @@ import type { ToolTip } from '@src/lang/langHelpers'
 import type { LineInputsType } from '@src/lang/std/sketchcombos'
 import type {
   BinaryPart,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -278,35 +277,6 @@ export interface ConstrainInfo {
   value: string
   calculatedValue?: any
   argPosition?: SimplifiedArgDetails
-}
-
-export interface SketchLineHelper {
-  add: (a: addCall) =>
-    | {
-        modifiedAst: Node<Program>
-        pathToNode: PathToNode
-        valueUsedInTransform?: number
-      }
-    | Error
-  updateArgs: (a: updateArgs) =>
-    | {
-        modifiedAst: Node<Program>
-        pathToNode: PathToNode
-      }
-    | Error
-  getTag: (a: CallExpression) => string | Error
-  addTag: (a: AddTagInfo) =>
-    | {
-        modifiedAst: Node<Program>
-        tag: string
-      }
-    | Error
-  getConstraintInfo: (
-    callExp: Node<CallExpression>,
-    code: string,
-    pathToNode: PathToNode,
-    filterValue?: string
-  ) => ConstrainInfo[]
 }
 
 export interface SketchLineHelperKw {

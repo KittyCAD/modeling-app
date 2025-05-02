@@ -73,8 +73,6 @@ import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
   applyUnionFromTargetOperatorSelections,
-  findAllChildrenAndOrderByPlaceInCode,
-  getLastVariable,
 } from '@src/lang/modifyAst/boolean'
 import {
   deleteSelectionPromise,
@@ -85,6 +83,7 @@ import {
   setTranslate,
   setRotate,
   insertExpressionNode,
+  retrievePathToNodeFromTransformSelection,
 } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
@@ -103,7 +102,6 @@ import {
 import type { Coords2d } from '@src/lang/std/sketch'
 import type {
   Artifact,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -2077,7 +2075,7 @@ export const modelingMachine = setup({
 
         let cylinderDeclarator: VariableDeclarator | undefined
         let axisExpression:
-          | Node<CallExpression | CallExpressionKw | Name>
+          | Node<CallExpressionKw | Name>
           | Node<Literal>
           | undefined
 
@@ -2382,10 +2380,7 @@ export const modelingMachine = setup({
             })
           }
 
-          if (
-            extrudeNode.node.declaration.init.type === 'CallExpression' ||
-            extrudeNode.node.declaration.init.type === 'CallExpressionKw'
-          ) {
+          if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
             pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
           } else if (
             segmentNode.node.declaration.init.type === 'PipeExpression'
@@ -2435,7 +2430,9 @@ export const modelingMachine = setup({
           'VariableDeclarator'
         )
         if (err(extrudeNode)) {
-          return new Error("Couldn't find extrude node", { cause: extrudeNode })
+          return new Error("Couldn't find extrude node", {
+            cause: extrudeNode,
+          })
         }
 
         // Perform the shell op
@@ -2771,25 +2768,16 @@ export const modelingMachine = setup({
         const { x, y, z, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, modifiedAst)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         // Look for the last pipe with the import alias and a call to translate, with a fallback to rotate.
@@ -2858,25 +2846,16 @@ export const modelingMachine = setup({
         const { roll, pitch, yaw, nodeToEdit, selection } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, modifiedAst)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         // Look for the last pipe with the import alias and a call to rotate, with a fallback to translate.
@@ -2944,25 +2923,16 @@ export const modelingMachine = setup({
         const { nodeToEdit, selection, variableName } = input
         let pathToNode = nodeToEdit
         if (!(pathToNode && typeof pathToNode[1][0] === 'number')) {
-          if (selection?.graphSelections[0].artifact) {
-            const children = findAllChildrenAndOrderByPlaceInCode(
-              selection?.graphSelections[0].artifact,
-              kclManager.artifactGraph
-            )
-            const variable = getLastVariable(children, ast)
-            if (!variable) {
-              return Promise.reject(
-                new Error("Couldn't find corresponding path to node")
-              )
-            }
-            pathToNode = variable.pathToNode
-          } else if (selection?.graphSelections[0].codeRef.pathToNode) {
-            pathToNode = selection?.graphSelections[0].codeRef.pathToNode
-          } else {
-            return Promise.reject(
-              new Error("Couldn't find corresponding path to node")
-            )
+          const result = retrievePathToNodeFromTransformSelection(
+            selection,
+            kclManager.artifactGraph,
+            ast
+          )
+          if (err(result)) {
+            return Promise.reject(result)
           }
+
+          pathToNode = result
         }
 
         const returnEarly = true
@@ -3326,11 +3296,7 @@ export const modelingMachine = setup({
             'Artifact graph emptied': 'hidePlanes',
           },
 
-          entry: [
-            'show default planes',
-            'reset camera position',
-            'set selection filter to curves only',
-          ],
+          entry: ['show default planes', 'set selection filter to curves only'],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',
         },
@@ -4881,8 +4847,7 @@ export function isEditingExistingSketch({
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
   const maybePipeExpression = variableDeclaration.node.init
   if (
-    (maybePipeExpression.type === 'CallExpression' ||
-      maybePipeExpression.type === 'CallExpressionKw') &&
+    maybePipeExpression.type === 'CallExpressionKw' &&
     (maybePipeExpression.callee.name.name === 'startProfile' ||
       maybePipeExpression.callee.name.name === 'circle' ||
       maybePipeExpression.callee.name.name === 'circleThreePoint')
@@ -4962,7 +4927,7 @@ export function isClosedSketch({
   if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
   return node.node.declaration.init.body.some(
     (node) =>
-      (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
+      node.type === 'CallExpressionKw' &&
       (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
   )
 }

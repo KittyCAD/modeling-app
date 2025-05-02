@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 3,
-        "end": 43,
+        "end": 59,
         "id": {
           "commentStart": 3,
           "end": 4,
@@ -23,31 +23,51 @@ expression: actual
                 "argument": {
                   "arguments": [
                     {
-                      "abs_path": false,
-                      "commentStart": 30,
-                      "end": 35,
-                      "name": {
+                      "type": "LabeledArg",
+                      "label": {
                         "commentStart": 30,
                         "end": 35,
-                        "name": "angle",
+                        "name": "maybe",
                         "start": 30,
                         "type": "Identifier"
                       },
-                      "path": [],
-                      "start": 30,
-                      "type": "Name",
-                      "type": "Name"
+                      "arg": {
+                        "abs_path": false,
+                        "commentStart": 36,
+                        "end": 41,
+                        "name": {
+                          "commentStart": 36,
+                          "end": 41,
+                          "name": "angle",
+                          "start": 36,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 36,
+                        "type": "Name",
+                        "type": "Name"
+                      }
                     },
                     {
-                      "commentStart": 37,
-                      "end": 40,
-                      "raw": "360",
-                      "start": 37,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 360.0,
-                        "suffix": "None"
+                      "type": "LabeledArg",
+                      "label": {
+                        "commentStart": 43,
+                        "end": 52,
+                        "name": "otherwise",
+                        "start": 43,
+                        "type": "Identifier"
+                      },
+                      "arg": {
+                        "commentStart": 53,
+                        "end": 56,
+                        "raw": "360",
+                        "start": 53,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 360.0,
+                          "suffix": "None"
+                        }
                       }
                     }
                   ],
@@ -67,24 +87,25 @@ expression: actual
                     "type": "Name"
                   },
                   "commentStart": 22,
-                  "end": 41,
+                  "end": 57,
                   "start": 22,
-                  "type": "CallExpression",
-                  "type": "CallExpression"
+                  "type": "CallExpressionKw",
+                  "type": "CallExpressionKw",
+                  "unlabeled": null
                 },
                 "commentStart": 15,
-                "end": 41,
+                "end": 57,
                 "start": 15,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
               }
             ],
             "commentStart": 13,
-            "end": 43,
+            "end": 59,
             "start": 13
           },
           "commentStart": 4,
-          "end": 43,
+          "end": 59,
           "params": [
             {
               "type": "Parameter",
@@ -109,7 +130,7 @@ expression: actual
         "start": 3,
         "type": "VariableDeclarator"
       },
-      "end": 43,
+      "end": 59,
       "kind": "fn",
       "start": 0,
       "type": "VariableDeclaration",
@@ -117,6 +138,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 43,
+  "end": 59,
   "start": 0
 }

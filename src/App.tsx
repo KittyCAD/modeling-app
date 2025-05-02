@@ -4,6 +4,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import {
   useLoaderData,
+  useLocation,
   useNavigate,
   useRouteLoaderData,
   useSearchParams,
@@ -26,15 +27,20 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
-import { sceneInfra } from '@src/lib/singletons'
+import { sceneInfra, codeManager, kclManager } from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
-import { type IndexLoaderData } from '@src/lib/types'
+import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
+import {
+  needsToOnboard,
+  ONBOARDING_TOAST_ID,
+  TutorialRequestToast,
+} from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -58,6 +64,7 @@ export function App() {
     })
   })
 
+  const location = useLocation()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath()
   const { onProjectOpen } = useLspContext()
@@ -66,7 +73,7 @@ export function App() {
   const ref = useRef<HTMLDivElement>(null)
 
   // Stream related refs and data
-  let [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
   const projectName = project?.name || null
@@ -76,9 +83,10 @@ export function App() {
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const lastCommandType = commands[commands.length - 1]?.type
 
+  // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
-  }, [projectName, projectPath])
+  }, [onProjectOpen, projectName, projectPath, file])
 
   useHotKeyListener()
 
@@ -104,9 +112,10 @@ export function App() {
     toast.success('Your work is auto-saved in real-time')
   })
 
-  const paneOpacity = [onboardingPaths.CAMERA, onboardingPaths.STREAMING].some(
-    (p) => p === onboardingStatus.current
-  )
+  const paneOpacity = [
+    ONBOARDING_SUBPATHS.CAMERA,
+    ONBOARDING_SUBPATHS.STREAMING,
+  ].some((p) => p === onboardingStatus.current)
     ? 'opacity-20'
     : ''
 
@@ -132,7 +141,7 @@ export function App() {
           })
       }, 500)
     }
-  }, [lastCommandType])
+  }, [lastCommandType, loaderData?.project?.path])
 
   useEffect(() => {
     return () => {
@@ -141,6 +150,32 @@ export function App() {
       engineStreamActor.send({ type: EngineStreamTransition.Stop })
     }
   }, [])
+
+  // Show a custom toast to users if they haven't done the onboarding
+  // and they're on the web
+  useEffect(() => {
+    const onboardingStatus =
+      settings.app.onboardingStatus.current ||
+      settings.app.onboardingStatus.default
+    const needsOnboarded = needsToOnboard(location, onboardingStatus)
+
+    if (!isDesktop() && needsOnboarded) {
+      toast.success(
+        () =>
+          TutorialRequestToast({
+            onboardingStatus: settings.app.onboardingStatus.current,
+            navigate,
+            codeManager,
+            kclManager,
+          }),
+        {
+          id: ONBOARDING_TOAST_ID,
+          duration: Number.POSITIVE_INFINITY,
+          icon: null,
+        }
+      )
+    }
+  }, [location, settings.app.onboardingStatus, navigate])
 
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
@@ -156,7 +191,7 @@ export function App() {
       <ModelingSidebar paneOpacity={paneOpacity} />
       <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
-      <LowerRightControls>
+      <LowerRightControls navigate={navigate}>
         <UnitsMenu />
         <Gizmo />
       </LowerRightControls>

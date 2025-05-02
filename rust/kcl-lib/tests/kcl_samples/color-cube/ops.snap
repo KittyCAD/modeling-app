@@ -382,7 +382,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#0000FF"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -393,7 +408,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#FFFF00"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -404,7 +434,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#00FF00"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -415,7 +460,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#FF0000"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -426,7 +486,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#00FFFF"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -437,7 +512,22 @@ description: Operations executed color-cube.kcl
       "name": "sketchRectangle",
       "functionSourceRange": [],
       "unlabeledArg": null,
-      "labeledArgs": {}
+      "labeledArgs": {
+        "color": {
+          "value": {
+            "type": "String",
+            "value": "#FF00FF"
+          },
+          "sourceRange": []
+        },
+        "profile": {
+          "value": {
+            "type": "Plane",
+            "artifact_id": "[uuid]"
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },

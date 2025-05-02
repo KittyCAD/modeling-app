@@ -47,7 +47,6 @@ import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -448,8 +447,7 @@ export function loftSketches(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['unlabeled', UNLABELED_ARG],
   ]
 
   return {
@@ -594,11 +592,9 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpression | CallExpressionKw>(
-    _node,
-    sketchPathToNode,
-    ['CallExpression', 'CallExpressionKw']
-  )
+  const _node2 = getNodeFromPath<CallExpressionKw>(_node, sketchPathToNode, [
+    'CallExpressionKw',
+  ])
   if (err(_node2)) return _node2
   const { node: expression } = _node2
 
@@ -764,7 +760,7 @@ export function addHelix({
   variableName,
 }: {
   node: Node<Program>
-  axis?: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
+  axis?: Node<Literal> | Node<Name | CallExpressionKw>
   cylinder?: VariableDeclarator
   revolutions: Expr
   angleStart: Expr
@@ -1270,8 +1266,9 @@ export function splitPipedProfile(
 
   const varName = varDec.node.declaration.id.name
   const newVarName = findUniqueName(_ast, 'sketch')
-  const secondCallArgs = structuredClone(secondCall.arguments)
-  secondCallArgs[1] = createLocalName(newVarName)
+  // const secondCallArgs = structuredClone(secondCall.arguments)
+  // secondCallArgs[1] = createLocalName(newVarName)
+  secondCall.unlabeled = createLocalName(newVarName)
   const startSketchOnBrokenIntoNewVarDec = structuredClone(varDec.node)
   const profileBrokenIntoItsOwnVar = structuredClone(varDec.node)
   if (

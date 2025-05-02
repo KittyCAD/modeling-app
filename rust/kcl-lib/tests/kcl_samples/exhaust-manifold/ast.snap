@@ -309,32 +309,6 @@ description: Result of parsing exhaust-manifold.kcl
                             "commentStart": 0,
                             "elements": [
                               {
-                                "arguments": [
-                                  {
-                                    "argument": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "angle001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "operator": "-",
-                                    "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
-                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -353,36 +327,34 @@ description: Result of parsing exhaust-manifold.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
-                              },
-                              {
-                                "arguments": [
-                                  {
-                                    "argument": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "name": "angle001",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "argument": {
+                                    "abs_path": false,
                                     "commentStart": 0,
                                     "end": 0,
-                                    "operator": "-",
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "angle001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
-                                ],
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "operator": "-",
+                                  "start": 0,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                }
+                              },
+                              {
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -401,8 +373,32 @@ description: Result of parsing exhaust-manifold.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "argument": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "angle001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "operator": "-",
+                                  "start": 0,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                }
                               },
                               {
                                 "commentStart": 0,
@@ -573,24 +569,6 @@ description: Result of parsing exhaust-manifold.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "sweepPlane",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -609,8 +587,24 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "sweepPlane",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -867,24 +861,6 @@ description: Result of parsing exhaust-manifold.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "arguments": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "arc01",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -903,8 +879,24 @@ description: Result of parsing exhaust-manifold.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "arc01",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
                               }
                             },
                             {
@@ -1059,24 +1051,6 @@ description: Result of parsing exhaust-manifold.kcl
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "arguments": [
-                                  {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "name": "arc02",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  }
-                                ],
                                 "callee": {
                                   "abs_path": false,
                                   "commentStart": 0,
@@ -1095,8 +1069,24 @@ description: Result of parsing exhaust-manifold.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "start": 0,
-                                "type": "CallExpression",
-                                "type": "CallExpression"
+                                "type": "CallExpressionKw",
+                                "type": "CallExpressionKw",
+                                "unlabeled": {
+                                  "abs_path": false,
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "name": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": "arc02",
+                                    "start": 0,
+                                    "type": "Identifier"
+                                  },
+                                  "path": [],
+                                  "start": 0,
+                                  "type": "Name",
+                                  "type": "Name"
+                                }
                               }
                             },
                             {
@@ -1202,24 +1192,6 @@ description: Result of parsing exhaust-manifold.kcl
                     "init": {
                       "body": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "XY",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -1238,8 +1210,24 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "XY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
                           "arguments": [
@@ -1717,63 +1705,113 @@ description: Result of parsing exhaust-manifold.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "n",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "0",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 0.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "angle001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "0",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 0.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "6",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 6.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "6",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -1795,8 +1833,9 @@ description: Result of parsing exhaust-manifold.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "preComments": [
           "",
@@ -1813,63 +1852,113 @@ description: Result of parsing exhaust-manifold.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "n",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "1",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 1.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "angle001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "1",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 1.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "6",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 6.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "6",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 6.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -1891,8 +1980,9 @@ description: Result of parsing exhaust-manifold.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -1904,63 +1994,113 @@ description: Result of parsing exhaust-manifold.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "2",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 2.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "n",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "24.3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 24.3,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "angle001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "24.3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 24.3,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -1982,8 +2122,9 @@ description: Result of parsing exhaust-manifold.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -1995,63 +2136,113 @@ description: Result of parsing exhaust-manifold.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "n",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "25.2",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 25.2,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "angle001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "25.2",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 25.2,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "5",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 5.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "5",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 5.0,
+                  "suffix": "None"
+                }
               }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "3",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": {
-                "value": 3.0,
-                "suffix": "None"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "length003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "3",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 3.0,
+                  "suffix": "None"
+                }
               }
             }
           ],
@@ -2073,8 +2264,9 @@ description: Result of parsing exhaust-manifold.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": null
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -2095,24 +2287,6 @@ description: Result of parsing exhaust-manifold.kcl
           "init": {
             "body": [
               {
-                "arguments": [
-                  {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "XY",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  }
-                ],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -2131,8 +2305,24 @@ description: Result of parsing exhaust-manifold.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "XY",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                }
               },
               {
                 "arguments": [
@@ -2611,24 +2801,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "arguments": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "seg01",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -2647,8 +2819,24 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg01",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
                     }
                   },
                   {
@@ -2992,24 +3180,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "arguments": [
-                        {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": "seg05",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -3028,8 +3198,24 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "seg05",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
                     }
                   },
                   {
@@ -3085,15 +3271,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "type": "Identifier"
                     },
                     "arg": {
-                      "arguments": [
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "start": 0,
-                          "type": "PipeSubstitution",
-                          "type": "PipeSubstitution"
-                        }
-                      ],
                       "callee": {
                         "abs_path": false,
                         "commentStart": 0,
@@ -3112,8 +3289,15 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "end": 0,
                       "start": 0,
-                      "type": "CallExpression",
-                      "type": "CallExpression"
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "start": 0,
+                        "type": "PipeSubstitution",
+                        "type": "PipeSubstitution"
+                      }
                     }
                   },
                   {
@@ -3170,24 +3354,6 @@ description: Result of parsing exhaust-manifold.kcl
                     },
                     "arg": {
                       "argument": {
-                        "arguments": [
-                          {
-                            "abs_path": false,
-                            "commentStart": 0,
-                            "end": 0,
-                            "name": {
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": "seg03",
-                              "start": 0,
-                              "type": "Identifier"
-                            },
-                            "path": [],
-                            "start": 0,
-                            "type": "Name",
-                            "type": "Name"
-                          }
-                        ],
                         "callee": {
                           "abs_path": false,
                           "commentStart": 0,
@@ -3206,8 +3372,24 @@ description: Result of parsing exhaust-manifold.kcl
                         "commentStart": 0,
                         "end": 0,
                         "start": 0,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": "seg03",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
                       },
                       "commentStart": 0,
                       "end": 0,
@@ -3419,15 +3601,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -3446,19 +3619,17 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
                         },
                         {
-                          "arguments": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "start": 0,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -3477,8 +3648,15 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0,
+                            "type": "PipeSubstitution",
+                            "type": "PipeSubstitution"
+                          }
                         }
                       ],
                       "end": 0,
@@ -3511,7 +3689,6 @@ description: Result of parsing exhaust-manifold.kcl
                 "unlabeled": null
               },
               {
-                "arguments": [],
                 "callee": {
                   "abs_path": false,
                   "commentStart": 0,
@@ -3530,8 +3707,9 @@ description: Result of parsing exhaust-manifold.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
@@ -5189,24 +5367,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg04",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -5225,28 +5385,26 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg04",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg07",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -5265,8 +5423,24 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg07",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         }
                       ],
                       "end": 0,
@@ -5335,24 +5509,6 @@ description: Result of parsing exhaust-manifold.kcl
                       "commentStart": 0,
                       "elements": [
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg03",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -5371,28 +5527,26 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg03",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         },
                         {
-                          "arguments": [
-                            {
-                              "abs_path": false,
-                              "commentStart": 0,
-                              "end": 0,
-                              "name": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "name": "seg08",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "path": [],
-                              "start": 0,
-                              "type": "Name",
-                              "type": "Name"
-                            }
-                          ],
                           "callee": {
                             "abs_path": false,
                             "commentStart": 0,
@@ -5411,8 +5565,24 @@ description: Result of parsing exhaust-manifold.kcl
                           "commentStart": 0,
                           "end": 0,
                           "start": 0,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "name": "seg08",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          }
                         }
                       ],
                       "end": 0,

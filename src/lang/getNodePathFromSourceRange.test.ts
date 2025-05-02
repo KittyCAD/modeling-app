@@ -50,7 +50,7 @@ sk3 = startSketchOn(XY)
   return sg
 }
 
-b1 = cube([0,0], 10)`
+b1 = cube(pos = [0,0], scale = 10)`
     const subStr = 'pos, scale'
     const subStrIndex = code.indexOf(subStr)
     const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'pos'.length)
@@ -83,7 +83,7 @@ b1 = cube([0,0], 10)`
   return sg
 }
 
-b1 = cube([0,0], 10)`
+b1 = cube(pos = [0,0], scale = 10)`
     const subStr = 'scale, 0'
     const subStrIndex = code.indexOf(subStr)
     const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'scale'.length)
