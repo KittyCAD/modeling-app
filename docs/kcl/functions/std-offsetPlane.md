@@ -11,9 +11,9 @@ plane and 10 units away from it.
 
 ```kcl
 offsetPlane(
-  @plane: [Plane](/docs/kcl/types/std-types-Plane),
+  @plane: Plane,
   offset: number(Length),
-): [Plane](/docs/kcl/types/std-types-Plane)
+): Plane
 ```
 
 

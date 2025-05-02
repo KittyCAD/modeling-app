@@ -36,11 +36,11 @@ The transform function returns a transform object. All properties of the object 
 
 ```kcl
 patternTransform(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
-  instances: [number](/docs/kcl/types/std-types-number),
+  solids: [Solid],
+  instances: number,
   transform: FunctionSource,
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  useOriginal?: bool,
+): [Solid]
 ```
 
 

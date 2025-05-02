@@ -10,12 +10,12 @@ Draw a smooth, continuous, curved line segment from the current origin to the de
 
 ```kcl
 bezierCurve(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  control1: [Point2d](/docs/kcl/types/std-types-Point2d),
-  control2: [Point2d](/docs/kcl/types/std-types-Point2d),
-  end: [Point2d](/docs/kcl/types/std-types-Point2d),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  control1: Point2d,
+  control2: Point2d,
+  end: Point2d,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

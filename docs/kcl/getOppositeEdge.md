@@ -9,7 +9,7 @@ Get the opposite edge to the edge given.
 
 
 ```kcl
-getOppositeEdge(edge: [TagIdentifier](/docs/kcl/types#TagIdentifier)): Uuid
+getOppositeEdge(edge: TagIdentifier): Uuid
 ```
 
 

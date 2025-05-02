@@ -10,8 +10,8 @@ Asserts that a value is the boolean value true.
 
 ```kcl
 assertIs(
-  actual: [bool](/docs/kcl/types/std-types-bool),
-  error?: [string](/docs/kcl/types/std-types-string),
+  actual: bool,
+  error?: string,
 ): ()
 ```
 

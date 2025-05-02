@@ -9,7 +9,7 @@ Round a number to the nearest integer.
 
 
 ```kcl
-round(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+round(@input: number): number
 ```
 
 

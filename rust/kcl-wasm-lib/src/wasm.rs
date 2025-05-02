@@ -1,10 +1,10 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{pretty::NumericSuffix, CoreDump, Program};
+use kcl_lib::{pretty::NumericSuffix, CoreDump, Program, SourceRange};
 use wasm_bindgen::prelude::*;
 
-// wasm_bindgen wrapper for execute
+// wasm_bindgen wrapper for lint
 #[wasm_bindgen]
 pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
@@ -16,6 +16,17 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     }
 
     Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
+}
+
+#[wasm_bindgen]
+pub async fn node_path_from_range(program_ast_json: &str, range_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let range: SourceRange = serde_json::from_str(range_json).map_err(|e| e.to_string())?;
+    let node_path = program.node_path_from_range(range);
+
+    JsValue::from_serde(&node_path).map_err(|e| e.to_string())
 }
 
 #[wasm_bindgen]

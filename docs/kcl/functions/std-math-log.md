@@ -12,9 +12,9 @@ and `log10` can produce more accurate results for base 10.
 
 ```kcl
 log(
-  @input: [number](/docs/kcl/types/std-types-number),
+  @input: number,
   base: number(_),
-): [number](/docs/kcl/types/std-types-number)
+): number
 ```
 
 

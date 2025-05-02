@@ -10,11 +10,11 @@ Just like patternTransform, but works on 2D sketches not 3D solids.
 
 ```kcl
 patternTransform2d(
-  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  instances: [number](/docs/kcl/types/std-types-number),
+  sketches: [Sketch],
+  instances: number,
   transform: FunctionSource,
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Sketch]](/docs/kcl/types/std-types-Sketch)
+  useOriginal?: bool,
+): [Sketch]
 ```
 
 

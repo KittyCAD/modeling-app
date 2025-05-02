@@ -10,13 +10,13 @@ Extend the current sketch with a new involute circular curve.
 
 ```kcl
 involuteCircular(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  startRadius: [number](/docs/kcl/types/std-types-number),
-  endRadius: [number](/docs/kcl/types/std-types-number),
-  angle: [number](/docs/kcl/types/std-types-number),
-  reverse?: [bool](/docs/kcl/types/std-types-bool),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  startRadius: number,
+  endRadius: number,
+  angle: number,
+  reverse?: bool,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

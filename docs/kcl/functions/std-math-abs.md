@@ -9,7 +9,7 @@ Compute the absolute value of a number.
 
 
 ```kcl
-abs(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+abs(@input: number): number
 ```
 
 

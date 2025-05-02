@@ -10,9 +10,9 @@ Compute the number to a power.
 
 ```kcl
 pow(
-  @input: [number](/docs/kcl/types/std-types-number),
+  @input: number,
   exp: number(_),
-): [number](/docs/kcl/types/std-types-number)
+): number
 ```
 
 

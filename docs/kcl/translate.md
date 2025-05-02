@@ -12,12 +12,12 @@ Translate is really useful for sketches if you want to move a sketch and then ro
 
 ```kcl
 translate(
-  objects: [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
-  x?: [number](/docs/kcl/types/std-types-number),
-  y?: [number](/docs/kcl/types/std-types-number),
-  z?: [number](/docs/kcl/types/std-types-number),
-  global?: [bool](/docs/kcl/types/std-types-bool),
-): [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
+  objects: [Solid] | [Sketch] | ImportedGeometry,
+  x?: number,
+  y?: number,
+  z?: number,
+  global?: bool,
+): [Solid] | [Sketch] | ImportedGeometry
 ```
 
 
