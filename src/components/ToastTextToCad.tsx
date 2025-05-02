@@ -568,22 +568,12 @@ export function ToastPromptToEditCadSuccess({
             onClick={() => {
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
-
               /**
-               * TODO: (Kevin) This seems odd because we are already calling writeOverFilesAndExecute which would overwrite all the files
-               * on disk. Why would we need to rewrite the current editor to disk when this accepts? The changes are already on disk.
+               * NO OP. Do not rewrite code to disk, we already do this ahead of time. This will dismiss the toast.
+               * All of the files were already written! Don't rewrite the current code editor.
+               * If this prompt to edit makes 5 new files, the code manager is only watching 1 of these files, why
+               * would it rewrite the current file selected when this is completed?
                */
-
-              // Write new content to disk since they have accepted.
-              codeManager
-                .writeToFile()
-                .then(() => {
-                  // no-op
-                })
-                .catch((e) => {
-                  console.error('Failed to save prompt-to-edit to disk')
-                  console.error(e)
-                })
             }}
           >
             Continue
