@@ -81,8 +81,11 @@ const sharedBulkCreateWorkflow = async ({
       fileName
     )
   }
+  const numberOfFiles = input.files.length
+  const fileText = numberOfFiles > 1 ? 'files' : 'file'
+  const message = input.override ? `Succesfully overwrote ${numberOfFiles} ${fileText}` : `Successfully created ${numberOfFiles} ${fileText}`
   return {
-    message: 'Batch create success',
+    message,
     fileName: '',
     projectName: '',
   }
