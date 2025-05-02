@@ -26,11 +26,11 @@ import {
   createLiteral,
   createLocalName,
   createName,
-  createObjectExpression,
   createPipeSubstitution,
   createUnaryExpression,
   giveSketchFnCallTag,
 } from '@src/lang/create'
+import type { createObjectExpression } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath, getNodeFromPathCurry } from '@src/lang/queryAst'
@@ -76,12 +76,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import type { Selections } from '@src/lib/selections'
-import {
-  cleanErrs,
-  err,
-  isErr as _isErr,
-  isNotErr as _isNotErr,
-} from '@src/lib/trap'
+import { err, isErr as _isErr, isNotErr as _isNotErr } from '@src/lib/trap'
 import {
   allLabels,
   getAngle,

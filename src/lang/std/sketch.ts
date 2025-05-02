@@ -32,7 +32,6 @@ import {
   createPipeExpression,
   createTagDeclarator,
   findUniqueName,
-  nonCodeMetaEmpty,
 } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { toolTips } from '@src/lang/langHelpers'
@@ -84,13 +83,7 @@ import type {
 } from '@src/lang/wasm'
 import { sketchFromKclValue } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import {
-  allLabels,
-  getAngle,
-  getLength,
-  isArray,
-  roundOff,
-} from '@src/lib/utils'
+import { allLabels, getAngle, getLength, roundOff } from '@src/lib/utils'
 import type { EdgeCutInfo } from '@src/machines/modelingMachine'
 
 const STRAIGHT_SEGMENT_ERR = new Error(
@@ -3425,7 +3418,7 @@ export function addCallExpressionsToPipe({
   node: Node<Program>
   variables: VariableMap
   pathToNode: PathToNode
-  expressions: Node<CallExpressionKw | CallExpressionKw>[]
+  expressions: Node<CallExpressionKw>[]
 }) {
   const _node: Node<Program> = structuredClone(node)
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(

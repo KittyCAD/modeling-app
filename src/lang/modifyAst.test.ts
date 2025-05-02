@@ -2,7 +2,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
   createArrayExpression,
-  createCallExpressionStdLibKw,
   createIdentifier,
   createLiteral,
   createObjectExpression,

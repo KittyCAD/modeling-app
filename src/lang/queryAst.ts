@@ -3,7 +3,6 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 
-import { ARG_TAG } from '@src/lang/constants'
 import { createLocalName } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
@@ -15,7 +14,7 @@ import {
   getConstraintLevelFromSourceRange,
   getConstraintType,
 } from '@src/lang/std/sketchcombos'
-import { findKwArg, topLevelRange } from '@src/lang/util'
+import { topLevelRange } from '@src/lang/util'
 import type {
   ArrayExpression,
   ArtifactGraph,
@@ -53,7 +52,7 @@ import { getAngle, isArray } from '@src/lib/utils'
 
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { UnaryExpression } from 'typescript'
+import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
