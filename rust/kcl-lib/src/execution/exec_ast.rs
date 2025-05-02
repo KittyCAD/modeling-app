@@ -1424,12 +1424,6 @@ impl Node<CallExpressionKw> {
                         e.add_source_ranges(vec![callsite])
                     })?;
 
-                #[cfg(feature = "artifact-graph")]
-                if matches!(fn_src, FunctionSource::User { .. }) {
-                    // Track return operation.
-                    exec_state.global.operations.push(Operation::GroupEnd);
-                }
-
                 let result = return_value.ok_or_else(move || {
                     let mut source_ranges: Vec<SourceRange> = vec![callsite];
                     // We want to send the source range of the original function.
@@ -2333,7 +2327,15 @@ impl FunctionSource {
                     });
                 }
 
-                call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx).await
+                let result =
+                    call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx)
+                        .await;
+
+                // Track return operation.
+                #[cfg(feature = "artifact-graph")]
+                exec_state.global.operations.push(Operation::GroupEnd);
+
+                result
             }
             FunctionSource::None => unreachable!(),
         }
