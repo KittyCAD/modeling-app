@@ -1,4 +1,6 @@
 import type { Project } from '@src/lib/project'
+import { ActorRefFrom } from 'xstate'
+import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -101,3 +103,15 @@ export type RequestedKCLFile = {
 
 // Custom event for navigation completion
 export const NAVIGATION_COMPLETE_EVENT = 'navigation-complete'
+
+export const waitForIdleState = async ({systemIOActor}:{systemIOActor: ActorRefFrom<typeof systemIOMachine>}) => {
+  const waitForIdlePromise = new Promise((resolve) => {
+    const subscription = systemIOActor.subscribe((state) => {
+      if (state.matches(SystemIOMachineStates.idle)) {
+        subscription.unsubscribe()
+        resolve(undefined)
+      }
+    })
+  })
+  return waitForIdlePromise
+}

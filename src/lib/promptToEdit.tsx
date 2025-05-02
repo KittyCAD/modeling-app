@@ -500,6 +500,7 @@ export async function promptToEditFlow({
       requestedFiles,
       projectName,
     })
+
   } else {
     const newCode = result.outputs['main.kcl']
     codeManager.updateCodeEditor(newCode)

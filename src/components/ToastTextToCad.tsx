@@ -32,7 +32,8 @@ import { reportRejection } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
-  NAVIGATION_COMPLETE_EVENT,
+    NAVIGATION_COMPLETE_EVENT,
+    waitForIdleState,
 } from '@src/machines/systemIO/utils'
 import {
   useProjectDirectoryPath,
@@ -602,31 +603,6 @@ export const writeOverFilesAndExecute = async ({
   requestedFiles: RequestedKCLFile[]
   projectName: string
 }) => {
-  // Create a promise that resolves when the bulk create operation completes
-  const bulkCreatePromise = new Promise((resolve) => {
-    const subscription = systemIOActor.subscribe((state) => {
-      if (state.matches(SystemIOMachineStates.idle)) {
-        subscription.unsubscribe()
-        resolve(undefined)
-      }
-    })
-  })
-
-  // Create a promise that resolves when navigation completes
-  const navigationPromise = new Promise<void>((resolve) => {
-    const handleNavigationComplete = (event: CustomEvent) => {
-      window.removeEventListener(
-        NAVIGATION_COMPLETE_EVENT,
-        handleNavigationComplete as EventListener
-      )
-      resolve()
-    }
-    window.addEventListener(
-      NAVIGATION_COMPLETE_EVENT,
-      handleNavigationComplete as EventListener
-    )
-  })
-
   systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
@@ -635,9 +611,6 @@ export const writeOverFilesAndExecute = async ({
       override: true,
     },
   })
-
-  // Wait for both the bulk create operation and navigation to complete
-  await Promise.all([bulkCreatePromise, navigationPromise])
-
-  await kclManager.executeCode()
+  // to await the result of the send event above
+  await waitForIdleState({systemIOActor})
 }
