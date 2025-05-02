@@ -62,7 +62,11 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
-import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
+import {
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
+  UNLABELED_ARG,
+} from '@src/lang/queryAstConstants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -534,7 +538,7 @@ function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
         pathToNode.push(['callee', 'CallExpressionKw'])
         break
       case 'CallKwUnlabeledArg':
-        pathToNode.push(['unlabeled', 'CallExpressionKw'])
+        pathToNode.push(['unlabeled', UNLABELED_ARG])
         break
       case 'CallKwArg':
         pathToNode.push(['arguments', 'CallExpressionKw'])
