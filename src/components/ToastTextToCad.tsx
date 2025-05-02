@@ -618,6 +618,8 @@ export const writeOverFilesAndExecute = async ({
   // Wait for the bulk create operation to complete
   await bulkCreatePromise
 
+  await new Promise((r) => setTimeout(r, 100))
+
   // Now execute the code after all files are written
   await kclManager.executeCode()
 }

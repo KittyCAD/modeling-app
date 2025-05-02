@@ -149,7 +149,7 @@ export const ModelingMachineProvider = ({
     app: { allowOrbitInSketchMode },
     modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
-  const { context, send: fileSend } = useFileContext()
+  const { context } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)

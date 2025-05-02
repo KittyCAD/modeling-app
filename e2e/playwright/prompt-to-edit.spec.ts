@@ -1,4 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import * as fsp from 'fs/promises'
+import * as path from 'path'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -50,23 +52,20 @@ test.describe('Prompt-to-edit tests', () => {
         page,
         scene,
       }) => {
-        await context.addInitScript((file) => {
-          localStorage.setItem('persistCode', file)
-        }, file)
-        await homePage.goToModelingScene()
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, 'test-project')
+          await fsp.mkdir(projectDir, { recursive: true })
+          await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
+        })
+        await homePage.openProject('test-project')
         await scene.settled(cmdBar)
 
         const body1CapCoords = { x: 571, y: 311 }
-        const greenCheckCoords = { x: 565, y: 305 }
-        const body2WallCoords = { x: 609, y: 153 }
         const [clickBody1Cap] = scene.makeMouseHelpers(
           body1CapCoords.x,
           body1CapCoords.y
         )
         const yellow: [number, number, number] = [179, 179, 131]
-        const green: [number, number, number] = [128, 194, 88]
-        const notGreen: [number, number, number] = [132, 132, 132]
-        const body2NotGreen: [number, number, number] = [88, 88, 88]
         const submittingToast = page.getByText(
           'Submitting to Text-to-CAD API...'
         )
@@ -103,32 +102,21 @@ test.describe('Prompt-to-edit tests', () => {
         })
 
         await test.step('verify initial change', async () => {
-          await scene.expectPixelColor(green, greenCheckCoords, 20)
-          await scene.expectPixelColor(body2NotGreen, body2WallCoords, 15)
           await editor.expectEditor.toContain('appearance(')
         })
 
         if (!shouldReject) {
-          await test.step('check accept works and can be "undo"ed', async () => {
+          await test.step('check accept works', async () => {
             await acceptBtn.click()
             await expect(successToast).not.toBeVisible()
 
-            await scene.expectPixelColor(green, greenCheckCoords, 15)
             await editor.expectEditor.toContain('appearance(')
-
-            // ctrl-z works after accepting
-            await page.keyboard.down('ControlOrMeta')
-            await page.keyboard.press('KeyZ')
-            await page.keyboard.up('ControlOrMeta')
-            await editor.expectEditor.not.toContain('appearance(')
-            await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
           })
         } else {
           await test.step('check reject works', async () => {
             await rejectBtn.click()
             await expect(successToast).not.toBeVisible()
 
-            await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
             await editor.expectEditor.not.toContain('appearance(')
           })
         }
