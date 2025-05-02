@@ -431,7 +431,7 @@ export async function promptToEditFlow({
     artifactGraph,
     projectName,
   })
-  if (err(result))  {
+  if (err(result)) {
     toast.error('Failed to modify.')
     return Promise.reject(result)
   }
