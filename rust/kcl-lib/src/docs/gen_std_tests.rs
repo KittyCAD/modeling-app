@@ -141,7 +141,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         types
             .get_mut("Primitive types")
             .unwrap()
-            .push((name.to_owned(), format!("types.md#{name}")));
+            .push((name.to_owned(), format!("types#{name}")));
     }
 
     for d in kcl_lib {
@@ -577,12 +577,16 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
                 ty
             };
 
-            if SPECIAL_TYPES.contains(&ty) {
+            // TODO markdown links in code blocks are not turned into links by our website stack.
+            // If we can handle signatures more manually we could get highlighting and links and
+            // we might want to restore the links by not checking `fmt_for_text` here.
+
+            if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl/types#{ty})")
-            } else if DECLARED_TYPES.contains(&ty) {
+            } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl/types/std-types-{ty})")
             } else {
-                format!("{prefix}{input}{suffix}")
+                format!("{prefix}{ty}{suffix}")
             }
         })
         .collect();

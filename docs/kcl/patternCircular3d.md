@@ -10,14 +10,14 @@ Repeat a 3-dimensional solid some number of times along a partial or complete ci
 
 ```kcl
 patternCircular3d(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
-  instances: [number](/docs/kcl/types/std-types-number),
-  axis: [[number]](/docs/kcl/types/std-types-number),
-  center: [Point3d](/docs/kcl/types/std-types-Point3d),
-  arcDegrees: [number](/docs/kcl/types/std-types-number),
-  rotateDuplicates: [bool](/docs/kcl/types/std-types-bool),
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  solids: [Solid],
+  instances: number,
+  axis: [number],
+  center: Point3d,
+  arcDegrees: number,
+  rotateDuplicates: bool,
+  useOriginal?: bool,
+): [Solid]
 ```
 
 

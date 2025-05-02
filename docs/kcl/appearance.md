@@ -10,11 +10,11 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```kcl
 appearance(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
-  color: [string](/docs/kcl/types/std-types-string),
-  metalness?: [number](/docs/kcl/types/std-types-number),
-  roughness?: [number](/docs/kcl/types/std-types-number),
-): [[Solid]](/docs/kcl/types/std-types-Solid) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
+  solids: [Solid] | ImportedGeometry,
+  color: string,
+  metalness?: number,
+  roughness?: number,
+): [Solid] | ImportedGeometry
 ```
 
 

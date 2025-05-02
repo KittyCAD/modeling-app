@@ -249,8 +249,8 @@ fn rect(origin) {
     |> close()
 }
 
-rect([0, 0])
-rect([20, 0])
+rect(origin = [0, 0])
+rect(origin = [20, 0])
 ``` 
 
 Those tags would only be available in the `rect` function and not globally.
@@ -279,8 +279,8 @@ fn rect(origin) {
     |> close()
 }
 
-rect([0, 0])
-myRect = rect([20, 0])
+rect(origin = [0, 0])
+myRect = rect(origin = [20, 0])
 
 myRect
   |> extrude(length = 10)

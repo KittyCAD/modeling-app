@@ -10,14 +10,14 @@ Check a value meets some expected conditions at runtime. Program terminates with
 
 ```kcl
 assert(
-  actual: [number](/docs/kcl/types/std-types-number),
-  isGreaterThan?: [number](/docs/kcl/types/std-types-number),
-  isLessThan?: [number](/docs/kcl/types/std-types-number),
-  isGreaterThanOrEqual?: [number](/docs/kcl/types/std-types-number),
-  isLessThanOrEqual?: [number](/docs/kcl/types/std-types-number),
-  isEqualTo?: [number](/docs/kcl/types/std-types-number),
-  tolerance?: [number](/docs/kcl/types/std-types-number),
-  error?: [string](/docs/kcl/types/std-types-string),
+  actual: number,
+  isGreaterThan?: number,
+  isLessThan?: number,
+  isGreaterThanOrEqual?: number,
+  isLessThanOrEqual?: number,
+  isEqualTo?: number,
+  tolerance?: number,
+  error?: string,
 ): ()
 ```
 

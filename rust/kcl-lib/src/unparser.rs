@@ -354,7 +354,7 @@ impl BinaryPart {
 impl CallExpressionKw {
     fn recast_args(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> Vec<String> {
         let mut arg_list = if let Some(first_arg) = &self.unlabeled {
-            vec![first_arg.recast(options, indentation_level, ctxt)]
+            vec![first_arg.recast(options, indentation_level, ctxt).trim().to_owned()]
         } else {
             Vec::with_capacity(self.arguments.len())
         };
@@ -2553,6 +2553,58 @@ sketch002 = startSketchOn({
     fn unparse_fn_named() {
         let input = r#"fn f(x) {
   return 1
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_call_inside_function_single_line() {
+        let input = r#"fn foo() {
+  toDegrees(atan(0.5), foo = 1)
+  return 0
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_call_inside_function_args_multiple_lines() {
+        let input = r#"fn foo() {
+  toDegrees(
+    atan(0.5),
+    foo = 1,
+    bar = 2,
+    baz = 3,
+    qux = 4,
+  )
+  return 0
+}
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn unparse_call_inside_function_single_arg_multiple_lines() {
+        let input = r#"fn foo() {
+  toDegrees(
+    [
+      profile0,
+      profile1,
+      profile2,
+      profile3,
+      profile4,
+      profile5
+    ],
+    key = 1,
+  )
+  return 0
 }
 "#;
         let ast = crate::parsing::top_level_parse(input).unwrap();

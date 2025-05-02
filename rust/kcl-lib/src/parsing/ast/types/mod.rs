@@ -11,6 +11,7 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
+pub use path::NodePath;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -35,6 +36,7 @@ use crate::{
 mod condition;
 mod literal_value;
 mod none;
+mod path;
 
 #[derive(Debug)]
 pub enum Definition<'a> {
@@ -157,6 +159,10 @@ impl<T> Node<T> {
 
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        self.as_source_range().contains_range(range)
     }
 
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
@@ -818,6 +824,11 @@ impl BodyItem {
         }
     }
 
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let item_range = SourceRange::from(self);
+        item_range.contains_range(range)
+    }
+
     pub(crate) fn set_attrs(&mut self, attr: NodeList<Annotation>) {
         match self {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
@@ -1040,6 +1051,11 @@ impl Expr {
         }
     }
 
+    fn contains_range(&self, range: &SourceRange) -> bool {
+        let expr_range = SourceRange::from(self);
+        expr_range.contains_range(range)
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
@@ -1142,6 +1158,21 @@ impl From<Expr> for SourceRange {
 impl From<&Expr> for SourceRange {
     fn from(value: &Expr) -> Self {
         Self::new(value.start(), value.end(), value.module_id())
+    }
+}
+
+impl From<&BinaryPart> for Expr {
+    fn from(value: &BinaryPart) -> Self {
+        match value {
+            BinaryPart::Literal(literal) => Expr::Literal(literal.clone()),
+            BinaryPart::Name(name) => Expr::Name(name.clone()),
+            BinaryPart::BinaryExpression(binary_expression) => Expr::BinaryExpression(binary_expression.clone()),
+            BinaryPart::CallExpression(call_expression) => Expr::CallExpression(call_expression.clone()),
+            BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
+            BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
+            BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+        }
     }
 }
 
@@ -2692,6 +2723,11 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<MemberObject> for SourceRange {
@@ -2727,6 +2763,11 @@ impl LiteralIdentifier {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
         }
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 
@@ -3245,6 +3286,11 @@ impl Parameter {
     /// Is the parameter optional?
     pub fn optional(&self) -> bool {
         self.default_value.is_some()
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 

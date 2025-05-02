@@ -42,6 +42,7 @@ function moreNodePathFromSourceRange(
   if (
     (_node.type === 'Name' ||
       _node.type === 'Literal' ||
+      _node.type === 'Identifier' ||
       _node.type === 'TagDeclarator') &&
     isInRange
   ) {
@@ -149,19 +150,6 @@ function moreNodePathFromSourceRange(
       }
     }
   }
-  if (_node.type === 'VariableDeclaration' && isInRange) {
-    const declaration = _node.declaration
-
-    if (declaration.start <= start && declaration.end >= end) {
-      const init = declaration.init
-      if (init.start <= start && init.end >= end) {
-        path.push(['declaration', 'VariableDeclaration'])
-        path.push(['init', ''])
-        return moreNodePathFromSourceRange(init, sourceRange, path)
-      }
-    }
-    return path
-  }
   if (_node.type === 'UnaryExpression' && isInRange) {
     const { argument } = _node
     if (argument.start <= start && argument.end >= end) {
@@ -247,6 +235,29 @@ function moreNodePathFromSourceRange(
       path.push(['body', 'IfExpression'])
       return getNodePathFromSourceRange(final_else, sourceRange, path)
     }
+    return path
+  }
+
+  if (_node.type === 'LabelledExpression' && isInRange) {
+    const { expr, label } = _node
+    if (expr.start <= start && expr.end >= end) {
+      path.push(['expr', 'LabelledExpression'])
+      return moreNodePathFromSourceRange(expr, sourceRange, path)
+    }
+    if (label.start <= start && label.end >= end) {
+      path.push(['label', 'LabelledExpression'])
+      return moreNodePathFromSourceRange(label, sourceRange, path)
+    }
+    return path
+  }
+
+  if (_node.type === 'AscribedExpression' && isInRange) {
+    const { expr } = _node
+    if (expr.start <= start && expr.end >= end) {
+      path.push(['expr', 'AscribedExpression'])
+      return moreNodePathFromSourceRange(expr, sourceRange, path)
+    }
+    // TODO: Check the type annotation.
     return path
   }
 

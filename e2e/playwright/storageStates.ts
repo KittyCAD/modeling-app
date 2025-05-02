@@ -5,8 +5,6 @@ import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
-export const IS_PLAYWRIGHT_KEY = 'playwright'
-
 export const TEST_SETTINGS_KEY = '/settings.toml'
 export const TEST_SETTINGS: DeepPartial<Settings> = {
   app: {

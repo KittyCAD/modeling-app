@@ -18,9 +18,9 @@ The point is if you want to export the result of a sketch on a face, you only ne
 
 ```kcl
 startSketchOn(
-  planeOrSolid: [Plane](/docs/kcl/types/std-types-Plane) | [Solid](/docs/kcl/types/std-types-Solid),
-  face?: [TagIdentifier](/docs/kcl/types#TagIdentifier) | [Start](/docs/kcl/types#Start) | [End](/docs/kcl/types#End),
-): [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face)
+  planeOrSolid: Plane | Solid,
+  face?: TagIdentifier | Start | End,
+): Plane | Face
 ```
 
 

@@ -678,10 +678,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             status: 'available',
             disabled: (state) => state.matches('Sketch no face'),
             title: 'Center rectangle',
-            hotkey: (state) =>
-              state.matches({ Sketch: 'Center Rectangle tool' })
-                ? ['Esc', 'C']
-                : 'C',
             description: 'Start drawing a rectangle from its center',
             links: [],
             isActive: (state) => {

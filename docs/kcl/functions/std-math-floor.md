@@ -9,7 +9,7 @@ Compute the largest integer less than or equal to a number.
 
 
 ```kcl
-floor(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+floor(@input: number): number
 ```
 
 

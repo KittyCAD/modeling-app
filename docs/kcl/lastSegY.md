@@ -9,7 +9,7 @@ Extract the 'y' axis value of the last line segment in the provided 2-d sketch.
 
 
 ```kcl
-lastSegY(sketch: [Sketch](/docs/kcl/types/std-types-Sketch)): [number](/docs/kcl/types/std-types-number)
+lastSegY(sketch: Sketch): number
 ```
 
 

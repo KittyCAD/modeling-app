@@ -2431,7 +2431,9 @@ export const modelingMachine = setup({
           'VariableDeclarator'
         )
         if (err(extrudeNode)) {
-          return new Error("Couldn't find extrude node", { cause: extrudeNode })
+          return new Error("Couldn't find extrude node", {
+            cause: extrudeNode,
+          })
         }
 
         // Perform the shell op
@@ -3322,11 +3324,7 @@ export const modelingMachine = setup({
             'Artifact graph emptied': 'hidePlanes',
           },
 
-          entry: [
-            'show default planes',
-            'reset camera position',
-            'set selection filter to curves only',
-          ],
+          entry: ['show default planes', 'set selection filter to curves only'],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',
         },

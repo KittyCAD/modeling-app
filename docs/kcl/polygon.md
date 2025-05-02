@@ -10,12 +10,12 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 ```kcl
 polygon(
-  sketchSurfaceOrGroup: [Sketch](/docs/kcl/types/std-types-Sketch) | [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
-  radius: [number](/docs/kcl/types/std-types-number),
+  sketchSurfaceOrGroup: Sketch | Plane | Face,
+  radius: number,
   numSides: u64,
-  center: [Point2d](/docs/kcl/types/std-types-Point2d),
-  inscribed?: [bool](/docs/kcl/types/std-types-bool),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  center: Point2d,
+  inscribed?: bool,
+): Sketch
 ```
 
 

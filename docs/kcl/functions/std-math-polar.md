@@ -13,7 +13,7 @@ cartesian (x/y/z grid) coordinates.
 polar(
   angle: number(rad),
   length: number(Length),
-): [Point2d](/docs/kcl/types/std-types-Point2d)
+): Point2d
 ```
 
 
