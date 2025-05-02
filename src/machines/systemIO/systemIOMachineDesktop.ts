@@ -84,7 +84,7 @@ const sharedBulkCreateWorkflow = async ({
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
   const message = input.override
-    ? `Succesfully overwrote ${numberOfFiles} ${fileText}`
+    ? `Successfully overwrote ${numberOfFiles} ${fileText}`
     : `Successfully created ${numberOfFiles} ${fileText}`
   return {
     message,
