@@ -28,6 +28,7 @@ import {
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
   KCL_DEFAULT_TRANSFORM,
+  ML_EXPERIMENTAL_MESSAGE,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
 import type { Selections } from '@src/lib/selections'
@@ -965,9 +966,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'Prompt-to-edit': {
-    description:
-      'Use Zoo AI to edit your kcl. This feature is experimental and undergoing constant improvement, stay tuned for updates.',
-    icon: 'sparkles',
+    description: 'Use Zoo AI to edit your parts and code.',
+    icon: 'chat',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
       selection: {
@@ -992,6 +992,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       prompt: {
         inputType: 'text',
         required: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   },

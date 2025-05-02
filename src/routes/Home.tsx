@@ -51,6 +51,7 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -306,10 +307,7 @@ const Home = () => {
                       <CustomIcon name="beaker" className="w-4 h-4" />
                       <span>Experimental</span>
                     </div>
-                    <p className="pt-2 text-left">
-                      This feature is experimental and undergoing constant
-                      improvement, stay tuned for updates.
-                    </p>
+                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
                   </div>
                 </Tooltip>
               </ActionButton>
