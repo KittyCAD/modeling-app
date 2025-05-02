@@ -11,9 +11,9 @@ provided thickness remains around the exterior of the shape.
 
 ```kcl
 hollow(
-  @solid: [Solid](/docs/kcl/types/std-types-Solid),
+  @solid: Solid,
   thickness: number(Length),
-): [Solid](/docs/kcl/types/std-types-Solid)
+): Solid
 ```
 
 

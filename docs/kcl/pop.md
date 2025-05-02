@@ -9,7 +9,7 @@ Remove the last element from an array.
 Returns a new array with the last element removed.
 
 ```kcl
-pop(array: [[any]](/docs/kcl/types/std-types-any)): [any](/docs/kcl/types/std-types-any)
+pop(array: [any]): any
 ```
 
 

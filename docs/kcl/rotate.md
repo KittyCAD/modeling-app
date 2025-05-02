@@ -28,14 +28,14 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```kcl
 rotate(
-  objects: [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry),
-  roll?: [number](/docs/kcl/types/std-types-number),
-  pitch?: [number](/docs/kcl/types/std-types-number),
-  yaw?: [number](/docs/kcl/types/std-types-number),
-  axis?: [[number]](/docs/kcl/types/std-types-number),
-  angle?: [number](/docs/kcl/types/std-types-number),
-  global?: [bool](/docs/kcl/types/std-types-bool),
-): [[Solid]](/docs/kcl/types/std-types-Solid) | [[Sketch]](/docs/kcl/types/std-types-Sketch) | [ImportedGeometry](/docs/kcl/types#ImportedGeometry)
+  objects: [Solid] | [Sketch] | ImportedGeometry,
+  roll?: number,
+  pitch?: number,
+  yaw?: number,
+  axis?: [number],
+  angle?: number,
+  global?: bool,
+): [Solid] | [Sketch] | ImportedGeometry
 ```
 
 

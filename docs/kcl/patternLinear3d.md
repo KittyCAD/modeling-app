@@ -10,12 +10,12 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount of dista
 
 ```kcl
 patternLinear3d(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
-  instances: [number](/docs/kcl/types/std-types-number),
-  distance: [number](/docs/kcl/types/std-types-number),
-  axis: [Point3d](/docs/kcl/types/std-types-Point3d),
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  solids: [Solid],
+  instances: number,
+  distance: number,
+  axis: Point3d,
+  useOriginal?: bool,
+): [Solid]
 ```
 
 

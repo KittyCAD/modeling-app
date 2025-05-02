@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment along the 'x' axis.
 
 
 ```kcl
-segStartX(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [number](/docs/kcl/types/std-types-number)
+segStartX(tag: TagIdentifier): number
 ```
 
 

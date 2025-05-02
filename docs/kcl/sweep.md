@@ -12,13 +12,13 @@ You can provide more than one sketch to sweep, and they will all be swept along 
 
 ```kcl
 sweep(
-  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  path: [Sketch](/docs/kcl/types/std-types-Sketch) | [Helix](/docs/kcl/types/std-types-Helix),
-  sectional?: [bool](/docs/kcl/types/std-types-bool),
-  tolerance?: [number](/docs/kcl/types/std-types-number),
-  tagStart?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-  tagEnd?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  sketches: [Sketch],
+  path: Sketch | Helix,
+  sectional?: bool,
+  tolerance?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
+): [Solid]
 ```
 
 
