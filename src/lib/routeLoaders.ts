@@ -90,10 +90,7 @@ export const fileLoader: LoaderFunction = async (
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
       codeManager.updateCodeStateEditor(code, true)
-      window.dispatchEvent(
-        // new CustomEvent(NAVIGATION_COMPLETE_EVENT, {
-        new CustomEvent(NAVIGATION_COMPLETE_EVENT)
-      )
+      window.dispatchEvent(new CustomEvent(NAVIGATION_COMPLETE_EVENT))
     }
 
     // Set the file system manager to the project path
