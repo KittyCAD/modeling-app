@@ -693,7 +693,11 @@ extrude(profile001, length = 100)"#
         )
         .await;
 
-        assert_eq!(result, CacheResult::NoAction(false));
+        let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
+            panic!("Expected CheckImportsOnly, got {:?}", result);
+        };
+
+        assert_eq!(reapply_settings, false);
     }
 
     #[tokio::test(flavor = "multi_thread")]
