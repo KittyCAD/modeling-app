@@ -570,6 +570,11 @@ export function ToastPromptToEditCadSuccess({
               sendTelemetry(modelId, 'accepted', token).catch(reportRejection)
               toast.dismiss(toastId)
 
+              /**
+               * TODO: (Kevin) This seems odd because we are already calling writeOverFilesAndExecute which would overwrite all the files
+               * on disk. Why would we need to rewrite the current editor to disk when this accepts? The changes are already on disk.
+               */
+
               // Write new content to disk since they have accepted.
               codeManager
                 .writeToFile()
