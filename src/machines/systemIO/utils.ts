@@ -10,6 +10,8 @@ export enum SystemIOMachineActors {
   checkReadWrite = 'check read write',
   importFileFromURL = 'import file from URL',
   deleteKCLFile = 'delete kcl delete',
+  bulkCreateKCLFiles = 'bulk create kcl files',
+  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
 }
 
 export enum SystemIOMachineStates {
@@ -23,6 +25,8 @@ export enum SystemIOMachineStates {
   checkingReadWrite = 'checkingReadWrite',
   importFileFromURL = 'importFileFromURL',
   deletingKCLFile = 'deletingKCLFile',
+  bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
+  bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -45,6 +49,8 @@ export enum SystemIOMachineEvents {
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
   deleteKCLFile = 'delete kcl file',
+  bulkCreateKCLFiles = 'bulk create kcl files',
+  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
 }
 
 export enum SystemIOMachineActions {
@@ -85,4 +91,10 @@ export type SystemIOContext = {
   lastProjectDeleteRequest: {
     project: string
   }
+}
+
+export type RequestedKCLFile = {
+  requestedProjectName: string
+  requestedFileName: string
+  requestedCode: string
 }
