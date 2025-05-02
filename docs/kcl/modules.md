@@ -12,7 +12,7 @@ to other modules.
 
 ```kcl
 // util.kcl
-export fn increment(@x) {
+export fn increment(x) {
   return x + 1
 }
 ```
@@ -37,11 +37,11 @@ Multiple functions can be exported in a file.
 
 ```kcl
 // util.kcl
-export fn increment(@x) {
+export fn increment(x) {
   return x + 1
 }
 
-export fn decrement(@x) {
+export fn decrement(x) {
   return x - 1
 }
 ```
@@ -81,7 +81,7 @@ fn cube(center) {
     |> extrude(length = 10)
 }
 
-myCube = cube(center = [0, 0])
+myCube = cube([0, 0])
 ```
 
 *Pros*

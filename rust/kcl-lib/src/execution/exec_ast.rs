@@ -2652,13 +2652,12 @@ d = b + c
         let mut exec_state = ExecState::new(&exec_ctxt);
 
         exec_ctxt
-            .run_concurrent(
+            .run(
                 &crate::Program {
                     ast: main.clone(),
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,
-                false,
             )
             .await
             .unwrap();

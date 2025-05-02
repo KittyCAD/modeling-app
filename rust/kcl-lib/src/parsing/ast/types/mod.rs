@@ -542,6 +542,16 @@ impl Program {
         }
     }
 
+    /// Checks if the ast has any import statements.    
+    pub fn has_import_statements(&self) -> bool {
+        for item in &self.body {
+            if let BodyItem::ImportStatement(_) = item {
+                return true;
+            }
+        }
+        false
+    }
+
     pub fn in_comment(&self, pos: usize) -> bool {
         // Check if its in the body.
         if self.non_code_meta.in_comment(pos) {
