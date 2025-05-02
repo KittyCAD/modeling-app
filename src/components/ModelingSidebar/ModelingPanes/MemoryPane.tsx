@@ -84,28 +84,19 @@ export const processMemory = (variables: VariableMap) => {
   const processedMemory: any = {}
   for (const [key, val] of Object.entries(variables)) {
     if (val === undefined) continue
-    if (
-      val.type === 'Sketch' ||
-      // @ts-ignore
-      val.type !== 'Function'
-    ) {
-      const sk = sketchFromKclValueOptional(val, key)
-      if (val.type === 'Solid') {
-        processedMemory[key] = val.value.value.map(
-          ({ ...rest }: ExtrudeSurface) => {
-            return rest
-          }
-        )
-      } else if (!(sk instanceof Reason)) {
-        processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
+    const sk = sketchFromKclValueOptional(val, key)
+    if (val.type === 'Solid') {
+      processedMemory[key] = val.value.value.map(
+        ({ ...rest }: ExtrudeSurface) => {
           return rest
-        })
-      } else {
-        processedMemory[key] = val.value
-      }
-      //@ts-ignore
-    } else if (val.type === 'Function') {
-      processedMemory[key] = `__function__`
+        }
+      )
+    } else if (!(sk instanceof Reason)) {
+      processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
+        return rest
+      })
+    } else {
+      processedMemory[key] = val.value
     }
   }
   return processedMemory
