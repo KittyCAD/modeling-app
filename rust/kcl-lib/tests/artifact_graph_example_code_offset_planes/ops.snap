@@ -94,18 +94,16 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   }
 ]

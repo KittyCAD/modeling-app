@@ -32,13 +32,13 @@ bracket = startSketchOn(XY)
   |> fillet(
        radius = filletR,
        tags = [
-         getPreviousAdjacentEdge('innerEdge', %)
+         getPreviousAdjacentEdge('innerEdge')
        ]
      )
   |> fillet(
        radius = filletR + thickness,
        tags = [
-         getPreviousAdjacentEdge('outerEdge', %)
+         getPreviousAdjacentEdge('outerEdge')
        ]
      )
 

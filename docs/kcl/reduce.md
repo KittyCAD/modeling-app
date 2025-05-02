@@ -55,7 +55,7 @@ fn sum(arr):
 // We use `assert` to check that our `sum` function gives the
 // expected result. It's good to check your work!
 assert(
-    sum([1, 2, 3]),
+  sum([1, 2, 3]),
   isEqualTo = 6,
   tolerance = 0.1,
   error = "1 + 2 + 3 summed is 6",

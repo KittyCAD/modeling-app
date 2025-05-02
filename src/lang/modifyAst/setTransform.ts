@@ -9,6 +9,7 @@ import {
 } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type {
+  ArtifactGraph,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
@@ -18,6 +19,11 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+import {
+  findAllChildrenAndOrderByPlaceInCode,
+  getLastVariable,
+} from '@src/lang/modifyAst/boolean'
+import type { Selections } from '@src/lib/selections'
 
 export function setTranslate({
   modifiedAst,
@@ -151,5 +157,36 @@ export function insertExpressionNode(ast: Node<Program>, alias: string) {
     [ast.body.length - 1, 'index'],
     ['expression', 'Name'],
   ]
+  return pathToNode
+}
+
+export function retrievePathToNodeFromTransformSelection(
+  selection: Selections,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>
+): PathToNode | Error {
+  const error = new Error(
+    "Couldn't retrieve selection. If you're trying to transform an import, use the feature tree."
+  )
+  const hasPathToNode = !!selection.graphSelections[0].codeRef.pathToNode.length
+  const artifact = selection.graphSelections[0].artifact
+  let pathToNode: PathToNode | undefined
+  if (hasPathToNode && artifact) {
+    const children = findAllChildrenAndOrderByPlaceInCode(
+      artifact,
+      artifactGraph
+    )
+    const variable = getLastVariable(children, ast)
+    if (!variable) {
+      return error
+    }
+
+    pathToNode = variable.pathToNode
+  } else if (hasPathToNode) {
+    pathToNode = selection.graphSelections[0].codeRef.pathToNode
+  } else {
+    return error
+  }
+
   return pathToNode
 }

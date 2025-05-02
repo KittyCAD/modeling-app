@@ -30,5 +30,8 @@ description: Operations executed kw_fn_unlabeled_but_has_label.kcl
       }
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

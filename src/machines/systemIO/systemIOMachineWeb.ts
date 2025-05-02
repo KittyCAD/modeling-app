@@ -21,6 +21,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           requestedFileName: string
           requestedCode: string
           rootContext: AppMachineContext
+          requestedSubRoute?: string
         }
       }) => {
         // Browser version doesn't navigate, just overwrites the current file
@@ -61,6 +62,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
           message: 'File overwritten successfully',
           fileName: input.requestedFileName,
           projectName: '',
+          subRoute: input.requestedSubRoute || '',
         }
       }
     ),
