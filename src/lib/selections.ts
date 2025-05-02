@@ -512,10 +512,10 @@ export function canSubmitSelectionArg(
 }
 
 /**
- * Find the index of the last range r1 where r1[0] < targetStart, such that
- * there does not exist another range r2 where r2[0] < targetStart and r2[0] >=
- * r1[0]. This is used as a starting point for linear search of overlapping
- * ranges
+ * Find the index of the last range where range.start < targetStart. When there
+ * are ranges with equal start positions just before the targetStart, the first
+ * one is returned. The returned index can be used as a starting point for
+ * linear search of overlapping ranges.
  *
  * @param index The sorted array of ranges to search through
  * @param targetStart The start position to compare against
