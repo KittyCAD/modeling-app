@@ -51,7 +51,6 @@ import {
   addShell,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
-  loftSketches,
 } from '@src/lang/modifyAst'
 import type {
   ChamferParameters,
@@ -65,6 +64,7 @@ import {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   addExtrude,
+  addLoft,
   addRevolve,
   addSweep,
   getAxisExpressionAndIndex,
@@ -88,7 +88,6 @@ import {
 } from '@src/lang/modifyAst/setTransform'
 import {
   getNodeFromPath,
-  getProfileExpressionsFromSelection,
   findPipesWithImportAlias,
   findImportNodeAndAlias,
   isNodeSafeToReplacePath,
@@ -96,7 +95,6 @@ import {
   updatePathToNodesAfterEdit,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromPlaneArtifact,
@@ -1797,17 +1795,8 @@ export const modelingMachine = setup({
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
       if (!input) return Promise.reject(new Error('No input provided'))
-      const { nodeToEdit, selection, length } = input
-      let ast = kclManager.ast
-      const sketches = getProfileExpressionsFromSelection(
-        selection,
-        ast,
-        nodeToEdit
-      )
-      if (err(sketches)) {
-        return Promise.reject(sketches)
-      }
-
+      const { nodeToEdit, sketches, length } = input
+      const { ast } = kclManager
       const astResult = addExtrude({
         ast,
         sketches,
@@ -1832,22 +1821,74 @@ export const modelingMachine = setup({
         }
       )
     }),
+    sweepAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Sweep'] | undefined
+    >(async ({ input }) => {
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const { nodeToEdit, sketches, path, sectional } = input
+      const { ast } = kclManager
+      const astResult = addSweep({
+        ast,
+        sketches,
+        path,
+        sectional,
+        nodeToEdit,
+      })
+      if (err(astResult)) {
+        return Promise.reject(astResult)
+      }
+
+      const { modifiedAst, pathToNode } = astResult
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
+        },
+        {
+          focusPath: [pathToNode],
+        }
+      )
+    }),
+    loftAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Loft'] | undefined
+      }) => {
+        if (!input) return Promise.reject(new Error('No input provided'))
+        const { sketches } = input
+        const { ast } = kclManager
+        const astResult = addLoft({ ast, sketches })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     revolveAstMod: fromPromise<
       unknown,
       ModelingCommandSchema['Revolve'] | undefined
     >(async ({ input }) => {
       if (!input) return Promise.reject(new Error('No input provided'))
-      const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
-      let ast = kclManager.ast
-      const sketches = getProfileExpressionsFromSelection(
-        selection,
-        ast,
-        nodeToEdit
-      )
-      if (err(sketches)) {
-        return Promise.reject(sketches)
-      }
-
+      const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
+      const { ast } = kclManager
       const astResult = addRevolve({
         ast,
         sketches,
@@ -1858,7 +1899,7 @@ export const modelingMachine = setup({
         nodeToEdit,
       })
       if (err(astResult)) {
-        return Promise.reject(new Error("Couldn't add revolve statement"))
+        return Promise.reject(astResult)
       }
 
       const { modifiedAst, pathToNode } = astResult
@@ -2095,104 +2136,6 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
-          }
-        )
-      }
-    ),
-    sweepAstMod: fromPromise<
-      unknown,
-      ModelingCommandSchema['Sweep'] | undefined
-    >(async ({ input }) => {
-      if (!input) return Promise.reject(new Error('No input provided'))
-      const ast = kclManager.ast
-      const { nodeToEdit, target, trajectory, sectional } = input
-      const sketches = getProfileExpressionsFromSelection(
-        target,
-        ast,
-        nodeToEdit
-      )
-      if (err(sketches)) {
-        return Promise.reject(sketches)
-      }
-
-      // Find the trajectory (or path) declaration
-      const trajectoryNodePath = getNodePathFromSourceRange(
-        ast,
-        trajectory.graphSelections[0].codeRef.range
-      )
-      const trajectoryNode = getNodeFromPath<VariableDeclaration>(
-        ast,
-        trajectoryNodePath,
-        'VariableDeclaration'
-      )
-      if (err(trajectoryNode)) {
-        return Promise.reject(new Error("Couldn't parse path selection"))
-      }
-
-      const trajectoryDeclarator = trajectoryNode.node.declaration
-
-      const astResult = addSweep({
-        ast,
-        sketches,
-        trajectoryDeclarator,
-        sectional,
-        nodeToEdit,
-      })
-      if (err(astResult)) {
-        return Promise.reject(new Error("Couldn't add extrude statement"))
-      }
-
-      const { modifiedAst, pathToNode } = astResult
-      await updateModelingState(
-        modifiedAst,
-        EXECUTION_TYPE_REAL,
-        {
-          kclManager,
-          editorManager,
-          codeManager,
-        },
-        {
-          focusPath: [pathToNode],
-        }
-      )
-    }),
-    loftAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Loft'] | undefined
-      }) => {
-        if (!input) return new Error('No input provided')
-        // Extract inputs
-        const ast = kclManager.ast
-        const { selection } = input
-        const declarators = selection.graphSelections.flatMap((s) => {
-          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
-          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
-            ast,
-            path,
-            'VariableDeclarator'
-          )
-          return err(nodeFromPath) ? [] : nodeFromPath.node
-        })
-
-        // TODO: add better validation on selection
-        if (!(declarators && declarators.length > 1)) {
-          trap('Not enough sketches selected')
-        }
-
-        // Perform the loft
-        const loftSketchesRes = loftSketches(ast, declarators)
-        await updateModelingState(
-          loftSketchesRes.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [loftSketchesRes.pathToNode],
           }
         )
       }

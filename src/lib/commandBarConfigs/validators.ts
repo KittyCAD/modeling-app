@@ -94,11 +94,12 @@ export const revolveAxisValidator = async ({
   data: { [key: string]: Selections }
   context: CommandBarContext
 }): Promise<boolean | string> => {
-  if (!isSelections(context.argumentsToSubmit.selection)) {
+  if (!isSelections(context.argumentsToSubmit.sketches)) {
     return 'Unable to revolve, selections are missing'
   }
+  // Gotcha: this validation only works for the first sketch
   const artifact =
-    context.argumentsToSubmit.selection.graphSelections[0].artifact
+    context.argumentsToSubmit.sketches.graphSelections[0].artifact
 
   if (!artifact) {
     return 'Unable to revolve, sketch not found'
@@ -153,16 +154,16 @@ export const loftValidator = async ({
   data: { [key: string]: Selections }
   context: CommandBarContext
 }): Promise<boolean | string> => {
-  if (!isSelections(data.selection)) {
+  if (!isSelections(data.sketches)) {
     return 'Unable to loft, selections are missing'
   }
-  const { selection } = data
+  const { sketches } = data
 
-  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
+  if (sketches.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
     return 'Unable to loft, some selection are not solid2ds'
   }
 
-  const sectionIds = data.selection.graphSelections.flatMap((s) =>
+  const sectionIds = sketches.graphSelections.flatMap((s) =>
     s.artifact?.type === 'solid2d' ? s.artifact.pathId : []
   )
 

@@ -137,7 +137,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
   // with `nodeToEdit` set, which will let the Extrude actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
-    selection: {
+    sketches: {
       graphSelections,
       otherSelections: [],
     },
@@ -562,7 +562,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     return { reason: "Couldn't retrieve trajectory artifact" }
   }
 
-  const trajectory = {
+  const path = {
     graphSelections: [
       {
         artifact: trajectoryArtifact,
@@ -585,11 +585,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   // 3. Assemble the default argument values for the Sweep command,
   // with `nodeToEdit` set to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Sweep'] = {
-    target: {
+    sketches: {
       graphSelections,
       otherSelections: [],
     },
-    trajectory,
+    path,
     sectional,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
@@ -1023,7 +1023,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axisOrEdge,
     axis,
     edge,
-    selection: {
+    sketches: {
       graphSelections,
       otherSelections: [],
     },

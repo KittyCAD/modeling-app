@@ -1009,14 +1009,14 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     // click extrude
     await toolbar.extrudeButton.click()
 
-    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Sketches: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'arguments',
       currentArgKey: 'length',
       currentArgValue: '5',
-      headerArguments: { Selection: '1 segment', Length: '' },
+      headerArguments: { Sketches: '1 segment', Length: '' },
       highlightedHeaderArg: 'length',
       commandName: 'Extrude',
     })

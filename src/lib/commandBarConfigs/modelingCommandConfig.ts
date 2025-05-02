@@ -62,27 +62,20 @@ export type ModelingCommandSchema = {
   Extrude: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    selection: Selections // & { type: 'face' } would be cool to lock that down
-    // result: (typeof EXTRUSION_RESULTS)[number]
+    // KCL stdlib arguments
+    sketches: Selections
     length: KclCommandValue
   }
   Sweep: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
-    // Arguments
-    target: Selections
-    trajectory: Selections
+    // KCL stdlib arguments
+    sketches: Selections
+    path: Selections
     sectional?: boolean
   }
   Loft: {
-    selection: Selections
-  }
-  Shell: {
-    // Enables editing workflow
-    nodeToEdit?: PathToNode
-    // KCL stdlib arguments
-    selection: Selections
-    thickness: KclCommandValue
+    sketches: Selections
   }
   Revolve: {
     // Enables editing workflow
@@ -90,10 +83,17 @@ export type ModelingCommandSchema = {
     // Flow arg
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
-    selection: Selections
+    sketches: Selections
     angle: KclCommandValue
     axis: string | undefined
     edge: Selections | undefined
+  }
+  Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
+    selection: Selections
+    thickness: KclCommandValue
   }
   Fillet: {
     // Enables editing workflow
@@ -386,7 +386,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
         multiple: true,
@@ -414,14 +414,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
-      target: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
         multiple: true,
         required: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
-      trajectory: {
+      path: {
         inputType: 'selection',
         selectionTypes: ['segment'],
         required: true,
@@ -448,40 +448,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'loft',
     needsReview: false,
     args: {
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d'],
         multiple: true,
         required: true,
         skip: false,
         validation: loftValidator,
-      },
-    },
-  },
-  Shell: {
-    description: 'Hollow out a 3D solid.',
-    icon: 'shell',
-    needsReview: true,
-    args: {
-      nodeToEdit: {
-        description:
-          'Path to the node in the AST to edit. Never shown to the user.',
-        skip: true,
-        inputType: 'text',
-        required: false,
-      },
-      selection: {
-        inputType: 'selection',
-        selectionTypes: ['cap', 'wall'],
-        multiple: true,
-        required: true,
-        validation: shellValidator,
-        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
-      },
-      thickness: {
-        inputType: 'kcl',
-        defaultValue: KCL_DEFAULT_LENGTH,
-        required: true,
       },
     },
   },
@@ -497,7 +470,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'text',
         required: false,
       },
-      selection: {
+      sketches: {
         inputType: 'selection',
         selectionTypes: ['solid2d', 'segment'],
         multiple: true,
@@ -540,6 +513,33 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       angle: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
+        required: true,
+      },
+    },
+  },
+  Shell: {
+    description: 'Hollow out a 3D solid.',
+    icon: 'shell',
+    needsReview: true,
+    args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
+      selection: {
+        inputType: 'selection',
+        selectionTypes: ['cap', 'wall'],
+        multiple: true,
+        required: true,
+        validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      thickness: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
       },
     },

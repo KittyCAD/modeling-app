@@ -76,10 +76,10 @@ test.describe('Point-and-click tests', () => {
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'selection',
+        currentArgKey: 'sketches',
         currentArgValue: '',
-        headerArguments: { Selection: '', Length: '' },
-        highlightedHeaderArg: 'selection',
+        headerArguments: { Sketches: '', Length: '' },
+        highlightedHeaderArg: 'sketches',
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -87,7 +87,7 @@ test.describe('Point-and-click tests', () => {
         stage: 'arguments',
         currentArgKey: 'length',
         currentArgValue: '5',
-        headerArguments: { Selection: '1 face', Length: '' },
+        headerArguments: { Sketches: '1 face', Length: '' },
         highlightedHeaderArg: 'length',
         commandName: 'Extrude',
       })
@@ -98,7 +98,7 @@ test.describe('Point-and-click tests', () => {
 
       await cmdBar.expectState({
         stage: 'review',
-        headerArguments: { Selection: '1 face', Length: '5' },
+        headerArguments: { Sketches: '1 face', Length: '5' },
         commandName: 'Extrude',
       })
       await cmdBar.progressCmdBar()
@@ -1629,10 +1629,10 @@ extrude001 = extrude(profile001, length = 100)
             .toBe(1)
           await cmdBar.expectState({
             stage: 'arguments',
-            currentArgKey: 'selection',
+            currentArgKey: 'sketches',
             currentArgValue: '',
-            headerArguments: { Selection: '' },
-            highlightedHeaderArg: 'selection',
+            headerArguments: { Sketches: '' },
+            highlightedHeaderArg: 'sketches',
             commandName: 'Loft',
           })
           await selectSketches()
@@ -1803,49 +1803,49 @@ sketch002 = startSketchOn(XZ)
           .toBe(1)
         await cmdBar.expectState({
           commandName: 'Sweep',
-          currentArgKey: 'target',
+          currentArgKey: 'sketches',
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Target: '',
-            Trajectory: '',
+            Sketches: '',
+            Path: '',
           },
-          highlightedHeaderArg: 'target',
+          highlightedHeaderArg: 'sketches',
           stage: 'arguments',
         })
         await clickOnSketch1()
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           commandName: 'Sweep',
-          currentArgKey: 'trajectory',
+          currentArgKey: 'path',
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Target: '1 face',
-            Trajectory: '',
+            Sketches: '1 face',
+            Path: '',
           },
-          highlightedHeaderArg: 'trajectory',
+          highlightedHeaderArg: 'path',
           stage: 'arguments',
         })
         await clickOnSketch2()
         await cmdBar.expectState({
           commandName: 'Sweep',
-          currentArgKey: 'trajectory',
+          currentArgKey: 'path',
           currentArgValue: '',
           headerArguments: {
             Sectional: '',
-            Target: '1 face',
-            Trajectory: '',
+            Sketches: '1 face',
+            Path: '',
           },
-          highlightedHeaderArg: 'trajectory',
+          highlightedHeaderArg: 'path',
           stage: 'arguments',
         })
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           commandName: 'Sweep',
           headerArguments: {
-            Target: '1 face',
-            Trajectory: '1 segment',
+            Sketches: '1 face',
+            Path: '1 segment',
             Sectional: '',
           },
           stage: 'review',
@@ -1954,28 +1954,28 @@ sketch002 = startSketchOn(XZ)
         .toBe(1)
       await cmdBar.expectState({
         commandName: 'Sweep',
-        currentArgKey: 'target',
+        currentArgKey: 'sketches',
         currentArgValue: '',
         headerArguments: {
           Sectional: '',
-          Target: '',
-          Trajectory: '',
+          Sketches: '',
+          Path: '',
         },
-        highlightedHeaderArg: 'target',
+        highlightedHeaderArg: 'sketches',
         stage: 'arguments',
       })
       await clickOnSketch1()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: 'Sweep',
-        currentArgKey: 'trajectory',
+        currentArgKey: 'path',
         currentArgValue: '',
         headerArguments: {
           Sectional: '',
-          Target: '1 face',
-          Trajectory: '',
+          Sketches: '1 face',
+          Path: '',
         },
-        highlightedHeaderArg: 'trajectory',
+        highlightedHeaderArg: 'path',
         stage: 'arguments',
       })
       await clickOnSketch2()
@@ -2073,7 +2073,7 @@ extrude001 = extrude(sketch001, length = -12)
         currentArgKey: 'selection',
         currentArgValue: '',
         headerArguments: {
-          Selection: '',
+          Sketches: '',
           Radius: '',
         },
         stage: 'arguments',

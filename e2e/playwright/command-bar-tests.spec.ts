@@ -41,13 +41,13 @@ test.describe('Command bar tests', () => {
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'selection',
+      currentArgKey: 'sketches',
       currentArgValue: '',
       headerArguments: {
-        Selection: '',
+        Sketches: '',
         Length: '',
       },
-      highlightedHeaderArg: 'selection',
+      highlightedHeaderArg: 'sketches',
     })
     await cmdBar.progressCmdBar()
     await cmdBar.progressCmdBar()
@@ -55,7 +55,7 @@ test.describe('Command bar tests', () => {
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
-        Selection: '1 segment',
+        Sketches: '1 segment',
         Length: '5',
       },
     })
@@ -285,7 +285,7 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'sketches' })).toBeDisabled()
     // Select a face
     await page.mouse.move(700, 200)
     await page.mouse.click(700, 200)

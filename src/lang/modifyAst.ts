@@ -338,38 +338,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function loftSketches(
-  node: Node<Program>,
-  declarators: VariableDeclarator[]
-): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const elements = declarators.map((d) => createLocalName(d.id.name))
-  const loft = createCallExpressionStdLibKw(
-    'loft',
-    createArrayExpression(elements),
-    []
-  )
-  const declaration = createVariableDeclaration(name, loft)
-  modifiedAst.body.push(declaration)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function addShell({
   node,
   sweepName,
