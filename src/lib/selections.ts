@@ -525,6 +525,10 @@ export function findLastRangeStartingBefore(
   index: ArtifactIndex,
   targetStart: number
 ): number {
+  if (index.length === 0) {
+    return 0
+  }
+
   let left = 0
   let right = index.length - 1
   let lastValidIndex = 0
