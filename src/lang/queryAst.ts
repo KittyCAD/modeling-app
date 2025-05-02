@@ -223,8 +223,6 @@ export function traverse(
         [index, 'index'],
       ])
     )
-  } else if (_node.type === 'CallExpression') {
-    throw new Error('No more CallExpression in KCL!')
   } else if (_node.type === 'CallExpressionKw') {
     _traverse(_node.callee, [...pathToNode, ['callee', 'CallExpressionKw']])
     if (_node.unlabeled !== null) {
