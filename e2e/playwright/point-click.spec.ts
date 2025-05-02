@@ -77,11 +77,12 @@ test.describe('Point-and-click tests', () => {
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'selection',
-        currentArgValue: '1 face',
+        currentArgValue: '',
         headerArguments: { Selection: '', Length: '' },
         highlightedHeaderArg: 'selection',
         commandName: 'Extrude',
       })
+      await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'length',
