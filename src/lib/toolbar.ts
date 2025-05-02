@@ -10,7 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
-import { IS_ML_EXPERIMENTAL } from './constants'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
