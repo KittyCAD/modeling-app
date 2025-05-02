@@ -24,18 +24,18 @@ connectorPadding = 4
 
 miniHdmiHole = startSketchOn(XY)
   |> startProfile(at = [0, border + miniHdmiDistance - (miniHdmiWidth / 2)])
-  |> lineTo([
+  |> line(endAbsolute = [
        0,
        border + miniHdmiDistance + miniHdmiWidth / 2
-     ], %)
-  |> lineTo([
+     ])
+  |> line(endAbsolute = [
        1,
        border + miniHdmiDistance + miniHdmiWidth / 2
-     ], %)
-  |> lineTo([
+     ])
+  |> line(endAbsolute = [
        1,
        border + miniHdmiDistance - (miniHdmiWidth / 2)
-     ], %)
+     ])
   |> close()
 
 case = startSketchOn(XY)

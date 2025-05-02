@@ -28,7 +28,7 @@ describe('processMemory', () => {
     |> line(endAbsolute = [-3.35, 0.17])
     |> line(endAbsolute = [0.98, 5.16])
     |> line(endAbsolute = [2.15, 4.32])
-    // |> rx(90, %)`
+    // |> rx(90)`
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const output = processMemory(execState.variables)

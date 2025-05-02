@@ -2365,9 +2365,9 @@ export const angledLine: SketchLineHelperKw = {
     const { node: pipe } = _node1
 
     // When snapping to previous arc's tangent direction, create this expression:
-    //  angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+    //  angledLine(angle = tangentToEnd(arc001), length = 12)
     // Or if snapping to the negative direction:
-    //  angledLine({ angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12 }, %)
+    //  angledLine(angle = tangentToEnd(arc001) + turns::HALF_TURN, length = 12)
     const newAngleVal = snaps?.previousArcTag
       ? snaps.negativeTangentDirection
         ? createBinaryExpression([

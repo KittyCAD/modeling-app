@@ -37,6 +37,6 @@ plumbus0 =
   |> fillet(
        radius = 5,
        tags = [c2.tags.arc_tag, getOppositeEdge(c2.tags.arc_tag)]
-     , %)
+     )
 
 
