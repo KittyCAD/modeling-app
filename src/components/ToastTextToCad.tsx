@@ -32,6 +32,7 @@ import { reportRejection } from '@src/lib/trap'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
+  NAVIGATION_COMPLETE_EVENT,
 } from '@src/machines/systemIO/utils'
 import {
   useProjectDirectoryPath,
@@ -591,7 +592,7 @@ export function ToastPromptToEditCadSuccess({
 
 export const writeOverFilesAndExecute = async ({
   requestedFiles,
-  projectName: projectNameTODO,
+  projectName,
 }: {
   requestedFiles: RequestedKCLFile[]
   projectName: string
@@ -606,27 +607,32 @@ export const writeOverFilesAndExecute = async ({
     })
   })
 
-  const mainCodeInfo = kclManager.execState.filenames[0]
-  const mainCodePath = mainCodeInfo?.type === 'Local' ? mainCodeInfo.value : ''
-  const mainCodeContent = requestedFiles.find((file) =>
-    mainCodePath.endsWith(file.requestedFileName)
-  )?.requestedCode
+  // Create a promise that resolves when navigation completes
+  const navigationPromise = new Promise<void>((resolve) => {
+    const handleNavigationComplete = (event: CustomEvent) => {
+      window.removeEventListener(
+        NAVIGATION_COMPLETE_EVENT,
+        handleNavigationComplete as EventListener
+      )
+      resolve()
+    }
+    window.addEventListener(
+      NAVIGATION_COMPLETE_EVENT,
+      handleNavigationComplete as EventListener
+    )
+  })
 
   systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
       files: requestedFiles,
-      requestedProjectName: projectNameTODO,
+      requestedProjectName: projectName,
       override: true,
     },
   })
 
-  // Wait for the bulk create operation to complete
-  await bulkCreatePromise
+  // Wait for both the bulk create operation and navigation to complete
+  await Promise.all([bulkCreatePromise, navigationPromise])
 
-  // Now execute the code after all files are written
-  if (mainCodeContent) {
-    codeManager.updateCodeEditor(mainCodeContent)
-  }
   await kclManager.executeCode()
 }

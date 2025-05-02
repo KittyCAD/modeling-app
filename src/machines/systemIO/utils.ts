@@ -98,3 +98,6 @@ export type RequestedKCLFile = {
   requestedFileName: string
   requestedCode: string
 }
+
+// Custom event for navigation completion
+export const NAVIGATION_COMPLETE_EVENT = 'navigation-complete'
