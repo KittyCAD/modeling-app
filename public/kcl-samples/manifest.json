@@ -162,6 +162,13 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
+    "multipleFiles": false,
+    "title": "Claw Hammer",
+    "description": "Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails"
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
     "title": "Hex Nut",
@@ -246,10 +253,24 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "piston/main.kcl",
+    "multipleFiles": false,
+    "title": "Piston",
+    "description": "A piston is the component of an engine that transfers linear motion into circular motion. The piston head is accelerated by exploding fuel, which drives a connecting rod to rotate a crankshaft."
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "poopy-shoe/main.kcl",
     "multipleFiles": false,
     "title": "Poopy Shoe",
     "description": "poop shute for bambu labs printer - optimized for printing."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "prosthetic-hip/main.kcl",
+    "multipleFiles": false,
+    "title": "Prosthetic Hip",
+    "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint"
   },
   {
     "file": "main.kcl",
