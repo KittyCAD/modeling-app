@@ -111,8 +111,24 @@ test.describe('Point and click for boolean workflows', () => {
         }
 
         await cmdBar.submit()
-
+        await scene.settled(cmdBar)
         await editor.expectEditor.toContain(operation.code)
+      })
+
+      await test.step(`Delete ${operationName} operation via feature tree selection`, async () => {
+        await toolbar.openPane('feature-tree')
+        const op = await toolbar.getFeatureTreeOperation(operationName, 0)
+        await op.click({ button: 'right' })
+        await page.getByTestId('context-menu-delete').click()
+        await scene.settled(cmdBar)
+        await toolbar.closePane('feature-tree')
+
+        // Expect changes in ft and code
+        await toolbar.openPane('code')
+        await editor.expectEditor.not.toContain(operation.code)
+        await expect(
+          await toolbar.getFeatureTreeOperation(operationName, 0)
+        ).not.toBeVisible()
       })
     })
   }

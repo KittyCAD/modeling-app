@@ -44,7 +44,6 @@ export function absDistanceInfo({
         : 'yAbs'
   const _nodes = selectionRanges.graphSelections.map(({ codeRef }) => {
     const tmp = getNodeFromPath<Expr>(kclManager.ast, codeRef.pathToNode, [
-      'CallExpression',
       'CallExpressionKw',
     ])
     if (err(tmp)) return tmp
@@ -56,7 +55,7 @@ export function absDistanceInfo({
 
   const isAllTooltips = nodes.every(
     (node) =>
-      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      node?.type === 'CallExpressionKw' &&
       toolTips.includes(node.callee.name.name as any)
   )
 

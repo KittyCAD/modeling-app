@@ -585,59 +585,6 @@ description: Result of parsing computed_var.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "commentStart": 0,
-                "end": 0,
-                "expr": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "left": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "2",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 2.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "operator": "*",
-                  "right": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "name": "PI",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "start": 0,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
-                },
-                "start": 0,
-                "ty": {
-                  "Rad": null,
-                  "commentStart": 0,
-                  "end": 0,
-                  "p_type": "Number",
-                  "start": 0,
-                  "type": "Primitive"
-                },
-                "type": "AscribedExpression",
-                "type": "AscribedExpression"
-              }
-            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -656,8 +603,59 @@ description: Result of parsing computed_var.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "commentStart": 0,
+              "end": 0,
+              "expr": {
+                "commentStart": 0,
+                "end": 0,
+                "left": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "raw": "2",
+                  "start": 0,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.0,
+                    "suffix": "None"
+                  }
+                },
+                "operator": "*",
+                "right": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "PI",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name",
+                  "type": "Name"
+                },
+                "start": 0,
+                "type": "BinaryExpression",
+                "type": "BinaryExpression"
+              },
+              "start": 0,
+              "ty": {
+                "Rad": null,
+                "commentStart": 0,
+                "end": 0,
+                "p_type": "Number",
+                "start": 0,
+                "type": "Primitive"
+              },
+              "type": "AscribedExpression",
+              "type": "AscribedExpression"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"

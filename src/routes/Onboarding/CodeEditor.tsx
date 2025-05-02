@@ -1,5 +1,4 @@
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import {
   OnboardingButtons,
   kbdClasses,
@@ -70,7 +69,7 @@ export default function OnboardingCodeEditor() {
             pressing <kbd className={kbdClasses}>Shift + C</kbd>.
           </p>
         </section>
-        <OnboardingButtons currentSlug={onboardingPaths.EDITOR} />
+        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.EDITOR} />
       </div>
     </div>
   )

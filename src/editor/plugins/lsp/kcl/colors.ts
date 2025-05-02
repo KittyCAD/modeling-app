@@ -43,7 +43,7 @@ function discoverColorsInKCL(
   switch (typeName) {
     case 'Program':
     case 'VariableDeclaration':
-    case 'CallExpression':
+    case 'CallExpressionKw':
     case 'ObjectExpression':
     case 'ObjectProperty':
     case 'ArgumentList':

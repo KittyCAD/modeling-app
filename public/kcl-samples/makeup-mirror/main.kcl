@@ -52,7 +52,7 @@ armPartB = armFn(plane = XZ, offset = armLength, altitude = hingeHeight * 2.5 + 
 
 // Add a function to create the mirror
 fn mirrorFn(plane, offsetX, offsetY, altitude, radius, tiefe, gestellR, gestellD) {
-  armPlane = startSketchOn(  offsetPlane(plane, offset = offsetY - (tiefe / 2)))
+  armPlane = startSketchOn(offsetPlane(plane, offset = offsetY - (tiefe / 2)))
   armBody = circle(armPlane, center = [offsetX, altitude], radius = radius)
     |> extrude(length = tiefe)
 

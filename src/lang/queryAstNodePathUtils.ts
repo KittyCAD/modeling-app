@@ -49,25 +49,6 @@ function moreNodePathFromSourceRange(
     return path
   }
 
-  if (_node.type === 'CallExpression' && isInRange) {
-    const { callee, arguments: args } = _node
-    if (callee.type === 'Name' && callee.start <= start && callee.end >= end) {
-      path.push(['callee', 'CallExpression'])
-      return path
-    }
-    if (args.length > 0) {
-      for (let argIndex = 0; argIndex < args.length; argIndex++) {
-        const arg = args[argIndex]
-        if (arg.start <= start && arg.end >= end) {
-          path.push(['arguments', 'CallExpression'])
-          path.push([argIndex, 'index'])
-          return moreNodePathFromSourceRange(arg, sourceRange, path)
-        }
-      }
-    }
-    return path
-  }
-
   if (_node.type === 'CallExpressionKw' && isInRange) {
     const { callee, arguments: args, unlabeled } = _node
     if (callee.type === 'Name' && callee.start <= start && callee.end >= end) {

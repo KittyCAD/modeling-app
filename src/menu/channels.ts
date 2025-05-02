@@ -6,7 +6,7 @@ import type { Channel } from '@src/channels'
 export type MenuLabels =
   | 'Help.Command Palette...'
   | 'Help.Report a bug'
-  | 'Help.Reset onboarding'
+  | 'Help.Replay onboarding tutorial'
   | 'Edit.Rename project'
   | 'Edit.Delete project'
   | 'Edit.Change project directory'

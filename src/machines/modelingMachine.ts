@@ -103,7 +103,6 @@ import {
 import type { Coords2d } from '@src/lang/std/sketch'
 import type {
   Artifact,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -2077,7 +2076,7 @@ export const modelingMachine = setup({
 
         let cylinderDeclarator: VariableDeclarator | undefined
         let axisExpression:
-          | Node<CallExpression | CallExpressionKw | Name>
+          | Node<CallExpressionKw | Name>
           | Node<Literal>
           | undefined
 
@@ -2382,10 +2381,7 @@ export const modelingMachine = setup({
             })
           }
 
-          if (
-            extrudeNode.node.declaration.init.type === 'CallExpression' ||
-            extrudeNode.node.declaration.init.type === 'CallExpressionKw'
-          ) {
+          if (extrudeNode.node.declaration.init.type === 'CallExpressionKw') {
             pathToExtrudeNode = extrudeLookupResult.pathToExtrudeNode
           } else if (
             segmentNode.node.declaration.init.type === 'PipeExpression'
@@ -4879,8 +4875,7 @@ export function isEditingExistingSketch({
   if (variableDeclaration.node.type !== 'VariableDeclarator') return false
   const maybePipeExpression = variableDeclaration.node.init
   if (
-    (maybePipeExpression.type === 'CallExpression' ||
-      maybePipeExpression.type === 'CallExpressionKw') &&
+    maybePipeExpression.type === 'CallExpressionKw' &&
     (maybePipeExpression.callee.name.name === 'startProfile' ||
       maybePipeExpression.callee.name.name === 'circle' ||
       maybePipeExpression.callee.name.name === 'circleThreePoint')
@@ -4960,7 +4955,7 @@ export function isClosedSketch({
   if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
   return node.node.declaration.init.body.some(
     (node) =>
-      (node.type === 'CallExpression' || node.type === 'CallExpressionKw') &&
+      node.type === 'CallExpressionKw' &&
       (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
   )
 }

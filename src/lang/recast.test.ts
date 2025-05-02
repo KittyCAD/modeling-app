@@ -57,7 +57,7 @@ newVar = myVar + 1
   })
   it('test with function call', () => {
     const code = `myVar = "hello"
-log(5, myVar)
+log(5, exp = myVar)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -70,7 +70,7 @@ log(5, myVar)
       '  return a + b',
       '}',
       'theVar = 60',
-      'magicNum = funcN(9, theVar)',
+      'magicNum = funcN(a = 9, b = theVar)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -97,7 +97,7 @@ log(5, myVar)
       '  |> line(endAbsolute = [1, 1])',
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
       '  |> line(endAbsolute = [1, 1])',
-      '  |> rx(90, %)',
+      '  |> rx(90)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -106,7 +106,7 @@ log(5, myVar)
   })
   it('recast BinaryExpression piped into CallExpression', () => {
     const code = [
-      'fn myFn(a) {',
+      'fn myFn(@a) {',
       '  return a + 1',
       '}',
       'myVar = 5 + 1',
@@ -244,7 +244,7 @@ key = 'c'
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
       '  |> line(endAbsolute = [1, 1])',
       '  // a comment',
-      '  |> rx(90, %)',
+      '  |> rx(90)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -264,12 +264,12 @@ mySk1 = startSketchOn(XY)
   here
   */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
+  |> ry(45)
 
 
-  |> rx(45, %)
+  |> rx(45)
 /*
 one more for good measure
 */
@@ -287,10 +287,10 @@ mySk1 = startSketchOn(XY)
   |> line(endAbsolute = [1, 1]) /* and
   here */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
-  |> rx(45, %)
+  |> ry(45)
+  |> rx(45)
 /* one more for good measure */
 `)
   })
