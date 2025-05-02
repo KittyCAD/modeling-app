@@ -23,6 +23,7 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import {
+  IS_ML_EXPERIMENTAL,
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DEGREE,
   KCL_DEFAULT_LENGTH,
@@ -965,7 +966,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Prompt-to-edit': {
     description: 'Use Zoo AI to edit your kcl',
-    icon: 'chat',
+    icon: 'sparkles',
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
       selection: {
         inputType: 'selectionMixed',

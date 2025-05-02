@@ -5,7 +5,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
+import { FILE_EXT, IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -21,6 +21,7 @@ export function createApplicationCommands({
     displayName: `Text to CAD`,
     groupId: 'application',
     needsReview: false,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
@@ -91,6 +92,7 @@ export function createApplicationCommands({
     description:
       'Add KCL file, Zoo sample, or 3D model to new or existing project.',
     needsReview: false,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
