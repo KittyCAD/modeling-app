@@ -81,7 +81,10 @@ export const MemoryPane = () => {
 }
 
 export const processMemory = (variables: VariableMap) => {
-  const processedMemory: any = {}
+  const processedMemory: Record<
+    string,
+    string | number | boolean | object | undefined
+  > = {}
   for (const [key, val] of Object.entries(variables)) {
     if (val === undefined) continue
     const sk = sketchFromKclValueOptional(val, key)
