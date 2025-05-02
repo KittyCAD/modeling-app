@@ -9,7 +9,7 @@ Compute the square root of a number.
 
 
 ```kcl
-sqrt(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+sqrt(@input: number): number
 ```
 
 

@@ -10,9 +10,9 @@ Compute the angle of the given leg for x.
 
 ```kcl
 legAngX(
-  hypotenuse: [number](/docs/kcl/types/std-types-number),
-  leg: [number](/docs/kcl/types/std-types-number),
-): [number](/docs/kcl/types/std-types-number)
+  hypotenuse: number,
+  leg: number,
+): number
 ```
 
 ### Tags

@@ -11,10 +11,10 @@ provided thickness remains, taking volume starting at the providedface, leaving 
 
 ```kcl
 shell(
-  @solids: [[Solid; 1+]](/docs/kcl/types/std-types-Solid),
+  @solids: [Solid; 1+],
   thickness: number(Length),
-  faces: [[tag; 1+]](/docs/kcl/types/std-types-tag),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  faces: [tag; 1+],
+): [Solid]
 ```
 
 

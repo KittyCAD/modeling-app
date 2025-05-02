@@ -10,9 +10,9 @@ Intersect computes the geometric intersection of multiple solid bodies, returnin
 
 ```kcl
 intersect(
-  solids: [[Solid]](/docs/kcl/types/std-types-Solid),
-  tolerance?: [number](/docs/kcl/types/std-types-number),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  solids: [Solid],
+  tolerance?: number,
+): [Solid]
 ```
 
 

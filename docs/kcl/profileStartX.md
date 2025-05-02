@@ -9,7 +9,7 @@ Extract the provided 2-dimensional sketch's profile's origin's 'x' value.
 
 
 ```kcl
-profileStartX(profile: [Sketch](/docs/kcl/types/std-types-Sketch)): [number](/docs/kcl/types/std-types-number)
+profileStartX(profile: Sketch): number
 ```
 
 

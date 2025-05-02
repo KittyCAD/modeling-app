@@ -9,7 +9,7 @@ Returns the angle coming out of the end of the segment in degrees.
 
 
 ```kcl
-tangentToEnd(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [number](/docs/kcl/types/std-types-number)
+tangentToEnd(tag: TagIdentifier): number
 ```
 
 

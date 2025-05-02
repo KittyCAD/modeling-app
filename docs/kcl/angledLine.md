@@ -10,15 +10,15 @@ Draw a line segment relative to the current origin using the polar measure of so
 
 ```kcl
 angledLine(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  angle: [number](/docs/kcl/types/std-types-number),
-  length?: [number](/docs/kcl/types/std-types-number),
-  lengthX?: [number](/docs/kcl/types/std-types-number),
-  lengthY?: [number](/docs/kcl/types/std-types-number),
-  endAbsoluteX?: [number](/docs/kcl/types/std-types-number),
-  endAbsoluteY?: [number](/docs/kcl/types/std-types-number),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  angle: number,
+  length?: number,
+  lengthX?: number,
+  lengthY?: number,
+  endAbsoluteX?: number,
+  endAbsoluteY?: number,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

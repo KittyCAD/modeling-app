@@ -9,7 +9,7 @@ Compute the base 10 logarithm of the number.
 
 
 ```kcl
-log10(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+log10(@input: number): number
 ```
 
 

@@ -10,12 +10,12 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of dis
 
 ```kcl
 patternLinear2d(
-  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  instances: [number](/docs/kcl/types/std-types-number),
-  distance: [number](/docs/kcl/types/std-types-number),
-  axis: [Point2d](/docs/kcl/types/std-types-Point2d),
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Sketch]](/docs/kcl/types/std-types-Sketch)
+  sketches: [Sketch],
+  instances: number,
+  distance: number,
+  axis: Point2d,
+  useOriginal?: bool,
+): [Sketch]
 ```
 
 

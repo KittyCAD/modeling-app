@@ -10,11 +10,11 @@ Draw a line relative to the current origin to a specified distance away from the
 
 ```kcl
 yLine(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  length?: [number](/docs/kcl/types/std-types-number),
-  endAbsolute?: [number](/docs/kcl/types/std-types-number),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  length?: number,
+  endAbsolute?: number,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

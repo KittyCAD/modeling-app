@@ -9,7 +9,7 @@ Compute the length of the provided line segment.
 
 
 ```kcl
-segLen(tag: [TagIdentifier](/docs/kcl/types#TagIdentifier)): [number](/docs/kcl/types/std-types-number)
+segLen(tag: TagIdentifier): number
 ```
 
 

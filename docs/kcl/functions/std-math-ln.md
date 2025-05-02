@@ -9,7 +9,7 @@ Compute the natural logarithm of the number.
 
 
 ```kcl
-ln(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+ln(@input: number): number
 ```
 
 

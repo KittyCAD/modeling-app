@@ -10,9 +10,9 @@ Compute the length of the given leg.
 
 ```kcl
 legLen(
-  hypotenuse: [number](/docs/kcl/types/std-types-number),
-  leg: [number](/docs/kcl/types/std-types-number),
-): [number](/docs/kcl/types/std-types-number)
+  hypotenuse: number,
+  leg: number,
+): number
 ```
 
 ### Tags
