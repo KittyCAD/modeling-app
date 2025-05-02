@@ -17,7 +17,8 @@ export function createApplicationCommands({
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
+    description:
+      'Generate parts from text prompts. This feature is experimental and undergoing constant improvment, stay tuned for updates.',
     displayName: `Text to CAD`,
     groupId: 'application',
     needsReview: false,
