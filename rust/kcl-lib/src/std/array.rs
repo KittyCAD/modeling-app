@@ -26,7 +26,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// `[f(a), f(b), f(c)]`
 /// ```no_run
 /// r = 10 // radius
-/// fn drawCircle(id) {
+/// fn drawCircle(@id) {
 ///   return startSketchOn(XY)
 ///     |> circle( center= [id * 2 * r, 0], radius= r)
 /// }
@@ -110,7 +110,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
 /// // element of the `arr` parameter. The starting value is 0.
-/// fn sum(arr) { return reduce(arr, initial = 0, f = add) }
+/// fn sum(@arr) { return reduce(arr, initial = 0, f = add) }
 ///
 /// /*
 /// The above is basically like this pseudo-code:
@@ -138,7 +138,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// ```
 /// ```no_run
 /// // Declare a function that sketches a decagon.
-/// fn decagon(radius) {
+/// fn decagon(@radius) {
 ///   // Each side of the decagon is turned this many radians from the previous angle.
 ///   stepAngle = ((1/10) * TAU): number(rad)
 ///

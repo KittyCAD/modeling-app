@@ -117,7 +117,7 @@ export fn fillet(
 ///     return sg
 /// }
 ///
-/// part001 = cube([0,0], 20)
+/// part001 = cube(pos = [0,0], scale = 20)
 ///     |> close(tag = $line1)
 ///     |> extrude(length = 20)
 ///     // We tag the chamfer to reference it later.

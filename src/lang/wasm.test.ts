@@ -2,10 +2,18 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import type { ParseResult } from '@src/lang/wasm'
-import { formatNumber, parse, errFromErrWithOutputs } from '@src/lang/wasm'
+import {
+  formatNumber,
+  parse,
+  errFromErrWithOutputs,
+  rustImplPathToNode,
+  assertParse,
+} from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { topLevelRange } from '@src/lang/util'
+import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 beforeEach(async () => {
   await initPromise
@@ -43,4 +51,18 @@ describe('test errFromErrWithOutputs', () => {
       '{"kind":"internal","sourceRange":[0,0,0],"msg":"Cache busted","operations":[],"artifactCommands":[],"artifactGraph":{},"filenames":{},"defaultPlanes":null}'
     )
   })
+})
+
+it('converts Rust NodePath to PathToNode', async () => {
+  // Convenience for making a SourceRange.
+  const sr = topLevelRange
+
+  const ast = assertParse(`x = 1 + 2
+y = foo(center = [3, 4])`)
+  expect(await rustImplPathToNode(ast, sr(4, 5))).toStrictEqual(
+    getNodePathFromSourceRange(ast, sr(4, 5))
+  )
+  expect(await rustImplPathToNode(ast, sr(31, 32))).toStrictEqual(
+    getNodePathFromSourceRange(ast, sr(31, 32))
+  )
 })

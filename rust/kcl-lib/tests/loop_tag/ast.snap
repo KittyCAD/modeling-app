@@ -474,7 +474,8 @@ description: Result of parsing loop_tag.kcl
                   "name": "index",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               }
             ],
             "start": 0,

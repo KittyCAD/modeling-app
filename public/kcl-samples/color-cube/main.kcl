@@ -33,9 +33,9 @@ fn sketchRectangle(profile, color) {
 }
 
 // Sketch each side of the cube
-sketchRectangle(bluePlane, '#0000FF')
-sketchRectangle(yellowPlane, '#FFFF00')
-sketchRectangle(greenPlane, '#00FF00')
-sketchRectangle(redPlane, '#FF0000')
-sketchRectangle(tealPlane, '#00FFFF')
-sketchRectangle(purplePlane, '#FF00FF')
+sketchRectangle(profile = bluePlane, color = '#0000FF')
+sketchRectangle(profile = yellowPlane, color = '#FFFF00')
+sketchRectangle(profile = greenPlane, color = '#00FF00')
+sketchRectangle(profile = redPlane, color = '#FF0000')
+sketchRectangle(profile = tealPlane, color = '#00FFFF')
+sketchRectangle(profile = purplePlane, color = '#FF00FF')

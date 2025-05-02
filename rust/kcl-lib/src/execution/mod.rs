@@ -1298,16 +1298,16 @@ mod tests {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_fn_definitions() {
-        let ast = r#"fn def(x) {
+        let ast = r#"fn def(@x) {
   return x
 }
-fn ghi(x) {
+fn ghi(@x) {
   return x
 }
-fn jkl(x) {
+fn jkl(@x) {
   return x
 }
-fn hmm(x) {
+fn hmm(@x) {
   return x
 }
 
@@ -1408,7 +1408,7 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn thing(x) {
+fn thing(@x) {
   return -x
 }
 
@@ -1429,7 +1429,7 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn thing(x) {
+fn thing(@x) {
   return [0, -x]
 }
 
@@ -1450,11 +1450,11 @@ firstExtrude = startSketchOn(XY)
 l = 8
 h = 10
 
-fn other_thing(y) {
+fn other_thing(@y) {
   return -y
 }
 
-fn thing(x) {
+fn thing(@x) {
   return other_thing(x)
 }
 
@@ -1483,14 +1483,14 @@ firstExtrude = startSketchOn(XY)
   return myBox
 }
 
-fnBox = box(3, 6, 10)"#;
+fnBox = box(h = 3, l = 6, w = 10)"#;
 
         parse_execute(ast).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_object_with_function_period() {
-        let ast = r#"fn box(obj) {
+        let ast = r#"fn box(@obj) {
  myBox = startSketchOn(XY)
     |> startProfile(at = obj.start)
     |> line(end = [0, obj.l])
@@ -1577,7 +1577,7 @@ for var in [[3, 6, 10, [0,0]], [1.5, 3, 5, [-10,-10]]] {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_member_of_array_with_function() {
-        let ast = r#"fn box(arr) {
+        let ast = r#"fn box(@arr) {
  myBox =startSketchOn(XY)
     |> startProfile(at = arr[0])
     |> line(end = [0, arr[1]])
@@ -1623,7 +1623,7 @@ answer = returnX()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn type_aliases() {
         let text = r#"type MyTy = [number; 2]
-fn foo(x: MyTy) {
+fn foo(@x: MyTy) {
     return x[0]
 }
 
@@ -1783,7 +1783,7 @@ fn check(x) {
   assertIs(!x, error = "expected argument to be false")
   return true
 }
-check(false)
+check(x = false)
 "#;
         let result = parse_execute(ast).await.unwrap();
         assert_eq!(
@@ -1961,7 +1961,7 @@ bracket = startSketchOn(XY)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_function_no_return() {
-        let ast = r#"fn test(origin) {
+        let ast = r#"fn test(@origin) {
   origin
 }
 
@@ -2154,7 +2154,7 @@ w = f() + f()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn read_tag_version() {
-        let ast = r#"fn bar(t) {
+        let ast = r#"fn bar(@t) {
   return startSketchOn(XY)
     |> startProfile(at = [0,0])
     |> angledLine(

@@ -8,7 +8,7 @@ expression: actual
       "commentStart": 0,
       "declaration": {
         "commentStart": 0,
-        "end": 23,
+        "end": 20,
         "id": {
           "commentStart": 0,
           "end": 5,
@@ -67,13 +67,6 @@ expression: actual
                     "value": 2.0,
                     "suffix": "None"
                   }
-                },
-                {
-                  "commentStart": 21,
-                  "end": 22,
-                  "start": 21,
-                  "type": "PipeSubstitution",
-                  "type": "PipeSubstitution"
                 }
               ],
               "callee": {
@@ -92,14 +85,14 @@ expression: actual
                 "type": "Name"
               },
               "commentStart": 16,
-              "end": 23,
+              "end": 20,
               "start": 16,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
           "commentStart": 8,
-          "end": 23,
+          "end": 20,
           "start": 8,
           "type": "PipeExpression",
           "type": "PipeExpression"
@@ -107,7 +100,7 @@ expression: actual
         "start": 0,
         "type": "VariableDeclarator"
       },
-      "end": 23,
+      "end": 20,
       "kind": "const",
       "start": 0,
       "type": "VariableDeclaration",
@@ -115,6 +108,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 23,
+  "end": 20,
   "start": 0
 }

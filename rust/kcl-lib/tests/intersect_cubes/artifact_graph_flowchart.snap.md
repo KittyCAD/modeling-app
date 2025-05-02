@@ -20,7 +20,7 @@ flowchart LR
   2["Plane<br>[33, 50, 0]"]
   15["Sweep Extrusion<br>[328, 354, 0]"]
   16["Sweep Extrusion<br>[328, 354, 0]"]
-  17["CompositeSolid Intersect<br>[448, 477, 0]"]
+  17["CompositeSolid Intersect<br>[480, 509, 0]"]
   18[Wall]
   19[Wall]
   20[Wall]

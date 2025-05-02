@@ -64,12 +64,9 @@ fn m25Screw(x, y, height) {
   return screw
 }
 
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
-
-m25Screw(border + rpizWidth / 2 - (widthBetweenScrews / 2), 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
-
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, screwHeight)
-
-m25Screw(border + rpizWidth / 2 + widthBetweenScrews / 2, 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 - (widthBetweenScrews / 2), y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 + lengthBetweenScrews / 2, height = screwHeight)
+m25Screw(x = border + rpizWidth / 2 + widthBetweenScrews / 2, y = 0 + border + rpizLength / 2 - (lengthBetweenScrews / 2), height = screwHeight)
 
 shell(case, faces = ['end'], thickness = caseThickness)

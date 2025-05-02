@@ -1,8 +1,6 @@
 import type { PlatformPath } from 'path'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import {
   BROWSER_FILE_NAME,

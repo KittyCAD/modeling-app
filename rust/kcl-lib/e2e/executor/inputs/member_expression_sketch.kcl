@@ -9,8 +9,8 @@ fn square(pos, scale) {
   return sg
 }
 
-sq = square([0,0], 10)
-cb = square([3,3], 4)
+sq = square(pos = [0,0], scale = 10)
+cb = square(pos = [3,3], scale = 4)
     |> extrude(length = 10)
 
 // pt1 = sq.paths[0]

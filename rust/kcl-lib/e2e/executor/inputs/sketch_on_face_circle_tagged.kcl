@@ -7,10 +7,10 @@ fn cube(pos, scale) {
 
   return sg
 }
-part001 = cube([0,0], 20)
+part001 = cube(pos = [0,0], scale = 20)
     |> close()
     |> extrude(length = 20)
 
 part002 = startSketchOn(part001, face = "end")
-  |> circle(center: [0, 0], radius: 5, tag =$myCircle)
+  |> circle(center = [0, 0], radius = 5, tag = $myCircle)
   |> extrude(length = 5)

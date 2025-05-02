@@ -27,7 +27,7 @@ holeRadius = .25
 holeIndex = .75
 
 // Create the mounting plate extrusion, holes, and fillets
-rs = rectShape([0, 0], plateWidth, plateLength)
+rs = rectShape(pos = [0, 0], w = plateWidth, l = plateLength)
 part = rs
   |> subtract2d(tool = circle(
        center = [

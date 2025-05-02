@@ -6,7 +6,7 @@ expression: actual
   "body": [
     {
       "commentStart": 0,
-      "end": 15,
+      "end": 12,
       "expression": {
         "arguments": [
           {
@@ -45,13 +45,6 @@ expression: actual
             "start": 5,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
-          },
-          {
-            "commentStart": 13,
-            "end": 14,
-            "start": 13,
-            "type": "PipeSubstitution",
-            "type": "PipeSubstitution"
           }
         ],
         "callee": {
@@ -70,7 +63,7 @@ expression: actual
           "type": "Name"
         },
         "commentStart": 0,
-        "end": 15,
+        "end": 12,
         "start": 0,
         "type": "CallExpression",
         "type": "CallExpression"
@@ -81,6 +74,6 @@ expression: actual
     }
   ],
   "commentStart": 0,
-  "end": 15,
+  "end": 12,
   "start": 0
 }

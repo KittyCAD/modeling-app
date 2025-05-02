@@ -326,7 +326,7 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// ```no_run
 /// // Move a sketch.
 ///
-/// fn square(length){
+/// fn square(@length){
 ///     l = length / 2
 ///     p0 = [-l, -l]
 ///     p1 = [-l, l]

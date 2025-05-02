@@ -111,8 +111,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "connector",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 56.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -152,8 +175,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "seatSlats",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 60.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -193,8 +239,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "backSlats",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 60.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -234,8 +303,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 28.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -245,8 +337,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRest",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": -28.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -928,8 +1043,49 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "connectorSketch",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": -12.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 8.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -971,8 +1127,49 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "connectorSketch",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "start": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 16.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              },
+              {
+                "type": "Number",
+                "value": 8.0,
+                "ty": {
+                  "type": "Default",
+                  "len": {
+                    "type": "Mm"
+                  },
+                  "angle": {
+                    "type": "Degrees"
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -1300,8 +1497,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": -28.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
@@ -1311,8 +1531,31 @@ description: Operations executed bench.kcl
       "type": "FunctionCall",
       "name": "armRestProfile",
       "functionSourceRange": [],
-      "unlabeledArg": null,
-      "labeledArgs": {}
+      "unlabeledArg": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "offset": {
+          "value": {
+            "type": "Number",
+            "value": 28.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
     },
     "sourceRange": []
   },
