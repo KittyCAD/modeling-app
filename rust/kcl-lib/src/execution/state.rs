@@ -238,6 +238,10 @@ impl ExecState {
         self.global.id_to_source.insert(id, source.clone());
     }
 
+    pub(super) fn get_source(&self, id: ModuleId) -> Option<&ModuleSource> {
+        self.global.id_to_source.get(&id)
+    }
+
     pub(super) fn add_module(&mut self, id: ModuleId, path: ModulePath, repr: ModuleRepr) {
         debug_assert!(self.global.path_to_source_id.contains_key(&path));
         let module_info = ModuleInfo { id, repr, path };

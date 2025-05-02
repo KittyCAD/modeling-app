@@ -80,6 +80,15 @@ pub(super) enum CacheResult {
         /// The program that needs to be executed.
         program: Node<Program>,
     },
+    /// Check only the imports, and not the main program.
+    /// Before sending this we already checked the main program and it is the same.
+    /// And we made sure the import statements > 0.
+    CheckImportsOnly {
+        /// Argument is whether we need to reapply settings.
+        reapply_settings: bool,
+        /// The ast of the main file, which did not change.
+        ast: Node<Program>,
+    },
     /// Argument is whether we need to reapply settings.
     NoAction(bool),
 }
@@ -105,7 +114,19 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
     // If the ASTs are the EXACT same we return None.
     // We don't even need to waste time computing the digests.
     if old.ast == new.ast {
-        return CacheResult::NoAction(reapply_settings);
+        // First we need to make sure an imported file didn't change it's ast.
+        // We know they have the same imports because the ast is the same.
+        // If we have no imports, we can skip this.
+        if !old.ast.has_import_statements() {
+            println!("No imports, no need to check.");
+            return CacheResult::NoAction(reapply_settings);
+        }
+
+        // Tell the CacheResult we need to check all the imports, but the main ast is the same.
+        return CacheResult::CheckImportsOnly {
+            reapply_settings,
+            ast: old.ast.clone(),
+        };
     }
 
     // We have to clone just because the digests are stored inline :-(
@@ -119,7 +140,19 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
 
     // Check if the digest is the same.
     if old_ast.digest == new_ast.digest {
-        return CacheResult::NoAction(reapply_settings);
+        // First we need to make sure an imported file didn't change it's ast.
+        // We know they have the same imports because the ast is the same.
+        // If we have no imports, we can skip this.
+        if !old.ast.has_import_statements() {
+            println!("No imports, no need to check.");
+            return CacheResult::NoAction(reapply_settings);
+        }
+
+        // Tell the CacheResult we need to check all the imports, but the main ast is the same.
+        return CacheResult::CheckImportsOnly {
+            reapply_settings,
+            ast: old.ast.clone(),
+        };
     }
 
     // Check if the annotations are different.
@@ -244,6 +277,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
 mod tests {
     use super::*;
     use crate::execution::{parse_execute, parse_execute_with_project_dir, ExecTestResults};
+    use pretty_assertions::assert_eq;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
@@ -659,5 +693,87 @@ extrude(profile001, length = 100)"#
         .await;
 
         assert_eq!(result, CacheResult::NoAction(false));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_cache_multi_file_only_other_file_changes_should_reexecute() {
+        let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+        let other_file = (
+            std::path::PathBuf::from("toBeImported.kcl"),
+            r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)"#
+                .to_string(),
+        );
+
+        let other_file2 = (
+            std::path::PathBuf::from("toBeImported.kcl"),
+            r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)
+|> translate(z=100) 
+"#
+            .to_string(),
+        );
+
+        let tmp_dir = std::env::temp_dir();
+        let tmp_dir = tmp_dir.join(uuid::Uuid::new_v4().to_string());
+
+        // Create a temporary file for each of the other files.
+        let tmp_file = tmp_dir.join(other_file.0);
+        std::fs::create_dir_all(tmp_file.parent().unwrap()).unwrap();
+        std::fs::write(&tmp_file, other_file.1).unwrap();
+
+        let ExecTestResults { program, exec_ctxt, .. } =
+            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+
+        // Change the other file.
+        std::fs::write(tmp_file, other_file2.1).unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        let CacheResult::CheckImportsOnly { reapply_settings, .. } = result else {
+            panic!("Expected CheckImportsOnly, got {:?}", result);
+        };
+
+        assert_eq!(reapply_settings, false);
     }
 }

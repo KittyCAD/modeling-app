@@ -42,6 +42,7 @@ use crate::{
     parsing::ast::types::{Expr, ImportPath, NodeRef},
     source_range::SourceRange,
     std::StdLib,
+    walk::{Universe, UniverseMap},
     CompilationError, ExecError, KclErrorWithOutputs,
 };
 
@@ -586,7 +587,7 @@ impl ExecutorContext {
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
 
-        let (program, mut exec_state, preserve_mem) = if let Some(OldAstState {
+        let (program, mut exec_state, preserve_mem, imports_info) = if let Some(OldAstState {
             ast: old_ast,
             exec_state: mut old_state,
             settings: old_settings,
@@ -603,7 +604,7 @@ impl ExecutorContext {
             };
 
             // Get the program that actually changed from the old and new information.
-            let (clear_scene, program) = match cache::get_changed_program(old, new).await {
+            let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
                 CacheResult::ReExecute {
                     clear_scene,
                     reapply_settings,
@@ -616,13 +617,59 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
-                        (true, program)
+                        (true, program, None)
                     } else {
                         (
                             clear_scene,
                             crate::Program {
                                 ast: changed_program,
                                 original_file_contents: program.original_file_contents,
+                            },
+                            None,
+                        )
+                    }
+                }
+                CacheResult::CheckImportsOnly {
+                    reapply_settings,
+                    ast: changed_program,
+                } => {
+                    if reapply_settings
+                        && self
+                            .engine
+                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
+                            .await
+                            .is_err()
+                    {
+                        (true, program, None)
+                    } else {
+                        // We need to check our imports to see if they changed.
+                        let mut new_exec_state = ExecState::new(self);
+                        let (new_universe, new_universe_map) = self.get_universe(&program, &mut new_exec_state).await?;
+                        let mut clear_scene = false;
+
+                        let mut keys = new_universe.keys().clone().collect::<Vec<_>>();
+                        keys.sort();
+                        for key in keys {
+                            let (_, id, _, _) = &new_universe[key];
+                            let old_source = old_state.get_source(*id);
+                            let new_source = new_exec_state.get_source(*id);
+                            if old_source != new_source {
+                                clear_scene = true;
+                                break;
+                            }
+                        }
+
+                        (
+                            clear_scene,
+                            crate::Program {
+                                ast: changed_program,
+                                original_file_contents: program.original_file_contents,
+                            },
+                            // We only care about this if we are clearing the scene.
+                            if clear_scene {
+                                Some((new_universe, new_universe_map, new_exec_state))
+                            } else {
+                                None
                             },
                         )
                     }
@@ -646,7 +693,7 @@ impl ExecutorContext {
                         let outcome = old_state.to_exec_outcome(result_env).await;
                         return Ok(outcome);
                     }
-                    (true, program)
+                    (true, program, None)
                 }
                 CacheResult::NoAction(false) => {
                     let outcome = old_state.to_exec_outcome(result_env).await;
@@ -654,34 +701,42 @@ impl ExecutorContext {
                 }
             };
 
-            let (exec_state, preserve_mem) = if clear_scene {
-                // Pop the execution state, since we are starting fresh.
-                let mut exec_state = old_state;
-                exec_state.reset(self);
+            let (exec_state, preserve_mem, universe_info) =
+                if let Some((new_universe, new_universe_map, mut new_exec_state)) = import_check_info {
+                    // Clear the scene if the imports changed.
+                    self.send_clear_scene(&mut new_exec_state, Default::default())
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                // We don't do this in mock mode since there is no engine connection
-                // anyways and from the TS side we override memory and don't want to clear it.
-                self.send_clear_scene(&mut exec_state, Default::default())
-                    .await
-                    .map_err(KclErrorWithOutputs::no_outputs)?;
+                    (new_exec_state, false, Some((new_universe, new_universe_map)))
+                } else if clear_scene {
+                    // Pop the execution state, since we are starting fresh.
+                    let mut exec_state = old_state;
+                    exec_state.reset(self);
 
-                (exec_state, false)
-            } else {
-                old_state.mut_stack().restore_env(result_env);
+                    self.send_clear_scene(&mut exec_state, Default::default())
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
 
-                (old_state, true)
-            };
+                    (exec_state, false, None)
+                } else {
+                    old_state.mut_stack().restore_env(result_env);
 
-            (program, exec_state, preserve_mem)
+                    (old_state, true, None)
+                };
+
+            (program, exec_state, preserve_mem, universe_info)
         } else {
             let mut exec_state = ExecState::new(self);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
-            (program, exec_state, false)
+            (program, exec_state, false, None)
         };
 
-        let result = self.run_concurrent(&program, &mut exec_state, preserve_mem).await;
+        let result = self
+            .run_concurrent(&program, &mut exec_state, imports_info, preserve_mem)
+            .await;
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -714,7 +769,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, false).await
+        self.run_concurrent(program, exec_state, None, false).await
     }
 
     /// Perform the execution of a program using a concurrent
@@ -728,46 +783,22 @@ impl ExecutorContext {
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: bool,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        exec_state.add_root_module_contents(program);
+        // Reuse our cached universe if we have one.
+        let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {
+            (universe, universe_map)
+        } else {
+            self.get_universe(program, exec_state).await?
+        };
+
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+
+        // Run the prelude to set up the engine.
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        let mut universe = std::collections::HashMap::new();
-
-        let default_planes = self.engine.get_default_planes().read().await.clone();
-        #[cfg_attr(not(feature = "artifact-graph"), expect(unused_variables))]
-        let root_imports = crate::walk::import_universe(
-            self,
-            &ModuleRepr::Kcl(program.ast.clone(), None),
-            &mut universe,
-            exec_state,
-        )
-        .await
-        .map_err(|err| {
-            println!("Error: {err:?}");
-            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                .global
-                .path_to_source_id
-                .iter()
-                .map(|(k, v)| ((*v), k.clone()))
-                .collect();
-
-            KclErrorWithOutputs::new(
-                err,
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_commands.clone(),
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.artifact_graph.clone(),
-                module_id_to_module_path,
-                exec_state.global.id_to_source.clone(),
-                default_planes.clone(),
-            )
-        })?;
 
         for modules in crate::walk::import_graph(&universe, self)
             .map_err(|err| {
@@ -821,7 +852,7 @@ impl ExecutorContext {
                     ModulePath::Local { value, .. } => {
                         // We only want to display the top-level module imports in
                         // the Feature Tree, not transitive imports.
-                        if root_imports.contains_key(value) {
+                        if universe_map.contains_key(value) {
                             exec_state.global.operations.push(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
                                     name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
@@ -972,6 +1003,52 @@ impl ExecutorContext {
         }
 
         self.inner_run(program, exec_state, preserve_mem).await
+    }
+
+    /// Get the universe & universe map of the program.
+    /// And see if any of the imports changed.
+    async fn get_universe(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+    ) -> Result<(Universe, UniverseMap), KclErrorWithOutputs> {
+        exec_state.add_root_module_contents(program);
+
+        let mut universe = std::collections::HashMap::new();
+
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+
+        let root_imports = crate::walk::import_universe(
+            self,
+            &ModuleRepr::Kcl(program.ast.clone(), None),
+            &mut universe,
+            exec_state,
+        )
+        .await
+        .map_err(|err| {
+            println!("Error: {err:?}");
+            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect();
+
+            KclErrorWithOutputs::new(
+                err,
+                #[cfg(feature = "artifact-graph")]
+                exec_state.global.operations.clone(),
+                #[cfg(feature = "artifact-graph")]
+                exec_state.global.artifact_commands.clone(),
+                #[cfg(feature = "artifact-graph")]
+                exec_state.global.artifact_graph.clone(),
+                module_id_to_module_path,
+                exec_state.global.id_to_source.clone(),
+                default_planes,
+            )
+        })?;
+
+        Ok((universe, root_imports))
     }
 
     /// Perform the execution of a program.  Accept all possible parameters and
