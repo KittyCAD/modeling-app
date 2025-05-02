@@ -606,6 +606,12 @@ export const writeOverFilesAndExecute = async ({
     })
   })
 
+  const mainCodeInfo = kclManager.execState.filenames[0]
+  const mainCodePath = mainCodeInfo?.type === 'Local' ? mainCodeInfo.value : ''
+  const mainCodeContent = requestedFiles.find((file) =>
+    mainCodePath.endsWith(file.requestedFileName)
+  )?.requestedCode
+
   systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
@@ -618,13 +624,9 @@ export const writeOverFilesAndExecute = async ({
   // Wait for the bulk create operation to complete
   await bulkCreatePromise
 
-  // TODO: get rid of this, the fact that a random wait is needed is a sign that there's a race and
-  // the bulkCreatePromise is not enough.
-  // just an an observation running tron:start does not need this timeout,
-  // but running tronb:package:dev && ./out/mac-arm64/Zoo\ Design\ Studio.app/Contents/MacOS/Zoo\ Design\ Studio
-  // is a different story, some how a race that only shows up when packaged
-  await new Promise((r) => setTimeout(r, 100))
-
   // Now execute the code after all files are written
+  if (mainCodeContent) {
+    codeManager.updateCodeEditor(mainCodeContent)
+  }
   await kclManager.executeCode()
 }
