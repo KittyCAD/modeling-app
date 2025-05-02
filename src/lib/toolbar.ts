@@ -10,6 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import { IS_ML_EXPERIMENTAL } from './constants'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -36,7 +37,7 @@ export type ToolbarItem = {
   icon?: CustomIconName
   iconColor?: string
   alwaysDark?: true
-  status: 'available' | 'unavailable' | 'kcl-only'
+  status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
@@ -440,7 +441,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'sparkles',
             iconColor: '#29FFA4',
             alwaysDark: true,
-            status: 'available',
+            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
             title: 'Create with Zoo Text-to-CAD',
             description: 'Create geometry with AI / ML.',
             links: [
@@ -460,7 +461,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'sparkles',
             iconColor: '#29FFA4',
             alwaysDark: true,
-            status: 'available',
+            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
             title: 'Modify with Zoo Text-to-CAD',
             description: 'Edit geometry with AI / ML.',
             links: [],
