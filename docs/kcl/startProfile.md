@@ -10,10 +10,10 @@ Start a new profile at a given point.
 
 ```kcl
 startProfile(
-  sketchSurface: [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
-  at: [Point2d](/docs/kcl/types/std-types-Point2d),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketchSurface: Plane | Face,
+  at: Point2d,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

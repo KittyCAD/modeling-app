@@ -11,11 +11,11 @@ the provided (x, y) origin point.
 
 ```kcl
 circle(
-  @sketch_or_surface: [Sketch](/docs/kcl/types/std-types-Sketch) | [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
-  center: [Point2d](/docs/kcl/types/std-types-Point2d),
+  @sketch_or_surface: Sketch | Plane | Face,
+  center: Point2d,
   radius: number(Length),
-  tag?: [tag](/docs/kcl/types/std-types-tag),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  tag?: tag,
+): Sketch
 ```
 
 

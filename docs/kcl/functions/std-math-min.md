@@ -9,7 +9,7 @@ Compute the minimum of the given arguments.
 
 
 ```kcl
-min(@input: [[number; 1+]](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+min(@input: [number; 1+]): number
 ```
 
 

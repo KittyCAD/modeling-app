@@ -19,15 +19,15 @@ revolved around the same axis.
 
 ```kcl
 revolve(
-  @sketches: [[Sketch; 1+]](/docs/kcl/types/std-types-Sketch),
-  axis: [Axis2d](/docs/kcl/types/std-types-Axis2d) | [Edge](/docs/kcl/types/std-types-Edge),
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
   angle?: number(Angle),
   tolerance?: number(Length),
-  symmetric?: [bool](/docs/kcl/types/std-types-bool),
+  symmetric?: bool,
   bidirectionalAngle?: number(Angle),
-  tagStart?: [tag](/docs/kcl/types/std-types-tag),
-  tagEnd?: [tag](/docs/kcl/types/std-types-tag),
-): [Solid](/docs/kcl/types/std-types-Solid)
+  tagStart?: tag,
+  tagEnd?: tag,
+): Solid
 ```
 
 

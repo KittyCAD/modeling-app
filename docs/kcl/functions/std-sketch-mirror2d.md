@@ -12,9 +12,9 @@ Mirror occurs around a local sketch axis rather than a global axis.
 
 ```kcl
 mirror2d(
-  @sketches: [[Sketch; 1+]](/docs/kcl/types/std-types-Sketch),
-  axis: [Axis2d](/docs/kcl/types/std-types-Axis2d) | [Edge](/docs/kcl/types/std-types-Edge),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  @sketches: [Sketch; 1+],
+  axis: Axis2d | Edge,
+): Sketch
 ```
 
 

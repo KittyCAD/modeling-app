@@ -10,12 +10,12 @@ Draw an angled line from the current origin, constructing a line segment such th
 
 ```kcl
 angledLineThatIntersects(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  angle: [number](/docs/kcl/types/std-types-number),
-  intersectTag: [TagIdentifier](/docs/kcl/types#TagIdentifier),
-  offset?: [number](/docs/kcl/types/std-types-number),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  angle: number,
+  intersectTag: TagIdentifier,
+  offset?: number,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

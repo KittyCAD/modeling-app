@@ -12,12 +12,12 @@ Create a helix.
 helix(
   revolutions: number(_),
   angleStart: number(Angle),
-  ccw?: [bool](/docs/kcl/types/std-types-bool),
+  ccw?: bool,
   radius?: number(Length),
-  axis?: [Axis3d](/docs/kcl/types/std-types-Axis3d) | [Edge](/docs/kcl/types/std-types-Edge),
+  axis?: Axis3d | Edge,
   length?: number(Length),
-  cylinder?: [Solid](/docs/kcl/types/std-types-Solid),
-): [Helix](/docs/kcl/types/std-types-Helix)
+  cylinder?: Solid,
+): Helix
 ```
 
 
