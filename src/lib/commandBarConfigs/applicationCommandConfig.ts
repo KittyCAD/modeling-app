@@ -93,7 +93,6 @@ export function createApplicationCommands({
     description:
       'Add KCL file, Zoo sample, or 3D model to new or existing project.',
     needsReview: false,
-    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'importFile',
     groupId: 'application',
     onSubmit(data) {
