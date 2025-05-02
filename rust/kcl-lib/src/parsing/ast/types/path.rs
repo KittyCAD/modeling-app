@@ -24,6 +24,7 @@ pub enum Step {
     CallCallee,
     CallArg { index: usize },
     CallKwCallee,
+    CallKwUnlabeledArg,
     CallKwArg { index: usize },
     BinaryLeft,
     BinaryRight,
@@ -192,6 +193,12 @@ impl NodePath {
                 if node.callee.contains_range(&range) {
                     path.push(Step::CallKwCallee);
                     return Some(path);
+                }
+                if let Some(unlabeled) = &node.unlabeled {
+                    if unlabeled.contains_range(&range) {
+                        path.push(Step::CallKwUnlabeledArg);
+                        return Self::from_expr(unlabeled, range, path);
+                    }
                 }
                 for (i, arg) in node.arguments.iter().enumerate() {
                     if arg.arg.contains_range(&range) {

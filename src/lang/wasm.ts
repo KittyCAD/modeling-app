@@ -533,6 +533,9 @@ function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'CallKwCallee':
         pathToNode.push(['callee', 'CallExpressionKw'])
         break
+      case 'CallKwUnlabeledArg':
+        pathToNode.push(['unlabeled', 'CallExpressionKw'])
+        break
       case 'CallKwArg':
         pathToNode.push(['arguments', 'CallExpressionKw'])
         pathToNode.push([step.index, ARG_INDEX_FIELD])
