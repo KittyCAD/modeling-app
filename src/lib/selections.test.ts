@@ -574,7 +574,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       },
     ],
     [
-      'eecb1d39-c251-449a-b815-c0fddeb31989',
+      'eecb1d39-c251-449a-b815-c0fddeb31989', // ADAM: This one.
       {
         type: 'cap',
         id: 'eecb1d39-c251-449a-b815-c0fddeb31989',
@@ -1272,7 +1272,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       },
     ],
     [
-      'startSketch on for a end cap that is also sketch on face on face',
+      'startSketch on for a end cap that is also sketch on face on face', // ADAM: This test.
       {
         snippet: 'sketch005 = startSketchOn(extrude002, face = END)',
         artifactDetails: {
@@ -1326,6 +1326,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         expect((artifact as any)[key]).toBeTruthy()
       }
       for (const { key, length } of artifactDetails.arrayIdsKeys) {
+        console.warn('ADAM: artifact', (artifact as any)[key])
         expect((artifact as any)[key]).toHaveLength(length)
       }
     }

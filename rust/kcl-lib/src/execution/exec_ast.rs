@@ -19,9 +19,9 @@ use crate::{
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpression, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
-        ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
-        ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
+        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef, ObjectExpression,
+        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -668,7 +668,6 @@ impl ExecutorContext {
                     }
                 }
             }
-            Expr::CallExpression(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
@@ -755,7 +754,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state)),
             BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
-            BinaryPart::CallExpression(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
@@ -1443,145 +1441,6 @@ impl Node<CallExpressionKw> {
                         source_ranges,
                     })
                 })?;
-
-                Ok(result)
-            }
-        }
-    }
-}
-
-impl Node<CallExpression> {
-    #[async_recursion]
-    pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
-        let fn_name = &self.callee;
-        let callsite = SourceRange::from(self);
-
-        let mut fn_args: Vec<Arg> = Vec::with_capacity(self.arguments.len());
-
-        for arg_expr in &self.arguments {
-            let metadata = Metadata {
-                source_range: SourceRange::from(arg_expr),
-            };
-            let value = ctx
-                .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
-                .await?;
-            let arg = Arg::new(value, SourceRange::from(arg_expr));
-            fn_args.push(arg);
-        }
-        let fn_args = fn_args; // remove mutability
-
-        match ctx.stdlib.get_either(fn_name) {
-            FunctionKind::Core(func) => {
-                if func.deprecated() {
-                    exec_state.warn(CompilationError::err(
-                        self.callee.as_source_range(),
-                        format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
-                    ));
-                }
-
-                #[cfg(feature = "artifact-graph")]
-                let op = if func.feature_tree_operation() {
-                    let op_labeled_args = func
-                        .args(false)
-                        .iter()
-                        .zip(&fn_args)
-                        .map(|(k, arg)| {
-                            (
-                                k.name.clone(),
-                                OpArg::new(OpKclValue::from(&arg.value), arg.source_range),
-                            )
-                        })
-                        .collect();
-                    Some(Operation::StdLibCall {
-                        std_lib_fn: (&func).into(),
-                        unlabeled_arg: None,
-                        labeled_args: op_labeled_args,
-                        source_range: callsite,
-                        is_error: false,
-                    })
-                } else {
-                    None
-                };
-
-                // Attempt to call the function.
-                let args = crate::std::Args::new(
-                    fn_args,
-                    self.into(),
-                    ctx.clone(),
-                    exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
-                );
-                let mut return_value = {
-                    // Don't early-return in this block.
-                    exec_state.mut_stack().push_new_env_for_rust_call();
-                    let result = func.std_lib_fn()(exec_state, args).await;
-                    exec_state.mut_stack().pop_env();
-
-                    #[cfg(feature = "artifact-graph")]
-                    if let Some(mut op) = op {
-                        op.set_std_lib_call_is_error(result.is_err());
-                        // Track call operation.  We do this after the call
-                        // since things like patternTransform may call user code
-                        // before running, and we will likely want to use the
-                        // return value. The call takes ownership of the args,
-                        // so we need to build the op before the call.
-                        exec_state.global.operations.push(op);
-                    }
-                    result
-                }?;
-
-                update_memory_for_tags_of_geometry(&mut return_value, exec_state)?;
-
-                Ok(return_value)
-            }
-            FunctionKind::UserDefined => {
-                let source_range = SourceRange::from(self);
-                // Clone the function so that we can use a mutable reference to
-                // exec_state.
-                let func = fn_name.get_result(exec_state, ctx).await?.clone();
-
-                // Track call operation.
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.push(Operation::GroupBegin {
-                    group: Group::FunctionCall {
-                        name: Some(fn_name.to_string()),
-                        function_source_range: func.function_def_source_range().unwrap_or_default(),
-                        unlabeled_arg: None,
-                        // TODO: Add the arguments for legacy positional parameters.
-                        labeled_args: Default::default(),
-                    },
-                    source_range: callsite,
-                });
-
-                let Some(fn_src) = func.as_fn() else {
-                    return Err(KclError::Semantic(KclErrorDetails {
-                        message: "cannot call this because it isn't a function".to_string(),
-                        source_ranges: vec![source_range],
-                    }));
-                };
-                let return_value = fn_src
-                    .call(Some(fn_name.to_string()), exec_state, ctx, fn_args, source_range)
-                    .await
-                    .map_err(|e| {
-                        // Add the call expression to the source ranges.
-                        // TODO currently ignored by the frontend
-                        e.add_source_ranges(vec![source_range])
-                    })?;
-
-                let result = return_value.ok_or_else(move || {
-                    let mut source_ranges: Vec<SourceRange> = vec![source_range];
-                    // We want to send the source range of the original function.
-                    if let KclValue::Function { meta, .. } = func {
-                        source_ranges = meta.iter().map(|m| m.source_range).collect();
-                    };
-                    KclError::UndefinedValue(KclErrorDetails {
-                        message: format!("Result of function {} is undefined", fn_name),
-                        source_ranges,
-                    })
-                })?;
-
-                // Track return operation.
-                #[cfg(feature = "artifact-graph")]
-                exec_state.global.operations.push(Operation::GroupEnd);
 
                 Ok(result)
             }

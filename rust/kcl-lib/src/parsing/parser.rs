@@ -630,7 +630,6 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 Expr::Literal(x) => BinaryPart::Literal(x),
                 Expr::Name(x) => BinaryPart::Name(x),
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
-                Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),

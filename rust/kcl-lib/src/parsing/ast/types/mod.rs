@@ -911,7 +911,6 @@ pub enum Expr {
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     PipeExpression(BoxNode<PipeExpression>),
     PipeSubstitution(BoxNode<PipeSubstitution>),
@@ -957,7 +956,6 @@ impl Expr {
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
-            Expr::CallExpression(_call_exp) => None,
             Expr::CallExpressionKw(_call_exp) => None,
             Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
@@ -985,7 +983,6 @@ impl Expr {
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
@@ -1006,7 +1003,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.start,
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
-            Expr::CallExpression(call_expression) => call_expression.start,
             Expr::CallExpressionKw(call_expression) => call_expression.start,
             Expr::PipeExpression(pipe_expression) => pipe_expression.start,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
@@ -1029,7 +1025,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.end,
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
-            Expr::CallExpression(call_expression) => call_expression.end,
             Expr::CallExpressionKw(call_expression) => call_expression.end,
             Expr::PipeExpression(pipe_expression) => pipe_expression.end,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
@@ -1055,7 +1050,6 @@ impl Expr {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
             Expr::FunctionExpression(_function_identifier) => {}
-            Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
@@ -1084,7 +1078,6 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
-            Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
             Expr::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
             Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
@@ -1099,16 +1092,6 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
-        }
-    }
-
-    pub fn has_substitution_arg(&self) -> bool {
-        match self {
-            Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
-            Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
-            Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
-            Expr::AscribedExpression(expr) => expr.expr.has_substitution_arg(),
-            _ => false,
         }
     }
 
@@ -1220,7 +1203,6 @@ pub enum BinaryPart {
     Literal(BoxNode<Literal>),
     Name(BoxNode<Name>),
     BinaryExpression(BoxNode<BinaryExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
@@ -1246,7 +1228,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.get_constraint_level(),
             BinaryPart::Name(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
-            BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
@@ -1260,9 +1241,6 @@ impl BinaryPart {
             BinaryPart::Name(_) => {}
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.replace_value(source_range, new_value)
-            }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.replace_value(source_range, new_value)
             }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.replace_value(source_range, new_value)
@@ -1280,7 +1258,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.start,
             BinaryPart::Name(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
-            BinaryPart::CallExpression(call_expression) => call_expression.start,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
@@ -1293,7 +1270,6 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.end,
             BinaryPart::Name(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
-            BinaryPart::CallExpression(call_expression) => call_expression.end,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
@@ -1308,9 +1284,6 @@ impl BinaryPart {
             BinaryPart::Name(ref mut identifier) => identifier.rename(old_name, new_name),
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
-            }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.rename_identifiers(old_name, new_name)
@@ -1805,18 +1778,6 @@ pub struct ExpressionStatement {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
-pub struct CallExpression {
-    pub callee: Node<Name>,
-    pub arguments: Vec<Expr>,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub digest: Option<Digest>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Name>,
@@ -1840,34 +1801,9 @@ pub struct LabeledArg {
     pub arg: Expr,
 }
 
-impl From<Node<CallExpression>> for Expr {
-    fn from(call_expression: Node<CallExpression>) -> Self {
-        Expr::CallExpression(Box::new(call_expression))
-    }
-}
-
 impl From<Node<CallExpressionKw>> for Expr {
     fn from(call_expression: Node<CallExpressionKw>) -> Self {
         Expr::CallExpressionKw(Box::new(call_expression))
-    }
-}
-
-impl Node<CallExpression> {
-    /// Return the constraint level for this call expression.
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.arguments.is_empty() {
-            return ConstraintLevel::Ignore {
-                source_ranges: vec![self.into()],
-            };
-        }
-
-        // Iterate over the arguments and get the constraint level for each one.
-        let mut constraint_levels = ConstraintLevels::new();
-        for arg in &self.arguments {
-            constraint_levels.push(arg.get_constraint_level());
-        }
-
-        constraint_levels.get_constraint_level(self.into())
     }
 }
 
@@ -1890,38 +1826,6 @@ impl Node<CallExpressionKw> {
     }
 }
 
-impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
-        Ok(Node::no_src(Self {
-            callee: Name::new(name),
-            arguments,
-            digest: None,
-        }))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for arg in &mut self.arguments {
-            arg.replace_value(source_range, new_value.clone());
-        }
-    }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.callee.rename(old_name, new_name);
-
-        for arg in &mut self.arguments {
-            arg.rename_identifiers(old_name, new_name);
-        }
-    }
-}
-
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
@@ -1939,13 +1843,6 @@ impl CallExpressionKw {
             .iter()
             .map(|e| (None, e))
             .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg.arg, Expr::PipeSubstitution(_)))
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -4132,13 +4029,8 @@ cylinder = startSketchOn(-XZ)
                 };
                 oe
             }
-            Expr::CallExpression(ce) => {
-                let Expr::ObjectExpression(ref oe) = (ce.arguments).first().unwrap() else {
-                    panic!("expected an object!");
-                };
-                oe
-            }
-            other => panic!("expected a Call or CallKw, found {other:?}"),
+
+            other => panic!("expected a CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);
