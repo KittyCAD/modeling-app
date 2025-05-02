@@ -1,7 +1,7 @@
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import type { DeepPartial } from '@src/lib/types'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -31,12 +31,15 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
 
 export const TEST_SETTINGS_ONBOARDING_USER_MENU: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.USER_MENU },
+  app: {
+    ...TEST_SETTINGS.app,
+    onboarding_status: ONBOARDING_SUBPATHS.USER_MENU,
+  },
 }
 
 export const TEST_SETTINGS_ONBOARDING_EXPORT: DeepPartial<Settings> = {
   ...TEST_SETTINGS,
-  app: { ...TEST_SETTINGS.app, onboarding_status: onboardingPaths.EXPORT },
+  app: { ...TEST_SETTINGS.app, onboarding_status: ONBOARDING_SUBPATHS.EXPORT },
 }
 
 export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING: DeepPartial<Settings> =
@@ -44,7 +47,7 @@ export const TEST_SETTINGS_ONBOARDING_PARAMETRIC_MODELING: DeepPartial<Settings>
     ...TEST_SETTINGS,
     app: {
       ...TEST_SETTINGS.app,
-      onboarding_status: onboardingPaths.PARAMETRIC_MODELING,
+      onboarding_status: ONBOARDING_SUBPATHS.PARAMETRIC_MODELING,
     },
   }
 

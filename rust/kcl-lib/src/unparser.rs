@@ -3,10 +3,10 @@ use std::fmt::Write;
 use crate::parsing::{
     ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
-        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
-        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression, IfExpression,
+        ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
+        MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
+        Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
     deprecation,
     token::NumericSuffix,
@@ -291,7 +291,6 @@ impl Expr {
                 result += &func_exp.recast(options, indentation_level);
                 result
             }
-            Expr::CallExpression(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::CallExpressionKw(call_exp) => call_exp.recast(options, indentation_level, ctxt),
             Expr::Name(name) => {
                 let result = name.to_string();
@@ -342,9 +341,6 @@ impl BinaryPart {
                 }
             }
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.recast(options),
-            BinaryPart::CallExpression(call_expression) => {
-                call_expression.recast(options, indentation_level, ExprContext::Other)
-            }
             BinaryPart::CallExpressionKw(call_expression) => {
                 call_expression.recast(options, indentation_level, ExprContext::Other)
             }
@@ -352,25 +348,6 @@ impl BinaryPart {
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
             BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
-    }
-}
-
-impl CallExpression {
-    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        format!(
-            "{}{}({})",
-            if ctxt == ExprContext::Pipe {
-                "".to_string()
-            } else {
-                options.get_indentation(indentation_level)
-            },
-            self.callee,
-            self.arguments
-                .iter()
-                .map(|arg| arg.recast(options, indentation_level, ctxt))
-                .collect::<Vec<String>>()
-                .join(", ")
-        )
     }
 }
 
@@ -748,8 +725,7 @@ impl UnaryExpression {
             | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
             | BinaryPart::IfExpression(_)
-            | BinaryPart::CallExpressionKw(_)
-            | BinaryPart::CallExpression(_) => {
+            | BinaryPart::CallExpressionKw(_) => {
                 format!("{}{}", &self.operator, self.argument.recast(options, 0))
             }
             BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) => {
