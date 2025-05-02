@@ -512,8 +512,11 @@ export function canSubmitSelectionArg(
 }
 
 /**
- * Find the index of the last range where range[0] < targetStart
- * This is used as a starting point for linear search of overlapping ranges
+ * Find the index of the last range r1 where r1[0] < targetStart, such that
+ * there does not exist another range r2 where r2[0] < targetStart and r2[0] >=
+ * r1[0]. This is used as a starting point for linear search of overlapping
+ * ranges
+ *
  * @param index The sorted array of ranges to search through
  * @param targetStart The start position to compare against
  * @returns The index of the last range where range[0] < targetStart
@@ -540,7 +543,21 @@ export function findLastRangeStartingBefore(
     }
   }
 
-  return lastValidIndex
+  // We may have passed the correct index. Consider what happens when there are
+  // duplicates. We found the last one, but earlier ones need to be checked too.
+  let resultIndex = lastValidIndex
+  let resultRange = index[resultIndex].range
+  for (let i = lastValidIndex - 1; i >= 0; i--) {
+    const range = index[i].range
+    if (range[0] === resultRange[0]) {
+      resultIndex = i
+      resultRange = range
+    } else {
+      break
+    }
+  }
+
+  return resultIndex
 }
 
 function findOverlappingArtifactsFromIndex(
@@ -584,7 +601,6 @@ function getBestCandidate(
     return undefined
   }
 
-  // TODO: We think the problem is here?
   for (const entry of entries) {
     // Segments take precedence
     if (entry.artifact.type === 'segment') {

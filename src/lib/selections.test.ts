@@ -1391,4 +1391,24 @@ describe('findLastRangeStartingBefore', () => {
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
   })
+
+  test('handles duplicate ranges', () => {
+    const mockIndex = [
+      {
+        range: [10, 20, 0] as SourceRange,
+        entry: { id: '1', artifact: { id: '1', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '3', artifact: { id: '3', type: 'segment' } as Artifact },
+      },
+    ] as ArtifactIndex
+
+    const result = findLastRangeStartingBefore(mockIndex, 50)
+    expect(result).toBe(1)
+  })
 })
