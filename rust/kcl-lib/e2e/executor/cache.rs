@@ -524,7 +524,7 @@ extrude(profile001, length = 100)
     );
 
     let result = cache_test(
-        "multi_file_after_empty",
+        "multi_file_other_file_only_change",
         vec![
             Variation {
                 code,
