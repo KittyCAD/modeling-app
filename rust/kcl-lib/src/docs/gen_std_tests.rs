@@ -141,7 +141,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         types
             .get_mut("Primitive types")
             .unwrap()
-            .push((name.to_owned(), format!("types.md#{name}")));
+            .push((name.to_owned(), format!("types#{name}")));
     }
 
     for d in kcl_lib {
