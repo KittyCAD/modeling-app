@@ -1,9 +1,4 @@
-use std::{
-    collections::HashMap,
-    fs::{self, File},
-    io::Read as _,
-    path::Path,
-};
+use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
 use base64::Engine;
@@ -672,9 +667,7 @@ async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
     for name in LANG_TOPICS {
         let filename = format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-"));
-        let mut file = File::open(&filename).unwrap();
-        let mut text = String::new();
-        file.read_to_string(&mut text).unwrap();
+        let text = std::fs::read_to_string(&filename).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &filename).into_iter().enumerate() {
             if attr == "norun" {
