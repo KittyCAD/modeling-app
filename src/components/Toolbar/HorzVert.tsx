@@ -33,7 +33,7 @@ export function horzVertInfo(
 
   const isAllTooltips = nodes.every(
     (node) =>
-      (node?.type === 'CallExpressionKw') &&
+      node?.type === 'CallExpressionKw' &&
       toolTips.includes(node.callee.name.name as any)
   )
 

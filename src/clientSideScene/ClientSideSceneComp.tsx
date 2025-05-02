@@ -26,11 +26,7 @@ import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import type { ConstrainInfo } from '@src/lang/std/stdTypes'
 import { topLevelRange } from '@src/lang/util'
-import type {
-  CallExpressionKw,
-  Expr,
-  PathToNode,
-} from '@src/lang/wasm'
+import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
 import { defaultSourceRange, parse, recast, resultIsOk } from '@src/lang/wasm'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import {
@@ -547,7 +543,7 @@ const ConstraintSymbol = ({
               if (trap(pResult) || !resultIsOk(pResult))
                 return Promise.reject(pResult)
 
-              const _node1 = getNodeFromPath< CallExpressionKw>(
+              const _node1 = getNodeFromPath<CallExpressionKw>(
                 pResult.program,
                 pathToNode,
                 ['CallExpressionKw'],
