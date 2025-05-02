@@ -962,6 +962,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
     page,
     homePage,
+    cmdBar,
+    toolbar,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -1002,19 +1004,21 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
     // expect extrude button to be enabled
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await expect(toolbar.extrudeButton).not.toBeDisabled()
 
     // click extrude
-    await page.getByRole('button', { name: 'Extrude' }).click()
+    await toolbar.extrudeButton.click()
 
     // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
-    await expect(
-      page.getByRole('button', { name: 'selection : 1 segment', exact: false })
-    ).toBeVisible({
-      timeout: 10_000,
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: { Selection: '1 segment', Length: '' },
+      highlightedHeaderArg: 'length',
+      commandName: 'Extrude',
     })
   })
   test("Existing sketch with bad code delete user's code", async ({
