@@ -177,18 +177,6 @@ impl NodePath {
                     }
                 }
             }
-            Expr::CallExpression(node) => {
-                if node.callee.contains_range(&range) {
-                    path.push(Step::CallCallee);
-                    return Some(path);
-                }
-                for (i, arg) in node.arguments.iter().enumerate() {
-                    if arg.contains_range(&range) {
-                        path.push(Step::CallArg { index: i });
-                        return Self::from_expr(arg, range, path);
-                    }
-                }
-            }
             Expr::CallExpressionKw(node) => {
                 if node.callee.contains_range(&range) {
                     path.push(Step::CallKwCallee);

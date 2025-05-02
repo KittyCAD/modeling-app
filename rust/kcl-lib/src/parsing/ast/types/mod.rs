@@ -1167,7 +1167,6 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::Literal(literal) => Expr::Literal(literal.clone()),
             BinaryPart::Name(name) => Expr::Name(name.clone()),
             BinaryPart::BinaryExpression(binary_expression) => Expr::BinaryExpression(binary_expression.clone()),
-            BinaryPart::CallExpression(call_expression) => Expr::CallExpression(call_expression.clone()),
             BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
