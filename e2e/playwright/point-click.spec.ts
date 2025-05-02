@@ -7,6 +7,7 @@ import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
+import { C } from 'vitest/dist/chunks/reporters.d.79o4mouw'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
@@ -4514,7 +4515,16 @@ extrude001 = extrude(profile001, length = 1)
     })
   })
 
-  test('Point-and-click multi-profile sweeps', async ({
+  const multiProfileSweepsCode = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [3, 0], radius = 1)
+profile002 = circle(sketch001, center = [6, 0], radius = 1)
+path001 = startProfile(sketch001, at = [0, 0])
+  |> yLine(length = 2)
+  `
+  const profile001Point = { x: 470, y: 270 }
+  const profile002Point = { x: 670, y: 270 }
+
+  test('Point-and-click multi-profile sweeps: extrude', async ({
     context,
     page,
     homePage,
@@ -4523,39 +4533,32 @@ extrude001 = extrude(profile001, length = 1)
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [3, 0], radius = 1)
-profile002 = circle(sketch001, center = [6, 0], radius = 1)
-path001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = 2)
-  `
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
+    }, multiProfileSweepsCode)
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
 
-    // Unfortunately can't select thru code for multi profile yet
-    const emptyPoint = { x: 900, y: 250 }
-    const profile001Point = { x: 470, y: 270 }
-    const profile002Point = { x: 670, y: 270 }
-    const [clickProfile001Point] = scene.makeMouseHelpers(
-      profile001Point.x,
-      profile001Point.y
-    )
-    const [clickProfile002Point] = scene.makeMouseHelpers(
-      profile002Point.x,
-      profile002Point.y
-    )
-
-    await test.step('Extrude through command bar flow', async () => {
+    await test.step('Select through scene', async () => {
+      // Unfortunately can't select thru code for multi profile yet
+      const [clickProfile001Point] = scene.makeMouseHelpers(
+        profile001Point.x,
+        profile001Point.y
+      )
+      const [clickProfile002Point] = scene.makeMouseHelpers(
+        profile002Point.x,
+        profile002Point.y
+      )
       await toolbar.closePane('code')
       await clickProfile001Point()
       await page.keyboard.down('Shift')
       await clickProfile002Point()
       await page.waitForTimeout(500)
       await page.keyboard.up('Shift')
+    })
+
+    await test.step('Go through command bar flow', async () => {
       await toolbar.extrudeButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -4607,19 +4610,49 @@ path001 = startProfile(sketch001, at = [0, 0])
       await page.getByTestId('context-menu-delete').click()
       await scene.settled(cmdBar)
       await toolbar.closePane('feature-tree')
+      await toolbar.openPane('code')
       await editor.expectEditor.not.toContain(
         `extrude001 = extrude([profile001, profile002], length = 1)`,
         { shouldNormalise: true }
       )
     })
+  })
 
-    await test.step('Sweep through command bar flow', async () => {
+  test('Point-and-click multi-profile sweeps: sweep', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, multiProfileSweepsCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Select through scene', async () => {
+      // Unfortunately can't select thru code for multi profile yet
+      const [clickProfile001Point] = scene.makeMouseHelpers(
+        profile001Point.x,
+        profile001Point.y
+      )
+      const [clickProfile002Point] = scene.makeMouseHelpers(
+        profile002Point.x,
+        profile002Point.y
+      )
       await toolbar.closePane('code')
       await clickProfile001Point()
       await page.keyboard.down('Shift')
       await clickProfile002Point()
       await page.waitForTimeout(500)
       await page.keyboard.up('Shift')
+    })
+
+    await test.step('Go through command bar flow', async () => {
       await toolbar.sweepButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -4679,17 +4712,57 @@ path001 = startProfile(sketch001, at = [0, 0])
         { shouldNormalise: true }
       )
     })
+  })
 
-    await test.step('Revolve through command bar flow', async () => {
+  test('Point-and-click multi-profile sweeps: revolve', async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, multiProfileSweepsCode)
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+
+    await test.step('Select through scene', async () => {
+      // Unfortunately can't select thru code for multi profile yet
+      const [clickProfile001Point] = scene.makeMouseHelpers(
+        profile001Point.x,
+        profile001Point.y
+      )
+      const [clickProfile002Point] = scene.makeMouseHelpers(
+        profile002Point.x,
+        profile002Point.y
+      )
       await toolbar.closePane('code')
       await clickProfile001Point()
       await page.keyboard.down('Shift')
       await clickProfile002Point()
       await page.waitForTimeout(500)
       await page.keyboard.up('Shift')
-      await page.waitForTimeout(500)
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Revolve')
+    })
+
+    await test.step('Go through command bar flow', async () => {
+      await toolbar.closePane('code')
+      await toolbar.revolveButton.click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'sketches',
+        currentArgValue: '',
+        headerArguments: {
+          Sketches: '',
+          AxisOrEdge: '',
+          Angle: '',
+        },
+        highlightedHeaderArg: 'sketches',
+        commandName: 'Revolve',
+      })
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -4697,22 +4770,23 @@ path001 = startProfile(sketch001, at = [0, 0])
         currentArgValue: '',
         headerArguments: {
           Sketches: '2 faces',
-          AxisOrEdge: 'axis',
+          AxisOrEdge: '',
           Angle: '',
         },
         highlightedHeaderArg: 'axisOrEdge',
         commandName: 'Revolve',
       })
       await cmdBar.selectOption({ name: 'Edge' }).click()
+      await toolbar.openPane('code')
       await page.getByText('yLine(length = 2)').click()
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'angle',
-        currentArgValue: '5',
+        currentArgValue: '360',
         headerArguments: {
           Sketches: '2 faces',
-          AxisOrEdge: 'edge',
+          AxisOrEdge: 'Edge',
           Edge: '1 segment',
           Angle: '',
         },
@@ -4725,7 +4799,7 @@ path001 = startProfile(sketch001, at = [0, 0])
         stage: 'review',
         headerArguments: {
           Sketches: '2 faces',
-          AxisOrEdge: 'edge',
+          AxisOrEdge: 'Edge',
           Edge: '1 segment',
           Angle: '180',
         },
@@ -4734,9 +4808,11 @@ path001 = startProfile(sketch001, at = [0, 0])
       await cmdBar.progressCmdBar()
       await scene.settled(cmdBar)
 
-      await toolbar.openPane('code')
+      await editor.expectEditor.toContain(`yLine(length = 2, tag = $seg01)`, {
+        shouldNormalise: true,
+      })
       await editor.expectEditor.toContain(
-        `revolve001 = revolve([profile001, profile002], axis = X, angle = 180)`,
+        `revolve001 = revolve([profile001, profile002], angle=180, axis=seg01)`,
         { shouldNormalise: true }
       )
     })
