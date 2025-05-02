@@ -74,6 +74,11 @@ export const AllSettingsFields = forwardRef(
         codeManager,
         kclManager,
       }
+      // We need to navigate out of settings before accepting onboarding
+      // in the web
+      if (!isDesktop()) {
+        navigate('..')
+      }
       acceptOnboarding(props).catch((reason) =>
         catchOnboardingWarnError(reason, props)
       )
