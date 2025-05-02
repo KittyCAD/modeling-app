@@ -18,7 +18,7 @@ export function createApplicationCommands({
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
     description:
-      'Generate parts from text prompts. This feature is experimental and undergoing constant improvment, stay tuned for updates.',
+      'Generate parts from text prompts. This feature is experimental and undergoing constant improvement, stay tuned for updates.',
     displayName: `Text to CAD`,
     groupId: 'application',
     needsReview: false,

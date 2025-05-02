@@ -308,7 +308,7 @@ const Home = () => {
                     </div>
                     <p className="pt-2 text-left">
                       This feature is experimental and undergoing constant
-                      improvment, stay tuned for updates.
+                      improvement, stay tuned for updates.
                     </p>
                   </div>
                 </Tooltip>

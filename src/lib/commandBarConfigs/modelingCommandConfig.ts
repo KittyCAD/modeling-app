@@ -966,7 +966,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Prompt-to-edit': {
     description:
-      'Use Zoo AI to edit your kcl. This feature is experimental and undergoing constant improvment, stay tuned for updates.',
+      'Use Zoo AI to edit your kcl. This feature is experimental and undergoing constant improvement, stay tuned for updates.',
     icon: 'sparkles',
     status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     args: {
