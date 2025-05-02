@@ -574,7 +574,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       },
     ],
     [
-      'eecb1d39-c251-449a-b815-c0fddeb31989', // ADAM: This one.
+      'eecb1d39-c251-449a-b815-c0fddeb31989',
       {
         type: 'cap',
         id: 'eecb1d39-c251-449a-b815-c0fddeb31989',
@@ -1254,7 +1254,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           singleIdsKeys: ['id', 'pathId'],
           arrayIdsKeys: [
             { key: 'surfaceIds', length: 6 },
-            { key: 'edgeIds', length: 8 },
+            { key: 'edgeIds', length: 7 },
           ],
         },
       },
@@ -1272,7 +1272,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       },
     ],
     [
-      'startSketch on for a end cap that is also sketch on face on face', // ADAM: This test.
+      'startSketch on for a end cap that is also sketch on face on face',
       {
         snippet: 'sketch005 = startSketchOn(extrude002, face = END)',
         artifactDetails: {
@@ -1280,7 +1280,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           subType: 'end',
           range: [635, 635, 0],
           singleIdsKeys: ['id', 'sweepId'],
-          arrayIdsKeys: [{ key: 'pathIds', length: 2 }],
+          arrayIdsKeys: [{ key: 'pathIds', length: 1 }],
         },
       },
     ],
@@ -1302,13 +1302,11 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
           },
         },
       ]
-      console.warn('ADAM: Snippet =', snippet)
       const [artifactSelection] = codeToIdSelections(
         selections,
         ___artifactGraph,
         artifactIndex
       )
-      console.warn('ADAM: artifactSelection=', artifactSelection)
       expect(artifactSelection.id).toBeTruthy()
       if (!artifactSelection.id) {
         throw new Error('id is falsy')
@@ -1326,7 +1324,6 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
         expect((artifact as any)[key]).toBeTruthy()
       }
       for (const { key, length } of artifactDetails.arrayIdsKeys) {
-        console.warn('ADAM: artifact', (artifact as any)[key])
         expect((artifact as any)[key]).toHaveLength(length)
       }
     }

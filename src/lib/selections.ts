@@ -664,8 +664,6 @@ export function codeToIdSelections(
       }
 
       // Direct artifact case
-      console.warn('ADAM: Selection', selection)
-      console.warn('ADAM: codeRef', selection.codeRef)
       if (selection.artifact?.id) {
         return [createSelectionToEngine(selection, selection.artifact.id)]
       }
