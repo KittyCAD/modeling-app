@@ -6,7 +6,7 @@ import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useSettings } from '@src/lib/singletons'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 import styles from './ModelingPane.module.css'
 
@@ -71,7 +71,7 @@ export const ModelingPane = ({
   const settings = useSettings()
   const onboardingStatus = settings.app.onboardingStatus
   const pointerEventsCssClass =
-    onboardingStatus.current === onboardingPaths.CAMERA
+    onboardingStatus.current === ONBOARDING_SUBPATHS.CAMERA
       ? 'pointer-events-none '
       : 'pointer-events-auto '
   return (
