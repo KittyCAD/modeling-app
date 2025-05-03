@@ -117,7 +117,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
             onClick={continueToWebApp}
             iconStart={{ icon: 'arrowLeft' }}
           >
-            Continue to web app
+            Continue to web app X
           </ActionButton>
         </div>
       </Transition.Child>
