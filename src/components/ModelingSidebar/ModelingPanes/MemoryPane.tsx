@@ -11,7 +11,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { useKclContext } from '@src/lang/KclProvider'
 import type { VariableMap } from '@src/lang/wasm'
-import { sketchFromKclValueOptional } from '@src/lang/wasm'
+import { formatNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { Reason, trap } from '@src/lib/trap'
 
 export const MemoryPaneMenu = () => {
@@ -98,6 +98,43 @@ export const processMemory = (variables: VariableMap) => {
       processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
         return rest
       })
+    } else if (val.type === 'Number') {
+      // The type is wrong because ts-rs can't handle tuple types.
+      let ty: string = val.ty.type
+      // Map from UnitLen to NumericSuffix.
+      if (ty === 'Inches') {
+        ty = 'Inch'
+      } else if (ty === 'Feet') {
+        ty = 'Ft'
+      } else if (ty === 'Yards') {
+        ty = 'Yd'
+      }
+      // Map from UnitAng to NumericSuffix.
+      if (ty === 'Degrees') {
+        ty = 'Deg'
+      } else if (ty === 'Radians') {
+        ty = 'Rad'
+      }
+      // Type narrow to NumericSuffix.
+      if (
+        ty === 'None' ||
+        ty === 'Count' ||
+        ty === 'Length' ||
+        ty === 'Angle' ||
+        ty === 'Mm' ||
+        ty === 'Cm' ||
+        ty === 'M' ||
+        ty === 'Inch' ||
+        ty === 'Ft' ||
+        ty === 'Yd' ||
+        ty === 'Deg' ||
+        ty === 'Rad' ||
+        ty === 'Unknown'
+      ) {
+        processedMemory[key] = formatNumber(val.value, ty)
+      } else {
+        processedMemory[key] = val.value
+      }
     } else {
       processedMemory[key] = val.value
     }
