@@ -17,9 +17,8 @@ import { Themes, getSystemTheme } from '@src/lib/theme'
  */
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   const theme = getSystemTheme()
-  const x = 0
   const buttonClasses =
-    'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
+    'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10' + ''
   const pathLogomarkSvg = `${isDesktop() ? '.' : ''}/zma-logomark${
     theme === Themes.Light ? '-dark' : ''
   }.svg`
