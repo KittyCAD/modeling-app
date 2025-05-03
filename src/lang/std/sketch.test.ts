@@ -108,7 +108,7 @@ describe('testing changeSketchArguments', () => {
   |> startProfile(at = [0, 0])
   |> ${line}
   |> line(endAbsolute = [0.46, -5.82])
-// |> rx(45, %)
+// |> rx(45)
 `
     const code = genCode(lineToChange)
     const expectedCode = genCode(lineAfterChange)
@@ -143,7 +143,7 @@ describe('testing addTagForSketchOnFace', () => {
     // Enable rotations #152
     const genCode = (line: string) => `mySketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
-  // |> rx(45, %)
+  // |> rx(45)
   |> ${line}
   |> line(endAbsolute = [0.46, -5.82])
 `

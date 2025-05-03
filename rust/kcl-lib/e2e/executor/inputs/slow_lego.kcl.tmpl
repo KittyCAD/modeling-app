@@ -26,13 +26,13 @@ tubeFace = {
   zAxis = { x = 0, y = 0, z = 1 }
 }
 // Make the base
-s = startSketchOn('XY')
+s = startSketchOn(XY)
   |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
-  |> line([totalWidth, 0], %)
-  |> line([0, totalLength], %)
-  |> line([-totalWidth, 0], %)
-  |> close(%)
-  |> extrude(height, %)
+  |> line(end = [totalWidth, 0])
+  |> line(end = [0, totalLength])
+  |> line(end = [-totalWidth, 0])
+  |> close()
+  |> extrude(length = height)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. This is a hack until we have a shell function.
 shellExtrude = startSketchOn(s, "start")
@@ -40,11 +40,11 @@ shellExtrude = startSketchOn(s, "start")
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
      ])
-  |> line([totalWidth - (2 * t), 0], %)
-  |> line([0, totalLength - (2 * t)], %)
-  |> line([-(totalWidth - (2 * t)), 0], %)
-  |> close(%)
-  |> extrude(-(height - t), %)
+  |> line(end = [totalWidth - (2 * t), 0])
+  |> line(end = [0, totalLength - (2 * t)])
+  |> line(end = [-(totalWidth - (2 * t)), 0])
+  |> close()
+  |> extrude(length = -(height - t))
 
 fn tr(i) {
   j = i + 1
@@ -57,7 +57,7 @@ fn tr(i) {
 
 // Create the pegs on the top of the base
 totalBumps = (wbumps * lbumps)-1
-peg = startSketchOn(s, 'end')
+peg = startSketchOn(s, face = END)
   |> circle( center = [
        -(pitch*(wbumps-1)/2),
        -(pitch*(lbumps-1)/2)
@@ -72,6 +72,6 @@ peg = startSketchOn(s, 'end')
        instances = lbumps,
        distance = pitch
      )
-  |> extrude(bumpHeight, %)
-  // |> patternTransform(instances = int(totalBumps-1), transform = tr)
+  |> extrude(length = bumpHeight)
+  // |> patternTransform(instances = totalBumps-1, transform = tr)
 

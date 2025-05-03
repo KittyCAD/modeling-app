@@ -14,37 +14,26 @@ f(1)
 Program(ExpressionStatement(CallExpression(VariableName,
                                            ArgumentList(Number))))
 
-# deprecated multiple anon args
+# unlabeled first arg and labeled arg
 
-f(1, 2)
+line(sketch001, end = [thickness, 0])
 
 ==>
 Program(ExpressionStatement(CallExpression(VariableName,
-                                           ArgumentList(Number,
-                                                        Number))))
+                                           ArgumentList(VariableName,
+                                                        LabeledArgument(ArgumentLabel,
+                                                                        Equals,
+                                                                        ArrayExpression(VariableName,
+                                                                                        Number))))))
 
-# deprecated trailing %
+# % and labeled arg
 
-startSketchOn('XY')
-|> line([thickness, 0], %)
-
-==>
-Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
-                                                          ArgumentList(String)),
-                                           PipeOperator,
-                                           CallExpression(VariableName,
-                                                          ArgumentList(ArrayExpression(VariableName,
-                                                                                       Number),
-                                                                       PipeSubstitution)))))
-
-# % and named arg
-
-startSketchOn('XY')
+startSketchOn(XY)
 |> line(%, end = [thickness, 0])
 
 ==>
 Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
-                                                          ArgumentList(String)),
+                                                          ArgumentList(VariableName)),
                                            PipeOperator,
                                            CallExpression(VariableName,
                                                           ArgumentList(PipeSubstitution,
@@ -53,14 +42,14 @@ Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
                                                                                        ArrayExpression(VariableName,
                                                                                                      Number)))))))
 
-# implied % and named arg
+# implied % and labeled arg
 
-startSketchOn('XY')
+startSketchOn(XY)
 |> line(end = [thickness, 0])
 
 ==>
 Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
-                                                          ArgumentList(String)),
+                                                          ArgumentList(VariableName)),
                                            PipeOperator,
                                            CallExpression(VariableName,
                                                           ArgumentList(LabeledArgument(ArgumentLabel,
@@ -68,7 +57,7 @@ Program(ExpressionStatement(PipeExpression(CallExpression(VariableName,
                                                                                        ArrayExpression(VariableName,
                                                                                                      Number)))))))
 
-# multiple named arg
+# multiple labeled arg
 
 ngon(plane = "XY", numSides = 5, radius = pentR)
 

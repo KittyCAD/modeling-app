@@ -1091,8 +1091,8 @@ export class SceneEntities {
             resolvedFunctionName = 'tangentialArc'
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
-            //   |> tangentialArcTo([5, -10], %, $arc001)
-            //   |> angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+            //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
+            //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
 
             const previousSegmentPathToNode = getNodePathFromSourceRange(
               modifiedAst,

@@ -781,7 +781,7 @@ profile001 = startProfile(sketch001, at = [56.37, 120.33])
        interiorAbsolute = [360.16, 231.76],
        endAbsolute = [391.48, 131.54],
      )
-  |> yLine(-131.54, %)
+  |> yLine(length = -131.54)
   |> arc(angleStart = 33.53, angleEnd = -141.07, radius = 126.46)
 `
         )
