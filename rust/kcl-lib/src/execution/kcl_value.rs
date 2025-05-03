@@ -85,7 +85,7 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     Function {
         #[serde(serialize_with = "function_value_stub")]
-        #[ts(type = "unknown")]
+        #[ts(type = "null")]
         value: FunctionSource,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -113,7 +113,7 @@ fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::O
 where
     S: serde::Serializer,
 {
-    serializer.serialize_unit_struct("FunctionSource")
+    serializer.serialize_unit()
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
