@@ -39,7 +39,10 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         if (err(codeToWrite)) return Promise.reject(codeToWrite)
         input.rootContext.codeManager.updateCodeStateEditor(codeToWrite)
         await input.rootContext.codeManager.writeToFile()
-        await input.rootContext.kclManager.executeCode()
+        let x = 1
+        if (x) {
+          await input.rootContext.kclManager.executeCode()
+        }
         return {
           message: 'File overwritten successfully',
           fileName: input.requestedFileName,
