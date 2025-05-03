@@ -435,7 +435,8 @@ description: Variables in memory after executing mounting-plate.kcl
     }
   },
   "rectShape": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "rs": {
     "type": "Sketch",

@@ -2832,7 +2832,8 @@ description: Variables in memory after executing food-service-spatula.kcl
     }
   },
   "slot": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "slotProfile000": {
     "type": "Sketch",

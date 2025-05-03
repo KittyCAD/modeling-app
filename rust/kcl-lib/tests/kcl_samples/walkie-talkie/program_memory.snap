@@ -77,7 +77,8 @@ description: Variables in memory after executing walkie-talkie.kcl
     "value": 2
   },
   "button": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "buttonHeight": {
     "type": "Number",

@@ -4,10 +4,12 @@ description: Variables in memory after executing pipe_as_arg.kcl
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "double": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "myCube": {
     "type": "Number",
@@ -23,6 +25,7 @@ description: Variables in memory after executing pipe_as_arg.kcl
     }
   },
   "width": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

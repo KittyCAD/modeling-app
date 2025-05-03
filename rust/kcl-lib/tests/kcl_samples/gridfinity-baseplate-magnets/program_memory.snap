@@ -10850,7 +10850,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",
@@ -10938,10 +10939,12 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
     }
   },
   "magnetBase": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "magnetCenterCutout": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "magnetCutoutExtrude": {
     "type": "Solid",

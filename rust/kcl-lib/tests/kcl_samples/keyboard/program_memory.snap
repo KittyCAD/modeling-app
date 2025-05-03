@@ -29,7 +29,8 @@ description: Variables in memory after executing keyboard.kcl
     }
   },
   "keyFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "keyHeight": {
     "type": "Number",
@@ -45,7 +46,8 @@ description: Variables in memory after executing keyboard.kcl
     }
   },
   "o": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "plane001": {
     "type": "Object",
@@ -2885,6 +2887,7 @@ description: Variables in memory after executing keyboard.kcl
     }
   },
   "z": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

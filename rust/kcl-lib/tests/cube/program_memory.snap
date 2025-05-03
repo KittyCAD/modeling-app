@@ -4,7 +4,8 @@ description: Variables in memory after executing cube.kcl
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "myCube": {
     "type": "Solid",

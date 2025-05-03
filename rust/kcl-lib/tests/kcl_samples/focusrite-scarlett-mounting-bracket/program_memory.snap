@@ -673,7 +673,8 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     }
   },
   "bracketSketch": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "bs": {
     "type": "Sketch",

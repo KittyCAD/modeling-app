@@ -19763,7 +19763,8 @@ description: Variables in memory after executing gear-rack.kcl
     ]
   },
   "tooth": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "width": {
     "type": "Number",

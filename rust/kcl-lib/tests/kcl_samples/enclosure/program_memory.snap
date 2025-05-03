@@ -1352,7 +1352,8 @@ description: Variables in memory after executing enclosure.kcl
     }
   },
   "function001": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "height": {
     "type": "Number",

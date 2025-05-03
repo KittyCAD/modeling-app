@@ -14220,7 +14220,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",
@@ -15659,7 +15660,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     ]
   },
   "lipFace": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "lipHeight": {
     "type": "Number",
