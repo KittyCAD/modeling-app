@@ -210,7 +210,7 @@ As per the example above you can use the tag identifier to get a reference to th
 tagged object. The syntax for this is `myTag`.
 
 In the example above we use the tag identifier to get the angle of the segment
-`segAng(rectangleSegmentA001, %)`.
+`segAng(rectangleSegmentA001)`.
 
 ### `Start`
 

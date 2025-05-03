@@ -154,7 +154,7 @@ newVar = myVar + 1`
       '  |> line(endAbsolute = [1,1])',
       '  |> line(endAbsolute = [0, 1], tag = $myPath)',
       '  |> line(endAbsolute = [1,1])',
-      // '  |> rx(90, %)',
+      // '  |> rx(90)',
     ].join('\n')
     const mem = await exe(code)
     expect(mem['mySk1']).toEqual({
