@@ -16,6 +16,12 @@ describe('processMemory', () => {
     return a - 2
   }
   otherVar = myFn(5)
+  nFeet = 2ft
+  nInches = 2in
+  nMm = 2mm
+  nDegrees = 2deg
+  nRadians = 2rad
+  nCount = 2_
 
   theExtrude = startSketchOn(XY)
     |> startProfile(at = [0, 0])
@@ -32,6 +38,12 @@ describe('processMemory', () => {
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const output = processMemory(execState.variables)
+    expect(output.nFeet).toEqual('2ft')
+    expect(output.nInches).toEqual('2in')
+    expect(output.nMm).toEqual('2mm')
+    expect(output.nDegrees).toEqual('2deg')
+    expect(output.nRadians).toEqual('2rad')
+    expect(output.nCount).toEqual('2_')
     expect(output.myVar).toEqual(5)
     expect(output.otherVar).toEqual(3)
     expect(output.myFn).toEqual('__function__')
