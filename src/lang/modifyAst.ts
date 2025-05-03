@@ -1215,19 +1215,19 @@ export function updateSketchNodePathsWithInsertIndex({
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 into
 ```ts
 sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)

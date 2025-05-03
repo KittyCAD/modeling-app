@@ -265,13 +265,13 @@ impl Backend {
                 r#"fn cube(pos, scale) {
   sg = startSketchOn(XY)
     |> startProfile(at = pos)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
   return sg
 }
-part001 = cube([0,0], 20)
-    |> close(%)
+part001 = cube(pos = [0,0], scale = 20)
+    |> close()
     |> extrude(length=20)"#
                     .to_string(),
             );
