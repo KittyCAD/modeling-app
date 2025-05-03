@@ -84,11 +84,11 @@ export const helpRole = (
       },
       { type: 'separator' },
       {
-        id: 'Help.Reset onboarding',
-        label: 'Reset onboarding',
+        id: 'Help.Replay onboarding tutorial',
+        label: 'Replay onboarding tutorial',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Help.Reset onboarding',
+            menuLabel: 'Help.Replay onboarding tutorial',
           })
         },
       },

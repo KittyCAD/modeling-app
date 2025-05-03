@@ -23,12 +23,6 @@ import type {
 import { settingsActor } from '@src/lib/singletons'
 import { NAVIGATION_COMPLETE_EVENT } from '@src/machines/systemIO/utils'
 
-export const telemetryLoader: LoaderFunction = async ({
-  params,
-}): Promise<null> => {
-  return null
-}
-
 export const fileLoader: LoaderFunction = async (
   routerData
 ): Promise<FileLoaderData | Response> => {

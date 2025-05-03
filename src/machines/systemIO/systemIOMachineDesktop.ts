@@ -229,6 +229,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           requestedFileName: string
           requestedCode: string
           rootContext: AppMachineContext
+          requestedSubRoute?: string
         }
       }) => {
         const requestedProjectName = input.requestedProjectName
@@ -277,6 +278,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           message: 'File created successfully',
           fileName: newFileName,
           projectName: newProjectName,
+          subRoute: input.requestedSubRoute || '',
         }
       }
     ),

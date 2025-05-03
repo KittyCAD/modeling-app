@@ -71,17 +71,6 @@ expression: actual
       "commentStart": 48,
       "end": 60,
       "expression": {
-        "arguments": [
-          {
-            "commentStart": 54,
-            "end": 59,
-            "raw": "false",
-            "start": 54,
-            "type": "Literal",
-            "type": "Literal",
-            "value": false
-          }
-        ],
         "callee": {
           "abs_path": false,
           "commentStart": 48,
@@ -100,8 +89,17 @@ expression: actual
         "commentStart": 48,
         "end": 60,
         "start": 48,
-        "type": "CallExpression",
-        "type": "CallExpression"
+        "type": "CallExpressionKw",
+        "type": "CallExpressionKw",
+        "unlabeled": {
+          "commentStart": 54,
+          "end": 59,
+          "raw": "false",
+          "start": 54,
+          "type": "Literal",
+          "type": "Literal",
+          "value": false
+        }
       },
       "start": 48,
       "type": "ExpressionStatement",

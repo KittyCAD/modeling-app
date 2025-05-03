@@ -144,11 +144,11 @@ layout: manual
 See also the [types overview](types)
 
 * **Primitive types**
-  * [`End`](kcl/types.md#End)
-  * [`ImportedGeometry`](kcl/types.md#ImportedGeometry)
-  * [`Start`](kcl/types.md#Start)
-  * [`TagDeclarator`](kcl/types.md#TagDeclarator)
-  * [`TagIdentifier`](kcl/types.md#TagIdentifier)
+  * [`End`](kcl/types#End)
+  * [`ImportedGeometry`](kcl/types#ImportedGeometry)
+  * [`Start`](kcl/types#Start)
+  * [`TagDeclarator`](kcl/types#TagDeclarator)
+  * [`TagIdentifier`](kcl/types#TagIdentifier)
   * [`any`](kcl/types/std-types-any)
   * [`bool`](kcl/types/std-types-bool)
   * [`number`](kcl/types/std-types-number)

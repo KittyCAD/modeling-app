@@ -14,7 +14,6 @@ import { findKwArg } from '@src/lang/util'
 import type {
   ArrayExpression,
   BinaryExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
@@ -161,23 +160,6 @@ export function createCallExpressionStdLibKw(
     nonCodeMeta: nonCodeMeta ?? nonCodeMetaEmpty(),
     callee: createLocalName(name),
     unlabeled,
-    arguments: args,
-  }
-}
-
-export function createCallExpression(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
     arguments: args,
   }
 }
@@ -410,39 +392,19 @@ export function giveSketchFnCallTag(
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      path,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
-      const { node: primaryCallExp } = callNode
-      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-      const tagDeclarator =
-        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-      const isTagExisting = !!existingTag
-      if (!isTagExisting) {
-        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-      }
-      return { tagDeclarator, isTagExisting }
+    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
+      'CallExpressionKw',
+    ])
+    if (err(callNode)) {
+      return callNode
     }
-
-    // We've handled CallExpressionKw above, so this has to be positional.
-    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-    if (err(_node1)) return _node1
-    const { node: primaryCallExp } = _node1
-
-    // Tag is always 3rd expression now, using arg index feels brittle
-    // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[2]
+    const { node: primaryCallExp } = callNode
+    const existingTag = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
-      thirdArg ||
-      (createTagDeclarator(
-        tag || findUniqueName(ast, 'seg', 2)
-      ) as TagDeclarator)
-    const isTagExisting = !!thirdArg
+      existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
+    const isTagExisting = !!existingTag
     if (!isTagExisting) {
-      primaryCallExp.arguments[2] = tagDeclarator
+      callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
     }
     return { tagDeclarator, isTagExisting }
   })()

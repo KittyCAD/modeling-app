@@ -35,7 +35,7 @@ As per the example above you can use the tag identifier to get a reference to th
 tagged object. The syntax for this is `myTag`.
 
 In the example above we use the tag identifier to get the angle of the segment
-`segAng(rectangleSegmentA001, %)`.
+`segAng(rectangleSegmentA001)`.
 
 ### Tag Scope
 
@@ -81,11 +81,13 @@ fn rect(origin) {
     |> angledLine(
          angle = segAng(rectangleSegmentA001) - 90,
          length = 196.99
-       , %, $rectangleSegmentB001)
+         tag = $rectangleSegmentB001,
+       )
     |> angledLine(
          angle = segAng(rectangleSegmentA001),
          length = -segLen(rectangleSegmentA001)
-       , %, $rectangleSegmentC001)
+         tag = $rectangleSegmentC001,
+       )
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
     |> close()
 }
