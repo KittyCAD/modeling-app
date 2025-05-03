@@ -83,9 +83,9 @@ pub enum KclValue {
         value: Box<Helix>,
     },
     ImportedGeometry(ImportedGeometry),
-    #[ts(skip)]
     Function {
-        #[serde(skip)]
+        #[serde(serialize_with = "function_value_stub")]
+        #[ts(type = "unknown")]
         value: FunctionSource,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -107,6 +107,13 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+}
+
+fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_unit_struct("FunctionSource")
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]

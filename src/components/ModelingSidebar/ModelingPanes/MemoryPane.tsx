@@ -98,6 +98,8 @@ export const processMemory = (variables: VariableMap) => {
       processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
         return rest
       })
+    } else if (val.type === 'Function') {
+      processedMemory[key] = '__function__'
     } else if (val.type === 'Number') {
       // The type is wrong because ts-rs can't handle tuple types.
       let ty: string = val.ty.type
