@@ -9,28 +9,31 @@ import {
 import type { BillingActor } from '@src/machines/billingMachine'
 
 export const BillingDialog = (props: { billingActor: BillingActor }) => {
-  const billingContext = useSelector(props.billingActor, ({ context }) => context)
+  const billingContext = useSelector(
+    props.billingActor,
+    ({ context }) => context
+  )
   const hasUnlimited = billingContext.credits === Infinity
 
   return (
-    <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-2 gap-2" >
+    <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-2 gap-2">
       <div>
         <div className="rounded bg-ml-black p-1">
-          { hasUnlimited
-            ? <CustomIcon name="infinity" />
-            : <CustomIcon name="star" />
-          }
+          {hasUnlimited ? (
+            <CustomIcon name="infinity" />
+          ) : (
+            <CustomIcon name="star" />
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="font-bold font-lg text-ml-black">{
-          hasUnlimited ? 'Unlimited Text-to-CAD' : 'Upgrade your plan' 
-        }</div>
+        <div className="font-bold font-lg text-ml-black">
+          {hasUnlimited ? 'Unlimited Text-to-CAD' : 'Upgrade your plan'}
+        </div>
         <div className="text-ml-grey">
-          { hasUnlimited
-           ? 'You have unlimited use on your paid plan.'
-           : 'for unlimited usage of Text-to-CAD and more!'
-          }
+          {hasUnlimited
+            ? 'You have unlimited use on your paid plan.'
+            : 'for unlimited usage of Text-to-CAD and more!'}
         </div>
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarStretch}

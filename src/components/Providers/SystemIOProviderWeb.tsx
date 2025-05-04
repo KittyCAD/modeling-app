@@ -54,10 +54,10 @@ export function SystemIOMachineLogicListenerWeb() {
       isProjectNew,
       settings: { highlightEdges: settings.modeling.highlightEdges.current },
     })
-    .then(() => {
-      billingActor.send({ type: BillingTransition.Update, apiToken: token })
-    })
-    .catch(reportRejection)
+      .then(() => {
+        billingActor.send({ type: BillingTransition.Update, apiToken: token })
+      })
+      .catch(reportRejection)
   }, [requestedTextToCadGeneration])
 
   useClearQueryParams()

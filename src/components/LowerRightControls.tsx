@@ -5,7 +5,7 @@ import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
-import { BillingDialog, } from '@src/components/BillingDialog'
+import { BillingDialog } from '@src/components/BillingDialog'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { HelpMenu } from '@src/components/HelpMenu'
@@ -43,9 +43,7 @@ export function LowerRightControls({
               billingActor={billingActor}
             />
           </Popover.Button>
-          <Popover.Panel
-            className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"
-          >
+          <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm">
             <BillingDialog billingActor={billingActor} />
           </Popover.Panel>
         </Popover>

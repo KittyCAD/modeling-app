@@ -149,7 +149,7 @@ const appMachine = setup({
         ...BILLING_CONTEXT_DEFAULTS,
         urlUserService: VITE_KC_API_BASE_URL,
       },
-    }
+    },
   ],
   entry: [
     /**

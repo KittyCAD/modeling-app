@@ -42,25 +42,29 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
 export const toBillingSubscriptionName = (
   target: string
 ): BillingSubscriptionName => {
-  return Object
-    .values(BillingSubscriptionName)
-    .find(item => item === target) ?? BillingSubscriptionName.Unknown
+  return (
+    Object.values(BillingSubscriptionName).find((item) => item === target) ??
+    BillingSubscriptionName.Unknown
+  )
 }
 
 export const billingMachine = setup({
   types: {
     context: {} as BillingContext,
     input: {} as BillingContext,
-    events: {} as BillingUpdateEvent
+    events: {} as BillingUpdateEvent,
   },
   actors: {
     [BillingTransition.Update]: fromPromise(
-      async ({ input }: { input: { context: BillingContext, event: BillingUpdateEvent } }) => {
-        const billingOrError: Models['CustomerBalance_type'] | Error = await crossPlatformFetch(
-          `${input.context.urlUserService}/user/payment/balance`,
-          { method: 'GET' },
-          input.event.apiToken,
-        )
+      async ({
+        input,
+      }: { input: { context: BillingContext; event: BillingUpdateEvent } }) => {
+        const billingOrError: Models['CustomerBalance_type'] | Error =
+          await crossPlatformFetch(
+            `${input.context.urlUserService}/user/payment/balance`,
+            { method: 'GET' },
+            input.event.apiToken
+          )
 
         if (billingOrError instanceof Error) {
           return Promise.reject(billingOrError)
@@ -69,7 +73,7 @@ export const billingMachine = setup({
         const billing: Models['CustomerBalance_type'] = billingOrError
 
         const plan: BillingSubscriptionName = toBillingSubscriptionName(
-          billing.subscription_details?.modeling_app.name ?? ""
+          billing.subscription_details?.modeling_app.name ?? ''
         )
 
         let credits =
@@ -84,8 +88,7 @@ export const billingMachine = setup({
           case BillingSubscriptionName.Free:
             // jess: this is monthly allowance. lee: but the name? jess: i know names computer science hard
             allowance = Number(
-              billing.subscription_details?.modeling_app
-                .pay_as_you_go_credits
+              billing.subscription_details?.modeling_app.pay_as_you_go_credits
             )
             break
           // On unknown, we can still show the total credits (graceful degradation).
@@ -117,7 +120,10 @@ export const billingMachine = setup({
     [BillingState.Updating]: {
       invoke: {
         src: BillingTransition.Update,
-        input: (args: { context: BillingContext, event: BillingUpdateEvent }) => ({
+        input: (args: {
+          context: BillingContext
+          event: BillingUpdateEvent
+        }) => ({
           context: args.context,
           event: args.event,
         }),

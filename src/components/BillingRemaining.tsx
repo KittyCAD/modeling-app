@@ -11,8 +11,8 @@ export enum BillingRemainingMode {
 }
 
 export interface BillingRemainingProps {
-  mode: BillingRemainingMode,
-  billingActor: BillingActor,
+  mode: BillingRemainingMode
+  billingActor: BillingActor
 }
 
 const Error = (props: { error: Error }) => {
@@ -68,7 +68,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
       <div
         className="bg-ml-green"
         style={{
-          width: Math.min(100, (ratio * 100)).toFixed(2) + '%',
+          width: Math.min(100, ratio * 100).toFixed(2) + '%',
           height: '100%',
           borderTopRightRadius: 4,
           borderBottomRightRadius: 4,
@@ -89,7 +89,10 @@ const BillingCredit = (props: { amount: number }) => {
 }
 
 export const BillingRemaining = (props: BillingRemainingProps) => {
-  const billingContext = useSelector(props.billingActor, ({ context }) => context)
+  const billingContext = useSelector(
+    props.billingActor,
+    ({ context }) => context
+  )
 
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
   const cssWrapper = [
@@ -108,11 +111,17 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
   return (
     <div
       data-testid="billing-remaining"
-      className={[isFlex ? 'flex flex-col gap-1' : 'px-2'].concat(cssWrapper).join(' ')}
+      className={[isFlex ? 'flex flex-col gap-1' : 'px-2']
+        .concat(cssWrapper)
+        .join(' ')}
     >
       <div className="flex flex-row gap-2 items-center">
         {billingContext.error && <Error error={billingContext.error} />}
-        { !isFlex && <div className="font-mono"><BillingCredit amount={billingContext.credits} /></div> }
+        {!isFlex && (
+          <div className="font-mono">
+            <BillingCredit amount={billingContext.credits} />
+          </div>
+        )}
         {10 !== Infinity && (
           <div className={[isFlex ? 'flex-grow' : 'w-16'].join(' ')}>
             <ProgressBar
@@ -127,7 +136,10 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
           {billingContext.credits ? (
             <>{billingContext.credits} credits remaining this month</>
           ) : (
-            <><Spinner className="text-inherit w-4 h-4" /> <span>Fetching remaining credits...</span></>
+            <>
+              <Spinner className="text-inherit w-4 h-4" />{' '}
+              <span>Fetching remaining credits...</span>
+            </>
           )}
         </div>
       )}

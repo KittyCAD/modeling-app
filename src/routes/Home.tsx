@@ -32,7 +32,15 @@ import {
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { useToken, commandBarActor, kclManager, authActor, billingActor, systemIOActor, useSettings } from '@src/lib/singletons'
+import {
+  useToken,
+  commandBarActor,
+  kclManager,
+  authActor,
+  billingActor,
+  systemIOActor,
+  useSettings,
+} from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
