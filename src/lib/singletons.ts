@@ -177,7 +177,7 @@ const appMachine = setup({
             commands: [],
           },
         }),
-      billingActor: ({spawn}) =>
+      billingActor: ({ spawn }) =>
         spawn(BILLING, {
           id: BILLING,
           systemId: BILLING,
