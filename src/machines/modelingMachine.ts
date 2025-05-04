@@ -2539,6 +2539,63 @@ export const modelingMachine = setup({
         if (err(filletResult)) return filletResult
       }
     ),
+    chamferAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Chamfer'] | undefined
+      }) => {
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        // Extract inputs
+        let ast = kclManager.ast
+        const { nodeToEdit, selection, length } = input
+
+        // If this is an edit flow, first we're going to remove the old node
+        if (nodeToEdit) {
+          const firstSelection = selection.graphSelections[0]
+          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
+            (artifact) =>
+              artifact.type === 'edgeCut' &&
+              (artifact).consumedEdgeId === firstSelection.artifact?.id
+          )
+          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+            return new Error(
+              'Failed to retrieve edgeCut artifact from sweepEdge selection'
+            )
+          }
+          const updatedSelection = {
+            artifact: edgeCutArtifact,
+            codeRef: edgeCutArtifact.codeRef,
+          }
+          const deleteRes = await deleteEdgeTreatment(ast, updatedSelection)
+          if (err(deleteRes)) return deleteRes
+          ast = deleteRes
+        }
+
+        const parameters: ChamferParameters = {
+          type: EdgeTreatmentType.Chamfer,
+          length,
+        }
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
+
+        // Apply chamfer to selection
+        const chamferResult = await applyEdgeTreatmentToSelection(
+          ast,
+          selection,
+          parameters,
+          dependencies
+        )
+        if (err(chamferResult)) return chamferResult
+      }
+    ),
     'actor.parameter.create': fromPromise(
       async ({
         input,
@@ -2658,63 +2715,6 @@ export const modelingMachine = setup({
     'split-sketch-pipe-if-needed': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
         return {} as SketchDetailsUpdate
-      }
-    ),
-    chamferAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Chamfer'] | undefined
-      }) => {
-        if (!input) {
-          return new Error('No input provided')
-        }
-
-        // Extract inputs
-        let ast = kclManager.ast
-        const { nodeToEdit, selection, length } = input
-
-        // If this is an edit flow, first we're going to remove the old node
-        if (nodeToEdit) {
-          const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
-            (artifact) =>
-              artifact.type === 'edgeCut' &&
-              (artifact).consumedEdgeId === firstSelection.artifact?.id
-          )
-          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return new Error(
-              'Failed to retrieve edgeCut artifact from sweepEdge selection'
-            )
-          }
-          const updatedSelection = {
-            artifact: edgeCutArtifact,
-            codeRef: edgeCutArtifact.codeRef,
-          }
-          const deleteRes = await deleteEdgeTreatment(ast, updatedSelection)
-          if (err(deleteRes)) return deleteRes
-          ast = deleteRes
-        }
-
-        const parameters: ChamferParameters = {
-          type: EdgeTreatmentType.Chamfer,
-          length,
-        }
-        const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
-        }
-
-        // Apply chamfer to selection
-        const chamferResult = await applyEdgeTreatmentToSelection(
-          ast,
-          selection,
-          parameters,
-          dependencies
-        )
-        if (err(chamferResult)) return chamferResult
       }
     ),
     'submit-prompt-edit': fromPromise(
