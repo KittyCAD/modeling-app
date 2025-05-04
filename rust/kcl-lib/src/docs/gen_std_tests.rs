@@ -8,7 +8,7 @@ use itertools::Itertools;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, TyData};
+use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::{docs::StdLibFn, std::StdLib, ExecutorContext};
 
 const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
@@ -101,12 +101,13 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
     hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
+    hbs.register_template_string("module", include_str!("templates/module.hbs"))?;
     hbs.register_template_string("kclType", include_str!("templates/kclType.hbs"))?;
 
     Ok(hbs)
 }
 
-fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[DocData]) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = HashMap::new();
@@ -139,7 +140,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             .push((name.to_owned(), format!("types#{name}")));
     }
 
-    for d in kcl_lib {
+    for d in kcl_lib.all_docs() {
         if d.hide() {
             continue;
         }
@@ -148,6 +149,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             DocData::Fn(_) => functions.entry(d.mod_name()).or_default(),
             DocData::Ty(_) => types.entry(d.mod_name()).or_default(),
             DocData::Const(_) => constants.entry(d.mod_name()).or_default(),
+            DocData::Mod(_) => continue,
         };
 
         group.push((d.preferred_name().to_owned(), d.file_name()));
@@ -159,6 +161,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             fns.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": fns.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -176,6 +179,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             consts.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": consts.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -193,6 +197,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             tys.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": tys.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -280,6 +285,47 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output);
+    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+
+    Ok(())
+}
+
+fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
+    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
+        let mut items: Vec<_> = m
+            .children
+            .iter()
+            .filter(|(k, _)| k.starts_with(namespace))
+            .map(|(_, v)| (v.preferred_name(), v.file_name()))
+            .collect();
+        items.sort();
+        items
+            .into_iter()
+            .map(|(n, f)| {
+                json!({
+                    "name": n,
+                    "file_name": f,
+                })
+            })
+            .collect()
+    }
+    let hbs = init_handlebars()?;
+
+    // TODO for prelude, items from Rust
+    let functions = list_items(m, "I:");
+    let modules = list_items(m, "M:");
+    let types = list_items(m, "T:");
+
+    let data = json!({
+        "name": m.qual_name,
+        "summary": m.summary,
+        "description": m.description,
+        "modules": modules,
+        "functions": functions,
+        "types": types,
+    });
+
+    let output = hbs.render("module", &data)?;
     expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
@@ -624,13 +670,15 @@ fn test_generate_stdlib_markdown_docs() {
         generate_function(internal_fn.clone()).unwrap();
     }
 
-    for d in &kcl_std {
+    for d in kcl_std.all_docs() {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name()).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
         }
     }
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
 
     // Copy manually written docs to the output directory.
     for entry in fs::read_dir("../../docs/kcl-src").unwrap() {

@@ -15,7 +15,7 @@ layout: manual
 
 ### Functions
 
-* **std**
+* [**std**](kcl/modules/std)
   * [`angledLine`](kcl/angledLine)
   * [`angledLineThatIntersects`](kcl/angledLineThatIntersects)
   * [`appearance`](kcl/appearance)
@@ -78,7 +78,7 @@ layout: manual
   * [`union`](kcl/union)
   * [`xLine`](kcl/xLine)
   * [`yLine`](kcl/yLine)
-* **std::math**
+* [**std::math**](kcl/modules/std-math)
   * [`abs`](kcl/functions/std-math-abs)
   * [`acos`](kcl/functions/std-math-acos)
   * [`asin`](kcl/functions/std-math-asin)
@@ -100,15 +100,15 @@ layout: manual
   * [`sin`](kcl/functions/std-math-sin)
   * [`sqrt`](kcl/functions/std-math-sqrt)
   * [`tan`](kcl/functions/std-math-tan)
-* **std::sketch**
+* [**std::sketch**](kcl/modules/std-sketch)
   * [`circle`](kcl/functions/std-sketch-circle)
   * [`mirror2d`](kcl/functions/std-sketch-mirror2d)
-* **std::solid**
+* [**std::solid**](kcl/modules/std-solid)
   * [`chamfer`](kcl/functions/std-solid-chamfer)
   * [`fillet`](kcl/functions/std-solid-fillet)
   * [`hollow`](kcl/functions/std-solid-hollow)
   * [`shell`](kcl/functions/std-solid-shell)
-* **std::units**
+* [**std::units**](kcl/modules/std-units)
   * [`units::toCentimeters`](kcl/functions/std-units-toCentimeters)
   * [`units::toDegrees`](kcl/functions/std-units-toDegrees)
   * [`units::toFeet`](kcl/functions/std-units-toFeet)
@@ -120,7 +120,7 @@ layout: manual
 
 ### Constants
 
-* **std**
+* [**std**](kcl/modules/std)
   * [`END`](kcl/consts/std-END)
   * [`START`](kcl/consts/std-START)
   * [`X`](kcl/consts/std-X)
@@ -129,11 +129,11 @@ layout: manual
   * [`Y`](kcl/consts/std-Y)
   * [`YZ`](kcl/consts/std-YZ)
   * [`Z`](kcl/consts/std-Z)
-* **std::math**
+* [**std::math**](kcl/modules/std-math)
   * [`E`](kcl/consts/std-math-E)
   * [`PI`](kcl/consts/std-math-PI)
   * [`TAU`](kcl/consts/std-math-TAU)
-* **std::turns**
+* [**std::turns**](kcl/modules/std-turns)
   * [`turns::HALF_TURN`](kcl/consts/std-turns-HALF_TURN)
   * [`turns::QUARTER_TURN`](kcl/consts/std-turns-QUARTER_TURN)
   * [`turns::THREE_QUARTER_TURN`](kcl/consts/std-turns-THREE_QUARTER_TURN)
@@ -143,7 +143,7 @@ layout: manual
 
 See also the [types overview](types)
 
-* **Primitive types**
+* [**Primitive types**](kcl/modules/Primitive types)
   * [`End`](kcl/types#End)
   * [`ImportedGeometry`](kcl/types#ImportedGeometry)
   * [`Start`](kcl/types#Start)
@@ -154,7 +154,7 @@ See also the [types overview](types)
   * [`number`](kcl/types/std-types-number)
   * [`string`](kcl/types/std-types-string)
   * [`tag`](kcl/types/std-types-tag)
-* **std::types**
+* [**std::types**](kcl/modules/std-types)
   * [`Axis2d`](kcl/types/std-types-Axis2d)
   * [`Axis3d`](kcl/types/std-types-Axis3d)
   * [`Edge`](kcl/types/std-types-Edge)
