@@ -2499,10 +2499,12 @@ export const modelingMachine = setup({
         // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
           const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
+          const edgeCutArtifact = Array.from(
+            kclManager.artifactGraph.values()
+          ).find(
             (artifact) =>
               artifact.type === 'edgeCut' &&
-              (artifact).consumedEdgeId === firstSelection.artifact?.id
+              artifact.consumedEdgeId === firstSelection.artifact?.id
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
             return new Error(
@@ -2556,10 +2558,12 @@ export const modelingMachine = setup({
         // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
           const firstSelection = selection.graphSelections[0]
-          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
+          const edgeCutArtifact = Array.from(
+            kclManager.artifactGraph.values()
+          ).find(
             (artifact) =>
               artifact.type === 'edgeCut' &&
-              (artifact).consumedEdgeId === firstSelection.artifact?.id
+              artifact.consumedEdgeId === firstSelection.artifact?.id
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
             return new Error(
