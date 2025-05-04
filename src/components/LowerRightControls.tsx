@@ -1,6 +1,5 @@
 import { Link, type NavigateFunction, useLocation } from 'react-router-dom'
 import { Popover } from '@headlessui/react'
-import Tooltip from '@src/components/Tooltip'
 import {
   BillingRemaining,
   BillingRemainingMode,

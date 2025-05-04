@@ -119,7 +119,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
         {billingContext.error && <Error error={billingContext.error} />}
         {!isFlex && (
           <div className="font-mono">
-            <BillingCredit amount={billingContext.credits} />
+            <BillingCredit amount={billingContext.credits ?? 0} />
           </div>
         )}
         {10 !== Infinity && (

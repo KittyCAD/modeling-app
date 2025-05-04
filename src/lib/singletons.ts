@@ -141,16 +141,6 @@ const appMachine = setup({
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
   },
-  invoke: [
-    {
-      id: BILLING,
-      systemId: BILLING,
-      input: {
-        ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: VITE_KC_API_BASE_URL,
-      },
-    },
-  ],
   entry: [
     /**
      * We originally wanted to use spawnChild but the inferred type blew up. The more children we
@@ -185,6 +175,15 @@ const appMachine = setup({
           systemId: COMMAND_BAR,
           input: {
             commands: [],
+          },
+        }),
+      billingActor: ({spawn}) =>
+        spawn(BILLING, {
+          id: BILLING,
+          systemId: BILLING,
+          input: {
+            ...BILLING_CONTEXT_DEFAULTS,
+            urlUserService: VITE_KC_API_BASE_URL,
           },
         }),
     }),

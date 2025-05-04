@@ -5,8 +5,12 @@ import {
   joinOSPaths,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
-import { billingActor, systemIOActor, useSettings, useToken } from '@src/lib/singletons'
+import {
+  billingActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useHasListedProjects,

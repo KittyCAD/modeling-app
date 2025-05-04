@@ -25,7 +25,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import { codeManager, kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -35,6 +34,7 @@ import { reportRejection } from '@src/lib/trap'
 import {
   useToken,
   commandBarActor,
+  codeManager,
   kclManager,
   authActor,
   billingActor,
