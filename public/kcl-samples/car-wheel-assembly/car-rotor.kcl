@@ -2,7 +2,7 @@
 // A component of a disc brake system. It provides a surface for brake pads to press against, generating the friction needed to slow or stop the vehicle.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "parameters.kcl"

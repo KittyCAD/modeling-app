@@ -2,7 +2,7 @@
 // Use these spatulas for mixing, flipping, and scraping.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 flipperThickness = 3.5

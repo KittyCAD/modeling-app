@@ -1,7 +1,7 @@
 // Global parameters for the axial fan
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define Parameters
 export fanSize = 120

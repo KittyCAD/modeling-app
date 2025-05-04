@@ -2,7 +2,7 @@
 // A sports car wheel with a circular lug pattern and spokes.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import lugCount, lugSpacing, offset, backSpacing, wheelWidth, wheelDiameter, spokeCount, spokeGap, spokeAngle, spokeThickness from "parameters.kcl"

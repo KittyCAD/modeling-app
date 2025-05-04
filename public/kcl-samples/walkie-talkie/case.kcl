@@ -2,7 +2,7 @@
 // The plastic case for the front of the walkie talkie
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters and Zoo logo
 import width, height, chamferLength, offset, screenWidth, screenHeight, screenYPosition, screenDepth, speakerBoxWidth, speakerBoxHeight, squareHoleSideLength, caseTolerance from "parameters.kcl"
