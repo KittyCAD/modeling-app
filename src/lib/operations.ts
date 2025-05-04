@@ -192,15 +192,6 @@ const prepareToEditEdgeTreatment: PrepareToEditCallback = async ({
     kclManager.ast,
     sourceRangeFromRust(operation.sourceRange)
   )
-  const isPipeExpression = nodeToEdit.some(
-    ([_, type]) => type === 'PipeExpression'
-  )
-  if (!isPipeExpression) {
-    return {
-      reason:
-        'Only chamfer and fillet in pipe expressions are supported for edits',
-    }
-  }
 
   let argDefaultValues:
     | ModelingCommandSchema['Chamfer']

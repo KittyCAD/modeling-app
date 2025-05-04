@@ -62,6 +62,7 @@ import type {
 import {
   EdgeTreatmentType,
   applyEdgeTreatmentToSelection,
+  deleteEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
@@ -96,6 +97,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  getArtifactOfTypes,
   getFaceCodeRef,
   getPathsFromPlaneArtifact,
 } from '@src/lang/std/artifactGraph'
@@ -2491,13 +2493,29 @@ export const modelingMachine = setup({
         }
 
         // Extract inputs
-        const ast = kclManager.ast
+        let ast = kclManager.ast
         const { nodeToEdit, selection, radius } = input
 
         // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
-          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
-          if (err(oldNodeDeletion)) return oldNodeDeletion
+          const firstSelection = selection.graphSelections[0]
+          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
+            (artifact) =>
+              artifact.type === 'edgeCut' &&
+              (artifact).consumedEdgeId === firstSelection.artifact?.id
+          )
+          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+            return new Error(
+              'Failed to retrieve edgeCut artifact from sweepEdge selection'
+            )
+          }
+          const updatedSelection = {
+            artifact: edgeCutArtifact,
+            codeRef: edgeCutArtifact.codeRef,
+          }
+          const deleteRes = await deleteEdgeTreatment(ast, updatedSelection)
+          if (err(deleteRes)) return deleteRes
+          ast = deleteRes
         }
 
         const parameters: FilletParameters = {
@@ -2653,13 +2671,29 @@ export const modelingMachine = setup({
         }
 
         // Extract inputs
-        const ast = kclManager.ast
+        let ast = kclManager.ast
         const { nodeToEdit, selection, length } = input
 
         // If this is an edit flow, first we're going to remove the old node
         if (nodeToEdit) {
-          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
-          if (err(oldNodeDeletion)) return oldNodeDeletion
+          const firstSelection = selection.graphSelections[0]
+          const edgeCutArtifact = Array.from(kclManager.artifactGraph.values()).find(
+            (artifact) =>
+              artifact.type === 'edgeCut' &&
+              (artifact).consumedEdgeId === firstSelection.artifact?.id
+          )
+          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+            return new Error(
+              'Failed to retrieve edgeCut artifact from sweepEdge selection'
+            )
+          }
+          const updatedSelection = {
+            artifact: edgeCutArtifact,
+            codeRef: edgeCutArtifact.codeRef,
+          }
+          const deleteRes = await deleteEdgeTreatment(ast, updatedSelection)
+          if (err(deleteRes)) return deleteRes
+          ast = deleteRes
         }
 
         const parameters: ChamferParameters = {
