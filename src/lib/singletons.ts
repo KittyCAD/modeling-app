@@ -141,6 +141,16 @@ const appMachine = setup({
     sceneInfra: sceneInfra,
     sceneEntitiesManager: sceneEntitiesManager,
   },
+  invoke: [
+    {
+      id: BILLING,
+      systemId: BILLING,
+      input: {
+        ...BILLING_CONTEXT_DEFAULTS,
+        urlUserService: VITE_KC_API_BASE_URL,
+      },
+    }
+  ],
   entry: [
     /**
      * We originally wanted to use spawnChild but the inferred type blew up. The more children we
@@ -175,15 +185,6 @@ const appMachine = setup({
           systemId: COMMAND_BAR,
           input: {
             commands: [],
-          },
-        }),
-      billingActor: ({ spawn }) =>
-        spawn(BILLING, {
-          id: BILLING,
-          systemId: BILLING,
-          input: {
-            ...BILLING_CONTEXT_DEFAULTS,
-            urlUserService: VITE_KC_API_BASE_URL,
           },
         }),
     }),
@@ -230,7 +231,7 @@ export const engineStreamActor =
 
 export const commandBarActor = appActor.getSnapshot().context.commandBarActor!
 
-export const billingActor = appActor.getSnapshot().context.billingActor!
+export const billingActor = appActor.system.get(BILLING)
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

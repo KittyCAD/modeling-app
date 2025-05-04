@@ -1,3 +1,5 @@
+import { Models } from '@kittycad/lib'
+import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
@@ -25,6 +27,11 @@ export interface BillingContext {
   urlUserService: string
 }
 
+export interface BillingUpdateEvent {
+  type: BillingTransition.Update
+  apiToken: string
+}
+
 export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   credits: undefined,
   allowance: undefined,
@@ -33,42 +40,41 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
 })
 
 export const toBillingSubscriptionName = (
-  str: string
+  target: string
 ): BillingSubscriptionName => {
-  return Object.values(BillingSubscriptionName).includes(str)
-    ? BillingSubscriptionName[str]
-    : BillingSubscriptionName.Unknown
+  return Object
+    .values(BillingSubscriptionName)
+    .find(item => item === target) ?? BillingSubscriptionName.Unknown
 }
 
 export const billingMachine = setup({
   types: {
     context: {} as BillingContext,
     input: {} as BillingContext,
+    events: {} as BillingUpdateEvent
   },
   actors: {
     [BillingTransition.Update]: fromPromise(
-      async ({ input }: { input: { context: BillingContext } }) => {
-        const billingOrError = await fetch(
+      async ({ input }: { input: { context: BillingContext, event: BillingUpdateEvent } }) => {
+        const billingOrError: Models['CustomerBalance_type'] | Error = await crossPlatformFetch(
           `${input.context.urlUserService}/user/payment/balance`,
-          { credentials: 'include' }
+          { method: 'GET' },
+          input.event.apiToken,
         )
-          .then((resp) =>
-            resp.ok ? resp.json() : new Error(resp.statusText || resp.status)
-          )
-          .catch((e) => new Error(e))
 
         if (billingOrError instanceof Error) {
-          return {
-            error: billingOrError,
-          }
+          return Promise.reject(billingOrError)
         }
 
-        const billing = billingOrError
+        const billing: Models['CustomerBalance_type'] = billingOrError
 
         const plan: BillingSubscriptionName = toBillingSubscriptionName(
-          billing.subscription_details.modeling_app.name
+          billing.subscription_details?.modeling_app.name ?? ""
         )
-        let credits = undefined
+
+        let credits =
+          Number(billing.monthly_credits_remaining) +
+          Number(billing.pre_pay_credits_remaining)
         let allowance = undefined
         switch (plan) {
           case BillingSubscriptionName.Pro:
@@ -76,15 +82,13 @@ export const billingMachine = setup({
             credits = Infinity
             break
           case BillingSubscriptionName.Free:
-            credits =
-              Number(dataBilling.monthly_credits_remaining) +
-              Number(billing.pre_pay_credits_remaining)
             // jess: this is monthly allowance. lee: but the name? jess: i know names computer science hard
             allowance = Number(
-              dataBilling.subscription_details.modeling_app
+              billing.subscription_details?.modeling_app
                 .pay_as_you_go_credits
             )
             break
+          // On unknown, we can still show the total credits (graceful degradation).
           case BillingSubscriptionName.Unknown:
             break
           default:
@@ -100,7 +104,7 @@ export const billingMachine = setup({
     ),
   },
 }).createMachine({
-  initial: BillingState.Updating,
+  initial: BillingState.Waiting,
   context: (args) => args.input,
   states: {
     [BillingState.Waiting]: {
@@ -113,7 +117,10 @@ export const billingMachine = setup({
     [BillingState.Updating]: {
       invoke: {
         src: BillingTransition.Update,
-        input: ({ context }) => ({ context }),
+        input: (args: { context: BillingContext, event: BillingUpdateEvent }) => ({
+          context: args.context,
+          event: args.event,
+        }),
         onDone: [
           {
             target: BillingState.Waiting,
@@ -125,7 +132,8 @@ export const billingMachine = setup({
         onError: [
           {
             target: BillingState.Waiting,
-            actions: assign(({ event }) => event.output),
+            // Yep, this is hard to follow. XState, why!
+            actions: assign({ error: ({ event }) => event.error as Error }),
           },
         ],
       },

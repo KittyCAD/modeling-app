@@ -8,7 +8,8 @@ import { CREATE_FILE_URL_PARAM } from '@src/lib/constants'
 import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { useNavigate } from 'react-router-dom'
-import { useSettings, useToken } from '@src/lib/singletons'
+import { billingActor, useSettings, useToken } from '@src/lib/singletons'
+import { BillingTransition } from '@src/machines/billingMachine'
 
 export function SystemIOMachineLogicListenerWeb() {
   const clearURLParams = useClearURLParams()
@@ -52,7 +53,11 @@ export function SystemIOMachineLogicListenerWeb() {
       token,
       isProjectNew,
       settings: { highlightEdges: settings.modeling.highlightEdges.current },
-    }).catch(reportRejection)
+    })
+    .then(() => {
+      billingActor.send({ type: BillingTransition.Update, apiToken: token })
+    })
+    .catch(reportRejection)
   }, [requestedTextToCadGeneration])
 
   useClearQueryParams()

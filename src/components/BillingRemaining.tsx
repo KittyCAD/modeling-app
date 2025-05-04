@@ -1,8 +1,9 @@
+import { Spinner } from '@src/components/Spinner'
 import { useSelector } from '@xstate/react'
 import { useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { billingActor } from '@src/lib/singletons'
+import type { BillingActor } from '@src/machines/billingMachine'
 
 export enum BillingRemainingMode {
   ProgressBarFixed,
@@ -10,7 +11,8 @@ export enum BillingRemainingMode {
 }
 
 export interface BillingRemainingProps {
-  mode: BillingRemainingMode
+  mode: BillingRemainingMode,
+  billingActor: BillingActor,
 }
 
 const Error = (props: { error: Error }) => {
@@ -56,17 +58,17 @@ const ProgressBar = (props: { max: number; value: number }) => {
 
   return (
     <div
-      className="rounded w-full"
+      className="rounded w-full border-ml-black bg-ml-black"
       style={{
         height: 6,
-        backgroundColor: 'transparent',
-        border: '1px solid black',
+        borderWidth: '1px',
+        borderStyle: 'solid',
       }}
     >
       <div
+        className="bg-ml-green"
         style={{
-          backgroundColor: 'black',
-          width: (ratio * 100).toFixed(2) + '%',
+          width: Math.min(100, (ratio * 100)).toFixed(2) + '%',
           height: '100%',
           borderTopRightRadius: 4,
           borderBottomRightRadius: 4,
@@ -78,23 +80,23 @@ const ProgressBar = (props: { max: number; value: number }) => {
 
 const BillingCredit = (props: { amount: number }) => {
   return props.amount === Infinity ? (
-    <CustomIcon name="booleanUnion" className="w-5 h-5" />
+    <CustomIcon name="infinity" className="w-5 h-5" />
   ) : Number.isNaN(props.amount) || props.amount === undefined ? (
-    '?'
+    <Spinner className="text-inherit w-4 h-4" />
   ) : (
     Math.max(0, Math.trunc(props.amount))
   )
 }
 
 export const BillingRemaining = (props: BillingRemainingProps) => {
-  const billingContext = useSelector(billingActor, ({ context }) => context)
+  const billingContext = useSelector(props.billingActor, ({ context }) => context)
 
   const isFlex = props.mode === BillingRemainingMode.ProgressBarStretch
   const cssWrapper = [
+    'bg-ml-green',
     'select-none',
     'cursor-pointer',
     'py-1',
-    'px-2',
     'rounded',
     '!no-underline',
     'font-semibold',
@@ -106,27 +108,26 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
   return (
     <div
       data-testid="billing-remaining"
-      style={{ backgroundColor: '#29FFA4' }}
-      className={[isFlex ? 'flex flex-col' : ''].concat(cssWrapper).join(' ')}
+      className={[isFlex ? 'flex flex-col gap-1' : 'px-2'].concat(cssWrapper).join(' ')}
     >
       <div className="flex flex-row gap-2 items-center">
         {billingContext.error && <Error error={billingContext.error} />}
-        <BillingCredit amount={billingContext.credits} />
+        { !isFlex && <div className="font-mono"><BillingCredit amount={billingContext.credits} /></div> }
         {10 !== Infinity && (
           <div className={[isFlex ? 'flex-grow' : 'w-16'].join(' ')}>
             <ProgressBar
-              max={billingContext.allowance}
-              value={billingContext.credits}
+              max={billingContext.allowance ?? 1}
+              value={billingContext.credits ?? 0}
             />
           </div>
         )}
       </div>
       {isFlex && (
-        <div>
+        <div className="flex flex-row gap-1">
           {billingContext.credits ? (
             <>{billingContext.credits} credits remaining this month</>
           ) : (
-            <>Unable to fetch remaining credits</>
+            <><Spinner className="text-inherit w-4 h-4" /> <span>Fetching remaining credits...</span></>
           )}
         </div>
       )}

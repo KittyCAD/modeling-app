@@ -32,8 +32,8 @@ import {
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { authActor, systemIOActor, useSettings } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import { useToken, commandBarActor, kclManager, authActor, billingActor, systemIOActor, useSettings } from '@src/lib/singletons'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,
@@ -61,12 +61,14 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const apiToken = useToken()
 
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
       window.electron.createHomePageMenu().catch(reportRejection)
     }
+    billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
@@ -333,7 +335,7 @@ const Home = () => {
           </ul>
           <ul className="flex flex-col">
             <li className="contents">
-              <BillingDialog />
+              <BillingDialog billingActor={billingActor} />
             </li>
             <li className="contents">
               <ActionButton
