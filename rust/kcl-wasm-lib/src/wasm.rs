@@ -65,6 +65,7 @@ pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, Js
 pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, JsError> {
     console_error_panic_hook::set_once();
 
+    // ts-rs can't handle tuple types, so it mashes all of these types together.
     if let Ok(unit_len) = serde_json::from_str::<UnitLen>(ty_json) {
         let ty = NumericType::Known(UnitType::Length(unit_len));
         return Ok(kcl_lib::pretty::human_display_number(value, ty));

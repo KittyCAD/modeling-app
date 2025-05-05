@@ -50,6 +50,7 @@ import {
   format_number_literal,
   get_kcl_version,
   get_tangential_arc_to_info,
+  human_display_number,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
   kcl_lint,
@@ -68,7 +69,6 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
-import { human_display_number } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
