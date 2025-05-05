@@ -3,7 +3,7 @@ import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
 
-export enum BillingSubscriptionName {
+export enum BillingSubscription {
   Free = 'free',
   Pro = 'pro',
   Enterprise = 'enterprise',
@@ -39,12 +39,12 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   urlUserService: '',
 })
 
-export const toBillingSubscriptionName = (
+export const toBillingSubscription = (
   target: string
-): BillingSubscriptionName => {
+): BillingSubscription => {
   return (
-    Object.values(BillingSubscriptionName).find((item) => item === target) ??
-    BillingSubscriptionName.Unknown
+    Object.values(BillingSubscription).find((item) => item === target) ??
+    BillingSubscription.Unknown
   )
 }
 
@@ -69,35 +69,41 @@ export const billingMachine = setup({
         if (billingOrError instanceof Error) {
           return Promise.reject(billingOrError)
         }
-
         const billing: Models['CustomerBalance_type'] = billingOrError
 
-        const plan: BillingSubscriptionName = toBillingSubscriptionName(
-          billing.subscription_details?.modeling_app.name ?? ''
+        const orgOrError: Models['Org_type'] | Error =
+          await crossPlatformFetch(
+            `${input.context.urlUserService}/org`,
+            { method: 'GET' },
+            input.event.apiToken
+          )
+
+        const plan: BillingSubscription = toBillingSubscription(
+          orgOrError,
+          billing,
         )
 
         let credits =
-          Number(billing.monthly_credits_remaining) +
-          Number(billing.pre_pay_credits_remaining)
+          Number(billing.monthly_api_credits_remaining) +
+          Number(billing.stable_api_credits_remaining)
         let allowance = undefined
         switch (plan) {
-          case BillingSubscriptionName.Pro:
-          case BillingSubscriptionName.Enterprise:
+          case BillingSubscription.Pro:
+          case BillingSubscription.Enterprise:
             credits = Infinity
             break
-          case BillingSubscriptionName.Free:
+          case BillingSubscription.Free:
             // jess: this is monthly allowance. lee: but the name? jess: i know names computer science hard
             allowance = Number(
-              billing.subscription_details?.modeling_app.pay_as_you_go_credits
+              billing.subscription_details?.modeling_app.monthly_pay_as_you_go_api_credits
             )
             break
           // On unknown, we can still show the total credits (graceful degradation).
-          case BillingSubscriptionName.Unknown:
+          case BillingSubscription.Unknown:
             break
           default:
             const _exh: never = plan
         }
-
         return {
           error: undefined,
           credits,

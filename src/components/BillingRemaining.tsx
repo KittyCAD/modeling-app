@@ -118,9 +118,11 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
       <div className="flex flex-row gap-2 items-center">
         {billingContext.error && <Error error={billingContext.error} />}
         {!isFlex && (
-          <div className="font-mono">
-            <BillingCredit amount={billingContext.credits ?? 0} />
-          </div>
+          billingContext.credits
+          ? <div className="font-mono" data-testid="billing-credits">
+              <BillingCredit amount={billingContext.credits} />
+            </div>
+          : <Spinner className="text-inherit w-4 h-4" />
         )}
         {10 !== Infinity && (
           <div className={[isFlex ? 'flex-grow' : 'w-16'].join(' ')}>

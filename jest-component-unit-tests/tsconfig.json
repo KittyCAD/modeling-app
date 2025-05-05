@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "noErrorTruncation": true,
+    "baseUrl": "../../",
+    "paths": {
+      "@kittycad/codemirror-lsp-client": [
+        "./packages/codemirror-lsp-client/src/index.ts"
+      ],
+      "@kittycad/codemirror-lang-kcl": [
+        "./packages/codemirror-lang-kcl/src/index.ts"
+      ],
+      "@rust/*": ["./rust/*"],
+      "@e2e/*": ["./e2e/*"],
+      "@src/*": ["./src/*"],
+      "@public/*": ["./public/*"],
+      "@root/*": ["./*"]
+    },
+    "target": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "composite": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx"
+  }
+}
