@@ -1589,11 +1589,11 @@ extrude001 = extrude(profile001, length = 100)
       cmdBar,
     }) => {
       const initialCode = `sketch001 = startSketchOn(XZ)
-    |> circle(center = [0, 0], radius = 30)
-    plane001 = offsetPlane(XZ, offset = 50)
-    sketch002 = startSketchOn(plane001)
-    |> circle(center = [0, 0], radius = 20)
-`
+  |> circle(center = [0, 0], radius = 30)
+plane001 = offsetPlane(XZ, offset = 50)
+sketch002 = startSketchOn(plane001)
+  |> circle(center = [0, 0], radius = 20)
+      `
       await context.addInitScript((initialCode) => {
         localStorage.setItem('persistCode', initialCode)
       }, initialCode)
@@ -1637,6 +1637,12 @@ extrude001 = extrude(profile001, length = 100)
           })
           await selectSketches()
           await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: { Sketches: '2 faces' },
+            commandName: 'Loft',
+          })
+          await cmdBar.submit()
         })
       } else {
         await test.step(`Preselect the two sketches`, async () => {
@@ -1645,7 +1651,21 @@ extrude001 = extrude(profile001, length = 100)
 
         await test.step(`Go through the command bar flow with preselected sketches`, async () => {
           await toolbar.loftButton.click()
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'sketches',
+            currentArgValue: '',
+            headerArguments: { Sketches: '' },
+            highlightedHeaderArg: 'sketches',
+            commandName: 'Loft',
+          })
           await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: { Sketches: '2 faces' },
+            commandName: 'Loft',
+          })
+          await cmdBar.submit()
         })
       }
 

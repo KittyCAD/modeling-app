@@ -338,10 +338,13 @@ function createPathToNode(
     [modifiedAst.body.length - 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
   ]
   if (toFirstKwarg) {
-    pathToCall.push([argIndex, ARG_INDEX_FIELD], ['arg', LABELED_ARG_FIELD])
+    pathToCall.push(
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD]
+    )
   }
 
   return pathToCall
