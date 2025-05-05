@@ -918,7 +918,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_fillet() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(fillet_fn) = data.into_iter().find(|d| d.name() == "fillet").unwrap() else {
+        let DocData::Fn(fillet_fn) = data.find_by_name("fillet").unwrap() else {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
@@ -946,7 +946,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_revolve() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+        let DocData::Fn(revolve_fn) = data.find_by_name("revolve").unwrap() else {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
@@ -956,7 +956,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_circle() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(circle_fn) = data.into_iter().find(|d| d.name() == "circle").unwrap() else {
+        let DocData::Fn(circle_fn) = data.find_by_name("circle").unwrap() else {
             panic!();
         };
         let snippet = circle_fn.to_autocomplete_snippet();
@@ -1027,7 +1027,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_helix() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+        let DocData::Fn(helix_fn) = data.find_by_name("helix").unwrap() else {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
