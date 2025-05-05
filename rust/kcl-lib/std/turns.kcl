@@ -1,4 +1,5 @@
 @no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 export ZERO = 0
 export QUARTER_TURN = 90deg
