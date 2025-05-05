@@ -13,6 +13,7 @@ import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 const prependRoutes =
   (routesObject: Record<string, string>) => (prepend: string) => {
@@ -214,4 +215,9 @@ export function desktopSafePathSplit(path: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
+}
+
+export function localModuleSafePathSplit(path: string) {
+  const modulePathSafeSep = '/'
+  return path.split(modulePathSafeSep)
 }
