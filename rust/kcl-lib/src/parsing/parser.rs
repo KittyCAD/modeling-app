@@ -529,10 +529,15 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
+                let suffix = token.numeric_suffix();
+                if let NumericSuffix::Unknown = suffix {
+                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                }
+
                 Ok((
                     LiteralValue::Number {
                         value,
-                        suffix: token.numeric_suffix(),
+                        suffix,
                     },
                     token,
                 ))
@@ -4479,6 +4484,14 @@ export fn cos(num: number(rad)): number(_) {}"#;
     fn warn_late_settings() {
         let some_program_string = r#"foo = 42
 @settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
+    fn warn_unknown_suffix() {
+        let some_program_string = r#"foo = 42_?
 "#;
         let (_, errs) = assert_no_err(some_program_string);
         assert_eq!(errs.len(), 1, "{errs:#?}");
