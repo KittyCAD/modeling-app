@@ -52,7 +52,10 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         //   padding: 0.2,
         // })
 
-        await engineStreamZoomToFit({ engineCommandManager: input.rootContext.engineCommandManager, padding: 0.2 })
+        await engineStreamZoomToFit({
+          engineCommandManager: input.rootContext.engineCommandManager,
+          padding: 0.2,
+        })
 
         return {
           message: 'File overwritten successfully',
