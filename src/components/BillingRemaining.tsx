@@ -66,6 +66,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
       }}
     >
       <div
+        data-testid="billing-remaining-progress-bar-inner"
         className="bg-ml-green"
         style={{
           width: Math.min(100, ratio * 100).toFixed(2) + '%',
@@ -80,7 +81,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
 
 const BillingCredit = (props: { amount: number }) => {
   return props.amount === Infinity ? (
-    <CustomIcon name="infinity" className="w-5 h-5" />
+    <CustomIcon data-testid="infinity" name="infinity" className="w-5 h-5" />
   ) : Number.isNaN(props.amount) || props.amount === undefined ? (
     <Spinner className="text-inherit w-4 h-4" />
   ) : (
@@ -125,7 +126,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
           ) : (
             <Spinner className="text-inherit w-4 h-4" />
           ))}
-        {10 !== Infinity && (
+        {billingContext.credits !== Infinity && (
           <div className={[isFlex ? 'flex-grow' : 'w-16'].join(' ')}>
             <ProgressBar
               max={billingContext.allowance ?? 1}

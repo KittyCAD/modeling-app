@@ -135,6 +135,8 @@ export const revolveAxisValidator = async ({
         target: sketchSelection,
         // Gotcha: Playwright will fail with larger tolerances, need to use a smaller one.
         tolerance: 1e-7,
+        // WARNING: I'm not sure this is what it should be.
+        opposite: '',
       },
     })
   }

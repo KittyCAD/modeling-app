@@ -1,14 +1,7 @@
-import { Models } from '@kittycad/lib'
+import type { Models } from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
-
-export enum BillingSubscription {
-  Free = 'free',
-  Pro = 'pro',
-  Enterprise = 'enterprise',
-  Unknown = 'unknown',
-}
 
 export enum BillingState {
   Updating = 'updating',
@@ -39,13 +32,6 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   urlUserService: '',
 })
 
-export const toBillingSubscription = (target: string): BillingSubscription => {
-  return (
-    Object.values(BillingSubscription).find((item) => item === target) ??
-    BillingSubscription.Unknown
-  )
-}
-
 export const billingMachine = setup({
   types: {
     context: {} as BillingContext,
@@ -57,51 +43,62 @@ export const billingMachine = setup({
       async ({
         input,
       }: { input: { context: BillingContext; event: BillingUpdateEvent } }) => {
-        const billingOrError: Models['CustomerBalance_type'] | Error =
+        const billingOrError: Models['CustomerBalance_type'] | number | Error =
           await crossPlatformFetch(
             `${input.context.urlUserService}/user/payment/balance`,
             { method: 'GET' },
             input.event.apiToken
           )
 
-        if (billingOrError instanceof Error) {
+        if (
+          typeof billingOrError === 'number' ||
+          billingOrError instanceof Error
+        ) {
           return Promise.reject(billingOrError)
         }
         const billing: Models['CustomerBalance_type'] = billingOrError
 
-        const orgOrError: Models['Org_type'] | Error = await crossPlatformFetch(
-          `${input.context.urlUserService}/org`,
+        const subscriptionsOrError:
+          | Models['ZooProductSubscriptions_type']
+          | number
+          | Error = await crossPlatformFetch(
+          `${input.context.urlUserService}/user/payment/subscriptions`,
           { method: 'GET' },
           input.event.apiToken
         )
 
-        const plan: BillingSubscription = toBillingSubscription(
-          orgOrError,
-          billing
-        )
+        const orgOrError: Models['Org_type'] | number | Error =
+          await crossPlatformFetch(
+            `${input.context.urlUserService}/org`,
+            { method: 'GET' },
+            input.event.apiToken
+          )
 
         let credits =
           Number(billing.monthly_api_credits_remaining) +
           Number(billing.stable_api_credits_remaining)
         let allowance = undefined
-        switch (plan) {
-          case BillingSubscription.Pro:
-          case BillingSubscription.Enterprise:
+
+        // If user is part of an org, the endpoint will return data.
+        if (typeof orgOrError !== 'number' && !(orgOrError instanceof Error)) {
+          credits = Infinity
+          // Otherwise they are on a Pro or Free subscription
+        } else if (
+          typeof subscriptionsOrError !== 'number' &&
+          !(subscriptionsOrError instanceof Error)
+        ) {
+          const subscriptions: Models['ZooProductSubscriptions_type'] =
+            subscriptionsOrError
+          if (subscriptions.modeling_app.name === 'pro') {
             credits = Infinity
-            break
-          case BillingSubscription.Free:
-            // jess: this is monthly allowance. lee: but the name? jess: i know names computer science hard
+          } else {
             allowance = Number(
-              billing.subscription_details?.modeling_app
-                .monthly_pay_as_you_go_api_credits
+              subscriptions.modeling_app.monthly_pay_as_you_go_api_credits
             )
-            break
-          // On unknown, we can still show the total credits (graceful degradation).
-          case BillingSubscription.Unknown:
-            break
-          default:
-            const _exh: never = plan
+          }
         }
+        // If nothing matches, we show a credit total.
+
         return {
           error: undefined,
           credits,
