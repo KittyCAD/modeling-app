@@ -13,6 +13,7 @@ import {
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { getStringAfterLastSeparator } from '../paths'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -148,7 +149,7 @@ export function createApplicationCommands({
             .catch(reportError)
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
-          const fileNameWithExtension = clonePath.split('/').pop()
+          const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
             const text = await window.electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
