@@ -102,6 +102,12 @@ function CommandComboBox({
                   </p>
                 )}
               </div>
+              {option.status === 'experimental' && (
+                <div className="text-xs flex items-center justify-center gap-1 text-primary">
+                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <span>Experimental</span>
+                </div>
+              )}
             </Combobox.Option>
           ))}
         </Combobox.Options>
