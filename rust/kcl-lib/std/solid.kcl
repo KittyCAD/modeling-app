@@ -1,5 +1,5 @@
 @no_std
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 import Face from "std::types"
 

@@ -4,13 +4,12 @@ import toast from 'react-hot-toast'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import { addModuleImport } from '@src/lang/modifyAst'
 import {
-  changeKclSettings,
+  changeDefaultUnits,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
@@ -66,13 +65,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeKclSettings(codeManager.code, {
-            defaultLengthUnits: unitLengthToUnitLen(data.unit),
-            defaultAngleUnits: unitAngleToUnitAng(
-              kclManager.fileSettings.defaultAngleUnit ??
-                DEFAULT_DEFAULT_ANGLE_UNIT
-            ),
-          })
+          const newCode = changeDefaultUnits(
+            codeManager.code,
+            unitLengthToUnitLen(data.unit),
+            unitAngleToUnitAng(undefined)
+          )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
