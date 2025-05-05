@@ -496,11 +496,11 @@ test.describe('Command bar tests', () => {
     })
   })
 
-  test(`Zoom to fit to shared model on web`, async ({
-    page,
-    scene,
-    cmdBar,
-  }) => {
+  test(`Zoom to fit to shared model on web`, async ({ page, scene }) => {
+    if (process.env.PLATFORM !== 'web') {
+      // This test is web-only
+      return
+    }
     await test.step(`Prepare and navigate to home page with query params`, async () => {
       // a quad in the top left corner of the XZ plane (which is out of the current view)
       const code = `sketch001 = startSketchOn(XZ)
