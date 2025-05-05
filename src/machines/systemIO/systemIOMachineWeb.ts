@@ -43,8 +43,9 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         await input.rootContext.kclManager.executeCode()
 
         // TODO wait added for the test to work
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        //await new Promise((resolve) => setTimeout(resolve, 2000))
 
+        await input.rootContext.kclManager.hidePlanes(true) // See: http://github.com/KittyCAD/modeling-app/issues/6545
         await input.rootContext.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
