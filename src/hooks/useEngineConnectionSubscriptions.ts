@@ -34,6 +34,7 @@ import type {
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { desktopSafePathSplit } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -207,7 +208,7 @@ export function useEngineConnectionSubscriptions() {
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = importDetails.value.split('/')
+                    const paths = desktopSafePathSplit(importDetails.value)
                     const fileName = paths[paths.length - 1]
                     showSketchOnImportToast(fileName)
                   } else if (

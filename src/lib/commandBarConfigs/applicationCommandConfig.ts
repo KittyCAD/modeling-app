@@ -13,7 +13,7 @@ import {
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
-import { getStringAfterLastSeparator } from '../paths'
+import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -116,7 +116,8 @@ export function createApplicationCommands({
           : requestedProjectName
 
         if (data.source === 'kcl-samples' && data.sample) {
-          const pathParts = data.sample.split('/')
+          // This is web safe because the values are taken from manifest.json not from the disk when selecting
+          const pathParts = webSafePathSplit(data.sample)
           const projectPathPart = pathParts[0]
           const primaryKclFile = pathParts[1]
           const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT

@@ -87,6 +87,10 @@
       {
         "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
         "message": "Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings."
+      },
+      {
+        "selector": "CallExpression[callee.property.name='split'] > Literal[value='/']",
+        "message": "Avoid using split with '/'."
       }
     ],
     "no-restricted-imports": [

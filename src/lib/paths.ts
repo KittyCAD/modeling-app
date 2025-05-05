@@ -186,3 +186,21 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
 export function getStringAfterLastSeparator(path: string): string {
   return path.split(window.electron.sep).pop() || ''
 }
+
+/**
+ * Use this for only web related paths not paths in OS or on disk
+ * e.g. document.location.pathname
+ */
+export function webSafePathSplit(path: string): string[] {
+  const webSafeSep = '/'
+  return path.split(webSafeSep)
+}
+
+/**
+ * Splits any paths safely based on the runtime
+ */
+export function desktopSafePathSplit(path: string): string[] {
+  return isDesktop()
+    ? path.split(`${window.electron.sep}`)
+    : webSafePathSplit(path)
+}
