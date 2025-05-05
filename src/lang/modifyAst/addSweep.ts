@@ -15,7 +15,7 @@ import {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   getNodeFromPath,
-  getProfileExpressionsFromSelection,
+  getSketchExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -52,7 +52,7 @@ export function addExtrude({
     }
   | Error {
   const modifiedAst = structuredClone(ast)
-  const sketchesExprList = getProfileExpressionsFromSelection(
+  const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
     nodeToEdit
@@ -119,7 +119,7 @@ export function addSweep({
     }
   | Error {
   const modifiedAst = structuredClone(ast)
-  const sketchesExprList = getProfileExpressionsFromSelection(
+  const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
     nodeToEdit
@@ -194,10 +194,7 @@ export function addLoft({
     }
   | Error {
   const modifiedAst = structuredClone(ast)
-  const sketchesExprList = getProfileExpressionsFromSelection(
-    sketches,
-    modifiedAst
-  )
+  const sketchesExprList = getSketchExprsFromSelection(sketches, modifiedAst)
   if (err(sketchesExprList)) {
     return sketchesExprList
   }
@@ -238,7 +235,7 @@ export function addRevolve({
     }
   | Error {
   const modifiedAst = structuredClone(ast)
-  const sketchesExprList = getProfileExpressionsFromSelection(
+  const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
     nodeToEdit

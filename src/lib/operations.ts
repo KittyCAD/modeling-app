@@ -1,7 +1,11 @@
 import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
-import { getNodeFromPath, findPipesWithImportAlias } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  findPipesWithImportAlias,
+  getSketchSelectionsFromOperation,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
@@ -57,70 +61,23 @@ interface StdLibCallInfo {
  * Gather up the argument values for the Extrude command
  * to be used in the command bar edit flow.
  */
-const prepareToEditExtrude: PrepareToEditCallback = async ({
-  operation,
-  artifact,
-}) => {
+const prepareToEditExtrude: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Extrude',
     groupId: 'modeling',
   }
-  if (
-    !artifact ||
-    !('pathId' in artifact) ||
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
-  ) {
-    return { reason: 'Wrong operation type or artifact' }
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  let sketches: OpKclValue[] = []
-  if (operation.unlabeledArg?.value.type === 'Sketch') {
-    sketches = [operation.unlabeledArg.value]
-  } else if (operation.unlabeledArg?.value.type === 'Array') {
-    sketches = operation.unlabeledArg.value.value
-  } else {
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
     return { reason: "Couldn't retrieve sketches" }
   }
-
-  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    if (sketch.type !== 'Sketch') {
-      return []
-    }
-
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: sketch.value.artifactId,
-        types: ['path'],
-      },
-      kclManager.artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    ) {
-      return []
-    }
-
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return []
-    }
-
-    return {
-      artifact: solid2DArtifact,
-      codeRef: pathArtifact.codeRef,
-    }
-  })
 
   // 2. Convert the length argument from a string to a KCL expression
   const length = await stringToKclExpression(
@@ -133,21 +90,17 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     return { reason: "Couldn't retrieve length argument" }
   }
 
-  // 3. Assemble the default argument values for the Extrude command,
-  // with `nodeToEdit` set, which will let the Extrude actor know
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Extrude'] = {
-    sketches: {
-      graphSelections,
-      otherSelections: [],
-    },
+    sketches,
     length,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
-  console.log('argDefaultValues', argDefaultValues)
   return {
     ...baseCommand,
     argDefaultValues,
@@ -467,71 +420,29 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditSweep: PrepareToEditCallback = async ({
-  artifact,
-  operation,
-}) => {
+/**
+ * Gather up the argument values for the Revolve command
+ * to be used in the command bar edit flow.
+ */
+const prepareToEditSweep: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Sweep',
     groupId: 'modeling',
   }
-  if (
-    !artifact ||
-    !('pathId' in artifact) ||
-    (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall')
-  ) {
-    return { reason: 'Wrong operation type or artifact' }
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+    return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled arguments to solid2d selection
-  let sketches: OpKclValue[] = []
-  if (operation.unlabeledArg?.value.type === 'Sketch') {
-    sketches = [operation.unlabeledArg.value]
-  } else if (operation.unlabeledArg?.value.type === 'Array') {
-    sketches = operation.unlabeledArg.value.value
-  } else {
+  // 1. Map the unlabeled arguments to solid2d selections
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
     return { reason: "Couldn't retrieve sketches" }
   }
 
-  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    if (sketch.type !== 'Sketch') {
-      return []
-    }
-
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: sketch.value.artifactId,
-        types: ['path'],
-      },
-      kclManager.artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    ) {
-      return []
-    }
-
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return []
-    }
-
-    return {
-      artifact: solid2DArtifact,
-      codeRef: pathArtifact.codeRef,
-    }
-  })
-
+  // 2. Prepare labeled arguments
   // Same roundabout but twice for 'path' aka trajectory: sketch -> path -> segment
   if (operation.labeledArgs.path?.value.type !== 'Sketch') {
     return { reason: "Couldn't retrieve trajectory argument" }
@@ -572,7 +483,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     otherSelections: [],
   }
 
-  // 2. Convert the sectional argument from a string to a KCL expression
+  // sectional argument from a string to a KCL expression
   let sectional: boolean | undefined
   if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
     sectional =
@@ -582,13 +493,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
-  // 3. Assemble the default argument values for the Sweep command,
-  // with `nodeToEdit` set to edit the node that corresponds to the StdLibCall.
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
+  // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Sweep'] = {
-    sketches: {
-      graphSelections,
-      otherSelections: [],
-    },
+    sketches,
     path,
     sectional,
     nodeToEdit: getNodePathFromSourceRange(
@@ -596,7 +505,6 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
-  console.log('argDefaultValues', argDefaultValues)
   return {
     ...baseCommand,
     argDefaultValues,
@@ -857,6 +765,10 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 }
 
+/**
+ * Gather up the argument values for the Revolve command
+ * to be used in the command bar edit flow.
+ */
 const prepareToEditRevolve: PrepareToEditCallback = async ({
   operation,
   artifact,
@@ -867,7 +779,6 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
   if (
     !artifact ||
-    !('pathId' in artifact) ||
     operation.type !== 'KclStdLibCall' ||
     !operation.labeledArgs
   ) {
@@ -875,53 +786,13 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
 
   // 1. Map the unlabeled arguments to solid2d selections
-  let sketches: OpKclValue[] = []
-  if (operation.unlabeledArg?.value.type === 'Sketch') {
-    sketches = [operation.unlabeledArg.value]
-  } else if (operation.unlabeledArg?.value.type === 'Array') {
-    sketches = operation.unlabeledArg.value.value
-  } else {
+  const sketches = getSketchSelectionsFromOperation(
+    operation,
+    kclManager.artifactGraph
+  )
+  if (err(sketches)) {
     return { reason: "Couldn't retrieve sketches" }
   }
-
-  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
-    // We have to go a little roundabout to get from the original artifact
-    // to the solid2DId that we need to pass to the Extrude command.
-    if (sketch.type !== 'Sketch') {
-      return []
-    }
-
-    const pathArtifact = getArtifactOfTypes(
-      {
-        key: sketch.value.artifactId,
-        types: ['path'],
-      },
-      kclManager.artifactGraph
-    )
-    if (
-      err(pathArtifact) ||
-      pathArtifact.type !== 'path' ||
-      !pathArtifact.solid2dId
-    ) {
-      return []
-    }
-
-    const solid2DArtifact = getArtifactOfTypes(
-      {
-        key: pathArtifact.solid2dId,
-        types: ['solid2d'],
-      },
-      kclManager.artifactGraph
-    )
-    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
-      return []
-    }
-
-    return {
-      artifact: solid2DArtifact,
-      codeRef: pathArtifact.codeRef,
-    }
-  })
 
   // 2. Prepare labeled arguments
   // axis options string arg
@@ -1016,24 +887,20 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
-  // Assemble the default argument values for the Offset Plane command,
-  // with `nodeToEdit` set, which will let the Offset Plane actor know
+  // 3. Assemble the default argument values for the command,
+  // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Revolve'] = {
+    sketches,
     axisOrEdge,
     axis,
     edge,
-    sketches: {
-      graphSelections,
-      otherSelections: [],
-    },
     angle,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,
       sourceRangeFromRust(operation.sourceRange)
     ),
   }
-  console.log('argDefaultValues', argDefaultValues)
   return {
     ...baseCommand,
     argDefaultValues,

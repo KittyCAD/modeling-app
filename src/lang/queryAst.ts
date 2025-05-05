@@ -6,7 +6,10 @@ import { createLocalName, createPipeSubstitution } from '@src/lang/create'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import {
+  codeRefFromRange,
+  getArtifactOfTypes,
+} from '@src/lang/std/artifactGraph'
 import { getArgForEnd } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
 import {
@@ -52,6 +55,7 @@ import { getAngle, isArray } from '@src/lib/utils'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1052,7 +1056,9 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
-export function getProfileExpressionsFromSelection(
+// Go from a selection of sketches to a list of KCL expressions that
+// can be used to create KCL sweep call declarations.
+export function getSketchExprsFromSelection(
   selection: Selections,
   ast: Node<Program>,
   nodeToEdit?: PathToNode
@@ -1098,6 +1104,75 @@ export function getProfileExpressionsFromSelection(
   }
 
   return sketches
+}
+
+// Go from the sketches argument in a KCL sweep call declaration
+// to a list of graph selections, useful for edit flows.
+// Somewhat of an inverse of getSketchExprsFromSelection.
+export function getSketchSelectionsFromOperation(
+  operation: Operation,
+  artifactGraph: ArtifactGraph
+): Error | Selections {
+  const error = new Error("Couldn't retrieve sketches from operation")
+  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+    return error
+  }
+
+  let sketches: OpKclValue[] = []
+  if (operation.unlabeledArg?.value.type === 'Sketch') {
+    sketches = [operation.unlabeledArg.value]
+  } else if (operation.unlabeledArg?.value.type === 'Array') {
+    sketches = operation.unlabeledArg.value.value
+  } else {
+    return error
+  }
+
+  const graphSelections: Selection[] = sketches.flatMap((sketch) => {
+    // We have to go a little roundabout to get from the original artifact
+    // to the solid2DId that we need to pass to the Extrude command.
+    if (sketch.type !== 'Sketch') {
+      return []
+    }
+
+    const pathArtifact = getArtifactOfTypes(
+      {
+        key: sketch.value.artifactId,
+        types: ['path'],
+      },
+      artifactGraph
+    )
+    if (
+      err(pathArtifact) ||
+      pathArtifact.type !== 'path' ||
+      !pathArtifact.solid2dId
+    ) {
+      return []
+    }
+
+    const solid2DArtifact = getArtifactOfTypes(
+      {
+        key: pathArtifact.solid2dId,
+        types: ['solid2d'],
+      },
+      artifactGraph
+    )
+    if (err(solid2DArtifact) || solid2DArtifact.type !== 'solid2d') {
+      return []
+    }
+
+    return {
+      artifact: solid2DArtifact,
+      codeRef: pathArtifact.codeRef,
+    }
+  })
+  if (graphSelections.length === 0) {
+    return error
+  }
+
+  return {
+    graphSelections,
+    otherSelections: [],
+  }
 }
 
 export function findImportNodeAndAlias(
