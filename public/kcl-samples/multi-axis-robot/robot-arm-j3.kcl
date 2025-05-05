@@ -1,7 +1,7 @@
 // J3 Robot Arm
 
 // Set Units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 import plane002, axisJ2, axisJ3C, axisJ4, axisJ2ArmLength, axisJ3CArmLength, axisJ3CArmWidth, axisJ3CArmThickness from "globals.kcl"
 

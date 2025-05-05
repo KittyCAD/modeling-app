@@ -2,7 +2,7 @@
 // A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 tableHeight = 850
