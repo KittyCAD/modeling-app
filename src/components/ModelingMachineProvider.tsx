@@ -1682,7 +1682,7 @@ export const ModelingMachineProvider = ({
                 if (
                   lastInPipe &&
                   Number(pathToProfile[1][0]) === indexToDelete &&
-                  lastInPipe.type === 'CallExpression' &&
+                  lastInPipe.type === 'CallExpressionKw' &&
                   lastInPipe.callee.type === 'Name' &&
                   lastInPipe.callee.name.name === 'arcTo'
                 ) {

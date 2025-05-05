@@ -516,7 +516,7 @@ impl Backend {
                             }
                             return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                         }
-                        crate::walk::Node::CallExpression(call_expr) => {
+                        crate::walk::Node::CallExpressionKw(call_expr) => {
                             let sr: SourceRange = (&call_expr.callee).into();
                             if sr.contains(source_range.start()) {
                                 let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;

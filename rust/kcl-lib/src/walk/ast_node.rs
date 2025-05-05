@@ -23,7 +23,6 @@ pub enum Node<'a> {
     Name(NodeRef<'a, types::Name>),
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
-    CallExpression(NodeRef<'a, types::CallExpression>),
     CallExpressionKw(NodeRef<'a, types::CallExpressionKw>),
     PipeExpression(NodeRef<'a, types::PipeExpression>),
     PipeSubstitution(NodeRef<'a, types::PipeSubstitution>),
@@ -64,7 +63,6 @@ impl Node<'_> {
             Node::Name(n) => n.digest,
             Node::BinaryExpression(n) => n.digest,
             Node::FunctionExpression(n) => n.digest,
-            Node::CallExpression(n) => n.digest,
             Node::CallExpressionKw(n) => n.digest,
             Node::PipeExpression(n) => n.digest,
             Node::PipeSubstitution(n) => n.digest,
@@ -109,7 +107,6 @@ impl Node<'_> {
             Node::Name(n) => *n as *const _ as *const (),
             Node::BinaryExpression(n) => *n as *const _ as *const (),
             Node::FunctionExpression(n) => *n as *const _ as *const (),
-            Node::CallExpression(n) => *n as *const _ as *const (),
             Node::CallExpressionKw(n) => *n as *const _ as *const (),
             Node::PipeExpression(n) => *n as *const _ as *const (),
             Node::PipeSubstitution(n) => *n as *const _ as *const (),
@@ -154,7 +151,6 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::Name(n) => SourceRange::from(*n),
             Node::BinaryExpression(n) => SourceRange::from(*n),
             Node::FunctionExpression(n) => SourceRange::from(*n),
-            Node::CallExpression(n) => SourceRange::from(*n),
             Node::CallExpressionKw(n) => SourceRange::from(*n),
             Node::PipeExpression(n) => SourceRange::from(*n),
             Node::PipeSubstitution(n) => SourceRange::from(*n),
@@ -199,7 +195,6 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
             types::Expr::Name(id) => id.as_ref().into(),
             types::Expr::BinaryExpression(be) => be.as_ref().into(),
             types::Expr::FunctionExpression(fe) => fe.as_ref().into(),
-            types::Expr::CallExpression(ce) => ce.as_ref().into(),
             types::Expr::CallExpressionKw(ce) => ce.as_ref().into(),
             types::Expr::PipeExpression(pe) => pe.as_ref().into(),
             types::Expr::PipeSubstitution(ps) => ps.as_ref().into(),
@@ -222,7 +217,6 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
             types::BinaryPart::Literal(lit) => lit.as_ref().into(),
             types::BinaryPart::Name(id) => id.as_ref().into(),
             types::BinaryPart::BinaryExpression(be) => be.as_ref().into(),
-            types::BinaryPart::CallExpression(ce) => ce.as_ref().into(),
             types::BinaryPart::CallExpressionKw(ce) => ce.as_ref().into(),
             types::BinaryPart::UnaryExpression(ue) => ue.as_ref().into(),
             types::BinaryPart::MemberExpression(me) => me.as_ref().into(),
@@ -282,7 +276,6 @@ impl_from!(Node, Identifier);
 impl_from!(Node, Name);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
-impl_from!(Node, CallExpression);
 impl_from!(Node, CallExpressionKw);
 impl_from!(Node, PipeExpression);
 impl_from!(Node, PipeSubstitution);

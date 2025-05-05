@@ -474,3 +474,79 @@ extrude(profile001, length = 100)
     result.first().unwrap();
     result.last().unwrap();
 }
+
+#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_multi_file_other_file_only_change() {
+    let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+    let other_file = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)
+"#
+        .to_string(),
+    );
+
+    let other_file2 = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)
+    |> translate(z = 100)
+"#
+        .to_string(),
+    );
+
+    let result = cache_test(
+        "multi_file_other_file_only_change",
+        vec![
+            Variation {
+                code,
+                other_files: vec![other_file],
+                settings: &Default::default(),
+            },
+            Variation {
+                code,
+                other_files: vec![other_file2],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let r1 = result.first().unwrap();
+    let r2 = result.last().unwrap();
+
+    assert!(r1.1 != r2.1, "The images should be different");
+    // Make sure the outcomes are different.
+    assert!(
+        r1.2.artifact_graph != r2.2.artifact_graph,
+        "The outcomes artifact graphs should be different"
+    );
+}

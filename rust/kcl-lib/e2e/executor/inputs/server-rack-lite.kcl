@@ -7,7 +7,7 @@ serverDepth = 31
 width = 21.53
 
 // simple caster model at each corner
-fn caster(originStart) {
+fn caster(@originStart) {
   plane001c = {
       origin = [
         -(3.543 - 2.756) / 2 + originStart[0],
@@ -29,22 +29,22 @@ fn caster(originStart) {
     |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2
-       ], radius= 8.8 / 2 / 25.4), %)
+       ], radius= 8.8 / 2 / 25.4))
     |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2
-       ], radius= 8.8 / 2 / 25.4), %)
+       ], radius= 8.8 / 2 / 25.4))
     |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2,
          (3.543 - 2.756) / 2 + 2.756
-       ], radius= 8.8 / 2 / 25.4), %)
+       ], radius= 8.8 / 2 / 25.4))
     |> subtract2d(tool = circle(center = [
          (3.543 - 2.756) / 2 + 2.756,
          (3.543 - 2.756) / 2 + 2.756
-       ], radius= 8.8 / 2 / 25.4), %)
+       ], radius= 8.8 / 2 / 25.4))
     |> extrude(length = -.25)
 
-  sketch002c = startSketchOn(sketch001c, face = 'START')
+  sketch002c = startSketchOn(sketch001c, face = START)
     |> startProfile(at = [-originStart[0], 2.2 + originStart[1]])
     |> arc(
          angle_start = 30,
@@ -450,10 +450,10 @@ sketch007 = startSketchOn(plane003)
   |> line(end = [-width + 1, -depth + serverDepth + 3.8])
   |> line(end = [1, 0])
   |> line(end = [0, -.75])
-  |> line([
+  |> line(end = [
        width - 2,
        depth - serverDepth - 5 + .6
-     ], %)
+     ])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude007 = extrude(sketch007, length = 1)
@@ -491,10 +491,10 @@ sketch007t = startSketchOn(plane004)
   |> line(end = [-width + 1, -depth + serverDepth + 3.8])
   |> line(end = [1, 0])
   |> line(end = [0, -.75])
-  |> line([
+  |> line(end = [
        width - 2,
        depth - serverDepth - 5 + .6
-     ], %)
+     ])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude007t = extrude(sketch007t, length = -1)
@@ -582,7 +582,7 @@ sketch003fl = startSketchOn(planeXYfl)
 extrude003fl = extrude(sketch003fl, length = railHeight * 1.75)
 
 // define slots
-sketch010fl = startSketchOn(extrude001fl, face = 'START')
+sketch010fl = startSketchOn(extrude001fl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + .81 - (.438 / 2)])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -600,7 +600,7 @@ sketch010fl = startSketchOn(extrude001fl, face = 'START')
 extrude010fl = extrude(sketch010fl, length = -thickness)
 
 // define slots
-sketch011fl = startSketchOn(extrude001fl, face = 'START')
+sketch011fl = startSketchOn(extrude001fl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + railHeight * 1.75 / 2 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -614,7 +614,7 @@ sketch011fl = startSketchOn(extrude001fl, face = 'START')
 extrude011fl = extrude(sketch011fl, length = -thickness)
 
 // define slots
-sketch012fl = startSketchOn(extrude001fl, face = 'START')
+sketch012fl = startSketchOn(extrude001fl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + railHeight * 1.75 - .81 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -694,7 +694,7 @@ sketch003fr = startSketchOn(planeXYfr)
 extrude003fr = extrude(sketch003fr, length = railHeight * 1.75)
 
 // define slots
-sketch010fr = startSketchOn(extrude001fr, face = 'START')
+sketch010fr = startSketchOn(extrude001fr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + .81 - (.438 / 2)])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -712,7 +712,7 @@ sketch010fr = startSketchOn(extrude001fr, face = 'START')
 extrude010fr = extrude(sketch010fr, length = -thickness)
 
 // define slots
-sketch011fr = startSketchOn(extrude001fr, face = 'START')
+sketch011fr = startSketchOn(extrude001fr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + railHeight * 1.75 / 2 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -726,7 +726,7 @@ sketch011fr = startSketchOn(extrude001fr, face = 'START')
 extrude011fr = extrude(sketch011fr, length = -thickness)
 
 // define slots
-sketch012fr = startSketchOn(extrude001fr, face = 'START')
+sketch012fr = startSketchOn(extrude001fr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0], originStart[2] + railHeight * 1.75 - .81 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -806,7 +806,7 @@ sketch003rr = startSketchOn(planeXYrr)
 extrude003rr = extrude(sketch003rr, length = railHeight * 1.75)
 
 // define slots
-sketch010rr = startSketchOn(extrude001rr, face = 'START')
+sketch010rr = startSketchOn(extrude001rr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth, originStart[2] + .81 - (.438 / 2)])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -824,7 +824,7 @@ sketch010rr = startSketchOn(extrude001rr, face = 'START')
 extrude010rr = extrude(sketch010rr, length = -thickness)
 
 // define slots
-sketch011rr = startSketchOn(extrude001rr, face = 'START')
+sketch011rr = startSketchOn(extrude001rr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth, originStart[2] + railHeight * 1.75 / 2 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -838,7 +838,7 @@ sketch011rr = startSketchOn(extrude001rr, face = 'START')
 extrude011rr = extrude(sketch011rr, length = -thickness)
 
 // define slots
-sketch012rr = startSketchOn(extrude001rr, face = 'START')
+sketch012rr = startSketchOn(extrude001rr, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] + 1.5 - serverDepth, originStart[2] + railHeight * 1.75 - .81 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -917,7 +917,7 @@ sketch003rl = startSketchOn(planeXYrl)
 extrude003rl = extrude(sketch003rl, length = railHeight * 1.75)
 
 // define slots
-sketch010rl = startSketchOn(extrude001rl, face = 'START')
+sketch010rl = startSketchOn(extrude001rl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5, originStart[2] + .81 - (.438 / 2)])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -935,7 +935,7 @@ sketch010rl = startSketchOn(extrude001rl, face = 'START')
 extrude010rl = extrude(sketch010rl, length = -thickness)
 
 // define slots
-sketch011rl = startSketchOn(extrude001rl, face = 'START')
+sketch011rl = startSketchOn(extrude001rl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5, originStart[2] + railHeight * 1.75 / 2 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -949,7 +949,7 @@ sketch011rl = startSketchOn(extrude001rl, face = 'START')
 extrude011rl = extrude(sketch011rl, length = -thickness)
 
 // define slots
-sketch012rl = startSketchOn(extrude001rl, face = 'START')
+sketch012rl = startSketchOn(extrude001rl, face = START)
   |> startProfile(at = [-1.12 + (.75 - .438) / 2 - originStart[0] - serverDepth + 1.5, originStart[2] + railHeight * 1.75 - .81 + .438 / 2])
   |> xLine(length = 0.75 - .438)
   |> tangentialArc(endAbsolute = [
@@ -967,7 +967,7 @@ sketch012rl = startSketchOn(extrude001rl, face = 'START')
 extrude012rl = extrude(sketch012rl, length = -thickness)
 
 // Define planes so the server can be moved
-fn streamServer(serverPos) {
+fn streamServer(@serverPos) {
   planeXYs = {
       origin = [0, 0 + 2, 4.114 + 1 + serverPos * 1.75],
       xAxis = [1.0, 0.0, 0.0],

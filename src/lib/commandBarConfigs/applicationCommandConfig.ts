@@ -5,7 +5,11 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  IS_ML_EXPERIMENTAL,
+  ML_EXPERIMENTAL_MESSAGE,
+} from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
@@ -17,10 +21,11 @@ export function createApplicationCommands({
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    displayName: `Text to CAD`,
+    description: 'Generate parts from text prompts.',
+    displayName: 'Text to CAD',
     groupId: 'application',
     needsReview: false,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
@@ -81,6 +86,7 @@ export function createApplicationCommands({
       prompt: {
         inputType: 'text',
         required: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   }

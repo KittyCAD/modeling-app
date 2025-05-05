@@ -8,8 +8,8 @@ fn cube(center, size) {
     |> extrude(length = 2 * size)
 }
 
-part001 = cube([0, 0], 10)
-part002 = cube([7, 3], 5)
+part001 = cube(center = [0, 0], size = 10)
+part002 = cube(center = [7, 3], size = 5)
      |> translate(z = 1)
 
 fullPart = intersect([part001, part002])

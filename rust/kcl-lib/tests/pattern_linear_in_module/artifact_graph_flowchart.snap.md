@@ -1,31 +1,31 @@
 ```mermaid
 flowchart LR
   subgraph path3 [Path]
-    3["Path<br>[54, 89, 8]"]
-    5["Segment<br>[54, 89, 8]"]
+    3["Path<br>[54, 89, 1]"]
+    5["Segment<br>[54, 89, 1]"]
     7[Solid2d]
   end
   subgraph path4 [Path]
-    4["Path<br>[54, 89, 8]"]
-    6["Segment<br>[54, 89, 8]"]
+    4["Path<br>[54, 89, 1]"]
+    6["Segment<br>[54, 89, 1]"]
     8[Solid2d]
   end
-  1["Plane<br>[29, 46, 8]"]
-  2["Plane<br>[29, 46, 8]"]
-  9["Sweep Extrusion<br>[200, 219, 8]"]
-  10["Sweep Extrusion<br>[200, 219, 8]"]
-  11["Sweep Extrusion<br>[200, 219, 8]"]
-  12["Sweep Extrusion<br>[200, 219, 8]"]
-  13["Sweep Extrusion<br>[200, 219, 8]"]
-  14["Sweep Extrusion<br>[200, 219, 8]"]
-  15["Sweep Extrusion<br>[200, 219, 8]"]
-  16["Sweep Extrusion<br>[200, 219, 8]"]
-  17["Sweep Extrusion<br>[200, 219, 8]"]
-  18["Sweep Extrusion<br>[200, 219, 8]"]
-  19["Sweep Extrusion<br>[200, 219, 8]"]
-  20["Sweep Extrusion<br>[200, 219, 8]"]
-  21["Sweep Extrusion<br>[200, 219, 8]"]
-  22["Sweep Extrusion<br>[200, 219, 8]"]
+  1["Plane<br>[29, 46, 1]"]
+  2["Plane<br>[29, 46, 1]"]
+  9["Sweep Extrusion<br>[200, 219, 1]"]
+  10["Sweep Extrusion<br>[200, 219, 1]"]
+  11["Sweep Extrusion<br>[200, 219, 1]"]
+  12["Sweep Extrusion<br>[200, 219, 1]"]
+  13["Sweep Extrusion<br>[200, 219, 1]"]
+  14["Sweep Extrusion<br>[200, 219, 1]"]
+  15["Sweep Extrusion<br>[200, 219, 1]"]
+  16["Sweep Extrusion<br>[200, 219, 1]"]
+  17["Sweep Extrusion<br>[200, 219, 1]"]
+  18["Sweep Extrusion<br>[200, 219, 1]"]
+  19["Sweep Extrusion<br>[200, 219, 1]"]
+  20["Sweep Extrusion<br>[200, 219, 1]"]
+  21["Sweep Extrusion<br>[200, 219, 1]"]
+  22["Sweep Extrusion<br>[200, 219, 1]"]
   23[Wall]
   24[Wall]
   25["Cap Start"]
@@ -40,32 +40,32 @@ flowchart LR
   2 --- 4
   3 --- 5
   3 --- 7
-  3 ---- 20
+  3 ---- 10
   4 --- 6
   4 --- 8
-  4 ---- 13
-  5 --- 24
+  4 ---- 15
+  5 --- 23
   5 x--> 25
-  5 --- 30
-  5 --- 32
-  6 --- 23
+  5 --- 29
+  5 --- 31
+  6 --- 24
   6 x--> 26
-  6 --- 29
-  6 --- 31
-  13 --- 23
-  13 --- 26
-  13 --- 28
-  13 --- 29
-  13 --- 31
-  20 --- 24
-  20 --- 25
-  20 --- 27
-  20 --- 30
-  20 --- 32
+  6 --- 30
+  6 --- 32
+  10 --- 23
+  10 --- 25
+  10 --- 27
+  10 --- 29
+  10 --- 31
+  15 --- 24
+  15 --- 26
+  15 --- 28
+  15 --- 30
+  15 --- 32
   29 <--x 23
   31 <--x 23
   30 <--x 24
   32 <--x 24
-  30 <--x 27
-  29 <--x 28
+  29 <--x 27
+  30 <--x 28
 ```

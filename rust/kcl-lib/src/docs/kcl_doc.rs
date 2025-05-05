@@ -1,8 +1,4 @@
-use std::{
-    collections::{HashMap, HashSet},
-    fmt,
-    str::FromStr,
-};
+use std::{collections::HashMap, fmt, str::FromStr};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -13,7 +9,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -159,6 +155,15 @@ impl DocData {
         }
     }
 
+    #[allow(dead_code)]
+    pub fn preferred_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.preferred_name,
+            DocData::Const(c) => &c.preferred_name,
+            DocData::Ty(t) => &t.preferred_name,
+        }
+    }
+
     pub fn qual_name(&self) -> &str {
         match self {
             DocData::Fn(f) => &f.qual_name,
@@ -180,18 +185,18 @@ impl DocData {
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.name.clone()),
+            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
         }
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => t.name.clone(),
+            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
         }
     }
 
@@ -400,8 +405,6 @@ pub struct FnData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
 
     pub module_name: String,
 }
@@ -420,16 +423,6 @@ impl FnData {
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
 
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &expr.return_type {
-            collect_type_names(&mut referenced_types, t);
-        }
-        for p in &expr.params {
-            if let Some(t) = &p.type_ {
-                collect_type_names(&mut referenced_types, t);
-            }
-        }
-
         FnData {
             preferred_name: format!("{preferred_prefix}{name}"),
             name,
@@ -445,7 +438,6 @@ impl FnData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
             module_name: module_name.to_owned(),
         }
     }
@@ -726,8 +718,6 @@ pub struct TyData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
 
     pub module_name: String,
 }
@@ -741,10 +731,6 @@ impl TyData {
     ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &ty.alias {
-            collect_type_names(&mut referenced_types, t);
-        }
 
         TyData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -760,7 +746,6 @@ impl TyData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
             module_name: module_name.to_owned(),
         }
     }
@@ -1053,35 +1038,6 @@ impl ApplyMeta for ArgData {
 
     fn impl_kind(&mut self, _impl_kind: annotations::Impl) {
         unreachable!();
-    }
-}
-
-fn collect_type_names(acc: &mut HashSet<String>, ty: &Type) {
-    match ty {
-        Type::Primitive(primitive_type) => {
-            acc.insert(collect_type_names_from_primitive(primitive_type));
-        }
-        Type::Array { ty, .. } => {
-            collect_type_names(acc, ty);
-        }
-        Type::Union { tys } => tys.iter().for_each(|t| {
-            acc.insert(collect_type_names_from_primitive(t));
-        }),
-        Type::Object { properties } => properties.iter().for_each(|p| {
-            if let Some(t) = &p.type_ {
-                collect_type_names(acc, t)
-            }
-        }),
-    }
-}
-
-fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
-    match ty {
-        PrimitiveType::String => "string".to_owned(),
-        PrimitiveType::Number(_) => "number".to_owned(),
-        PrimitiveType::Boolean => "bool".to_owned(),
-        PrimitiveType::Tag => "tag".to_owned(),
-        PrimitiveType::Named(id) => id.name.clone(),
     }
 }
 

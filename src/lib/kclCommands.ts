@@ -97,8 +97,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       hide: 'web',
       needsReview: true,
-      reviewMessage:
-        'Reminder: point-and-click insert is in development and only supports one part instance per assembly.',
       args: {
         path: {
           inputType: 'options',

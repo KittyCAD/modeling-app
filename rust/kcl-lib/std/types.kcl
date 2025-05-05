@@ -1,6 +1,10 @@
 @no_std
 @settings(defaultLengthUnit = mm)
 
+/// Any value.
+@(impl = primitive)
+export type any
+
 /// A number
 ///
 /// May be signed or unsigned, an integer or decimal value.
@@ -57,7 +61,7 @@ export type string
 /// tagged object. The syntax for this is `myTag`.
 /// 
 /// In the example above we use the tag identifier to get the angle of the segment
-/// `segAng(rectangleSegmentA001, %)`.
+/// `segAng(rectangleSegmentA001)`.
 ///
 /// ### Tag Scope
 ///
@@ -84,8 +88,8 @@ export type string
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// rect([20, 0])
+/// rect(origin = [0, 0])
+/// rect(origin = [20, 0])
 /// ```
 ///
 /// Those tags would only be available in the `rect` function and not globally.
@@ -103,17 +107,19 @@ export type string
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001) - 90,
 ///          length = 196.99
-///        , %, $rectangleSegmentB001)
+///          tag = $rectangleSegmentB001,
+///        )
 ///     |> angledLine(
 ///          angle = segAng(rectangleSegmentA001),
 ///          length = -segLen(rectangleSegmentA001)
-///        , %, $rectangleSegmentC001)
+///          tag = $rectangleSegmentC001,
+///        )
 ///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 ///     |> close()
 /// }
 /// 
-/// rect([0, 0])
-/// myRect = rect([20, 0])
+/// rect(origin = [0, 0])
+/// myRect = rect(origin = [20, 0])
 /// 
 /// myRect
 ///   |> extrude(length = 10)

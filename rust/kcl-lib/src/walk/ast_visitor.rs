@@ -78,19 +78,17 @@ impl<'tree> Visitable<'tree> for Node<'tree> {
                 children.push((&n.body).into());
                 children
             }
-            Node::CallExpression(n) => {
-                let mut children = n.arguments.iter().map(|v| v.into()).collect::<Vec<Node>>();
-                children.insert(0, (&n.callee).into());
-                children
-            }
             Node::CallExpressionKw(n) => {
-                let mut children = n.unlabeled.iter().map(|v| v.into()).collect::<Vec<Node>>();
+                let mut children: Vec<Node<'_>> =
+                    Vec::with_capacity(1 + if n.unlabeled.is_some() { 1 } else { 0 } + n.arguments.len());
+                children.push((&n.callee).into());
+                children.extend(n.unlabeled.iter().map(Node::from));
 
                 // TODO: this is wrong but it's what the old walk code was doing.
                 // We likely need a real LabeledArg AST node, but I don't
                 // want to tango with it since it's a lot deeper than
                 // adding it to the enum.
-                children.extend(n.arguments.iter().map(|v| (&v.arg).into()).collect::<Vec<Node>>());
+                children.extend(n.arguments.iter().map(|v| Node::from(&v.arg)));
                 children
             }
             Node::PipeExpression(n) => n.body.iter().map(|v| v.into()).collect(),

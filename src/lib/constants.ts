@@ -187,3 +187,11 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
+
+/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+export const IS_PLAYWRIGHT_KEY = 'playwright'
+
+/** Should we mark all the ML features as "beta"? */
+export const IS_ML_EXPERIMENTAL = true
+export const ML_EXPERIMENTAL_MESSAGE =
+  'This feature is experimental and undergoing constant improvement, stay tuned for updates.'
