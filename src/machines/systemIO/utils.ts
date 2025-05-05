@@ -104,12 +104,14 @@ export type RequestedKCLFile = {
   requestedCode: string
 }
 
-// Custom event for navigation completion
-export const NAVIGATION_COMPLETE_EVENT = 'navigation-complete'
-
 export const waitForIdleState = async ({
   systemIOActor,
 }: { systemIOActor: ActorRefFrom<typeof systemIOMachine> }) => {
+  // Check if already idle before setting up subscription
+  if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
+    return Promise.resolve()
+  }
+
   const waitForIdlePromise = new Promise((resolve) => {
     const subscription = systemIOActor.subscribe((state) => {
       if (state.matches(SystemIOMachineStates.idle)) {
