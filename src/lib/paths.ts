@@ -208,12 +208,10 @@ export function webSafeJoin(paths: string[]): string {
  */
 export function desktopSafePathSplit(path: string): string[] {
   return isDesktop()
-    ? path.split(`${window?.electron?.sep}`)
+    ? path.split(window?.electron?.sep)
     : webSafePathSplit(path)
 }
 
 export function desktopSafePathJoin(paths: string[]): string {
-  return isDesktop()
-    ? paths.join(`${window?.electron?.sep}`)
-    : webSafeJoin(paths)
+  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
 }
