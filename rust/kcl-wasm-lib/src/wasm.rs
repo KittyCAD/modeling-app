@@ -1,7 +1,11 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{pretty::NumericSuffix, CoreDump, Program, SourceRange};
+use kcl_lib::{
+    exec::{NumericType, UnitAngle, UnitLen, UnitType},
+    pretty::NumericSuffix,
+    CoreDump, Program, SourceRange,
+};
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
@@ -50,11 +54,31 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, JsError> {
     console_error_panic_hook::set_once();
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
-    Ok(kcl_lib::pretty::format_number(value, suffix))
+    kcl_lib::pretty::format_number_literal(value, suffix).map_err(JsError::from)
+}
+
+#[wasm_bindgen]
+pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, JsError> {
+    console_error_panic_hook::set_once();
+
+    if let Ok(unit_len) = serde_json::from_str::<UnitLen>(ty_json) {
+        let ty = NumericType::Known(UnitType::Length(unit_len));
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_angle) = serde_json::from_str::<UnitAngle>(ty_json) {
+        let ty = NumericType::Known(UnitType::Angle(unit_angle));
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_type) = serde_json::from_str::<UnitType>(ty_json) {
+        let ty = NumericType::Known(unit_type);
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    let ty = serde_json::from_str::<NumericType>(ty_json).map_err(JsError::from)?;
+    Ok(kcl_lib::pretty::human_display_number(value, ty))
 }
 
 #[wasm_bindgen]

@@ -12,7 +12,8 @@ import type {
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
-  format_number as FormatNumber,
+  format_number_literal as FormatNumberLiteral,
+  human_display_number as HumanDisplayNumber,
   get_kcl_version as GetKclVersion,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
   import_file_extensions as ImportFileExtensions,
@@ -55,8 +56,11 @@ export const parse_wasm: typeof ParseWasm = (...args) => {
 export const recast_wasm: typeof RecastWasm = (...args) => {
   return getModule().recast_wasm(...args)
 }
-export const format_number: typeof FormatNumber = (...args) => {
-  return getModule().format_number(...args)
+export const format_number_literal: typeof FormatNumberLiteral = (...args) => {
+  return getModule().format_number_literal(...args)
+}
+export const human_display_number: typeof HumanDisplayNumber = (...args) => {
+  return getModule().human_display_number(...args)
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)

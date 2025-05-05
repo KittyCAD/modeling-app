@@ -8,9 +8,7 @@ use crate::parsing::{
         MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
         Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
-    deprecation,
-    token::NumericSuffix,
-    DeprecationKind, PIPE_OPERATOR,
+    deprecation, DeprecationKind, PIPE_OPERATOR,
 };
 
 impl Program {
@@ -462,24 +460,6 @@ impl TypeDeclaration {
             arg_str.push_str(&alias.to_string());
         }
         format!("{}type {}{}", vis, self.name.name, arg_str)
-    }
-}
-
-// Used by TS.
-pub fn format_number(value: f64, suffix: NumericSuffix) -> String {
-    match suffix {
-        NumericSuffix::Length | NumericSuffix::Angle => format!("{value}: number({suffix})"),
-        NumericSuffix::None
-        | NumericSuffix::Count
-        | NumericSuffix::Mm
-        | NumericSuffix::Cm
-        | NumericSuffix::M
-        | NumericSuffix::Inch
-        | NumericSuffix::Ft
-        | NumericSuffix::Yd
-        | NumericSuffix::Deg
-        | NumericSuffix::Rad
-        | NumericSuffix::Unknown => format!("{value}{suffix}"),
     }
 }
 
@@ -964,23 +944,6 @@ mod tests {
 
     use super::*;
     use crate::{parsing::ast::types::FormatOptions, ModuleId};
-
-    #[test]
-    fn test_format_number() {
-        assert_eq!(format_number(1.0, NumericSuffix::Length), "1: number(Length)");
-        assert_eq!(format_number(1.0, NumericSuffix::Angle), "1: number(Angle)");
-        assert_eq!(format_number(1.0, NumericSuffix::None), "1");
-        assert_eq!(format_number(1.0, NumericSuffix::Count), "1_");
-        assert_eq!(format_number(1.0, NumericSuffix::Mm), "1mm");
-        assert_eq!(format_number(1.0, NumericSuffix::Cm), "1cm");
-        assert_eq!(format_number(1.0, NumericSuffix::M), "1m");
-        assert_eq!(format_number(1.0, NumericSuffix::Inch), "1in");
-        assert_eq!(format_number(1.0, NumericSuffix::Ft), "1ft");
-        assert_eq!(format_number(1.0, NumericSuffix::Yd), "1yd");
-        assert_eq!(format_number(1.0, NumericSuffix::Deg), "1deg");
-        assert_eq!(format_number(1.0, NumericSuffix::Rad), "1rad");
-        assert_eq!(format_number(1.0, NumericSuffix::Unknown), "1_?");
-    }
 
     #[test]
     fn test_recast_annotations_without_body_items() {
