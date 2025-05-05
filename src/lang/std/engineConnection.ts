@@ -937,9 +937,14 @@ class EngineConnection extends EventTarget {
               })
               .join('\n')
             if (message.request_id) {
+              const pendingCommand =
+                this.engineCommandManager.pendingCommands[message.request_id]
               console.error(
-                `Error in response to request ${message.request_id}:\n${errorsString}
-    failed`
+                `Error in response to request ${message.request_id}:\n${errorsString}\n\nPending command:\n${JSON.stringify(
+                  pendingCommand,
+                  null,
+                  2
+                )}`
               )
             } else {
               console.error(`Error from server:\n${errorsString}`)
