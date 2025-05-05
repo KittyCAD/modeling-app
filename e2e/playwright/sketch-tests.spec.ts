@@ -1226,7 +1226,7 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
         return lugSketch
       }
 
-      lug([0, 0], 10, .5, XY)`
+      lug(origin = [0, 0], length = 10, diameter = .5, plane = XY)`
       )
     })
 

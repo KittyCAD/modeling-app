@@ -97,7 +97,7 @@ The following will need to be run when checking out a new commit and guarantees 
 ```bash
 npm install
 npm run build:wasm
-npm start # or npm run build:local && npm run serve for slower but more production-like build
+npm start
 ```
 
 ## Before submitting a PR

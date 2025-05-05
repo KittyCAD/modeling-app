@@ -3,7 +3,6 @@ import type {
   ArrayExpression,
   ArtifactGraph,
   BinaryExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -111,10 +110,6 @@ export function isCursorInSketchCommandRange(
     : [...overlappingEntries].find(
         ([, artifact]) => artifact.type === 'path'
       )?.[0] || false
-}
-
-export function isCallExpression(e: any): e is CallExpression {
-  return e && e.type === 'CallExpression'
 }
 
 export function isCallExpressionKw(e: any): e is CallExpressionKw {

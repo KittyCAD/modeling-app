@@ -18,7 +18,6 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import type {
-  CallExpression,
   CallExpressionKw,
   PathToNode,
   PipeExpression,
@@ -77,12 +76,13 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
   function getExtrudeExpression(
     ast: Program,
     pathToExtrudeNode: PathToNode
-  ): CallExpression | CallExpressionKw | PipeExpression | undefined | Error {
+  ): CallExpressionKw | PipeExpression | undefined | Error {
     if (pathToExtrudeNode.length === 0) return undefined // no extrude node
 
-    const extrudeNodeResult = getNodeFromPath<
-      CallExpression | CallExpressionKw
-    >(ast, pathToExtrudeNode)
+    const extrudeNodeResult = getNodeFromPath<CallExpressionKw>(
+      ast,
+      pathToExtrudeNode
+    )
     if (err(extrudeNodeResult)) {
       return extrudeNodeResult
     }
@@ -93,14 +93,14 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     ast: Program,
     code: string,
     expectedExtrudeSnippet: string
-  ): CallExpression | CallExpressionKw | PipeExpression | Error {
+  ): CallExpressionKw | PipeExpression | Error {
     const extrudeRange = topLevelRange(
       code.indexOf(expectedExtrudeSnippet),
       code.indexOf(expectedExtrudeSnippet) + expectedExtrudeSnippet.length
     )
     const expectedExtrudePath = getNodePathFromSourceRange(ast, extrudeRange)
     const expectedExtrudeNodeResult = getNodeFromPath<
-      VariableDeclarator | CallExpression | CallExpressionKw
+      VariableDeclarator | CallExpressionKw
     >(ast, expectedExtrudePath)
     if (err(expectedExtrudeNodeResult)) {
       return expectedExtrudeNodeResult
@@ -108,19 +108,13 @@ const runGetPathToExtrudeForSegmentSelectionTest = async (
     const expectedExtrudeNode = expectedExtrudeNodeResult.node
 
     // check whether extrude is in the sketch pipe
-    const extrudeInSketchPipe =
-      expectedExtrudeNode.type === 'CallExpression' ||
-      expectedExtrudeNode.type === 'CallExpressionKw'
+    const extrudeInSketchPipe = expectedExtrudeNode.type === 'CallExpressionKw'
     if (extrudeInSketchPipe) {
       return expectedExtrudeNode
     }
     if (!extrudeInSketchPipe) {
       const init = expectedExtrudeNode.init
-      if (
-        init.type !== 'CallExpression' &&
-        init.type !== 'CallExpressionKw' &&
-        init.type !== 'PipeExpression'
-      ) {
+      if (init.type !== 'CallExpressionKw' && init.type !== 'PipeExpression') {
         return new Error(
           'Expected extrude expression is not a CallExpression or PipeExpression'
         )

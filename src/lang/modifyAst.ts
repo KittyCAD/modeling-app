@@ -44,7 +44,6 @@ import {
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -417,11 +416,9 @@ export function sketchOnExtrudedFace(
   const { node: oldSketchNode } = _node1
 
   const oldSketchName = oldSketchNode.id.name
-  const _node2 = getNodeFromPath<CallExpression | CallExpressionKw>(
-    _node,
-    sketchPathToNode,
-    ['CallExpression', 'CallExpressionKw']
-  )
+  const _node2 = getNodeFromPath<CallExpressionKw>(_node, sketchPathToNode, [
+    'CallExpressionKw',
+  ])
   if (err(_node2)) return _node2
   const { node: expression } = _node2
 
@@ -587,7 +584,7 @@ export function addHelix({
   variableName,
 }: {
   node: Node<Program>
-  axis?: Node<Literal> | Node<Name | CallExpression | CallExpressionKw>
+  axis?: Node<Literal> | Node<Name | CallExpressionKw>
   cylinder?: VariableDeclarator
   revolutions: Expr
   angleStart: Expr
@@ -1042,19 +1039,19 @@ export function updateSketchNodePathsWithInsertIndex({
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 into
 ```ts
 sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)
@@ -1093,8 +1090,9 @@ export function splitPipedProfile(
 
   const varName = varDec.node.declaration.id.name
   const newVarName = findUniqueName(_ast, 'sketch')
-  const secondCallArgs = structuredClone(secondCall.arguments)
-  secondCallArgs[1] = createLocalName(newVarName)
+  // const secondCallArgs = structuredClone(secondCall.arguments)
+  // secondCallArgs[1] = createLocalName(newVarName)
+  secondCall.unlabeled = createLocalName(newVarName)
   const startSketchOnBrokenIntoNewVarDec = structuredClone(varDec.node)
   const profileBrokenIntoItsOwnVar = structuredClone(varDec.node)
   if (

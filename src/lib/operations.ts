@@ -1068,8 +1068,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'helix',
     prepareToEdit: prepareToEditHelix,
   },
-  hole: {
-    label: 'Hole',
+  subtract2d: {
+    label: 'Subtract 2D',
     icon: 'hole',
   },
   hollow: {

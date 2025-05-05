@@ -1,8 +1,7 @@
 import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/CommandBar'
 import usePlatform from '@src/hooks/usePlatform'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { OnboardingButtons, kbdClasses } from '@src/routes/Onboarding/utils'
 
 export default function CmdK() {
@@ -37,7 +36,7 @@ export default function CmdK() {
           . You can control settings, authentication, and file management from
           the command bar, as well as a growing number of modeling commands.
         </p>
-        <OnboardingButtons currentSlug={onboardingPaths.COMMAND_K} />
+        <OnboardingButtons currentSlug={ONBOARDING_SUBPATHS.COMMAND_K} />
       </div>
     </div>
   )

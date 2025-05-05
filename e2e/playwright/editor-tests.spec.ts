@@ -871,14 +871,18 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press('Enter')
     await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center = [0, 0], radius = dia/2)
-    |> subtract2d(tool = squareHole(length, width, height))
+    |> subtract2d(tool = squareHole(l = length, w = width, height))
     |> extrude(length = height)`)
 
     // error in gutter
     await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
     await page.hover('.cm-lint-marker-error:first-child')
     await expect(
-      page.getByText('Expected 2 arguments, got 3').first()
+      page
+        .getByText(
+          'TODO ADAM: find the right error Expected 2 arguments, got 3'
+        )
+        .first()
     ).toBeVisible()
 
     // Make sure there are two diagnostics

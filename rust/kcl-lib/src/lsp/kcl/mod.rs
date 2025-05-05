@@ -516,23 +516,6 @@ impl Backend {
                             }
                             return get_modifier(vec![SemanticTokenModifier::DECLARATION]);
                         }
-                        crate::walk::Node::CallExpression(call_expr) => {
-                            let sr: SourceRange = (&call_expr.callee).into();
-                            if sr.contains(source_range.start()) {
-                                let mut ti = token_index.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-                                *ti = match self.get_semantic_token_type_index(&SemanticTokenType::FUNCTION) {
-                                    Some(index) => index,
-                                    None => token_type_index,
-                                };
-
-                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
-                                    // This is a stdlib function.
-                                    return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
-                                }
-
-                                return Ok(false);
-                            }
-                        }
                         crate::walk::Node::CallExpressionKw(call_expr) => {
                             let sr: SourceRange = (&call_expr.callee).into();
                             if sr.contains(source_range.start()) {
