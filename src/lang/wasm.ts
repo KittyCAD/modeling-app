@@ -43,7 +43,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
-  change_kcl_settings,
+  change_default_units,
   coredump,
   default_app_settings,
   default_project_settings,
@@ -744,12 +744,13 @@ export function kclSettings(
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
-export function changeKclSettings(
+export function changeDefaultUnits(
   kcl: string,
-  settings: MetaSettings
+  len: UnitLen | null,
+  angle: UnitAng | null
 ): string | Error {
   try {
-    return change_kcl_settings(kcl, JSON.stringify(settings))
+    return change_default_units(kcl, JSON.stringify(len), JSON.stringify(angle))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
@@ -779,8 +780,12 @@ export function isKclEmptyOrOnlySettings(kcl: string): boolean {
  * Convert a `UnitLength` (used in settings and modeling commands) to a
  * `UnitLen` (used in execution).
  */
-export function unitLengthToUnitLen(input: UnitLength): UnitLen {
+export function unitLengthToUnitLen(
+  input: UnitLength | undefined
+): UnitLen | null {
   switch (input) {
+    case 'mm':
+      return { type: 'Mm' }
     case 'm':
       return { type: 'M' }
     case 'cm':
@@ -792,7 +797,7 @@ export function unitLengthToUnitLen(input: UnitLength): UnitLen {
     case 'in':
       return { type: 'Inches' }
     default:
-      return { type: 'Mm' }
+      return null
   }
 }
 
@@ -821,12 +826,16 @@ export function unitLenToUnitLength(input: UnitLen): UnitLength {
  * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in
  * execution).
  */
-export function unitAngleToUnitAng(input: UnitAngle): UnitAng {
+export function unitAngleToUnitAng(
+  input: UnitAngle | undefined
+): UnitAng | null {
   switch (input) {
     case 'radians':
       return { type: 'Radians' }
-    default:
+    case 'degrees':
       return { type: 'Degrees' }
+    default:
+      return null
   }
 }
 

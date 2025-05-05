@@ -2,7 +2,7 @@
 // The frequency knob for the walkie talkie assembly
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import width, thickness, height, knobDiameter, knobHeight, knobRadius from "parameters.kcl"

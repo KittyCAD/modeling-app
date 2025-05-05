@@ -2,7 +2,7 @@
 // Spinning axial fan that moves airflow
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"

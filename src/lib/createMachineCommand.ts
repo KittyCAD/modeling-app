@@ -123,6 +123,9 @@ export function createMachineCommand<
   if ('reviewMessage' in commandConfig) {
     command.reviewMessage = commandConfig.reviewMessage
   }
+  if ('status' in commandConfig) {
+    command.status = commandConfig.status
+  }
 
   return command
 }
