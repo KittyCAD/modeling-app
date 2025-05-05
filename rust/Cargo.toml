@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+	"kcl-book-tester",
 	"kcl-bumper",
 	"kcl-derive-docs",
 	"kcl-directory-test-macro",

@@ -1,0 +1,15 @@
+[book]
+authors = ["Adam Chalmers"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Modeling with KCL"
+
+[preprocessor.toc]
+command = "mdbook-toc"
+renderer = ["html"]
+
+# [output.pdf]
+
+# [output.html.print]
+# enable = true

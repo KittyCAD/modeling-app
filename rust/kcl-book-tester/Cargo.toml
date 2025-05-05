@@ -1,0 +1,8 @@
+[package]
+name = "kcl-book-tester"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+camino = "1.1.9"
