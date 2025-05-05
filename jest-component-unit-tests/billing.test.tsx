@@ -161,7 +161,7 @@ test('Shows the total credits for Unknown subscription', async () => {
   />)
 
   await act(() => {
-    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesnt matter wtf this is :)" })
+    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesn't matter wtf this is :)" })
   })
 
   const totalCredits = data.balance.monthlyApiCreditsRemaining + data.balance.stableApiCreditsRemaining
@@ -201,7 +201,7 @@ test('Progress bar reflects ratio left of Free subscription', async () => {
   />)
 
   await act(() => {
-    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesnt matter wtf this is :)" })
+    billingActor.send({ type: BillingTransition.Update, apiToken: "it doesn't matter wtf this is :)" })
   })
 
   const totalCredits = data.balance.monthlyApiCreditsRemaining + data.balance.stableApiCreditsRemaining
