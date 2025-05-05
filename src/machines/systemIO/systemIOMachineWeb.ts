@@ -8,7 +8,6 @@ import { err } from '@src/lib/trap'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
 import { engineStreamZoomToFit } from '@src/lib/utils'
-import { engineCommandManager } from '@src/lib/singletons'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -53,7 +52,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         //   padding: 0.2,
         // })
 
-        await engineStreamZoomToFit({ engineCommandManager, padding: 0.2 })
+        await engineStreamZoomToFit({ engineCommandManager: input.rootContext.engineCommandManager, padding: 0.2 })
 
         return {
           message: 'File overwritten successfully',
