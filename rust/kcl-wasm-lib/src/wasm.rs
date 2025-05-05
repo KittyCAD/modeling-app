@@ -62,10 +62,17 @@ pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, Js
 }
 
 #[wasm_bindgen]
-pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, JsError> {
+pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
     // ts-rs can't handle tuple types, so it mashes all of these types together.
+    if let Ok(ty) = serde_json::from_str::<NumericType>(ty_json) {
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_type) = serde_json::from_str::<UnitType>(ty_json) {
+        let ty = NumericType::Known(unit_type);
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
     if let Ok(unit_len) = serde_json::from_str::<UnitLen>(ty_json) {
         let ty = NumericType::Known(UnitType::Length(unit_len));
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
@@ -74,12 +81,7 @@ pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, JsError
         let ty = NumericType::Known(UnitType::Angle(unit_angle));
         return Ok(kcl_lib::pretty::human_display_number(value, ty));
     }
-    if let Ok(unit_type) = serde_json::from_str::<UnitType>(ty_json) {
-        let ty = NumericType::Known(unit_type);
-        return Ok(kcl_lib::pretty::human_display_number(value, ty));
-    }
-    let ty = serde_json::from_str::<NumericType>(ty_json).map_err(JsError::from)?;
-    Ok(kcl_lib::pretty::human_display_number(value, ty))
+    Err(format!("Invalid type: {ty_json}"))
 }
 
 #[wasm_bindgen]
