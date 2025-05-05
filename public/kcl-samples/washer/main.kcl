@@ -2,7 +2,7 @@
 // A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 innerDiameter = 0.203

@@ -1,7 +1,7 @@
 // Global constants for the multi-axis robot
 
 // Set Units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Axis Angles
 export axisJ4 = 25deg
