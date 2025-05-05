@@ -465,6 +465,7 @@ impl ModData {
             return Some(result);
         }
 
+        #[allow(clippy::iter_over_hash_type)]
         for (k, v) in &self.children {
             if k.starts_with("M:") {
                 if let Some(result) = v.expect_mod().find_by_name(name) {
@@ -1223,6 +1224,7 @@ mod test {
                 .expect_mod()
         };
 
+        #[allow(clippy::iter_over_hash_type)]
         for d in data.children.values() {
             if let DocData::Mod(_) = d {
                 continue;

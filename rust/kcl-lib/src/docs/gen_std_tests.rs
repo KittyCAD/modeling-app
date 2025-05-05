@@ -11,7 +11,6 @@ use tokio::task::JoinSet;
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::{docs::StdLibFn, std::StdLib, ExecutorContext};
 
-const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
 // These types are declared in (KCL) std.
 const DECLARED_TYPES: [&str; 15] = [
     "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
@@ -209,18 +208,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
     sorted_types.sort_by(|t1, t2| t1.0.cmp(&t2.0));
     let types_data: Vec<_> = sorted_types.into_iter().map(|(_, val)| val).collect();
 
-    let topics: Vec<_> = LANG_TOPICS
-        .iter()
-        .map(|name| {
-            json!({
-                "name": name,
-                "file_name": name.to_lowercase().replace(' ', "-"),
-            })
-        })
-        .collect();
-
     let data = json!({
-        "lang_topics": topics,
         "functions": functions_data,
         "consts": consts_data,
         "types": types_data,
@@ -228,7 +216,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
 
     let output = hbs.render("index", &data)?;
 
-    expectorate::assert_contents("../../docs/kcl/index.md", &output);
+    expectorate::assert_contents("../../docs/kcl-std/index.md", &output);
 
     Ok(())
 }
@@ -285,7 +273,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output);
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -326,7 +314,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("module", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -372,7 +360,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output);
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
 
     Ok(())
 }
@@ -401,7 +389,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -471,7 +459,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     // Fix the links to the types.
     output = cleanup_types(&output);
 
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", fn_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", fn_name), &output);
 
     Ok(())
 }
@@ -623,9 +611,9 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
             // we might want to restore the links by not checking `fmt_for_text` here.
 
             if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl/types#{ty})")
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
             } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl/types/std-types-{ty})")
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
             } else {
                 format!("{prefix}{ty}{suffix}")
             }
@@ -679,19 +667,13 @@ fn test_generate_stdlib_markdown_docs() {
         }
     }
     generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
-
-    // Copy manually written docs to the output directory.
-    for entry in fs::read_dir("../../docs/kcl-src").unwrap() {
-        let path = entry.unwrap().path();
-        fs::copy(&path, Path::new("../../docs/kcl").join(path.file_name().unwrap())).unwrap();
-    }
 }
 
 #[test]
 fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
-    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // test data, then check `/docs/kcl-std/std.json` to ensure the changes are expected.
     // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
@@ -705,7 +687,7 @@ fn test_generate_stdlib_json_schema() {
         })
         .collect();
     expectorate::assert_contents(
-        "../../docs/kcl/std.json",
+        "../../docs/kcl-std/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),
     );
 }
@@ -713,16 +695,16 @@ fn test_generate_stdlib_json_schema() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
-    for name in LANG_TOPICS {
-        let filename = format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-"));
-        let text = std::fs::read_to_string(&filename).unwrap();
+    for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
+        let path = entry.unwrap().path();
+        let text = std::fs::read_to_string(&path).unwrap();
 
-        for (i, (eg, attr)) in find_examples(&text, &filename).into_iter().enumerate() {
-            if attr == "norun" {
+        for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
+            if attr.contains("norun") || !attr.contains("kcl") {
                 continue;
             }
 
-            let f = filename.clone();
+            let f = path.display().to_string();
             join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
         }
     }
@@ -735,7 +717,7 @@ async fn test_code_in_topics() {
     assert!(results.is_empty(), "Failures: {}", results.join(", "))
 }
 
-fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
+fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     let mut buf = String::new();
     let mut attr = String::new();
     let mut in_eg = false;
@@ -759,7 +741,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
         }
     }
 
-    assert!(!in_eg, "Unclosed code tags in {}", filename);
+    assert!(!in_eg, "Unclosed code tags in {}", filename.display());
 
     result
 }
