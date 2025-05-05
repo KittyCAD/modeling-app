@@ -38,7 +38,6 @@ rotate(
 ): [Solid] | [Sketch] | ImportedGeometry
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -19,7 +19,6 @@ extrude(
 ): [Solid]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

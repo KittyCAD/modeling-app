@@ -20,7 +20,6 @@ patternCircular3d(
 ): [Solid]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

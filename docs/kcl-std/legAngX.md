@@ -15,11 +15,6 @@ legAngX(
 ): number
 ```
 
-### Tags
-
-* `utilities`
-
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -37,5 +32,6 @@ legAngX(
 ```kcl
 legAngX(hypotenuse = 5, leg = 3)
 ```
+
 
 

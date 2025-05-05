@@ -17,7 +17,6 @@ log(
 ): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

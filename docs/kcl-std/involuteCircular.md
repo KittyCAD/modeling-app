@@ -19,7 +19,6 @@ involuteCircular(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -21,7 +21,6 @@ angledLine(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

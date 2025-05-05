@@ -12,7 +12,6 @@ Compute the maximum of the given arguments.
 max(@input: [number; 1+]): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

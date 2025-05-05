@@ -12,7 +12,6 @@ Converts a number to degrees from its current units.
 units::toDegrees(@num: number(deg)): number(deg)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

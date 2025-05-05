@@ -17,7 +17,6 @@ appearance(
 ): [Solid] | ImportedGeometry
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

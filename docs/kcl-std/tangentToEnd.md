@@ -12,7 +12,6 @@ Returns the angle coming out of the end of the segment in degrees.
 tangentToEnd(tag: TagIdentifier): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

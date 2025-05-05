@@ -12,7 +12,6 @@ Compute the smallest integer greater than or equal to a number.
 ceil(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

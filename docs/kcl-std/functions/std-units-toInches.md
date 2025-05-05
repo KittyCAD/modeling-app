@@ -12,7 +12,6 @@ Convert a number to inches from its current units.
 units::toInches(@num: number(in)): number(in)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

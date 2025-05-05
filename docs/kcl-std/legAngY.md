@@ -15,11 +15,6 @@ legAngY(
 ): number
 ```
 
-### Tags
-
-* `utilities`
-
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -37,5 +32,6 @@ legAngY(
 ```kcl
 legAngY(hypotenuse = 5, leg = 3)
 ```
+
 
 

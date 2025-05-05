@@ -12,7 +12,6 @@ Compute the ending point of the provided line segment along the 'x' axis.
 segEndX(tag: TagIdentifier): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

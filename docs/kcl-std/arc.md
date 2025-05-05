@@ -22,7 +22,6 @@ arc(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

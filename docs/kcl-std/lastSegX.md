@@ -12,7 +12,6 @@ Extract the 'x' axis value of the last line segment in the provided 2-d sketch.
 lastSegX(sketch: Sketch): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

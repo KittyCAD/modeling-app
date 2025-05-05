@@ -339,9 +339,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
         "description": function.description,
         "deprecated": function.properties.deprecated,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
-        "tags": [],
         "examples": examples,
-        "is_utilities": false,
         "args": function.args.iter().map(|arg| {
             json!({
                 "name": arg.name,
@@ -408,8 +406,8 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         .examples()
         .iter()
         .enumerate()
-        .map(|(index, example)| {
-            let image_base64 = if !internal_fn.tags().contains(&"utilities".to_string()) {
+        .map(|(index, (example, norun))| {
+            let image_base64 = if !norun {
                 let image_path = format!(
                     "{}/tests/outputs/serial_test_example_{}{}.png",
                     env!("CARGO_MANIFEST_DIR"),
@@ -436,9 +434,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
         "fn_signature": internal_fn.fn_signature(true),
-        "tags": internal_fn.tags(),
         "examples": examples,
-        "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
         "args": internal_fn.args(false).iter().map(|arg| {
             json!({
                 "name": arg.name,
@@ -700,7 +696,7 @@ async fn test_code_in_topics() {
         let text = std::fs::read_to_string(&path).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
-            if attr.contains("norun") || !attr.contains("kcl") {
+            if attr.contains("norun") || attr == "no_run" || !attr.contains("kcl") {
                 continue;
             }
 

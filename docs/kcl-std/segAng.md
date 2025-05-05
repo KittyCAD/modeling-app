@@ -12,7 +12,6 @@ Compute the angle (in degrees) of the provided line segment.
 segAng(tag: TagIdentifier): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

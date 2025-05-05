@@ -12,7 +12,6 @@ Convert a number to centimeters from its current units.
 units::toCentimeters(@num: number(cm)): number(cm)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |
