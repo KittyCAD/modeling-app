@@ -39,9 +39,7 @@ export const BILLING_CONTEXT_DEFAULTS: BillingContext = Object.freeze({
   urlUserService: '',
 })
 
-export const toBillingSubscription = (
-  target: string
-): BillingSubscription => {
+export const toBillingSubscription = (target: string): BillingSubscription => {
   return (
     Object.values(BillingSubscription).find((item) => item === target) ??
     BillingSubscription.Unknown
@@ -71,16 +69,15 @@ export const billingMachine = setup({
         }
         const billing: Models['CustomerBalance_type'] = billingOrError
 
-        const orgOrError: Models['Org_type'] | Error =
-          await crossPlatformFetch(
-            `${input.context.urlUserService}/org`,
-            { method: 'GET' },
-            input.event.apiToken
-          )
+        const orgOrError: Models['Org_type'] | Error = await crossPlatformFetch(
+          `${input.context.urlUserService}/org`,
+          { method: 'GET' },
+          input.event.apiToken
+        )
 
         const plan: BillingSubscription = toBillingSubscription(
           orgOrError,
-          billing,
+          billing
         )
 
         let credits =
@@ -95,7 +92,8 @@ export const billingMachine = setup({
           case BillingSubscription.Free:
             // jess: this is monthly allowance. lee: but the name? jess: i know names computer science hard
             allowance = Number(
-              billing.subscription_details?.modeling_app.monthly_pay_as_you_go_api_credits
+              billing.subscription_details?.modeling_app
+                .monthly_pay_as_you_go_api_credits
             )
             break
           // On unknown, we can still show the total credits (graceful degradation).
