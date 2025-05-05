@@ -7,7 +7,8 @@ import { readLocalStorageProjectSettingsFile } from '@src/lib/settings/settingsU
 import { err } from '@src/lib/trap'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import type { AppMachineContext } from '@src/lib/types'
-import { uuidv4 } from '@src/lib/utils'
+import { engineStreamZoomToFit } from '@src/lib/utils'
+import { engineCommandManager } from '@src/lib/singletons'
 
 export const systemIOMachineWeb = systemIOMachine.provide({
   actors: {
@@ -42,20 +43,17 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         await input.rootContext.codeManager.writeToFile()
         await input.rootContext.kclManager.executeCode()
 
-        // TODO wait added for the test to work
-        //await new Promise((resolve) => setTimeout(resolve, 2000))
+        // Needed for zoom_to_fit to work until #6545 is fixed:
+        // https://github.com/KittyCAD/modeling-app/issues/6545
+        await input.rootContext.kclManager.hidePlanes()
 
-        await input.rootContext.kclManager.hidePlanes(true) // See: http://github.com/KittyCAD/modeling-app/issues/6545
-        await input.rootContext.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
+        // Alternatively, this makes it work too:
+        // await engineViewIsometricWithGeometryPresent({
+        //   engineCommandManager: input.rootContext.engineCommandManager,
+        //   padding: 0.2,
+        // })
+
+        await engineStreamZoomToFit({ engineCommandManager, padding: 0.2 })
 
         return {
           message: 'File overwritten successfully',

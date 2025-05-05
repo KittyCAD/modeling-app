@@ -496,7 +496,7 @@ test.describe('Command bar tests', () => {
     })
   })
 
-  test(`Zoom to fit to shared model on web`, async ({ page }) => {
+  test(`Zoom to fit to shared model on web`, async ({ page, scene, cmdBar }) => {
     await test.step(`Prepare and navigate to home page with query params`, async () => {
       // a quad in the top left corner of the XZ plane (which is out of the current view)
       const code = `sketch001 = startSketchOn(XZ)
@@ -514,7 +514,12 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
 
     await test.step(`Submit the command`, async () => {
       await page.getByTestId('continue-to-web-app-button').click()
-      // await page.waitForTimeout(3000)
+
+      await scene.connectionEstablished()
+      
+      // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
+      await page.waitForTimeout(3000)
+
       await page.getByTestId('command-bar-submit').click()
     })
 
