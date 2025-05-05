@@ -1034,15 +1034,8 @@ export class LanguageServerPlugin implements PluginValue {
             continue
           }
 
-          // Sort edits in reverse order to avoid position shifts
-          const sortedEdits = docChange.edits.sort((a, b) => {
-            const posA = posToOffset(view.state.doc, a.range.start)
-            const posB = posToOffset(view.state.doc, b.range.start)
-            return (posB ?? 0) - (posA ?? 0)
-          })
-
           // Create a single transaction with all changes
-          const changes = sortedEdits.map((edit) => ({
+          const changes = docChange.edits.map((edit) => ({
             from: posToOffset(view.state.doc, edit.range.start) ?? 0,
             to: posToOffset(view.state.doc, edit.range.end) ?? 0,
             insert: edit.newText,
@@ -1070,15 +1063,8 @@ export class LanguageServerPlugin implements PluginValue {
           continue
         }
 
-        // Sort changes in reverse order to avoid position shifts
-        const sortedChanges = changes.sort((a, b) => {
-          const posA = posToOffset(view.state.doc, a.range.start)
-          const posB = posToOffset(view.state.doc, b.range.start)
-          return (posB ?? 0) - (posA ?? 0)
-        })
-
         // Create a single transaction with all changes
-        const changeSpecs = sortedChanges.map((change) => ({
+        const changeSpecs = changes.map((change) => ({
           from: posToOffset(view.state.doc, change.range.start) ?? 0,
           to: posToOffset(view.state.doc, change.range.end) ?? 0,
           insert: change.newText,

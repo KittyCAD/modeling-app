@@ -15,10 +15,6 @@ export default function lspSignatureHelpExt(
         {
           key: 'Mod-Shift-Space',
           run: (view) => {
-            if (!plugin) {
-              return false
-            }
-
             const value = view.plugin(plugin)
             if (!value) return false
 
@@ -32,17 +28,10 @@ export default function lspSignatureHelpExt(
     ),
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     EditorView.updateListener.of(async (update) => {
-      if (!(plugin && update.docChanged)) return
+      if (!update.docChanged) return
 
       // Make sure this is a valid user typing event.
-      let isRelevant = false
-      for (const tr of update.transactions) {
-        if (tr.isUserEvent('input')) {
-          isRelevant = true
-        }
-      }
-
-      if (!isRelevant) {
+      if (!update.transactions.some((tr) => tr.isUserEvent('input'))) {
         // We only want signature help on user events.
         return
       }
@@ -59,18 +48,16 @@ export default function lspSignatureHelpExt(
 
       // Check if changes include trigger characters
       const changes = update.changes
-      let shouldTrigger = false
       let triggerPos = -1
 
       changes.iterChanges((_fromA, _toA, _fromB, toB, inserted) => {
-        if (shouldTrigger) return // Skip if already found a trigger
+        if (triggerPos >= 0) return // Skip if already found a trigger
 
         const text = inserted.toString()
         if (!text) return
 
         for (const char of triggerChars) {
           if (text.includes(char)) {
-            shouldTrigger = true
             triggerPos = toB
             triggerCharacter = char
             break
@@ -78,7 +65,7 @@ export default function lspSignatureHelpExt(
         }
       })
 
-      if (shouldTrigger && triggerPos >= 0) {
+      if (triggerPos >= 0) {
         await value.showSignatureHelpTooltip(
           update.view,
           triggerPos,
