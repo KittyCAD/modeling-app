@@ -11,9 +11,9 @@ If `num` is negative, the result will be too.
 
 ```kcl
 rem(
-  @num: [number](/docs/kcl/types/std-types-number),
-  divisor: [number](/docs/kcl/types/std-types-number),
-): [number](/docs/kcl/types/std-types-number)
+  @num: number,
+  divisor: number,
+): number
 ```
 
 

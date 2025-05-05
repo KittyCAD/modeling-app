@@ -5,10 +5,10 @@ description: Variables in memory after executing assembly_non_default_units.kcl
 {
   "other1": {
     "type": "Module",
-    "value": 8
+    "value": 1
   },
   "other2": {
     "type": "Module",
-    "value": 10
+    "value": 3
   }
 }

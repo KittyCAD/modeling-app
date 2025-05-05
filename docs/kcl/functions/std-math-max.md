@@ -9,7 +9,7 @@ Compute the maximum of the given arguments.
 
 
 ```kcl
-max(@input: [[number; 1+]](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+max(@input: [number; 1+]): number
 ```
 
 

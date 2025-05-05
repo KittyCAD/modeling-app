@@ -4,19 +4,17 @@ description: Operations executed pattern_into_union.kcl
 ---
 [
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -51,19 +49,17 @@ description: Operations executed pattern_into_union.kcl
     }
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -237,19 +233,17 @@ description: Operations executed pattern_into_union.kcl
     }
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -424,156 +418,154 @@ description: Operations executed pattern_into_union.kcl
   },
   {
     "isError": true,
-    "labeledArgs": {
-      "solids": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Solid",
-              "value": {
-                "artifactId": "[uuid]"
-              }
-            },
-            {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                },
-                {
-                  "type": "Solid",
-                  "value": {
-                    "artifactId": "[uuid]"
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "union",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              },
+              {
+                "type": "Solid",
+                "value": {
+                  "artifactId": "[uuid]"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "sourceRange": []
+    }
   }
 ]

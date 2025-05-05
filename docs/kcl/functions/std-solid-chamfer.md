@@ -12,11 +12,11 @@ a sharp, straight transitional edge.
 
 ```kcl
 chamfer(
-  @solid: [Solid](/docs/kcl/types/std-types-Solid),
+  @solid: Solid,
   length: number(Length),
-  tags: [[Edge; 1+]](/docs/kcl/types/std-types-Edge),
-  tag?: [tag](/docs/kcl/types/std-types-tag),
-): [Solid](/docs/kcl/types/std-types-Solid)
+  tags: [Edge; 1+],
+  tag?: tag,
+): Solid
 ```
 
 

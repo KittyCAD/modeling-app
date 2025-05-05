@@ -14,8 +14,8 @@ import ProjectMenu from '@src/routes/Onboarding/ProjectMenu'
 import Sketching from '@src/routes/Onboarding/Sketching'
 import Streaming from '@src/routes/Onboarding/Streaming'
 import UserMenu from '@src/routes/Onboarding/UserMenu'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 import { useDismiss } from '@src/routes/Onboarding/utils'
+import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 export const onboardingRoutes = [
   {
@@ -23,55 +23,55 @@ export const onboardingRoutes = [
     element: <Introduction />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.CAMERA),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.CAMERA),
     element: <Camera />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.STREAMING),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.STREAMING),
     element: <Streaming />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.EDITOR),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.EDITOR),
     element: <CodeEditor />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.PARAMETRIC_MODELING),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.PARAMETRIC_MODELING),
     element: <ParametricModeling />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.INTERACTIVE_NUMBERS),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.INTERACTIVE_NUMBERS),
     element: <InteractiveNumbers />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.COMMAND_K),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.COMMAND_K),
     element: <CmdK />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.USER_MENU),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.USER_MENU),
     element: <UserMenu />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.PROJECT_MENU),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.PROJECT_MENU),
     element: <ProjectMenu />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.EXPORT),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.EXPORT),
     element: <Export />,
   },
   // Export / conversion API
   {
-    path: makeUrlPathRelative(onboardingPaths.SKETCHING),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.SKETCHING),
     element: <Sketching />,
   },
   {
-    path: makeUrlPathRelative(onboardingPaths.FUTURE_WORK),
+    path: makeUrlPathRelative(ONBOARDING_SUBPATHS.FUTURE_WORK),
     element: <FutureWork />,
   },
 ]
 
 const Onboarding = () => {
   const dismiss = useDismiss()
-  useHotkeys('esc', dismiss)
+  useHotkeys('esc', () => dismiss())
 
   return (
     <div className="content" data-testid="onboarding-content">

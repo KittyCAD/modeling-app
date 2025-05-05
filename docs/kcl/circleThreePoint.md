@@ -10,12 +10,12 @@ Construct a circle derived from 3 points.
 
 ```kcl
 circleThreePoint(
-  sketchSurfaceOrGroup: [Sketch](/docs/kcl/types/std-types-Sketch) | [Plane](/docs/kcl/types/std-types-Plane) | [Face](/docs/kcl/types/std-types-Face),
-  p1: [Point2d](/docs/kcl/types/std-types-Point2d),
-  p2: [Point2d](/docs/kcl/types/std-types-Point2d),
-  p3: [Point2d](/docs/kcl/types/std-types-Point2d),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketchSurfaceOrGroup: Sketch | Plane | Face,
+  p1: Point2d,
+  p2: Point2d,
+  p3: Point2d,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

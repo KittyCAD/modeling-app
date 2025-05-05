@@ -10,13 +10,13 @@ When using radius and angle, draw a curved line segment along part of an imagina
 
 ```kcl
 tangentialArc(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  endAbsolute?: [Point2d](/docs/kcl/types/std-types-Point2d),
-  end?: [Point2d](/docs/kcl/types/std-types-Point2d),
-  radius?: [number](/docs/kcl/types/std-types-number),
-  angle?: [number](/docs/kcl/types/std-types-number),
-  tag?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  endAbsolute?: Point2d,
+  end?: Point2d,
+  radius?: number,
+  angle?: number,
+  tag?: TagDeclarator,
+): Sketch
 ```
 
 

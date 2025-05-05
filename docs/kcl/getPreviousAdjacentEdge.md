@@ -9,7 +9,7 @@ Get the previous adjacent edge to the edge given.
 
 
 ```kcl
-getPreviousAdjacentEdge(edge: [TagIdentifier](/docs/kcl/types#TagIdentifier)): Uuid
+getPreviousAdjacentEdge(edge: TagIdentifier): Uuid
 ```
 
 

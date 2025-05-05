@@ -39,7 +39,7 @@ newVar = myVar + 1`
         '  return a + b',
         '}',
         'theVar = 60',
-        'magicNum = funcN(9, theVar)',
+        'magicNum = funcN(a = 9, b = theVar)',
       ].join('\n')
     )
     expect(mem['theVar']?.value).toBe(60)
@@ -113,7 +113,7 @@ newVar = myVar + 1`
 
   it('pipe binary expression into call expression', async () => {
     const code = [
-      'fn myFn(a) { return a + 1 }',
+      'fn myFn(@a) { return a + 1 }',
       'myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
     const mem = await exe(code)
@@ -154,7 +154,7 @@ newVar = myVar + 1`
       '  |> line(endAbsolute = [1,1])',
       '  |> line(endAbsolute = [0, 1], tag = $myPath)',
       '  |> line(endAbsolute = [1,1])',
-      // '  |> rx(90, %)',
+      // '  |> rx(90)',
     ].join('\n')
     const mem = await exe(code)
     expect(mem['mySk1']).toEqual({

@@ -10,9 +10,9 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 ```kcl
 subtract2d(
-  sketch: [Sketch](/docs/kcl/types/std-types-Sketch),
-  tool: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-): [Sketch](/docs/kcl/types/std-types-Sketch)
+  sketch: Sketch,
+  tool: [Sketch],
+): Sketch
 ```
 
 

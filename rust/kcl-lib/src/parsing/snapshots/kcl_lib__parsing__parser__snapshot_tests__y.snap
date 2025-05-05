@@ -19,24 +19,6 @@ expression: actual
         "init": {
           "body": [
             {
-              "arguments": [
-                {
-                  "abs_path": false,
-                  "commentStart": 19,
-                  "end": 21,
-                  "name": {
-                    "commentStart": 19,
-                    "end": 21,
-                    "name": "XY",
-                    "start": 19,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 19,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 5,
@@ -55,28 +37,26 @@ expression: actual
               "commentStart": 5,
               "end": 22,
               "start": 5,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "abs_path": false,
+                "commentStart": 19,
+                "end": 21,
+                "name": {
+                  "commentStart": 19,
+                  "end": 21,
+                  "name": "XY",
+                  "start": 19,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 19,
+                "type": "Name",
+                "type": "Name"
+              }
             },
             {
-              "arguments": [
-                {
-                  "abs_path": false,
-                  "commentStart": 39,
-                  "end": 42,
-                  "name": {
-                    "commentStart": 39,
-                    "end": 42,
-                    "name": "pos",
-                    "start": 39,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 39,
-                  "type": "Name",
-                  "type": "Name"
-                }
-              ],
               "callee": {
                 "abs_path": false,
                 "commentStart": 26,
@@ -95,8 +75,24 @@ expression: actual
               "commentStart": 26,
               "end": 43,
               "start": 26,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "abs_path": false,
+                "commentStart": 39,
+                "end": 42,
+                "name": {
+                  "commentStart": 39,
+                  "end": 42,
+                  "name": "pos",
+                  "start": 39,
+                  "type": "Identifier"
+                },
+                "path": [],
+                "start": 39,
+                "type": "Name",
+                "type": "Name"
+              }
             }
           ],
           "commentStart": 5,

@@ -800,25 +800,26 @@ foreign
     }
   )
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
-    'Point-and-click Clone on assembly parts',
+  test(
+    `Point-and-click clone`,
     { tag: ['@electron'] },
     async ({
       context,
       page,
       homePage,
       scene,
+      editor,
       toolbar,
       cmdBar,
       tronApp,
-      editor,
     }) => {
       if (!tronApp) {
         fail()
       }
 
       const projectName = 'assembly'
+      const midPoint = { x: 500, y: 250 }
+      const [clickMidPoint] = scene.makeMouseHelpers(midPoint.x, midPoint.y)
 
       await test.step('Setup parts and expect imported model', async () => {
         await context.folderSetupFn(async (dir) => {
@@ -853,6 +854,50 @@ washer
         await homePage.openProject(projectName)
         await scene.settled(cmdBar)
         await toolbar.closePane('code')
+      })
+
+      await test.step('Try to clone from scene selection and expect error', async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Clone a solid')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'selection',
+          commandName: 'Clone',
+        })
+        await clickMidPoint()
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'variableName',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '1 path',
+            VariableName: '',
+          },
+          highlightedHeaderArg: 'variableName',
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: {
+            Selection: '1 path',
+            VariableName: 'clone001',
+          },
+          commandName: 'Clone',
+        })
+        await cmdBar.progressCmdBar()
+        await expect(
+          page.getByText(
+            "Couldn't retrieve selection. If you're trying to transform an import, use the feature tree."
+          )
+        ).toBeVisible()
       })
 
       await test.step('Clone the part using the feature tree', async () => {

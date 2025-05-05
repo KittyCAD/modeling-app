@@ -10,13 +10,13 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 
 ```kcl
 extrude(
-  sketches: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  length: [number](/docs/kcl/types/std-types-number),
-  symmetric?: [bool](/docs/kcl/types/std-types-bool),
-  bidirectionalLength?: [number](/docs/kcl/types/std-types-number),
-  tagStart?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-  tagEnd?: [TagDeclarator](/docs/kcl/types#TagDeclarator),
-): [[Solid]](/docs/kcl/types/std-types-Solid)
+  sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
+): [Solid]
 ```
 
 

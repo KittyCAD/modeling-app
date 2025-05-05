@@ -265,7 +265,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `angledLineToYy = -0.76`,
     `part001 = startSketchOn(XY)`,
     `  |> startProfile(at = [0, 0])`,
-    // `  |> rx(90, %)`,
+    // `  |> rx(90)`,
     `  |> line(endAbsolute = [1, 1])`,
     `  |> line(end = [lineX, 2.13])`,
     `  |> line(endAbsolute = [lineToX, 2.85])`,

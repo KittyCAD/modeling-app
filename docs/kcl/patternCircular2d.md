@@ -10,13 +10,13 @@ Repeat a 2-dimensional sketch some number of times along a partial or complete c
 
 ```kcl
 patternCircular2d(
-  sketchSet: [[Sketch]](/docs/kcl/types/std-types-Sketch),
-  instances: [number](/docs/kcl/types/std-types-number),
-  center: [Point2d](/docs/kcl/types/std-types-Point2d),
-  arcDegrees: [number](/docs/kcl/types/std-types-number),
-  rotateDuplicates: [bool](/docs/kcl/types/std-types-bool),
-  useOriginal?: [bool](/docs/kcl/types/std-types-bool),
-): [[Sketch]](/docs/kcl/types/std-types-Sketch)
+  sketchSet: [Sketch],
+  instances: number,
+  center: Point2d,
+  arcDegrees: number,
+  rotateDuplicates: bool,
+  useOriginal?: bool,
+): [Sketch]
 ```
 
 

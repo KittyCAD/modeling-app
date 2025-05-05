@@ -1,8 +1,13 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { AppHeader } from '@src/components/AppHeader'
@@ -19,7 +24,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import { kclManager } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -39,6 +44,14 @@ import {
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import {
+  acceptOnboarding,
+  needsToOnboard,
+  onDismissOnboardingInvite,
+} from '@src/routes/Onboarding/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -69,8 +82,10 @@ const Home = () => {
     })
   })
 
+  const location = useLocation()
   const navigate = useNavigate()
   const settings = useSettings()
+  const onboardingStatus = settings.app.onboardingStatus.current
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -182,7 +197,6 @@ const Home = () => {
       splitKey: '|',
     }
   )
-  const ref = useRef<HTMLDivElement>(null)
   const projects = useFolders()
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } = useProjectSearch(projects)
@@ -191,9 +205,9 @@ const Home = () => {
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   return (
-    <div className="relative flex flex-col h-screen overflow-hidden" ref={ref}>
+    <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
       <AppHeader showToolbar={false} />
-      <div className="overflow-hidden home-layout max-w-4xl xl:max-w-7xl mb-12 px-4 mx-auto mt-24 lg:px-0">
+      <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
           sort={sort}
@@ -202,8 +216,44 @@ const Home = () => {
           readWriteProjectDir={readWriteProjectDir}
           className="col-start-2 -col-end-1"
         />
-        <aside className="row-start-1 -row-end-1 flex flex-col justify-between">
+        <aside className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 lg:flex flex-col justify-between">
           <ul className="flex flex-col">
+            {needsToOnboard(location, onboardingStatus) && (
+              <li className="flex group">
+                <ActionButton
+                  Element="button"
+                  onClick={() => {
+                    acceptOnboarding({
+                      onboardingStatus,
+                      navigate,
+                      codeManager,
+                      kclManager,
+                    }).catch(reportRejection)
+                  }}
+                  className={`${sidebarButtonClasses} !text-primary flex-1`}
+                  iconStart={{
+                    icon: 'play',
+                    bgClassName: '!bg-primary rounded-sm',
+                    iconClassName: '!text-white',
+                  }}
+                  data-testid="home-tutorial-button"
+                >
+                  {onboardingStatus === '' ? 'Start' : 'Continue'} tutorial
+                </ActionButton>
+                <ActionButton
+                  Element="button"
+                  onClick={onDismissOnboardingInvite}
+                  className={`${sidebarButtonClasses} hidden group-hover:flex flex-none ml-auto`}
+                  iconStart={{
+                    icon: 'close',
+                    bgClassName: '!bg-transparent rounded-sm',
+                  }}
+                  data-testid="onboarding-dismiss"
+                >
+                  <Tooltip>Dismiss tutorial</Tooltip>
+                </ActionButton>
+              </li>
+            )}
             <li className="contents">
               <ActionButton
                 Element="button"
@@ -251,6 +301,15 @@ const Home = () => {
                 data-testid="home-text-to-cad"
               >
                 Generate with Text-to-CAD
+                <Tooltip position="bottom-left">
+                  <div className="text-sm flex flex-col max-w-xs">
+                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+                      <CustomIcon name="beaker" className="w-4 h-4" />
+                      <span>Experimental</span>
+                    </div>
+                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
+                  </div>
+                </Tooltip>
               </ActionButton>
             </li>
             <li className="contents">
@@ -324,7 +383,7 @@ const Home = () => {
           sort={sort}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
-        <LowerRightControls />
+        <LowerRightControls navigate={navigate} />
       </div>
     </div>
   )
@@ -350,53 +409,55 @@ function HomeHeader({
 
   return (
     <section {...rest}>
-      <div className="flex justify-between items-center select-none">
+      <div className="flex flex-col md:flex-row gap-4 justify-between md:items-center select-none">
         <div className="flex gap-8 items-center">
           <h1 className="text-3xl font-bold">Projects</h1>
         </div>
-        <div className="flex gap-2 items-center">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <ProjectSearchBar setQuery={setQuery} />
-          <small>Sort by</small>
-          <ActionButton
-            Element="button"
-            data-testid="home-sort-by-name"
-            className={`text-xs border-primary/10 ${
-              !sort.includes('name')
-                ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                : ''
-            }`}
-            onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
-            iconStart={{
-              icon: getSortIcon(sort, 'name'),
-              bgClassName: 'bg-transparent',
-              iconClassName: !sort.includes('name')
-                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                : '',
-            }}
-          >
-            Name
-          </ActionButton>
-          <ActionButton
-            Element="button"
-            data-testid="home-sort-by-modified"
-            className={`text-xs border-primary/10 ${
-              !isSortByModified
-                ? 'text-chalkboard-80 dark:text-chalkboard-40'
-                : ''
-            }`}
-            onClick={() =>
-              setSearchParams(getNextSearchParams(sort, 'modified'))
-            }
-            iconStart={{
-              icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
-              bgClassName: 'bg-transparent',
-              iconClassName: !isSortByModified
-                ? '!text-chalkboard-90 dark:!text-chalkboard-30'
-                : '',
-            }}
-          >
-            Last Modified
-          </ActionButton>
+          <div className="flex gap-2 items-center">
+            <small>Sort by</small>
+            <ActionButton
+              Element="button"
+              data-testid="home-sort-by-name"
+              className={`text-xs border-primary/10 ${
+                !sort.includes('name')
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }`}
+              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
+              iconStart={{
+                icon: getSortIcon(sort, 'name'),
+                bgClassName: 'bg-transparent',
+                iconClassName: !sort.includes('name')
+                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  : '',
+              }}
+            >
+              Name
+            </ActionButton>
+            <ActionButton
+              Element="button"
+              data-testid="home-sort-by-modified"
+              className={`text-xs border-primary/10 ${
+                !isSortByModified
+                  ? 'text-chalkboard-80 dark:text-chalkboard-40'
+                  : ''
+              }`}
+              onClick={() =>
+                setSearchParams(getNextSearchParams(sort, 'modified'))
+              }
+              iconStart={{
+                icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
+                bgClassName: 'bg-transparent',
+                iconClassName: !isSortByModified
+                  ? '!text-chalkboard-90 dark:!text-chalkboard-30'
+                  : '',
+              }}
+            >
+              Last Modified
+            </ActionButton>
+          </div>
         </div>
       </div>
       <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
@@ -453,7 +514,7 @@ function ProjectGrid({
       ) : (
         <>
           {searchResults.length > 0 ? (
-            <ul className="grid w-full md:grid-cols-2 xl:grid-cols-4 gap-4">
+            <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {searchResults.sort(getSortFunction(sort)).map((project) => (
                 <ProjectCard
                   key={project.name}

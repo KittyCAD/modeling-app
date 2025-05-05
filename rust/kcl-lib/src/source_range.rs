@@ -99,6 +99,11 @@ impl SourceRange {
         pos >= self.start() && pos <= self.end()
     }
 
+    /// Check if the range contains another range.  Modules must match.
+    pub(crate) fn contains_range(&self, other: &Self) -> bool {
+        self.module_id() == other.module_id() && self.start() <= other.start() && self.end() >= other.end()
+    }
+
     pub fn start_to_lsp_position(&self, code: &str) -> LspPosition {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.

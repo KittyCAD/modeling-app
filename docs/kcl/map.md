@@ -6,13 +6,13 @@ layout: manual
 
 Apply a function to every element of a list.
 
-Given a list like `[[a, b, c]]`, and a function like `f`, returns `[[f(a), f(b), f(c)]]`
+Given a list like `[a, b, c]`, and a function like `f`, returns `[f(a), f(b), f(c)]`
 
 ```kcl
 map(
-  array: [[any]](/docs/kcl/types/std-types-any),
+  array: [any],
   f: FunctionSource,
-): [[any]](/docs/kcl/types/std-types-any)
+): [any]
 ```
 
 

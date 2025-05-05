@@ -704,7 +704,7 @@ const onlyConsecutivePaths = (
     if (expr.type === 'VariableDeclaration') {
       const init = expr.declaration?.init
       if (!init) return false
-      if (init.type === 'CallExpression') {
+      if (init.type === 'CallExpressionKw') {
         return false
       }
       if (init.type === 'BinaryExpression' && isNodeSafe(init)) {

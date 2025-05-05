@@ -9,7 +9,7 @@ Compute the smallest integer greater than or equal to a number.
 
 
 ```kcl
-ceil(@input: [number](/docs/kcl/types/std-types-number)): [number](/docs/kcl/types/std-types-number)
+ceil(@input: number): number
 ```
 
 
