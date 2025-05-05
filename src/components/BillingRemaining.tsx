@@ -1,3 +1,4 @@
+import { IS_NIGHTLY } from '@src/routes/utils'
 import { Spinner } from '@src/components/Spinner'
 import { useSelector } from '@xstate/react'
 import { useState } from 'react'
@@ -108,6 +109,10 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
     '!text-chalkboard-100',
     'dark:!text-chalkboard-0',
   ]
+
+  if (!IS_NIGHTLY) {
+    return <></>
+  }
 
   return (
     <div
