@@ -140,7 +140,7 @@ export function createApplicationCommands({
                 type: SystemIOMachineEvents.importFileFromURL,
                 data: {
                   requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileName: folderNameBecomesKCLFileName,
+                  requestedFileNameWithExtension: folderNameBecomesKCLFileName,
                   requestedCode: code,
                 },
               })
@@ -148,14 +148,14 @@ export function createApplicationCommands({
             .catch(reportError)
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
-          const fileWithExtension = clonePath.split('/').pop()
+          const fileNameWithExtension = clonePath.split('/').pop()
           const readFileContentsAndCreateNewFile = async () => {
             const text = await window.electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
-                requestedFileName: fileWithExtension,
+                requestedFileNameWithExtension: fileNameWithExtension,
                 requestedCode: text,
               },
             })

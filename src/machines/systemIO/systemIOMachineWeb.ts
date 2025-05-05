@@ -17,7 +17,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedFileName: string
+          requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
@@ -42,7 +42,7 @@ export const systemIOMachineWeb = systemIOMachine.provide({
         await input.rootContext.kclManager.executeCode()
         return {
           message: 'File overwritten successfully',
-          fileName: input.requestedFileName,
+          fileName: input.requestedFileNameWithExtension,
           projectName: '',
           subRoute: input.requestedSubRoute || '',
         }
