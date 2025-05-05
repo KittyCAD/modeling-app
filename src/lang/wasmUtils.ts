@@ -2,7 +2,7 @@ import {
   import_file_extensions,
   relevant_file_extensions,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { webSafePathSplit } from '@src/lib/paths'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import { init, reloadModule } from '@src/lib/wasm_lib_wrapper'
 
 export const wasmUrl = () => {
@@ -13,7 +13,7 @@ export const wasmUrl = () => {
   const fullUrl = document.location.protocol.includes('http')
     ? document.location.origin + '/kcl_wasm_lib_bg.wasm'
     : document.location.protocol +
-      webSafePathSplit(document.location.pathname).slice(0, -1).join('/') +
+      webSafeJoin(webSafePathSplit(document.location.pathname).slice(0, -1)) +
       '/kcl_wasm_lib_bg.wasm'
 
   return fullUrl

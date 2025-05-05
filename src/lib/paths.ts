@@ -145,10 +145,12 @@ export function parseProjectRoute(
  * /dog/cat
  */
 export function joinRouterPaths(...parts: string[]): string {
-  return `/${parts
-    .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
-    .filter((part) => part.length > 0) // Remove empty segments
-    .join('/')}`
+  const cleanedUpPath = webSafeJoin(
+    parts
+      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0)
+  ) // Remove empty segments
+  return `/${cleanedUpPath}`
 }
 
 /**
@@ -196,11 +198,22 @@ export function webSafePathSplit(path: string): string[] {
   return path.split(webSafeSep)
 }
 
+export function webSafeJoin(paths: string[]): string {
+  const webSafeSep = '/'
+  return paths.join(webSafeSep)
+}
+
 /**
  * Splits any paths safely based on the runtime
  */
 export function desktopSafePathSplit(path: string): string[] {
   return isDesktop()
-    ? path.split(`${window.electron.sep}`)
+    ? path.split(`${window?.electron?.sep}`)
     : webSafePathSplit(path)
+}
+
+export function desktopSafePathJoin(paths: string[]): string {
+  return isDesktop()
+    ? paths.join(`${window?.electron?.sep}`)
+    : webSafeJoin(paths)
 }

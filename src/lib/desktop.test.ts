@@ -5,7 +5,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { initPromise } from '@src/lang/wasmUtils'
 import { listProjects } from '@src/lib/desktop'
 import type { DeepPartial } from '@src/lib/types'
-import { webSafePathSplit } from '@src/lib/paths'
+import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 
 beforeAll(async () => {
   await initPromise
@@ -77,7 +77,7 @@ describe('desktop utilities', () => {
 
     // Setup default mock implementations
     mockElectron.path.join.mockImplementation((...parts: string[]) =>
-      parts.join('/')
+      webSafeJoin(parts)
     )
     mockElectron.path.basename.mockImplementation((path: string) =>
       // The tests is hard coded to / so webSafe is defaulted to /
@@ -85,9 +85,7 @@ describe('desktop utilities', () => {
     )
     mockElectron.path.dirname.mockImplementation((path: string) =>
       // The tests is hard coded to / so webSafe is defaulted to /
-      webSafePathSplit(path)
-        .slice(0, -1)
-        .join('/')
+      webSafeJoin(webSafePathSplit(path).slice(0, -1))
     )
 
     // Mock readdir to return the entries for the given path
