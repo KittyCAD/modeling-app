@@ -194,6 +194,12 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         self.async_tasks().clear().await;
     }
 
+    /// Fetch debug information from the peer.
+    async fn fetch_debug(&self) -> Result<(), crate::errors::KclError>;
+
+    /// Get any debug information (if requested)
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData>;
+
     /// Send a modeling command and do not wait for the response message.
     async fn inner_fire_modeling_cmd(
         &self,

@@ -307,6 +307,14 @@ impl crate::engine::EngineManager for EngineConnection {
         Ok(())
     }
 
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        unimplemented!();
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        None
+    }
+
     async fn inner_fire_modeling_cmd(
         &self,
         id: uuid::Uuid,
