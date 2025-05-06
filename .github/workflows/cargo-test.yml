@@ -210,7 +210,9 @@ jobs:
           workspaces: './rust'
       - name: Build Wasm
         shell: bash
-        run: npm run build:wasm
+        run: |
+          npm install
+          npm run build:wasm
       - name: Run wasm tests
         run: |
           cd rust
