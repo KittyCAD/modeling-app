@@ -13,12 +13,10 @@ baseH = 1
 coneH = totalH - baseH
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([bottomInnerR, 0], %)
+  |> startProfile(at = [bottomInnerR, 0])
   |> xLine(endAbsolute = bottomOuterR)
   |> yLine(length = baseH)
   |> line(end = [-(bottomOuterR - topOuterR), coneH])
   |> line(end = [-(topOuterR - topInnerR), 0])
-  |> close(%)
+  |> close()
   |> revolve(axis = Y)
-
-
