@@ -339,6 +339,21 @@ code {
   .outline-appForeground {
     @apply outline-chalkboard-100 dark:outline-chalkboard-10;
   }
+
+  /* hightlight an object with a moving dashed outline */
+  .onboarding-highlight {
+    @apply outline outline-2;
+    animation: onboarding-highlight 0.7s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes onboarding-highlight {
+    0% {
+      outline-offset: 0px;
+    }
+    100% {
+      outline-offset: 4px;
+    }
+  }
 }
 
 #code-mirror-override .cm-scroller,

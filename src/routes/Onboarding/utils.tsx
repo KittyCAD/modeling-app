@@ -1,11 +1,10 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
-  Outlet,
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { waitFor } from 'xstate'
+import { type SnapshotFrom, waitFor } from 'xstate'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -19,6 +18,7 @@ import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {
   codeManager,
+  commandBarActor,
   editorManager,
   kclManager,
   systemIOActor,
@@ -30,6 +30,7 @@ import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   DEFAULT_PROJECT_KCL_FILE,
   EXECUTION_TYPE_REAL,
+  ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
 } from '@src/lib/constants'
 import toast from 'react-hot-toast'
@@ -41,11 +42,12 @@ import { Logo } from '@src/components/Logo'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   isOnboardingPath,
-  OnboardingPath,
+  type OnboardingPath,
   onboardingPaths,
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
 
 export const kbdClasses =
   'py-0.5 px-1 text-sm rounded bg-chalkboard-10 dark:bg-chalkboard-100 border border-chalkboard-50 border-b-2'
@@ -57,6 +59,19 @@ function getStepNumber(
 ) {
   return slug ? Object.values(onboardingPaths[platform]).indexOf(slug) + 1 : -1
 }
+
+export const OnboardingCard = ({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={`relative max-w-3xl min-w-80 bg-chalkboard-10 dark:bg-chalkboard-90 py-6 px-8 rounded border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg ${className || ''}`}
+    {...props}
+  >
+    {children}
+  </div>
+)
 
 export function useDemoCode() {
   const { overallState, immediateState } = useNetworkContext()
@@ -106,7 +121,6 @@ export function useNextClick(newStatus: OnboardingStatus) {
       data: { level: 'user', value: newStatus },
     })
     const targetRoute = joinRouterPaths(filePath, PATHS.ONBOARDING, newStatus)
-    console.log('FRANK gonna navigate', targetRoute)
     navigate(targetRoute)
   }, [filePath, newStatus, navigate])
 }
@@ -144,22 +158,11 @@ export function useDismiss() {
   return settingsCallback
 }
 
-export function OnboardingButtons({
-  currentSlug,
-  platform = 'browser',
-  className,
-  dismissClassName,
-  onNextOverride,
-  ...props
-}: {
-  currentSlug?: OnboardingPath
-  platform?: keyof typeof onboardingPaths
-  className?: string
-  dismissClassName?: string
-  onNextOverride?: () => void
-} & React.HTMLAttributes<HTMLDivElement>) {
+export function useAdjacentOnboardingSteps(
+  currentSlug?: OnboardingPath,
+  platform: undefined | keyof typeof onboardingPaths = 'browser'
+) {
   const onboardingPathsArray = Object.values(onboardingPaths[platform])
-  const dismiss = useDismiss()
   const stepNumber = getStepNumber(currentSlug, platform)
   const previousStep =
     !stepNumber || stepNumber <= 1 ? null : onboardingPathsArray[stepNumber - 2]
@@ -171,25 +174,58 @@ export function OnboardingButtons({
   const previousOnboardingStatus: OnboardingStatus = previousStep ?? 'dismissed'
   const nextOnboardingStatus: OnboardingStatus = nextStep ?? 'completed'
 
-  console.log('FRANK what do we have here?', {
-    currentSlug,
-    stepNumber,
-    previousStep,
-    previousOnboardingStatus,
-    onboardingPathsArray,
-  })
+  return [previousOnboardingStatus, nextOnboardingStatus]
+}
 
+export function useOnboardingClicks(
+  currentSlug?: OnboardingPath,
+  platform: undefined | keyof typeof onboardingPaths = 'browser'
+) {
+  const [previousOnboardingStatus, nextOnboardingStatus] =
+    useAdjacentOnboardingSteps(currentSlug, platform)
   const goToPrevious = useNextClick(previousOnboardingStatus)
   const goToNext = useNextClick(nextOnboardingStatus)
+
+  return [goToPrevious, goToNext]
+}
+
+export function OnboardingButtons({
+  currentSlug,
+  platform = 'browser',
+  dismissPosition = 'left',
+  className,
+  dismissClassName,
+  onNextOverride,
+  ...props
+}: {
+  currentSlug?: OnboardingPath
+  platform?: keyof typeof onboardingPaths
+  dismissPosition?: 'left' | 'right'
+  className?: string
+  dismissClassName?: string
+  onNextOverride?: () => void
+} & React.HTMLAttributes<HTMLDivElement>) {
+  const dismiss = useDismiss()
+  const onboardingPathsArray = Object.values(onboardingPaths[platform])
+  const stepNumber = getStepNumber(currentSlug, platform)
+  const [previousStep, nextStep] = useAdjacentOnboardingSteps(
+    currentSlug,
+    platform
+  )
+  const [goToPrevious, goToNext] = useOnboardingClicks(currentSlug, platform)
 
   return (
     <>
       <button
         type="button"
         onClick={() => dismiss()}
-        className={`group block !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ${
+        className={`group block !absolute top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent ${
           dismissClassName
         }`}
+        style={{
+          left: dismissPosition === 'left' ? 'auto' : '100%',
+          right: dismissPosition === 'left' ? '100%' : 'auto',
+        }}
         data-testid="onboarding-dismiss"
       >
         <CustomIcon
@@ -206,16 +242,25 @@ export function OnboardingButtons({
       >
         <ActionButton
           Element="button"
-          onClick={() => (previousStep ? goToPrevious() : dismiss())}
+          onClick={() =>
+            previousStep && previousStep !== 'dismissed'
+              ? goToPrevious()
+              : dismiss()
+          }
           iconStart={{
-            icon: previousStep ? 'arrowLeft' : 'close',
+            icon:
+              previousStep && previousStep !== 'dismissed'
+                ? 'arrowLeft'
+                : 'close',
             className: 'text-chalkboard-10',
             bgClassName: 'bg-destroy-80 group-hover:bg-destroy-80',
           }}
           className="hover:border-destroy-40 hover:bg-destroy-10/50 dark:hover:bg-destroy-80/50"
           data-testid="onboarding-prev"
+          id="onboarding-prev"
+          tabIndex={0}
         >
-          {previousStep ? 'Back' : 'Dismiss'}
+          {previousStep && previousStep !== 'dismissed' ? 'Back' : 'Dismiss'}
         </ActionButton>
         {stepNumber !== undefined && (
           <p className="font-mono text-xs text-center m-0">
@@ -224,9 +269,10 @@ export function OnboardingButtons({
         )}
         <ActionButton
           autoFocus
+          tabIndex={0}
           Element="button"
           onClick={() => {
-            if (nextStep) {
+            if (nextStep && nextStep !== 'completed') {
               const result = onNextOverride ? onNextOverride() : goToNext()
               if (err(result)) {
                 reportRejection(result)
@@ -236,13 +282,15 @@ export function OnboardingButtons({
             }
           }}
           iconStart={{
-            icon: nextStep ? 'arrowRight' : 'checkmark',
+            icon:
+              nextStep && nextStep !== 'completed' ? 'arrowRight' : 'checkmark',
             bgClassName: 'dark:bg-chalkboard-80',
           }}
           className="dark:hover:bg-chalkboard-80/50"
           data-testid="onboarding-next"
+          id="onboarding-next"
         >
-          {nextStep ? 'Next' : 'Finish'}
+          {nextStep && nextStep !== 'completed' ? 'Next' : 'Finish'}
         </ActionButton>
       </div>
     </>
@@ -463,4 +511,140 @@ export function TutorialWebConfirmationToast(props: OnboardingUtilDeps) {
       </div>
     </div>
   )
+}
+
+/**
+ * Find the the element with a given `data-onboarding-id` attribute
+ * and highlight it on mount, unhighlighting on unmount.
+ */
+export function useOnboardingHighlight(elementId: string) {
+  useEffect(() => {
+    const elementToHighlight = document.querySelector(
+      `[data-${ONBOARDING_DATA_ATTRIBUTE}="${elementId}"`
+    )
+    if (elementToHighlight === null) {
+      console.error('Text-to-CAD dropdown element not found')
+      return
+    }
+    // There is an ".onboarding-highlight" class defined in index.css
+    elementToHighlight?.classList.add('onboarding-highlight')
+
+    // Remove the highlight on unmount
+    return () => {
+      elementToHighlight?.classList.remove('onboarding-highlight')
+    }
+  }, [elementId])
+}
+
+/**
+ * Utility hook to set the pane state on mount and unmount.
+ */
+export function useOnboardingPanes(
+  onMount: SidebarType[] | undefined = [],
+  onUnmount: SidebarType[] | undefined = []
+) {
+  const { send } = useModelingContext()
+  useEffect(() => {
+    send({
+      type: 'Set context',
+      data: {
+        openPanes: onMount,
+      },
+    })
+
+    return () =>
+      send({
+        type: 'Set context',
+        data: {
+          openPanes: onUnmount,
+        },
+      })
+  }, [send])
+}
+
+export function isModelingCmdGroupReady(
+  state: SnapshotFrom<typeof commandBarActor>
+) {
+  // Ensure that the modeling command group is available
+  if (
+    state.context.commands.some((command) => command.groupId === 'modeling')
+  ) {
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Utility onboarding hook to wait for the engine connection to be established
+ */
+export function useOnModelingCmdGroupReadyOnce(
+  callback: () => void,
+  deps: React.DependencyList
+) {
+  const [isReadyOnce, setReadyOnce] = useState(false)
+
+  // Set up a subscription to the command bar actor's
+  // modeling command group
+  useEffect(() => {
+    const isReadyNow = isModelingCmdGroupReady(commandBarActor.getSnapshot())
+    if (isReadyNow) {
+      setReadyOnce(true)
+    } else {
+      const subscription = commandBarActor.subscribe((state) => {
+        if (isModelingCmdGroupReady(state)) {
+          setReadyOnce(true)
+        }
+      })
+      return () => subscription.unsubscribe()
+    }
+  }, [])
+
+  // Fire the callback when the modeling command group is ready
+  useEffect(() => {
+    if (isReadyOnce) {
+      callback()
+    }
+  }, [isReadyOnce, ...deps])
+}
+
+/**
+ * If your onboarding step opens the command palette it will mess with keyboard focus.
+ * To side-step this, use this hook to override a form submission to advance the onboarding.
+ */
+export function useAdvanceOnboardingOnFormSubmit(
+  currentSlug?: OnboardingPath,
+  platform: undefined | keyof typeof onboardingPaths = 'browser'
+) {
+  const [_prev, goToNext] = useOnboardingClicks(currentSlug, platform)
+
+  useEffect(() => {
+    // Override form submission events so the command palette can't be submitted
+    const formSubmitListener = (e: SubmitEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      e.stopImmediatePropagation()
+      goToNext()
+    }
+    const keyUpListener = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault()
+        e.stopPropagation()
+        e.stopImmediatePropagation()
+        goToNext()
+      }
+    }
+
+    window.addEventListener('submit', formSubmitListener)
+    window.addEventListener('keydown', keyUpListener)
+    // FUN FACT: If a button has focus and the user presses enter,
+    // no `keydown` event is fired. But `click` and `keyup` ARE.
+    window.addEventListener('keyup', keyUpListener)
+    // Remove the listener when we leave
+    return () => {
+      window.removeEventListener('submit', formSubmitListener)
+      window.removeEventListener('keydown', keyUpListener)
+      window.removeEventListener('keyup', keyUpListener)
+    }
+  }, [goToNext])
 }

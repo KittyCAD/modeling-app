@@ -76,6 +76,7 @@ function AppLogoLink({
   return isDesktop() ? (
     <Link
       data-testid="app-logo"
+      data-onboarding-id="app-logo"
       onClick={() => {
         onProjectClose(file || null, project?.path || null, false)
         kclManager.switchedFiles = true
@@ -87,7 +88,11 @@ function AppLogoLink({
       <span className="sr-only">{APP_NAME}</span>
     </Link>
   ) : (
-    <div className={wrapperClassName} data-testid="app-logo">
+    <div
+      className={wrapperClassName}
+      data-testid="app-logo"
+      data-onboarding-id="app-logo"
+    >
       <Logo className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </div>

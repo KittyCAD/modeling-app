@@ -355,7 +355,11 @@ function ModelingPaneButton({
   })
 
   return (
-    <div id={paneConfig.id + '-button-holder'} className="relative">
+    <div
+      id={paneConfig.id + '-button-holder'}
+      className="relative"
+      data-onboarding-id={`${paneConfig.id}-pane-button`}
+    >
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
