@@ -10,6 +10,7 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_doc::ModData;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -21,6 +22,12 @@ use crate::{
     execution::{types::NumericType, Sketch},
     std::Primitive,
 };
+
+// These types are declared in (KCL) std.
+const DECLARED_TYPES: [&str; 15] = [
+    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
+    "Point3d", "Axis2d", "Axis3d",
+];
 
 lazy_static::lazy_static! {
     static ref NUMERIC_TYPE_SCHEMA: schemars::schema::SchemaObject = {
@@ -157,11 +164,20 @@ impl StdLibFnArg {
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
-    pub fn description(&self) -> Option<String> {
+    pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
             return Some(self.description.clone());
         }
+
+        if let Some(kcl_std) = kcl_std {
+            if DECLARED_TYPES.contains(&&*self.type_) {
+                if let Some(data) = kcl_std.find_by_name(&self.type_) {
+                    return data.summary().cloned();
+                }
+            }
+        }
+
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
@@ -373,7 +389,7 @@ impl From<StdLibFnArg> for ParameterInformation {
     fn from(arg: StdLibFnArg) -> Self {
         ParameterInformation {
             label: ParameterLabel::Simple(arg.name.to_string()),
-            documentation: arg.description().map(|description| {
+            documentation: arg.description(None).map(|description| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: description,

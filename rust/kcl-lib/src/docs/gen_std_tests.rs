@@ -9,13 +9,11 @@ use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::{docs::StdLibFn, std::StdLib, ExecutorContext};
-
-// These types are declared in (KCL) std.
-const DECLARED_TYPES: [&str; 15] = [
-    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
-    "Point3d", "Axis2d", "Axis3d",
-];
+use crate::{
+    docs::{StdLibFn, DECLARED_TYPES},
+    std::StdLib,
+    ExecutorContext,
+};
 
 // Types with special handling.
 const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
@@ -395,7 +393,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     Ok(())
 }
 
-fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
+fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     if internal_fn.unpublished() {
@@ -445,14 +443,14 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
             json!({
                 "name": arg.name,
                 "type_": rename_type(&arg.type_),
-                "description": arg.description(),
+                "description": arg.description(Some(kcl_std)),
                 "required": arg.required,
             })
         }).collect::<Vec<_>>(),
         "return_value": internal_fn.return_value(false).map(|ret| {
             json!({
                 "type_": rename_type(&ret.type_),
-                "description": ret.description(),
+                "description": ret.description(Some(kcl_std)),
             })
         }),
     });
@@ -657,7 +655,7 @@ fn test_generate_stdlib_markdown_docs() {
 
     for key in combined.keys().sorted() {
         let internal_fn = combined.get(key).unwrap();
-        generate_function(internal_fn.clone()).unwrap();
+        generate_function(internal_fn.clone(), &kcl_std).unwrap();
     }
 
     for d in kcl_std.all_docs() {

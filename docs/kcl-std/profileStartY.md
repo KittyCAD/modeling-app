@@ -20,7 +20,7 @@ profileStartY(@profile: Sketch): number
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number)
+[`number`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

@@ -26,7 +26,7 @@ startProfile(
 
 ### Returns
 
-[`Sketch`](/docs/kcl-std/types/std-types-Sketch)
+[`Sketch`](/docs/kcl-std/types/std-types-Sketch) - A sketch is a collection of paths.
 
 
 ### Examples
