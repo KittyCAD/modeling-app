@@ -1131,7 +1131,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,

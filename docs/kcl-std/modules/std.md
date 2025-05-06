@@ -31,5 +31,4 @@ Contains frequently used constants, functions for interacting with the KittyCAD 
 * [`Z`](/docs/kcl-std/consts/std-Z)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
-* [`revolve`](/docs/kcl-std/functions/std-revolve)
 
