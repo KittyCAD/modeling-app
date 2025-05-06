@@ -3759,7 +3759,7 @@ extrude001 = extrude(profile001, length = 100)
       await scene.expectPixelColor(initialColor, testPoint, tolerance)
     })
 
-    async function setApperanceAndCheck(
+    async function setAppearanceAndCheck(
       option: string,
       hex: string,
       shapeColor?: [number, number, number]
@@ -3832,18 +3832,18 @@ extrude001 = extrude(profile001, length = 100)
     }
 
     await test.step(`Go through the Set Appearance flow for all options`, async () => {
-      await setApperanceAndCheck('Red', '#FF0000', [180, 30, 30])
+      await setAppearanceAndCheck('Red', '#FF0000', [180, 30, 30])
       // Not checking the scene color every time cause that's not really deterministic. Red seems reliable though
-      await setApperanceAndCheck('Green', '#00FF00')
-      await setApperanceAndCheck('Blue', '#0000FF')
-      await setApperanceAndCheck('Turquoise', '#00FFFF')
-      await setApperanceAndCheck('Purple', '#FF00FF')
-      await setApperanceAndCheck('Yellow', '#FFFF00')
-      await setApperanceAndCheck('Black', '#000000')
-      await setApperanceAndCheck('Dark Grey', '#080808')
-      await setApperanceAndCheck('Light Grey', '#D3D3D3')
-      await setApperanceAndCheck('White', '#FFFFFF')
-      await setApperanceAndCheck(
+      await setAppearanceAndCheck('Green', '#00FF00')
+      await setAppearanceAndCheck('Blue', '#0000FF')
+      await setAppearanceAndCheck('Turquoise', '#00FFFF')
+      await setAppearanceAndCheck('Purple', '#FF00FF')
+      await setAppearanceAndCheck('Yellow', '#FFFF00')
+      await setAppearanceAndCheck('Black', '#000000')
+      await setAppearanceAndCheck('Dark Grey', '#080808')
+      await setAppearanceAndCheck('Light Grey', '#D3D3D3')
+      await setAppearanceAndCheck('White', '#FFFFFF')
+      await setAppearanceAndCheck(
         'Default (clear appearance)',
         'default',
         initialColor

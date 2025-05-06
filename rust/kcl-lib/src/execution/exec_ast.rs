@@ -2571,17 +2571,17 @@ a = foo()
     #[tokio::test(flavor = "multi_thread")]
     async fn load_all_modules() {
         // program a.kcl
-        let programa_kcl = r#"
+        let program_a_kcl = r#"
 export a = 1
 "#;
         // program b.kcl
-        let programb_kcl = r#"
+        let program_b_kcl = r#"
 import a from 'a.kcl'
 
 export b = a + 1
 "#;
         // program c.kcl
-        let programc_kcl = r#"
+        let program_c_kcl = r#"
 import a from 'a.kcl'
 
 export c = a + 2
@@ -2611,21 +2611,21 @@ d = b + c
         tokio::fs::File::create(tmpdir.path().join("a.kcl"))
             .await
             .unwrap()
-            .write_all(programa_kcl.as_bytes())
+            .write_all(program_a_kcl.as_bytes())
             .await
             .unwrap();
 
         tokio::fs::File::create(tmpdir.path().join("b.kcl"))
             .await
             .unwrap()
-            .write_all(programb_kcl.as_bytes())
+            .write_all(program_b_kcl.as_bytes())
             .await
             .unwrap();
 
         tokio::fs::File::create(tmpdir.path().join("c.kcl"))
             .await
             .unwrap()
-            .write_all(programc_kcl.as_bytes())
+            .write_all(program_c_kcl.as_bytes())
             .await
             .unwrap();
 
