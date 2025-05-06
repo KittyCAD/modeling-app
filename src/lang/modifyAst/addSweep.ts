@@ -9,6 +9,7 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
+import { insertVariableAndOffsetPathToNode } from '@src/lang/modifyAst'
 import {
   getEdgeTagCall,
   mutateAstWithTagForSketchSegment,
@@ -27,10 +28,7 @@ import type {
   Program,
   VariableDeclaration,
 } from '@src/lang/wasm'
-import type {
-  KclCommandValue,
-  KclExpressionWithVariable,
-} from '@src/lib/commandTypes'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
@@ -51,7 +49,12 @@ export function addExtrude({
       pathToNode: PathToNode
     }
   | Error {
+  // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  let pathToNode: PathToNode = nodeToEdit ?? createPathToNode(modifiedAst)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
@@ -66,12 +69,13 @@ export function addExtrude({
     createLabeledArg('length', valueOrVariable(length)),
   ])
 
-  // Insert the length variable if the user has provided a variable name
+  // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
-    insertVariable(length, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(length, modifiedAst, pathToNode)
   }
 
-  let pathToNode: PathToNode = []
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
   if (nodeToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       modifiedAst,
@@ -83,7 +87,6 @@ export function addExtrude({
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
   } else {
     const name = findUniqueName(
       modifiedAst,
@@ -91,7 +94,6 @@ export function addExtrude({
     )
     const declaration = createVariableDeclaration(name, call)
     modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
   }
 
   return {
@@ -118,7 +120,12 @@ export function addSweep({
       pathToNode: PathToNode
     }
   | Error {
+  // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  let pathToNode: PathToNode = nodeToEdit ?? createPathToNode(modifiedAst)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
@@ -128,7 +135,7 @@ export function addSweep({
     return sketchesExprList
   }
 
-  // Find the trajectory (or path) declaration
+  // Extra roundabout to find the trajectory (or path) declaration for the labeled argument
   const pathNodePath = getNodePathFromSourceRange(
     ast,
     path.graphSelections[0].codeRef.range
@@ -151,7 +158,8 @@ export function addSweep({
       : []),
   ])
 
-  let pathToNode: PathToNode = []
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
   if (nodeToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       modifiedAst,
@@ -163,7 +171,6 @@ export function addSweep({
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
   } else {
     const name = findUniqueName(
       modifiedAst,
@@ -171,7 +178,6 @@ export function addSweep({
     )
     const declaration = createVariableDeclaration(name, call)
     modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
   }
 
   return {
@@ -180,7 +186,6 @@ export function addSweep({
   }
 }
 
-// Note that Loft doesn't support edit flows yet since it's selection only atm
 export function addLoft({
   ast,
   sketches,
@@ -193,7 +198,13 @@ export function addLoft({
       pathToNode: PathToNode
     }
   | Error {
+  // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  const toFirstKwarg = false
+  const pathToNode: PathToNode = createPathToNode(modifiedAst, toFirstKwarg)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const sketchesExprList = getSketchExprsFromSelection(sketches, modifiedAst)
   if (err(sketchesExprList)) {
     return sketchesExprList
@@ -201,11 +212,13 @@ export function addLoft({
 
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('loft', sketchesExpr, [])
+
+  // 3. Just push the declaraiton to the end
+  // Note that Loft doesn't support edit flows yet since it's selection only atm
   const name = findUniqueName(modifiedAst, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
   const declaration = createVariableDeclaration(name, call)
   modifiedAst.body.push(declaration)
-  const toFirstKwarg = false
-  const pathToNode = createPathToNode(modifiedAst, toFirstKwarg)
+
   return {
     modifiedAst,
     pathToNode,
@@ -234,7 +247,12 @@ export function addRevolve({
       pathToNode: PathToNode
     }
   | Error {
+  // 1. Clone the ast so we can edit it
   const modifiedAst = structuredClone(ast)
+  let pathToNode: PathToNode = nodeToEdit ?? createPathToNode(modifiedAst)
+
+  // 2. Prepare unlabeled and labeled arguments
+  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
   const sketchesExprList = getSketchExprsFromSelection(
     sketches,
     modifiedAst,
@@ -261,12 +279,13 @@ export function addRevolve({
     createLabeledArg('axis', getAxisResult.generatedAxis),
   ])
 
-  // Insert the angle variable if the user has provided a variable name
+  // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
-    insertVariable(angle, modifiedAst, nodeToEdit)
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, pathToNode)
   }
 
-  let pathToNode: PathToNode = []
+  // 3. If edit, we assign the new function call declaration to the existing node,
+  // otherwise just push to the end
   if (nodeToEdit) {
     const result = getNodeFromPath<CallExpressionKw>(
       modifiedAst,
@@ -278,7 +297,6 @@ export function addRevolve({
     }
 
     Object.assign(result.node, call)
-    pathToNode = nodeToEdit
   } else {
     const name = findUniqueName(
       modifiedAst,
@@ -286,7 +304,6 @@ export function addRevolve({
     )
     const declaration = createVariableDeclaration(name, call)
     modifiedAst.body.push(declaration)
-    pathToNode = createPathToNode(modifiedAst)
   }
 
   return {
@@ -307,22 +324,6 @@ function createSketchExpression(sketches: Expr[]) {
     sketchesExpr = createArrayExpression(sketches)
   }
   return sketchesExpr
-}
-
-function insertVariable(
-  length: KclExpressionWithVariable,
-  modifiedAst: Node<Program>,
-  nodeToEdit: PathToNode | undefined
-) {
-  const insertIndex = length.insertIndex
-  modifiedAst.body.splice(insertIndex, 0, length.variableDeclarationAst)
-  if (
-    nodeToEdit &&
-    typeof nodeToEdit[1][0] === 'number' &&
-    insertIndex <= nodeToEdit[1][0]
-  ) {
-    nodeToEdit[1][0] += 1
-  }
 }
 
 function createPathToNode(
