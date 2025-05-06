@@ -8,10 +8,9 @@ use itertools::Itertools;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, TyData};
+use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::{docs::StdLibFn, std::StdLib, ExecutorContext};
 
-const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
 // These types are declared in (KCL) std.
 const DECLARED_TYPES: [&str; 15] = [
     "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
@@ -101,12 +100,13 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
     hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
+    hbs.register_template_string("module", include_str!("templates/module.hbs"))?;
     hbs.register_template_string("kclType", include_str!("templates/kclType.hbs"))?;
 
     Ok(hbs)
 }
 
-fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[DocData]) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = HashMap::new();
@@ -139,7 +139,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             .push((name.to_owned(), format!("types#{name}")));
     }
 
-    for d in kcl_lib {
+    for d in kcl_lib.all_docs() {
         if d.hide() {
             continue;
         }
@@ -148,6 +148,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             DocData::Fn(_) => functions.entry(d.mod_name()).or_default(),
             DocData::Ty(_) => types.entry(d.mod_name()).or_default(),
             DocData::Const(_) => constants.entry(d.mod_name()).or_default(),
+            DocData::Mod(_) => continue,
         };
 
         group.push((d.preferred_name().to_owned(), d.file_name()));
@@ -159,6 +160,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             fns.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": fns.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -176,6 +178,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             consts.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": consts.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -193,6 +196,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             tys.sort();
             let val = json!({
                 "name": m,
+                "file_name": m.replace("::", "-"),
                 "items": tys.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -204,18 +208,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
     sorted_types.sort_by(|t1, t2| t1.0.cmp(&t2.0));
     let types_data: Vec<_> = sorted_types.into_iter().map(|(_, val)| val).collect();
 
-    let topics: Vec<_> = LANG_TOPICS
-        .iter()
-        .map(|name| {
-            json!({
-                "name": name,
-                "file_name": name.to_lowercase().replace(' ', "-"),
-            })
-        })
-        .collect();
-
     let data = json!({
-        "lang_topics": topics,
         "functions": functions_data,
         "consts": consts_data,
         "types": types_data,
@@ -223,7 +216,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
 
     let output = hbs.render("index", &data)?;
 
-    expectorate::assert_contents("../../docs/kcl/index.md", &output);
+    expectorate::assert_contents("../../docs/kcl-std/index.md", &output);
 
     Ok(())
 }
@@ -280,7 +273,48 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output);
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+
+    Ok(())
+}
+
+fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
+    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
+        let mut items: Vec<_> = m
+            .children
+            .iter()
+            .filter(|(k, _)| k.starts_with(namespace))
+            .map(|(_, v)| (v.preferred_name(), v.file_name()))
+            .collect();
+        items.sort();
+        items
+            .into_iter()
+            .map(|(n, f)| {
+                json!({
+                    "name": n,
+                    "file_name": f,
+                })
+            })
+            .collect()
+    }
+    let hbs = init_handlebars()?;
+
+    // TODO for prelude, items from Rust
+    let functions = list_items(m, "I:");
+    let modules = list_items(m, "M:");
+    let types = list_items(m, "T:");
+
+    let data = json!({
+        "name": m.qual_name,
+        "summary": m.summary,
+        "description": m.description,
+        "modules": modules,
+        "functions": functions,
+        "types": types,
+    });
+
+    let output = hbs.render("module", &data)?;
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -305,9 +339,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
         "description": function.description,
         "deprecated": function.properties.deprecated,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
-        "tags": [],
         "examples": examples,
-        "is_utilities": false,
         "args": function.args.iter().map(|arg| {
             json!({
                 "name": arg.name,
@@ -326,7 +358,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output);
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
 
     Ok(())
 }
@@ -355,7 +387,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -374,8 +406,8 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         .examples()
         .iter()
         .enumerate()
-        .map(|(index, example)| {
-            let image_base64 = if !internal_fn.tags().contains(&"utilities".to_string()) {
+        .map(|(index, (example, norun))| {
+            let image_base64 = if !norun {
                 let image_path = format!(
                     "{}/tests/outputs/serial_test_example_{}{}.png",
                     env!("CARGO_MANIFEST_DIR"),
@@ -402,9 +434,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
         "fn_signature": internal_fn.fn_signature(true),
-        "tags": internal_fn.tags(),
         "examples": examples,
-        "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
         "args": internal_fn.args(false).iter().map(|arg| {
             json!({
                 "name": arg.name,
@@ -425,7 +455,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
     // Fix the links to the types.
     output = cleanup_types(&output);
 
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", fn_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", fn_name), &output);
 
     Ok(())
 }
@@ -577,9 +607,9 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
             // we might want to restore the links by not checking `fmt_for_text` here.
 
             if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl/types#{ty})")
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
             } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
-                format!("[{prefix}{ty}{suffix}](/docs/kcl/types/std-types-{ty})")
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
             } else {
                 format!("{prefix}{ty}{suffix}")
             }
@@ -624,26 +654,22 @@ fn test_generate_stdlib_markdown_docs() {
         generate_function(internal_fn.clone()).unwrap();
     }
 
-    for d in &kcl_std {
+    for d in kcl_std.all_docs() {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name()).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
         }
     }
-
-    // Copy manually written docs to the output directory.
-    for entry in fs::read_dir("../../docs/kcl-src").unwrap() {
-        let path = entry.unwrap().path();
-        fs::copy(&path, Path::new("../../docs/kcl").join(path.file_name().unwrap())).unwrap();
-    }
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
 }
 
 #[test]
 fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
-    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // test data, then check `/docs/kcl-std/std.json` to ensure the changes are expected.
     // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
@@ -657,7 +683,7 @@ fn test_generate_stdlib_json_schema() {
         })
         .collect();
     expectorate::assert_contents(
-        "../../docs/kcl/std.json",
+        "../../docs/kcl-std/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),
     );
 }
@@ -665,16 +691,16 @@ fn test_generate_stdlib_json_schema() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
-    for name in LANG_TOPICS {
-        let filename = format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-"));
-        let text = std::fs::read_to_string(&filename).unwrap();
+    for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
+        let path = entry.unwrap().path();
+        let text = std::fs::read_to_string(&path).unwrap();
 
-        for (i, (eg, attr)) in find_examples(&text, &filename).into_iter().enumerate() {
-            if attr == "norun" {
+        for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
+            if attr.contains("norun") || attr == "no_run" || !attr.contains("kcl") {
                 continue;
             }
 
-            let f = filename.clone();
+            let f = path.display().to_string();
             join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
         }
     }
@@ -687,7 +713,7 @@ async fn test_code_in_topics() {
     assert!(results.is_empty(), "Failures: {}", results.join(", "))
 }
 
-fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
+fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     let mut buf = String::new();
     let mut attr = String::new();
     let mut in_eg = false;
@@ -711,7 +737,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
         }
     }
 
-    assert!(!in_eg, "Unclosed code tags in {}", filename);
+    assert!(!in_eg, "Unclosed code tags in {}", filename.display());
 
     result
 }

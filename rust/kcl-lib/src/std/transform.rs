@@ -153,7 +153,8 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         y = {docs = "The scale factor for the y axis. Default is 1 if not provided.", include_in_snippet = true},
         z = {docs = "The scale factor for the z axis. Default is 1 if not provided.", include_in_snippet = true},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
-    }
+    },
+    tags = ["transform"]
 }]
 async fn inner_scale(
     objects: SolidOrSketchOrImportedGeometry,
@@ -383,7 +384,8 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         y = {docs = "The amount to move the solid or sketch along the y axis. Defaults to 0 if not provided.", include_in_snippet = true},
         z = {docs = "The amount to move the solid or sketch along the z axis. Defaults to 0 if not provided.", include_in_snippet = true},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
-    }
+    },
+    tags = ["transform"]
 }]
 async fn inner_translate(
     objects: SolidOrSketchOrImportedGeometry,
@@ -748,7 +750,8 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         axis = {docs = "The axis to rotate around. Must be used with `angle`.", include_in_snippet = false},
         angle = {docs = "The angle to rotate in degrees. Must be used with `axis`. Must be between -360 and 360.", include_in_snippet = false},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
-    }
+    },
+    tags = ["transform"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(

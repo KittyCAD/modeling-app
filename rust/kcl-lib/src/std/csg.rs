@@ -111,7 +111,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     args = {
         solids = {docs = "The solids to union."},
         tolerance = {docs = "The tolerance to use for the union operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
@@ -236,7 +237,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     args = {
         solids = {docs = "The solids to intersect."},
         tolerance = {docs = "The tolerance to use for the intersection operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_intersect(
     solids: Vec<Solid>,
@@ -370,7 +372,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         solids = {docs = "The solids to use as the base to subtract from."},
         tools = {docs = "The solids to subtract."},
         tolerance = {docs = "The tolerance to use for the subtraction operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_subtract(
     solids: Vec<Solid>,
