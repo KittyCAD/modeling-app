@@ -20,7 +20,6 @@ fillet(
 ): Solid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

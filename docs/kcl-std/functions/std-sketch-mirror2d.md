@@ -17,7 +17,6 @@ mirror2d(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

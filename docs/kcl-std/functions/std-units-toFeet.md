@@ -12,7 +12,6 @@ Convert a number to feet from its current units.
 units::toFeet(@num: number(ft)): number(ft)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

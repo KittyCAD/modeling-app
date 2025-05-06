@@ -15,7 +15,6 @@ atan2(
 ): number(rad)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

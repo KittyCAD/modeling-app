@@ -15,7 +15,6 @@ assertIs(
 ): ()
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -131,7 +131,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         tolerance = {docs = "Tolerance for the loft operation."},
         tag_start = { docs = "A named tag for the face at the start of the loft, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the loft, i.e. the last sketch" },
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_loft(

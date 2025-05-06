@@ -12,7 +12,6 @@ Converts a number to yards from its current units.
 units::toYards(@num: number(yd)): number(yd)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

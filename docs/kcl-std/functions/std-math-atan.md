@@ -12,7 +12,6 @@ Consider using `atan2()` instead for the true inverse of tangent.
 atan(@num: number(_)): number(rad)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

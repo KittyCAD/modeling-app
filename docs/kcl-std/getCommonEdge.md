@@ -12,7 +12,6 @@ Get the shared edge between two faces.
 getCommonEdge(faces: [TagIdentifier]): Uuid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

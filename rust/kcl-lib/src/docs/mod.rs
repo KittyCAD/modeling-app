@@ -53,9 +53,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
-    /// Code examples.
+    /// Code examples. The bool is whether the example is `norun``
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, bool)>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -414,7 +414,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
-    fn examples(&self) -> Vec<String>;
+    fn examples(&self) -> Vec<(String, bool)>;
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;

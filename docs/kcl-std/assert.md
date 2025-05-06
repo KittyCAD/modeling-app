@@ -21,7 +21,6 @@ assert(
 ): ()
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

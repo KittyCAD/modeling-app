@@ -12,7 +12,6 @@ Compute the base 10 logarithm of the number.
 log10(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

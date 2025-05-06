@@ -157,7 +157,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
