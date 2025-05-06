@@ -70,7 +70,7 @@ export function addExtrude({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in length && length.variableName) {
-    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit ?? [])
+    insertVariableAndOffsetPathToNode(length, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -287,7 +287,7 @@ export function addRevolve({
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
-    insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit ?? [])
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, nodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,

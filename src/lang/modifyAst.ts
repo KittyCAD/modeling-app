@@ -1169,7 +1169,7 @@ export function createNodeFromExprSnippet(
 export function insertVariableAndOffsetPathToNode(
   variable: KclCommandValue,
   modifiedAst: Node<Program>,
-  pathToNode: PathToNode
+  pathToNode?: PathToNode
 ) {
   if ('variableName' in variable && variable.variableName) {
     modifiedAst.body.splice(
@@ -1177,7 +1177,11 @@ export function insertVariableAndOffsetPathToNode(
       0,
       variable.variableDeclarationAst
     )
-    if (typeof pathToNode[1][0] === 'number') {
+    if (
+      pathToNode &&
+      typeof pathToNode[1] &&
+      typeof pathToNode[1][0] === 'number'
+    ) {
       pathToNode[1][0]++
     }
   }
