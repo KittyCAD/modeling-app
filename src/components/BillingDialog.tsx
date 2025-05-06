@@ -21,7 +21,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
   }
 
   return (
-    <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-2 gap-2">
+    <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-4 gap-2 text-xs">
       <div>
         <div className="rounded bg-ml-black p-1">
           {hasUnlimited ? (
@@ -32,7 +32,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="font-bold font-lg text-ml-black">
+        <div className="font-bold text-ml-black">
           {hasUnlimited ? 'Unlimited Text-to-CAD' : 'Upgrade your plan'}
         </div>
         <div className="text-ml-grey">
