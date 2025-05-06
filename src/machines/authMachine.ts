@@ -38,6 +38,7 @@ const LOCAL_USER: Models['User_type'] = {
   last_name: 'User',
   can_train_on_data: false,
   is_service_account: false,
+  deletion_scheduled: false,
 }
 
 export interface UserContext {
