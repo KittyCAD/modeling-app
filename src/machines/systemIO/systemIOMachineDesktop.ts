@@ -155,14 +155,15 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedFileName: string
+          requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
         }
       }) => {
         const requestedProjectName = input.requestedProjectName
-        const requestedFileName = input.requestedFileName
+        const requestedFileNameWithExtension =
+          input.requestedFileNameWithExtension
         const requestedCode = input.requestedCode
         const folders = input.context.folders
 
@@ -190,9 +191,10 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           newProjectName
         )
         const { name: newFileName } = getNextFileName({
-          entryName: requestedFileName,
+          entryName: requestedFileNameWithExtension,
           baseDir,
         })
+
         const configuration = await readAppSettingsFile()
 
         // Create the project around the file if newProject
