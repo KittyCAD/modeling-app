@@ -40,11 +40,11 @@ async function insertPartIntoAssembly(
 }
 
 // test file is for testing point an click code gen functionality that's assemblies related
-test.describe('Point-and-click assemblies tests', () => {
-  test(
-    `Insert kcl parts into assembly as whole module import`,
-    { tag: ['@electron'] },
-    async ({
+test.describe(
+  'Point-and-click assemblies tests',
+  { tag: ['@electron', '@windows'] },
+  () => {
+    test(`Insert kcl parts into assembly as whole module import`, async ({
       context,
       page,
       homePage,
@@ -168,13 +168,9 @@ test.describe('Point-and-click assemblies tests', () => {
           page.getByText('This file is already imported')
         ).toBeVisible()
       })
-    }
-  )
+    })
 
-  test(
-    `Can still translate, rotate, and delete inserted parts even with non standard code`,
-    { tag: ['@electron'] },
-    async ({
+    test(`Can still translate, rotate, and delete inserted parts even with non standard code`, async ({
       context,
       page,
       homePage,
@@ -364,13 +360,9 @@ test.describe('Point-and-click assemblies tests', () => {
         )
         await toolbar.closePane('code')
       })
-    }
-  )
+    })
 
-  test(
-    `Insert the bracket part into an assembly and transform it`,
-    { tag: ['@electron'] },
-    async ({
+    test(`Insert the bracket part into an assembly and transform it`, async ({
       context,
       page,
       homePage,
@@ -555,165 +547,174 @@ test.describe('Point-and-click assemblies tests', () => {
         await toolbar.closePane('code')
         await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
       })
-    }
-  )
+    })
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
-    `Insert foreign parts into assembly as whole module import`,
-    { tag: ['@electron'] },
-    async ({
+    // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
+    test.fixme(
+      `Insert foreign parts into assembly as whole module import`,
+      async ({
+        context,
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        tronApp,
+      }) => {
+        if (!tronApp) {
+          fail()
+        }
+
+        const midPoint = { x: 500, y: 250 }
+        const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
+        const defaultPlanesColor: [number, number, number] = [180, 220, 180]
+        const partColor: [number, number, number] = [150, 150, 150]
+        const tolerance = 50
+
+        const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
+        const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
+
+        await test.step('Setup parts and expect empty assembly scene', async () => {
+          const projectName = 'assembly'
+          await context.folderSetupFn(async (dir) => {
+            const bracketDir = path.join(dir, projectName)
+            await fsp.mkdir(bracketDir, { recursive: true })
+            await Promise.all([
+              fsp.copyFile(
+                testsInputPath('cube.step'),
+                path.join(bracketDir, 'cube.step')
+              ),
+              fsp.copyFile(
+                testsInputPath('cube.sldprt'),
+                path.join(bracketDir, complexPlmFileName)
+              ),
+              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
+            ])
+          })
+          await page.setBodyDimensions({ width: 1000, height: 500 })
+          await homePage.openProject(projectName)
+          await scene.settled(cmdBar)
+          await toolbar.closePane('code')
+          await scene.expectPixelColor(defaultPlanesColor, midPoint, tolerance)
+        })
+
+        await test.step('Insert step part as module', async () => {
+          await insertPartIntoAssembly(
+            'cube.step',
+            'cube',
+            toolbar,
+            cmdBar,
+            page
+          )
+          await toolbar.openPane('code')
+          await editor.expectEditor.toContain(
+            `
+          import "cube.step" as cube
+        `,
+            { shouldNormalise: true }
+          )
+          await scene.settled(cmdBar)
+
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+          await toolbar.closePane('code')
+          await scene.expectPixelColor(partColor, partPoint, tolerance)
+        })
+
+        await test.step('Insert second foreign part by clicking', async () => {
+          await toolbar.openPane('files')
+          await toolbar.expectFileTreeState([
+            complexPlmFileName,
+            'cube.step',
+            'main.kcl',
+          ])
+          await toolbar.openFile(complexPlmFileName)
+
+          // Go through the ToastInsert prompt
+          await page.getByText('Insert into my current file').click()
+
+          // Check getPathFilenameInVariableCase output
+          const parsedValueFromFile =
+            await cmdBar.currentArgumentInput.inputValue()
+          expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+
+          // Continue on with the flow
+          await page.keyboard.insertText('cubeSw')
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
+            commandName: 'Insert',
+          })
+          await cmdBar.progressCmdBar()
+          await toolbar.closePane('files')
+          await toolbar.openPane('code')
+          await editor.expectEditor.toContain(
+            `
+          import "cube.step" as cube
+          import "${complexPlmFileName}" as cubeSw
+        `,
+            { shouldNormalise: true }
+          )
+          await scene.settled(cmdBar)
+
+          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+          await toolbar.closePane('code')
+          await scene.expectPixelColor(partColor, partPoint, tolerance)
+        })
+
+        // TODO: enable once deleting the first import is fixed
+        // await test.step('Delete first part using the feature tree', async () => {
+        //   page.on('console', console.log)
+        //   await toolbar.openPane('feature-tree')
+        //   const op = await toolbar.getFeatureTreeOperation('cube', 0)
+        //   await op.click({ button: 'right' })
+        //   await page.getByTestId('context-menu-delete').click()
+        //   await scene.settled(cmdBar)
+        //   await toolbar.closePane('feature-tree')
+
+        //   // Expect only the import statement to be there
+        //   await toolbar.openPane('code')
+        //   await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
+        //   await toolbar.closePane('code')
+        //   await editor.expectEditor.toContain(
+        //     `
+        //     import "${complexPlmFileName}" as cubeSw
+        //   `,
+        //     { shouldNormalise: true }
+        //   )
+        //   await toolbar.closePane('code')
+        // })
+
+        await test.step('Delete second part using the feature tree', async () => {
+          await toolbar.openPane('feature-tree')
+          const op = await toolbar.getFeatureTreeOperation('cube_Complex', 0)
+          await op.click({ button: 'right' })
+          await page.getByTestId('context-menu-delete').click()
+          await scene.settled(cmdBar)
+          await toolbar.closePane('feature-tree')
+
+          // Expect empty editor and scene
+          await toolbar.openPane('code')
+          await editor.expectEditor.not.toContain(
+            `import "${complexPlmFileName}" as cubeSw`
+          )
+          await toolbar.closePane('code')
+          // TODO: enable once deleting the first import is fixed
+          // await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
+        })
+      }
+    )
+
+    test('Assembly gets reexecuted when imported models are updated externally', async ({
       context,
       page,
       homePage,
       scene,
-      editor,
       toolbar,
       cmdBar,
       tronApp,
     }) => {
-      if (!tronApp) {
-        fail()
-      }
-
-      const midPoint = { x: 500, y: 250 }
-      const partPoint = { x: midPoint.x + 30, y: midPoint.y - 30 } // mid point, just off top right
-      const defaultPlanesColor: [number, number, number] = [180, 220, 180]
-      const partColor: [number, number, number] = [150, 150, 150]
-      const tolerance = 50
-
-      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
-      const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
-
-      await test.step('Setup parts and expect empty assembly scene', async () => {
-        const projectName = 'assembly'
-        await context.folderSetupFn(async (dir) => {
-          const bracketDir = path.join(dir, projectName)
-          await fsp.mkdir(bracketDir, { recursive: true })
-          await Promise.all([
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(bracketDir, 'cube.step')
-            ),
-            fsp.copyFile(
-              testsInputPath('cube.sldprt'),
-              path.join(bracketDir, complexPlmFileName)
-            ),
-            fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-          ])
-        })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(defaultPlanesColor, midPoint, tolerance)
-      })
-
-      await test.step('Insert step part as module', async () => {
-        await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
-        await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `
-          import "cube.step" as cube
-        `,
-          { shouldNormalise: true }
-        )
-        await scene.settled(cmdBar)
-
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(partColor, partPoint, tolerance)
-      })
-
-      await test.step('Insert second foreign part by clicking', async () => {
-        await toolbar.openPane('files')
-        await toolbar.expectFileTreeState([
-          complexPlmFileName,
-          'cube.step',
-          'main.kcl',
-        ])
-        await toolbar.openFile(complexPlmFileName)
-
-        // Go through the ToastInsert prompt
-        await page.getByText('Insert into my current file').click()
-
-        // Check getPathFilenameInVariableCase output
-        const parsedValueFromFile =
-          await cmdBar.currentArgumentInput.inputValue()
-        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
-
-        // Continue on with the flow
-        await page.keyboard.insertText('cubeSw')
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
-          commandName: 'Insert',
-        })
-        await cmdBar.progressCmdBar()
-        await toolbar.closePane('files')
-        await toolbar.openPane('code')
-        await editor.expectEditor.toContain(
-          `
-          import "cube.step" as cube
-          import "${complexPlmFileName}" as cubeSw
-        `,
-          { shouldNormalise: true }
-        )
-        await scene.settled(cmdBar)
-
-        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        await toolbar.closePane('code')
-        await scene.expectPixelColor(partColor, partPoint, tolerance)
-      })
-
-      // TODO: enable once deleting the first import is fixed
-      // await test.step('Delete first part using the feature tree', async () => {
-      //   page.on('console', console.log)
-      //   await toolbar.openPane('feature-tree')
-      //   const op = await toolbar.getFeatureTreeOperation('cube', 0)
-      //   await op.click({ button: 'right' })
-      //   await page.getByTestId('context-menu-delete').click()
-      //   await scene.settled(cmdBar)
-      //   await toolbar.closePane('feature-tree')
-
-      //   // Expect only the import statement to be there
-      //   await toolbar.openPane('code')
-      //   await editor.expectEditor.not.toContain(`import "cube.step" as cube`)
-      //   await toolbar.closePane('code')
-      //   await editor.expectEditor.toContain(
-      //     `
-      //     import "${complexPlmFileName}" as cubeSw
-      //   `,
-      //     { shouldNormalise: true }
-      //   )
-      //   await toolbar.closePane('code')
-      // })
-
-      await test.step('Delete second part using the feature tree', async () => {
-        await toolbar.openPane('feature-tree')
-        const op = await toolbar.getFeatureTreeOperation('cube_Complex', 0)
-        await op.click({ button: 'right' })
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
-        await toolbar.closePane('feature-tree')
-
-        // Expect empty editor and scene
-        await toolbar.openPane('code')
-        await editor.expectEditor.not.toContain(
-          `import "${complexPlmFileName}" as cubeSw`
-        )
-        await toolbar.closePane('code')
-        // TODO: enable once deleting the first import is fixed
-        // await scene.expectPixelColorNotToBe(partColor, midPoint, tolerance)
-      })
-    }
-  )
-
-  test(
-    'Assembly gets reexecuted when imported models are updated externally',
-    { tag: ['@electron'] },
-    async ({ context, page, homePage, scene, toolbar, cmdBar, tronApp }) => {
       if (!tronApp) {
         fail()
       }
@@ -797,13 +798,9 @@ foreign
         await scene.expectPixelColor(partColor, midPoint, tolerance)
         await scene.expectPixelColor(bgColor, washerPoint, tolerance)
       })
-    }
-  )
+    })
 
-  test(
-    `Point-and-click clone`,
-    { tag: ['@electron'] },
-    async ({
+    test(`Point-and-click clone`, async ({
       context,
       page,
       homePage,
@@ -1029,6 +1026,6 @@ washer
           { shouldNormalise: true }
         )
       })
-    }
-  )
-})
+    })
+  }
+)

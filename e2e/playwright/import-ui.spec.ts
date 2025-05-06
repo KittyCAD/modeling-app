@@ -2,7 +2,7 @@ import path from 'path'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import * as fsp from 'fs/promises'
 
-test.describe('Import UI tests', () => {
+test.describe('Import UI tests', { tag: ['@windows'] }, () => {
   test('shows toast when trying to sketch on imported face, and hovering over imported geometry should NOT highlight any code', async ({
     context,
     page,
