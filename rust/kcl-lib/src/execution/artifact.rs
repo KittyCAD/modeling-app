@@ -1396,7 +1396,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
-                                new_path.solid2d_id = Some(*solid_id);
+                                new_path.composite_solid_id = Some(*solid_id);
                                 return_arr.push(Artifact::Path(new_path));
                             }
                             _ => {}
@@ -1415,7 +1415,7 @@ fn artifacts_to_update(
                             }
                             Artifact::Path(path) => {
                                 let mut new_path = path.clone();
-                                new_path.solid2d_id = Some(*solid_id);
+                                new_path.composite_solid_id = Some(*solid_id);
                                 return_arr.push(Artifact::Path(new_path));
                             }
                             _ => {}
