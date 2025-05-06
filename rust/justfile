@@ -52,7 +52,8 @@ redo-sim-tests:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests
 
 test:
-    export RUST_BRACKTRACE="full" && {{cnr}} --workspace --features artifact-graph --no-fail-fast
+    cargo install cargo-nextest
+    {{cnr}} --workspace --features artifact-graph --no-fail-fast
 
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.
