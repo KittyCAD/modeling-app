@@ -61,6 +61,7 @@ mod docs;
 mod engine;
 mod errors;
 mod execution;
+mod fmt;
 mod fs;
 pub mod lint;
 mod log;
@@ -88,7 +89,9 @@ pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
 pub use execution::{
-    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
+    bust_cache, clear_mem_cache,
+    types::{UnitAngle, UnitLen},
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -106,7 +109,10 @@ pub use unparser::{recast_dir, walk_dir};
 pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::ArtifactCommand;
-    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
+    pub use crate::execution::{
+        types::{NumericType, UnitAngle, UnitLen, UnitType},
+        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+    };
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -132,7 +138,10 @@ pub mod std_utils {
 }
 
 pub mod pretty {
-    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
+    pub use crate::{
+        fmt::{format_number_literal, human_display_number},
+        parsing::token::NumericSuffix,
+    };
 }
 
 #[cfg(feature = "cli")]
@@ -217,9 +226,13 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_meta_settings(&self, settings: crate::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<execution::types::UnitLen>,
+        angle_units: Option<execution::types::UnitAngle>,
+    ) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_meta_settings(settings)?,
+            ast: self.ast.change_default_units(length_units, angle_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

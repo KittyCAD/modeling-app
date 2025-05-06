@@ -170,7 +170,9 @@ extrude001 = extrude(sketch001, length = 50)
     await variablesTabButton.click()
     // expect to see "myVar:5"
     await expect(
-      page.locator('.pretty-json-container >> text=myVar:5')
+      // There's a double quote before the number value since the units are
+      // formatted into a string.
+      page.locator('.pretty-json-container >> text=myVar:"5')
     ).toBeVisible()
 
     // change 5 to 67
@@ -180,7 +182,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.keyboard.type('67')
 
     await expect(
-      page.locator('.pretty-json-container >> text=myVar:67')
+      page.locator('.pretty-json-container >> text=myVar:"67')
     ).toBeVisible()
   })
   test('ProgramMemory can be serialised', async ({ page, homePage }) => {

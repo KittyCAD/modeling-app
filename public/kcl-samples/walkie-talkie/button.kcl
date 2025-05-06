@@ -2,7 +2,7 @@
 // Button for the walkie talkie
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import buttonWidth, buttonHeight, buttonThickness from "parameters.kcl"

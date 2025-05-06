@@ -4,9 +4,11 @@ description: Variables in memory after executing import_function_not_sketch.kcl
 ---
 {
   "one": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "two": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

@@ -7,7 +7,7 @@ use kittycad_modeling_cmds::coord::{System, KITTYCAD, OPENGL, VULKAN};
 use crate::{
     errors::KclErrorDetails,
     execution::types::{UnitAngle, UnitLen},
-    parsing::ast::types::{Annotation, Expr, Node, ObjectProperty},
+    parsing::ast::types::{Annotation, Expr, LiteralValue, Node, ObjectProperty},
     KclError, SourceRange,
 };
 
@@ -17,6 +17,7 @@ pub(super) const SIGNIFICANT_ATTRS: [&str; 2] = [SETTINGS, NO_PRELUDE];
 pub(crate) const SETTINGS: &str = "settings";
 pub(crate) const SETTINGS_UNIT_LENGTH: &str = "defaultLengthUnit";
 pub(crate) const SETTINGS_UNIT_ANGLE: &str = "defaultAngleUnit";
+pub(crate) const SETTINGS_VERSION: &str = "kclVersion";
 pub(super) const NO_PRELUDE: &str = "no_std";
 
 pub(super) const IMPORT_FORMAT: &str = "format";
@@ -53,7 +54,7 @@ impl FromStr for Impl {
 }
 
 pub(crate) fn settings_completion_text() -> String {
-    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg)")
+    format!("@{SETTINGS}({SETTINGS_UNIT_LENGTH} = mm, {SETTINGS_UNIT_ANGLE} = deg, {SETTINGS_VERSION} = 1.0)")
 }
 
 pub(super) fn is_significant(attr: &&Node<Annotation>) -> bool {
@@ -85,6 +86,20 @@ pub(super) fn expect_ident(expr: &Expr) -> Result<&str, KclError> {
 
     Err(KclError::Semantic(KclErrorDetails {
         message: "Unexpected settings value, expected a simple name, e.g., `mm`".to_owned(),
+        source_ranges: vec![expr.into()],
+    }))
+}
+
+// Returns the unparsed number literal.
+pub(super) fn expect_number(expr: &Expr) -> Result<String, KclError> {
+    if let Expr::Literal(lit) = expr {
+        if let LiteralValue::Number { .. } = &lit.value {
+            return Ok(lit.raw.clone());
+        }
+    }
+
+    Err(KclError::Semantic(KclErrorDetails {
+        message: "Unexpected settings value, expected a number, e.g., `1.0`".to_owned(),
         source_ranges: vec![expr.into()],
     }))
 }

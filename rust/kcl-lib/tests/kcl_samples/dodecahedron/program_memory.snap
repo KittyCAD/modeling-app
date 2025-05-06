@@ -4,13 +4,16 @@ description: Variables in memory after executing dodecahedron.kcl
 ---
 {
   "calculateArrayLength": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "createFaceTemplate": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "createIntersection": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "dihedral": {
     "type": "Number",

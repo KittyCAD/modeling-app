@@ -2,7 +2,7 @@
 // A structural metal beam with an I shaped cross section. Often used in construction and architecture
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 beamLength = 6ft

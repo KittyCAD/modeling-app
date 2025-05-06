@@ -2,7 +2,7 @@
 // Antenna for the walkie talkie assembly
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import antennaLength, antennaBaseWidth, antennaBaseHeight, antennaTopWidth, antennaTopHeight from "parameters.kcl"

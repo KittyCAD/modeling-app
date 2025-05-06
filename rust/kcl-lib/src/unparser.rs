@@ -8,9 +8,7 @@ use crate::parsing::{
         MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
         Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
-    deprecation,
-    token::NumericSuffix,
-    DeprecationKind, PIPE_OPERATOR,
+    deprecation, DeprecationKind, PIPE_OPERATOR,
 };
 
 impl Program {
@@ -463,11 +461,6 @@ impl TypeDeclaration {
         }
         format!("{}type {}{}", vis, self.name.name, arg_str)
     }
-}
-
-// Used by TS.
-pub fn format_number(value: f64, suffix: NumericSuffix) -> String {
-    format!("{value}{suffix}")
 }
 
 impl Literal {

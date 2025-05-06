@@ -1,5 +1,7 @@
+/// Functions for converting numbers to different units.
+
 @no_std
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// Convert a number to millimeters from its current units.
 export fn toMillimeters(@num: number(mm)): number(mm) {

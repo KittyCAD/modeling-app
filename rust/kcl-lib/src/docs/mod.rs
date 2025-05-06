@@ -10,6 +10,7 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_doc::ModData;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -21,6 +22,12 @@ use crate::{
     execution::{types::NumericType, Sketch},
     std::Primitive,
 };
+
+// These types are declared in (KCL) std.
+const DECLARED_TYPES: [&str; 15] = [
+    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
+    "Point3d", "Axis2d", "Axis3d",
+];
 
 lazy_static::lazy_static! {
     static ref NUMERIC_TYPE_SCHEMA: schemars::schema::SchemaObject = {
@@ -53,9 +60,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
-    /// Code examples.
+    /// Code examples. The bool is whether the example is `norun``
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, bool)>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -94,6 +101,9 @@ pub struct StdLibFnArg {
 
 impl fmt::Display for StdLibFnArg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if !self.label_required {
+            f.write_char('@')?;
+        }
         f.write_str(&self.name)?;
         if !self.required {
             f.write_char('?')?;
@@ -154,11 +164,18 @@ impl StdLibFnArg {
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
-    pub fn description(&self) -> Option<String> {
+    pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
             return Some(self.description.clone());
         }
+
+        if let Some(kcl_std) = kcl_std {
+            if let Some(t) = docs_for_type(&self.type_, kcl_std) {
+                return Some(t);
+            }
+        }
+
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
@@ -370,7 +387,7 @@ impl From<StdLibFnArg> for ParameterInformation {
     fn from(arg: StdLibFnArg) -> Self {
         ParameterInformation {
             label: ParameterLabel::Simple(arg.name.to_string()),
-            documentation: arg.description().map(|description| {
+            documentation: arg.description(None).map(|description| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: description,
@@ -378,6 +395,16 @@ impl From<StdLibFnArg> for ParameterInformation {
             }),
         }
     }
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    if DECLARED_TYPES.contains(&ty) {
+        if let Some(data) = kcl_std.find_by_name(ty) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 /// This trait defines functions called upon stdlib functions to generate
@@ -414,7 +441,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
-    fn examples(&self) -> Vec<String>;
+    fn examples(&self) -> Vec<(String, bool)>;
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;
@@ -918,7 +945,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_fillet() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(fillet_fn) = data.into_iter().find(|d| d.name() == "fillet").unwrap() else {
+        let DocData::Fn(fillet_fn) = data.find_by_name("fillet").unwrap() else {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
@@ -946,7 +973,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_revolve() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+        let DocData::Fn(revolve_fn) = data.find_by_name("revolve").unwrap() else {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
@@ -956,7 +983,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_circle() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(circle_fn) = data.into_iter().find(|d| d.name() == "circle").unwrap() else {
+        let DocData::Fn(circle_fn) = data.find_by_name("circle").unwrap() else {
             panic!();
         };
         let snippet = circle_fn.to_autocomplete_snippet();
@@ -1027,7 +1054,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_helix() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+        let DocData::Fn(helix_fn) = data.find_by_name("helix").unwrap() else {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
@@ -1128,7 +1155,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,
