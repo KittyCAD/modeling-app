@@ -1116,7 +1116,7 @@ async fn test_kcl_lsp_signature_help() {
         assert_eq!(
             signature_help.signatures[0].label,
             r#"startSketchOn(
-  planeOrSolid: SketchData,
+  @planeOrSolid: SketchData,
   face?: FaceTag,
 ): SketchSurface"#
         );
@@ -1205,7 +1205,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         assert_eq!(
             signature_help.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,
@@ -1303,7 +1303,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         assert_eq!(
             signature_help.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,
@@ -1396,7 +1396,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         assert_eq!(
             signature_help.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,
@@ -1494,7 +1494,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
         assert_eq!(
             signature_help.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,

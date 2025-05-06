@@ -247,7 +247,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_transform<'a>(
     solids: Vec<Solid>,
@@ -300,7 +301,8 @@ async fn inner_pattern_transform<'a>(
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_pattern_transform_2d<'a>(
     sketches: Vec<Sketch>,
@@ -872,7 +874,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
         axis = { docs = "The axis of the pattern. A 2D vector." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_linear_3d(
     solids: Vec<Solid>,
@@ -1069,7 +1072,8 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
@@ -1184,7 +1188,8 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["solid"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(

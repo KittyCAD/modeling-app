@@ -1,13 +1,20 @@
+/// The KCL standard library
+///
+/// Contains frequently used constants, functions for interacting with the KittyCAD servers to
+/// create sketches and geometry, and utility functions.
+
 @no_std
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::types"
 export import "std::units"
+export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
 export import * from "std::solid"
+export import * from "std::transform"
 export import "std::turns"
 
 export XY = {
@@ -143,245 +150,6 @@ export fn helix(
   /// Cylinder to create the helix on.
   cylinder?: Solid,
 ): Helix {}
-
-/// Rotate a sketch around some provided axis, creating a solid from its extent.
-///
-/// This, like extrude, is able to create a 3-dimensional solid from a
-/// 2-dimensional sketch. However, unlike extrude, this creates a solid
-/// by using the extent of the sketch as its revolved around an axis rather
-/// than using the extent of the sketch linearly translated through a third
-/// dimension.
-///
-/// Revolve occurs around a local sketch axis rather than a global axis.
-///
-/// You can provide more than one sketch to revolve, and they will all be
-/// revolved around the same axis.
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y) // default angle is 360
-/// ```
-///
-/// ```
-/// // A donut shape.
-/// sketch001 = startSketchOn(XY)
-///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve(
-///         angle = 360,
-///         axis = Y,
-///     )
-/// ```
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y, angle = 180)
-/// ```
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y, angle = 180)
-///
-/// part002 = startSketchOn(part001, face = END)
-///     |> startProfile(at = [4.5, -5])
-///     |> line(end = [0, 5])
-///     |> line(end = [5, 0])
-///     |> line(end = [0, -5])
-///     |> close()
-///     |> extrude(length = 5)
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20])
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = -90,
-///         axis = Y
-///     )
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20], tag = $revolveAxis)
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = 90,
-///         axis = getOppositeEdge(revolveAxis)
-///     )
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20], tag = $revolveAxis)
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = 90,
-///         axis = getOppositeEdge(revolveAxis),
-///         tolerance = 0.0001
-///     )
-/// ```
-///
-/// ```
-/// sketch001 = startSketchOn(XY)
-///   |> startProfile(at = [10, 0])
-///   |> line(end = [5, -5])
-///   |> line(end = [5, 5])
-///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///   |> close()
-///
-/// part001 = revolve(
-///    sketch001,
-///    axis = {
-///      direction = [0.0, 1.0],
-///      origin = [0.0, 0.0]
-///   }
-/// )
-/// ```
-///
-/// ```
-/// // Revolve two sketches around the same axis.
-///
-/// sketch001 = startSketchOn(XY)
-/// profile001 = startProfile(sketch001, at = [4, 8])
-///     |> xLine(length = 3)
-///     |> yLine(length = -3)
-///     |> xLine(length = -3)
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// profile002 = startProfile(sketch001, at = [-5, 8])
-///     |> xLine(length = 3)
-///     |> yLine(length = -3)
-///     |> xLine(length = -3)
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// revolve(
-///     [profile001, profile002],
-///     axis = X,
-/// )
-/// ```
-///
-/// ```
-/// // Revolve around a path that has not been extruded.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20])
-///     |> close(%)
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
-/// ```
-///
-/// ```
-/// // Revolve around a path that has not been extruded or closed.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
-/// ```
-///
-/// ```
-/// // Symmetrically revolve around a path.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
-/// ```
-///
-/// ```
-/// // Bidirectional revolve around a path.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
-/// ```
-@(impl = std_rust)
-export fn revolve(
-  /// The sketch or set of sketches that should be revolved
-  @sketches: [Sketch; 1+],
-  /// Axis of revolution.
-  axis: Axis2d | Edge,
-  /// Angle to revolve (in degrees). Default is 360.
-  angle?: number(Angle),
-  /// Tolerance for the revolve operation.
-  tolerance?: number(Length),
-  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
-  symmetric?: bool,
-  /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
-  bidirectionalAngle?: number(Angle),
-  /// A named tag for the face at the start of the revolve, i.e. the original sketch.
-  tagStart?: tag,
-  /// A named tag for the face at the end of the revolve.
-  tagEnd?: tag,
-): Solid {}
 
 /// Offset a plane by a distance along its normal.
 ///

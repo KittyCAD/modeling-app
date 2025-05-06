@@ -57,7 +57,8 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the opposite edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_opposite_edge(
     edge: TagIdentifier,
@@ -140,7 +141,8 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the next adjacent edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_next_adjacent_edge(
     edge: TagIdentifier,
@@ -232,7 +234,8 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the previous adjacent edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_previous_adjacent_edge(
     edge: TagIdentifier,
@@ -320,6 +323,7 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
     args = {
         faces = { docs = "The tags of the faces you want to find the common edge between" },
     },
+    tags = ["sketch"]
 }]
 async fn inner_get_common_edge(
     faces: Vec<TagIdentifier>,

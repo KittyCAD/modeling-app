@@ -4,7 +4,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "myCircle": {
     "type": "TagIdentifier",
