@@ -7,9 +7,7 @@ import {
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
@@ -54,6 +52,8 @@ export const PATHS = {
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
+  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
+  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
