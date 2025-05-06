@@ -157,7 +157,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
@@ -337,18 +338,6 @@ pub(crate) async fn do_post_extrude<'a>(
         let next_adjacent_edge_uuid = exec_state.next_uuid();
         let get_all_edge_faces_opposite_uuid = exec_state.next_uuid();
         let get_all_edge_faces_next_uuid = exec_state.next_uuid();
-        #[cfg(any(not(test), not(feature = "artifact-graph"), not(target_arch = "wasm32")))]
-        #[allow(unused_variables)]
-        let single_threaded = false;
-        // When running in vitest, we need to run this in a single thread.
-        // Because their workers are complete shit.
-        #[cfg(target_arch = "wasm32")]
-        let single_threaded = crate::wasm::vitest::running_in_vitest();
-        // If we are running in a test, for the arifact graph to be deterministic and not fail
-        // after say a fillet runs concurrently, we need to make sure that the
-        // async tasks are done before we return.
-        #[cfg(all(test, feature = "artifact-graph", not(target_arch = "wasm32")))]
-        let single_threaded = true;
 
         // Get faces for original edge
         // Since this one is batched we can just run it.
@@ -361,57 +350,27 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-        if !single_threaded {
-            args.ctx
-                .engine
-                .async_tasks()
-                .spawn(get_bg_edge_info_opposite(
-                    args_cloned.clone(),
-                    curve_id,
-                    sketch.id,
-                    face_id,
-                    opposite_edge_uuid,
-                    get_all_edge_faces_opposite_uuid,
-                    single_threaded,
-                ))
-                .await;
+        get_bg_edge_info_opposite(
+            args_cloned.clone(),
+            curve_id,
+            sketch.id,
+            face_id,
+            opposite_edge_uuid,
+            get_all_edge_faces_opposite_uuid,
+            true,
+        )
+        .await?;
 
-            args.ctx
-                .engine
-                .async_tasks()
-                .spawn(get_bg_edge_info_next(
-                    args_cloned,
-                    curve_id,
-                    sketch.id,
-                    face_id,
-                    next_adjacent_edge_uuid,
-                    get_all_edge_faces_next_uuid,
-                    single_threaded,
-                ))
-                .await;
-        } else {
-            get_bg_edge_info_opposite(
-                args_cloned.clone(),
-                curve_id,
-                sketch.id,
-                face_id,
-                opposite_edge_uuid,
-                get_all_edge_faces_opposite_uuid,
-                single_threaded,
-            )
-            .await?;
-
-            get_bg_edge_info_next(
-                args_cloned,
-                curve_id,
-                sketch.id,
-                face_id,
-                next_adjacent_edge_uuid,
-                get_all_edge_faces_next_uuid,
-                single_threaded,
-            )
-            .await?;
-        }
+        get_bg_edge_info_next(
+            args_cloned,
+            curve_id,
+            sketch.id,
+            face_id,
+            next_adjacent_edge_uuid,
+            get_all_edge_faces_next_uuid,
+            true,
+        )
+        .await?;
     }
 
     let Faces {

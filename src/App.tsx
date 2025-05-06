@@ -27,12 +27,18 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
-import { sceneInfra, codeManager, kclManager } from '@src/lib/singletons'
+import {
+  billingActor,
+  sceneInfra,
+  codeManager,
+  kclManager,
+} from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
@@ -144,6 +150,11 @@ export function App() {
   }, [lastCommandType, loaderData?.project?.path])
 
   useEffect(() => {
+    // Not too useful for regular flows but on modeling view refresh,
+    // fetch the token count. The regular flow is the count is initialized
+    // by the Projects view.
+    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
+
     // When leaving the modeling scene, cut the engine stream.
     return () => {
       engineStreamActor.send({ type: EngineStreamTransition.Pause })

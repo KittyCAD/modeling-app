@@ -4,7 +4,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "fullPart": {
     "type": "Solid",

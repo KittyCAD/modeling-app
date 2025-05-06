@@ -4,7 +4,8 @@ description: Variables in memory after executing sketch_on_face_end_negative_ext
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "part001": {
     "type": "Solid",

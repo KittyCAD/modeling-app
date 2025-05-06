@@ -190,7 +190,7 @@ export function createProjectCommands({
           data: {
             requestedProjectName: record.projectName,
             requestedCode: record.code,
-            requestedFileName: record.name,
+            requestedFileNameWithExtension: record.name,
           },
         })
       }

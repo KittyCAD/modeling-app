@@ -57,7 +57,8 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     args = {
         array = { docs = "Input array. The output array is this input array, but every element has had the function `f` run on it." },
         f = { docs = "A function. The output array is just the input array, but `f` has been run on every item." },
-    }
+    },
+    tags = ["array"]
 }]
 async fn inner_map<'a>(
     array: Vec<KclValue>,
@@ -188,7 +189,8 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         array = { docs = "Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run." },
         initial = { docs = "The first time `f` is run, it will be called with the first item of `array` and this initial starting value."},
         f = { docs = "Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`." },
-    }
+    },
+    tags = ["array"]
 }]
 async fn inner_reduce<'a>(
     array: Vec<KclValue>,
@@ -246,7 +248,8 @@ async fn call_reduce_closure(
     args = {
         array = { docs = "The array which you're adding a new item to." },
         item = { docs = "The new item to add to the array" },
-    }
+    },
+    tags = ["array"]
 }]
 async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
     array.push(item);
@@ -289,7 +292,8 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     unlabeled_first = true,
     args = {
         array = { docs = "The array to pop from. Must not be empty."},
-    }
+    },
+    tags = ["array"]
 }]
 async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
     if array.is_empty() {

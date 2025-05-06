@@ -2,7 +2,7 @@
 // This is a color cube centered about the origin. It is used to help determine orientation in the scene.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Parameters referenced in drawRectangle
 size = 100

@@ -27,7 +27,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
+    execution::{
+        annotations,
+        types::{ArrayLen, UnitAngle, UnitLen},
+        KclValue, Metadata, TagIdentifier,
+    },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -354,12 +358,28 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_meta_settings(&self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<UnitLen>,
+        angle_units: Option<UnitAngle>,
+    ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                node.inner = Annotation::new_from_meta_settings(&settings);
+                if let Some(len) = length_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_LENGTH,
+                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    );
+                }
+                if let Some(angle) = angle_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_ANGLE,
+                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                    );
+                }
+
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -369,9 +389,21 @@ impl Node<Program> {
         }
 
         if !found {
-            new_program
-                .inner_attrs
-                .push(Node::no_src(Annotation::new_from_meta_settings(&settings)));
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(len) = length_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_LENGTH,
+                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+            if let Some(angle) = angle_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_ANGLE,
+                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
         }
 
         Ok(new_program)
@@ -1536,6 +1568,15 @@ pub struct Annotation {
 }
 
 impl Annotation {
+    // Creates a named annotation with an empty (but present) property list, `@name()`.
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Annotation {
+            name: Some(Identifier::new(name)),
+            properties: Some(vec![]),
+            digest: None,
+        })
+    }
+
     pub fn is_inner(&self) -> bool {
         self.name.is_some()
     }
@@ -1544,22 +1585,16 @@ impl Annotation {
         self.name.as_ref().map(|n| &*n.name)
     }
 
-    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
-        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
-            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
-        )];
-
-        if settings.default_angle_units != Default::default() {
-            properties.push(ObjectProperty::new(
-                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
-            ));
-        }
-        Annotation {
-            name: Some(Identifier::new(annotations::SETTINGS)),
-            properties: Some(properties),
-            digest: None,
+    pub(crate) fn add_or_update(&mut self, label: &str, value: Expr) {
+        match &mut self.properties {
+            Some(props) => match props.iter_mut().find(|p| p.key.name == label) {
+                Some(p) => {
+                    p.value = value;
+                    p.digest = None;
+                }
+                None => props.push(ObjectProperty::new(Identifier::new(label), value)),
+            },
+            None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
 }
@@ -4136,10 +4171,7 @@ startSketchOn(XY)"#;
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4168,10 +4200,7 @@ startSketchOn(XY)
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4206,10 +4235,7 @@ startSketchOn(XY)
         let program = crate::parsing::top_level_parse(code).unwrap();
 
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Cm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();

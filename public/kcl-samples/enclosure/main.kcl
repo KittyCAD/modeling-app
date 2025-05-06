@@ -2,7 +2,7 @@
 // An enclosure body and sealing lid for storing items
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 length = 175
