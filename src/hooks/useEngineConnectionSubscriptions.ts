@@ -34,7 +34,7 @@ import type {
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
-import { localModuleSafePathSplit } from '@src/lib/paths'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -209,9 +209,11 @@ export function useEngineConnectionSubscriptions() {
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = localModuleSafePathSplit(importDetails.value)
-                    const fileName = paths[paths.length - 1]
-                    showSketchOnImportToast(fileName)
+                    // importDetails has OS specific separators from the rust side!
+                    const fileNameWithExtension = getStringAfterLastSeparator(
+                      importDetails.value
+                    )
+                    showSketchOnImportToast(fileNameWithExtension)
                   } else if (
                     importDetails?.type === 'Main' ||
                     importDetails?.type === 'Std'
