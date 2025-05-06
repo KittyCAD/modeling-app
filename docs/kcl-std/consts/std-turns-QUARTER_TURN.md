@@ -1,15 +1,16 @@
 ---
-title: "std::turns::QUARTER_TURN"
+title: "turns::QUARTER_TURN"
+subtitle: "Constant in turns"
 excerpt: ""
 layout: manual
 ---
 
 
 
-
-
 ```kcl
-std::turns::QUARTER_TURN: number(deg) = 90deg
+turns::QUARTER_TURN: number(deg) = 90deg
 ```
+
+
 
 

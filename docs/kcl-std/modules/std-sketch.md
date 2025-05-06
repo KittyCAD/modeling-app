@@ -1,5 +1,6 @@
 ---
-title: "std::sketch"
+title: "sketch"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---
