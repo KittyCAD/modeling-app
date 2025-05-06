@@ -13,7 +13,7 @@ This doesn't really have much utility unless you need the equivalent of a double
 Really only use this function if YOU ARE SURE you need it. In most cases you do not need clone and using a pattern with `instance = 2` is more appropriate.
 
 ```kcl
-clone(geometry: Solid | Sketch | ImportedGeometry): Solid | Sketch | ImportedGeometry
+clone(@geometry: Solid | Sketch | ImportedGeometry): Solid | Sketch | ImportedGeometry
 ```
 
 ### Arguments

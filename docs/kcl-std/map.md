@@ -10,7 +10,7 @@ Given a list like `[a, b, c]`, and a function like `f`, returns `[f(a), f(b), f(
 
 ```kcl
 map(
-  array: [any],
+  @array: [any],
   f: FunctionSource,
 ): [any]
 ```

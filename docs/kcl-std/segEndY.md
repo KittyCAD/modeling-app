@@ -9,7 +9,7 @@ Compute the ending point of the provided line segment along the 'y' axis.
 
 
 ```kcl
-segEndY(tag: TagIdentifier): number
+segEndY(@tag: TagIdentifier): number
 ```
 
 ### Arguments

@@ -10,7 +10,7 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount of dista
 
 ```kcl
 patternLinear3d(
-  solids: [Solid],
+  @solids: [Solid],
   instances: number,
   distance: number,
   axis: Point3d,

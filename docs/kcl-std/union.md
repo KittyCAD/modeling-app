@@ -10,7 +10,7 @@ Union two or more solids into a single solid.
 
 ```kcl
 union(
-  solids: [Solid],
+  @solids: [Solid],
   tolerance?: number,
 ): [Solid]
 ```

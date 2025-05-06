@@ -10,7 +10,7 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 
 ```kcl
 extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,

@@ -10,7 +10,7 @@ Intersect computes the geometric intersection of multiple solid bodies, returnin
 
 ```kcl
 intersect(
-  solids: [Solid],
+  @solids: [Solid],
   tolerance?: number,
 ): [Solid]
 ```

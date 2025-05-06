@@ -10,7 +10,7 @@ Create a regular polygon with the specified number of sides that is either inscr
 
 ```kcl
 polygon(
-  sketchSurfaceOrGroup: Sketch | Plane | Face,
+  @sketchSurfaceOrGroup: Sketch | Plane | Face,
   radius: number,
   numSides: u64,
   center: Point2d,

@@ -12,7 +12,7 @@ Translate is really useful for sketches if you want to move a sketch and then ro
 
 ```kcl
 translate(
-  objects: [Solid] | [Sketch] | ImportedGeometry,
+  @objects: [Solid] | [Sketch] | ImportedGeometry,
   x?: number,
   y?: number,
   z?: number,

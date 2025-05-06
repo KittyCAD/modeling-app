@@ -10,7 +10,7 @@ Construct a line segment from the current origin back to the profile's origin, e
 
 ```kcl
 close(
-  sketch: Sketch,
+  @sketch: Sketch,
   tag?: TagDeclarator,
 ): Sketch
 ```

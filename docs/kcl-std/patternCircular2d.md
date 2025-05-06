@@ -10,7 +10,7 @@ Repeat a 2-dimensional sketch some number of times along a partial or complete c
 
 ```kcl
 patternCircular2d(
-  sketchSet: [Sketch],
+  @sketchSet: [Sketch],
   instances: number,
   center: Point2d,
   arcDegrees: number,

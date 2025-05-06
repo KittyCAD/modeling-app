@@ -10,7 +10,7 @@ Draw a line segment relative to the current origin using the polar measure of so
 
 ```kcl
 angledLine(
-  sketch: Sketch,
+  @sketch: Sketch,
   angle: number,
   length?: number,
   lengthX?: number,

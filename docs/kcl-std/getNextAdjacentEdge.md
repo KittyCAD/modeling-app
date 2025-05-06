@@ -9,7 +9,7 @@ Get the next adjacent edge to the edge given.
 
 
 ```kcl
-getNextAdjacentEdge(edge: TagIdentifier): Uuid
+getNextAdjacentEdge(@edge: TagIdentifier): Uuid
 ```
 
 ### Arguments

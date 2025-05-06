@@ -9,7 +9,7 @@ Compute the ending point of the provided line segment.
 
 
 ```kcl
-segEnd(tag: TagIdentifier): Point2d
+segEnd(@tag: TagIdentifier): Point2d
 ```
 
 ### Arguments

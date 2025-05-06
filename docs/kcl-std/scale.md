@@ -16,7 +16,7 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ```kcl
 scale(
-  objects: [Solid] | [Sketch] | ImportedGeometry,
+  @objects: [Solid] | [Sketch] | ImportedGeometry,
   x?: number,
   y?: number,
   z?: number,

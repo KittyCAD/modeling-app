@@ -10,7 +10,7 @@ Take a starting value. Then, for each element of an array, calculate the next va
 
 ```kcl
 reduce(
-  array: [any],
+  @array: [any],
   initial: any,
   f: FunctionSource,
 ): any

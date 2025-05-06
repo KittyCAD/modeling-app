@@ -10,7 +10,7 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```kcl
 appearance(
-  solids: [Solid] | ImportedGeometry,
+  @solids: [Solid] | ImportedGeometry,
   color: string,
   metalness?: number,
   roughness?: number,

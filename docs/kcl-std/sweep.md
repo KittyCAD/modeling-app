@@ -12,7 +12,7 @@ You can provide more than one sketch to sweep, and they will all be swept along 
 
 ```kcl
 sweep(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   path: Sketch | Helix,
   sectional?: bool,
   tolerance?: number,

@@ -10,7 +10,7 @@ The sketches need to closed and on the same plane.
 
 ```kcl
 loft(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   vDegree: number,
   bezApproximateRational: bool,
   baseCurveIndex?: number,

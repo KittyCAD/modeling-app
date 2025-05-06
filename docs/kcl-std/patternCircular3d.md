@@ -10,7 +10,7 @@ Repeat a 3-dimensional solid some number of times along a partial or complete ci
 
 ```kcl
 patternCircular3d(
-  solids: [Solid],
+  @solids: [Solid],
   instances: number,
   axis: [number],
   center: Point3d,

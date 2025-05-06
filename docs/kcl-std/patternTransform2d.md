@@ -10,7 +10,7 @@ Just like patternTransform, but works on 2D sketches not 3D solids.
 
 ```kcl
 patternTransform2d(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   instances: number,
   transform: FunctionSource,
   useOriginal?: bool,

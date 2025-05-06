@@ -18,7 +18,7 @@ The point is if you want to export the result of a sketch on a face, you only ne
 
 ```kcl
 startSketchOn(
-  planeOrSolid: Plane | Solid,
+  @planeOrSolid: Plane | Solid,
   face?: TagIdentifier | Start | End,
 ): Plane | Face
 ```

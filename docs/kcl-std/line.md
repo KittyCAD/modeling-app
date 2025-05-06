@@ -10,7 +10,7 @@ Extend the current sketch with a new straight line.
 
 ```kcl
 line(
-  sketch: Sketch,
+  @sketch: Sketch,
   endAbsolute?: Point2d,
   end?: Point2d,
   tag?: TagDeclarator,

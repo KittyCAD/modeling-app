@@ -12,7 +12,7 @@ Unless this makes a lot of sense and feels like what you're looking for to const
 
 ```kcl
 arc(
-  sketch: Sketch,
+  @sketch: Sketch,
   angleStart?: number,
   angleEnd?: number,
   radius?: number,

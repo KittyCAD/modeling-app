@@ -36,7 +36,7 @@ The transform function returns a transform object. All properties of the object 
 
 ```kcl
 patternTransform(
-  solids: [Solid],
+  @solids: [Solid],
   instances: number,
   transform: FunctionSource,
   useOriginal?: bool,

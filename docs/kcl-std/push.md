@@ -10,7 +10,7 @@ Returns a new array with the element appended.
 
 ```kcl
 push(
-  array: [any],
+  @array: [any],
   item: any,
 ): any
 ```

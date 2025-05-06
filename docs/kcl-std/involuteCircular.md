@@ -10,7 +10,7 @@ Extend the current sketch with a new involute circular curve.
 
 ```kcl
 involuteCircular(
-  sketch: Sketch,
+  @sketch: Sketch,
   startRadius: number,
   endRadius: number,
   angle: number,

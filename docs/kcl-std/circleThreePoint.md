@@ -10,7 +10,7 @@ Construct a circle derived from 3 points.
 
 ```kcl
 circleThreePoint(
-  sketchSurfaceOrGroup: Sketch | Plane | Face,
+  @sketchSurfaceOrGroup: Sketch | Plane | Face,
   p1: Point2d,
   p2: Point2d,
   p3: Point2d,

@@ -28,7 +28,7 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```kcl
 rotate(
-  objects: [Solid] | [Sketch] | ImportedGeometry,
+  @objects: [Solid] | [Sketch] | ImportedGeometry,
   roll?: number,
   pitch?: number,
   yaw?: number,

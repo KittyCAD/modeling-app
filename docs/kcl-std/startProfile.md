@@ -10,7 +10,7 @@ Start a new profile at a given point.
 
 ```kcl
 startProfile(
-  sketchSurface: Plane | Face,
+  @sketchSurface: Plane | Face,
   at: Point2d,
   tag?: TagDeclarator,
 ): Sketch

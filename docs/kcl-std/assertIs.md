@@ -10,7 +10,7 @@ Asserts that a value is the boolean value true.
 
 ```kcl
 assertIs(
-  actual: bool,
+  @actual: bool,
   error?: string,
 ): ()
 ```

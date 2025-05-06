@@ -9,7 +9,7 @@ Compute the starting point of the provided line segment.
 
 
 ```kcl
-segStart(tag: TagIdentifier): Point2d
+segStart(@tag: TagIdentifier): Point2d
 ```
 
 ### Arguments

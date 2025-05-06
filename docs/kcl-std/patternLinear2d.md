@@ -10,7 +10,7 @@ Repeat a 2-dimensional sketch along some dimension, with a dynamic amount of dis
 
 ```kcl
 patternLinear2d(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   instances: number,
   distance: number,
   axis: Point2d,

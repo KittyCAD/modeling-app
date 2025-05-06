@@ -10,7 +10,7 @@ Draw a line relative to the current origin to a specified distance away from the
 
 ```kcl
 yLine(
-  sketch: Sketch,
+  @sketch: Sketch,
   length?: number,
   endAbsolute?: number,
   tag?: TagDeclarator,

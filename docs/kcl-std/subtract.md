@@ -10,7 +10,7 @@ Performs a boolean subtraction operation, removing the volume of one or more too
 
 ```kcl
 subtract(
-  solids: [Solid],
+  @solids: [Solid],
   tools: [Solid],
   tolerance?: number,
 ): [Solid]

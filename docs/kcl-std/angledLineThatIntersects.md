@@ -10,7 +10,7 @@ Draw an angled line from the current origin, constructing a line segment such th
 
 ```kcl
 angledLineThatIntersects(
-  sketch: Sketch,
+  @sketch: Sketch,
   angle: number,
   intersectTag: TagIdentifier,
   offset?: number,

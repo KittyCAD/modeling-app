@@ -94,6 +94,9 @@ pub struct StdLibFnArg {
 
 impl fmt::Display for StdLibFnArg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if !self.label_required {
+            f.write_char('@')?;
+        }
         f.write_str(&self.name)?;
         if !self.required {
             f.write_char('?')?;

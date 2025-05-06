@@ -10,7 +10,7 @@ When using radius and angle, draw a curved line segment along part of an imagina
 
 ```kcl
 tangentialArc(
-  sketch: Sketch,
+  @sketch: Sketch,
   endAbsolute?: Point2d,
   end?: Point2d,
   radius?: number,

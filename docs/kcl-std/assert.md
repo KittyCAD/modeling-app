@@ -10,7 +10,7 @@ Check a value meets some expected conditions at runtime. Program terminates with
 
 ```kcl
 assert(
-  actual: number,
+  @actual: number,
   isGreaterThan?: number,
   isLessThan?: number,
   isGreaterThanOrEqual?: number,
