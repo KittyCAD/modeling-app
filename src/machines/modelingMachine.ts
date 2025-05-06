@@ -306,7 +306,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch On Face' }
   | {
-      type: 'Select default plane'
+      type: 'Select sketch plane'
       data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
     }
   | {
@@ -4421,7 +4421,7 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
-        'Select default plane': {
+        'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
         },
@@ -4434,7 +4434,7 @@ export const modelingMachine = setup({
         id: 'animate-to-face',
 
         input: ({ event }) => {
-          if (event.type !== 'Select default plane') return undefined
+          if (event.type !== 'Select sketch plane') return undefined
           return event.data
         },
 

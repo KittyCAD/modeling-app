@@ -637,7 +637,8 @@ export function sketchOnExtrudedFace(
 
   const expressionIndex = Math.max(
     sketchPathToNode[1][0] as number,
-    extrudePathToNode[1][0] as number
+    extrudePathToNode[1][0] as number,
+    node.body.length - 1
   )
   _node.body.splice(expressionIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
