@@ -13,6 +13,17 @@ import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
 
 /**
+ * /some/dir            = directoryPath
+ * report               = fileNameWithoutExtension
+ * report.csv           = fileNameWithExtension
+ * /some/dir/report.csv = absolutePathToFileNameWithExtension
+ * /some/dir/report     = aboslutePathTOFileNameWithoutExtension
+ * /some/dir/dreport    = absolutePathToDirectory
+ * some/dir/report      = relativePathToDirectory
+ * some/dir/report      = relativePathFileWithoutExtension
+ */
+
+/**
  * Handles any system level I/O for folders and files
  * This machine will be initializes once within the applications runtime
  * and exist for the entire life cycle of the application and able to be access
@@ -69,7 +80,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
-            requestedFileName: string
+            requestedFileNameWithExtension: string
             requestedCode: string
           }
         }
@@ -77,7 +88,7 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.importFileFromURL
           data: {
             requestedProjectName: string
-            requestedFileName: string
+            requestedFileNameWithExtension: string
             requestedCode: string
             requestedSubRoute?: string
           }
@@ -229,7 +240,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedFileName: string
+          requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
@@ -444,7 +455,8 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileName: event.data.requestedFileName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
           }
@@ -467,7 +479,8 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileName: event.data.requestedFileName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
