@@ -2,7 +2,7 @@ import type {
   TextToCad_type,
   TextToCadMultiFileIteration_type,
 } from '@kittycad/lib/dist/types/src/models'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import type { Mesh } from 'three'
 import {
@@ -173,8 +173,6 @@ export function ToastTextToCadSuccess({
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const animationRequestRef = useRef<number>()
-  const [hasCopied, setHasCopied] = useState(false)
-  const [showCopiedUi, setShowCopiedUi] = useState(false)
   const modelId = data.id
   const projectDirectoryPath = useProjectDirectoryPath()
 
@@ -353,12 +351,10 @@ export function ToastTextToCadSuccess({
             iconStart={{
               icon: 'close',
             }}
-            data-negative-button={hasCopied ? 'close' : 'reject'}
-            name={hasCopied ? 'Close' : 'Reject'}
+            data-negative-button="reject"
+            name="Reject"
             onClick={() => {
-              if (!hasCopied) {
-                sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
-              }
+              sendTelemetry(modelId, 'rejected', token).catch(reportRejection)
               if (isDesktop()) {
                 // Delete the file from the project
 
@@ -388,7 +384,7 @@ export function ToastTextToCadSuccess({
               toast.dismiss(toastId)
             }}
           >
-            {hasCopied ? 'Close' : 'Reject'}
+            Reject
           </ActionButton>
           {isDesktop() ? (
             <ActionButton
@@ -412,24 +408,27 @@ export function ToastTextToCadSuccess({
             <ActionButton
               Element="button"
               iconStart={{
-                icon: showCopiedUi ? 'clipboardCheckmark' : 'clipboardPlus',
+                icon: 'checkmark',
               }}
-              name="Copy to clipboard"
+              name="Replace current file"
               onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 sendTelemetry(modelId, 'accepted', token)
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                navigator.clipboard.writeText(data.code || '// no code found')
-                setShowCopiedUi(true)
-                setHasCopied(true)
+                const code = data.code || '// no code found'
 
-                // Reset the button text after 5 seconds
-                setTimeout(() => {
-                  setShowCopiedUi(false)
-                }, 5000)
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.createKCLFile,
+                  data: {
+                    requestedProjectName: projectName,
+                    requestedCode: code,
+                    requestedFileName: fileName,
+                  },
+                })
+
+                toast.dismiss(toastId)
               }}
             >
-              {showCopiedUi ? 'Copied' : 'Copy to clipboard'}
+              Replace current file
             </ActionButton>
           )}
         </div>

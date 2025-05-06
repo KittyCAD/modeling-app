@@ -5,10 +5,15 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
+import {
+  FILE_EXT,
+  IS_ML_EXPERIMENTAL,
+  ML_EXPERIMENTAL_MESSAGE,
+} from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -17,10 +22,11 @@ export function createApplicationCommands({
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    displayName: `Text to CAD`,
+    description: 'Generate parts from text prompts.',
+    displayName: 'Text to CAD',
     groupId: 'application',
     needsReview: false,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
@@ -81,6 +87,7 @@ export function createApplicationCommands({
       prompt: {
         inputType: 'text',
         required: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   }
@@ -109,7 +116,8 @@ export function createApplicationCommands({
           : requestedProjectName
 
         if (data.source === 'kcl-samples' && data.sample) {
-          const pathParts = data.sample.split('/')
+          // This is web safe because the values are taken from manifest.json not from the disk when selecting
+          const pathParts = webSafePathSplit(data.sample)
           const projectPathPart = pathParts[0]
           const primaryKclFile = pathParts[1]
           const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
@@ -134,7 +142,7 @@ export function createApplicationCommands({
                 type: SystemIOMachineEvents.importFileFromURL,
                 data: {
                   requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileName: folderNameBecomesKCLFileName,
+                  requestedFileNameWithExtension: folderNameBecomesKCLFileName,
                   requestedCode: code,
                 },
               })
@@ -142,14 +150,14 @@ export function createApplicationCommands({
             .catch(reportError)
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
-          const fileWithExtension = clonePath.split('/').pop()
+          const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
             const text = await window.electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
-                requestedFileName: fileWithExtension,
+                requestedFileNameWithExtension: fileNameWithExtension,
                 requestedCode: text,
               },
             })

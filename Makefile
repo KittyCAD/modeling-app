@@ -49,14 +49,9 @@ REACT_SOURCES := $(wildcard src/*.tsx) $(wildcard src/**/*.tsx)
 TYPESCRIPT_SOURCES := tsconfig.* $(wildcard src/*.ts) $(wildcard src/**/*.ts)
 VITE_SOURCES := $(wildcard vite.*) $(wildcard vite/**/*.tsx)
 
+
 .PHONY: build
-build: build-web build-desktop
-
-.PHONY: build-web
-build-web: install public/kcl_wasm_lib_bg.wasm build/index.html
-
-.PHONY: build-desktop
-build-desktop: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
+build: install public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
 public/kcl_wasm_lib_bg.wasm: $(CARGO_SOURCES) $(RUST_SOURCES)
 ifdef WINDOWS
@@ -64,9 +59,6 @@ ifdef WINDOWS
 else
 	npm run build:wasm:dev
 endif
-
-build/index.html: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
-	npm run build:local
 
 .vite/build/main.js: $(REACT_SOURCES) $(TYPESCRIPT_SOURCES) $(VITE_SOURCES)
 	npm run tronb:vite:dev
@@ -95,11 +87,11 @@ TARGET ?= desktop
 run: run-$(TARGET)
 
 .PHONY: run-web
-run-web: install build-web ## Start the web app
+run-web: install build ## Start the web app
 	npm run start
 
 .PHONY: run-desktop
-run-desktop: install build-desktop ## Start the desktop app
+run-desktop: install build ## Start the desktop app
 	npm run tron:start
 
 ###############################################################################
@@ -121,7 +113,7 @@ test-unit: install ## Run the unit tests
 test-e2e: test-e2e-$(TARGET)
 
 .PHONY: test-e2e-web
-test-e2e-web: install build-web ## Run the web e2e tests
+test-e2e-web: install build ## Run the web e2e tests
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 ifdef E2E_GREP
 	npm run chrome:test -- --headed --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
@@ -130,7 +122,7 @@ else
 endif
 
 .PHONY: test-e2e-desktop
-test-e2e-desktop: install build-desktop ## Run the desktop e2e tests
+test-e2e-desktop: install build ## Run the desktop e2e tests
 ifdef E2E_GREP
 	npm run test:playwright:electron -- --grep="$(E2E_GREP)" --max-failures=$(E2E_FAILURES)
 else

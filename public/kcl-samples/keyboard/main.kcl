@@ -2,7 +2,7 @@
 // A custom keyboard with Zoo brand lettering
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 baseColor = "#0f0f0f"

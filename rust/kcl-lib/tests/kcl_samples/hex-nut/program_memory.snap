@@ -17,7 +17,8 @@ description: Variables in memory after executing hex-nut.kcl
     }
   },
   "hexNut": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "thickness": {
     "type": "Number",

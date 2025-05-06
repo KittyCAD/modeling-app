@@ -216,7 +216,7 @@ export async function submitAndAwaitTextToKclSystemIO({
           data: {
             requestedProjectName: projectName,
             requestedCode: value.code,
-            requestedFileName: newFileName,
+            requestedFileNameWithExtension: newFileName,
           },
         })
       }

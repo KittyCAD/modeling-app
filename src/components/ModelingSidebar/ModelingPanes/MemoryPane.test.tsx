@@ -16,6 +16,13 @@ describe('processMemory', () => {
     return a - 2
   }
   otherVar = myFn(5)
+  nFeet = 2ft
+  nInches = 2in
+  nMm = 2mm
+  nDegrees = 2deg
+  nRadians = 2rad
+  nCount = 2_
+  nUnknown = 1rad * PI
 
   theExtrude = startSketchOn(XY)
     |> startProfile(at = [0, 0])
@@ -32,8 +39,17 @@ describe('processMemory', () => {
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
     const output = processMemory(execState.variables)
-    expect(output.myVar).toEqual(5)
-    expect(output.otherVar).toEqual(3)
+    expect(output.nFeet).toEqual('2: number(ft)')
+    expect(output.nInches).toEqual('2: number(in)')
+    expect(output.nMm).toEqual('2: number(mm)')
+    expect(output.nDegrees).toEqual('2: number(deg)')
+    expect(output.nRadians).toEqual('2: number(rad)')
+    expect(output.nCount).toEqual('2: number(Count)')
+    expect(output.nUnknown).toEqual(
+      '3.141592653589793 (number with unknown units)'
+    )
+    expect(output.myVar).toEqual('5 (no units, defaulting to mm or deg)')
+    expect(output.otherVar).toEqual('3 (no units, defaulting to mm or deg)')
     expect(output.myFn).toEqual('__function__')
     expect(output.theExtrude).toEqual([
       {

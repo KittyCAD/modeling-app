@@ -147,7 +147,7 @@ export class CmdBarFixture {
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
       const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your kcl'
+        'Use Zoo AI to edit your parts and code.'
       )
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
