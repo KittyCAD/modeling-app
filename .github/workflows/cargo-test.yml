@@ -214,7 +214,8 @@ jobs:
       - name: Run wasm tests
         run: |
           cd rust
-          wasm-pack test -p kcl-wasm-lib --headless --chrome
+          cd kcl-wasm-lib
+          wasm-pack test --headless --chrome
         env:
           KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
           NODE_ENV: development
