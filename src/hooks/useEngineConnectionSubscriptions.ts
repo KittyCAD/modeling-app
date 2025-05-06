@@ -34,6 +34,7 @@ import type {
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 import { localModuleSafePathSplit } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
@@ -148,7 +149,7 @@ export function useEngineConnectionSubscriptions() {
                 }
 
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'defaultPlane',
                     planeId: planeId,
@@ -165,7 +166,7 @@ export function useEngineConnectionSubscriptions() {
                 const planeInfo =
                   await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'offsetPlane',
                     zAxis: [
@@ -194,7 +195,7 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
 
-              // Artifact is likely an extrusion face
+              // Artifact is likely an sweep face
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
@@ -318,15 +319,31 @@ export function useEngineConnectionSubscriptions() {
                     }
                   : { type: 'wall' }
 
+              if (err(extrusion)) {
+                return Promise.reject(
+                  new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+                )
+              }
+
+              const lastChild =
+                findAllChildrenAndOrderByPlaceInCode(
+                  { type: 'sweep', ...extrusion },
+                  kclManager.artifactGraph
+                )[0] || null
+              const lastChildCodeRef =
+                lastChild?.type === 'compositeSolid'
+                  ? lastChild.codeRef.range
+                  : null
+
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
                     kclManager.ast,
-                    extrusion.codeRef.range
+                    lastChildCodeRef || extrusion.codeRef.range
                   )
                 : []
 
               sceneInfra.modelingSend({
-                type: 'Select default plane',
+                type: 'Select sketch plane',
                 data: {
                   type: 'extrudeFace',
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],
