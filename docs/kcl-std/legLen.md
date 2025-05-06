@@ -1,5 +1,5 @@
 ---
-title: "legLen"
+title: "std::math::legLen"
 excerpt: "Compute the length of the given leg."
 layout: manual
 ---

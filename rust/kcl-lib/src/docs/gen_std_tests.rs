@@ -126,9 +126,12 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             continue;
         }
 
+        let tags = internal_fn.tags();
+        let module = tags.get(0).map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
         functions
-            .get_mut("std")
-            .unwrap()
+            .entry(module.to_owned())
+            .or_default()
             .push((internal_fn.name(), internal_fn.name()));
     }
 
@@ -428,8 +431,11 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         })
         .collect();
 
+    let tags = internal_fn.tags();
+    let qual = tags.get(0).map(|s| &**s).unwrap_or("");
+
     let data = json!({
-        "name": fn_name,
+        "name": format!("std::{qual}{}{fn_name}", if qual.is_empty() { "" } else {"::"}),
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),

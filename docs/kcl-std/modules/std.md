@@ -10,9 +10,11 @@ Contains frequently used constants, functions for interacting with the KittyCAD 
 
 ## Modules
 
+* [`array`](/docs/kcl-std/modules/std-array)
 * [`math`](/docs/kcl-std/modules/std-math)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)
+* [`transform`](/docs/kcl-std/modules/std-transform)
 * [`turns::turns`](/docs/kcl-std/modules/std-turns)
 * [`types`](/docs/kcl-std/modules/std-types)
 * [`units::units`](/docs/kcl-std/modules/std-units)

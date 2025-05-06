@@ -1,5 +1,5 @@
 ---
-title: "legAngY"
+title: "std::math::legAngY"
 excerpt: "Compute the angle of the given leg for y."
 layout: manual
 ---

@@ -10,9 +10,11 @@
 
 export import * from "std::types"
 export import "std::units"
+export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
 export import * from "std::solid"
+export import * from "std::transform"
 export import "std::turns"
 
 export XY = {
