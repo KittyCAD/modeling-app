@@ -18,8 +18,8 @@ export interface BillingRemainingProps {
 const Error = (props: { error: Error }) => {
   const [showMessage, setShowMessage] = useState(false)
 
-  const fadedBg = 'rgba(127, 127, 127, 0.2)'
-  const fadedFg = 'rgba(255, 255, 255, 0.6)'
+  const fadedBg = 'rgba(127, 127, 127, 1)'
+  const fadedFg = 'rgba(255, 255, 255, 1)'
   const colors = {
     color: fadedFg,
     stroke: fadedFg,
