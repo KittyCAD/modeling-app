@@ -19,12 +19,12 @@ upperBlock = {
 }
 elevate = { h = 5 }
 
-blockSz = max(upperBlock.h, lowerBlock.h)
+blockSz = max([upperBlock.h, lowerBlock.h])
 
 slot = { l = 10, h = 1 }
 
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(length = blockSz, tag = $edgeA)
   |> xLine(length = blockSz, tag = $edgeB)
   |> yLine(length = -blockSz, tag = $edgeC)
@@ -36,15 +36,15 @@ sketch001 = startSketchOn(XZ)
   |> yLine(length = blockSz + elevate.h, tag = $edge6)
   |> xLine(length = -(upperBlock.l - blockSz), tag = $edge7)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close(%)
-  |> hole(circle(center = [blockSz / 2, blockSz / 2], radius = upperBlockTransHole.r), %)
-  |> hole(circle(
+  |> close()
+  |> subtract2d(tool = circle(center = [blockSz / 2, blockSz / 2], radius = upperBlockTransHole.r))
+  |> subtract2d(tool = circle(
        center = [
          upperBlock.l + lowerBlock.l - blockSz - lowerBlockTransHole.r - tubeClr,
          -(blockSz + elevate.h + blockSz / 2)
        ],
        radius = lowerBlockTransHole.r,
-     ), %)
+     ))
 rad = 3
 
 extrude001 = extrude(sketch001, length = blockSz)
@@ -64,8 +64,7 @@ extrude001 = extrude(sketch001, length = blockSz)
        ],
      )
 
-sketch002 = startSketchOn(extrude001, seg01)
-  |> startProfileAt([0, 0], %)
+sketch002 = startSketchOn(extrude001, face = seg01)
+  |> startProfile(at = [0, 0])
   |> circle(center = [blockSz / 2, -blockSz / 2], radius = upperBlockLongHole.r)
   |> extrude(length = -upperBlock.l)
-
