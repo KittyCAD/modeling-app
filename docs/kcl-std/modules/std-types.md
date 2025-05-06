@@ -1,5 +1,6 @@
 ---
-title: "std::types"
+title: "types"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---

@@ -1,16 +1,17 @@
 ---
-title: "std::math::atan"
+title: "atan"
+subtitle: "Function in math"
 excerpt: "Compute the arctangent of a number."
 layout: manual
 ---
 
 Compute the arctangent of a number.
 
-Consider using `atan2()` instead for the true inverse of tangent.
-
 ```kcl
 atan(@num: number(_)): number(rad)
 ```
+
+Consider using `atan2()` instead for the true inverse of tangent.
 
 ### Arguments
 

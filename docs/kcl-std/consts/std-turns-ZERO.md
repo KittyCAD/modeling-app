@@ -1,15 +1,16 @@
 ---
-title: "std::turns::ZERO"
+title: "turns::ZERO"
+subtitle: "Constant in turns"
 excerpt: ""
 layout: manual
 ---
 
 
 
-
-
 ```kcl
-std::turns::ZERO: number = 0
+turns::ZERO: number = 0
 ```
+
+
 
 

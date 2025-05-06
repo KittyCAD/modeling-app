@@ -1,5 +1,6 @@
 ---
-title: "std::units"
+title: "units"
+subtitle: "Module in std"
 excerpt: "Functions for converting numbers to different units. "
 layout: manual
 ---

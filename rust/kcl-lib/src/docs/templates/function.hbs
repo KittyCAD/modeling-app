@@ -1,5 +1,6 @@
 ---
 title: "{{name}}"
+subtitle: "Function in {{module}}"
 excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
@@ -10,11 +11,11 @@ layout: manual
 {{/if}}
 {{{summary}}}
 
-{{{description}}}
-
 ```kcl
 {{{fn_signature}}}
 ```
+
+{{{description}}}
 
 {{#if args}}
 ### Arguments
