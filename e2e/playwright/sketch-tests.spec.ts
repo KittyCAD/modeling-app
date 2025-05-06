@@ -1256,6 +1256,97 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
 
+  test('sketch sketch on face of a boolean', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
+
+myVar = 50
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [myVar, 43.9], radius = 41.05)
+extrude001 = extrude(profile001, length = 200)
+  |> translate(x = 3.14, y = 3.14, z = -50.154)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [72.2, -52.05])
+  |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $mySeg)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+
+extrude002 = extrude(profile002, length = 151)
+  |> chamfer(
+       %,
+       length = 15,
+       tags = [mySeg],
+       tag = $seg02,
+     )
+solid001 = subtract([extrude001], tools = [extrude002])
+`
+      )
+    })
+
+    const [selectChamferFaceClk] = scene.makeMouseHelpers(671, 283)
+    const [circleCenterClk] = scene.makeMouseHelpers(700, 272)
+    const [circleRadiusClk] = scene.makeMouseHelpers(694, 264)
+
+    await test.step('Setup', async () => {
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      await scene.moveCameraTo(
+        { x: 180, y: -75, z: 116 },
+        { x: 67, y: -114, z: -15 }
+      )
+    })
+
+    await test.step('sketch on chamfer face that is part of a boolean', async () => {
+      await toolbar.startSketchPlaneSelection()
+      await selectChamferFaceClk()
+
+      await expect
+        .poll(async () => {
+          const lineBtn = page.getByRole('button', { name: 'line Line' })
+          return lineBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+
+      await editor.expectEditor.toContain(
+        'startSketchOn(solid001, face = seg02)'
+      )
+    })
+
+    await test.step('verify sketching still works', async () => {
+      await toolbar.circleBtn.click()
+      await expect
+        .poll(async () => {
+          const circleBtn = page.getByRole('button', { name: 'circle Circle' })
+          return circleBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+
+      await circleCenterClk()
+      await editor.expectEditor.toContain(
+        'profile003 = circle(sketch003, center'
+      )
+
+      await circleRadiusClk()
+      await editor.expectEditor.toContain(
+        'profile003 = circle(sketch003, center = [119.41, -56.05], radius = 1.82)'
+      )
+    })
+  })
+
   test('Can sketch on face when user defined function was used in the sketch', async ({
     page,
     homePage,
