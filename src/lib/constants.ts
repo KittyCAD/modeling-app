@@ -2,7 +2,6 @@ import type { Models } from '@kittycad/lib/dist/types/src'
 
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 
-export const IS_PLAYWRIGHT_KEY = 'playwright'
 export const APP_NAME = 'Design Studio'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
