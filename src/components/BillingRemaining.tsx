@@ -126,7 +126,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
             <Spinner className="text-inherit w-4 h-4" />
           ))}
         {billingContext.credits !== Infinity && (
-          <div className={[isFlex ? 'flex-grow' : 'w-16'].join(' ')}>
+          <div className={[isFlex ? 'flex-grow' : 'w-9'].join(' ')}>
             <ProgressBar
               max={billingContext.allowance ?? 1}
               value={billingContext.credits ?? 0}
