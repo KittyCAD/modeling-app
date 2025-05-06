@@ -12,7 +12,6 @@ Convert a number to millimeters from its current units.
 units::toMillimeters(@num: number(mm)): number(mm)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

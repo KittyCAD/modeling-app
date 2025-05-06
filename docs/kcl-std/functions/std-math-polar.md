@@ -16,7 +16,6 @@ polar(
 ): Point2d
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

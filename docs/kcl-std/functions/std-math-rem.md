@@ -16,7 +16,6 @@ rem(
 ): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

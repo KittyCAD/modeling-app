@@ -15,7 +15,6 @@ push(
 ): any
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -23,7 +23,6 @@ startSketchOn(
 ): Plane | Face
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

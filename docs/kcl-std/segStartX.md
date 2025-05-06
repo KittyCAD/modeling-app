@@ -12,7 +12,6 @@ Compute the starting point of the provided line segment along the 'x' axis.
 segStartX(tag: TagIdentifier): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

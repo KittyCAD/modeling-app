@@ -15,7 +15,6 @@ intersect(
 ): [Solid]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

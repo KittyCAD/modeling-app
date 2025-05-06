@@ -16,7 +16,6 @@ reduce(
 ): any
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

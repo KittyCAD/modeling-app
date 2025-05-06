@@ -12,7 +12,6 @@ Round a number to the nearest integer.
 round(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

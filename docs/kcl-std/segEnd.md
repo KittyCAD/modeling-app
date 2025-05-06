@@ -12,7 +12,6 @@ Compute the ending point of the provided line segment.
 segEnd(tag: TagIdentifier): Point2d
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

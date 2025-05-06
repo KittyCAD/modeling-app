@@ -15,7 +15,6 @@ pow(
 ): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

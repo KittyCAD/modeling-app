@@ -12,7 +12,6 @@ Compute the minimum of the given arguments.
 min(@input: [number; 1+]): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

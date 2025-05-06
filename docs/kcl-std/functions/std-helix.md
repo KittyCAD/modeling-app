@@ -20,7 +20,6 @@ helix(
 ): Helix
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

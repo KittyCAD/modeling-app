@@ -20,7 +20,6 @@ loft(
 ): Solid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

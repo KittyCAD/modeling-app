@@ -15,11 +15,6 @@ legLen(
 ): number
 ```
 
-### Tags
-
-* `utilities`
-
-
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -37,5 +32,6 @@ legLen(
 ```kcl
 legLen(hypotenuse = 5, leg = 3)
 ```
+
 
 

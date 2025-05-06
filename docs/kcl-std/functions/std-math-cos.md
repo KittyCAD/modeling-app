@@ -12,7 +12,6 @@ Compute the cosine of a number.
 cos(@num: number(Angle)): number(_)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -12,7 +12,6 @@ Compute the square root of a number.
 sqrt(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

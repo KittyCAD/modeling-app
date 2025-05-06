@@ -19,7 +19,6 @@ chamfer(
 ): Solid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -12,7 +12,6 @@ Compute the length of the provided line segment.
 segLen(tag: TagIdentifier): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

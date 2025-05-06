@@ -12,7 +12,6 @@ Compute the base 2 logarithm of the number.
 log2(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

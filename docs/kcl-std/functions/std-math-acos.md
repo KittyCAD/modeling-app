@@ -12,7 +12,6 @@ Compute the arccosine of a number.
 acos(@num: number(_)): number(rad)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

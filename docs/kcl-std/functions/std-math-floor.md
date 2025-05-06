@@ -12,7 +12,6 @@ Compute the largest integer less than or equal to a number.
 floor(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

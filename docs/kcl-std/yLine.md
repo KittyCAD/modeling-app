@@ -17,7 +17,6 @@ yLine(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |
