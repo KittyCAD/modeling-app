@@ -7,6 +7,7 @@ import {
   isModelingCmdGroupReady,
   OnboardingButtons,
   OnboardingCard,
+  useAdvanceOnboardingOnFormSubmit,
   useOnboardingHighlight,
   useOnboardingPanes,
   useOnModelingCmdGroupReadyOnce,
@@ -77,8 +78,8 @@ function Welcome() {
   }, [loaderData?.project?.name])
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
-      <OnboardingCard className="pointer-events-auto">
+    <div className="fixed inset-0 z-50 grid items-end justify-center p-2">
+      <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
           Here is an assembly of a CPU Cooler that was made in Zoo Design
@@ -121,10 +122,11 @@ function Scene() {
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
       <OnboardingCard className="pointer-events-auto">
-        <h1 className="text-xl font-bold">Here is a blank scene</h1>
+        <h1 className="text-xl font-bold">Scene</h1>
         <p className="my-4">
-          There are three default planes shown when the scene is empty. Try
-          middle clicking to orbit around.
+          Here is a blank scene. There are three default planes shown when the
+          scene is empty. Try right-clicking and dragging to orbit around, and
+          scroll to zoom in and out.
         </p>
         <OnboardingButtons currentSlug="/desktop/scene" platform="desktop" />
       </OnboardingCard>
@@ -167,11 +169,16 @@ function TextToCad() {
         <p className="my-4">
           This last button is Text-to-CAD. This allows you to write up a
           description of what you want, and our AI will generate the CAD for
-          you.
+          you. Text-to-CAD is currently in an experimental stage. We are
+          improving it every day.
         </p>
         <p className="my-4">
-          If you are on the free plan, you get 20 free credits. With any of our
-          paid plans, you get unlimited Text-to-CAD generations.
+          <strong>One</strong> Text-to-CAD generation costs{' '}
+          <strong>one credit per minute</strong>, rounded up to the nearest
+          minute. A large majority of Text-to-CAD generations take under a
+          minute. If you are on the free plan, you get 20 free credits per
+          month. With any of our paid plans, you get unlimited Text-to-CAD
+          generations.
         </p>
         <p className="my-4">
           Let’s walk through an example of how to use Text-to-CAD.
@@ -186,8 +193,11 @@ function TextToCad() {
 }
 
 function TextToCadPrompt() {
+  const thisOnboardingStatus: DesktopOnboardingPath =
+    '/desktop/text-to-cad-prompt'
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const prompt = 'Design a CPU cooler housing with <insert params here>.'
+  const prompt =
+    'Design a fan housing for a CPU cooler for a 120mm diameter fan with four holes for retaining clips'
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -208,6 +218,9 @@ function TextToCadPrompt() {
     })
   }, [loaderData?.project?.name])
 
+  // Make it so submitting the command just advances the onboarding
+  useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
+
   return (
     <div className="fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
@@ -220,7 +233,7 @@ function TextToCadPrompt() {
           generate.
         </p>
         <OnboardingButtons
-          currentSlug="/desktop/text-to-cad-prompt"
+          currentSlug={thisOnboardingStatus}
           platform="desktop"
         />
       </OnboardingCard>
@@ -260,7 +273,7 @@ function FeatureTreePane() {
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
-        <h1 className="text-xl font-bold">CPU Housing</h1>
+        <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
           This is an example of a generated CAD model. We skipped the real
           generation for this tutorial, but normally you'll be asked to approve
@@ -295,7 +308,7 @@ function CodePane() {
         <p className="my-4">
           This is the KCL Pane. KCL (KittyCAD Language) is a scripting language
           we created to describe CAD geometries. This code is the source of
-          truth, everything we do generates code.
+          truth, everything you do to the model will change the code.
         </p>
         <p className="my-4">
           KCL boasts other scripting features such as imports, functions and
@@ -351,9 +364,10 @@ function OtherPanes() {
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Other panes</h1>
         <p className="my-4">
-          These last two panes are the Variables Pane and Logs Pane. With these
-          two panes, you can view any variables created in KCL for this part and
-          their values and error messages.
+          These last two panes are the Variables Pane and Logs Pane. The
+          Variables pane will display the numeric values of any parameters you
+          made, along with other entities and types created in your in your
+          file. The Logs pane will show error logs.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -383,21 +397,25 @@ function PromptToEdit() {
       dropdownButton.click()
     }
   }, [])
+
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
+
+  // Make it so pressing Enter advances instead of toggling the dropdown
+  useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
     <div className="fixed inset-0 z-50 p-8 grid justify-center items-center">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
-          One more way to edit your part is through "Modify" in this dropdown,
-          which we also call "Prompt-to-Edit".
-        </p>
-        <p className="my-4">
-          Similar to generating with Text-to-CAD, you describe how you want your
-          CAD model to be changed, and our AI will generate the changes for you.
-          Using Modify with Zoo Text-to-CAD also costs credits.
+          Text-to-CAD not only can <strong>create</strong> a part, but also{' '}
+          <strong>modify</strong> an existing part. In the dropdown, you’ll see
+          “Modify with Zoo Text-to-CAD”. Once clicked, you’ll describe the
+          change you want for your part, and our AI will generate the change.
+          Once again, this will cost <strong>one credit per minute</strong> it
+          took to generate. Once again, most of the time, this is under a
+          minute.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -412,7 +430,7 @@ function PromptToEditPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
-    'Change the housing to be _____, add ____, change the color to be tan.'
+    'Change the housing to be for a 150 mm diameter fan, make it 30 mm tall, and change the color to purple.'
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -439,10 +457,13 @@ function PromptToEditPrompt() {
     })
   }, [])
 
+  // Make it so submitting the command just advances the onboarding
+  useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
+
   return (
     <div className="fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
-        <h1 className="text-xl font-bold">Text-to-CAD prompt</h1>
+        <h1 className="text-xl font-bold">Modify with Text-to-CAD prompt</h1>
         {!isReady && (
           <p className="absolute top-0 right-0 m-4 w-fit flex items-center py-1 px-2 rounded bg-chalkboard-20 dark:bg-chalkboard-80">
             <Spinner className="w-5 h-5 inline-block mr-2" />
@@ -450,11 +471,10 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          When you click the Text-to-CAD button, it opens the command palette to
-          where you can input a text prompt. To save you a Text-to-CAD
-          generation credit, we are going to use a pre-rolled Text-to-CAD prompt
-          for this example. Click next to see an example of what Text-to-CAD can
-          generate.
+          To save you a credit, we are using a pre-rolled Text-to-CAD prompt to
+          edit your existing fan housing. You can see the prompt in the window
+          above. Click next to see an example of what modifying with Text-to-CAD
+          would look like.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -492,21 +512,22 @@ function PromptToEditResult() {
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
-        <h1 className="text-xl font-bold">Prompt-to-Edit results</h1>
+        <h1 className="text-xl font-bold">Result</h1>
         <p className="my-4">
-          This is an example of edits Prompt-to-Edit can make to your CAD model.
-          We skipped the real generation for this tutorial, but normally you'll
-          be asked to approve the generation first.
+          This is an example of an edit that Text-to-CAD can make for you. We
+          skipped the real generation for this tutorial, but normally you'll be
+          asked to approve the generation first.
         </p>
         <p className="my-4">
-          Prompt-to-Edit will make changes across files in your project, so if
-          you have named parameters in another file that need to change to
-          complete your request, it is smart enough to go find their source and
-          change them.
+          Text-to-CAD will make changes across files in your project, so if you
+          have named parameters in another file that need to change to complete
+          your request, it is smart enough to go find their source and change
+          them.
         </p>
         <p className="my-4">
-          All our Text-to-CAD capabilities are in beta, so please report any
-          issues to us and stay tuned for updates!
+          All of our Text-to-CAD capabilities are experimental, so please report
+          any issues to us and stay tuned for updates! We are working on it
+          every day.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -529,20 +550,16 @@ function Imports() {
   return (
     <div className="fixed inset-0 z-50 p-16 flex flex-col gap-8 items-center">
       <OnboardingCard>
-        <h1 className="text-xl font-bold">Inserting</h1>
+        <h1 className="text-xl font-bold">Import</h1>
         <p className="my-4">
-          Let's show you how to import a file into your project and insert a
-          part into your assembly, the first steps to making assemblies.
+          Import (Add file to project) is available in the left sidebar. Use it
+          to bring files into your project into the current file.
         </p>
+        <h1 className="text-xl font-bold">Insert</h1>
         <p className="my-4">
-          Insert is available in the toolbar. Use it to import geometry from
-          elsewhere in your project into the current file.
-        </p>
-        <h1 className="text-xl font-bold">Importing</h1>
-        <p className="my-4">
-          Import is available as an action button on the left sidebar. Use it to
-          bring files into your project from our samples library or elsewhere on
-          your computer.
+          Once a file has been imported, you can add it to the scene using
+          insert. Insert is available in the toolbar. This is the first step to
+          making assemblies!
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
