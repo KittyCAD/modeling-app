@@ -328,9 +328,9 @@ export function useEngineConnectionSubscriptions() {
               const lastChild = findAllChildrenAndOrderByPlaceInCode(
                 { type: 'sweep', ...extrusion },
                 kclManager.artifactGraph
-              )[0]
+              )[0] || null
               const lastChildCodeRef =
-                lastChild.type === 'compositeSolid'
+                lastChild?.type === 'compositeSolid'
                   ? lastChild.codeRef.range
                   : null
 
