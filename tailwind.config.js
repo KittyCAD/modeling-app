@@ -34,7 +34,7 @@ module.exports = {
       colors: {
         primary: `oklch(var(--_primary) / <alpha-value>)`,
         'ml-green': '#29FFA4',
-        'ml-black': '#0B0F0D',
+        'ml-black': 'var(--chalkboard-100)',
         'ml-white': '#FFFFFF',
         'ml-grey': '#60635F',
         ...themeColors,
