@@ -1,4 +1,3 @@
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 import { Spinner } from '@src/components/Spinner'
 import { useSelector } from '@xstate/react'
 import { useState } from 'react'
@@ -100,10 +99,6 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
     'dark:!text-chalkboard-0',
   ]
 
-  if (!IS_NIGHTLY_OR_DEBUG) {
-    return <></>
-  }
-
   return (
     <div
       data-testid="billing-remaining"
@@ -114,7 +109,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
       <div className="flex flex-row gap-2 items-center">
         {billingContext.error && <Error error={billingContext.error} />}
         {!isFlex &&
-          (billingContext.credits ? (
+          (typeof billingContext.credits === 'number' ? (
             <div className="font-mono" data-testid="billing-credits">
               <BillingCredit amount={billingContext.credits} />
             </div>
@@ -132,7 +127,7 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
       </div>
       {isFlex && (
         <div className="flex flex-row gap-1">
-          {billingContext.credits ? (
+          {typeof billingContext.credits === 'number' ? (
             billingContext.credits !== Infinity ? (
               <>{billingContext.credits} credits remaining this month</>
             ) : null

@@ -1,4 +1,3 @@
-
 // Test runner
 import {expect, test, beforeAll, afterEach, afterAll} from '@jest/globals';
 
@@ -11,13 +10,14 @@ import {http, HttpResponse} from 'msw'
 import {setupServer} from 'msw/node'
 
 // React and XState code to test
+import { Models } from '@kittycad/lib'
 import { createActor } from 'xstate'
 import {
   BillingRemaining,
   BillingRemainingMode,
 } from '@src/components/BillingRemaining'
 import { BillingDialog, } from '@src/components/BillingDialog'
-import { billingMachine, BillingTransition } from '@src/machines/billingMachine'
+import { BILLING_CONTEXT_DEFAULTS, billingMachine, BillingTransition } from '@src/machines/billingMachine'
 
 // Setup basic request mocking
 const server = setupServer()
@@ -29,7 +29,7 @@ afterAll(() => server.close())
 const createUserPaymentBalanceResponse = (opts: {
   monthlyApiCreditsRemaining,
   stableApiCreditsRemaining,
-}) => ({
+}): Models['CustomerBalance_type'] => ({
   "created_at": "2025-05-05T16:05:47.317Z",
   "id": "de607b7e-90ba-4977-8561-16e8a9ea0e50",
   "map_id": "d7f7de34-9bc3-4b8b-9951-cdee03fc792d",
@@ -47,7 +47,7 @@ const createUserPaymentBalanceResponse = (opts: {
 })
 
 const createOrgResponse = (opts: {
-}) => ({
+}): Models['Org_type'] => ({
   "allow_users_in_domain_to_auto_join": true,
   "billing_email": "m@dN9MCH.com",
   "billing_email_verified": "2025-05-05T18:52:02.021Z",
@@ -66,7 +66,7 @@ const createOrgResponse = (opts: {
 const createUserPaymentSubscriptionsResponse = (opts: {
   monthlyPayAsYouGoApiCreditsTotal,
   name,
-}) => ({
+}): Models['ZooProductSubscriptions_type'] => ({
   "modeling_app": {
     "annual_discount": 10,
     "description": "1ztERftrU3L3yOnv5epTLcM",
@@ -102,7 +102,7 @@ const createUserPaymentSubscriptionsResponse = (opts: {
   }
 })
 
-test('Shows a loading spinner when unknown credit count or unexpected API data', async () => {
+test('Shows a loading spinner when uninitialized credit count', async () => {
   server.use(
     http.get('*/user/payment/balance', (req, res, ctx) => {
       return HttpResponse.json({})
@@ -115,16 +115,12 @@ test('Shows a loading spinner when unknown credit count or unexpected API data',
     }),
   )
 
-  const billingActor = createActor(billingMachine).start()
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
 
   const { queryByTestId } = render(<BillingRemaining
     mode={BillingRemainingMode.ProgressBarFixed}
     billingActor={billingActor}
   />)
-
-  await act(() => {
-    billingActor.send({ type: BillingTransition.Update, apiToken: "blah" })
-  })
 
   await expect(queryByTestId('spinner')).toBeVisible()
 })
@@ -153,7 +149,7 @@ test('Shows the total credits for Unknown subscription', async () => {
     }),
   )
 
-  const billingActor = createActor(billingMachine).start()
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
 
   const { queryByTestId } = render(<BillingRemaining
     mode={BillingRemainingMode.ProgressBarFixed}
@@ -193,7 +189,7 @@ test('Progress bar reflects ratio left of Free subscription', async () => {
     }),
   )
 
-  const billingActor = createActor(billingMachine).start()
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
 
   const { queryByTestId } = render(<BillingRemaining
     mode={BillingRemainingMode.ProgressBarFixed}
@@ -241,7 +237,7 @@ test('Shows infinite credits for Pro subscription', async () => {
     }),
   )
 
-  const billingActor = createActor(billingMachine).start()
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
 
   const { queryByTestId } = render(<BillingRemaining
     mode={BillingRemainingMode.ProgressBarFixed}
@@ -286,7 +282,7 @@ test('Shows infinite credits for Enterprise subscription', async () => {
     }),
   )
 
-  const billingActor = createActor(billingMachine).start()
+  const billingActor = createActor(billingMachine, { input: BILLING_CONTEXT_DEFAULTS }).start()
 
   const { queryByTestId } = render(<BillingRemaining
     mode={BillingRemainingMode.ProgressBarFixed}

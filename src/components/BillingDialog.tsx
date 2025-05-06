@@ -1,4 +1,3 @@
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 import { useSelector } from '@xstate/react'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -15,10 +14,6 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
     ({ context }) => context
   )
   const hasUnlimited = billingContext.credits === Infinity
-
-  if (!IS_NIGHTLY_OR_DEBUG) {
-    return <></>
-  }
 
   return (
     <div className="bg-ml-green fg-ml-black flex flex-row rounded-lg p-4 gap-2 text-xs">
