@@ -30,7 +30,7 @@ chamfer(
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid)
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extrude surfaces.
 
 
 ### Examples

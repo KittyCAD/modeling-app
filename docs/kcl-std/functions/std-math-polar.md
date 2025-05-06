@@ -25,7 +25,7 @@ polar(
 
 ### Returns
 
-[`Point2d`](/docs/kcl-std/types/std-types-Point2d)
+[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
 
 
 ### Examples

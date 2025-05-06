@@ -125,7 +125,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
         }
 
         let tags = internal_fn.tags();
-        let module = tags.get(0).map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
 
         functions
             .entry(module.to_owned())
@@ -320,7 +320,12 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     Ok(())
 }
 
-fn generate_function_from_kcl(function: &FnData, file_name: String, example_name: String) -> Result<()> {
+fn generate_function_from_kcl(
+    function: &FnData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+) -> Result<()> {
     if function.properties.doc_hidden {
         return Ok(());
     }
@@ -345,14 +350,14 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
             json!({
                 "name": arg.name,
                 "type_": arg.ty,
-                "description": arg.docs.as_deref().unwrap_or(""),
+                "description": arg.docs.clone().or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
                 "required": arg.kind.required(),
             })
         }).collect::<Vec<_>>(),
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,
-                "description": "",
+                "description": super::docs_for_type(t, kcl_std).unwrap_or_default(),
             })
         }),
     });
@@ -430,7 +435,7 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Resul
         .collect();
 
     let tags = internal_fn.tags();
-    let qual = tags.get(0).map(|s| &**s).unwrap_or("");
+    let qual = tags.first().map(|s| &**s).unwrap_or("");
 
     let data = json!({
         "name": format!("std::{qual}{}{fn_name}", if qual.is_empty() { "" } else {"::"}),
@@ -660,7 +665,7 @@ fn test_generate_stdlib_markdown_docs() {
 
     for d in kcl_std.all_docs() {
         match d {
-            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name()).unwrap(),
+            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
             DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),

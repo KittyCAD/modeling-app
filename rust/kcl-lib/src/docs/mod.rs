@@ -171,10 +171,8 @@ impl StdLibFnArg {
         }
 
         if let Some(kcl_std) = kcl_std {
-            if DECLARED_TYPES.contains(&&*self.type_) {
-                if let Some(data) = kcl_std.find_by_name(&self.type_) {
-                    return data.summary().cloned();
-                }
+            if let Some(t) = docs_for_type(&self.type_, kcl_std) {
+                return Some(t);
             }
         }
 
@@ -397,6 +395,16 @@ impl From<StdLibFnArg> for ParameterInformation {
             }),
         }
     }
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    if DECLARED_TYPES.contains(&ty) {
+        if let Some(data) = kcl_std.find_by_name(ty) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 /// This trait defines functions called upon stdlib functions to generate
