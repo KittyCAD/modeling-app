@@ -151,8 +151,8 @@ pub struct CompositeSolid {
     pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    /// This is the ID of the composite solid that this sweep is part of, if any.
-    /// as a composite solid can be use as input for another composite solid.
+    /// This is the ID of the composite solid that this is part of, if any, as a
+    /// composite solid can be used as input for another composite solid.
     pub composite_solid_id: Option<ArtifactId>,
 }
 
@@ -187,8 +187,8 @@ pub struct Path {
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    /// This is the ID of the composite solid that this sweep is part of, if any.
-    /// as a composite solid can be use as input for another composite solid.
+    /// This is the ID of the composite solid that this is part of, if any, as
+    /// this can be used as input for another composite solid.
     pub composite_solid_id: Option<ArtifactId>,
 }
 
