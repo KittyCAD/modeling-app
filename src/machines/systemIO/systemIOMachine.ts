@@ -17,7 +17,7 @@ import type { AppMachineContext } from '@src/lib/types'
  * report               = fileNameWithoutExtension
  * report.csv           = fileNameWithExtension
  * /some/dir/report.csv = absolutePathToFileNameWithExtension
- * /some/dir/report     = aboslutePathTOFileNameWithoutExtension
+ * /some/dir/report     = absolutePathTOFileNameWithoutExtension
  * /some/dir/dreport    = absolutePathToDirectory
  * some/dir/report      = relativePathToDirectory
  * some/dir/report      = relativePathFileWithoutExtension
