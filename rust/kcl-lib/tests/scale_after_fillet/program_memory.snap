@@ -4,7 +4,8 @@ description: Variables in memory after executing scale_after_fillet.kcl
 ---
 {
   "bolt": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "boltDiameter": {
     "type": "Number",

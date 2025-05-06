@@ -3,7 +3,7 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import type { ParseResult } from '@src/lang/wasm'
 import {
-  formatNumber,
+  formatNumberLiteral,
   parse,
   errFromErrWithOutputs,
   rustImplPathToNode,
@@ -33,12 +33,15 @@ it('can execute parsed AST', async () => {
 })
 
 it('formats numbers with units', () => {
-  expect(formatNumber(1, 'None')).toEqual('1')
-  expect(formatNumber(1, 'Count')).toEqual('1_')
-  expect(formatNumber(1, 'Mm')).toEqual('1mm')
-  expect(formatNumber(1, 'Inch')).toEqual('1in')
-  expect(formatNumber(0.5, 'Mm')).toEqual('0.5mm')
-  expect(formatNumber(-0.5, 'Mm')).toEqual('-0.5mm')
+  expect(formatNumberLiteral(1, 'None')).toEqual('1')
+  expect(formatNumberLiteral(1, 'Count')).toEqual('1_')
+  expect(formatNumberLiteral(1, 'Mm')).toEqual('1mm')
+  expect(formatNumberLiteral(1, 'Inch')).toEqual('1in')
+  expect(formatNumberLiteral(0.5, 'Mm')).toEqual('0.5mm')
+  expect(formatNumberLiteral(-0.5, 'Mm')).toEqual('-0.5mm')
+  expect(formatNumberLiteral(1, 'Unknown')).toEqual(
+    new Error('Error formatting number literal: value=1, suffix=Unknown')
+  )
 })
 
 describe('test errFromErrWithOutputs', () => {

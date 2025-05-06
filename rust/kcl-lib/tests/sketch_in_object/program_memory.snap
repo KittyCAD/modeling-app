@@ -4,10 +4,12 @@ description: Variables in memory after executing sketch_in_object.kcl
 ---
 {
   "test": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "test2": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "x": {
     "type": "Sketch",

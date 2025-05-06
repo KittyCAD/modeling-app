@@ -223,7 +223,8 @@ description: Variables in memory after executing riddle_small.kcl
     }
   },
   "t": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "xs": {
     "type": "Number",

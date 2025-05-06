@@ -31,28 +31,48 @@ import type {
   VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { formatNumber } from '@src/lang/wasm'
+import { formatNumberLiteral } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+
+export function createLiteral(value: number | string | boolean): Node<Literal> {
+  // TODO: Should we handle string escape sequences?
+  return {
+    type: 'Literal',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    value: typeof value === 'number' ? { value, suffix: 'None' } : value,
+    raw: `${value}`,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+  }
+}
 
 /**
  * Note: This depends on WASM, but it's not async.  Callers are responsible for
  * awaiting init of the WASM module.
  */
-export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  if (typeof value === 'number') {
-    value = { value, suffix: 'None' }
+export function createLiteralMaybeSuffix(
+  value: LiteralValue
+): Node<Literal> | Error {
+  if (typeof value === 'string' || typeof value === 'boolean') {
+    return createLiteral(value)
   }
+
   let raw: string
-  if (typeof value === 'string') {
-    // TODO: Should we handle escape sequences?
-    raw = `${value}`
-  } else if (typeof value === 'boolean') {
-    raw = `${value}`
-  } else if (typeof value.value === 'number' && value.suffix === 'None') {
+  if (typeof value.value === 'number' && value.suffix === 'None') {
     // Fast path for numbers when there are no units.
     raw = `${value.value}`
   } else {
-    raw = formatNumber(value.value, value.suffix)
+    const formatted = formatNumberLiteral(value.value, value.suffix)
+    if (err(formatted)) {
+      return new Error(
+        `Invalid number literal: value=${value.value}, suffix=${value.suffix}`,
+        { cause: formatted }
+      )
+    }
+    raw = formatted
   }
   return {
     type: 'Literal',

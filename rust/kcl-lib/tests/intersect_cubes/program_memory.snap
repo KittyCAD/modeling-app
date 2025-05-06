@@ -4,7 +4,8 @@ description: Variables in memory after executing intersect_cubes.kcl
 ---
 {
   "cube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "fullPart": {
     "type": "Solid",

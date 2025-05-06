@@ -4,7 +4,8 @@ description: Variables in memory after executing function_sketch.kcl
 ---
 {
   "box": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "fnBox": {
     "type": "Solid",
