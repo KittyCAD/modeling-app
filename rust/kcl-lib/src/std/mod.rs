@@ -236,13 +236,13 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
             StdFnProps::default("std::helix").include_in_feature_tree(),
         ),
-        ("sketch", "mirror2d") => (
+        ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
-            StdFnProps::default("std::sketch::mirror2d"),
+            StdFnProps::default("std::transform::mirror2d"),
         ),
-        ("prelude", "revolve") => (
+        ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
-            StdFnProps::default("std::revolve").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),
@@ -353,7 +353,7 @@ pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 /// Compute the length of the given leg.
 ///
-/// ```no_run
+/// ```kcl,no_run
 /// legLen(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
@@ -364,7 +364,7 @@ pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         hypotenuse = { docs = "The length of the triangle's hypotenuse" },
         leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
     },
-    tags = ["utilities"],
+    tags = ["math"],
 }]
 fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
     (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
@@ -385,7 +385,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 
 /// Compute the angle of the given leg for x.
 ///
-/// ```no_run
+/// ```kcl,no_run
 /// legAngX(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
@@ -396,7 +396,7 @@ pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         hypotenuse = { docs = "The length of the triangle's hypotenuse" },
         leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
     },
-    tags = ["utilities"],
+    tags = ["math"],
 }]
 fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
@@ -417,7 +417,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 
 /// Compute the angle of the given leg for y.
 ///
-/// ```no_run
+/// ```kcl,no_run
 /// legAngY(hypotenuse = 5, leg = 3)
 /// ```
 #[stdlib {
@@ -428,7 +428,7 @@ pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         hypotenuse = { docs = "The length of the triangle's hypotenuse" },
         leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
     },
-    tags = ["utilities"],
+    tags = ["math"],
 }]
 fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
     (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()

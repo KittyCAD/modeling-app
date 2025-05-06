@@ -61,6 +61,7 @@ mod docs;
 mod engine;
 mod errors;
 mod execution;
+mod fmt;
 mod fs;
 pub mod lint;
 mod log;
@@ -108,7 +109,10 @@ pub use unparser::{recast_dir, walk_dir};
 pub mod exec {
     #[cfg(feature = "artifact-graph")]
     pub use crate::execution::ArtifactCommand;
-    pub use crate::execution::{DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch};
+    pub use crate::execution::{
+        types::{NumericType, UnitAngle, UnitLen, UnitType},
+        DefaultPlanes, IdGenerator, KclValue, PlaneType, Sketch,
+    };
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -134,7 +138,10 @@ pub mod std_utils {
 }
 
 pub mod pretty {
-    pub use crate::{parsing::token::NumericSuffix, unparser::format_number};
+    pub use crate::{
+        fmt::{format_number_literal, human_display_number},
+        parsing::token::NumericSuffix,
+    };
 }
 
 #[cfg(feature = "cli")]

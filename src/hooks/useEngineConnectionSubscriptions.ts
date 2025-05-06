@@ -61,7 +61,8 @@ export function useEngineConnectionSubscriptions() {
           }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0][0] !== 0 &&
+          (editorManager.highlightRange[0] &&
+            editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
           editorManager.setHighlightRange([defaultSourceRange()])

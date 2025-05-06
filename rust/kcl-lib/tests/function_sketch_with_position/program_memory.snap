@@ -4,7 +4,8 @@ description: Variables in memory after executing function_sketch_with_position.k
 ---
 {
   "box": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "thing": {
     "type": "Solid",
