@@ -3367,7 +3367,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     // wait for scene to load
     await scene.settled(cmdBar)
 
-    await test.step('check chamfer selection changes cursor positon', async () => {
+    await test.step('check chamfer selection changes cursor position', async () => {
       await expect(async () => {
         // sometimes initial click doesn't register
         await objClick()
