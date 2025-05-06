@@ -41,7 +41,7 @@ export function LowerRightControls({
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         {IS_NIGHTLY_OR_DEBUG && (
           <Popover className="relative">
-            <Popover.Button className="p-0">
+            <Popover.Button className="p-0 !border-transparent">
               <BillingRemaining
                 mode={BillingRemainingMode.ProgressBarFixed}
                 billingActor={billingActor}
