@@ -12,7 +12,6 @@ Compute the natural logarithm of the number.
 ln(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

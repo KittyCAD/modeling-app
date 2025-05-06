@@ -17,7 +17,6 @@ shell(
 ): [Solid]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

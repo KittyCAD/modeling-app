@@ -16,7 +16,6 @@ offsetPlane(
 ): Plane
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

@@ -20,7 +20,6 @@ translate(
 ): [Solid] | [Sketch] | ImportedGeometry
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

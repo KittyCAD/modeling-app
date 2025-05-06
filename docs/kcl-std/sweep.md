@@ -21,7 +21,6 @@ sweep(
 ): [Solid]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

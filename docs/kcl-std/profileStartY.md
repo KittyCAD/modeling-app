@@ -12,7 +12,6 @@ Extract the provided 2-dimensional sketch's profile's origin's 'y' value.
 profileStartY(profile: Sketch): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

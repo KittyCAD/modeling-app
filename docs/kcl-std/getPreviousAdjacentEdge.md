@@ -12,7 +12,6 @@ Get the previous adjacent edge to the edge given.
 getPreviousAdjacentEdge(edge: TagIdentifier): Uuid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

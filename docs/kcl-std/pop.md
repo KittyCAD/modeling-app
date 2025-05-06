@@ -12,7 +12,6 @@ Returns a new array with the last element removed.
 pop(array: [any]): any
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

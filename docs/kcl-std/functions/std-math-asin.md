@@ -12,7 +12,6 @@ Compute the arcsine of a number.
 asin(@num: number(_)): number(rad)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

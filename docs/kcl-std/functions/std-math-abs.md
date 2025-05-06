@@ -12,7 +12,6 @@ Compute the absolute value of a number.
 abs(@input: number): number
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

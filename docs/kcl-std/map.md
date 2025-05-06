@@ -15,7 +15,6 @@ map(
 ): [any]
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

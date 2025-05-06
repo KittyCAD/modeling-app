@@ -160,7 +160,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         tolerance = { docs = "Tolerance for this operation" },
         tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the sweep" },
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_sweep(

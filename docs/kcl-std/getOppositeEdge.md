@@ -12,7 +12,6 @@ Get the opposite edge to the edge given.
 getOppositeEdge(edge: TagIdentifier): Uuid
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

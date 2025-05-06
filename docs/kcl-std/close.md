@@ -15,7 +15,6 @@ close(
 ): Sketch
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

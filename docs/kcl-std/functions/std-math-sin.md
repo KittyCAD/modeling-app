@@ -12,7 +12,6 @@ Compute the sine of a number.
 sin(@num: number(Angle)): number(_)
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

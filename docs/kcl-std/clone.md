@@ -16,7 +16,6 @@ Really only use this function if YOU ARE SURE you need it. In most cases you do 
 clone(geometry: Solid | Sketch | ImportedGeometry): Solid | Sketch | ImportedGeometry
 ```
 
-
 ### Arguments
 
 | Name | Type | Description | Required |

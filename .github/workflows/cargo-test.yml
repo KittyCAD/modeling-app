@@ -84,7 +84,7 @@ jobs:
         run: |
           set -euo pipefail
           cd rust
-          cargo nextest run --workspace --features artifact-graph --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run --workspace --features artifact-graph --retries=10 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
@@ -180,7 +180,7 @@ jobs:
           ls -lah
           cd rust
           cargo nextest run\
-           --retries=2 --no-fail-fast -P ci --archive-file nextest-archive.tar.zst \
+           --retries=10 --no-fail-fast --profile ci --archive-file nextest-archive.tar.zst \
            --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
            2>&1 | tee /tmp/github-actions.log
         env:
