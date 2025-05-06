@@ -1,7 +1,5 @@
 //! Web assembly utils.
 
-pub mod vitest;
-
 use std::{
     pin::Pin,
     task::{Context, Poll},

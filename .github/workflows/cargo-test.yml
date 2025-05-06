@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - main
-
   pull_request:
   workflow_dispatch:
 permissions:
@@ -131,7 +130,6 @@ jobs:
         with:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
-
   run-test-artifacts:
     name: cargo test (shard ${{ matrix.partitionIndex}})
     runs-on:
@@ -186,4 +184,36 @@ jobs:
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
-
+  run-wasm-tests:
+    name: Build test artifacts
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+        with:
+          tool: wasm-pack
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './rust'
+      - name: Build Wasm
+        shell: bash
+        run: npm run build:wasm
+      - name: Run wasm tests
+        run: |
+          cd rust
+          wasm-pack test -p kcl-wasm-lib --headless --chrome
+        env:
+          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          NODE_ENV: development

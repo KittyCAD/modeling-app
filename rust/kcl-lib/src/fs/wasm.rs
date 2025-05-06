@@ -15,6 +15,9 @@ extern "C" {
     #[derive(Debug, Clone)]
     pub type FileSystemManager;
 
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> FileSystemManager;
+
     #[wasm_bindgen(method, js_name = readFile, catch)]
     fn read_file(this: &FileSystemManager, path: String) -> Result<js_sys::Promise, js_sys::Error>;
 

@@ -1583,6 +1583,21 @@ export class EngineCommandManager extends EventTarget {
     return
   }
 
+  async startFromWasm(token: string): Promise<boolean> {
+    return await new Promise((resolve) => {
+      this.start({
+        token,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+    })
+  }
+
   handleMessage(event: MessageEvent) {
     let message: Models['WebSocketResponse_type'] | null = null
 
@@ -1731,7 +1746,9 @@ export class EngineCommandManager extends EventTarget {
     this.engineConnection?.send(resizeCmd)
   }
 
-  tearDown(opts?: { idleMode: boolean }) {
+  tearDown(opts?: {
+    idleMode: boolean
+  }) {
     if (this.engineConnection) {
       for (const [cmdId, pending] of Object.entries(this.pendingCommands)) {
         pending.reject([
@@ -1782,7 +1799,8 @@ export class EngineCommandManager extends EventTarget {
     }
     this.engineConnection = undefined
   }
-  async startNewSession() {
+  async
+  startNewSession() {
     this.responseMap = {}
   }
   subscribeTo<T extends ModelTypes>({
@@ -1797,7 +1815,8 @@ export class EngineCommandManager extends EventTarget {
 
     return () => this.unSubscribeTo(event, localUnsubscribeId)
   }
-  private unSubscribeTo(event: ModelTypes, id: string) {
+  private
+  unSubscribeTo(event: ModelTypes, id: string) {
     delete this.subscriptions[event][id]
   }
   subscribeToUnreliable<T extends UnreliableResponses['type']>({
@@ -1811,10 +1830,8 @@ export class EngineCommandManager extends EventTarget {
     this.unreliableSubscriptions[event][localUnsubscribeId] = callback
     return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
-  private unSubscribeToUnreliable(
-    event: UnreliableResponses['type'],
-    id: string
-  ) {
+  private
+  unSubscribeToUnreliable(event: UnreliableResponses['type'], id: string) {
     delete this.unreliableSubscriptions[event][id]
   }
   addCommandLog(message: CommandLog) {
@@ -1832,7 +1849,8 @@ export class EngineCommandManager extends EventTarget {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  async sendSceneCommand(
+  async
+  sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<
