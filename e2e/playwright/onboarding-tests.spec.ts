@@ -22,7 +22,7 @@ test.describe('Onboarding tests', () => {
     })
 
     const bracketComment = '// Shelf Bracket'
-    const tutorialWelcomHeading = page.getByText(
+    const tutorialWelcomeHeading = page.getByText(
       'Welcome to Design Studio! This'
     )
     const nextButton = page.getByTestId('onboarding-next')
@@ -59,7 +59,7 @@ test.describe('Onboarding tests', () => {
     await test.step('Create a blank project and verify no onboarding chrome is shown', async () => {
       await homePage.goToModelingScene()
       await expect(toolbar.projectName).toContainText('testDefault')
-      await expect(tutorialWelcomHeading).not.toBeVisible()
+      await expect(tutorialWelcomeHeading).not.toBeVisible()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in)', {
         shouldNormalise: true,
       })
@@ -91,7 +91,7 @@ test.describe('Onboarding tests', () => {
 
     await test.step('Ensure we see the welcome screen in a new project', async () => {
       await expect(toolbar.projectName).toContainText('Tutorial Project 00')
-      await expect(tutorialWelcomHeading).toBeVisible()
+      await expect(tutorialWelcomeHeading).toBeVisible()
       await editor.expectEditor.toContain(bracketComment)
       await scene.connectionEstablished()
       await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
@@ -133,7 +133,7 @@ test.describe('Onboarding tests', () => {
 
       await test.step('Makes a new project', async () => {
         await expect(toolbar.projectName).toContainText('Tutorial Project 01')
-        await expect(tutorialWelcomHeading).toBeVisible()
+        await expect(tutorialWelcomeHeading).toBeVisible()
         await editor.expectEditor.toContain(bracketComment)
         await scene.connectionEstablished()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
@@ -165,7 +165,7 @@ test.describe('Onboarding tests', () => {
 
       await test.step('Makes a new project', async () => {
         await expect(toolbar.projectName).toContainText('Tutorial Project 02')
-        await expect(tutorialWelcomHeading).toBeVisible()
+        await expect(tutorialWelcomeHeading).toBeVisible()
         await editor.expectEditor.toContain(bracketComment)
         await scene.connectionEstablished()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })

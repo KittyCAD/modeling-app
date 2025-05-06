@@ -519,7 +519,7 @@ test(
 
       await fsp.mkdir(`${dir}/bracket`, { recursive: true })
       await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
         `${dir}/bracket/main.kcl`
       )
       const _1985 = new Date('1985-01-01T00:02:22')
@@ -1112,7 +1112,7 @@ test(
         `${dir}/${projectName}/main.kcl`
       )
       await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
         `${dir}/${projectName}/otherThingToClickOn.kcl`
       )
     })
@@ -1156,7 +1156,7 @@ test(
         path.join(dir, 'router-template-slate', 'nested', 'slate.kcl')
       )
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
         path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
       )
       testDir = dir
@@ -1205,7 +1205,7 @@ test(
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
-      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
@@ -1315,7 +1315,7 @@ test(
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
-      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
@@ -1539,7 +1539,7 @@ test(
           'e2e',
           'executor',
           'inputs',
-          'focusrite_scarlett_mounting_braket.kcl'
+          'focusrite_scarlett_mounting_bracket.kcl'
         ),
         path.join(dir, 'bracket', 'main.kcl')
       )
@@ -1644,7 +1644,7 @@ test(
           `${dir}/router-template-slate/main.kcl`
         ),
         fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
           `${dir}/bracket/main.kcl`
         ),
       ])
@@ -1737,7 +1737,7 @@ test(
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     const projectData = [
-      ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
       ['basic-cylinder', 'cylinder.kcl'],
       ['router-template-slate', 'router-template-slate.kcl'],
@@ -1819,7 +1819,7 @@ test(
         'extrude-inside-fn-with-tags.kcl',
         'fillet-and-shell.kcl',
         'fillet_duplicate_tags.kcl',
-        'focusrite_scarlett_mounting_braket.kcl',
+        'focusrite_scarlett_mounting_bracket.kcl',
         'function_sketch.kcl',
         'function_sketch_with_position.kcl',
         'global-tags.kcl',
@@ -2029,7 +2029,7 @@ test(
       const bracketDir = path.join(dir, 'العربية')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
 

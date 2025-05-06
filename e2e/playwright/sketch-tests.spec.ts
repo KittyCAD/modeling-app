@@ -3075,7 +3075,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 100)
     await click00r(100, 0)
 
-    // draw a line to opposite tangnet direction of previous arc
+    // draw a line to opposite tangent direction of previous arc
     await toolbar.selectLine()
     await click00r(0, 0)
     await click00r(-200, 200)

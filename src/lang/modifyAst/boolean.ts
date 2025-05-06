@@ -95,8 +95,8 @@ export async function applyUnionFromTargetOperatorSelections(
   )
 
   const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeafs of orderedChildrenEach) {
-    const lastVar = getLastVariable(orderedArtifactLeafs, ast)
+  for (const orderedArtifactLeaves of orderedChildrenEach) {
+    const lastVar = getLastVariable(orderedArtifactLeaves, ast)
     if (!lastVar) continue
     lastVars.push(lastVar.variableDeclaration.node)
   }
@@ -142,8 +142,8 @@ export async function applyIntersectFromTargetOperatorSelections(
   )
 
   const lastVars: VariableDeclaration[] = []
-  for (const orderedArtifactLeafs of orderedChildrenEach) {
-    const lastVar = getLastVariable(orderedArtifactLeafs, ast)
+  for (const orderedArtifactLeaves of orderedChildrenEach) {
+    const lastVar = getLastVariable(orderedArtifactLeaves, ast)
     if (!lastVar) continue
     lastVars.push(lastVar.variableDeclaration.node)
   }
