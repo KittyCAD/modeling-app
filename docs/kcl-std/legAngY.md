@@ -1,5 +1,5 @@
 ---
-title: "legAngY"
+title: "std::math::legAngY"
 excerpt: "Compute the angle of the given leg for y."
 layout: manual
 ---
@@ -24,7 +24,7 @@ legAngY(
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number)
+[`number`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

@@ -10,6 +10,7 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_doc::ModData;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -21,6 +22,12 @@ use crate::{
     execution::{types::NumericType, Sketch},
     std::Primitive,
 };
+
+// These types are declared in (KCL) std.
+const DECLARED_TYPES: [&str; 15] = [
+    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
+    "Point3d", "Axis2d", "Axis3d",
+];
 
 lazy_static::lazy_static! {
     static ref NUMERIC_TYPE_SCHEMA: schemars::schema::SchemaObject = {
@@ -94,6 +101,9 @@ pub struct StdLibFnArg {
 
 impl fmt::Display for StdLibFnArg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if !self.label_required {
+            f.write_char('@')?;
+        }
         f.write_str(&self.name)?;
         if !self.required {
             f.write_char('?')?;
@@ -154,11 +164,18 @@ impl StdLibFnArg {
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
-    pub fn description(&self) -> Option<String> {
+    pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
             return Some(self.description.clone());
         }
+
+        if let Some(kcl_std) = kcl_std {
+            if let Some(t) = docs_for_type(&self.type_, kcl_std) {
+                return Some(t);
+            }
+        }
+
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
@@ -370,7 +387,7 @@ impl From<StdLibFnArg> for ParameterInformation {
     fn from(arg: StdLibFnArg) -> Self {
         ParameterInformation {
             label: ParameterLabel::Simple(arg.name.to_string()),
-            documentation: arg.description().map(|description| {
+            documentation: arg.description(None).map(|description| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: description,
@@ -378,6 +395,16 @@ impl From<StdLibFnArg> for ParameterInformation {
             }),
         }
     }
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    if DECLARED_TYPES.contains(&ty) {
+        if let Some(data) = kcl_std.find_by_name(ty) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 /// This trait defines functions called upon stdlib functions to generate
@@ -1128,7 +1155,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,

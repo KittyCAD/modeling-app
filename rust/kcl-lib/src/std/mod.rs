@@ -236,13 +236,13 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::helix::helix(e, a)),
             StdFnProps::default("std::helix").include_in_feature_tree(),
         ),
-        ("sketch", "mirror2d") => (
+        ("transform", "mirror2d") => (
             |e, a| Box::pin(crate::std::mirror::mirror_2d(e, a)),
-            StdFnProps::default("std::sketch::mirror2d"),
+            StdFnProps::default("std::transform::mirror2d"),
         ),
-        ("prelude", "revolve") => (
+        ("sketch", "revolve") => (
             |e, a| Box::pin(crate::std::revolve::revolve(e, a)),
-            StdFnProps::default("std::revolve").include_in_feature_tree(),
+            StdFnProps::default("std::sketch::revolve").include_in_feature_tree(),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a)),

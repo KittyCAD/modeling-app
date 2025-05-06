@@ -25,7 +25,7 @@ offsetPlane(
 
 ### Returns
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane)
+[`Plane`](/docs/kcl-std/types/std-types-Plane) - A plane.
 
 
 ### Examples
