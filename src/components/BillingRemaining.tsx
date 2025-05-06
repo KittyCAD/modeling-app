@@ -63,12 +63,10 @@ const ProgressBar = (props: { max: number; value: number }) => {
     >
       <div
         data-testid="billing-remaining-progress-bar-inner"
-        className="bg-ml-green"
+        className="bg-ml-green rounded-full"
         style={{
           width: Math.min(100, ratio * 100).toFixed(2) + '%',
           height: '100%',
-          borderTopRightRadius: 4,
-          borderBottomRightRadius: 4,
         }}
       ></div>
     </div>
