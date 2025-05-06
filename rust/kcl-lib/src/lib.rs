@@ -88,7 +88,9 @@ pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
 pub use execution::{
-    bust_cache, clear_mem_cache, ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
+    bust_cache, clear_mem_cache,
+    types::{UnitAngle, UnitLen},
+    ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };
 pub use lsp::{
     copilot::Backend as CopilotLspBackend,
@@ -217,9 +219,13 @@ impl Program {
     }
 
     /// Change the meta settings for the kcl file.
-    pub fn change_meta_settings(&self, settings: crate::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<execution::types::UnitLen>,
+        angle_units: Option<execution::types::UnitAngle>,
+    ) -> Result<Self, KclError> {
         Ok(Self {
-            ast: self.ast.change_meta_settings(settings)?,
+            ast: self.ast.change_default_units(length_units, angle_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }

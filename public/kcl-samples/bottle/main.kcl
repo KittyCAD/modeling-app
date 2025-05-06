@@ -2,7 +2,7 @@
 // A simple bottle with a hollow, watertight interior
 
 // Set Units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Input dimensions to define the bottle
 bottleWidth = 80
