@@ -107,17 +107,8 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse")?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
-    let new_sketch = inner_involute_circular(
-        sketch,
-        start_radius.n,
-        end_radius.n,
-        angle.n,
-        reverse,
-        tag,
-        exec_state,
-        args,
-    )
-    .await?;
+    let new_sketch =
+        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -156,33 +147,35 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
 #[allow(clippy::too_many_arguments)]
 async fn inner_involute_circular(
     sketch: Sketch,
-    start_radius: f64,
-    end_radius: f64,
-    angle: f64,
+    start_radius: TyF64,
+    end_radius: TyF64,
+    angle: TyF64,
     reverse: Option<bool>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
-    let angle = Angle::from_degrees(angle);
-    let segment = PathSegment::CircularInvolute {
-        start_radius: LengthUnit(start_radius),
-        end_radius: LengthUnit(end_radius),
-        angle,
-        reverse: reverse.unwrap_or_default(),
-    };
 
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
-            segment,
+            segment: PathSegment::CircularInvolute {
+                start_radius: LengthUnit(start_radius.to_mm()),
+                end_radius: LengthUnit(end_radius.to_mm()),
+                angle: Angle::from_degrees(angle.to_degrees()),
+                reverse: reverse.unwrap_or_default(),
+            },
         }),
     )
     .await?;
 
     let from = sketch.current_pen_position()?;
+
+    let start_radius = start_radius.to_length_units(from.units);
+    let end_radius = end_radius.to_length_units(from.units);
+
     let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
