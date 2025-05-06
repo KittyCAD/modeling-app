@@ -574,6 +574,7 @@ profile001 = startProfile(sketch002, at = [-12.34, 12.34])
   await page.waitForTimeout(100)
 
   await cmdBar.progressCmdBar()
+  await cmdBar.progressCmdBar()
   await expect(page.getByText('Confirm Extrude')).toBeVisible()
   await cmdBar.progressCmdBar()
 
