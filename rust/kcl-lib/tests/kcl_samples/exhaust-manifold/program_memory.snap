@@ -774,7 +774,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
     }
   },
   "primaryTube": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "primaryTubeDiameter": {
     "type": "Number",

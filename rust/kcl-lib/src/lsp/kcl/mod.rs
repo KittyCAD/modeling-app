@@ -41,7 +41,7 @@ use tower_lsp::{
 };
 
 use crate::{
-    docs::kcl_doc::DocData,
+    docs::kcl_doc::ModData,
     errors::LspSuggestion,
     exec::KclValue,
     execution::{cache, kcl_value::FunctionSource},
@@ -1636,7 +1636,7 @@ impl LanguageServer for Backend {
 /// Get completions from our stdlib.
 pub fn get_completions_from_stdlib(
     stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
+    kcl_std: &ModData,
 ) -> Result<HashMap<String, CompletionItem>> {
     let mut completions = HashMap::new();
     let combined = stdlib.combined();
@@ -1645,8 +1645,10 @@ pub fn get_completions_from_stdlib(
         completions.insert(internal_fn.name(), internal_fn.to_completion_item()?);
     }
 
-    for d in kcl_std {
-        completions.insert(d.name().to_owned(), d.to_completion_item());
+    for d in kcl_std.all_docs() {
+        if let Some(ci) = d.to_completion_item() {
+            completions.insert(d.name().to_owned(), ci);
+        }
     }
 
     let variable_kinds = VariableKind::to_completion_items();
@@ -1658,7 +1660,7 @@ pub fn get_completions_from_stdlib(
 }
 
 /// Get signatures from our stdlib.
-pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocData]) -> HashMap<String, SignatureHelp> {
+pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &ModData) -> HashMap<String, SignatureHelp> {
     let mut signatures = HashMap::new();
     let combined = stdlib.combined();
 
@@ -1666,7 +1668,7 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
         signatures.insert(internal_fn.name(), internal_fn.to_signature_help());
     }
 
-    for d in kcl_std {
+    for d in kcl_std.all_docs() {
         if let Some(sig) = d.to_signature_help() {
             signatures.insert(d.name().to_owned(), sig);
         }
@@ -1678,7 +1680,7 @@ pub fn get_signatures_from_stdlib(stdlib: &crate::std::StdLib, kcl_std: &[DocDat
 /// Get signatures from our stdlib.
 pub fn get_arg_maps_from_stdlib(
     stdlib: &crate::std::StdLib,
-    kcl_std: &[DocData],
+    kcl_std: &ModData,
 ) -> HashMap<String, HashMap<String, String>> {
     let mut result = HashMap::new();
     let combined = stdlib.combined();
@@ -1712,7 +1714,7 @@ pub fn get_arg_maps_from_stdlib(
         }
     }
 
-    for _d in kcl_std {
+    for _d in kcl_std.all_docs() {
         // TODO add KCL std fns
     }
 

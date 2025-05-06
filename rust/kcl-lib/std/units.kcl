@@ -1,3 +1,5 @@
+/// Functions for converting numbers to different units.
+
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 

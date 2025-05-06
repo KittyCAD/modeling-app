@@ -47,9 +47,10 @@ import {
   coredump,
   default_app_settings,
   default_project_settings,
-  format_number,
+  format_number_literal,
   get_kcl_version,
   get_tangential_arc_to_info,
+  human_display_number,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
   kcl_lint,
@@ -67,6 +68,7 @@ import {
   LABELED_ARG_FIELD,
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -440,8 +442,35 @@ export const recast = (ast: Program): string | Error => {
 /**
  * Format a number with suffix as KCL.
  */
-export function formatNumber(value: number, suffix: NumericSuffix): string {
-  return format_number(value, JSON.stringify(suffix))
+export function formatNumberLiteral(
+  value: number,
+  suffix: NumericSuffix
+): string | Error {
+  try {
+    return format_number_literal(value, JSON.stringify(suffix))
+  } catch (e) {
+    return new Error(
+      `Error formatting number literal: value=${value}, suffix=${suffix}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Debug display a number with suffix, for human consumption only.
+ */
+export function humanDisplayNumber(
+  value: number,
+  ty: NumericType
+): string | Error {
+  try {
+    return human_display_number(value, JSON.stringify(ty))
+  } catch (e) {
+    return new Error(
+      `Error formatting number for human display: value=${value}, ty=${JSON.stringify(ty)}`,
+      { cause: e }
+    )
+  }
 }
 
 export function isPointsCCW(points: Coords2d[]): number {
