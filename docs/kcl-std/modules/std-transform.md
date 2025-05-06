@@ -1,5 +1,6 @@
 ---
-title: "std::transform"
+title: "transform"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---

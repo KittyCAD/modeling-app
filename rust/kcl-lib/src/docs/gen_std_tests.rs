@@ -130,14 +130,14 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
         functions
             .entry(module.to_owned())
             .or_default()
-            .push((internal_fn.name(), internal_fn.name()));
+            .push((internal_fn.name(), format!("/docs/kcl-std/{}", internal_fn.name())));
     }
 
     for name in SPECIAL_TYPES {
         types
             .get_mut("Primitive types")
             .unwrap()
-            .push((name.to_owned(), format!("types#{name}")));
+            .push((name.to_owned(), format!("/docs/kcl-lang/types#{name}")));
     }
 
     for d in kcl_lib.all_docs() {
@@ -152,7 +152,10 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             DocData::Mod(_) => continue,
         };
 
-        group.push((d.preferred_name().to_owned(), d.file_name()));
+        group.push((
+            d.preferred_name().to_owned(),
+            format!("/docs/kcl-std/{}", d.file_name()),
+        ));
     }
 
     let mut sorted_fns: Vec<_> = functions
@@ -161,7 +164,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             fns.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
                 "items": fns.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -179,7 +182,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             consts.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
                 "items": consts.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -194,10 +197,15 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
     let mut sorted_types: Vec<_> = types
         .into_iter()
         .map(|(m, mut tys)| {
+            let file_name = if m == "Primitive types" {
+                "/docs/kcl-lang/types".to_owned()
+            } else {
+                format!("/docs/kcl-std/modules/{}", m.replace("::", "-"))
+            };
             tys.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": file_name,
                 "items": tys.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -264,7 +272,8 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
         .collect();
 
     let data = json!({
-        "name": ty.qual_name(),
+        "name": ty.preferred_name,
+        "module": ty.module_name,
         "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
         "summary": ty.summary,
         "description": ty.description,
@@ -306,7 +315,8 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     let types = list_items(m, "T:");
 
     let data = json!({
-        "name": m.qual_name,
+        "name": m.name,
+        "module": m.module_name,
         "summary": m.summary,
         "description": m.description,
         "modules": modules,
@@ -340,7 +350,8 @@ fn generate_function_from_kcl(
         .collect();
 
     let data = json!({
-        "name": function.qual_name,
+        "name": function.preferred_name,
+        "module": function.module_name,
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
@@ -383,7 +394,8 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .collect();
 
     let data = json!({
-        "name": cnst.qual_name,
+        "name": cnst.preferred_name,
+        "module": cnst.module_name,
         "summary": cnst.summary,
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,
@@ -435,10 +447,15 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Resul
         .collect();
 
     let tags = internal_fn.tags();
-    let qual = tags.first().map(|s| &**s).unwrap_or("");
+    let module = tags
+        .first()
+        .map(|s| &**s)
+        .map(|m| format!("std::{m}"))
+        .unwrap_or("std".to_owned());
 
     let data = json!({
-        "name": format!("std::{qual}{}{fn_name}", if qual.is_empty() { "" } else {"::"}),
+        "name": fn_name,
+        "module": module,
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
