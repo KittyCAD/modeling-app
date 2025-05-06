@@ -25,14 +25,14 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
       <div>
         <div className="rounded bg-ml-black p-1">
           {hasUnlimited ? (
-            <CustomIcon name="infinity" />
+            <CustomIcon name="infinity" className="w-5 h-5" />
           ) : (
-            <CustomIcon name="star" />
+            <CustomIcon name="star" className="w-5 h-5" />
           )}
         </div>
       </div>
       <div className="flex flex-col gap-2">
-        <div className="font-bold text-ml-black">
+        <div className="font-bold text-ml-black h-5 py-1">
           {hasUnlimited ? 'Unlimited Text-to-CAD' : 'Upgrade your plan'}
         </div>
         <div className="text-ml-grey">
@@ -46,7 +46,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
         />
         <a
           className="bg-ml-black text-ml-white rounded-lg text-center p-1 cursor-pointer"
-          href="https://zoo.dev/account#upgrade"
+          href="https://zoo.dev/api-pricing"
           target="_blank"
           rel="noopener noreferrer"
           onClick={openExternalBrowserIfDesktop()}

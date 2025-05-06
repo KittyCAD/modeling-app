@@ -1,4 +1,4 @@
-import { IS_NIGHTLY } from '@src/routes/utils'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
@@ -354,9 +354,11 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {IS_NIGHTLY && (
+            {IS_NIGHTLY_OR_DEBUG && (
               <li className="contents">
-                <BillingDialog billingActor={billingActor} />
+                <div className="my-2">
+                  <BillingDialog billingActor={billingActor} />
+                </div>
               </li>
             )}
             <li className="contents">

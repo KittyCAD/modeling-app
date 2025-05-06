@@ -133,7 +133,9 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
       {isFlex && (
         <div className="flex flex-row gap-1">
           {billingContext.credits ? (
-            <>{billingContext.credits} credits remaining this month</>
+            billingContext.credits !== Infinity ? (
+              <>{billingContext.credits} credits remaining this month</>
+            ) : null
           ) : (
             <>
               <Spinner className="text-inherit w-4 h-4" />{' '}
