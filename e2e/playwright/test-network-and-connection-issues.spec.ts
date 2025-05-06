@@ -1,17 +1,22 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import { commonPoints, getUtils } from '@e2e/playwright/test-utils'
+import {
+  commonPoints,
+  getUtils,
+  TEST_COLORS,
+  circleMove,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test.describe(
-  'Test network and connection issues',
+  'Test network related behaviors',
   {
     tag: ['@macos', '@windows'],
   },
   () => {
     test(
-      'simulate network down and network little widget',
+      'simulate network down and network little w1dget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
         const u = await getUtils(page)
@@ -253,6 +258,97 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
         await expect(
           page.getByRole('button', { name: 'Exit Sketch' })
         ).not.toBeVisible()
+      }
+    )
+
+    test(
+      'Paused stream freezes view frame, unpause reconnect is seamless to user',
+      { tag: '@skipLocalEngine' },
+      async ({ page, homePage, scene, cmdBar, toolbar }) => {
+        const networkToggle = page.getByTestId('network-toggle')
+        const networkToggleConnectedText = page.getByText('Connected')
+        const networkToggleWeakText = page.getByText('Network health (Weak)')
+        const userSettingsTab = page.getByRole('radio', { name: 'User' })
+        const appStreamIdleModeSetting = page.getByTestId('app-streamIdleMode')
+        const settingsCloseButton = page.getByTestId('settings-close-button')
+
+        await page.addInitScript(async () => {
+          localStorage.setItem(
+            'persistCode',
+            `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0.0, 0.0])
+  |> line(end = [10.0, 0])
+  |> line(end = [0, 10.0])
+  |> close()`
+          )
+        })
+
+        const dim = { width: 1200, height: 500 }
+        await page.setBodyDimensions(dim)
+
+        await test.step('Go to modeling scene', async () => {
+          await homePage.goToModelingScene()
+          await scene.settled(cmdBar)
+        })
+
+        await test.step('Set stream idle pause time to 5s', async () => {
+          await page.getByRole('link', { name: 'Settings' }).last().click()
+          await expect(
+            page.getByRole('heading', { name: 'Settings', exact: true })
+          ).toBeVisible()
+          await userSettingsTab.click()
+          await appStreamIdleModeSetting.click()
+          await appStreamIdleModeSetting.selectOption('5000')
+          await settingsCloseButton.click()
+          await expect(
+            page.getByText('Set stream idle mode to "5000" as a user default')
+          ).toBeVisible()
+        })
+
+        await test.step('Verify pausing behavior', async () => {
+          // Wait 5s + 1s to pause.
+          await page.waitForTimeout(6000)
+
+          // We should now be paused. To the user, it should appear we're still
+          // connected.
+          await networkToggle.hover()
+          await expect(
+            networkToggleConnectedText.or(networkToggleWeakText)
+          ).toBeVisible()
+
+          const center = {
+            x: dim.width / 2,
+            y: dim.height / 2,
+          }
+
+          let probe = { x: 0, y: 0 }
+
+          // ... and the model's still visibly there
+          probe.x = center.x + dim.width / 100
+          probe.y = center.y
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+          probe = { ...center }
+
+          // Now move the mouse around to unpause!
+          await circleMove(page, probe.x, probe.y, 20, 10)
+
+          // ONCE AGAIN! Check the view area hasn't changed at all.
+          // Check the pixel a couple times as it reconnects.
+          // NOTE: Remember, idle behavior is still on at this point -
+          // if this test takes longer than 5s shit WILL go south!
+          probe.x = center.x + dim.width / 100
+          probe.y = center.y
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+          await page.waitForTimeout(1000)
+          await scene.expectPixelColor(TEST_COLORS.GREY, probe, 15)
+          probe = { ...center }
+
+          // Ensure we're still connected
+          await networkToggle.hover()
+          await expect(
+            networkToggleConnectedText.or(networkToggleWeakText)
+          ).toBeVisible()
+        })
       }
     )
   }

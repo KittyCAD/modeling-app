@@ -138,7 +138,9 @@ const Loading = ({ children, className, dataTestId }: LoadingProps) => {
               CONNECTION_ERROR_TEXT[error.error] +
                 (error.context
                   ? '\n\nThe error details are: ' +
-                    JSON.stringify(error.context)
+                    (error.context instanceof Object
+                      ? JSON.stringify(error.context)
+                      : error.context)
                   : ''),
               {
                 renderer: new SafeRenderer(markedOptions),
