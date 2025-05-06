@@ -138,6 +138,7 @@ test.describe('Point-and-click tests', () => {
         await scene.moveCameraTo(cameraPos, cameraTarget)
 
         await test.step('check chamfer selection changes cursor position', async () => {
+          await toolbar.waitForFeatureTreeToBeBuilt()
           await expect(async () => {
             // sometimes initial click doesn't register
             await clickChamfer()
@@ -177,6 +178,7 @@ test.describe('Point-and-click tests', () => {
             highlightedCode: '',
             diagnostics: [],
           })
+          await toolbar.waitForFeatureTreeToBeBuilt()
         })
       }
     test('works on all edge selections and can break up multi edges in a chamfer array', async ({
@@ -296,6 +298,7 @@ test.describe('Point-and-click tests', () => {
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
           `@settings(defaultLengthUnit = in)
+
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [75.8, 317.2]) // [$startCapTag, $EndCapTag]
   |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
@@ -308,18 +311,11 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [seg01], tag = $seg04)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(seg02)], tag = $seg05)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
-sketch005 = startSketchOn(extrude001, face = seg06)
-profile004=startProfile(sketch005, at = [-23.43,19.69])
-  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
-  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
-  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
-  |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
-  |> close()
-sketch004 = startSketchOn(extrude001, face = seg05)
-profile003 = startProfile(sketch004, at = [82.57, 322.96])
-  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
-  |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
-  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
+sketch002 = startSketchOn(extrude001, face = seg03)
+profile001 = startProfile(sketch002, at = [205.96, 254.59])
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, face = seg04)
@@ -329,11 +325,18 @@ profile002 = startProfile(sketch003, at = [-209.64, 255.28])
   |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch002 = startSketchOn(extrude001, face = seg03)
-profile001 = startProfile(sketch002, at = [205.96, 254.59])
-  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 105.26)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
+sketch004 = startSketchOn(extrude001, face = seg05)
+profile003 = startProfile(sketch004, at = [82.57, 322.96])
+  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
+  |> angledLine(angle = segAng(rectangleSegmentA004) - 90, length = 103.07)
+  |> angledLine(angle = segAng(rectangleSegmentA004), length = -segLen(rectangleSegmentA004))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch005 = startSketchOn(extrude001, face = seg06)
+profile004 = startProfile(sketch005, at = [-23.43, 19.69])
+  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
+  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
+  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `,
