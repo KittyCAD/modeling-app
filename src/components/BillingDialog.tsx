@@ -20,9 +20,9 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
       <div>
         <div className="rounded bg-ml-black p-1">
           {hasUnlimited ? (
-            <CustomIcon name="infinity" className="w-5 h-5" />
+            <CustomIcon name="infinity" className="!text-ml-white w-5 h-5" />
           ) : (
-            <CustomIcon name="star" className="w-5 h-5" />
+            <CustomIcon name="star" className="!text-ml-white w-5 h-5" />
           )}
         </div>
       </div>
