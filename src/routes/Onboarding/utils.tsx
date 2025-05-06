@@ -253,7 +253,7 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedFileName: DEFAULT_PROJECT_KCL_FILE,
+        requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
         requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING.INDEX,
