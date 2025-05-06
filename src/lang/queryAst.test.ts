@@ -150,7 +150,7 @@ yo2 = hmm([identifierGuy + 5])`
     // because the unlabeled arg will default to %. However, the `isNodeSafeToReplacePath`
     // function doesn't yet check for this (because it cannot differentiate between
     // a function that relies on this default unlabeled arg, and a function with no unlabeled arg)
-    const rangeStart = code.indexOf('one(%, end = [2.8,')
+    const rangeStart = code.indexOf('Line(%, end = [2.8,')
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
