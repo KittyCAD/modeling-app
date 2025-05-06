@@ -167,26 +167,6 @@ export function findAllChildrenAndOrderByPlaceInCode(
   artifact: Artifact,
   artifactGraph: ArtifactGraph
 ): Artifact[] {
-  const pathToCompositeSolidMap: { [key: string]: string[] } = {}
-  for (const [id, artifact] of artifactGraph) {
-    if (artifact.type === 'compositeSolid') {
-      for (const pathId of artifact.solidIds) {
-        if (pathToCompositeSolidMap[pathId]) {
-          pathToCompositeSolidMap[pathId].push(id)
-        } else {
-          pathToCompositeSolidMap[pathId] = [id]
-        }
-      }
-      for (const pathId of artifact.toolIds) {
-        if (pathToCompositeSolidMap[pathId]) {
-          pathToCompositeSolidMap[pathId].push(id)
-        } else {
-          pathToCompositeSolidMap[pathId] = [id]
-        }
-      }
-    }
-  }
-
   const result: string[] = []
   const stack: string[] = [artifact.id]
 
@@ -233,9 +213,9 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current?.surfaceIds)
       const path = artifactGraph.get(current.pathId)
       if (path && path.type === 'path') {
-        const compositeSolidIds = pathToCompositeSolidMap[current.pathId]
-        if (compositeSolidIds) {
-          result.push(...compositeSolidIds)
+        const compositeSolidId = path.compositeSolidId
+        if (compositeSolidId) {
+          result.push(compositeSolidId)
         }
       }
     } else if (current?.type === 'wall' || current?.type === 'cap') {

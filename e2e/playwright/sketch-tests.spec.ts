@@ -1256,7 +1256,7 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
     }).toPass({ timeout: 40_000, intervals: [1_000] })
   })
 
-  test('sketch sketch on face of a boolean', async ({
+  test('sketch on face of a boolean works', async ({
     page,
     homePage,
     scene,
