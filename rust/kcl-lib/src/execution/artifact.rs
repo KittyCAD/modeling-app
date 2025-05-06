@@ -150,9 +150,9 @@ pub struct CompositeSolid {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// This is the ID of the composite solid that this is part of, if any, as a
     /// composite solid can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
 }
 
@@ -186,9 +186,9 @@ pub struct Path {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
     /// This is the ID of the composite solid that this is part of, if any, as
     /// this can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub composite_solid_id: Option<ArtifactId>,
 }
 
