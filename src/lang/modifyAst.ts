@@ -1177,11 +1177,7 @@ export function insertVariableAndOffsetPathToNode(
       0,
       variable.variableDeclarationAst
     )
-    if (
-      pathToNode &&
-      typeof pathToNode[1] &&
-      typeof pathToNode[1][0] === 'number'
-    ) {
+    if (pathToNode && pathToNode[1] && typeof pathToNode[1][0] === 'number') {
       pathToNode[1][0]++
     }
   }
