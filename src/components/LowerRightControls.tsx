@@ -14,7 +14,11 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
+import {
+  APP_VERSION,
+  IS_NIGHTLY_OR_DEBUG,
+  getReleaseUrl,
+} from '@src/routes/utils'
 
 import { billingActor } from '@src/lib/singletons'
 
