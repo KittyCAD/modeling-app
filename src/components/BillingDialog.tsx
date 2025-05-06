@@ -1,4 +1,4 @@
-import { IS_NIGHTLY } from '@src/routes/utils'
+import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 import { useSelector } from '@xstate/react'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -16,7 +16,7 @@ export const BillingDialog = (props: { billingActor: BillingActor }) => {
   )
   const hasUnlimited = billingContext.credits === Infinity
 
-  if (!IS_NIGHTLY) {
+  if (!IS_NIGHTLY_OR_DEBUG) {
     return <></>
   }
 
