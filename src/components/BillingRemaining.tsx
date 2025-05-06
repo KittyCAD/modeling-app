@@ -104,7 +104,6 @@ export const BillingRemaining = (props: BillingRemainingProps) => {
     'py-1',
     'rounded',
     '!no-underline',
-    'font-semibold',
     'text-xs',
     '!text-chalkboard-100',
     'dark:!text-chalkboard-0',
