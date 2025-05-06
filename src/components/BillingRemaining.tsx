@@ -58,9 +58,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
   const ratio = props.value / props.max
 
   return (
-    <div
-      className="h-1.5 rounded w-full border-ml-black bg-ml-black border"
-    >
+    <div className="h-1.5 rounded w-full border-ml-black bg-ml-black border">
       <div
         data-testid="billing-remaining-progress-bar-inner"
         className="bg-ml-green rounded-full"

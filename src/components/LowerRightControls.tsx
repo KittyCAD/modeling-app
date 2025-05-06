@@ -49,7 +49,6 @@ export function LowerRightControls({
               <Tooltip position="top" contentClassName="text-xs">
                 Text-to-CAD credits
               </Tooltip>
-
             </Popover.Button>
             <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
               <BillingDialog billingActor={billingActor} />

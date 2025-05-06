@@ -2,6 +2,7 @@ import type { Models } from '@kittycad/lib'
 import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import type { ActorRefFrom } from 'xstate'
 import { assign, fromPromise, setup } from 'xstate'
+import { err } from '@src/lib/trap'
 
 export enum BillingState {
   Updating = 'updating',
@@ -50,10 +51,7 @@ export const billingMachine = setup({
             input.event.apiToken
           )
 
-        if (
-          typeof billingOrError === 'number' ||
-          billingOrError instanceof Error
-        ) {
+        if (typeof billingOrError === 'number' || err(billingOrError)) {
           return Promise.reject(billingOrError)
         }
         const billing: Models['CustomerBalance_type'] = billingOrError
@@ -80,12 +78,12 @@ export const billingMachine = setup({
         let allowance = undefined
 
         // If user is part of an org, the endpoint will return data.
-        if (typeof orgOrError !== 'number' && !(orgOrError instanceof Error)) {
+        if (typeof orgOrError !== 'number' && !err(orgOrError)) {
           credits = Infinity
           // Otherwise they are on a Pro or Free subscription
         } else if (
           typeof subscriptionsOrError !== 'number' &&
-          !(subscriptionsOrError instanceof Error)
+          !err(subscriptionsOrError)
         ) {
           const subscriptions: Models['ZooProductSubscriptions_type'] =
             subscriptionsOrError
