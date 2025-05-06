@@ -34,7 +34,7 @@ helix(
 
 ### Returns
 
-[`Helix`](/docs/kcl-std/types/std-types-Helix)
+[`Helix`](/docs/kcl-std/types/std-types-Helix) - A helix.
 
 
 ### Examples

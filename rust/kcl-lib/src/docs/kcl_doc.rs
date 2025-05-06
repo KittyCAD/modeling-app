@@ -307,6 +307,15 @@ impl DocData {
             _ => unreachable!(),
         }
     }
+
+    pub(super) fn summary(&self) -> Option<&String> {
+        match self {
+            DocData::Fn(f) => f.summary.as_ref(),
+            DocData::Const(c) => c.summary.as_ref(),
+            DocData::Ty(t) => t.summary.as_ref(),
+            DocData::Mod(m) => m.summary.as_ref(),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -459,7 +468,6 @@ impl ModData {
         }
     }
 
-    #[cfg(test)]
     pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
         if let Some(result) = self.children.values().find(|dd| dd.name() == name) {
             return Some(result);

@@ -9,13 +9,11 @@ use serde_json::json;
 use tokio::task::JoinSet;
 
 use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
-use crate::{docs::StdLibFn, std::StdLib, ExecutorContext};
-
-// These types are declared in (KCL) std.
-const DECLARED_TYPES: [&str; 15] = [
-    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
-    "Point3d", "Axis2d", "Axis3d",
-];
+use crate::{
+    docs::{StdLibFn, DECLARED_TYPES},
+    std::StdLib,
+    ExecutorContext,
+};
 
 // Types with special handling.
 const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
@@ -126,9 +124,12 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             continue;
         }
 
+        let tags = internal_fn.tags();
+        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
         functions
-            .get_mut("std")
-            .unwrap()
+            .entry(module.to_owned())
+            .or_default()
             .push((internal_fn.name(), internal_fn.name()));
     }
 
@@ -319,7 +320,12 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     Ok(())
 }
 
-fn generate_function_from_kcl(function: &FnData, file_name: String, example_name: String) -> Result<()> {
+fn generate_function_from_kcl(
+    function: &FnData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+) -> Result<()> {
     if function.properties.doc_hidden {
         return Ok(());
     }
@@ -344,14 +350,14 @@ fn generate_function_from_kcl(function: &FnData, file_name: String, example_name
             json!({
                 "name": arg.name,
                 "type_": arg.ty,
-                "description": arg.docs.as_deref().unwrap_or(""),
+                "description": arg.docs.clone().or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
                 "required": arg.kind.required(),
             })
         }).collect::<Vec<_>>(),
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,
-                "description": "",
+                "description": super::docs_for_type(t, kcl_std).unwrap_or_default(),
             })
         }),
     });
@@ -392,7 +398,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     Ok(())
 }
 
-fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
+fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     if internal_fn.unpublished() {
@@ -428,8 +434,11 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
         })
         .collect();
 
+    let tags = internal_fn.tags();
+    let qual = tags.first().map(|s| &**s).unwrap_or("");
+
     let data = json!({
-        "name": fn_name,
+        "name": format!("std::{qual}{}{fn_name}", if qual.is_empty() { "" } else {"::"}),
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
@@ -439,14 +448,14 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<()> {
             json!({
                 "name": arg.name,
                 "type_": rename_type(&arg.type_),
-                "description": arg.description(),
+                "description": arg.description(Some(kcl_std)),
                 "required": arg.required,
             })
         }).collect::<Vec<_>>(),
         "return_value": internal_fn.return_value(false).map(|ret| {
             json!({
                 "type_": rename_type(&ret.type_),
-                "description": ret.description(),
+                "description": ret.description(Some(kcl_std)),
             })
         }),
     });
@@ -651,12 +660,12 @@ fn test_generate_stdlib_markdown_docs() {
 
     for key in combined.keys().sorted() {
         let internal_fn = combined.get(key).unwrap();
-        generate_function(internal_fn.clone()).unwrap();
+        generate_function(internal_fn.clone(), &kcl_std).unwrap();
     }
 
     for d in kcl_std.all_docs() {
         match d {
-            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name()).unwrap(),
+            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
             DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),

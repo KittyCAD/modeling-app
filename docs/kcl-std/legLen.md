@@ -1,5 +1,5 @@
 ---
-title: "legLen"
+title: "std::math::legLen"
 excerpt: "Compute the length of the given leg."
 layout: manual
 ---
@@ -24,7 +24,7 @@ legLen(
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number)
+[`number`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples
