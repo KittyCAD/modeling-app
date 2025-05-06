@@ -30,7 +30,7 @@ test(
           await fsp.mkdir(myDir)
           await fsp.writeFile(
             path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-            'sca ba be bop de day wawa skee'
+            'meaningless nonsense here'
           )
         })().catch(console.error)
       }, 5000)
@@ -2026,7 +2026,7 @@ test(
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'اَلْعَرَبِيَّةُ')
+      const bracketDir = path.join(dir, 'العربية')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
         executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
@@ -2043,11 +2043,11 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
-    await test.step('Opening the اَلْعَرَبِيَّةُ project should load the stream', async () => {
+    await test.step('Opening the العربية project should load the stream', async () => {
       // expect to see the text bracket
-      await expect(page.getByText('اَلْعَرَبِيَّةُ')).toBeVisible()
+      await expect(page.getByText('العربية')).toBeVisible()
 
-      await page.getByText('اَلْعَرَبِيَّةُ').click()
+      await page.getByText('العربية').click()
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })

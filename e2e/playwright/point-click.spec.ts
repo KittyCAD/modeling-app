@@ -820,7 +820,7 @@ openSketch = startSketchOn(XY)
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
     const thirdPointLocation = { x: 800, y: 400 }
-    const fristSegmentLocation = { x: 750, y: 100 }
+    const firstSegmentLocation = { x: 750, y: 100 }
     const secondSegmentLocation = { x: 800, y: 150 }
     const planeLocation = { x: 700, y: 200 }
 
@@ -838,8 +838,8 @@ openSketch = startSketchOn(XY)
       thirdPointLocation.y
     )
     const [clickFirstSegment] = scene.makeMouseHelpers(
-      fristSegmentLocation.x,
-      fristSegmentLocation.y
+      firstSegmentLocation.x,
+      firstSegmentLocation.y
     )
     const [clickSecondSegment] = scene.makeMouseHelpers(
       secondSegmentLocation.x,
@@ -901,7 +901,7 @@ openSketch = startSketchOn(XY)
         await page.waitForTimeout(timeout)
         await scene.expectPixelColor(
           edgeColorBlue,
-          fristSegmentLocation,
+          firstSegmentLocation,
           tolerance
         )
         await scene.expectPixelColor(
@@ -918,7 +918,7 @@ openSketch = startSketchOn(XY)
         await page.keyboard.up('Shift')
         await scene.expectPixelColor(
           edgeColorBlue,
-          fristSegmentLocation,
+          firstSegmentLocation,
           tolerance
         )
         await scene.expectPixelColor(
@@ -935,7 +935,7 @@ openSketch = startSketchOn(XY)
         await page.keyboard.up('Shift')
         await scene.expectPixelColor(
           edgeColorWhite,
-          fristSegmentLocation,
+          firstSegmentLocation,
           tolerance
         )
         await scene.expectPixelColor(
@@ -952,7 +952,7 @@ openSketch = startSketchOn(XY)
         await page.keyboard.up('Shift')
         await scene.expectPixelColor(
           edgeColorWhite,
-          fristSegmentLocation,
+          firstSegmentLocation,
           tolerance
         )
         await scene.expectPixelColor(

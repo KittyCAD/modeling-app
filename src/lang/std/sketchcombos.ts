@@ -660,7 +660,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
 }
 
 const setAngleBetweenCreateNode =
-  (tranformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
+  (transformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
   ({
     referenceSegName,
     tag,
@@ -689,14 +689,14 @@ const setAngleBetweenCreateNode =
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
-      tranformToType === 'none'
+      transformToType === 'none'
         ? 'angledLine'
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? 'angledLineToX'
           : 'angledLineToY',
-      tranformToType === 'none'
+      transformToType === 'none'
         ? [binExp, args[1].expr]
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? [binExp, inputs[0].expr]
           : [binExp, inputs[1].expr],
       tag,

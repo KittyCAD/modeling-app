@@ -600,7 +600,7 @@ sketch001 = startSketchOn(XZ)
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: startPX[0], y: startPX[1] },
       targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },

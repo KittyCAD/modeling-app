@@ -1042,7 +1042,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 2-dimensional sketch some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
@@ -1159,7 +1159,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 3-dimensional solid some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
