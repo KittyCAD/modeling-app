@@ -35,6 +35,7 @@ import type {
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
 import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
+import { localModuleSafePathSplit } from '@src/lib/paths'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -61,7 +62,8 @@ export function useEngineConnectionSubscriptions() {
           }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0][0] !== 0 &&
+          (editorManager.highlightRange[0] &&
+            editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
           editorManager.setHighlightRange([defaultSourceRange()])
@@ -208,7 +210,7 @@ export function useEngineConnectionSubscriptions() {
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = importDetails.value.split('/')
+                    const paths = localModuleSafePathSplit(importDetails.value)
                     const fileName = paths[paths.length - 1]
                     showSketchOnImportToast(fileName)
                   } else if (
