@@ -61,8 +61,6 @@
             nodejs_22
             electron
             playwright-driver.browsers
-            firefox
-            geckodriver
             chromedriver
             wasm-pack
             python3Full
@@ -83,11 +81,7 @@
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
         RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
-        GECKODRIVER = "${pkgs.geckodriver}/bin/geckodriver";
-        FIREFOX_BINARY =
-          if pkgs.stdenv.isDarwin
-          then "${pkgs.firefox}/Applications/Firefox.app/Contents/MacOS/firefox"
-          else "${pkgs.firefox}/bin/firefox";
+        CHROMEDRIVER = "${pkgs.chromedriver}/bin/chromedriver";
       };
     });
 

@@ -1799,8 +1799,7 @@ export class EngineCommandManager extends EventTarget {
     }
     this.engineConnection = undefined
   }
-  async
-  startNewSession() {
+  async startNewSession() {
     this.responseMap = {}
   }
   subscribeTo<T extends ModelTypes>({
@@ -1815,8 +1814,7 @@ export class EngineCommandManager extends EventTarget {
 
     return () => this.unSubscribeTo(event, localUnsubscribeId)
   }
-  private
-  unSubscribeTo(event: ModelTypes, id: string) {
+  private unSubscribeTo(event: ModelTypes, id: string) {
     delete this.subscriptions[event][id]
   }
   subscribeToUnreliable<T extends UnreliableResponses['type']>({
@@ -1830,8 +1828,10 @@ export class EngineCommandManager extends EventTarget {
     this.unreliableSubscriptions[event][localUnsubscribeId] = callback
     return () => this.unSubscribeToUnreliable(event, localUnsubscribeId)
   }
-  private
-  unSubscribeToUnreliable(event: UnreliableResponses['type'], id: string) {
+  private unSubscribeToUnreliable(
+    event: UnreliableResponses['type'],
+    id: string
+  ) {
     delete this.unreliableSubscriptions[event][id]
   }
   addCommandLog(message: CommandLog) {
@@ -1849,8 +1849,7 @@ export class EngineCommandManager extends EventTarget {
   registerCommandLogCallback(callback: (command: CommandLog[]) => void) {
     this._commandLogCallBack = callback
   }
-  async
-  sendSceneCommand(
+  async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<

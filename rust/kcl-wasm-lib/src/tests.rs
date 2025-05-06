@@ -21,8 +21,12 @@ pub async fn get_connection() -> Result<EngineCommandManager, JsValue> {
     };
 
     let mgr = EngineCommandManager::new();
-    // TODO: we should probably allow for setting the host as well.
-    mgr.start_from_wasm(&token).await?;
+    let mgr_clone = mgr.clone();
+
+    wasm_bindgen_futures::spawn_local(async move {
+        // TODO: we should probably allow for setting the host as well.
+        mgr_clone.start_from_wasm(&token).await.unwrap();
+    });
 
     // Return the JS object so the test can poke at it.
     Ok(mgr)
