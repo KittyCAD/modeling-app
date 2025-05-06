@@ -59,12 +59,7 @@ const ProgressBar = (props: { max: number; value: number }) => {
 
   return (
     <div
-      className="rounded w-full border-ml-black bg-ml-black"
-      style={{
-        height: 6,
-        borderWidth: '1px',
-        borderStyle: 'solid',
-      }}
+      className="h-1.5 rounded w-full border-ml-black bg-ml-black border"
     >
       <div
         data-testid="billing-remaining-progress-bar-inner"
