@@ -4,7 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
+use kcmc::websocket::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
