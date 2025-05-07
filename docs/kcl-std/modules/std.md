@@ -12,6 +12,7 @@ Contains frequently used constants, functions for interacting with the KittyCAD 
 ## Modules
 
 * [`array`](/docs/kcl-std/modules/std-array)
+* [`cutStrategy::cutStrategy`](/docs/kcl-std/modules/std-cutStrategy)
 * [`math`](/docs/kcl-std/modules/std-math)
 * [`sketch`](/docs/kcl-std/modules/std-sketch)
 * [`solid`](/docs/kcl-std/modules/std-solid)

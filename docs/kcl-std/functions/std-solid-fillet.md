@@ -14,6 +14,7 @@ fillet(
   tags: [Edge; 1+],
   tolerance?: number(Length),
   tag?: tag,
+  strategy?: string,
 ): Solid
 ```
 
@@ -30,6 +31,7 @@ will smoothly blend the transition.
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to fillet | Yes |
 | `tolerance` | `number(Length)` | The tolerance for this fillet | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this fillet | No |
+| `strategy` | [`string`](/docs/kcl-std/types/std-types-string) | Which strategy should be used to perform this chamfer? | No |
 
 ### Returns
 
