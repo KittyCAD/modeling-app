@@ -1,3 +1,5 @@
+import { VITE_KC_API_BASE_URL } from '@src/env'
+
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
@@ -16,6 +18,10 @@ import { createActor, setup, spawnChild } from 'xstate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
+import {
+  BILLING_CONTEXT_DEFAULTS,
+  billingMachine,
+} from '@src/machines/billingMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
@@ -110,13 +116,15 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
+  ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
   [COMMAND_BAR]: commandBarMachine,
+  [BILLING]: billingMachine,
 } as const
 
 const appMachine = setup({
@@ -155,6 +163,13 @@ const appMachine = setup({
       systemId: COMMAND_BAR,
       input: {
         commands: [],
+      },
+    }),
+    spawnChild(appMachineActors[BILLING], {
+      systemId: BILLING,
+      input: {
+        ...BILLING_CONTEXT_DEFAULTS,
+        urlUserService: VITE_KC_API_BASE_URL,
       },
     }),
   ],
@@ -207,6 +222,10 @@ export const engineStreamActor = appActor.system.get(
 
 export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
   (typeof appMachineActors)[typeof COMMAND_BAR]
+>
+
+export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
+  (typeof appMachineActors)[typeof BILLING]
 >
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>

@@ -1,5 +1,6 @@
 ---
-title: "std::math"
+title: "math"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---

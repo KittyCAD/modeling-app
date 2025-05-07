@@ -275,7 +275,7 @@ impl ExecState {
                     .mod_loader
                     .import_stack
                     .iter()
-                    .map(|p| p.as_path().to_string_lossy())
+                    .map(|p| p.to_string_lossy())
                     .collect::<Vec<_>>()
                     .join(" -> "),
                 path,

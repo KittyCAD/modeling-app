@@ -421,7 +421,7 @@ export function ToastTextToCadSuccess({
                   data: {
                     requestedProjectName: projectName,
                     requestedCode: code,
-                    requestedFileName: fileName,
+                    requestedFileNameWithExtension: fileName,
                   },
                 })
 

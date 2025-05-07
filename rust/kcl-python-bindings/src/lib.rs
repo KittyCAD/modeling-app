@@ -220,7 +220,7 @@ async fn get_code_and_file_path(path: &str) -> Result<(String, std::path::PathBu
 async fn new_context_state(current_file: Option<std::path::PathBuf>) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings: kcl_lib::ExecutorSettings = Default::default();
     if let Some(current_file) = current_file {
-        settings.with_current_file(current_file);
+        settings.with_current_file(kcl_lib::TypedPath(current_file));
     }
     let ctx = ExecutorContext::new_with_client(settings, None, None).await?;
     let state = kcl_lib::ExecState::new(&ctx);

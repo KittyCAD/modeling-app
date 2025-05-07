@@ -1,12 +1,11 @@
 ---
-title: "std::math::legAngX"
+title: "legAngX"
+subtitle: "Function in std::math"
 excerpt: "Compute the angle of the given leg for x."
 layout: manual
 ---
 
 Compute the angle of the given leg for x.
-
-
 
 ```kcl
 legAngX(
@@ -14,6 +13,8 @@ legAngX(
   leg: number,
 ): number
 ```
+
+
 
 ### Arguments
 

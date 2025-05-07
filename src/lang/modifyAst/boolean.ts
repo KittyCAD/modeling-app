@@ -211,6 +211,13 @@ export function findAllChildrenAndOrderByPlaceInCode(
       pushToSomething(currentId, current?.segIds)
     } else if (current?.type === 'sweep') {
       pushToSomething(currentId, current?.surfaceIds)
+      const path = artifactGraph.get(current.pathId)
+      if (path && path.type === 'path') {
+        const compositeSolidId = path.compositeSolidId
+        if (compositeSolidId) {
+          result.push(compositeSolidId)
+        }
+      }
     } else if (current?.type === 'wall' || current?.type === 'cap') {
       pushToSomething(currentId, current?.pathIds)
     } else if (current?.type === 'segment') {

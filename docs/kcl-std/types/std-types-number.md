@@ -1,5 +1,6 @@
 ---
 title: "number"
+subtitle: "Type in types"
 excerpt: "A number"
 layout: manual
 ---

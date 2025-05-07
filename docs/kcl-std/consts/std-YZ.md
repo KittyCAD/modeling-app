@@ -1,15 +1,16 @@
 ---
-title: "std::YZ"
+title: "YZ"
+subtitle: "Constant in prelude"
 excerpt: ""
 layout: manual
 ---
 
 
 
-
-
 ```kcl
-std::YZ
+YZ
 ```
+
+
 
 

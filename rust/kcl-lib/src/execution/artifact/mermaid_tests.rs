@@ -92,10 +92,14 @@ impl Artifact {
     /// the graph.
     pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
-            Artifact::CompositeSolid(_) => {
+            Artifact::CompositeSolid(a) => {
                 // Note: Don't include these since they're parents: solid_ids,
                 // tool_ids.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(composite_solid_id) = a.composite_solid_id {
+                    ids.push(composite_solid_id);
+                }
+                ids
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
@@ -106,6 +110,9 @@ impl Artifact {
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
                     ids.push(solid2d_id);
+                }
+                if let Some(composite_solid_id) = a.composite_solid_id {
+                    ids.push(composite_solid_id);
                 }
                 ids
             }

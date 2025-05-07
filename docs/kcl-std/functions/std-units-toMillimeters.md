@@ -1,16 +1,17 @@
 ---
-title: "std::units::toMillimeters"
+title: "units::toMillimeters"
+subtitle: "Function in units"
 excerpt: "Convert a number to millimeters from its current units."
 layout: manual
 ---
 
 Convert a number to millimeters from its current units.
 
-
-
 ```kcl
 units::toMillimeters(@num: number(mm)): number(mm)
 ```
+
+
 
 ### Arguments
 

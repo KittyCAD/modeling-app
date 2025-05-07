@@ -1,5 +1,6 @@
 ---
-title: "std::turns"
+title: "turns"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---
