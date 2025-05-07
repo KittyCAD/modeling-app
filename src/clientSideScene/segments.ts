@@ -307,7 +307,6 @@ class StraightSegment implements SegmentUtils {
         updateLine(snapLine, {
           from: snapLineFrom,
           to: [snapLineTo.x, snapLineTo.y],
-          scale,
         })
       }
     }
@@ -1076,7 +1075,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle,
-      scale,
       color: grey, // Red color for the angle indicator
     })
     angleIndicator.name = 'angleIndicator'
@@ -1087,7 +1085,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle: (endAngle * Math.PI) / 180,
-      scale,
       color: grey, // Green color for the end angle indicator
     })
     endAngleIndicator.name = 'endAngleIndicator'
@@ -1275,12 +1272,12 @@ class ArcSegment implements SegmentUtils {
 
     const centerToFromLine = group.getObjectByName(ARC_CENTER_TO_FROM) as Line
     if (centerToFromLine) {
-      updateLine(centerToFromLine, { from: center, to: from, scale })
+      updateLine(centerToFromLine, { from: center, to: from })
       centerToFromLine.visible = isHandlesVisible
     }
     const centerToToLine = group.getObjectByName(ARC_CENTER_TO_TO) as Line
     if (centerToToLine) {
-      updateLine(centerToToLine, { from: center, to, scale })
+      updateLine(centerToToLine, { from: center, to })
       centerToToLine.visible = isHandlesVisible
     }
     const angleReferenceLine = group.getObjectByName(
@@ -1290,7 +1287,6 @@ class ArcSegment implements SegmentUtils {
       updateLine(angleReferenceLine, {
         from: center,
         to: [center[0] + 34 * scale, center[1]],
-        scale,
       })
       angleReferenceLine.visible = isHandlesVisible
     }
@@ -2042,11 +2038,7 @@ function createLine({
 
 function updateLine(
   line: Line,
-  {
-    from,
-    to,
-    scale,
-  }: { from: [number, number]; to: [number, number]; scale: number }
+  { from, to }: { from: [number, number]; to: [number, number] }
 ) {
   // Implementation for updating a line
   const points = [
@@ -2061,14 +2053,12 @@ function createAngleIndicator({
   radius,
   startAngle,
   endAngle,
-  scale,
   color,
 }: {
   center: [number, number]
   radius: number
   startAngle: number
   endAngle: number
-  scale: number
   color: number
 }): Line {
   // Implementation for creating an angle indicator
