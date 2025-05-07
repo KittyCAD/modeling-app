@@ -1,6 +1,6 @@
 ---
 title: "number"
-subtitle: "Type in types"
+subtitle: "Type in std::types"
 excerpt: "A number"
 layout: manual
 ---

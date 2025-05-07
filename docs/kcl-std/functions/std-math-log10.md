@@ -1,6 +1,6 @@
 ---
 title: "log10"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the base 10 logarithm of the number."
 layout: manual
 ---

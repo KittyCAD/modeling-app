@@ -1,6 +1,6 @@
 ---
 title: "log"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the logarithm of the number with respect to an arbitrary base."
 layout: manual
 ---

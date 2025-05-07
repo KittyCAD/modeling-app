@@ -1,6 +1,6 @@
 ---
-title: "prelude"
-subtitle: "Module in "
+title: "std"
+subtitle: "Module in std::"
 excerpt: "The KCL standard library "
 layout: manual
 ---

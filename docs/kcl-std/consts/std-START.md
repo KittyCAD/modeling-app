@@ -1,6 +1,6 @@
 ---
 title: "START"
-subtitle: "Constant in prelude"
+subtitle: "Constant in std"
 excerpt: "Identifies the starting face of an extrusion. I.e., the face which is extruded."
 layout: manual
 ---

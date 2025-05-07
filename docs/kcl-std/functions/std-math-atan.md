@@ -1,6 +1,6 @@
 ---
 title: "atan"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the arctangent of a number."
 layout: manual
 ---

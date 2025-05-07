@@ -1,6 +1,6 @@
 ---
 title: "any"
-subtitle: "Type in types"
+subtitle: "Type in std::types"
 excerpt: "Any value."
 layout: manual
 ---

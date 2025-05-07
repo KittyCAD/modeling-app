@@ -273,7 +273,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let data = json!({
         "name": ty.preferred_name,
-        "module": ty.module_name,
+        "module": mod_name_std(&ty.module_name),
         "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
         "summary": ty.summary,
         "description": ty.description,
@@ -316,7 +316,7 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
 
     let data = json!({
         "name": m.name,
-        "module": m.module_name,
+        "module": mod_name_std(&m.module_name),
         "summary": m.summary,
         "description": m.description,
         "modules": modules,
@@ -328,6 +328,15 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
+}
+
+fn mod_name_std(name: &str) -> String {
+    assert_ne!(name, "prelude");
+    if name == "std" {
+        name.to_owned()
+    } else {
+        format!("std::{name}")
+    }
 }
 
 fn generate_function_from_kcl(
@@ -351,7 +360,7 @@ fn generate_function_from_kcl(
 
     let data = json!({
         "name": function.preferred_name,
-        "module": function.module_name,
+        "module": mod_name_std(&function.module_name),
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
@@ -395,7 +404,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
 
     let data = json!({
         "name": cnst.preferred_name,
-        "module": cnst.module_name,
+        "module": mod_name_std(&cnst.module_name),
         "summary": cnst.summary,
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,

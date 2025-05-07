@@ -1,6 +1,6 @@
 ---
 title: "turns::QUARTER_TURN"
-subtitle: "Constant in turns"
+subtitle: "Constant in std::turns"
 excerpt: ""
 layout: manual
 ---
