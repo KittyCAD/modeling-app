@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{path::PathBuf, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
@@ -35,6 +35,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
+        typed_path::TypedPath,
         types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
@@ -59,6 +60,7 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub mod typed_path;
 pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
@@ -287,10 +289,10 @@ pub struct ExecutorSettings {
     pub replay: Option<String>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
-    pub project_directory: Option<PathBuf>,
+    pub project_directory: Option<TypedPath>,
     /// This is the path to the current file being executed.
     /// We use this for preventing cyclic imports.
-    pub current_file: Option<PathBuf>,
+    pub current_file: Option<TypedPath>,
 }
 
 impl Default for ExecutorSettings {
@@ -360,15 +362,15 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
 
 impl ExecutorSettings {
     /// Add the current file path to the executor settings.
-    pub fn with_current_file(&mut self, current_file: PathBuf) {
+    pub fn with_current_file(&mut self, current_file: TypedPath) {
         // We want the parent directory of the file.
-        if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
+        if current_file.extension() == Some("kcl") {
             self.current_file = Some(current_file.clone());
             // Get the parent directory.
             if let Some(parent) = current_file.parent() {
-                self.project_directory = Some(parent.to_path_buf());
+                self.project_directory = Some(parent);
             } else {
-                self.project_directory = Some(std::path::PathBuf::from(""));
+                self.project_directory = Some(TypedPath::from(""));
             }
         } else {
             self.project_directory = Some(current_file.clone());
@@ -856,7 +858,7 @@ impl ExecutorContext {
                         if universe_map.contains_key(value) {
                             exec_state.global.operations.push(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
-                                    name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                                    name: value.file_name().unwrap_or_default(),
                                     module_id,
                                 },
                                 source_range,

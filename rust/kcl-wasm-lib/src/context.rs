@@ -45,11 +45,12 @@ impl Context {
         settings: &str,
         path: Option<String>,
         is_mock: bool,
+        is_windows: bool,
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
-        if let Some(path) = path {
-            settings.with_current_file(std::path::PathBuf::from(path));
+        if let Some(path_src) = path {
+            settings.with_current_file(typed_path::TypedPath::derive(&path_src));
         }
 
         if is_mock {
@@ -74,12 +75,13 @@ impl Context {
         program_ast_json: &str,
         path: Option<String>,
         settings: &str,
+        is_windows: bool,
     ) -> Result<JsValue, String> {
         console_error_panic_hook::set_once();
 
         let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
 
-        let ctx = self.create_executor_ctx(settings, path, false)?;
+        let ctx = self.create_executor_ctx(settings, path, false, is_windows)?;
         match ctx.run_with_caching(program).await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.
             // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
@@ -117,12 +119,13 @@ impl Context {
         path: Option<String>,
         settings: &str,
         use_prev_memory: bool,
+        is_windows: bool,
     ) -> Result<JsValue, String> {
         console_error_panic_hook::set_once();
 
         let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
 
-        let ctx = self.create_executor_ctx(settings, path, true)?;
+        let ctx = self.create_executor_ctx(settings, path, true, is_windows)?;
         match ctx.run_mock(program, use_prev_memory).await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.
             // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.

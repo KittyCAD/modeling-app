@@ -5,6 +5,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
+    execution::typed_path::TypedPath,
     fs::FileSystem,
     wasm::JsFuture,
     SourceRange,
@@ -44,30 +45,13 @@ unsafe impl Sync for FileManager {}
 
 #[async_trait::async_trait]
 impl FileSystem for FileManager {
-    async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<Vec<u8>, KclError> {
-        let promise = self
-            .manager
-            .read_file(
-                path.as_ref()
-                    .to_str()
-                    .ok_or_else(|| {
-                        KclError::Engine(KclErrorDetails {
-                            message: "Failed to convert path to string".to_string(),
-                            source_ranges: vec![source_range],
-                        })
-                    })?
-                    .to_string(),
-            )
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+    async fn read(&self, path: &TypedPath, source_range: SourceRange) -> Result<Vec<u8>, KclError> {
+        let promise = self.manager.read_file(path.to_string_lossy()).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -82,11 +66,7 @@ impl FileSystem for FileManager {
         Ok(bytes)
     }
 
-    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<String, KclError> {
+    async fn read_to_string(&self, path: &TypedPath, source_range: SourceRange) -> Result<String, KclError> {
         let bytes = self.read(path, source_range).await?;
         let string = String::from_utf8(bytes).map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -98,30 +78,13 @@ impl FileSystem for FileManager {
         Ok(string)
     }
 
-    async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<bool, crate::errors::KclError> {
-        let promise = self
-            .manager
-            .exists(
-                path.as_ref()
-                    .to_str()
-                    .ok_or_else(|| {
-                        KclError::Engine(KclErrorDetails {
-                            message: "Failed to convert path to string".to_string(),
-                            source_ranges: vec![source_range],
-                        })
-                    })?
-                    .to_string(),
-            )
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+    async fn exists(&self, path: &TypedPath, source_range: SourceRange) -> Result<bool, crate::errors::KclError> {
+        let promise = self.manager.exists(path.to_string_lossy()).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -140,30 +103,17 @@ impl FileSystem for FileManager {
         Ok(it_exists)
     }
 
-    async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+    async fn get_all_files(
         &self,
-        path: P,
+        path: &TypedPath,
         source_range: SourceRange,
-    ) -> Result<Vec<std::path::PathBuf>, crate::errors::KclError> {
-        let promise = self
-            .manager
-            .get_all_files(
-                path.as_ref()
-                    .to_str()
-                    .ok_or_else(|| {
-                        KclError::Engine(KclErrorDetails {
-                            message: "Failed to convert path to string".to_string(),
-                            source_ranges: vec![source_range],
-                        })
-                    })?
-                    .to_string(),
-            )
-            .map_err(|e| {
-                KclError::Engine(KclErrorDetails {
-                    message: e.to_string().into(),
-                    source_ranges: vec![source_range],
-                })
-            })?;
+    ) -> Result<Vec<TypedPath>, crate::errors::KclError> {
+        let promise = self.manager.get_all_files(path.to_string_lossy()).map_err(|e| {
+            KclError::Engine(KclErrorDetails {
+                message: e.to_string().into(),
+                source_ranges: vec![source_range],
+            })
+        })?;
 
         let value = JsFuture::from(promise).await.map_err(|e| {
             KclError::Engine(KclErrorDetails {
@@ -186,6 +136,6 @@ impl FileSystem for FileManager {
             })
         })?;
 
-        Ok(files.into_iter().map(std::path::PathBuf::from).collect())
+        Ok(files.into_iter().map(|s| TypedPath::from(&s)).collect())
     }
 }

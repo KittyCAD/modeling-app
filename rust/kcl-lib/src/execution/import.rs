@@ -1,4 +1,4 @@
-use std::{ffi::OsStr, path::Path, str::FromStr};
+use std::str::FromStr;
 
 use anyhow::Result;
 use kcmc::{
@@ -15,7 +15,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{annotations, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
+    execution::{annotations, typed_path::TypedPath, types::UnitLen, ExecState, ExecutorContext, ImportedGeometry},
     fs::FileSystem,
     parsing::ast::types::{Annotation, Node},
     source_range::SourceRange,
@@ -29,7 +29,7 @@ use crate::{
 pub const ZOO_COORD_SYSTEM: System = *KITTYCAD;
 
 pub async fn import_foreign(
-    file_path: &Path,
+    file_path: &TypedPath,
     format: Option<InputFormat3d>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
@@ -43,19 +43,18 @@ pub async fn import_foreign(
         }));
     }
 
-    let ext_format =
-        get_import_format_from_extension(file_path.extension().and_then(OsStr::to_str).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("No file extension found for `{}`", file_path.display()),
-                source_ranges: vec![source_range],
-            })
-        })?)
-        .map_err(|e| {
-            KclError::Semantic(KclErrorDetails {
-                message: e.to_string(),
-                source_ranges: vec![source_range],
-            })
-        })?;
+    let ext_format = get_import_format_from_extension(file_path.extension().ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("No file extension found for `{}`", file_path.display()),
+            source_ranges: vec![source_range],
+        })
+    })?)
+    .map_err(|e| {
+        KclError::Semantic(KclErrorDetails {
+            message: e.to_string(),
+            source_ranges: vec![source_range],
+        })
+    })?;
 
     // Get the format type from the extension of the file.
     let format = if let Some(format) = format {
@@ -80,15 +79,12 @@ pub async fn import_foreign(
     })?;
 
     // We want the file_path to be without the parent.
-    let file_name = std::path::Path::new(&file_path)
-        .file_name()
-        .map(|p| p.to_string_lossy().to_string())
-        .ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
-                message: format!("Could not get the file name from the path `{}`", file_path.display()),
-                source_ranges: vec![source_range],
-            })
-        })?;
+    let file_name = file_path.file_name().map(|p| p.to_string()).ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("Could not get the file name from the path `{}`", file_path.display()),
+            source_ranges: vec![source_range],
+        })
+    })?;
     let mut import_files = vec![kcmc::ImportFile {
         path: file_name.to_string(),
         data: file_contents.clone(),
@@ -112,19 +108,12 @@ pub async fn import_foreign(
                 if let Some(uri) = &buffer.uri {
                     if !uri.starts_with("data:") {
                         // We want this path relative to the file_path given.
-                        let bin_path = std::path::Path::new(&file_path)
-                            .parent()
-                            .map(|p| p.join(uri))
-                            .map(|p| p.to_string_lossy().to_string())
-                            .ok_or_else(|| {
-                                KclError::Semantic(KclErrorDetails {
-                                    message: format!(
-                                        "Could not get the parent path of the file `{}`",
-                                        file_path.display()
-                                    ),
-                                    source_ranges: vec![source_range],
-                                })
-                            })?;
+                        let bin_path = file_path.parent().map(|p| p.join(uri)).ok_or_else(|| {
+                            KclError::Semantic(KclErrorDetails {
+                                message: format!("Could not get the parent path of the file `{}`", file_path.display()),
+                                source_ranges: vec![source_range],
+                            })
+                        })?;
 
                         let bin_contents = ctxt.fs.read(&bin_path, source_range).await.map_err(|e| {
                             KclError::Semantic(KclErrorDetails {
@@ -154,7 +143,7 @@ pub async fn import_foreign(
 
 pub(super) fn format_from_annotations(
     annotations: &[Node<Annotation>],
-    path: &Path,
+    path: &TypedPath,
     import_source_range: SourceRange,
 ) -> Result<Option<InputFormat3d>, KclError> {
     if annotations.is_empty() {
@@ -184,7 +173,6 @@ pub(super) fn format_from_annotations(
     let mut result = result
         .or_else(|| {
             path.extension()
-                .and_then(OsStr::to_str)
                 .and_then(|ext| get_import_format_from_extension(ext).ok())
         })
         .ok_or(KclError::Semantic(KclErrorDetails {
