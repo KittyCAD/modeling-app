@@ -51,9 +51,7 @@ function angledLine(
  *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
  *  |> close()
  */
-export const getRectangleCallExpressions = (
-  tag: string
-) => {
+export const getRectangleCallExpressions = (tag: string) => {
   return [
     angledLine(
       createLiteral(0), // 0 deg

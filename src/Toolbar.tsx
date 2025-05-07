@@ -142,9 +142,7 @@ export function Toolbar({
       } else if (isToolbarDropdown(maybeIconConfig)) {
         return {
           id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item)
-          ),
+          array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
         }
       } else {
         return resolveItemConfig(maybeIconConfig)
