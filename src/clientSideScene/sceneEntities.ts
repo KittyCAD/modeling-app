@@ -924,8 +924,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArc' = 'line',
-    shouldTearDown = true
+    segmentName: 'line' | 'tangentialArc' = 'line'
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
 
