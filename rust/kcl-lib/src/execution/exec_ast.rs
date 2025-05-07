@@ -2235,9 +2235,10 @@ mod test {
 
     use super::*;
     use crate::{
+        exec::UnitType,
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
-        ExecutorSettings,
+        ExecutorSettings, UnitLen,
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2391,6 +2392,7 @@ p = {
   yAxis = { x = 0, y = 1, z = 0 },
   zAxis = { x = 0, y = 0, z = 1 }
 }: Plane
+arr1 = [42]: [number(cm)]
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -2401,6 +2403,24 @@ p = {
                 .unwrap(),
             KclValue::Plane { .. }
         ));
+        let arr1 = mem
+            .memory
+            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        if let KclValue::HomArray { value, ty } = arr1 {
+            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {:?}", value);
+            assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
+            // Compare, ignoring meta.
+            if let KclValue::Number { value, ty, .. } = &value[0] {
+                // Converted from mm to cm.
+                assert_eq!(*value, 4.2);
+                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
+            } else {
+                panic!("Expected a number; found {:?}", value[0]);
+            }
+        } else {
+            panic!("Expected HomArray; found {arr1:?}");
+        }
 
         let program = r#"
 a = 42: string
@@ -2419,6 +2439,28 @@ a = 42: Plane
             .unwrap_err()
             .to_string()
             .contains("could not coerce number value to type Plane"));
+
+        let program = r#"
+arr = [0]: [string]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [string]"),
+            "Expected error but found {err:?}"
+        );
+
+        let program = r#"
+mixedArr = [0, "a"]: [number(mm)]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [number(mm)]"),
+            "Expected error but found {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
