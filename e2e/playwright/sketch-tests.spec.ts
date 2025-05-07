@@ -600,7 +600,7 @@ sketch001 = startSketchOn(XZ)
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: startPX[0], y: startPX[1] },
       targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
@@ -3165,7 +3165,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 100)
     await click00r(100, 0)
 
-    // draw a line to opposite tangnet direction of previous arc
+    // draw a line to opposite tangent direction of previous arc
     await toolbar.selectLine()
     await click00r(0, 0)
     await click00r(-200, 200)
@@ -3457,7 +3457,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     // wait for scene to load
     await scene.settled(cmdBar)
 
-    await test.step('check chamfer selection changes cursor positon', async () => {
+    await test.step('check chamfer selection changes cursor position', async () => {
       await expect(async () => {
         // sometimes initial click doesn't register
         await objClick()

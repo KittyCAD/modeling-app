@@ -289,14 +289,14 @@ export function createNamedViewsCommand() {
             },
           })
 
-          const isPerpsective = !engineViewData.is_ortho
+          const isPerspective = !engineViewData.is_ortho
 
           // Update the GUI for orthographic and projection
           settingsActor.send({
             type: 'set.modeling.cameraProjection',
             data: {
               level: 'user',
-              value: isPerpsective ? 'perspective' : 'orthographic',
+              value: isPerspective ? 'perspective' : 'orthographic',
             },
           })
 

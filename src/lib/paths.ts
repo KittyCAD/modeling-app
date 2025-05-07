@@ -198,8 +198,3 @@ export function desktopSafePathSplit(path: string): string[] {
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
 }
-
-export function localModuleSafePathSplit(path: string) {
-  const modulePathSafeSep = '/'
-  return path.split(modulePathSafeSep)
-}

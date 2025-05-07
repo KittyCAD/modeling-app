@@ -1355,7 +1355,7 @@ sketch001 = startSketchOn(XZ)
       const projectLink = page.getByRole('link', { name: 'cube' })
       const gizmo = page.locator('[aria-label*=gizmo]')
       const resetCameraButton = page.getByRole('button', { name: 'Reset view' })
-      const locationToHavColor = async (
+      const locationToHaveColor = async (
         position: { x: number; y: number },
         color: [number, number, number]
       ) => {
@@ -1374,7 +1374,7 @@ sketch001 = startSketchOn(XZ)
         await expect
           .poll(
             async () =>
-              locationToHavColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
+              locationToHaveColor(notTheOrigin, TEST_COLORS.DARK_MODE_PLANE_XZ),
             {
               timeout: 5000,
               message: 'XZ plane color is visible',
@@ -1397,7 +1397,7 @@ sketch001 = startSketchOn(XZ)
         await expect
           .poll(
             async () =>
-              locationToHavColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
+              locationToHaveColor(origin, TEST_COLORS.DARK_MODE_PLANE_XZ),
             {
               timeout: 3000,
               message: 'Plane color should not be visible',
@@ -1406,7 +1406,7 @@ sketch001 = startSketchOn(XZ)
           .toBeGreaterThan(15)
         await expect
           .poll(
-            async () => locationToHavColor(origin, TEST_COLORS.DARK_MODE_BKGD),
+            async () => locationToHaveColor(origin, TEST_COLORS.DARK_MODE_BKGD),
             {
               timeout: 3000,
               message: 'Background color should not be visible',

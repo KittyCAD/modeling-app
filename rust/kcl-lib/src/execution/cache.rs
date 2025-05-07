@@ -489,7 +489,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+    async fn test_get_changed_program_same_code_but_different_edge_visibility_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])

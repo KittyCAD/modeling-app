@@ -370,7 +370,7 @@ test.describe('Testing Camera Movement', () => {
     })
     const userSettingsTab = page.getByRole('radio', { name: 'User' })
     const mouseControlsSetting = () => page.locator('#camera-controls').first()
-    const mouseControlSuccesToast = page.getByText(
+    const mouseControlSuccessToast = page.getByText(
       'Set mouse controls to "Solidworks"'
     )
     const settingsCloseButton = page.getByTestId('settings-close-button')
@@ -407,7 +407,7 @@ test.describe('Testing Camera Movement', () => {
           'Solidworks',
           { timeout: 120_000 }
         )
-        await expect(mouseControlSuccesToast).toBeVisible()
+        await expect(mouseControlSuccessToast).toBeVisible()
         await settingsCloseButton.click()
       })
     })

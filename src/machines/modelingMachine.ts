@@ -807,18 +807,6 @@ export const modelingMachine = setup({
         sketchDetails: event.output,
       }
     }),
-    'set selection filter to curves only': () => {
-      ;(async () => {
-        await engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'set_selection_filter',
-            filter: ['curve'],
-          },
-        })
-      })().catch(reportRejection)
-    },
     'tear down client sketch': () => {
       sceneEntitiesManager.tearDownSketch({ removeAxis: false })
     },
@@ -2232,7 +2220,7 @@ export const modelingMachine = setup({
             return new Error('Bad artifact from selection')
           }
 
-          // Check on the selection, and handle the wall vs cap casees
+          // Check on the selection, and handle the wall vs cap cases
           let expr: Expr
           if (selectedArtifact.type === 'cap') {
             expr = createLiteral(selectedArtifact.subType)
@@ -3130,7 +3118,7 @@ export const modelingMachine = setup({
             'Artifact graph emptied': 'hidePlanes',
           },
 
-          entry: ['show default planes', 'set selection filter to curves only'],
+          entry: ['show default planes'],
           description: `We want to disable selections and hover highlights here, because users can't do anything with that information until they actually add something to the scene. The planes are just for orientation here.`,
           exit: 'set selection filter to defaults',
         },

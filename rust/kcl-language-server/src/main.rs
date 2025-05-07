@@ -85,7 +85,7 @@ async fn main() -> Result<()> {
     };
 
     // Format fields using the provided closure.
-    // We want to make this very consise otherwise the logs are not able to be read by humans.
+    // We want to make this very concise otherwise the logs are not able to be read by humans.
     let format = tracing_subscriber::fmt::format::debug_fn(|writer, field, value| {
         if format!("{}", field) == "message" {
             write!(writer, "{}: {:?}", field, value)
