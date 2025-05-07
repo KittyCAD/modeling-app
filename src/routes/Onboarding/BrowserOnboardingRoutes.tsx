@@ -11,7 +11,7 @@ import {
   useOnboardingHighlight,
   useOnboardingPanes,
   useOnModelingCmdGroupReadyOnce,
-} from './utils'
+} from '@src/routes/Onboarding/utils'
 import { Spinner } from '@src/components/Spinner'
 import {
   ONBOARDING_PROJECT_NAME,
@@ -65,7 +65,7 @@ function Welcome() {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: BROWSER_PROJECT_NAME,
-        requestedFileName: PROJECT_ENTRYPOINT,
+        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
         requestedCode: '',
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING,
@@ -243,7 +243,7 @@ function FeatureTreePane() {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: BROWSER_PROJECT_NAME,
-        requestedFileName: PROJECT_ENTRYPOINT,
+        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
         requestedCode: '// Whatever who cares',
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING,

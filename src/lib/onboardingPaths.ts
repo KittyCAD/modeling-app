@@ -1,5 +1,5 @@
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { isDesktop } from './isDesktop'
+import { isDesktop } from '@src/lib/isDesktop'
 
 export type OnboardingPath = OnboardingStatus & `/${string}`
 export type DesktopOnboardingPath = OnboardingPath & `/desktop${string}`

@@ -1,10 +1,9 @@
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Outlet } from 'react-router-dom'
 import { useDismiss } from '@src/routes/Onboarding/utils'
-import { browserOnboardingRoutes } from './BrowserOnboardingRoutes'
-import { desktopOnboardingRoutes } from './DesktopOnboardingRoutes'
+import { browserOnboardingRoutes } from '@src/routes/Onboarding/BrowserOnboardingRoutes'
+import { desktopOnboardingRoutes } from '@src/routes/Onboarding/DesktopOnboardingRoutes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
-import { useEffect } from 'react'
 
 /** Compile the onboarding routes into one object
  *  for use in the Router.

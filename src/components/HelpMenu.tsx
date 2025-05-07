@@ -13,7 +13,7 @@ import {
   acceptOnboarding,
   catchOnboardingWarnError,
 } from '@src/routes/Onboarding/utils'
-import { onboardingPaths, onboardingStartPath } from '@src/lib/onboardingPaths'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />

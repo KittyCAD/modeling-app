@@ -11,7 +11,7 @@ import {
   useOnboardingHighlight,
   useOnboardingPanes,
   useOnModelingCmdGroupReadyOnce,
-} from './utils'
+} from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
 import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -109,7 +109,7 @@ function Scene() {
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName,
-        requestedFileName: 'blank.kcl',
+        requestedFileNameWithExtension: 'blank.kcl',
         requestedCode: '',
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING,
@@ -260,7 +260,7 @@ function FeatureTreePane() {
       data: {
         requestedProjectName:
           loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
-        requestedFileName: generatedFileName,
+        requestedFileNameWithExtension: generatedFileName,
         requestedCode: '// Whatever who cares',
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING,

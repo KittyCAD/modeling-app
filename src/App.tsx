@@ -98,10 +98,6 @@ export function App() {
   const settings = useSettings()
   const authToken = useToken()
 
-  const {
-    app: { onboardingStatus },
-  } = settings
-
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
