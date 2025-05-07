@@ -994,9 +994,9 @@ impl KclValue {
         self_ty.subtype(ty)
     }
 
-    /// Coerce `self` to a new value which has `ty` as it's closest supertype.
+    /// Coerce `self` to a new value which has `ty` as its closest supertype.
     ///
-    /// If the result is Some, then:
+    /// If the result is Ok, then:
     ///   - result.principal_type().unwrap().subtype(ty)
     ///
     /// If self.principal_type() == ty then result == self
