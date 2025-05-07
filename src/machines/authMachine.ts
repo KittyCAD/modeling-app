@@ -43,7 +43,7 @@ const LOCAL_USER: Models['User_type'] = {
 
 export interface UserContext {
   user?: Models['User_type']
-  token?: string
+  token: string
 }
 
 export type Events =
