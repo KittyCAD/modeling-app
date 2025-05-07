@@ -37,7 +37,7 @@ type BrowserOnboaringRoute = RouteObject & {
  * This is the mapping between browser onboarding paths and the components that will be rendered.
  * All components are defined below in this file.
  *
- * Browser onboarding content is completely seperate from desktop onboarding content.
+ * Browser onboarding content is completely separate from desktop onboarding content.
  */
 const browserOnboardingComponents: Record<BrowserOnboardingPath, JSX.Element> =
   {
@@ -69,7 +69,7 @@ function Welcome() {
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
         requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
-          PATHS.ONBOARDING,
+          String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
@@ -110,7 +110,7 @@ function Scene() {
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
         requestedCode: '',
         requestedSubRoute: joinRouterPaths(
-          PATHS.ONBOARDING,
+          String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
@@ -264,7 +264,7 @@ function FeatureTreePane() {
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
         requestedCode: '// Whatever who cares',
         requestedSubRoute: joinRouterPaths(
-          PATHS.ONBOARDING,
+          String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
@@ -418,7 +418,7 @@ function PromptToEditResult() {
           loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
         requestedFileName: 'main.kcl',
         requestedSubRoute: joinRouterPaths(
-          PATHS.ONBOARDING,
+          String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
