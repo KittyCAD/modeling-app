@@ -1,6 +1,6 @@
 ---
 title: "hollow"
-subtitle: "Function in solid"
+subtitle: "Function in std::solid"
 excerpt: "Make the inside of a 3D object hollow."
 layout: manual
 ---

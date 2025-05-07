@@ -1,6 +1,6 @@
 ---
 title: "turns::ZERO"
-subtitle: "Constant in turns"
+subtitle: "Constant in std::turns"
 excerpt: ""
 layout: manual
 ---

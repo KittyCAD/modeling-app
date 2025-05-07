@@ -1,6 +1,6 @@
 ---
 title: "sqrt"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the square root of a number."
 layout: manual
 ---

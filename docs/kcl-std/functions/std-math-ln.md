@@ -1,6 +1,6 @@
 ---
 title: "ln"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the natural logarithm of the number."
 layout: manual
 ---

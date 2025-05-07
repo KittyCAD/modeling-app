@@ -1,6 +1,6 @@
 ---
 title: "Solid"
-subtitle: "Type in types"
+subtitle: "Type in std::types"
 excerpt: "A solid is a collection of extrude surfaces."
 layout: manual
 ---

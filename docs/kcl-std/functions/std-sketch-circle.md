@@ -1,6 +1,6 @@
 ---
 title: "circle"
-subtitle: "Function in sketch"
+subtitle: "Function in std::sketch"
 excerpt: ""
 layout: manual
 ---

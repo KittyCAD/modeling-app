@@ -1,6 +1,6 @@
 ---
 title: "atan2"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the four quadrant arctangent of Y and X."
 layout: manual
 ---

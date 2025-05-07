@@ -1,6 +1,6 @@
 ---
 title: "units::toCentimeters"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to centimeters from its current units."
 layout: manual
 ---

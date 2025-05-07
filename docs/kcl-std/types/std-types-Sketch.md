@@ -1,6 +1,6 @@
 ---
 title: "Sketch"
-subtitle: "Type in types"
+subtitle: "Type in std::types"
 excerpt: "A sketch is a collection of paths."
 layout: manual
 ---

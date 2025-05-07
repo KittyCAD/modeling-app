@@ -1,6 +1,6 @@
 ---
 title: "min"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the minimum of the given arguments."
 layout: manual
 ---

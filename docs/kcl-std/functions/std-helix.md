@@ -1,6 +1,6 @@
 ---
 title: "helix"
-subtitle: "Function in prelude"
+subtitle: "Function in std"
 excerpt: "Create a helix."
 layout: manual
 ---

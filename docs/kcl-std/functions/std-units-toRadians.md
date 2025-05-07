@@ -1,6 +1,6 @@
 ---
 title: "units::toRadians"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Converts a number to radians from its current units."
 layout: manual
 ---

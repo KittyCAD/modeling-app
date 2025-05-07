@@ -1,6 +1,6 @@
 ---
 title: "chamfer"
-subtitle: "Function in solid"
+subtitle: "Function in std::solid"
 excerpt: "Cut a straight transitional edge along a tagged path."
 layout: manual
 ---

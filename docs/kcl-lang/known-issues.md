@@ -1,5 +1,5 @@
 ---
-title: "KCL Known Issues"
+title: "Known Issues"
 excerpt: "Known issues with the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---

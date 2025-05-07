@@ -1,6 +1,6 @@
 ---
 title: "asin"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the arcsine of a number."
 layout: manual
 ---
