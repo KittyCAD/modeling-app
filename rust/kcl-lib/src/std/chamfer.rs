@@ -58,7 +58,10 @@ async fn inner_chamfer(
         args.batch_end_cmd(
             id,
             ModelingCmd::from(mcmd::Solid3dFilletEdge {
-                edge_id,
+                edge_id: None,
+                edge_ids: vec![edge_id],
+                extra_face_ids: vec![],
+                strategy: Default::default(),
                 object_id: solid.id,
                 radius: LengthUnit(length.to_mm()),
                 tolerance: LengthUnit(DEFAULT_TOLERANCE), // We can let the user set this in the future.

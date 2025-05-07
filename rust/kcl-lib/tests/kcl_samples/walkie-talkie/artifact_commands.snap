@@ -641,10 +641,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 8.254999999999999,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -653,10 +658,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 8.254999999999999,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -665,10 +675,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 8.254999999999999,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -677,10 +692,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 8.254999999999999,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -40241,10 +40261,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -40253,10 +40278,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -40265,10 +40295,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -40277,10 +40312,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42256,10 +42296,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42268,10 +42313,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42280,10 +42330,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42292,10 +42347,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42304,10 +42364,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42316,10 +42381,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42328,10 +42398,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -42340,10 +42415,15 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 1.27,
       "tolerance": 0.0000001,
-      "cut_type": "chamfer"
+      "cut_type": "chamfer",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
