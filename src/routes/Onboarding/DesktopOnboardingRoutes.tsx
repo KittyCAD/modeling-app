@@ -550,16 +550,17 @@ function Imports() {
   return (
     <div className="fixed inset-0 z-50 p-16 flex flex-col gap-8 items-center">
       <OnboardingCard>
-        <h1 className="text-xl font-bold">Import</h1>
+        <h1 className="text-xl font-bold">Add file(s) to project</h1>
         <p className="my-4">
-          Import (Add file to project) is available in the left sidebar. Use it
-          to bring files into your project into the current file.
+          "Add file(s) to project" is available in the left sidebar. Use it to
+          bring files into your project, whether from the sample library or from
+          your local drive.
         </p>
-        <h1 className="text-xl font-bold">Insert</h1>
+        <h1 className="text-xl font-bold">Insert parts</h1>
         <p className="my-4">
-          Once a file has been imported, you can add it to the scene using
-          insert. Insert is available in the toolbar. This is the first step to
-          making assemblies!
+          Once a file has been added to your project, you can add it to the
+          scene using insert. Insert is available in the toolbar. This is the
+          first step to making assemblies!
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
