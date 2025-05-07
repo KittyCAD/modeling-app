@@ -6,12 +6,10 @@ import {
   useLoaderData,
   useLocation,
   useNavigate,
-  useRouteLoaderData,
   useSearchParams,
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
-import { useEngineCommands } from '@src/components/EngineCommands'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { LowerRightControls } from '@src/components/LowerRightControls'
@@ -22,11 +20,9 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
-import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
 import {
   billingActor,
   sceneInfra,
@@ -85,10 +81,6 @@ export function App() {
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
-  const [commands] = useEngineCommands()
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const lastCommandType = commands[commands.length - 1]?.type
-
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
@@ -126,32 +118,6 @@ export function App() {
     : ''
 
   useEngineConnectionSubscriptions()
-
-  // Generate thumbnail.png when loading the app
-  useEffect(() => {
-    console.log(`command:${lastCommandType}`)
-    if (isDesktop() && lastCommandType === 'execution-done') {
-      setTimeout(() => {
-        const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
-        if (!projectDirectoryWithoutEndingSlash) {
-          return
-        }
-        const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
-        // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-        writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-          .then(() => {
-            toast.success(`made thumbnail${projectDirectoryWithoutEndingSlash}`)
-          })
-          .catch((e) => {
-            toast.error('no thumbnail')
-            console.error(
-              `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
-            )
-            console.error(e)
-          })
-      }, 500)
-    }
-  }, [lastCommandType, loaderData?.project?.path])
 
   useEffect(() => {
     // Not too useful for regular flows but on modeling view refresh,
