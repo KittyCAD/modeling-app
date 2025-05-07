@@ -1256,7 +1256,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
 
     const code = recast(_ast)
@@ -1465,7 +1465,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
     __recastAst = parse(code)

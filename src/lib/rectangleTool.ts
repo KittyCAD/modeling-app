@@ -52,7 +52,6 @@ function angledLine(
  *  |> close()
  */
 export const getRectangleCallExpressions = (
-  rectangleOrigin: [number, number],
   tag: string
 ) => {
   return [
