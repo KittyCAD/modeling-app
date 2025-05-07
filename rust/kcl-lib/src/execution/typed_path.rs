@@ -172,7 +172,7 @@ impl ts_rs::TS for TypedPath {
     type WithoutGenerics = Self;
 
     fn name() -> String {
-        "TypedPath".to_string()
+        "string".to_string()
     }
 
     fn decl() -> String {
