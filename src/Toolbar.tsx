@@ -143,7 +143,7 @@ export function Toolbar({
         return {
           id: maybeIconConfig.id,
           array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item, maybeIconConfig.id)
+            resolveItemConfig(item)
           ),
         }
       } else {
@@ -152,8 +152,7 @@ export function Toolbar({
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem,
-      dropdownId?: string
+      maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
       const isConfiguredAvailable = ['available', 'experimental'].includes(
         maybeIconConfig.status
