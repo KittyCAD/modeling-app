@@ -13,7 +13,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
-import { bracket } from '@src/lib/exampleKcl'
+import { browserAxialFan } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {
@@ -79,7 +79,7 @@ export function useDemoCode() {
   useEffect(() => {
     async function setCodeToDemoIfNeeded() {
       // Don't run if the editor isn't loaded or the code is already the bracket
-      if (!editorManager.editorView || codeManager.code === bracket) {
+      if (!editorManager.editorView || codeManager.code === browserAxialFan) {
         return
       }
       // Don't run if the network isn't healthy or the connection isn't established
@@ -90,7 +90,7 @@ export function useDemoCode() {
       ) {
         return
       }
-      const pResult = parse(bracket)
+      const pResult = parse(browserAxialFan)
       if (trap(pResult) || !resultIsOk(pResult)) {
         return Promise.reject(pResult)
       }
@@ -352,19 +352,20 @@ export async function resetCodeAndAdvanceOnboarding({
     ? onboardingStartPath
     : onboardingStatus
   // We do want to update both the state and editor here.
-  codeManager.updateCodeStateEditor(bracket)
+  codeManager.updateCodeStateEditor(browserAxialFan)
   codeManager.writeToFile().catch(reportRejection)
   kclManager.executeCode().catch(reportRejection)
   navigate(
     makeUrlPathRelative(
-      joinRouterPaths(PATHS.ONBOARDING, resolvedOnboardingStatus)
+      joinRouterPaths(String(PATHS.ONBOARDING), resolvedOnboardingStatus)
     )
   )
 }
 
 function hasResetReadyCode(codeManager: CodeManager) {
   return (
-    isKclEmptyOrOnlySettings(codeManager.code) || codeManager.code === bracket
+    isKclEmptyOrOnlySettings(codeManager.code) ||
+    codeManager.code === browserAxialFan
   )
 }
 
@@ -373,7 +374,7 @@ export function needsToOnboard(
   onboardingStatus: OnboardingStatus
 ) {
   return (
-    !location.pathname.includes(PATHS.ONBOARDING) &&
+    !location.pathname.includes(String(PATHS.ONBOARDING)) &&
     (onboardingStatus.length === 0 ||
       !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed'))
   )

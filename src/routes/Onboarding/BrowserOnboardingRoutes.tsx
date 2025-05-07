@@ -27,7 +27,11 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useState } from 'react'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { bracket } from '@src/lib/exampleKcl'
+import {
+  browserAxialFan,
+  browserAxialFanAfterTextToCad,
+  browserCpuFan,
+} from '@src/lib/exampleKcl'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -61,13 +65,13 @@ function Welcome() {
 
   // Things that happen when we load this route
   useEffect(() => {
-    // Navigate to the `main.kcl` file
+    // Overwrite the code with the browser-version of the axial-fan example
     systemIOActor.send({
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: BROWSER_PROJECT_NAME,
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-        requestedCode: bracket,
+        requestedCode: browserAxialFan,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
@@ -81,8 +85,9 @@ function Welcome() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
-          Here is an assembly of a CPU Cooler that was made in Zoo Design
-          Studio.
+          Here is an axial fan that was made in Zoo Design Studio. It's a part
+          of a larger CPU cooler assembly sample you can view in the desktop
+          app, which supports multiple-part assemblies.
         </p>
         <p className="my-4">
           Let’s walk through the basics of how to get started, and how you can
@@ -255,14 +260,14 @@ function FeatureTreePane() {
   // Open the feature tree pane on mount, close on unmount
   useOnboardingPanes(['feature-tree'])
 
-  // navigate to the "generated" file
+  // Overwrite the code with the "genereated" KCL
   useEffect(() => {
     systemIOActor.send({
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
         requestedProjectName: BROWSER_PROJECT_NAME,
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-        requestedCode: '// Whatever who cares',
+        requestedCode: browserAxialFan,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
@@ -276,9 +281,10 @@ function FeatureTreePane() {
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
-          This is an example of a generated CAD model. We skipped the real
-          generation for this tutorial, but normally you'll be asked to approve
-          the generation first.
+          This is an example of a generated CAD model; it's the same model we
+          showed you at the start. We skipped the real generation for this
+          tutorial, but normally you'll be asked to approve the generation
+          first.
         </p>
         <p className="my-4">
           To the left are the panes. We have opened the feature tree pane for
@@ -404,26 +410,25 @@ function PromptToEditPrompt() {
 function PromptToEditResult() {
   const thisOnboardingStatus: BrowserOnboardingPath =
     '/browser/prompt-to-edit-result'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   // Open the code pane on mount, close on unmount
   useOnboardingPanes(['code'])
 
+  // Overwrite the code with the "genereated" KCL
   useEffect(() => {
-    // Navigate to the `main.kcl` file
     systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
+      type: SystemIOMachineEvents.importFileFromURL,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
-        requestedFileName: 'main.kcl',
+        requestedProjectName: BROWSER_PROJECT_NAME,
+        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+        requestedCode: browserAxialFanAfterTextToCad,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [])
 
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
