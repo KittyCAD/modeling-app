@@ -1868,7 +1868,7 @@ fn type_check_params_kw(
                     arg.value = arg
                         .value
                         .coerce(
-                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).map_err(|e| KclError::Semantic(e.into()))?,
                             exec_state,
                         )
                         .map_err(|e| {
@@ -1946,7 +1946,8 @@ fn type_check_params_kw(
                 arg.value = arg
                     .value
                     .coerce(
-                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                            .map_err(|e| KclError::Semantic(e.into()))?,
                         exec_state,
                     )
                     .map_err(|_| {
@@ -2125,7 +2126,8 @@ impl FunctionSource {
                             arg.value = arg
                                 .value
                                 .coerce(
-                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                        .map_err(|e| KclError::Semantic(e.into()))?,
                                     exec_state,
                                 )
                                 .map_err(|_| {
