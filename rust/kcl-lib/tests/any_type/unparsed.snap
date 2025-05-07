@@ -1,14 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing any_type.kcl
+---
 fn id(@x: any): any {
-    return x
+  return x
 }
 
 fn singleton(@x: any): [any; 1] {
-    return [x]
+  return [x]
 }
 
 fn len(@a: [any]): number(_) {
-    // TODO
-    return 0
+  // TODO
+  return 0
 }
 
 one = id(1)

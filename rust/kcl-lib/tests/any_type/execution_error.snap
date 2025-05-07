@@ -1,0 +1,25 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing any_type.kcl
+---
+KCL Semantic error
+
+  × semantic: Unknown type: any
+    ╭─[14:7]
+ 13 │ 
+ 14 │ one = id(1)
+    ·       ──┬──┬
+    ·         │  ╰── tests/any_type/input.kcl
+    ·         ╰── tests/any_type/input.kcl
+ 15 │ a = id("a")
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: Unknown type: any
+          ╭─[14:10]
+       13 │
+       14 │ one = id(1)
+          ·          ┬
+          ·          ╰── tests/any_type/input.kcl
+       15 │ a = id("a")
+          ╰────
