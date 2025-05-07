@@ -1558,7 +1558,6 @@ export const ModelingMachineProvider = ({
             const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1577,7 +1576,6 @@ export const ModelingMachineProvider = ({
             const result = await sceneEntitiesManager.setupDraftArc(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,

@@ -1783,7 +1783,6 @@ export class SceneEntities {
   setupDraftArc = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -2020,7 +2019,6 @@ export class SceneEntities {
   setupDraftArcThreePoint = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
