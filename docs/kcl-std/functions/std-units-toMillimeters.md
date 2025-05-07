@@ -17,11 +17,11 @@ units::toMillimeters(@num: number(mm)): number(mm)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(mm)` |  | Yes |
+| `num` | [`number(mm)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(mm)`
+[`number(mm)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 

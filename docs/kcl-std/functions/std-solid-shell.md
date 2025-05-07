@@ -23,7 +23,7 @@ provided thickness remains, taking volume starting at the providedface, leaving 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solids` | [`[Solid; 1+]`](/docs/kcl-std/types/std-types-Solid) | Which solid (or solids) to shell out | Yes |
-| `thickness` | `number(Length)` | The thickness of the shell | Yes |
+| `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the shell | Yes |
 | `faces` | [`[tag; 1+]`](/docs/kcl-std/types/std-types-tag) | The faces you want removed | Yes |
 
 ### Returns

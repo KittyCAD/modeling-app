@@ -22,7 +22,7 @@ provided thickness remains around the exterior of the shape.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Which solid to hollow out | Yes |
-| `thickness` | `number(Length)` | The thickness of the remaining shell | Yes |
+| `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the remaining shell | Yes |
 
 ### Returns
 
