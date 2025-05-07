@@ -10,7 +10,7 @@ import type { settingsMachine } from '@src/machines/settingsMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { BillingActor } from '@src/machines/billingMachine'
+import type { billingMachine } from '@src/machines/billingMachine'
 
 export type IndexLoaderData = {
   code: string | null
@@ -135,7 +135,7 @@ export type AppMachineContext = {
   systemIOActor?: ActorRefFrom<typeof systemIOMachine>
   engineStreamActor?: ActorRefFrom<typeof engineStreamMachine>
   commandBarActor?: ActorRefFrom<typeof commandBarMachine>
-  billingActor?: BillingActor
+  billingActor?: ActorRefFrom<typeof billingMachine>
 }
 
 export type FileMeta =
