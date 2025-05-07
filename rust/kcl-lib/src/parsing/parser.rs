@@ -2725,9 +2725,9 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
 
 /// A type of a function argument.
 /// This can be:
-/// - a primitive type, e.g. 'number' or 'string' or 'bool'
-/// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
-/// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
+/// - a primitive type, e.g. `number` or `string` or `bool`
+/// - an array type, e.g. `[number]` or `[string]` or `[bool]`
+/// - an object type, e.g. `{x: number, y: number}` or `{name: string, age: number}`
 fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
