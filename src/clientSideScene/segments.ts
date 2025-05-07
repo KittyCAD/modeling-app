@@ -1536,7 +1536,7 @@ class ThreePointArcSegment implements SegmentUtils {
 
     return () => {
       const overlays: SegmentOverlays = {}
-      const overlayDetails = [p2Handle, p3Handle].map((handle, index) =>
+      const overlayDetails = [p2Handle, p3Handle].map((handle, _index) =>
         sceneInfra.updateOverlayDetails({
           handle: handle,
           group,
