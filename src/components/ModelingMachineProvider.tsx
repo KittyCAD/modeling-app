@@ -1480,7 +1480,6 @@ export const ModelingMachineProvider = ({
               return reject('No sketch details or data')
 
             const result = await sceneEntitiesManager.setupDraftCircle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1501,7 +1500,6 @@ export const ModelingMachineProvider = ({
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
-                sketchDetails.sketchEntryNodePath,
                 sketchDetails.sketchNodePaths,
                 sketchDetails.planeNodePath,
                 sketchDetails.zAxis,
@@ -1522,7 +1520,6 @@ export const ModelingMachineProvider = ({
               return reject('No sketch details or data')
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1541,7 +1538,6 @@ export const ModelingMachineProvider = ({
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,

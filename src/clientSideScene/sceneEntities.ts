@@ -218,7 +218,7 @@ export class SceneEntities {
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    Object.values(this.activeSegments).forEach((segment, index) => {
+    Object.values(this.activeSegments).forEach((segment, _index) => {
       const factor =
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
@@ -354,7 +354,6 @@ export class SceneEntities {
   }
 
   createSketchAxis(
-    sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchPosition?: [number, number, number]
@@ -1184,7 +1183,6 @@ export class SceneEntities {
     })
   }
   setupDraftRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1394,7 +1392,6 @@ export class SceneEntities {
     }
   }
   setupDraftCenterRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1601,7 +1598,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircleThreePoint = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -2285,7 +2281,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
