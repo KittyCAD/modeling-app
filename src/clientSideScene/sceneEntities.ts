@@ -623,7 +623,6 @@ export class SceneEntities {
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
-          sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           [snappedClickPoint.x, snappedClickPoint.y],
