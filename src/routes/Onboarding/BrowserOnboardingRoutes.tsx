@@ -249,7 +249,7 @@ function FeatureTreePane() {
   const thisOnboardingStatus: BrowserOnboardingPath =
     '/browser/feature-tree-pane'
 
-  // Hightlight the feature tree pane button if it's present
+  // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('feature-tree-pane-button')
 
   // Open the feature tree pane on mount, close on unmount

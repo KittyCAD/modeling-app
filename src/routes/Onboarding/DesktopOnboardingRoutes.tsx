@@ -247,7 +247,7 @@ function FeatureTreePane() {
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const generatedFileName = 'generated.kcl'
 
-  // Hightlight the feature tree pane button if it's present
+  // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('feature-tree-pane-button')
 
   // Open the feature tree pane on mount, close on unmount
@@ -295,7 +295,7 @@ function FeatureTreePane() {
 }
 
 function CodePane() {
-  // Hightlight the feature tree pane button if it's present
+  // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('code-pane-button')
 
   // Open the code pane on mount, close on unmount
@@ -326,7 +326,7 @@ function CodePane() {
 
 function ProjectPane() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/project-pane'
-  // Hightlight the feature tree pane button if it's present
+  // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('files-pane-button')
 
   // Open the code pane on mount, close on unmount
@@ -352,7 +352,7 @@ function ProjectPane() {
 
 function OtherPanes() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/other-panes'
-  // Hightlight the log and variable panes button if it's present
+  // Highlight the log and variable panes button if it's present
   useOnboardingHighlight('logs-pane-button')
   useOnboardingHighlight('variables-pane-button')
 

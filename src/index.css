@@ -198,6 +198,7 @@ code {
 #code-mirror-override .cm-content {
   @apply caret-primary;
 }
+
 .dark #code-mirror-override .cm-content {
   @apply caret-chalkboard-10;
 }
@@ -216,6 +217,7 @@ code {
   100% {
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
@@ -258,9 +260,11 @@ code {
 #code-mirror-override .cm-tooltip-autocomplete li {
   @apply px-2 py-1;
 }
+
 #code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-10 text-liquid-110;
 }
+
 .dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-100 text-liquid-20;
 }
@@ -340,7 +344,7 @@ code {
     @apply outline-chalkboard-100 dark:outline-chalkboard-10;
   }
 
-  /* hightlight an object with a moving dashed outline */
+  /* highlight an object with a moving dashed outline */
   .onboarding-highlight {
     @apply outline outline-2;
     animation: onboarding-highlight 0.7s ease-in-out infinite alternate-reverse;
@@ -350,6 +354,7 @@ code {
     0% {
       outline-offset: 0px;
     }
+
     100% {
       outline-offset: 4px;
     }
