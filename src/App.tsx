@@ -129,6 +129,7 @@ export function App() {
 
   // Generate thumbnail.png when loading the app
   useEffect(() => {
+    console.log(`command:${lastCommandType}`)
     if (isDesktop() && lastCommandType === 'execution-done') {
       setTimeout(() => {
         const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
@@ -138,8 +139,11 @@ export function App() {
         const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
         // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
         writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-          .then(() => {})
+          .then(() => {
+            toast.success(`made thumbnail${projectDirectoryWithoutEndingSlash}`)
+          })
           .catch((e) => {
+            toast.error('no thumbnail')
             console.error(
               `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
             )

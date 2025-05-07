@@ -36,6 +36,7 @@ import {
   engineViewIsometricWithoutGeometryPresent,
 } from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -49,7 +50,7 @@ export const EngineStream = (props: {
 
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
@@ -121,6 +122,12 @@ export const EngineStream = (props: {
               padding,
             })
           }
+        }
+
+        if (project && project.path) {
+          createThumbnailPNGOnDesktop({
+            projectDirectoryWithoutEndingSlash: project.path,
+          })
         }
       })
       .catch(trap)
