@@ -136,8 +136,6 @@ import { uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
-export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
-
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
@@ -4725,42 +4723,4 @@ export function pipeHasCircle({
       item.type === 'CallExpressionKw' && item.callee.name.name === 'circle'
   )
   return hasCircle
-}
-
-export function canRectangleOrCircleTool({
-  sketchDetails,
-}: {
-  sketchDetails: SketchDetails | null
-}): boolean {
-  const node = getNodeFromPath<VariableDeclaration>(
-    kclManager.ast,
-    sketchDetails?.sketchEntryNodePath || [],
-    'VariableDeclaration'
-  )
-  // This should not be returning false, and it should be caught
-  // but we need to simulate old behavior to move on.
-  if (err(node)) return false
-  return node.node?.declaration.init.type !== 'PipeExpression'
-}
-
-/** If the sketch contains `close` or `circle` stdlib functions it must be closed */
-export function isClosedSketch({
-  sketchDetails,
-}: {
-  sketchDetails: SketchDetails | null
-}): boolean {
-  const node = getNodeFromPath<VariableDeclaration>(
-    kclManager.ast,
-    sketchDetails?.sketchEntryNodePath || [],
-    'VariableDeclaration'
-  )
-  // This should not be returning false, and it should be caught
-  // but we need to simulate old behavior to move on.
-  if (err(node)) return false
-  if (node.node?.declaration?.init?.type !== 'PipeExpression') return false
-  return node.node.declaration.init.body.some(
-    (node) =>
-      node.type === 'CallExpressionKw' &&
-      (node.callee.name.name === 'close' || node.callee.name.name === 'circle')
-  )
 }
