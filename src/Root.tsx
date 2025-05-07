@@ -18,11 +18,9 @@ function RootLayout() {
 
   // Because credits can be spent outside the app, and they also take time to
   // calculate,  we have to poll to have an updated amount.
-  // 5s should be reasonable. 2s for round trip network time and 3s for general
-  // computation...
   setInterval(() => {
     billingActor.send({ type: BillingTransition.Update, apiToken })
-  }, 5000)
+  }, 60000)
 
   return (
     <OpenInDesktopAppHandler>
