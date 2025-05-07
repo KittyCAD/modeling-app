@@ -71,9 +71,9 @@ test.describe('Prompt-to-edit tests', () => {
         )
         const successToast = page.getByText('Prompt to edit successful')
         const acceptBtn = page.getByRole('button', {
-          name: 'checkmark Accept',
+          name: 'checkmark Continue',
         })
-        const rejectBtn = page.getByRole('button', { name: 'close Reject' })
+        const rejectBtn = page.getByRole('button', { name: 'close Revert' })
 
         await test.step('wait for scene to load select body and check selection came through', async () => {
           await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
@@ -196,7 +196,7 @@ test.describe('Prompt-to-edit tests', () => {
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+    const acceptBtn = page.getByRole('button', { name: 'checkmark Continue' })
 
     await test.step('wait for scene to load and select code in editor', async () => {
       // Find and select the text "sketch002" in the editor
@@ -265,7 +265,7 @@ test.describe('Prompt-to-edit tests', () => {
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+    const acceptBtn = page.getByRole('button', { name: 'checkmark Continue' })
 
     await test.step('select multiple bodies and fire prompt', async () => {
       // Initial color check
