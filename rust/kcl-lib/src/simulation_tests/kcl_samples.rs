@@ -273,7 +273,7 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         multiple_files: files.len() > 1,
         title,
         description,
-        files
+        files,
     })
 }
 
