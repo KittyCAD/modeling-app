@@ -16,10 +16,10 @@
     "title": "PC Fan",
     "description": "A small axial fan, used to push or draw airflow over components to remove excess heat",
     "files": [
-      "motor.kcl",
-      "main.kcl",
       "fan-housing.kcl",
       "fan.kcl",
+      "main.kcl",
+      "motor.kcl",
       "parameters.kcl"
     ]
   },
@@ -40,8 +40,8 @@
     "title": "Bench",
     "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
     "files": [
-      "main.kcl",
-      "bench-parts.kcl"
+      "bench-parts.kcl",
+      "main.kcl"
     ]
   },
   {
@@ -71,13 +71,13 @@
     "title": "Car Wheel Assembly",
     "description": "A car wheel assembly with a rotor, tire, and lug nuts.",
     "files": [
-      "lug-nut.kcl",
-      "main.kcl",
+      "brake-caliper.kcl",
+      "car-rotor.kcl",
       "car-tire.kcl",
       "car-wheel.kcl",
-      "parameters.kcl",
-      "brake-caliper.kcl",
-      "car-rotor.kcl"
+      "lug-nut.kcl",
+      "main.kcl",
+      "parameters.kcl"
     ]
   },
   {
@@ -317,12 +317,12 @@
     "title": "Robot Arm",
     "description": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
     "files": [
-      "robot-arm-j3.kcl",
-      "main.kcl",
-      "robot-arm-j2.kcl",
       "globals.kcl",
-      "robot-rotating-base.kcl",
-      "robot-arm-base.kcl"
+      "main.kcl",
+      "robot-arm-base.kcl",
+      "robot-arm-j2.kcl",
+      "robot-arm-j3.kcl",
+      "robot-rotating-base.kcl"
     ]
   },
   {
@@ -353,12 +353,12 @@
     "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint.",
     "files": [
       "1120t74-pipe.kcl",
+      "68095k348-flange.kcl",
+      "91251a404-bolt.kcl",
+      "9472k188-gasket.kcl",
+      "95479a127-hex-nut.kcl",
       "98017a257-washer.kcl",
       "main.kcl",
-      "95479a127-hex-nut.kcl",
-      "68095k348-flange.kcl",
-      "9472k188-gasket.kcl",
-      "91251a404-bolt.kcl",
       "parameters.kcl"
     ]
   },
@@ -429,15 +429,15 @@
     "title": "Walkie Talkie",
     "description": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
     "files": [
-      "main.kcl",
-      "zoo-logo.kcl",
-      "button.kcl",
-      "talk-button.kcl",
-      "body.kcl",
-      "parameters.kcl",
       "antenna.kcl",
+      "body.kcl",
+      "button.kcl",
       "case.kcl",
-      "knob.kcl"
+      "knob.kcl",
+      "main.kcl",
+      "parameters.kcl",
+      "talk-button.kcl",
+      "zoo-logo.kcl"
     ]
   },
   {
