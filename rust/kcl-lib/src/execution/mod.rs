@@ -1308,7 +1308,7 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
 #[cfg(test)]
 pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
-    project_directory: Option<std::path::PathBuf>,
+    project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
