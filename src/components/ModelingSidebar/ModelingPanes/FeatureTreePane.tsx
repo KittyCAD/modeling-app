@@ -555,7 +555,7 @@ const DefaultPlanes = () => {
       id: defaultPlanes.xy,
       key: 'xy',
       customSuffix: (
-        <div className="text-red-500/50 font-bold, text-xs">XY</div>
+        <div className="text-red-500/50 font-bold text-xs">XY</div>
       ),
     },
     {
