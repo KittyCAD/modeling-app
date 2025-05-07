@@ -288,14 +288,38 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     Ok(())
 }
 
-fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
-    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
+fn generate_mod_from_kcl(m: &ModData, file_name: String, combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+    fn list_items(
+        m: &ModData,
+        namespace: &str,
+        combined: &IndexMap<String, Box<dyn StdLibFn>>,
+    ) -> Vec<gltf_json::Value> {
         let mut items: Vec<_> = m
             .children
             .iter()
             .filter(|(k, _)| k.starts_with(namespace))
-            .map(|(_, v)| (v.preferred_name(), v.file_name()))
+            .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
             .collect();
+
+        if namespace == "I:" {
+            // Add in functions declared in Rust
+            items.extend(
+                combined
+                    .values()
+                    .filter(|f| {
+                        if f.unpublished() || f.deprecated() {
+                            return false;
+                        }
+
+                        let tags = f.tags();
+                        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
+                        module == m.qual_name
+                    })
+                    .map(|f| (f.name(), f.name())),
+            )
+        }
+
         items.sort();
         items
             .into_iter()
@@ -309,10 +333,9 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     }
     let hbs = init_handlebars()?;
 
-    // TODO for prelude, items from Rust
-    let functions = list_items(m, "I:");
-    let modules = list_items(m, "M:");
-    let types = list_items(m, "T:");
+    let functions = list_items(m, "I:", combined);
+    let modules = list_items(m, "M:", combined);
+    let types = list_items(m, "T:", combined);
 
     let data = json!({
         "name": m.name,
@@ -694,10 +717,10 @@ fn test_generate_stdlib_markdown_docs() {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
-            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name(), &combined).unwrap(),
         }
     }
-    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned(), &combined).unwrap();
 }
 
 #[test]
@@ -727,7 +750,11 @@ fn test_generate_stdlib_json_schema() {
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
     for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
-        let path = entry.unwrap().path();
+        let entry = entry.unwrap();
+        if entry.file_type().unwrap().is_dir() {
+            continue;
+        }
+        let path = entry.path();
         let text = std::fs::read_to_string(&path).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
