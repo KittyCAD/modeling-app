@@ -1,0 +1,19 @@
+fn id(@x: any): any {
+    return x
+}
+
+fn singleton(@x: any): [any; 1] {
+    return [x]
+}
+
+fn len(@a: [any]): number(_) {
+    // TODO
+    return 0
+}
+
+// Any of these would be an error because `any` is undefined.
+//one = id(1)
+//a = id("a")
+//arr1 = singleton(1)
+//len0 = len([])
+//len1 = len([1])
