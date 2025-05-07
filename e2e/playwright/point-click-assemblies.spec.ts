@@ -558,9 +558,8 @@ test.describe('Point-and-click assemblies tests', () => {
     }
   )
 
-  // TODO: bring back in https://github.com/KittyCAD/modeling-app/issues/6570
-  test.fixme(
-    `Insert foreign parts into assembly as whole module import`,
+  test(
+    `Insert foreign parts into assembly and delete them`,
     { tag: ['@electron', '@macos', '@windows'] },
     async ({
       context,
