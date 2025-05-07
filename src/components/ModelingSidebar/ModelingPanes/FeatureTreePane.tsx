@@ -242,6 +242,7 @@ const OperationItemWrapper = ({
   visibilityToggle,
   menuItems,
   errors,
+  codeName,
   className,
   selectable = true,
   ...props
@@ -249,6 +250,7 @@ const OperationItemWrapper = ({
   icon: CustomIconName
   name: string
   visibilityToggle?: VisibilityToggleProps
+  codeName?: string
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
@@ -265,7 +267,14 @@ const OperationItemWrapper = ({
         className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        {name}
+        <div className="flex items-center">
+          <div className="min-w-24">{name}</div>
+          {codeName && (
+            <span className="text-chalkboard-50/50 text-xs">
+              {codeName.toUpperCase()}
+            </span>
+          )}
+        </div>
       </button>
       {errors && errors.length > 0 && (
         <em className="text-destroy-80 text-xs">has error</em>
@@ -547,6 +556,7 @@ const DefaultPlanes = () => {
       {planes.map((plane) => (
         <OperationItemWrapper
           key={plane.key}
+          codeName={plane.key}
           icon={'plane'}
           name={plane.name}
           selectable={false}
