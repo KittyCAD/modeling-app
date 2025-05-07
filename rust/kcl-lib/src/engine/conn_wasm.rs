@@ -4,7 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
+use kcmc::websocket::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -311,6 +311,14 @@ impl crate::engine::EngineManager for EngineConnection {
         })?;
 
         Ok(())
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        unimplemented!();
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        None
     }
 
     async fn inner_fire_modeling_cmd(
