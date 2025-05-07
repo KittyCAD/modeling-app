@@ -1,0 +1,39 @@
+[files]
+extend-exclude = [
+  "**/target",
+  "node_modules",
+  "build",
+  "dist",
+  "out",
+  "**/Cargo.lock",
+  "docs/**/*.md",
+  "docs/**/*.json",
+  "e2e/playwright/lib/console-error-whitelist.ts",
+  ".package-lock.json",
+  "**/package-lock.json",
+  "openapi/*.json",
+  "packages/codemirror-lang-kcl/test/all.test.ts",
+  "public/kcl-samples",
+  "rust/kcl-lib/tests/kcl_samples",
+  "tsconfig.tsbuildinfo",
+  "src/lib/machine-api.d.ts",
+  "kcl-book/book",
+]
+
+[default.extend-words]
+metalness = "metalness" # appearance API 
+Hom = "Hom" # short for homogenous
+typ = "typ" # used to declare a variable named 'type' which is a reserved keyword in Rust
+ue = "ue" # short for UnaryExpression
+THRE = "THRE" # Weird bug that wrongly detects THREEjs as a typo
+nwo = "nwo" # don't know what this is about tbh
+"ot" = "ot" # some abbreviation, idk what
+"oe" = "oe" # some abbreviation, idk what
+
+[default]
+extend-ignore-identifiers-re = [
+    "\\dnd", # e.g. 2nd
+]
+extend-ignore-re = [
+  "@xstate-layout .*",
+]

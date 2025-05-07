@@ -82,7 +82,7 @@ export type SegmentInputs =
  *
  * @property segmentInput - The input segment data, which can be either a straight segment or an arc segment.
  * @property replaceExistingCallback - An optional callback function to replace an existing call expression,
- * if not provided, a new call expression will be added using segMentInput values.
+ * if not provided, a new call expression will be added using segmentInput values.
  * @property referencedSegment - An optional path to a referenced segment.
  * @property spliceBetween=false - Defaults to false. Normal behavior is to add a new callExpression to the end of the pipeExpression.
  */

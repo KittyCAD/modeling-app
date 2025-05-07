@@ -2232,7 +2232,7 @@ export const modelingMachine = setup({
             return new Error('Bad artifact from selection')
           }
 
-          // Check on the selection, and handle the wall vs cap casees
+          // Check on the selection, and handle the wall vs cap cases
           let expr: Expr
           if (selectedArtifact.type === 'cap') {
             expr = createLiteral(selectedArtifact.subType)

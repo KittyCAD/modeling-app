@@ -620,14 +620,14 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
     angle = asNum(args[0].expr.value)
   if (err(val) || err(angle)) return REF_NUM_ERR
   const valueUsedInTransform = roundOff(val, 2)
-  const varNamMap: { [key: number]: string } = {
+  const varNameMap: { [key: number]: string } = {
     0: 'ZERO',
     90: 'QUARTER_TURN',
     180: 'HALF_TURN',
     270: 'THREE_QUARTER_TURN',
   }
   const angleVal = [0, 90, 180, 270].includes(angle)
-    ? createName(['turns'], varNamMap[angle])
+    ? createName(['turns'], varNameMap[angle])
     : createLiteral(angle)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
@@ -660,7 +660,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
 }
 
 const setAngleBetweenCreateNode =
-  (tranformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
+  (transformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
   ({
     referenceSegName,
     tag,
@@ -689,14 +689,14 @@ const setAngleBetweenCreateNode =
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
-      tranformToType === 'none'
+      transformToType === 'none'
         ? 'angledLine'
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? 'angledLineToX'
           : 'angledLineToY',
-      tranformToType === 'none'
+      transformToType === 'none'
         ? [binExp, args[1].expr]
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? [binExp, inputs[0].expr]
           : [binExp, inputs[1].expr],
       tag,
