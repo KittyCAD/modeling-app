@@ -4,6 +4,8 @@
 mod context;
 #[cfg(target_arch = "wasm32")]
 mod lsp;
+#[cfg(all(target_arch = "wasm32", test))]
+mod tests;
 #[cfg(target_arch = "wasm32")]
 mod wasm;
 

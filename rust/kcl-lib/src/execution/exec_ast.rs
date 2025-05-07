@@ -2643,7 +2643,7 @@ d = b + c
             )),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
-                project_directory: Some(tmpdir.path().into()),
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()
             },
             stdlib: Arc::new(crate::std::StdLib::new()),

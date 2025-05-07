@@ -1,5 +1,6 @@
 ---
 title: "bool"
+subtitle: "Type in types"
 excerpt: "A boolean value."
 layout: manual
 ---

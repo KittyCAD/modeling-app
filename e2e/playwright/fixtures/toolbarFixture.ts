@@ -241,6 +241,12 @@ export class ToolbarFixture {
   async openFeatureTreePane() {
     return this.openPane(this.featureTreeId)
   }
+
+  async waitForFeatureTreeToBeBuilt() {
+    await this.openFeatureTreePane()
+    await expect(this.page.getByText('Building feature tree')).not.toBeVisible()
+    await this.closeFeatureTreePane()
+  }
   async closeFeatureTreePane() {
     await this.closePane(this.featureTreeId)
   }

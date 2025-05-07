@@ -138,12 +138,12 @@ layout: manual
 
 See also the [types overview](/docs/kcl-lang/types)
 
-* [**Primitive types**](/docs/kcl-std/modules/Primitive types)
-  * [`End`](/docs/kcl-std/types#End)
-  * [`ImportedGeometry`](/docs/kcl-std/types#ImportedGeometry)
-  * [`Start`](/docs/kcl-std/types#Start)
-  * [`TagDeclarator`](/docs/kcl-std/types#TagDeclarator)
-  * [`TagIdentifier`](/docs/kcl-std/types#TagIdentifier)
+* [**Primitive types**](/docs/kcl-lang/types)
+  * [`End`](/docs/kcl-lang/types#End)
+  * [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry)
+  * [`Start`](/docs/kcl-lang/types#Start)
+  * [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator)
+  * [`TagIdentifier`](/docs/kcl-lang/types#TagIdentifier)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`number`](/docs/kcl-std/types/std-types-number)

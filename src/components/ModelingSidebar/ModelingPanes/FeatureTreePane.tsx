@@ -242,6 +242,7 @@ const OperationItemWrapper = ({
   visibilityToggle,
   menuItems,
   errors,
+  customSuffix,
   className,
   selectable = true,
   ...props
@@ -249,6 +250,7 @@ const OperationItemWrapper = ({
   icon: CustomIconName
   name: string
   visibilityToggle?: VisibilityToggleProps
+  customSuffix?: JSX.Element
   menuItems?: ComponentProps<typeof ContextMenu>['items']
   errors?: Diagnostic[]
   selectable?: boolean
@@ -265,7 +267,10 @@ const OperationItemWrapper = ({
         className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        {name}
+        <div className="flex items-baseline">
+          <div className="mr-2">{name}</div>
+          {customSuffix && customSuffix}
+        </div>
       </button>
       {errors && errors.length > 0 && (
         <em className="text-destroy-80 text-xs">has error</em>
@@ -537,9 +542,28 @@ const DefaultPlanes = () => {
   if (!defaultPlanes) return null
 
   const planes = [
-    { name: 'Front plane', id: defaultPlanes.xz, key: 'xz' },
-    { name: 'Top plane', id: defaultPlanes.xy, key: 'xy' },
-    { name: 'Side plane', id: defaultPlanes.yz, key: 'yz' },
+    {
+      name: 'Front plane',
+      id: defaultPlanes.xz,
+      key: 'xz',
+      customSuffix: (
+        <div className="text-blue-500/50 font-bold text-xs">XZ</div>
+      ),
+    },
+    {
+      name: 'Top plane',
+      id: defaultPlanes.xy,
+      key: 'xy',
+      customSuffix: <div className="text-red-500/50 font-bold text-xs">XY</div>,
+    },
+    {
+      name: 'Side plane',
+      id: defaultPlanes.yz,
+      key: 'yz',
+      customSuffix: (
+        <div className="text-green-500/50 font-bold text-xs">YZ</div>
+      ),
+    },
   ] as const
 
   return (
@@ -547,6 +571,7 @@ const DefaultPlanes = () => {
       {planes.map((plane) => (
         <OperationItemWrapper
           key={plane.key}
+          customSuffix={plane.customSuffix}
           icon={'plane'}
           name={plane.name}
           selectable={false}

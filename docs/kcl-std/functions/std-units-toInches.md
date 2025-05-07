@@ -1,16 +1,17 @@
 ---
-title: "std::units::toInches"
+title: "units::toInches"
+subtitle: "Function in units"
 excerpt: "Convert a number to inches from its current units."
 layout: manual
 ---
 
 Convert a number to inches from its current units.
 
-
-
 ```kcl
 units::toInches(@num: number(in)): number(in)
 ```
+
+
 
 ### Arguments
 

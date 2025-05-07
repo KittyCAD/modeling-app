@@ -1,5 +1,6 @@
 ---
-title: "std::solid"
+title: "solid"
+subtitle: "Module in std"
 excerpt: ""
 layout: manual
 ---
