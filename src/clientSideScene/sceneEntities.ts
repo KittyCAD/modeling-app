@@ -677,7 +677,6 @@ export class SceneEntities {
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
-      ast: maybeModdedAst,
       variables: execState.variables,
       kclManager: this.kclManager,
     })
@@ -998,7 +997,6 @@ export class SceneEntities {
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
-          ast: this.kclManager.ast,
           variables: this.kclManager.variables,
           kclManager: this.kclManager,
         })
@@ -2532,7 +2530,6 @@ export class SceneEntities {
 
           const sketch = sketchFromPathToNode({
             pathToNode,
-            ast: this.kclManager.ast,
             variables: this.kclManager.variables,
             kclManager: this.kclManager,
           })
@@ -3086,7 +3083,6 @@ export class SceneEntities {
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
-        ast: truncatedAst,
         variables,
         kclManager: this.kclManager,
       })
@@ -3409,7 +3405,7 @@ export class SceneEntities {
         }
         this.editorManager.setHighlightRange([defaultSourceRange()])
       },
-      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+      onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
         this.editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
@@ -3773,12 +3769,10 @@ function prepareTruncatedAst(
 
 function sketchFromPathToNode({
   pathToNode,
-  ast,
   variables,
   kclManager,
 }: {
   pathToNode: PathToNode
-  ast: Program
   variables: VariableMap
   kclManager: KclManager
 }): Sketch | null | Error {
@@ -3828,7 +3822,6 @@ export function getSketchQuaternion(
 ): Quaternion | Error {
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
-    ast: kclManager.ast,
     variables: kclManager.variables,
     kclManager,
   })
@@ -3870,12 +3863,10 @@ function massageFormats(
 
 function getSketchesInfo({
   sketchNodePaths,
-  ast,
   variables,
   kclManager,
 }: {
   sketchNodePaths: PathToNode[]
-  ast: Node<Program>
   variables: VariableMap
   kclManager: KclManager
 }): {
@@ -3889,7 +3880,6 @@ function getSketchesInfo({
   for (const path of sketchNodePaths) {
     const sketch = sketchFromPathToNode({
       pathToNode: path,
-      ast,
       variables,
       kclManager,
     })
