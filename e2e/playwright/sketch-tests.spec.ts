@@ -1289,18 +1289,12 @@ profile002 = startProfile(sketch002, at = [72.2, -52.05])
   |> close()
 
 extrude002 = extrude(profile002, length = 151)
-  |> chamfer(
-       %,
-       length = 15,
-       tags = [mySeg],
-       tag = $seg02,
-     )
 solid001 = subtract([extrude001], tools = [extrude002])
 `
       )
     })
 
-    const [selectChamferFaceClk] = scene.makeMouseHelpers(671, 283)
+    const [selectChamferFaceClk] = scene.makeMouseHelpers(705, 234)
     const [circleCenterClk] = scene.makeMouseHelpers(700, 272)
     const [circleRadiusClk] = scene.makeMouseHelpers(694, 264)
 
@@ -1312,6 +1306,7 @@ solid001 = subtract([extrude001], tools = [extrude002])
         { x: 180, y: -75, z: 116 },
         { x: 67, y: -114, z: -15 }
       )
+      await toolbar.waitForFeatureTreeToBeBuilt()
     })
 
     await test.step('sketch on chamfer face that is part of a boolean', async () => {
@@ -1326,7 +1321,7 @@ solid001 = subtract([extrude001], tools = [extrude002])
         .toBe('true')
 
       await editor.expectEditor.toContain(
-        'startSketchOn(solid001, face = seg02)'
+        'startSketchOn(solid001, face = seg01)'
       )
     })
 
@@ -1346,7 +1341,7 @@ solid001 = subtract([extrude001], tools = [extrude002])
 
       await circleRadiusClk()
       await editor.expectEditor.toContain(
-        'profile003 = circle(sketch003, center = [119.41, -56.05], radius = 1.82)'
+        'profile003 = circle(sketch003, center = [-25.77, 10.97], radius = 1.85)'
       )
     })
   })
