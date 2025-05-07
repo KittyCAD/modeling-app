@@ -1,6 +1,6 @@
 ---
 title: "units::toFeet"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to feet from its current units."
 layout: manual
 ---

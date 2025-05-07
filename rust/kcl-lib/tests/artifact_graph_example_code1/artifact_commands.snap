@@ -418,10 +418,15 @@ description: Artifact commands artifact_graph_example_code1.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 5.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {

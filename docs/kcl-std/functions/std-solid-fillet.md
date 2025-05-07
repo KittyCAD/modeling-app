@@ -1,6 +1,6 @@
 ---
 title: "fillet"
-subtitle: "Function in solid"
+subtitle: "Function in std::solid"
 excerpt: "Blend a transitional edge along a tagged path, smoothing the sharp edge."
 layout: manual
 ---

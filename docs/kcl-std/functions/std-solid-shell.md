@@ -1,6 +1,6 @@
 ---
 title: "shell"
-subtitle: "Function in solid"
+subtitle: "Function in std::solid"
 excerpt: ""
 layout: manual
 ---

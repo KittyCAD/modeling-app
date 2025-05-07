@@ -257,6 +257,7 @@ impl EngineConnection {
 
                 this_response = OkModelingCmdResponse::EntityCircularPattern(kcmc::output::EntityCircularPattern {
                     entity_ids: entity_ids.clone(),
+                    entity_face_edge_ids: vec![],
                 });
 
                 let mut base_code: String = format!(

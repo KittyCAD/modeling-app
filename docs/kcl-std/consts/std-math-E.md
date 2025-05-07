@@ -1,6 +1,6 @@
 ---
 title: "E"
-subtitle: "Constant in math"
+subtitle: "Constant in std::math"
 excerpt: "The value of Euler’s number `e`."
 layout: manual
 ---

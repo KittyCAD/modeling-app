@@ -1,6 +1,6 @@
 ---
 title: "Helix"
-subtitle: "Type in types"
+subtitle: "Type in std::types"
 excerpt: "A helix."
 layout: manual
 ---

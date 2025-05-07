@@ -1,6 +1,6 @@
 ---
 title: "units::toInches"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to inches from its current units."
 layout: manual
 ---

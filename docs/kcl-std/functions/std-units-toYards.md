@@ -1,6 +1,6 @@
 ---
 title: "units::toYards"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Converts a number to yards from its current units."
 layout: manual
 ---

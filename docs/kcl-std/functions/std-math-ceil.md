@@ -1,6 +1,6 @@
 ---
 title: "ceil"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the smallest integer greater than or equal to a number."
 layout: manual
 ---

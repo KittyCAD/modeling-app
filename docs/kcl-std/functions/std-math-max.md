@@ -1,6 +1,6 @@
 ---
 title: "max"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the maximum of the given arguments."
 layout: manual
 ---

@@ -1,5 +1,5 @@
 ---
-title: "KCL Modules"
+title: "Modules"
 excerpt: "Documentation of modules for the KCL language for the Zoo Design Studio."
 layout: manual
 ---
