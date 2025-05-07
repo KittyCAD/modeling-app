@@ -626,25 +626,10 @@ export function useAdvanceOnboardingOnFormSubmit(
       e.stopImmediatePropagation()
       goToNext()
     }
-    const keyUpListener = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        e.preventDefault()
-        e.stopPropagation()
-        e.stopImmediatePropagation()
-        goToNext()
-      }
-    }
-
     window.addEventListener('submit', formSubmitListener)
-    window.addEventListener('keydown', keyUpListener)
-    // FUN FACT: If a button has focus and the user presses enter,
-    // no `keydown` event is fired. But `click` and `keyup` ARE.
-    window.addEventListener('keyup', keyUpListener)
     // Remove the listener when we leave
     return () => {
       window.removeEventListener('submit', formSubmitListener)
-      window.removeEventListener('keydown', keyUpListener)
-      window.removeEventListener('keyup', keyUpListener)
     }
   }, [goToNext])
 }

@@ -27,6 +27,7 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { useEffect, useState } from 'react'
 import { VITE_KC_SITE_BASE_URL } from '@src/env'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { bracket } from '@src/lib/exampleKcl'
 
 type BrowserOnboaringRoute = RouteObject & {
   path: keyof typeof browserOnboardingPaths
@@ -66,7 +67,7 @@ function Welcome() {
       data: {
         requestedProjectName: BROWSER_PROJECT_NAME,
         requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
-        requestedCode: '',
+        requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(
           PATHS.ONBOARDING,
           thisOnboardingStatus
@@ -98,6 +99,23 @@ function Welcome() {
 
 function Scene() {
   const thisOnboardingStatus: BrowserOnboardingPath = '/browser/scene'
+
+  // Things that happen when we load this route
+  useEffect(() => {
+    // Navigate to the `main.kcl` file
+    systemIOActor.send({
+      type: SystemIOMachineEvents.importFileFromURL,
+      data: {
+        requestedProjectName: BROWSER_PROJECT_NAME,
+        requestedFileNameWithExtension: PROJECT_ENTRYPOINT,
+        requestedCode: '',
+        requestedSubRoute: joinRouterPaths(
+          PATHS.ONBOARDING,
+          thisOnboardingStatus
+        ),
+      },
+    })
+  }, [])
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -437,8 +455,6 @@ function PromptToEditResult() {
 }
 
 function OnboardingConclusion() {
-  // Highlight the App logo
-  useOnboardingHighlight('app-logo')
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
 

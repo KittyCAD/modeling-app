@@ -600,7 +600,7 @@ function OnboardingConclusion() {
   // Highlight the App logo
   useOnboardingHighlight('app-logo')
   // Close the panes on mount, close on unmount
-  useOnboardingPanes()
+  useOnboardingPanes(['feature-tree', 'code', 'files'])
 
   return (
     <div className="fixed inset-0 z-50 p-16 grid justify-center items-center">
