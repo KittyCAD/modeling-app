@@ -385,7 +385,7 @@ mod test {
     fn annotations() {
         // no annotations
         assert!(
-            format_from_annotations(&[], Path::new("../foo.txt"), SourceRange::default(),)
+            format_from_annotations(&[], &TypedPath::from("../foo.txt"), SourceRange::default(),)
                 .unwrap()
                 .is_none()
         );
@@ -394,7 +394,7 @@ mod test {
         let text = "@()\nimport '../foo.gltf' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.gltf"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.gltf"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -406,7 +406,7 @@ mod test {
         let text = "@(format = gltf)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -415,7 +415,7 @@ mod test {
         );
 
         // format, no extension (wouldn't parse but might some day)
-        let fmt = format_from_annotations(attrs, Path::new("../foo"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -427,7 +427,7 @@ mod test {
         let text = "@(format = obj, coords = vulkan, lengthUnit = ft)\nimport '../foo.txt' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.txt"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.txt"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -442,7 +442,7 @@ mod test {
         let text = "@(coords = vulkan, lengthUnit = ft)\nimport '../foo.obj' as foo";
         let parsed = crate::Program::parse_no_errs(text).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let fmt = format_from_annotations(attrs, Path::new("../foo.obj"), SourceRange::default())
+        let fmt = format_from_annotations(attrs, &TypedPath::from("../foo.obj"), SourceRange::default())
             .unwrap()
             .unwrap();
         assert_eq!(
@@ -495,7 +495,7 @@ mod test {
     fn assert_annotation_error(src: &str, path: &str, expected: &str) {
         let parsed = crate::Program::parse_no_errs(src).unwrap().ast;
         let attrs = parsed.body[0].get_attrs();
-        let err = format_from_annotations(attrs, Path::new(path), SourceRange::default()).unwrap_err();
+        let err = format_from_annotations(attrs, &TypedPath::from(path), SourceRange::default()).unwrap_err();
         assert!(
             err.message().contains(expected),
             "Expected: `{expected}`, found `{}`",
