@@ -58,8 +58,7 @@ export function removeConstrainingValuesInfo({
 
   const transforms = getRemoveConstraintsTransforms(
     updatedSelectionRanges,
-    kclManager.ast,
-    'removeConstrainingValues'
+    kclManager.ast
   )
   if (err(transforms)) return transforms
 
