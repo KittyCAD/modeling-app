@@ -26,9 +26,9 @@ will smoothly blend the transition.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be filletted | Yes |
-| `radius` | `number(Length)` | The radius of the fillet | Yes |
+| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to fillet | Yes |
-| `tolerance` | `number(Length)` | The tolerance for this fillet | No |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance for this fillet | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this fillet | No |
 
 ### Returns

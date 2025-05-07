@@ -37,10 +37,10 @@ revolved around the same axis.
 |----------|------|-------------|----------|
 | `sketches` | [`[Sketch; 1+]`](/docs/kcl-std/types/std-types-Sketch) | The sketch or set of sketches that should be revolved | Yes |
 | `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) | Axis of revolution. | Yes |
-| `angle` | `number(Angle)` | Angle to revolve (in degrees). Default is 360. | No |
-| `tolerance` | `number(Length)` | Tolerance for the revolve operation. | No |
+| `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
+| `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Tolerance for the revolve operation. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
-| `bidirectionalAngle` | `number(Angle)` | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
+| `bidirectionalAngle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the start of the revolve, i.e. the original sketch. | No |
 | `tagEnd` | [`tag`](/docs/kcl-std/types/std-types-tag) | A named tag for the face at the end of the revolve. | No |
 

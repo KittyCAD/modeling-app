@@ -17,11 +17,11 @@ acos(@num: number(_)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(_)` |  | Yes |
+| `num` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(rad)`
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples
