@@ -113,7 +113,7 @@ export function createApplicationCommands({
           : requestedProjectName
 
         const kclSample = findKclSample(data.sample)
-        if (kclSample && kclSample.files.length > 1) {
+        if (kclSample && kclSample.files.length >= 1) {
           const pathParts = webSafePathSplit(data.sample)
           const projectPathPart = pathParts[0]
           const files = kclSample.files
@@ -148,13 +148,33 @@ export function createApplicationCommands({
                   requestedProjectName: requestedProjectName,
                 })
               }
-              systemIOActor.send({
-                type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-                data: {
-                  files: requestedFiles,
-                  requestedProjectName: requestedProjectName,
-                },
-              })
+
+              if (requestedFiles.length === 1) {
+                /**
+                 * Navigates to the single file that could be renamed on disk for duplicates
+                 */
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.importFileFromURL,
+                  data: {
+                    requestedProjectName:
+                      requestedFiles[0].requestedProjectName,
+                    requestedFileNameWithExtension:
+                      requestedFiles[0].requestedFileName,
+                    requestedCode: requestedFiles[0].requestedCode,
+                  },
+                })
+              } else {
+                /**
+                 * Bulk create the assembly and navigate to the project
+                 */
+                systemIOActor.send({
+                  type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+                  data: {
+                    files: requestedFiles,
+                    requestedProjectName: requestedProjectName,
+                  },
+                })
+              }
             })
             .catch(reportError)
         } else if (data.source === 'local' && data.path) {
@@ -202,16 +222,51 @@ export function createApplicationCommands({
           ]
         },
       },
+      sample: {
+        inputType: 'options',
+        required: (commandContext) =>
+          !['local'].includes(
+            commandContext.argumentsToSubmit.source as string
+          ),
+        hidden: (commandContext) =>
+          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+        valueSummary(value) {
+          const MAX_LENGTH = 12
+          if (typeof value === 'string') {
+            return value.length > MAX_LENGTH
+              ? value.substring(0, MAX_LENGTH) + '...'
+              : value
+          }
+          return value
+        },
+        options: everyKclSample.map((sample) => {
+          return {
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
+          }
+        }),
+      },
       method: {
         inputType: 'options',
         required: true,
         skip: true,
-        options: isDesktop()
-          ? [
-              { name: 'New project', value: 'newProject', isCurrent: true },
-              { name: 'Existing project', value: 'existingProject' },
-            ]
-          : [{ name: 'Overwrite', value: 'existingProject' }],
+        options: ({ argumentsToSubmit }, _) => {
+          if (isDesktop() && typeof argumentsToSubmit.sample === 'string') {
+            const kclSample = findKclSample(argumentsToSubmit.sample)
+            if (kclSample && kclSample.files.length > 1) {
+              return [
+                { name: 'New project', value: 'newProject', isCurrent: true },
+              ]
+            } else {
+              return [
+                { name: 'New project', value: 'newProject', isCurrent: true },
+                { name: 'Existing project', value: 'existingProject' },
+              ]
+            }
+          } else {
+            return [{ name: 'Overwrite', value: 'existingProject' }]
+          }
+        },
         valueSummary(value) {
           return isDesktop()
             ? value === 'newProject'
@@ -245,30 +300,6 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
-      },
-      sample: {
-        inputType: 'options',
-        required: (commandContext) =>
-          !['local'].includes(
-            commandContext.argumentsToSubmit.source as string
-          ),
-        hidden: (commandContext) =>
-          ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        valueSummary(value) {
-          const MAX_LENGTH = 12
-          if (typeof value === 'string') {
-            return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
-              : value
-          }
-          return value
-        },
-        options: everyKclSample.map((sample) => {
-          return {
-            value: sample.pathFromProjectDirectoryToFirstFile,
-            name: sample.title,
-          }
-        }),
       },
       path: {
         inputType: 'path',
