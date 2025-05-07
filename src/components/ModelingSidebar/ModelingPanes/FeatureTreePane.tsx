@@ -55,9 +55,6 @@ export const FeatureTreePane = () => {
             },
           })
         },
-        sendEditFlowStart: () => {
-          modelingSend({ type: 'Enter sketch' })
-        },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
