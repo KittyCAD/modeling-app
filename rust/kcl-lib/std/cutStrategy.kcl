@@ -1,0 +1,9 @@
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// Try the fast but simple Basic strategy, and if that fails, try the slow and complex CSG strategy.
+export automatic = "automatic"
+/// The basic strategy is fastest, but it can't handle complicated cases (like chamfering two edges that touch).
+export basic = "basic"
+/// The CSG strategy is slowest, but it can handle complex cases (like chamfering two edges that touch).
+export csg = "csg"

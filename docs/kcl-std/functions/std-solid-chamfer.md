@@ -13,6 +13,7 @@ chamfer(
   length: number(Length),
   tags: [Edge; 1+],
   tag?: tag,
+  strategy?: string,
 ): Solid
 ```
 
@@ -28,6 +29,7 @@ a sharp, straight transitional edge.
 | `length` | `number(Length)` | The length of the chamfer | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to chamfer | Yes |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this chamfer | No |
+| `strategy` | [`string`](/docs/kcl-std/types/std-types-string) | Which strategy should be used to perform this chamfer? | No |
 
 ### Returns
 

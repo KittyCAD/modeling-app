@@ -332,11 +332,10 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_ids: Vec<ArtifactId>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub surface_id: Option<ArtifactId>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub surface_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
 }
 
@@ -679,7 +678,7 @@ impl EdgeCut {
         let Artifact::EdgeCut(new) = new else {
             return Some(new);
         };
-        merge_opt_id(&mut self.surface_id, new.surface_id);
+        merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
 
         None
@@ -1270,22 +1269,19 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
             let mut return_arr = Vec::new();
+            let mut surface_ids = Vec::with_capacity(cmd.extra_face_ids.len() + 1);
+            surface_ids.push(id);
+            for id in &cmd.extra_face_ids {
+                surface_ids.push(id.into());
+            }
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: cmd.edge_id.into(),
-                edge_ids: Vec::new(),
-                surface_id: None,
+                edge_ids: cmd.edge_ids.iter().copied().map(From::from).collect(),
+                surface_ids,
                 code_ref,
             }));
-            let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
-            if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
-                let mut new_segment = consumed_edge.clone();
-                new_segment.edge_cut_id = Some(id);
-                return_arr.push(Artifact::Segment(new_segment));
-            } else {
-                // TODO: Handle other types like SweepEdge.
-            }
+            // TODO: Handle other types like SweepEdge.
             return Ok(return_arr);
         }
         ModelingCmd::EntityMakeHelixFromParams(_) => {

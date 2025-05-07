@@ -778,6 +778,18 @@ impl<'a> FromKclValue<'a> for TagNode {
     }
 }
 
+impl<'a> FromKclValue<'a> for kcmc::shared::CutStrategy {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg.as_str() {
+            Some("automatic") => Some(Self::Automatic),
+            Some("basic") => Some(Self::Basic),
+            Some("csg") => Some(Self::Csg),
+            Some(_) => None,
+            None => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for TagIdentifier {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_identifier().ok()

@@ -82,7 +82,7 @@ impl Artifact {
             Artifact::Wall(a) => vec![a.seg_id, a.sweep_id],
             Artifact::Cap(a) => vec![a.sweep_id],
             Artifact::SweepEdge(a) => vec![a.seg_id, a.sweep_id],
-            Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
+            Artifact::EdgeCut(a) => a.edge_ids.clone(),
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
         }
@@ -175,9 +175,7 @@ impl Artifact {
                 // consumed_edge_id.
                 let mut ids = Vec::new();
                 ids.extend(&a.edge_ids);
-                if let Some(surface_id) = a.surface_id {
-                    ids.push(surface_id);
-                }
+                ids.extend(&a.surface_ids);
                 ids
             }
             Artifact::EdgeCutEdge(a) => {
