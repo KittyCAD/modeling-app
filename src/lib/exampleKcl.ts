@@ -1,9 +1,4 @@
 import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
-import parameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
-import fan from '@public/kcl-samples/axial-fan/fan.kcl?raw'
-import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
-import fanHousing from '@public/kcl-samples/axial-fan/fan-housing.kcl?raw'
-import axialFanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 
 export { bracket }
 

@@ -13,7 +13,7 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
-import { browserAxialFan } from '@src/lib/exampleKcl'
+import { bracket, browserAxialFan } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {

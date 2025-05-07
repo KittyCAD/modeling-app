@@ -14,7 +14,6 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { Spinner } from '@src/components/Spinner'
 import {
-  ONBOARDING_PROJECT_NAME,
   ONBOARDING_DATA_ATTRIBUTE,
   BROWSER_PROJECT_NAME,
   PROJECT_ENTRYPOINT,
@@ -30,7 +29,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
   browserAxialFan,
   browserAxialFanAfterTextToCad,
-  browserCpuFan,
 } from '@src/lib/exampleKcl'
 
 type BrowserOnboaringRoute = RouteObject & {
