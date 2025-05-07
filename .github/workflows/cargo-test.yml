@@ -175,13 +175,27 @@ jobs:
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
           ls -lah
           cd rust
-          cargo nextest run\
-           --retries=10 --no-fail-fast --profile ci --archive-file nextest-archive.tar.zst \
+          cargo nextest run \
+           --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
            --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
            2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results-${{ matrix.partitionIndex }}
+          path: test-results/
+          retention-days: 30
+      - name: Create report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Rust Tests
+          path: test-results/junit.xml
+          reporter: java-junit
   run-wasm-tests:
     name: Run wasm tests
     strategy:
