@@ -393,22 +393,12 @@ flowchart LR
   351["SweepEdge Adjacent"]
   352["SweepEdge Adjacent"]
   353["SweepEdge Adjacent"]
-  354["EdgeCut Chamfer<br>[657, 888, 2]"]
-  355["EdgeCut Chamfer<br>[657, 888, 2]"]
-  356["EdgeCut Chamfer<br>[657, 888, 2]"]
-  357["EdgeCut Chamfer<br>[657, 888, 2]"]
-  358["EdgeCut Fillet<br>[667, 873, 6]"]
-  359["EdgeCut Fillet<br>[667, 873, 6]"]
-  360["EdgeCut Fillet<br>[667, 873, 6]"]
-  361["EdgeCut Fillet<br>[667, 873, 6]"]
-  362["EdgeCut Chamfer<br>[707, 853, 8]"]
-  363["EdgeCut Chamfer<br>[707, 853, 8]"]
-  364["EdgeCut Chamfer<br>[707, 853, 8]"]
-  365["EdgeCut Chamfer<br>[707, 853, 8]"]
-  366["EdgeCut Chamfer<br>[707, 853, 8]"]
-  367["EdgeCut Chamfer<br>[707, 853, 8]"]
-  368["EdgeCut Chamfer<br>[707, 853, 8]"]
-  369["EdgeCut Chamfer<br>[707, 853, 8]"]
+  354["EdgeCut Fillet<br>[657, 888, 2]"]
+  355["EdgeCut Fillet<br>[667, 873, 6]"]
+  356["EdgeCut Fillet<br>[707, 853, 8]"]
+  357["EdgeCut Fillet<br>[707, 853, 8]"]
+  358["EdgeCut Fillet<br>[707, 853, 8]"]
+  359["EdgeCut Fillet<br>[707, 853, 8]"]
   1 --- 18
   2 --- 22
   3 --- 23
@@ -709,7 +699,6 @@ flowchart LR
   115 --- 179
   115 x--> 228
   115 --- 256
-  115 x--> 307
   115 --- 308
   164 <--x 116
   116 --- 184
@@ -1161,20 +1150,20 @@ flowchart LR
   294 <--x 244
   295 <--x 244
   296 <--x 244
-  301 <--x 362
-  303 <--x 365
-  305 <--x 360
-  306 <--x 359
-  307 <--x 361
-  308 <--x 358
-  314 <--x 363
-  315 <--x 364
-  319 <--x 369
-  320 <--x 367
-  322 <--x 355
-  323 <--x 356
+  301 <--x 356
+  303 <--x 356
+  305 <--x 355
+  306 <--x 355
+  307 <--x 355
+  308 <--x 355
+  314 <--x 357
+  315 <--x 357
+  319 <--x 358
+  320 <--x 358
+  322 <--x 354
+  323 <--x 354
   324 <--x 354
-  325 <--x 357
-  350 <--x 368
-  353 <--x 366
+  325 <--x 354
+  350 <--x 359
+  353 <--x 359
 ```

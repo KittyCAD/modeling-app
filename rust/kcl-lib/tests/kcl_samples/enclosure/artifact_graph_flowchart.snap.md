@@ -184,17 +184,8 @@ flowchart LR
   144["SweepEdge Adjacent"]
   145["SweepEdge Adjacent"]
   146["EdgeCut Fillet<br>[789, 1071, 0]"]
-  147["EdgeCut Fillet<br>[789, 1071, 0]"]
-  148["EdgeCut Fillet<br>[789, 1071, 0]"]
-  149["EdgeCut Fillet<br>[789, 1071, 0]"]
-  150["EdgeCut Fillet<br>[3611, 3893, 0]"]
-  151["EdgeCut Fillet<br>[3611, 3893, 0]"]
-  152["EdgeCut Fillet<br>[3611, 3893, 0]"]
-  153["EdgeCut Fillet<br>[3611, 3893, 0]"]
-  154["EdgeCut Fillet<br>[5399, 5681, 0]"]
-  155["EdgeCut Fillet<br>[5399, 5681, 0]"]
-  156["EdgeCut Fillet<br>[5399, 5681, 0]"]
-  157["EdgeCut Fillet<br>[5399, 5681, 0]"]
+  147["EdgeCut Fillet<br>[3611, 3893, 0]"]
+  148["EdgeCut Fillet<br>[5399, 5681, 0]"]
   1 --- 8
   2 --- 9
   2 --- 14
@@ -435,15 +426,15 @@ flowchart LR
   121 <--x 113
   122 <--x 113
   131 <--x 146
-  132 <--x 149
-  133 <--x 148
-  134 <--x 147
-  135 <--x 150
-  136 <--x 152
-  137 <--x 153
-  138 <--x 151
-  139 <--x 155
-  140 <--x 154
-  141 <--x 156
-  142 <--x 157
+  132 <--x 146
+  133 <--x 146
+  134 <--x 146
+  135 <--x 147
+  136 <--x 147
+  137 <--x 147
+  138 <--x 147
+  139 <--x 148
+  140 <--x 148
+  141 <--x 148
+  142 <--x 148
 ```

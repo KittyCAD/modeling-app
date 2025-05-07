@@ -114,9 +114,6 @@ flowchart LR
   84["SweepEdge Adjacent"]
   85["SweepEdge Adjacent"]
   86["EdgeCut Fillet<br>[1068, 1274, 0]"]
-  87["EdgeCut Fillet<br>[1068, 1274, 0]"]
-  88["EdgeCut Fillet<br>[1068, 1274, 0]"]
-  89["EdgeCut Fillet<br>[1068, 1274, 0]"]
   1 --- 7
   2 --- 8
   3 --- 9
@@ -248,8 +245,8 @@ flowchart LR
   74 <--x 69
   75 <--x 69
   76 <--x 69
-  81 <--x 89
-  82 <--x 88
-  83 <--x 87
+  81 <--x 86
+  82 <--x 86
+  83 <--x 86
   84 <--x 86
 ```
