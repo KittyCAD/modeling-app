@@ -1,6 +1,5 @@
 import { isDesktop } from '@src/lib/isDesktop'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
-import toast from 'react-hot-toast'
 
 export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
@@ -59,11 +58,8 @@ export function createThumbnailPNGOnDesktop({
       const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
       // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
       writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-        .then(() => {
-          toast.success(`made thumbnail${projectDirectoryWithoutEndingSlash}`)
-        })
+        .then(() => {})
         .catch((e) => {
-          toast.error('no thumbnail')
           console.error(
             `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
           )
