@@ -1270,15 +1270,20 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
             let mut return_arr = Vec::new();
+            let edge_id = if let Some(edge_id) = cmd.edge_id {
+                ArtifactId::new(edge_id)
+            } else {
+                cmd.edge_ids.first().unwrap().into()
+            };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: cmd.edge_id.into(),
+                consumed_edge_id: edge_id,
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
             }));
-            let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
+            let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);

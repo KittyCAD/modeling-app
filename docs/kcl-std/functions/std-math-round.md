@@ -1,6 +1,6 @@
 ---
 title: "round"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Round a number to the nearest integer."
 layout: manual
 ---

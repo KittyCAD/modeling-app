@@ -39,8 +39,8 @@ base_unit = "mm"
 text_wrapping = false
 "#;
 
-const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings-project.md";
-const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings-user.md";
+const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/project.md";
+const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/user.md";
 
 fn init_handlebars() -> handlebars::Handlebars<'static> {
     let mut hbs = handlebars::Handlebars::new();

@@ -1,6 +1,6 @@
 ---
 title: "Z"
-subtitle: "Constant in prelude"
+subtitle: "Constant in std"
 excerpt: ""
 layout: manual
 ---

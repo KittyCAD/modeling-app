@@ -1,6 +1,6 @@
 ---
 title: "sin"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the sine of a number."
 layout: manual
 ---

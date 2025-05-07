@@ -1,6 +1,6 @@
 ---
 title: "units::toMeters"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to meters from its current units."
 layout: manual
 ---

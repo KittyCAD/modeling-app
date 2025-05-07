@@ -1,6 +1,6 @@
 ---
 title: "offsetPlane"
-subtitle: "Function in prelude"
+subtitle: "Function in std"
 excerpt: "Offset a plane by a distance along its normal."
 layout: manual
 ---

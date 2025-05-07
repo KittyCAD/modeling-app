@@ -1,6 +1,6 @@
 ---
 title: "revolve"
-subtitle: "Function in sketch"
+subtitle: "Function in std::sketch"
 excerpt: "Rotate a sketch around some provided axis, creating a solid from its extent."
 layout: manual
 ---

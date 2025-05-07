@@ -1,6 +1,6 @@
 ---
 title: "pow"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the number to a power."
 layout: manual
 ---

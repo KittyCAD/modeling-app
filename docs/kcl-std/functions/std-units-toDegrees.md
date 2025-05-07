@@ -1,6 +1,6 @@
 ---
 title: "units::toDegrees"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Converts a number to degrees from its current units."
 layout: manual
 ---

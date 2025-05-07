@@ -1,6 +1,6 @@
 ---
 title: "TAU"
-subtitle: "Constant in math"
+subtitle: "Constant in std::math"
 excerpt: "The value of `tau`, the full circle constant (τ). Equal to 2π."
 layout: manual
 ---
