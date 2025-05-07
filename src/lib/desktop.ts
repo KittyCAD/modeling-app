@@ -25,6 +25,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase } from '@src/lib/utils'
+import { IS_NIGHTLY } from '@src/routes/utils'
 
 export async function renameProjectDirectory(
   projectPath: string,
@@ -450,14 +451,19 @@ export async function writeProjectSettingsFile(
   return window.electron.writeFile(projectSettingsFilePath, tomlStr)
 }
 
-// Since we want backwards compatibility with the old settings file, we need to
-// rename the folder for macos.
-const MACOS_APP_NAME = 'dev.zoo.modeling-app'
+// Important for saving settings.
+// TODO: should be pulled from electron-builder.yml
+const APP_ID = IS_NIGHTLY
+  ? 'dev.zoo.modeling-app-nightly'
+  : 'dev.zoo.modeling-app'
 
 const getAppFolderName = () => {
   if (window.electron.os.isMac || window.electron.os.isWindows) {
-    return MACOS_APP_NAME
+    return APP_ID
   }
+  // TODO: we need to make linux use the same convention this is weird
+  // This variable below gets the -nightly suffix on nighly too thru scripts/flip-files-to-nightly.sh
+  // But it should be consistent with the reserve domain app id we use on Windows and Linux
   return window.electron.packageJson.name
 }
 

@@ -139,17 +139,19 @@ impl crate::docs::StdLibFn for Min {
         false
     }
 
-    fn examples(&self) -> Vec<String> {
+    fn examples(&self) -> Vec<(String, bool)> {
         let code_blocks = vec!["This is another code block.\nyes sirrr.\nmin"];
+        let norun = vec![false];
         code_blocks
             .iter()
-            .map(|cb| {
+            .zip(norun)
+            .map(|(cb, norun)| {
                 let program = crate::Program::parse_no_errs(cb).unwrap();
                 let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
                 options.insert_final_newline = false;
-                program.ast.recast(&options, 0)
+                (program.ast.recast(&options, 0), norun)
             })
-            .collect::<Vec<String>>()
+            .collect::<Vec<(String, bool)>>()
     }
 
     fn std_lib_fn(&self) -> crate::std::StdFn {

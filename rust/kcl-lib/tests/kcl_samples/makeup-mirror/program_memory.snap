@@ -43,7 +43,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     }
   },
   "armFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "armLength": {
     "type": "Number",
@@ -288,7 +289,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     }
   },
   "hingeFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "hingeGap": {
     "type": "Number",
@@ -1194,7 +1196,8 @@ description: Variables in memory after executing makeup-mirror.kcl
     }
   },
   "mirrorFn": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "mirrorRadius": {
     "type": "Number",

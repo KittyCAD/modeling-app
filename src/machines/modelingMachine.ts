@@ -49,11 +49,8 @@ import {
   addHelix,
   addOffsetPlane,
   addShell,
-  addSweep,
-  extrudeSketch,
   insertNamedConstant,
   insertVariableAndOffsetPathToNode,
-  loftSketches,
 } from '@src/lang/modifyAst'
 import type {
   ChamferParameters,
@@ -66,9 +63,12 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
+  addExtrude,
+  addLoft,
+  addRevolve,
+  addSweep,
   getAxisExpressionAndIndex,
-  revolveSketch,
-} from '@src/lang/modifyAst/addRevolve'
+} from '@src/lang/modifyAst/addSweep'
 import {
   applyIntersectFromTargetOperatorSelections,
   applySubtractFromTargetOperatorSelections,
@@ -94,7 +94,6 @@ import {
   updatePathToNodesAfterEdit,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getFaceCodeRef,
   getPathsFromPlaneArtifact,
@@ -133,7 +132,7 @@ import {
 } from '@src/lib/singletons'
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { uuidv4 } from '@src/lib/utils'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
@@ -306,7 +305,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Sketch On Face' }
   | {
-      type: 'Select default plane'
+      type: 'Select sketch plane'
       data: DefaultPlane | ExtrudeFacePlane | OffsetPlane
     }
   | {
@@ -1793,69 +1792,20 @@ export const modelingMachine = setup({
       unknown,
       ModelingCommandSchema['Extrude'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
-      const { selection, distance, nodeToEdit } = input
-      const isEditing =
-        nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number'
-      let ast = structuredClone(kclManager.ast)
-      let extrudeName: string | undefined = undefined
-
-      // If this is an edit flow, first we're going to remove the old extrusion
-      if (isEditing) {
-        // Extract the plane name from the node to edit
-        const extrudeNameNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          nodeToEdit,
-          'VariableDeclaration'
-        )
-        if (err(extrudeNameNode)) {
-          console.error('Error extracting plane name')
-        } else {
-          extrudeName = extrudeNameNode.node.declaration.id.name
-        }
-
-        // Removing the old extrusion statement
-        const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0] as number, 1)
-        ast.body = newBody
-      }
-
-      const pathToNode = getNodePathFromSourceRange(
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const { nodeToEdit, sketches, length } = input
+      const { ast } = kclManager
+      const astResult = addExtrude({
         ast,
-        selection.graphSelections[0]?.codeRef.range
-      )
-      // Add an extrude statement to the AST
-      const extrudeSketchRes = extrudeSketch({
-        node: ast,
-        pathToNode,
-        artifact: selection.graphSelections[0].artifact,
-        artifactGraph: kclManager.artifactGraph,
-        distance:
-          'variableName' in distance
-            ? distance.variableIdentifierAst
-            : distance.valueAst,
-        extrudeName,
+        sketches,
+        length,
+        nodeToEdit,
       })
-      if (err(extrudeSketchRes)) return extrudeSketchRes
-      const { modifiedAst, pathToExtrudeArg } = extrudeSketchRes
-
-      // Insert the distance variable if the user has provided a variable name
-      if (
-        'variableName' in distance &&
-        distance.variableName &&
-        typeof pathToExtrudeArg[1][0] === 'number'
-      ) {
-        const insertIndex = Math.min(
-          pathToExtrudeArg[1][0],
-          distance.insertIndex
-        )
-        const newBody = [...modifiedAst.body]
-        newBody.splice(insertIndex, 0, distance.variableDeclarationAst)
-        modifiedAst.body = newBody
-        // Since we inserted a new variable, we need to update the path to the extrude argument
-        pathToExtrudeArg[1][0]++
+      if (err(astResult)) {
+        return Promise.reject(new Error("Couldn't add extrude statement"))
       }
 
+      const { modifiedAst, pathToNode } = astResult
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,
@@ -1865,73 +1815,92 @@ export const modelingMachine = setup({
           codeManager,
         },
         {
-          focusPath: [pathToExtrudeArg],
+          focusPath: [pathToNode],
         }
       )
     }),
+    sweepAstMod: fromPromise<
+      unknown,
+      ModelingCommandSchema['Sweep'] | undefined
+    >(async ({ input }) => {
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const { nodeToEdit, sketches, path, sectional } = input
+      const { ast } = kclManager
+      const astResult = addSweep({
+        ast,
+        sketches,
+        path,
+        sectional,
+        nodeToEdit,
+      })
+      if (err(astResult)) {
+        return Promise.reject(astResult)
+      }
+
+      const { modifiedAst, pathToNode } = astResult
+      await updateModelingState(
+        modifiedAst,
+        EXECUTION_TYPE_REAL,
+        {
+          kclManager,
+          editorManager,
+          codeManager,
+        },
+        {
+          focusPath: [pathToNode],
+        }
+      )
+    }),
+    loftAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Loft'] | undefined
+      }) => {
+        if (!input) return Promise.reject(new Error('No input provided'))
+        const { sketches } = input
+        const { ast } = kclManager
+        const astResult = addLoft({ ast, sketches })
+        if (err(astResult)) {
+          return Promise.reject(astResult)
+        }
+
+        const { modifiedAst, pathToNode } = astResult
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
+          }
+        )
+      }
+    ),
     revolveAstMod: fromPromise<
       unknown,
       ModelingCommandSchema['Revolve'] | undefined
     >(async ({ input }) => {
-      if (!input) return new Error('No input provided')
-      const { nodeToEdit, selection, angle, axis, edge, axisOrEdge } = input
-      let ast = kclManager.ast
-      let variableName: string | undefined = undefined
-      let insertIndex: number | undefined = undefined
-
-      // If this is an edit flow, first we're going to remove the old extrusion
-      if (nodeToEdit && typeof nodeToEdit[1][0] === 'number') {
-        // Extract the plane name from the node to edit
-        const nameNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          nodeToEdit,
-          'VariableDeclaration'
-        )
-        if (err(nameNode)) {
-          console.error('Error extracting plane name')
-        } else {
-          variableName = nameNode.node.declaration.id.name
-        }
-
-        // Removing the old extrusion statement
-        const newBody = [...ast.body]
-        newBody.splice(nodeToEdit[1][0], 1)
-        ast.body = newBody
-        insertIndex = nodeToEdit[1][0]
-      }
-
-      if (
-        'variableName' in angle &&
-        angle.variableName &&
-        angle.insertIndex !== undefined
-      ) {
-        const newBody = [...ast.body]
-        newBody.splice(angle.insertIndex, 0, angle.variableDeclarationAst)
-        ast.body = newBody
-        if (insertIndex) {
-          // if editing need to offset that new var
-          insertIndex += 1
-        }
-      }
-
-      // This is the selection of the sketch that will be revolved
-      const pathToNode = getNodePathFromSourceRange(
+      if (!input) return Promise.reject(new Error('No input provided'))
+      const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
+      const { ast } = kclManager
+      const astResult = addRevolve({
         ast,
-        selection.graphSelections[0]?.codeRef.range
-      )
-
-      const revolveSketchRes = revolveSketch(
-        ast,
-        pathToNode,
-        'variableName' in angle ? angle.variableIdentifierAst : angle.valueAst,
+        sketches,
+        angle,
         axisOrEdge,
         axis,
         edge,
-        variableName,
-        insertIndex
-      )
-      if (trap(revolveSketchRes)) return
-      const { modifiedAst, pathToRevolveArg } = revolveSketchRes
+        nodeToEdit,
+      })
+      if (err(astResult)) {
+        return Promise.reject(astResult)
+      }
+
+      const { modifiedAst, pathToNode } = astResult
       await updateModelingState(
         modifiedAst,
         EXECUTION_TYPE_REAL,
@@ -1941,7 +1910,7 @@ export const modelingMachine = setup({
           codeManager,
         },
         {
-          focusPath: [pathToRevolveArg],
+          focusPath: [pathToNode],
         }
       )
     }),
@@ -2165,141 +2134,6 @@ export const modelingMachine = setup({
           },
           {
             focusPath: [pathToNode],
-          }
-        )
-      }
-    ),
-    sweepAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Sweep'] | undefined
-      }) => {
-        if (!input) return new Error('No input provided')
-        // Extract inputs
-        const ast = kclManager.ast
-        const { target, trajectory, sectional, nodeToEdit } = input
-        let variableName: string | undefined = undefined
-        let insertIndex: number | undefined = undefined
-
-        // If this is an edit flow, first we're going to remove the old one
-        if (nodeToEdit !== undefined && typeof nodeToEdit[1][0] === 'number') {
-          // Extract the plane name from the node to edit
-          const variableNode = getNodeFromPath<VariableDeclaration>(
-            ast,
-            nodeToEdit,
-            'VariableDeclaration'
-          )
-
-          if (err(variableNode)) {
-            console.error('Error extracting name')
-          } else {
-            variableName = variableNode.node.declaration.id.name
-          }
-
-          // Removing the old statement
-          const newBody = [...ast.body]
-          newBody.splice(nodeToEdit[1][0], 1)
-          ast.body = newBody
-          insertIndex = nodeToEdit[1][0]
-        }
-
-        // Find the target declaration
-        const targetNodePath = getNodePathFromSourceRange(
-          ast,
-          target.graphSelections[0].codeRef.range
-        )
-        // Gotchas, not sure why
-        // - it seems like in some cases we get a list on edit, especially the state that e2e hits
-        // - looking for a VariableDeclaration seems more robust than VariableDeclarator
-        const targetNode = getNodeFromPath<
-          VariableDeclaration | VariableDeclaration[]
-        >(ast, targetNodePath, 'VariableDeclaration')
-        if (err(targetNode)) {
-          return new Error("Couldn't parse profile selection")
-        }
-
-        const targetDeclarator = isArray(targetNode.node)
-          ? targetNode.node[0].declaration
-          : targetNode.node.declaration
-
-        // Find the trajectory (or path) declaration
-        const trajectoryNodePath = getNodePathFromSourceRange(
-          ast,
-          trajectory.graphSelections[0].codeRef.range
-        )
-        // Also looking for VariableDeclaration for consistency here
-        const trajectoryNode = getNodeFromPath<VariableDeclaration>(
-          ast,
-          trajectoryNodePath,
-          'VariableDeclaration'
-        )
-        if (err(trajectoryNode)) {
-          return new Error("Couldn't parse path selection")
-        }
-
-        const trajectoryDeclarator = trajectoryNode.node.declaration
-
-        // Perform the sweep
-        const { modifiedAst, pathToNode } = addSweep({
-          node: ast,
-          targetDeclarator,
-          trajectoryDeclarator,
-          sectional,
-          variableName,
-          insertIndex,
-        })
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
-    ),
-    loftAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Loft'] | undefined
-      }) => {
-        if (!input) return new Error('No input provided')
-        // Extract inputs
-        const ast = kclManager.ast
-        const { selection } = input
-        const declarators = selection.graphSelections.flatMap((s) => {
-          const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
-          const nodeFromPath = getNodeFromPath<VariableDeclarator>(
-            ast,
-            path,
-            'VariableDeclarator'
-          )
-          return err(nodeFromPath) ? [] : nodeFromPath.node
-        })
-
-        // TODO: add better validation on selection
-        if (!(declarators && declarators.length > 1)) {
-          trap('Not enough sketches selected')
-        }
-
-        // Perform the loft
-        const loftSketchesRes = loftSketches(ast, declarators)
-        await updateModelingState(
-          loftSketchesRes.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          {
-            kclManager,
-            editorManager,
-            codeManager,
-          },
-          {
-            focusPath: [loftSketchesRes.pathToNode],
           }
         )
       }
@@ -4421,7 +4255,7 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
-        'Select default plane': {
+        'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
         },
@@ -4434,7 +4268,7 @@ export const modelingMachine = setup({
         id: 'animate-to-face',
 
         input: ({ event }) => {
-          if (event.type !== 'Select default plane') return undefined
+          if (event.type !== 'Select sketch plane') return undefined
           return event.data
         },
 
