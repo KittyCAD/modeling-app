@@ -183,19 +183,9 @@ jobs:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
       - name: Upload results
-        uses: actions/upload-artifact@v4
         if: always()
-        with:
-          name: test-results-${{ matrix.partitionIndex }}
-          path: test-results/
-          retention-days: 30
-      - name: Create report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Rust Tests
-          path: test-results/junit.xml
-          reporter: java-junit
+        # TODO: Send to Test Analysis Bot for reporting
+        run: cat test-results/junit.xml
   run-wasm-tests:
     name: Run wasm tests
     strategy:
