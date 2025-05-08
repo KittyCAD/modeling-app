@@ -73,39 +73,6 @@ export const OnboardingCard = ({
   </div>
 )
 
-export function useDemoCode() {
-  const { overallState, immediateState } = useNetworkContext()
-
-  useEffect(() => {
-    async function setCodeToDemoIfNeeded() {
-      // Don't run if the editor isn't loaded or the code is already the bracket
-      if (!editorManager.editorView || codeManager.code === browserAxialFan) {
-        return
-      }
-      // Don't run if the network isn't healthy or the connection isn't established
-      if (
-        overallState === NetworkHealthState.Disconnected ||
-        overallState === NetworkHealthState.Issue ||
-        immediateState.type !== EngineConnectionStateType.ConnectionEstablished
-      ) {
-        return
-      }
-      const pResult = parse(browserAxialFan)
-      if (trap(pResult) || !resultIsOk(pResult)) {
-        return Promise.reject(pResult)
-      }
-      const ast = pResult.program
-      await updateModelingState(ast, EXECUTION_TYPE_REAL, {
-        kclManager: kclManager,
-        editorManager: editorManager,
-        codeManager: codeManager,
-      })
-    }
-
-    setCodeToDemoIfNeeded().catch(reportRejection)
-  }, [editorManager.editorView, immediateState.type, overallState])
-}
-
 export function useNextClick(newStatus: OnboardingStatus) {
   const filePath = useAbsoluteFilePath()
   const navigate = useNavigate()
