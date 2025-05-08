@@ -2321,11 +2321,12 @@ extrude001 = extrude(sketch001, length = -12)
     })
   })
 
-  test(`Fillet point-and-click edit rejected when not in pipe`, async ({
+  test(`Fillet point-and-click edit standalone expression`, async ({
     context,
     page,
     homePage,
     scene,
+    editor,
     toolbar,
     cmdBar,
   }) => {
@@ -2339,23 +2340,44 @@ profile001 = circle(
 extrude001 = extrude(profile001, length = 100)
 fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
 `
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, initialCode)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    await test.step('Double-click in feature tree and expect error toast', async () => {
+    await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+    })
+    await test.step('Edit fillet', async () => {
       await toolbar.openPane('feature-tree')
+      await toolbar.closePane('code')
       const operationButton = await toolbar.getFeatureTreeOperation('Fillet', 0)
       await operationButton.dblclick({ button: 'left' })
-      await expect(
-        page.getByText(
-          'Only chamfer and fillet in pipe expressions are supported for edits'
-        )
-      ).toBeVisible()
-      await page.waitForTimeout(1000)
+      await cmdBar.expectState({
+        commandName: 'Fillet',
+        currentArgKey: 'radius',
+        currentArgValue: '5',
+        headerArguments: {
+          Radius: '5',
+        },
+        highlightedHeaderArg: 'radius',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText('20')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: {
+          Radius: '20',
+        },
+        commandName: 'Fillet',
+      })
+      await cmdBar.progressCmdBar()
+    })
+    await test.step('Confirm changes', async () => {
+      await toolbar.openPane('code')
+      await toolbar.closePane('feature-tree')
+      await editor.expectEditor.toContain('radius = 20')
     })
   })
 
