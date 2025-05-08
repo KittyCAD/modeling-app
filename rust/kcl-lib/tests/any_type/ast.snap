@@ -219,7 +219,7 @@ description: Result of parsing any_type.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "count",
+                                      "name": "accum",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -267,14 +267,15 @@ description: Result of parsing any_type.kcl
                                 "name": "_",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "labeled": false
                             },
                             {
                               "type": "Parameter",
                               "identifier": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "count",
+                                "name": "accum",
                                 "start": 0,
                                 "type": "Identifier"
                               }
