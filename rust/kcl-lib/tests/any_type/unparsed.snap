@@ -14,8 +14,8 @@ fn len(@a: [any]): number(_) {
   return reduce(
     a,
     initial = 0,
-    f = fn(_, count) {
-      return count + 1
+    f = fn(@_, accum) {
+      return accum + 1
     },
   )
 }

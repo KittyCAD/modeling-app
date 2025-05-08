@@ -7,6 +7,49 @@ description: Operations executed any_type.kcl
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
+      "name": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {
+        "accum": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
       "name": "id",
       "functionSourceRange": [],
       "unlabeledArg": {
@@ -119,6 +162,9 @@ description: Operations executed any_type.kcl
       "labeledArgs": {}
     },
     "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"
