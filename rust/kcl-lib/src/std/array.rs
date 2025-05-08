@@ -1,6 +1,10 @@
+use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 
-use super::{args::Arg, Args};
+use super::{
+    args::{Arg, KwArgs},
+    Args,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -44,7 +48,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
 ///   [1..3],
-///   f = fn(id) {
+///   f = fn(@id) {
 ///     return startSketchOn(XY)
 ///       |> circle( center= [id * 2 * r, 0], radius= r)
 ///   }
@@ -81,9 +85,17 @@ async fn call_map_closure(
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn
-        .call(None, exec_state, ctxt, vec![Arg::synthetic(input)], source_range)
-        .await?;
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(input, source_range)),
+        labeled: Default::default(),
+    };
+    let args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
+    let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -106,7 +118,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// using the previous value and the element.
 /// ```no_run
 /// // This function adds two numbers.
-/// fn add(a, b) { return a + b }
+/// fn add(@a, accum) { return a + accum }
 ///
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
@@ -118,7 +130,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// fn sum(arr):
 ///     sumSoFar = 0
 ///     for i in arr:
-///         sumSoFar = add(sumSoFar, i)
+///         sumSoFar = add(i, sumSoFar)
 ///     return sumSoFar
 /// */
 ///
@@ -131,7 +143,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
 /// arr = [1, 2, 3]
-/// sum = reduce(arr, initial = 0, f = fn (i, result_so_far) { return i + result_so_far })
+/// sum = reduce(arr, initial = 0, f = fn (@i, accum) { return i + accum })
 ///
 /// // We use `assert` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
@@ -150,11 +162,11 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], initial = startOfDecagonSketch, f = fn(i, partialDecagon) {
+///   fullDecagon = reduce([1..10], initial = startOfDecagonSketch, f = fn(@i, accum) {
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
-///       return line(partialDecagon, end = [x, y])
+///       return line(accum, end = [x, y])
 ///   })
 ///
 ///   return fullDecagon
@@ -209,16 +221,27 @@ async fn inner_reduce<'a>(
 
 async fn call_reduce_closure(
     elem: KclValue,
-    start: KclValue,
+    accum: KclValue,
     reduce_fn: &FunctionSource,
     source_range: SourceRange,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
+    let mut labeled = IndexMap::with_capacity(1);
+    labeled.insert("accum".to_string(), Arg::new(accum, source_range));
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(elem, source_range)),
+        labeled,
+    };
+    let reduce_fn_args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
     let transform_fn_return = reduce_fn
-        .call(None, exec_state, ctxt, reduce_fn_args, source_range)
+        .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
