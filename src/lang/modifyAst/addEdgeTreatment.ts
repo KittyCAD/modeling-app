@@ -773,7 +773,7 @@ export async function editEdgeTreatment(
 
   // find the index of an argument to update
   const index = edgeTreatmentCall.node.arguments.findIndex(
-    (arg) => arg.label.name === parameterName
+    (arg) => arg.label?.name === parameterName
   )
 
   // create a new argument with the updated value

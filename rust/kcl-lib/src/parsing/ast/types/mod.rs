@@ -460,10 +460,12 @@ impl Node<Program> {
                 crate::walk::Node::CallExpressionKw(call) => {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
-                            if arg.label.inner.name == "color" {
-                                // Get the value of the argument.
-                                if let Expr::Literal(literal) = &arg.arg {
-                                    add_color(literal);
+                            if let Some(l) = &arg.label {
+                                if l.inner.name == "color" {
+                                    // Get the value of the argument.
+                                    if let Expr::Literal(literal) = &arg.arg {
+                                        add_color(literal);
+                                    }
                                 }
                             }
                         }
@@ -1872,7 +1874,7 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: Node<Identifier>,
+    pub label: Option<Node<Identifier>>,
     pub arg: Expr,
 }
 
@@ -1917,7 +1919,7 @@ impl CallExpressionKw {
         self.unlabeled
             .iter()
             .map(|e| (None, e))
-            .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
+            .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
