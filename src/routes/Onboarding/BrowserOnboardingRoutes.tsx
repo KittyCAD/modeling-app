@@ -258,7 +258,7 @@ function FeatureTreePane() {
   // Open the feature tree pane on mount, close on unmount
   useOnboardingPanes(['feature-tree'])
 
-  // Overwrite the code with the "genereated" KCL
+  // Overwrite the code with the "generated" KCL
   useEffect(() => {
     systemIOActor.send({
       type: SystemIOMachineEvents.importFileFromURL,
@@ -412,7 +412,7 @@ function PromptToEditResult() {
   // Open the code pane on mount, close on unmount
   useOnboardingPanes(['code'])
 
-  // Overwrite the code with the "genereated" KCL
+  // Overwrite the code with the "generated" KCL
   useEffect(() => {
     systemIOActor.send({
       type: SystemIOMachineEvents.importFileFromURL,
