@@ -50,7 +50,7 @@ r = 10 // radius
 // Call `map`, using an anonymous function instead of a named one.
 circles = map(
   [1..3],
-  f = fn(id) {
+  f = fn(@id) {
     return startSketchOn(XY)
       |> circle(center = [id * 2 * r, 0], radius = r)
   },

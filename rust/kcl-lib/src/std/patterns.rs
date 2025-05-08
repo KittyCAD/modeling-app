@@ -16,7 +16,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use super::{
-    args::Arg,
+    args::{Arg, KwArgs},
     utils::{point_3d_to_mm, point_to_mm},
 };
 use crate::{
@@ -427,9 +427,18 @@ async fn make_transform<T: GeometryTrait>(
         ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(repetition_num, source_range)),
+        labeled: Default::default(),
+    };
+    let transform_fn_args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
     let transform_fn_return = transform
-        .call(None, exec_state, ctxt, transform_fn_args, source_range)
+        .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.

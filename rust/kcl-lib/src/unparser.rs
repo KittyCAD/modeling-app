@@ -2532,7 +2532,7 @@ sketch002 = startSketchOn({
         let input = r#"squares_out = reduce(
   arr,
   n = 0: number,
-  f = fn(i, squares) {
+  f = fn(@i, accum) {
     return 1
   },
 )

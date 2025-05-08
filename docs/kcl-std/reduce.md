@@ -34,8 +34,8 @@ reduce(
 
 ```kcl
 // This function adds two numbers.
-fn add(a, b) {
-  return a + b
+fn add(@a, accum) {
+  return a + accum
 }
 
 // This function adds an array of numbers.
@@ -49,7 +49,7 @@ fn sum(@arr) {
 fn sum(arr):
     sumSoFar = 0
     for i in arr:
-        sumSoFar = add(sumSoFar, i)
+        sumSoFar = add(i, sumSoFar)
     return sumSoFar */
 
 // We use `assert` to check that our `sum` function gives the
@@ -72,8 +72,8 @@ arr = [1, 2, 3]
 sum = reduce(
   arr,
   initial = 0,
-  f = fn(i, result_so_far) {
-    return i + result_so_far
+  f = fn(@i, accum) {
+    return i + accum
   },
 )
 
@@ -105,11 +105,11 @@ fn decagon(@radius) {
   fullDecagon = reduce(
     [1..10],
     initial = startOfDecagonSketch,
-    f = fn(i, partialDecagon) {
+    f = fn(@i, accum) {
       // Draw one edge of the decagon.
       x = cos(stepAngle * i) * radius
       y = sin(stepAngle * i) * radius
-      return line(partialDecagon, end = [x, y])
+      return line(accum, end = [x, y])
     },
   )
 
