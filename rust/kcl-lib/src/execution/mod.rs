@@ -1741,7 +1741,7 @@ foo
     #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
-fn transform(replicaId) {
+fn transform(@replicaId) {
   // x shouldn't be defined yet.
   scale = x
   return {
@@ -1932,7 +1932,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: array (list)",
+            "Cannot apply unary operator ! to non-boolean value: mixed array (list)",
         );
 
         let code6 = "

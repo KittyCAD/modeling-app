@@ -1324,7 +1324,7 @@ impl Node<CallExpressionKw> {
             },
             self.into(),
             ctx.clone(),
-            exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
+            exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
@@ -1835,89 +1835,6 @@ impl Node<PipeExpression> {
     }
 }
 
-/// For each argument given,
-/// assign it to a parameter of the function, in the given block of function memory.
-/// Returns Err if too few/too many arguments were given for the function.
-fn assign_args_to_params(
-    function_expression: NodeRef<'_, FunctionExpression>,
-    args: Vec<Arg>,
-    exec_state: &mut ExecState,
-) -> Result<(), KclError> {
-    let num_args = function_expression.number_of_args();
-    let (min_params, max_params) = num_args.into_inner();
-    let n = args.len();
-
-    // Check if the user supplied too many arguments
-    // (we'll check for too few arguments below).
-    let err_wrong_number_args = KclError::Semantic(KclErrorDetails {
-        message: if min_params == max_params {
-            format!("Expected {min_params} arguments, got {n}")
-        } else {
-            format!("Expected {min_params}-{max_params} arguments, got {n}")
-        },
-        source_ranges: vec![function_expression.into()],
-    });
-    if n > max_params {
-        return Err(err_wrong_number_args);
-    }
-
-    // Add the arguments to the memory.  A new call frame should have already
-    // been created.
-    for (index, param) in function_expression.params.iter().enumerate() {
-        if let Some(arg) = args.get(index) {
-            // Argument was provided.
-
-            if let Some(ty) = &param.type_ {
-                let value = arg
-                        .value
-                        .coerce(
-                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
-                            exec_state,
-                        )
-                        .map_err(|e| {
-                            let mut message = format!(
-                                "Argument requires a value with type `{}`, but found {}",
-                                ty.inner,
-                                arg.value.human_friendly_type(),
-                            );
-                            if let Some(ty) = e.explicit_coercion {
-                                // TODO if we have access to the AST for the argument we could choose which example to suggest.
-                                message = format!("{message}\n\nYou may need to add information about the type of the argument, for example:\n  using a numeric suffix: `42{ty}`\n  or using type ascription: `foo(): number({ty})`");
-                            }
-                            KclError::Semantic(KclErrorDetails {
-                                message,
-                                source_ranges: vec![arg.source_range],
-                            })
-                        })?;
-                exec_state
-                    .mut_stack()
-                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
-            } else {
-                exec_state.mut_stack().add(
-                    param.identifier.name.clone(),
-                    arg.value.clone(),
-                    (&param.identifier).into(),
-                )?;
-            }
-        } else {
-            // Argument was not provided.
-            if let Some(ref default_val) = param.default_value {
-                // If the corresponding parameter is optional,
-                // then it's fine, the user doesn't need to supply it.
-                let value = KclValue::from_default_param(default_val.clone(), exec_state);
-                exec_state
-                    .mut_stack()
-                    .add(param.identifier.name.clone(), value, (&param.identifier).into())?;
-            } else {
-                // But if the corresponding parameter was required,
-                // then the user has called with too few arguments.
-                return Err(err_wrong_number_args);
-            }
-        }
-    }
-    Ok(())
-}
-
 fn type_check_params_kw(
     fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
@@ -2102,42 +2019,6 @@ fn coerce_result_type(
     }
 }
 
-async fn call_user_defined_function(
-    args: Vec<Arg>,
-    memory: EnvironmentRef,
-    function_expression: NodeRef<'_, FunctionExpression>,
-    exec_state: &mut ExecState,
-    ctx: &ExecutorContext,
-) -> Result<Option<KclValue>, KclError> {
-    // Create a new environment to execute the function body in so that local
-    // variables shadow variables in the parent scope.  The new environment's
-    // parent should be the environment of the closure.
-    exec_state.mut_stack().push_new_env_for_call(memory);
-    if let Err(e) = assign_args_to_params(function_expression, args, exec_state) {
-        exec_state.mut_stack().pop_env();
-        return Err(e);
-    }
-
-    // Execute the function body using the memory we just created.
-    let result = ctx
-        .exec_block(&function_expression.body, exec_state, BodyType::Block)
-        .await;
-    let mut result = result.map(|_| {
-        exec_state
-            .stack()
-            .get(memory::RETURN_NAME, function_expression.as_source_range())
-            .ok()
-            .cloned()
-    });
-
-    result = coerce_result_type(result, function_expression, exec_state);
-
-    // Restore the previous memory.
-    exec_state.mut_stack().pop_env();
-
-    result
-}
-
 async fn call_user_defined_function_kw(
     fn_name: Option<&str>,
     args: crate::std::args::KwArgs,
@@ -2176,41 +2057,6 @@ async fn call_user_defined_function_kw(
 }
 
 impl FunctionSource {
-    pub async fn call(
-        &self,
-        fn_name: Option<String>,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-        mut args: Vec<Arg>,
-        callsite: SourceRange,
-    ) -> Result<Option<KclValue>, KclError> {
-        match self {
-            FunctionSource::Std { props, .. } => {
-                if args.len() <= 1 {
-                    let args = crate::std::Args::new_kw(
-                        KwArgs {
-                            unlabeled: args.pop(),
-                            labeled: IndexMap::new(),
-                        },
-                        callsite,
-                        ctx.clone(),
-                        exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
-                    );
-                    self.call_kw(fn_name, exec_state, ctx, args, callsite).await
-                } else {
-                    Err(KclError::Semantic(KclErrorDetails {
-                        message: format!("{} requires its arguments to be labelled", props.name),
-                        source_ranges: vec![callsite],
-                    }))
-                }
-            }
-            FunctionSource::User { ast, memory, .. } => {
-                call_user_defined_function(args, *memory, ast, exec_state, ctx).await
-            }
-            FunctionSource::None => unreachable!(),
-        }
-    }
-
     pub async fn call_kw(
         &self,
         fn_name: Option<String>,
@@ -2404,7 +2250,7 @@ mod test {
             (
                 "all params required, and all given, should be OK",
                 vec![req_param("x")],
-                vec![mem(1)],
+                vec![("x", mem(1))],
                 Ok(additional_program_memory(&[("x".to_owned(), mem(1))])),
             ),
             (
@@ -2413,7 +2259,7 @@ mod test {
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
                     source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1 arguments, got 0".to_owned(),
+                    message: "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                 })),
             ),
             (
@@ -2428,13 +2274,13 @@ mod test {
                 vec![],
                 Err(KclError::Semantic(KclErrorDetails {
                     source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1-2 arguments, got 0".to_owned(),
+                    message: "This function requires a parameter x, but you haven't passed it one.".to_owned(),
                 })),
             ),
             (
                 "mixed params, minimum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
-                vec![mem(1)],
+                vec![("x", mem(1))],
                 Ok(additional_program_memory(&[
                     ("x".to_owned(), mem(1)),
                     ("y".to_owned(), KclValue::none()),
@@ -2443,20 +2289,11 @@ mod test {
             (
                 "mixed params, maximum given, should be OK",
                 vec![req_param("x"), opt_param("y")],
-                vec![mem(1), mem(2)],
+                vec![("x", mem(1)), ("y", mem(2))],
                 Ok(additional_program_memory(&[
                     ("x".to_owned(), mem(1)),
                     ("y".to_owned(), mem(2)),
                 ])),
-            ),
-            (
-                "mixed params, too many given",
-                vec![req_param("x"), opt_param("y")],
-                vec![mem(1), mem(2), mem(3)],
-                Err(KclError::Semantic(KclErrorDetails {
-                    source_ranges: vec![SourceRange::default()],
-                    message: "Expected 1-2 arguments, got 3".to_owned(),
-                })),
             ),
         ] {
             // Run each test.
@@ -2466,7 +2303,17 @@ mod test {
                 return_type: None,
                 digest: None,
             });
-            let args = args.into_iter().map(Arg::synthetic).collect();
+            let labeled = args
+                .iter()
+                .map(|(name, value)| {
+                    let arg = Arg::new(value.clone(), SourceRange::default());
+                    ((*name).to_owned(), arg)
+                })
+                .collect::<IndexMap<_, _>>();
+            let args = KwArgs {
+                unlabeled: None,
+                labeled,
+            };
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(
                     crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
@@ -2478,7 +2325,8 @@ mod test {
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
-            let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
+            let actual =
+                assign_args_to_params_kw(None, func_expr, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
                 actual, expected,
                 "failed test '{test_name}':\ngot {actual:?}\nbut expected\n{expected:?}"

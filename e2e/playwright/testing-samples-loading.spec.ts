@@ -52,7 +52,9 @@ test.describe('Testing loading external models', () => {
           name,
         })
       const warningText = page.getByText('Overwrite current file with sample?')
-      const confirmButton = page.getByRole('button', { name: 'Submit command' })
+      const confirmButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
 
       await test.step(`Precondition: check the initial code`, async () => {
         await u.openKclCodePanel()

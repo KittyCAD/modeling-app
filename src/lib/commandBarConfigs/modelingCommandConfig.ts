@@ -746,8 +746,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Fillets cannot touch other fillets yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       radius: {

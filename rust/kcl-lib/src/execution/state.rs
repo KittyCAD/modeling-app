@@ -283,6 +283,10 @@ impl ExecState {
             source_ranges: vec![source_range],
         })
     }
+
+    pub(crate) fn pipe_value(&self) -> Option<&KclValue> {
+        self.mod_local.pipe_value.as_ref()
+    }
 }
 
 impl GlobalState {

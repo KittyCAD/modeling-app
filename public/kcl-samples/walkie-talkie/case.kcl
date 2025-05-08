@@ -18,10 +18,10 @@ screenSketch = startSketchOn(XZ)
   |> close()
 
 // Create transform functions for the speaker grid pattern
-fn transformX(i) {
+fn transformX(@i) {
   return { translate = [.125 * i, 0] }
 }
-fn transformY(i) {
+fn transformY(@i) {
   return { translate = [0, -.125 * i] }
 }
 

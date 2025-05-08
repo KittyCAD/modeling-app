@@ -307,7 +307,7 @@ impl KclValue {
             } => "number(Angle)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
-            KclValue::MixedArray { .. } => "array (list)",
+            KclValue::MixedArray { .. } => "mixed array (list)",
             KclValue::HomArray { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",

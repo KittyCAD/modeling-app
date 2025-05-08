@@ -332,12 +332,9 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'add-kcl-file-to-project',
+                      name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
                       },
                     },
                   })
