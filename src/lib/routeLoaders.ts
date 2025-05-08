@@ -82,9 +82,7 @@ export const fileLoader: LoaderFunction = async (
       if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
         return redirect(
           `${PATHS.FILE}/${encodeURIComponent(
-            isDesktop()
-              ? fallbackFile
-              : params.id + window.electron.sep + PROJECT_ENTRYPOINT
+            isDesktop() ? fallbackFile : params.id + '/' + PROJECT_ENTRYPOINT
           )}${new URL(routerData.request.url).search || ''}`
         )
       }
