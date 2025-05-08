@@ -2345,8 +2345,8 @@ export const modelingMachine = setup({
               artifact.consumedEdgeId === firstSelection.artifact?.id
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return new Error(
-              'Failed to retrieve edgeCut artifact from sweepEdge selection'
+            return Promise.reject(
+              new Error('Failed to retrieve edgeCut artifact from sweepEdge selection')
             )
           }
           const edgeTreatmentSelection = {
@@ -2359,7 +2359,7 @@ export const modelingMachine = setup({
             edgeTreatmentSelection,
             parameters
           )
-          if (err(editResult)) return editResult
+          if (err(editResult)) return Promise.reject(editResult)
 
           modifiedAst = editResult.modifiedAst
           focusPath = [editResult.pathToEdgeTreatmentNode]
@@ -2371,7 +2371,7 @@ export const modelingMachine = setup({
             parameters,
             dependencies
           )
-          if (err(filletResult)) return filletResult
+          if (err(filletResult)) return Promise.reject(filletResult)
           modifiedAst = filletResult.modifiedAst
           focusPath = filletResult.pathToEdgeTreatmentNode
         }
@@ -2397,11 +2397,11 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['Chamfer'] | undefined
       }) => {
         if (!input) {
-          return new Error('No input provided')
+          return Promise.reject(new Error('No input provided'))
         }
 
         // Extract inputs
-        let ast = kclManager.ast
+        const ast = kclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
         const { nodeToEdit, selection, length } = input
@@ -2435,8 +2435,8 @@ export const modelingMachine = setup({
               artifact.consumedEdgeId === firstSelection.artifact?.id
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
-            return new Error(
-              'Failed to retrieve edgeCut artifact from sweepEdge selection'
+            return Promise.reject(
+              new Error('Failed to retrieve edgeCut artifact from sweepEdge selection')
             )
           }
           const edgeTreatmentSelection = {
@@ -2449,7 +2449,7 @@ export const modelingMachine = setup({
             edgeTreatmentSelection,
             parameters
           )
-          if (err(editResult)) return editResult
+          if (err(editResult)) return Promise.reject(editResult)
 
           modifiedAst = editResult.modifiedAst
           focusPath = [editResult.pathToEdgeTreatmentNode]
@@ -2461,7 +2461,7 @@ export const modelingMachine = setup({
             parameters,
             dependencies
           )
-          if (err(chamferResult)) return chamferResult
+          if (err(chamferResult)) return Promise.reject(chamferResult)
           modifiedAst = chamferResult.modifiedAst
           focusPath = chamferResult.pathToEdgeTreatmentNode
         }
