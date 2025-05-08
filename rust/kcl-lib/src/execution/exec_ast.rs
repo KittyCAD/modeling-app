@@ -25,7 +25,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, KwArgs, TyF64},
+        args::{Arg, Args, KwArgs, TyF64},
         FunctionKind,
     },
     CompilationError,
@@ -942,7 +942,7 @@ impl Node<BinaryExpression> {
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
                 let result = crate::std::csg::inner_union(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -955,7 +955,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::Sub {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
                 let result = crate::std::csg::inner_subtract(
                     vec![*left.clone()],
                     vec![*right.clone()],
@@ -969,7 +969,7 @@ impl Node<BinaryExpression> {
         } else if self.operator == BinaryOperator::And {
             // Check if we have solids.
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
-                let args = crate::std::Args::new(Default::default(), self.into(), ctx.clone(), None);
+                let args = Args::new(Default::default(), self.into(), ctx.clone(), None);
                 let result = crate::std::csg::inner_intersect(
                     vec![*left.clone(), *right.clone()],
                     Default::default(),
@@ -1324,7 +1324,7 @@ impl Node<CallExpressionKw> {
             None
         };
 
-        let args = crate::std::Args::new_kw(
+        let args = Args::new_kw(
             KwArgs {
                 unlabeled,
                 labeled: fn_args,
@@ -1846,7 +1846,7 @@ impl Node<PipeExpression> {
 fn type_check_params_kw(
     fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
-    args: &mut crate::std::args::KwArgs,
+    args: &mut KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
     for (label, arg) in &mut args.labeled {
@@ -1972,10 +1972,10 @@ fn type_check_params_kw(
 fn assign_args_to_params_kw(
     fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
-    mut args: crate::std::args::KwArgs,
+    mut args: Args,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
-    type_check_params_kw(fn_name, function_expression, &mut args, exec_state)?;
+    type_check_params_kw(fn_name, function_expression, &mut args.kw_args, exec_state)?;
 
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
@@ -1983,7 +1983,7 @@ fn assign_args_to_params_kw(
 
     for param in function_expression.params.iter() {
         if param.labeled {
-            let arg = args.labeled.get(&param.identifier.name);
+            let arg = args.kw_args.labeled.get(&param.identifier.name);
             let arg_val = match arg {
                 Some(arg) => arg.value.clone(),
                 None => match param.default_value {
@@ -2003,17 +2003,11 @@ fn assign_args_to_params_kw(
                 .mut_stack()
                 .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
-            // TODO: Get the actual source range.
-            // Part of https://github.com/KittyCAD/modeling-app/issues/6613
-            let pipe_value_source_range = Default::default();
-            let default_unlabeled = exec_state
-                .mod_local
-                .pipe_value
-                .clone()
-                .map(|val| Arg::new(val, pipe_value_source_range));
-            let Some(unlabeled) = args.unlabeled.take().or(default_unlabeled) else {
+            let unlabelled = args.unlabeled_kw_arg_unconverted();
+
+            let Some(unlabeled) = unlabelled else {
                 let param_name = &param.identifier.name;
-                return Err(if args.labeled.contains_key(param_name) {
+                return Err(if args.kw_args.labeled.contains_key(param_name) {
                     KclError::Semantic(KclErrorDetails {
                         source_ranges,
                         message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
@@ -2067,7 +2061,7 @@ fn coerce_result_type(
 
 async fn call_user_defined_function_kw(
     fn_name: Option<&str>,
-    args: crate::std::args::KwArgs,
+    args: Args,
     memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
@@ -2108,7 +2102,7 @@ impl FunctionSource {
         fn_name: Option<String>,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-        mut args: crate::std::Args,
+        mut args: Args,
         callsite: SourceRange,
     ) -> Result<Option<KclValue>, KclError> {
         match self {
@@ -2220,8 +2214,7 @@ impl FunctionSource {
                 }
 
                 let result =
-                    call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx)
-                        .await;
+                    call_user_defined_function_kw(fn_name.as_deref(), args, *memory, ast, exec_state, ctx).await;
 
                 // Track return operation.
                 #[cfg(feature = "artifact-graph")]
@@ -2356,11 +2349,6 @@ mod test {
                     ((*name).to_owned(), arg)
                 })
                 .collect::<IndexMap<_, _>>();
-            let args = KwArgs {
-                unlabeled: None,
-                labeled,
-                errors: Vec::new(),
-            };
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(
                     crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
@@ -2372,6 +2360,17 @@ mod test {
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
+
+            let args = Args::new_kw(
+                KwArgs {
+                    unlabeled: None,
+                    labeled,
+                    errors: Vec::new(),
+                },
+                SourceRange::default(),
+                exec_ctxt,
+                None,
+            );
             let actual =
                 assign_args_to_params_kw(None, func_expr, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
@@ -2624,5 +2623,19 @@ fn f(x, y, z) {{ return 0 }}
                 assert!(msg.contains("`z`"), "failed test {i}, missing `z`: {msg}");
             }
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_param_for_unlabeled() {
+        // Tests that the input param for myExtrude is taken from the pipeline value.
+        let ast = r#"fn myExtrude(@sk, length) {
+  return extrude(sk, length = length)
+}
+sketch001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 93.75)
+  |> myExtrude(length = 40)
+"#;
+
+        parse_execute(ast).await.unwrap();
     }
 }
