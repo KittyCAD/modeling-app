@@ -173,22 +173,158 @@ description: Result of parsing any_type.kcl
               "body": [
                 {
                   "argument": {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "initial",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "raw": "0",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 0.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "name": "f",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "body": {
+                            "body": [
+                              {
+                                "argument": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "left": {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "name": "count",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 0,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                "commentStart": 0,
+                                "end": 0,
+                                "start": 0,
+                                "type": "ReturnStatement",
+                                "type": "ReturnStatement"
+                              }
+                            ],
+                            "commentStart": 0,
+                            "end": 0,
+                            "start": 0
+                          },
+                          "commentStart": 0,
+                          "end": 0,
+                          "params": [
+                            {
+                              "type": "Parameter",
+                              "identifier": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "_",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
+                            },
+                            {
+                              "type": "Parameter",
+                              "identifier": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "name": "count",
+                                "start": 0,
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "FunctionExpression",
+                          "type": "FunctionExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "reduce",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
                     "commentStart": 0,
                     "end": 0,
-                    "raw": "0",
                     "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "a",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   "commentStart": 0,
                   "end": 0,
-                  "preComments": [
-                    "// TODO"
-                  ],
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
@@ -589,150 +725,6 @@ description: Result of parsing any_type.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "\"a\"",
-                "start": 0,
-                "type": "Literal",
-                "type": "Literal",
-                "value": "a"
-              }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assert",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "a",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "isEqualTo",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "elements": [
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "raw": "1",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 1.0,
-                      "suffix": "None"
-                    }
-                  }
-                ],
-                "end": 0,
-                "start": 0,
-                "type": "ArrayExpression",
-                "type": "ArrayExpression"
-              }
-            }
-          ],
-          "callee": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "assert",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name"
-          },
-          "commentStart": 0,
-          "end": 0,
-          "start": 0,
-          "type": "CallExpressionKw",
-          "type": "CallExpressionKw",
-          "unlabeled": {
-            "abs_path": false,
-            "commentStart": 0,
-            "end": 0,
-            "name": {
-              "commentStart": 0,
-              "end": 0,
-              "name": "arr1",
-              "start": 0,
-              "type": "Identifier"
-            },
-            "path": [],
-            "start": 0,
-            "type": "Name",
-            "type": "Name"
-          }
-        },
-        "start": 0,
-        "type": "ExpressionStatement",
-        "type": "ExpressionStatement"
-      },
-      {
-        "commentStart": 0,
-        "end": 0,
-        "expression": {
-          "arguments": [
-            {
-              "type": "LabeledArg",
-              "label": {
-                "commentStart": 0,
-                "end": 0,
-                "name": "isEqualTo",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "arg": {
-                "commentStart": 0,
-                "end": 0,
                 "raw": "0",
                 "start": 0,
                 "type": "Literal",
@@ -781,6 +773,12 @@ description: Result of parsing any_type.kcl
             "type": "Name"
           }
         },
+        "preComments": [
+          "// TODO: we cannot currently assert on strings.",
+          "// assert(a, isEqualTo = \"a\")",
+          "// TODO: we cannot currently assert on arrays.",
+          "// assert(arr1, isEqualTo = [1])"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
@@ -893,6 +891,17 @@ description: Result of parsing any_type.kcl
           }
         ],
         "7": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "10": [
           {
             "commentStart": 0,
             "end": 0,
