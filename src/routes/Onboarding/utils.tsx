@@ -10,26 +10,14 @@ import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
-import { bracket, browserAxialFan } from '@src/lib/exampleKcl'
+import { browserAxialFan, fanParts } from '@src/lib/exampleKcl'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
-import {
-  codeManager,
-  commandBarActor,
-  editorManager,
-  kclManager,
-  systemIOActor,
-} from '@src/lib/singletons'
-import { err, reportRejection, trap } from '@src/lib/trap'
+import { commandBarActor, systemIOActor } from '@src/lib/singletons'
+import { err, reportRejection } from '@src/lib/trap'
 import { settingsActor } from '@src/lib/singletons'
-import { isKclEmptyOrOnlySettings, parse, resultIsOk } from '@src/lang/wasm'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { isKclEmptyOrOnlySettings } from '@src/lang/wasm'
 import {
-  DEFAULT_PROJECT_KCL_FILE,
-  EXECUTION_TYPE_REAL,
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
 } from '@src/lib/constants'
@@ -283,16 +271,23 @@ export async function acceptOnboarding(deps: OnboardingUtilDeps) {
     ? onboardingStartPath
     : deps.onboardingStatus
   if (isDesktop()) {
-    /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
+    /**
+     * Bulk create the assembly and navigate to the project
+     */
     systemIOActor.send({
-      type: SystemIOMachineEvents.importFileFromURL,
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
+        files: fanParts.map((part) => ({
+          requestedProjectName: ONBOARDING_PROJECT_NAME,
+          ...part,
+        })),
+        // Make a unique tutorial project each time
+        override: true,
         requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedFileNameWithExtension: DEFAULT_PROJECT_KCL_FILE,
-        requestedCode: bracket,
         requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
       },
     })
+
     return Promise.resolve()
   }
 

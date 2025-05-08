@@ -99,6 +99,7 @@ export const systemIOMachine = setup({
             files: RequestedKCLFile[]
             requestedProjectName: string
             override?: boolean
+            requestedSubRoute?: string
           }
         }
       | {
@@ -313,8 +314,9 @@ export const systemIOMachine = setup({
         message: string
         fileName: string
         projectName: string
+        subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '' }
+        return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
@@ -326,13 +328,15 @@ export const systemIOMachine = setup({
           files: RequestedKCLFile[]
           rootContext: AppMachineContext
           requestedProjectName: string
+          requestedSubRoute?: string
         }
       }): Promise<{
         message: string
         fileName: string
         projectName: string
+        subRoute: string
       }> => {
-        return { message: '', fileName: '', projectName: '' }
+        return { message: '', fileName: '', projectName: '', subRoute: '' }
       }
     ),
   },
@@ -656,6 +660,7 @@ export const systemIOMachine = setup({
             rootContext: self.system.get('root').getSnapshot().context,
             requestedProjectName: event.data.requestedProjectName,
             override: event.data.override,
+            requestedSubRoute: event.data.requestedSubRoute,
           }
         },
         onDone: {
@@ -663,7 +668,10 @@ export const systemIOMachine = setup({
           actions: [
             assign({
               requestedProjectName: ({ event }) => {
-                return { name: event.output.projectName }
+                return {
+                  name: event.output.projectName,
+                  subRoute: event.output.subRoute,
+                }
               },
             }),
             SystemIOMachineActions.toastSuccess,

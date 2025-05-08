@@ -90,6 +90,7 @@ const sharedBulkCreateWorkflow = async ({
     message,
     fileName: '',
     projectName: '',
+    subRoute: 'subRoute' in input ? input.subRoute : '',
   }
 }
 
@@ -336,7 +337,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           rootContext: AppMachineContext
         }
       }) => {
-        return await sharedBulkCreateWorkflow({ input })
+        const message = await sharedBulkCreateWorkflow({ input })
+        return {
+          ...message,
+          subRoute: '',
+        }
       }
     ),
     [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
@@ -349,6 +354,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           rootContext: AppMachineContext
           requestedProjectName: string
           override?: boolean
+          requestedSubRoute?: string
         }
       }) => {
         const message = await sharedBulkCreateWorkflow({
@@ -357,8 +363,11 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
             override: input.override,
           },
         })
-        message.projectName = input.requestedProjectName
-        return message
+        return {
+          ...message,
+          projectName: input.requestedProjectName,
+          subRoute: input.requestedSubRoute || '',
+        }
       }
     ),
   },

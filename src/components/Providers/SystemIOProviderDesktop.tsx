@@ -52,7 +52,8 @@ export function SystemIOMachineLogicListenerDesktop() {
       )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
-        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile)
+        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
+        requestedProjectName.subRoute || ''
       )
       navigate(requestedPath)
     }, [requestedProjectName])
@@ -156,7 +157,10 @@ export function SystemIOMachineLogicListenerDesktop() {
         settings: { highlightEdges: settings.modeling.highlightEdges.current },
       })
         .then(() => {
-          billingActor.send({ type: BillingTransition.Update, apiToken: token })
+          billingActor.send({
+            type: BillingTransition.Update,
+            apiToken: token,
+          })
         })
         .catch(reportRejection)
     }, [requestedTextToCadGeneration])

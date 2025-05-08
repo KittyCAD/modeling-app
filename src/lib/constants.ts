@@ -36,7 +36,7 @@ export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
-export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+export const ONBOARDING_PROJECT_NAME = 'tutorial-project'
 /**
  * The default starting constant name for various modeling operations.
  * These are used to generate unique names for new objects.

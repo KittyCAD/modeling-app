@@ -1,6 +1,18 @@
 import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
+import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
+import fanHousingOriginal from '@public/kcl-samples/axial-fan/fan-housing.kcl?raw'
+import fanFan from '@public/kcl-samples/axial-fan/fan.kcl?raw'
+import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
+import fanParameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
 
 export { bracket }
+export const fanParts = [
+  { requestedFileName: 'main.kcl', requestedCode: fanAssembly },
+  { requestedFileName: 'fan.kcl', requestedCode: fanFan },
+  { requestedFileName: 'motor.kcl', requestedCode: fanMotor },
+  { requestedFileName: 'parameters.kcl', requestedCode: fanParameters },
+  { requestedFileName: 'fan-housing.kcl', requestedCode: fanHousingOriginal },
+] as const
 
 /**
  * @throws Error if the search text is not found in the example code.

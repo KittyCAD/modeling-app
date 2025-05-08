@@ -15,7 +15,6 @@ import {
 import { useEffect, useState } from 'react'
 import { commandBarActor, systemIOActor } from '@src/lib/singletons'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { useRequestedProjectName } from '@src/machines/systemIO/hooks'
 import { joinRouterPaths, PATHS } from '@src/lib/paths'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
@@ -24,6 +23,7 @@ import {
 import type { IndexLoaderData } from '@src/lib/types'
 import type { Selections } from '@src/lib/selections'
 import { Spinner } from '@src/components/Spinner'
+import { modifiedFanHousing } from '@src/lib/exampleKcl'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -82,8 +82,7 @@ function Welcome() {
       <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
-          Here is an assembly of a CPU Cooler that was made in Zoo Design
-          Studio.
+          Here is an assembly of a CPU fan that was made in Zoo Design Studio.
         </p>
         <p className="my-4">
           Let’s walk through the basics of how to get started, and how you can
@@ -97,7 +96,6 @@ function Welcome() {
 
 function Scene() {
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/scene'
-  const { name: requestedProjectName } = useRequestedProjectName()
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -108,7 +106,7 @@ function Scene() {
     systemIOActor.send({
       type: SystemIOMachineEvents.importFileFromURL,
       data: {
-        requestedProjectName,
+        requestedProjectName: ONBOARDING_PROJECT_NAME,
         requestedFileNameWithExtension: 'blank.kcl',
         requestedCode: '',
         requestedSubRoute: joinRouterPaths(
@@ -117,7 +115,7 @@ function Scene() {
         ),
       },
     })
-  }, [requestedProjectName])
+  }, [])
 
   return (
     <div className="pointer-events-none fixed inset-0 z-50 grid items-end justify-center p-2">
@@ -244,8 +242,7 @@ function TextToCadPrompt() {
 function FeatureTreePane() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/feature-tree-pane'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const generatedFileName = 'generated.kcl'
+  const generatedFileName = 'fan-housing.kcl'
 
   // Highlight the feature tree pane button if it's present
   useOnboardingHighlight('feature-tree-pane-button')
@@ -256,19 +253,17 @@ function FeatureTreePane() {
   // navigate to the "generated" file
   useEffect(() => {
     systemIOActor.send({
-      type: SystemIOMachineEvents.importFileFromURL,
+      type: SystemIOMachineEvents.navigateToFile,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
-        requestedFileNameWithExtension: generatedFileName,
-        requestedCode: '// Whatever who cares',
+        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        requestedFileName: generatedFileName,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [])
 
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -488,7 +483,6 @@ function PromptToEditPrompt() {
 function PromptToEditResult() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-result'
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
 
   // Open the code pane on mount, close on unmount
   useOnboardingPanes(['code'])
@@ -496,18 +490,24 @@ function PromptToEditResult() {
   useEffect(() => {
     // Navigate to the `main.kcl` file
     systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
+      type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
       data: {
-        requestedProjectName:
-          loaderData?.project?.name || ONBOARDING_PROJECT_NAME,
-        requestedFileName: 'main.kcl',
+        requestedProjectName: ONBOARDING_PROJECT_NAME,
+        files: [
+          {
+            requestedFileName: 'main.kcl',
+            requestedProjectName: ONBOARDING_PROJECT_NAME,
+            requestedCode: modifiedFanHousing,
+          },
+        ],
+        override: true,
         requestedSubRoute: joinRouterPaths(
           String(PATHS.ONBOARDING),
           thisOnboardingStatus
         ),
       },
     })
-  }, [loaderData?.project?.name])
+  }, [])
 
   return (
     <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
@@ -601,7 +601,10 @@ function OnboardingConclusion() {
   // Highlight the App logo
   useOnboardingHighlight('app-logo')
   // Close the panes on mount, close on unmount
-  useOnboardingPanes(['feature-tree', 'code', 'files'])
+  useOnboardingPanes(
+    ['feature-tree', 'code', 'files'],
+    ['feature-tree', 'code', 'files']
+  )
 
   return (
     <div className="fixed inset-0 z-50 p-16 grid justify-center items-center">
