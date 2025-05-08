@@ -8,16 +8,16 @@ layout: manual
 
 There are three levels of settings available in Zoo Design Studio:
 
-1. [User Settings](/docs/kcl/settings/user): Global settings that apply to all projects, stored in `user.toml`
-2. [Project Settings](/docs/kcl/settings/project): Settings specific to a project, stored in `project.toml`
+1. [User Settings](/docs/kcl-lang/settings/user): Global settings that apply to all projects, stored in `user.toml`
+2. [Project Settings](/docs/kcl-lang/settings/project): Settings specific to a project, stored in `project.toml`
 3. Per-file Settings: Settings that apply to a single KCL file, specified using the `@settings` attribute
 
 ## Configuration Files
 
 Zoo Design Studio uses TOML files for configuration:
 
-* **User Settings**: `user.toml` - See [complete documentation](/docs/kcl/settings/user)
-* **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl/settings/project)
+* **User Settings**: `user.toml` - See [complete documentation](/docs/kcl-lang/settings/user)
+* **Project Settings**: `project.toml` - See [complete documentation](/docs/kcl-lang/settings/project)
 
 ## Per-file settings
 
