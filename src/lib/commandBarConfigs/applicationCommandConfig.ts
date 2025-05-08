@@ -11,6 +11,7 @@ import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
+import { FILE_EXT } from '@src/lib/constants'
 
 export function createApplicationCommands({
   systemIOActor,
@@ -153,13 +154,14 @@ export function createApplicationCommands({
                 /**
                  * Navigates to the single file that could be renamed on disk for duplicates
                  */
+                const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
                 systemIOActor.send({
                   type: SystemIOMachineEvents.importFileFromURL,
                   data: {
                     requestedProjectName:
                       requestedFiles[0].requestedProjectName,
                     requestedFileNameWithExtension:
-                      requestedFiles[0].requestedFileName,
+                      folderNameBecomesKCLFileName,
                     requestedCode: requestedFiles[0].requestedCode,
                   },
                 })

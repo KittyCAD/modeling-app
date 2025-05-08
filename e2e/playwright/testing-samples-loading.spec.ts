@@ -52,7 +52,9 @@ test.describe('Testing loading external models', () => {
           name,
         })
       const warningText = page.getByText('Overwrite current file with sample?')
-      const confirmButton = page.getByRole('button', { name: 'Submit command' })
+      const confirmButton = page.getByRole('button', {
+        name: 'Submit command',
+      })
 
       await test.step(`Precondition: check the initial code`, async () => {
         await u.openKclCodePanel()
@@ -152,6 +154,7 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
+        await page.pause()
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
