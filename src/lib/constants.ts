@@ -193,5 +193,4 @@ export const IS_PLAYWRIGHT_KEY = 'playwright'
 
 /** Should we mark all the ML features as "beta"? */
 export const IS_ML_EXPERIMENTAL = true
-export const ML_EXPERIMENTAL_MESSAGE =
-  'This feature is experimental and undergoing constant improvement, stay tuned for updates.'
+export const ML_EXPERIMENTAL_MESSAGE = 'This feature is experimental.'
