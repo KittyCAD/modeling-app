@@ -3179,6 +3179,8 @@ impl PipeExpression {
 #[ts(export)]
 #[serde(tag = "p_type")]
 pub enum PrimitiveType {
+    /// The super type of all other types.
+    Any,
     /// A string type.
     String,
     /// A number type.
@@ -3195,6 +3197,7 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
+            ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
@@ -3208,6 +3211,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
