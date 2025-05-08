@@ -779,8 +779,12 @@ export async function editEdgeTreatment(
   // create a new argument with the updated value
   const newArg = createLabeledArg(parameterName, parameterValue)
 
-  // replace the old argument with the new one
-  edgeTreatmentCall.node.arguments[index] = newArg
+  // if the parameter doesn't exist, add it; otherwise replace it
+  if (index === -1) {
+    edgeTreatmentCall.node.arguments.push(newArg)
+  } else {
+    edgeTreatmentCall.node.arguments[index] = newArg
+  }
 
   let pathToEdgeTreatmentNode = selection?.codeRef?.pathToNode
 
