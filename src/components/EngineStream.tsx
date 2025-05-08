@@ -37,7 +37,7 @@ import {
 } from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
 export const EngineStream = (props: {
   pool: string | null
