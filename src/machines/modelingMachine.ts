@@ -2310,7 +2310,7 @@ export const modelingMachine = setup({
         }
 
         // Extract inputs
-        let ast = kclManager.ast
+        const ast = kclManager.ast
         let modifiedAst = structuredClone(ast)
         let focusPath: PathToNode[] = []
         const { nodeToEdit, selection, radius } = input
