@@ -24,6 +24,13 @@ function errorMessage(error: unknown): string {
   }
 }
 
+function stackTraceMessage(error: unknown): string {
+  if (error !== undefined && error instanceof Error) {
+    return error.stack || ''
+  }
+  return ''
+}
+
 /** Generate a GitHub issue URL from the error */
 function generateToUrl(error: unknown) {
   const title: string = 'An unexpected error occurred'
@@ -45,6 +52,9 @@ export const ErrorPage = () => {
         </h1>
         <p className="mb-8 w-full overflow-aut">
           <>{errorMessage(error)}</>
+        </p>
+        <p className="mb-8 w-full overflow-aut">
+          <>{stackTraceMessage(error)}</>
         </p>
         <div className="flex justify-between gap-2 mt-6">
           {isDesktop() && (
