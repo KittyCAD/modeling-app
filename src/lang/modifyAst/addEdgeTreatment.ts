@@ -65,43 +65,7 @@ export interface FilletParameters {
 export type EdgeTreatmentParameters = ChamferParameters | FilletParameters
 
 // Apply Edge Treatment (Fillet or Chamfer) To Selection
-export async function applyEdgeTreatmentToSelection(
-  ast: Node<Program>,
-  selection: Selections,
-  parameters: EdgeTreatmentParameters,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    editorManager: EditorManager
-    codeManager: CodeManager
-  }
-): Promise<void | Error> {
-  // 1. clone and modify with edge treatment and tag
-  const result = modifyAstWithEdgeTreatmentAndTag(
-    ast,
-    selection,
-    parameters,
-    dependencies
-  )
-  if (err(result)) return result
-  const { modifiedAst, pathToEdgeTreatmentNode } = result
-
-  // 2. update ast
-  await updateModelingState(
-    modifiedAst,
-    EXECUTION_TYPE_REAL,
-    {
-      kclManager: dependencies.kclManager,
-      editorManager: dependencies.editorManager,
-      codeManager: dependencies.codeManager,
-    },
-    {
-      focusPath: pathToEdgeTreatmentNode,
-    }
-  )
-}
-
-export function modifyAstWithEdgeTreatmentAndTag(
+export async function modifyAstWithEdgeTreatmentAndTag(
   ast: Node<Program>,
   selections: Selections,
   parameters: EdgeTreatmentParameters,
@@ -111,9 +75,9 @@ export function modifyAstWithEdgeTreatmentAndTag(
     editorManager: EditorManager
     codeManager: CodeManager
   }
-):
-  | { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: Array<PathToNode> }
-  | Error {
+): Promise<
+  { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: PathToNode[] } | Error
+> {
   let clonedAst = structuredClone(ast)
   const clonedAstForGetExtrude = structuredClone(ast)
 
@@ -783,4 +747,52 @@ export async function deleteEdgeTreatment(
   }
 
   return Error('Delete fillets not implemented')
+}
+
+// Edit Edge Treatment
+export async function editEdgeTreatment(
+  ast: Node<Program>,
+  selection: Selection,
+  parameters: EdgeTreatmentParameters
+): Promise<
+  { modifiedAst: Node<Program>; pathToEdgeTreatmentNode: PathToNode } | Error
+> {
+  // 1. clone and modify with new value
+  const modifiedAst = structuredClone(ast)
+
+  // find the edge treatment call
+  const edgeTreatmentCall = getNodeFromPath<CallExpressionKw>(
+    modifiedAst,
+    selection?.codeRef?.pathToNode,
+    'CallExpressionKw'
+  )
+  if (err(edgeTreatmentCall)) return edgeTreatmentCall
+
+  // edge treatment parameter
+  const parameterResult = getParameterNameAndValue(parameters)
+  if (err(parameterResult)) return parameterResult
+  const { parameterName, parameterValue } = parameterResult
+
+  // find the radius or length argument to update
+  const objectArg = edgeTreatmentCall.node.arguments.find(
+    (arg) => arg.label.name === 'radius' || arg.label.name === 'length'
+  )
+
+  // create a new argument with the updated value
+  const newArg = createLabeledArg(parameterName, parameterValue)
+
+  // replace the old argument with the new one
+  if (objectArg) {
+    const index = edgeTreatmentCall.node.arguments.indexOf(objectArg)
+    if (index !== -1) {
+      edgeTreatmentCall.node.arguments[index] = newArg
+    }
+  } else {
+    // If the argument doesn't exist, add it
+    edgeTreatmentCall.node.arguments.push(newArg)
+  }
+
+  let pathToEdgeTreatmentNode = selection?.codeRef?.pathToNode
+
+  return { modifiedAst, pathToEdgeTreatmentNode }
 }
