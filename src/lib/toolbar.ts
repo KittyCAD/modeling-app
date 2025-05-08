@@ -238,7 +238,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanUnion',
             status: 'available',
             title: 'Union',
-            hotkey: 'Shift + B U',
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
@@ -257,7 +256,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanSubtract',
             status: 'available',
             title: 'Subtract',
-            hotkey: 'Shift + B S',
             description: 'Subtract one solid from another.',
             links: [
               {
@@ -276,7 +274,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanIntersect',
             status: 'available',
             title: 'Intersect',
-            hotkey: 'Shift + B I',
             description: 'Create a solid from the intersection of two solids.',
             links: [
               {
