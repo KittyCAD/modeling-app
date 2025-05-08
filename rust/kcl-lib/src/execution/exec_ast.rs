@@ -25,7 +25,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, KwArgs, TyF64},
+        args::{Arg, Args, KwArgs, TyF64},
         FunctionKind,
     },
     CompilationError,
@@ -1838,7 +1838,7 @@ impl Node<PipeExpression> {
 fn type_check_params_kw(
     fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
-    args: &mut crate::std::args::KwArgs,
+    args: &mut KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
     for (label, arg) in &mut args.labeled {
@@ -1926,10 +1926,10 @@ fn type_check_params_kw(
 fn assign_args_to_params_kw(
     fn_name: Option<&str>,
     function_expression: NodeRef<'_, FunctionExpression>,
-    mut args: crate::std::args::KwArgs,
+    mut args: Args,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
-    type_check_params_kw(fn_name, function_expression, &mut args, exec_state)?;
+    type_check_params_kw(fn_name, function_expression, &mut args.kw_args, exec_state)?;
 
     // Add the arguments to the memory.  A new call frame should have already
     // been created.
@@ -1937,7 +1937,7 @@ fn assign_args_to_params_kw(
 
     for param in function_expression.params.iter() {
         if param.labeled {
-            let arg = args.labeled.get(&param.identifier.name);
+            let arg = args.kw_args.labeled.get(&param.identifier.name);
             let arg_val = match arg {
                 Some(arg) => arg.value.clone(),
                 None => match param.default_value {
@@ -1957,17 +1957,11 @@ fn assign_args_to_params_kw(
                 .mut_stack()
                 .add(param.identifier.name.clone(), arg_val, (&param.identifier).into())?;
         } else {
-            // TODO: Get the actual source range.
-            // Part of https://github.com/KittyCAD/modeling-app/issues/6613
-            let pipe_value_source_range = Default::default();
-            let default_unlabeled = exec_state
-                .mod_local
-                .pipe_value
-                .clone()
-                .map(|val| Arg::new(val, pipe_value_source_range));
-            let Some(unlabeled) = args.unlabeled.take().or(default_unlabeled) else {
+            let unlabelled = args.kw_args.unlabeled.take().or_else(|| args.pipe_value.take());
+
+            let Some(unlabeled) = unlabelled else {
                 let param_name = &param.identifier.name;
-                return Err(if args.labeled.contains_key(param_name) {
+                return Err(if args.kw_args.labeled.contains_key(param_name) {
                     KclError::Semantic(KclErrorDetails {
                         source_ranges,
                         message: format!("The function does declare a parameter named '{param_name}', but this parameter doesn't use a label. Try removing the `{param_name}:`"),
@@ -1982,7 +1976,7 @@ fn assign_args_to_params_kw(
             };
             exec_state.mut_stack().add(
                 param.identifier.name.clone(),
-                unlabeled.value.clone(),
+                unlabeled.value,
                 (&param.identifier).into(),
             )?;
         }
@@ -2021,7 +2015,7 @@ fn coerce_result_type(
 
 async fn call_user_defined_function_kw(
     fn_name: Option<&str>,
-    args: crate::std::args::KwArgs,
+    args: Args,
     memory: EnvironmentRef,
     function_expression: NodeRef<'_, FunctionExpression>,
     exec_state: &mut ExecState,
@@ -2174,8 +2168,7 @@ impl FunctionSource {
                 }
 
                 let result =
-                    call_user_defined_function_kw(fn_name.as_deref(), args.kw_args, *memory, ast, exec_state, ctx)
-                        .await;
+                    call_user_defined_function_kw(fn_name.as_deref(), args, *memory, ast, exec_state, ctx).await;
 
                 // Track return operation.
                 #[cfg(feature = "artifact-graph")]

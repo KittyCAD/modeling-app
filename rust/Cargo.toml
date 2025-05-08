@@ -26,6 +26,9 @@ insta = { opt-level = 3 }
 [profile.test]
 debug = "line-tables-only"
 
+[workspace.features]
+artifact-graph = []
+
 [workspace.dependencies]
 async-trait = "0.1.88"
 anyhow = { version = "1" }

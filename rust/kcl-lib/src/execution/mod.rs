@@ -2268,4 +2268,20 @@ foo() |> extrude(length = 1)
 "#;
         parse_execute(ast).await.unwrap();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn default_param_for_unlabeled() {
+        // Tests that the input param for myExtrude is taken from the pipeline value and that
+        // the labelled arg to extrude is ok (i.e., just `length` not `length = length`)
+        let ast = r#"fn myExtrude(@sk, length) {
+  return extrude(sk, length)
+}
+
+sketch001 = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 93.75)
+  |> myExtrude(length = 40)
+"#;
+
+        parse_execute(ast).await.unwrap();
+    }
 }
