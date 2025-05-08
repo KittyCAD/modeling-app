@@ -1741,7 +1741,7 @@ foo
     #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
-fn transform(replicaId) {
+fn transform(@replicaId) {
   // x shouldn't be defined yet.
   scale = x
   return {

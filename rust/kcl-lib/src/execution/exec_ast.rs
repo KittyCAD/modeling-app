@@ -1324,7 +1324,7 @@ impl Node<CallExpressionKw> {
             },
             self.into(),
             ctx.clone(),
-            exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
+            exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
         );
         match ctx.stdlib.get_either(fn_name) {
             FunctionKind::Core(func) => {
@@ -2194,7 +2194,7 @@ impl FunctionSource {
                         },
                         callsite,
                         ctx.clone(),
-                        exec_state.mod_local.pipe_value.clone().map(|v| Arg::new(v, callsite)),
+                        exec_state.pipe_value().map(|v| Arg::new(v.clone(), callsite)),
                     );
                     self.call_kw(fn_name, exec_state, ctx, args, callsite).await
                 } else {
