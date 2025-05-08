@@ -222,7 +222,7 @@ export function createProjectCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, context) => {
+        options: (_, _context) => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
           folders.forEach((folder) => {

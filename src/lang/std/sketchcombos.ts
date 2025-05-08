@@ -1244,8 +1244,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpressionKw,
-  constraintType: ConstraintType
+  sketchFnExp: CallExpressionKw
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name.name as ToolTip
   if (!toolTips.includes(name)) {
@@ -1779,8 +1778,7 @@ export function getTransformInfos(
 
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
-  ast: Program,
-  constraintType: ConstraintType
+  ast: Program
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
     getNodeFromPath<Expr>(ast, codeRef.pathToNode)
@@ -1796,7 +1794,7 @@ export function getRemoveConstraintsTransforms(
 
     const node = nodeMeta.node
     if (node?.type === 'CallExpressionKw') {
-      return getRemoveConstraintsTransform(node, constraintType)
+      return getRemoveConstraintsTransform(node)
     }
 
     return false

@@ -746,8 +746,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: true,
         required: true,
         skip: false,
-        warningMessage:
-          'Fillets cannot touch other fillets yet. This is under development.',
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       radius: {
@@ -825,7 +823,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             Object.entries(kclManager.execState.variables)
               // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
               .filter(([_, variable]) => variable?.type === 'Number')
-              .map(([name, variable]) => {
+              .map(([name, _variable]) => {
                 const node = getVariableDeclaration(kclManager.ast, name)
                 if (node === undefined) return
                 const range: SourceRange = [node.start, node.end, node.moduleId]
@@ -926,7 +924,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: true,
         createVariable: 'byDefault',
-        variableName(commandBarContext, machineContext) {
+        variableName(commandBarContext, _machineContext) {
           const { currentValue } = commandBarContext.argumentsToSubmit
           if (
             !currentValue ||

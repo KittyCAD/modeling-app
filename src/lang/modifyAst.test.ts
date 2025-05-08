@@ -1005,7 +1005,7 @@ sketch003 = startSketchOn(XZ)
   ] as const
   test.each(cases)(
     '%s',
-    async (name, { codeBefore, codeAfter, lineOfInterest, type }) => {
+    async (_name, { codeBefore, codeAfter, lineOfInterest, type }) => {
       // const lineOfInterest = 'line(end = [-2.94, 2.7])'
       const ast = assertParse(codeBefore)
       const execState = await enginelessExecutor(ast)
