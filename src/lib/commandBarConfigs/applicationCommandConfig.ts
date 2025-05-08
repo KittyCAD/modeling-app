@@ -270,10 +270,11 @@ export function createApplicationCommands({
           }
           return value
         },
-        options: () => {
-          const samples = isDesktop()
-            ? everyKclSample
-            : kclSamplesManifestWithNoMultipleFiles
+        options: ({ argumentsToSubmit }) => {
+          const samples =
+            isDesktop() && argumentsToSubmit.method !== 'existingProject'
+              ? everyKclSample
+              : kclSamplesManifestWithNoMultipleFiles
           return samples.map((sample) => {
             return {
               value: sample.pathFromProjectDirectoryToFirstFile,
