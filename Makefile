@@ -1,5 +1,5 @@
 .PHONY: all
-all: install build check
+all: install check build
 
 ###############################################################################
 # INSTALL
