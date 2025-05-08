@@ -3384,8 +3384,6 @@ export const modelingMachine = setup({
                   target: 'normal',
                   actions: 'set up draft line',
                 },
-
-                Cancel: '#Modeling.Sketch.undo startSketchOn',
               },
 
               exit: 'remove draft entities',
@@ -4208,6 +4206,7 @@ export const modelingMachine = setup({
       initial: 'Init',
 
       on: {
+        Cancel: '.undo startSketchOn',
         CancelSketch: '.SketchIdle',
 
         'Delete segment': {
