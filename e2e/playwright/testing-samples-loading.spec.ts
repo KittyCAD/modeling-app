@@ -154,7 +154,6 @@ test.describe('Testing loading external models', () => {
 
       await test.step(`Ensure we made and opened a new file`, async () => {
         await editor.expectEditor.toContain('// ' + sampleOne.title)
-        await page.pause()
         await expect(newlyCreatedFile(sampleOne.file)).toBeVisible()
         await expect(projectMenuButton).toContainText(sampleOne.file)
       })
