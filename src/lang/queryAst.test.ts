@@ -631,7 +631,7 @@ describe('Testing traverse and pathToNode', () => {
       'very nested, array, object, callExpression, array, memberExpression',
       '.yo',
     ],
-  ])('testing %s', async (testName, literalOfInterest) => {
+  ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [3.29, 7.86])

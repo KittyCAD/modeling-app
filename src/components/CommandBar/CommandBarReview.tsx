@@ -44,7 +44,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     [argumentsToSubmit, selectedCommand]
   )
 
-  Object.keys(argumentsToSubmit).forEach((key, i) => {
+  Object.keys(argumentsToSubmit).forEach((key, _i) => {
     const arg = selectedCommand?.args ? selectedCommand?.args[key] : undefined
     if (!arg) return
   })
@@ -75,7 +75,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         className="absolute opacity-0 inset-0 pointer-events-none"
         onSubmit={submitCommand}
       >
-        {Object.entries(argumentsToSubmit).map(([key, value], i) => {
+        {Object.entries(argumentsToSubmit).map(([key, value], _i) => {
           const arg = selectedCommand?.args
             ? selectedCommand?.args[key]
             : undefined

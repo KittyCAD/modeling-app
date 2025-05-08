@@ -103,7 +103,6 @@ export function startSketchOnDefault(
 
 export function insertNewStartProfileAt(
   node: Node<Program>,
-  sketchEntryNodePath: PathToNode,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: [number, number],

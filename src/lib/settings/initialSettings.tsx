@@ -322,7 +322,7 @@ export function createSettings() {
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
-        validate: (v) => true,
+        validate: (_v) => true,
         hideOnLevel: 'user',
       }),
     },

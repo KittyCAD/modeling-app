@@ -224,7 +224,7 @@ export function createNamedViewsCommand() {
       name: {
         required: true,
         inputType: 'options',
-        options: (commandBar, machineContext) => {
+        options: (_commandBar, _machineContext) => {
           const settings = getSettings()
           const namedViews = {
             ...settings.app.namedViews.current,
