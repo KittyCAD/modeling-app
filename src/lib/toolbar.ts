@@ -628,7 +628,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             isActive: (state) =>
               state.matches({ Sketch: 'Circle three point tool' }),
             hotkey: (state) =>
-              state.matches({ Sketch: 'Circle three point tool' }) ? 'Esc' : [],
+              state.matches({ Sketch: 'Circle three point tool' })
+                ? ['Alt+C', 'Esc']
+                : 'Alt+C',
             showTitle: false,
             description: 'Draw a circle defined by three points',
             links: [],
@@ -678,6 +680,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: 'Center rectangle',
             description: 'Start drawing a rectangle from its center',
             links: [],
+            hotkey: (state) =>
+              state.matches({ Sketch: 'Center Rectangle tool' })
+                ? ['Esc', 'Alt+R']
+                : 'Alt+R',
             isActive: (state) => {
               return state.matches({ Sketch: 'Center Rectangle tool' })
             },
