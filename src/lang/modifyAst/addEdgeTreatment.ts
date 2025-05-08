@@ -12,7 +12,6 @@ import {
   createLocalName,
   createPipeExpression,
 } from '@src/lang/create'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
@@ -39,7 +38,6 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type { Selection, Selections } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'

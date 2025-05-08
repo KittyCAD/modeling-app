@@ -59,7 +59,6 @@ import type {
 import {
   EdgeTreatmentType,
   modifyAstWithEdgeTreatmentAndTag,
-  deleteEdgeTreatment,
   editEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
@@ -97,7 +96,6 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
-  getArtifactOfTypes,
   getFaceCodeRef,
   getPathsFromPlaneArtifact,
 } from '@src/lang/std/artifactGraph'
@@ -110,7 +108,6 @@ import type {
   Name,
   PathToNode,
   PipeExpression,
-  Program,
   VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
@@ -137,7 +134,6 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export type SetSelections =
