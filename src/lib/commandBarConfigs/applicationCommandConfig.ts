@@ -405,7 +405,7 @@ export function createApplicationCommands({
         required: true,
         skip: false,
         defaultValue: 'kcl-samples',
-        hidden: false,
+        hidden: true,
       },
       sample: {
         inputType: 'options',
