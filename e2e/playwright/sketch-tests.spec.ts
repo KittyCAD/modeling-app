@@ -3425,6 +3425,72 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       ).toBeVisible()
     })
   })
+  test('empty draft sketch is cleaned up properly', async ({
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    // This is the sketch used in the original report, but any sketch would work
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `yRel002 = 200
+lStraight = -200
+yRel001 = -lStraight
+length001 = lStraight
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-102.72, 237.44])
+  |> yLine(length = lStraight)
+  |> tangentialArc(endAbsolute = [118.9, 23.57])
+  |> line(end = [-17.64, yRel002])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Ensure start sketch button is enabled
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    // Start a new sketch
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    await page.waitForTimeout(2000) // wait for engine animation
+
+    // Switch to a different tool (circle)
+    await toolbar.circleBtn.click()
+    await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+    // Exit the empty sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // Ensure the feature tree now shows only one sketch
+    await toolbar.openFeatureTreePane()
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(1)
+    await toolbar.closeFeatureTreePane()
+
+    // Open the first sketch from the feature tree (the existing sketch)
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    // timeout is a bit longer because when the bug happened, it did go into sketch mode for a split second, but returned
+    // automatically, we want to make sure it stays there.
+    await page.waitForTimeout(2000)
+
+    // Validate we are in sketch mode (Exit Sketch button visible)
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+  })
+
   test('adding a syntax error, recovers after fixing', async ({
     page,
     homePage,
