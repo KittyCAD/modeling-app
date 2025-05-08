@@ -495,7 +495,7 @@ function PromptToEditResult() {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         files: [
           {
-            requestedFileName: 'main.kcl',
+            requestedFileName: 'fan-housing.kcl',
             requestedProjectName: ONBOARDING_PROJECT_NAME,
             requestedCode: modifiedFanHousing,
           },
