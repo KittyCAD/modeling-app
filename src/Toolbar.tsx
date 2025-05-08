@@ -95,7 +95,7 @@ export function Toolbar({
 
   const tooltipContentClassName = !showRichContent
     ? ''
-    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex gap-2 !max-w-none !w-72 flex-col items-stretch'
+    : '!text-left text-wrap !text-xs !p-0 !pb-2 flex !max-w-none !w-72 flex-col items-stretch'
   const richContentTimeout = useRef<number | null>(null)
   const richContentClearTimeout = useRef<number | null>(null)
   // On mouse enter, show rich content after a 1s delay
@@ -142,9 +142,7 @@ export function Toolbar({
       } else if (isToolbarDropdown(maybeIconConfig)) {
         return {
           id: maybeIconConfig.id,
-          array: maybeIconConfig.array.map((item) =>
-            resolveItemConfig(item, maybeIconConfig.id)
-          ),
+          array: maybeIconConfig.array.map((item) => resolveItemConfig(item)),
         }
       } else {
         return resolveItemConfig(maybeIconConfig)
@@ -152,12 +150,14 @@ export function Toolbar({
     })
 
     function resolveItemConfig(
-      maybeIconConfig: ToolbarItem,
-      dropdownId?: string
+      maybeIconConfig: ToolbarItem
     ): ToolbarItemResolved {
+      const isConfiguredAvailable = ['available', 'experimental'].includes(
+        maybeIconConfig.status
+      )
       const isDisabled =
         disableAllButtons ||
-        maybeIconConfig.status !== 'available' ||
+        !isConfiguredAvailable ||
         maybeIconConfig.disabled?.(state) === true
 
       return {
@@ -248,7 +248,9 @@ export function Toolbar({
                   onClick: () => itemConfig.onClick(configCallbackProps),
                   disabled:
                     disableAllButtons ||
-                    itemConfig.status !== 'available' ||
+                    !['available', 'experimental'].includes(
+                      itemConfig.status
+                    ) ||
                     itemConfig.disabled === true,
                   status: itemConfig.status,
                 }))}
@@ -276,7 +278,9 @@ export function Toolbar({
                     aria-pressed={selectedIcon.isActive}
                     disabled={
                       disableAllButtons ||
-                      selectedIcon.status !== 'available' ||
+                      !['available', 'experimental'].includes(
+                        selectedIcon.status
+                      ) ||
                       selectedIcon.disabled
                     }
                     name={selectedIcon.title}
@@ -347,7 +351,7 @@ export function Toolbar({
                 aria-pressed={itemConfig.isActive}
                 disabled={
                   disableAllButtons ||
-                  itemConfig.status !== 'available' ||
+                  !['available', 'experimental'].includes(itemConfig.status) ||
                   itemConfig.disabled
                 }
                 onClick={() => itemConfig.onClick(configCallbackProps)}
@@ -409,7 +413,7 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
     },
     {
       enabled:
-        itemConfig.status === 'available' &&
+        ['available', 'experimental'].includes(itemConfig.status) &&
         !!itemConfig.hotkey &&
         !itemConfig.disabled &&
         !itemConfig.disableHotkey,
@@ -444,18 +448,28 @@ const ToolbarItemTooltipShortContent = ({
   title: string
   hotkey?: string | string[]
 }) => (
-  <span
-    className={`text-sm ${
-      status !== 'available' ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
+  <div
+    className={`text-sm flex flex-col ${
+      !['available', 'experimental'].includes(status)
+        ? 'text-chalkboard-70 dark:text-chalkboard-40'
+        : ''
     }`}
   >
-    {title}
-    {hotkey && (
-      <kbd className="inline-block ml-2 flex-none hotkey">
-        {displayHotkeys(hotkey)}
-      </kbd>
+    {status === 'experimental' && (
+      <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+        <CustomIcon name="beaker" className="w-4 h-4" />
+        <span>Experimental</span>
+      </div>
     )}
-  </span>
+    <div className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}>
+      {title}
+      {hotkey && (
+        <kbd className="inline-block ml-2 flex-none hotkey">
+          {displayHotkeys(hotkey)}
+        </kbd>
+      )}
+    </div>
+  </div>
 )
 
 const ToolbarItemTooltipRichContent = ({
@@ -463,9 +477,18 @@ const ToolbarItemTooltipRichContent = ({
 }: {
   itemConfig: ToolbarItemResolved
 }) => {
+  const shouldBeEnabled = ['available', 'experimental'].includes(
+    itemConfig.status
+  )
   const { state } = useModelingContext()
   return (
     <>
+      {itemConfig.status === 'experimental' && (
+        <div className="text-xs flex items-center justify-center self-stretch gap-1 p-1 border-b">
+          <CustomIcon name="beaker" className="w-4 h-4" />
+          <span className="block">Experimental</span>
+        </div>
+      )}
       <div className="rounded-top flex items-center gap-2 pt-3 pb-2 px-2 bg-chalkboard-20/50 dark:bg-chalkboard-80/50">
         {itemConfig.icon && (
           <CustomIcon
@@ -474,16 +497,14 @@ const ToolbarItemTooltipRichContent = ({
             name={itemConfig.icon}
           />
         )}
-        <span
-          className={`text-sm flex-1 ${
-            itemConfig.status !== 'available'
-              ? 'text-chalkboard-70 dark:text-chalkboard-40'
-              : ''
+        <div
+          className={`text-sm flex-1 flex flex-col gap-1 ${
+            !shouldBeEnabled ? 'text-chalkboard-70 dark:text-chalkboard-40' : ''
           }`}
         >
           {itemConfig.title}
-        </span>
-        {itemConfig.status === 'available' && itemConfig.hotkey ? (
+        </div>
+        {shouldBeEnabled && itemConfig.hotkey ? (
           <kbd className="flex-none hotkey">
             {displayHotkeys(itemConfig.hotkey)}
           </kbd>
@@ -511,12 +532,12 @@ const ToolbarItemTooltipRichContent = ({
           )
         )}
       </div>
-      <p className="px-2 text-ch font-sans">{itemConfig.description}</p>
+      <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
       {/* Add disabled reason if item is disabled */}
       {itemConfig.disabled && itemConfig.disabledReason && (
         <>
           <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-          <p className="px-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
+          <p className="px-2 my-2 text-ch font-sans text-chalkboard-70 dark:text-chalkboard-40">
             {typeof itemConfig.disabledReason === 'function'
               ? itemConfig.disabledReason(state)
               : itemConfig.disabledReason}

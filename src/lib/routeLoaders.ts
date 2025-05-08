@@ -13,7 +13,10 @@ import {
 import { getProjectInfo } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  loadAndValidateSettings,
+  readLocalStorageAppSettingsFile,
+} from '@src/lib/settings/settingsUtils'
 import { codeManager } from '@src/lib/singletons'
 import type {
   FileLoaderData,
@@ -21,6 +24,7 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { settingsActor } from '@src/lib/singletons'
+import { readAppSettingsFile } from '@src/lib/desktop'
 
 export const fileLoader: LoaderFunction = async (
   routerData
@@ -29,6 +33,8 @@ export const fileLoader: LoaderFunction = async (
   let { configuration } = await loadAndValidateSettings()
 
   const projectPathData = await getProjectMetaByRouteId(
+    readAppSettingsFile,
+    readLocalStorageAppSettingsFile,
     params.id,
     configuration
   )

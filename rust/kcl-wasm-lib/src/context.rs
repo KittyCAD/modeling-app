@@ -48,8 +48,8 @@ impl Context {
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
-        if let Some(path) = path {
-            settings.with_current_file(std::path::PathBuf::from(path));
+        if let Some(path_src) = path {
+            settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
         }
 
         if is_mock {

@@ -2,7 +2,7 @@
 // A circular vanity mirror mounted on a swiveling arm with pivot joints, used for personal grooming.
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Hinge parameters
 hingeRadius = 8

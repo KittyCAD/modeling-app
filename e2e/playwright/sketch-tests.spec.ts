@@ -600,7 +600,7 @@ sketch001 = startSketchOn(XZ)
 
     await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: startPX[0], y: startPX[1] },
       targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
@@ -962,6 +962,8 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
   test('exiting a close extrude, has the extrude button enabled ready to go', async ({
     page,
     homePage,
+    cmdBar,
+    toolbar,
   }) => {
     // this was a regression https://github.com/KittyCAD/modeling-app/issues/2832
     await page.addInitScript(async () => {
@@ -1002,19 +1004,21 @@ profile001 = startProfile(sketch001, at = [${roundOff(scale * 69.6)}, ${roundOff
     await page.getByRole('button', { name: 'Exit Sketch' }).click()
 
     // expect extrude button to be enabled
-    await expect(
-      page.getByRole('button', { name: 'Extrude' })
-    ).not.toBeDisabled()
+    await expect(toolbar.extrudeButton).not.toBeDisabled()
 
     // click extrude
-    await page.getByRole('button', { name: 'Extrude' }).click()
+    await toolbar.extrudeButton.click()
 
-    // sketch selection should already have been made. "Selection: 1 face" only show up when the selection has been made already
+    // sketch selection should already have been made. "Sketches: 1 face" only show up when the selection has been made already
     // otherwise the cmdbar would be waiting for a selection.
-    await expect(
-      page.getByRole('button', { name: 'selection : 1 segment', exact: false })
-    ).toBeVisible({
-      timeout: 10_000,
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: { Sketches: '1 segment', Length: '' },
+      highlightedHeaderArg: 'length',
+      commandName: 'Extrude',
     })
   })
   test("Existing sketch with bad code delete user's code", async ({
@@ -1254,6 +1258,92 @@ profile001 = startProfile(sketch001, at = [299.72, 230.82])
         page.getByRole('button', { name: 'line Line', exact: true })
       ).toHaveAttribute('aria-pressed', 'true')
     }).toPass({ timeout: 40_000, intervals: [1_000] })
+  })
+
+  test('sketch on face of a boolean works', async ({
+    page,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+    editor,
+  }) => {
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
+
+myVar = 50
+sketch001 = startSketchOn(XZ)
+profile001 = circle(sketch001, center = [myVar, 43.9], radius = 41.05)
+extrude001 = extrude(profile001, length = 200)
+  |> translate(x = 3.14, y = 3.14, z = -50.154)
+sketch002 = startSketchOn(XY)
+profile002 = startProfile(sketch002, at = [72.2, -52.05])
+  |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 21.54)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $mySeg)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+
+extrude002 = extrude(profile002, length = 151)
+solid001 = subtract([extrude001], tools = [extrude002])
+`
+      )
+    })
+
+    const [selectChamferFaceClk] = scene.makeMouseHelpers(705, 234)
+    const [circleCenterClk] = scene.makeMouseHelpers(700, 272)
+    const [circleRadiusClk] = scene.makeMouseHelpers(694, 264)
+
+    await test.step('Setup', async () => {
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      await scene.moveCameraTo(
+        { x: 180, y: -75, z: 116 },
+        { x: 67, y: -114, z: -15 }
+      )
+      await toolbar.waitForFeatureTreeToBeBuilt()
+    })
+
+    await test.step('sketch on chamfer face that is part of a boolean', async () => {
+      await toolbar.startSketchPlaneSelection()
+      await selectChamferFaceClk()
+
+      await expect
+        .poll(async () => {
+          const lineBtn = page.getByRole('button', { name: 'line Line' })
+          return lineBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+
+      await editor.expectEditor.toContain(
+        'startSketchOn(solid001, face = seg01)'
+      )
+    })
+
+    await test.step('verify sketching still works', async () => {
+      await toolbar.circleBtn.click()
+      await expect
+        .poll(async () => {
+          const circleBtn = page.getByRole('button', { name: 'circle Circle' })
+          return circleBtn.getAttribute('aria-pressed')
+        })
+        .toBe('true')
+
+      await circleCenterClk()
+      await editor.expectEditor.toContain(
+        'profile003 = circle(sketch003, center'
+      )
+
+      await circleRadiusClk()
+      await editor.expectEditor.toContain(
+        'profile003 = circle(sketch003, center = [-25.77, 10.97], radius = 1.85)'
+      )
+    })
   })
 
   test('Can sketch on face when user defined function was used in the sketch', async ({
@@ -3075,7 +3165,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 100)
     await click00r(100, 0)
 
-    // draw a line to opposite tangnet direction of previous arc
+    // draw a line to opposite tangent direction of previous arc
     await toolbar.selectLine()
     await click00r(0, 0)
     await click00r(-200, 200)
@@ -3335,6 +3425,72 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       ).toBeVisible()
     })
   })
+  test('empty draft sketch is cleaned up properly', async ({
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    // This is the sketch used in the original report, but any sketch would work
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `yRel002 = 200
+lStraight = -200
+yRel001 = -lStraight
+length001 = lStraight
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-102.72, 237.44])
+  |> yLine(length = lStraight)
+  |> tangentialArc(endAbsolute = [118.9, 23.57])
+  |> line(end = [-17.64, yRel002])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Ensure start sketch button is enabled
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    // Start a new sketch
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    await page.waitForTimeout(2000) // wait for engine animation
+
+    // Switch to a different tool (circle)
+    await toolbar.circleBtn.click()
+    await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+    // Exit the empty sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // Ensure the feature tree now shows only one sketch
+    await toolbar.openFeatureTreePane()
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(1)
+    await toolbar.closeFeatureTreePane()
+
+    // Open the first sketch from the feature tree (the existing sketch)
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    // timeout is a bit longer because when the bug happened, it did go into sketch mode for a split second, but returned
+    // automatically, we want to make sure it stays there.
+    await page.waitForTimeout(2000)
+
+    // Validate we are in sketch mode (Exit Sketch button visible)
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+  })
+
   test('adding a syntax error, recovers after fixing', async ({
     page,
     homePage,
@@ -3367,7 +3523,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     // wait for scene to load
     await scene.settled(cmdBar)
 
-    await test.step('check chamfer selection changes cursor positon', async () => {
+    await test.step('check chamfer selection changes cursor position', async () => {
       await expect(async () => {
         // sometimes initial click doesn't register
         await objClick()

@@ -148,6 +148,8 @@ function CommandBarHeader({ children }: React.PropsWithChildren<object>) {
                             ),
                             4
                           )
+                        ) : arg.inputType === 'text' && !arg.valueSummary ? (
+                          `${argValue.slice(0, 12)}${argValue.length > 12 ? '...' : ''}`
                         ) : typeof argValue === 'object' ? (
                           arg.valueSummary ? (
                             arg.valueSummary(argValue)

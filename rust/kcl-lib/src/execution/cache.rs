@@ -489,7 +489,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+    async fn test_get_changed_program_same_code_but_different_edge_visibility_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
@@ -676,7 +676,9 @@ extrude(profile001, length = 100)"#
         std::fs::write(tmp_file, other_file.1).unwrap();
 
         let ExecTestResults { program, exec_ctxt, .. } =
-            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+            parse_execute_with_project_dir(code, Some(crate::TypedPath(tmp_dir)))
+                .await
+                .unwrap();
 
         let mut new_program = crate::Program::parse_no_errs(code).unwrap();
         new_program.compute_digest();
@@ -755,7 +757,9 @@ extrude(profile001, length = 100)
         std::fs::write(&tmp_file, other_file.1).unwrap();
 
         let ExecTestResults { program, exec_ctxt, .. } =
-            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+            parse_execute_with_project_dir(code, Some(crate::TypedPath(tmp_dir)))
+                .await
+                .unwrap();
 
         // Change the other file.
         std::fs::write(tmp_file, other_file2.1).unwrap();

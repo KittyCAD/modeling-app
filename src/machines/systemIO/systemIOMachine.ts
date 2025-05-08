@@ -1,6 +1,9 @@
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
-import type { SystemIOContext } from '@src/machines/systemIO/utils'
+import type {
+  SystemIOContext,
+  RequestedKCLFile,
+} from '@src/machines/systemIO/utils'
 import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActions,
@@ -11,6 +14,17 @@ import {
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { AppMachineContext } from '@src/lib/types'
+
+/**
+ * /some/dir            = directoryPath
+ * report               = fileNameWithoutExtension
+ * report.csv           = fileNameWithExtension
+ * /some/dir/report.csv = absolutePathToFileNameWithExtension
+ * /some/dir/report     = absolutePathTOFileNameWithoutExtension
+ * /some/dir/dreport    = absolutePathToDirectory
+ * some/dir/report      = relativePathToDirectory
+ * some/dir/report      = relativePathFileWithoutExtension
+ */
 
 /**
  * Handles any system level I/O for folders and files
@@ -69,15 +83,29 @@ export const systemIOMachine = setup({
           type: SystemIOMachineEvents.createKCLFile
           data: {
             requestedProjectName: string
-            requestedFileName: string
+            requestedFileNameWithExtension: string
             requestedCode: string
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.bulkCreateKCLFiles
+          data: {
+            files: RequestedKCLFile[]
+          }
+        }
+      | {
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject
+          data: {
+            files: RequestedKCLFile[]
+            requestedProjectName: string
+            override?: boolean
           }
         }
       | {
           type: SystemIOMachineEvents.importFileFromURL
           data: {
             requestedProjectName: string
-            requestedFileName: string
+            requestedFileNameWithExtension: string
             requestedCode: string
             requestedSubRoute?: string
           }
@@ -229,7 +257,7 @@ export const systemIOMachine = setup({
         input: {
           context: SystemIOContext
           requestedProjectName: string
-          requestedFileName: string
+          requestedFileNameWithExtension: string
           requestedCode: string
           rootContext: AppMachineContext
           requestedSubRoute?: string
@@ -263,6 +291,41 @@ export const systemIOMachine = setup({
           context: SystemIOContext
           requestedProjectName: string
           requestedFileName: string
+        }
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
+    ),
+    [SystemIOMachineActors.bulkCreateKCLFiles]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+        }
+      }): Promise<{
+        message: string
+        fileName: string
+        projectName: string
+      }> => {
+        return { message: '', fileName: '', projectName: '' }
+      }
+    ),
+    [SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          files: RequestedKCLFile[]
+          rootContext: AppMachineContext
+          requestedProjectName: string
         }
       }): Promise<{
         message: string
@@ -339,6 +402,13 @@ export const systemIOMachine = setup({
         },
         [SystemIOMachineEvents.deleteKCLFile]: {
           target: SystemIOMachineStates.deletingKCLFile,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFiles]: {
+          target: SystemIOMachineStates.bulkCreatingKCLFiles,
+        },
+        [SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject]: {
+          target:
+            SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject,
         },
       },
     },
@@ -444,7 +514,8 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileName: event.data.requestedFileName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
           }
@@ -467,7 +538,8 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
-            requestedFileName: event.data.requestedFileName,
+            requestedFileNameWithExtension:
+              event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
             rootContext: self.system.get('root').getSnapshot().context,
@@ -538,6 +610,61 @@ export const systemIOMachine = setup({
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.bulkCreatingKCLFiles]: {
+      invoke: {
+        id: SystemIOMachineActors.bulkCreateKCLFiles,
+        src: SystemIOMachineActors.bulkCreateKCLFiles,
+        input: ({ context, event, self }) => {
+          assertEvent(event, SystemIOMachineEvents.bulkCreateKCLFiles)
+          return {
+            context,
+            files: event.data.files,
+            rootContext: self.system.get('root').getSnapshot().context,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.bulkCreatingKCLFilesAndNavigateToProject]: {
+      invoke: {
+        id: SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject,
+        src: SystemIOMachineActors.bulkCreateKCLFilesAndNavigateToProject,
+        input: ({ context, event, self }) => {
+          assertEvent(
+            event,
+            SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject
+          )
+          return {
+            context,
+            files: event.data.files,
+            rootContext: self.system.get('root').getSnapshot().context,
+            requestedProjectName: event.data.requestedProjectName,
+            override: event.data.override,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              requestedProjectName: ({ event }) => {
+                return { name: event.output.projectName }
+              },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
           actions: [SystemIOMachineActions.toastError],
         },
       },

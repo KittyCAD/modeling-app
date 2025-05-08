@@ -150,6 +150,10 @@ pub struct CompositeSolid {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub tool_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// This is the ID of the composite solid that this is part of, if any, as a
+    /// composite solid can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub composite_solid_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, PartialEq, Eq, ts_rs::TS)]
@@ -182,6 +186,10 @@ pub struct Path {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub solid2d_id: Option<ArtifactId>,
     pub code_ref: CodeRef,
+    /// This is the ID of the composite solid that this is part of, if any, as
+    /// this can be used as input for another composite solid.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub composite_solid_id: Option<ArtifactId>,
 }
 
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
@@ -585,6 +593,7 @@ impl CompositeSolid {
         };
         merge_ids(&mut self.solid_ids, new.solid_ids);
         merge_ids(&mut self.tool_ids, new.tool_ids);
+        merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
 
         None
     }
@@ -609,6 +618,7 @@ impl Path {
         merge_opt_id(&mut self.sweep_id, new.sweep_id);
         merge_ids(&mut self.seg_ids, new.seg_ids);
         merge_opt_id(&mut self.solid2d_id, new.solid2d_id);
+        merge_opt_id(&mut self.composite_solid_id, new.composite_solid_id);
 
         None
     }
@@ -921,6 +931,7 @@ fn artifacts_to_update(
                 sweep_id: None,
                 solid2d_id: None,
                 code_ref,
+                composite_solid_id: None,
             }));
             let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
@@ -1259,15 +1270,20 @@ fn artifacts_to_update(
         }
         ModelingCmd::Solid3dFilletEdge(cmd) => {
             let mut return_arr = Vec::new();
+            let edge_id = if let Some(edge_id) = cmd.edge_id {
+                ArtifactId::new(edge_id)
+            } else {
+                cmd.edge_ids.first().unwrap().into()
+            };
             return_arr.push(Artifact::EdgeCut(EdgeCut {
                 id,
                 sub_type: cmd.cut_type.into(),
-                consumed_edge_id: cmd.edge_id.into(),
+                consumed_edge_id: edge_id,
                 edge_ids: Vec::new(),
                 surface_id: None,
                 code_ref,
             }));
-            let consumed_edge = artifacts.get(&ArtifactId::new(cmd.edge_id));
+            let consumed_edge = artifacts.get(&edge_id);
             if let Some(Artifact::Segment(consumed_edge)) = consumed_edge {
                 let mut new_segment = consumed_edge.clone();
                 new_segment.edge_cut_id = Some(id);
@@ -1359,20 +1375,59 @@ fn artifacts_to_update(
                     .for_each(|id| new_solid_ids.push(id)),
                 _ => {}
             }
-            let return_arr = new_solid_ids
-                .into_iter()
-                .map(|solid_id| {
-                    Artifact::CompositeSolid(CompositeSolid {
-                        id: solid_id,
-                        sub_type,
-                        solid_ids: solid_ids.clone(),
-                        tool_ids: tool_ids.clone(),
-                        code_ref: code_ref.clone(),
-                    })
-                })
-                .collect::<Vec<_>>();
 
-            // TODO: Should we add the reverse graph edges?
+            let mut return_arr = Vec::new();
+
+            // Create the new composite solids and update their linked artifacts
+            for solid_id in &new_solid_ids {
+                // Create the composite solid
+                return_arr.push(Artifact::CompositeSolid(CompositeSolid {
+                    id: *solid_id,
+                    sub_type,
+                    solid_ids: solid_ids.clone(),
+                    tool_ids: tool_ids.clone(),
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                }));
+
+                // Update the artifacts that were used as input for this composite solid
+                for input_id in &solid_ids {
+                    if let Some(artifact) = artifacts.get(input_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+
+                // Update the tool artifacts if this is a subtract operation
+                for tool_id in &tool_ids {
+                    if let Some(artifact) = artifacts.get(tool_id) {
+                        match artifact {
+                            Artifact::CompositeSolid(comp) => {
+                                let mut new_comp = comp.clone();
+                                new_comp.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::CompositeSolid(new_comp));
+                            }
+                            Artifact::Path(path) => {
+                                let mut new_path = path.clone();
+                                new_path.composite_solid_id = Some(*solid_id);
+                                return_arr.push(Artifact::Path(new_path));
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
 
             return Ok(return_arr);
         }

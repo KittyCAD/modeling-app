@@ -134,7 +134,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         current_file: None,
     };
     if let Some(current_file) = current_file {
-        settings.with_current_file(current_file);
+        settings.with_current_file(crate::TypedPath(current_file));
     }
     let ctx = ExecutorContext::new(&client, settings)
         .await

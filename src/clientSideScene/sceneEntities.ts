@@ -218,7 +218,7 @@ export class SceneEntities {
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    Object.values(this.activeSegments).forEach((segment, index) => {
+    Object.values(this.activeSegments).forEach((segment, _index) => {
       const factor =
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
@@ -354,7 +354,6 @@ export class SceneEntities {
   }
 
   createSketchAxis(
-    sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchPosition?: [number, number, number]
@@ -623,7 +622,6 @@ export class SceneEntities {
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
-          sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           [snappedClickPoint.x, snappedClickPoint.y],
@@ -679,7 +677,6 @@ export class SceneEntities {
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
-      ast: maybeModdedAst,
       variables: execState.variables,
       kclManager: this.kclManager,
     })
@@ -926,8 +923,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArc' = 'line',
-    shouldTearDown = true
+    segmentName: 'line' | 'tangentialArc' = 'line'
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
 
@@ -1001,7 +997,6 @@ export class SceneEntities {
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
-          ast: this.kclManager.ast,
           variables: this.kclManager.variables,
           kclManager: this.kclManager,
         })
@@ -1185,7 +1180,6 @@ export class SceneEntities {
     })
   }
   setupDraftRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1256,7 +1250,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
 
     const code = recast(_ast)
@@ -1395,7 +1389,6 @@ export class SceneEntities {
     }
   }
   setupDraftCenterRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1465,7 +1458,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
     __recastAst = parse(code)
@@ -1602,7 +1595,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircleThreePoint = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1789,7 +1781,6 @@ export class SceneEntities {
   setupDraftArc = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -2026,7 +2017,6 @@ export class SceneEntities {
   setupDraftArcThreePoint = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -2286,7 +2276,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -2541,7 +2530,6 @@ export class SceneEntities {
 
           const sketch = sketchFromPathToNode({
             pathToNode,
-            ast: this.kclManager.ast,
             variables: this.kclManager.variables,
             kclManager: this.kclManager,
           })
@@ -3095,7 +3083,6 @@ export class SceneEntities {
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
-        ast: truncatedAst,
         variables,
         kclManager: this.kclManager,
       })
@@ -3418,7 +3405,7 @@ export class SceneEntities {
         }
         this.editorManager.setHighlightRange([defaultSourceRange()])
       },
-      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+      onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
         this.editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
@@ -3782,12 +3769,10 @@ function prepareTruncatedAst(
 
 function sketchFromPathToNode({
   pathToNode,
-  ast,
   variables,
   kclManager,
 }: {
   pathToNode: PathToNode
-  ast: Program
   variables: VariableMap
   kclManager: KclManager
 }): Sketch | null | Error {
@@ -3837,7 +3822,6 @@ export function getSketchQuaternion(
 ): Quaternion | Error {
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
-    ast: kclManager.ast,
     variables: kclManager.variables,
     kclManager,
   })
@@ -3879,12 +3863,10 @@ function massageFormats(
 
 function getSketchesInfo({
   sketchNodePaths,
-  ast,
   variables,
   kclManager,
 }: {
   sketchNodePaths: PathToNode[]
-  ast: Node<Program>
   variables: VariableMap
   kclManager: KclManager
 }): {
@@ -3898,7 +3880,6 @@ function getSketchesInfo({
   for (const path of sketchNodePaths) {
     const sketch = sketchFromPathToNode({
       pathToNode: path,
-      ast,
       variables,
       kclManager,
     })

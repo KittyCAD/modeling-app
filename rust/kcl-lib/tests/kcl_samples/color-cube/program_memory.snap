@@ -197,7 +197,8 @@ description: Variables in memory after executing color-cube.kcl
     }
   },
   "sketchRectangle": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "tealPlane": {
     "type": "Plane",

@@ -4,6 +4,7 @@ description: Variables in memory after executing 80-20-rail.kcl
 ---
 {
   "rail8020": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

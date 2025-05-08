@@ -10850,7 +10850,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",

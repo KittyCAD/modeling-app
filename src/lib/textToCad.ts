@@ -11,7 +11,10 @@ import crossPlatformFetch from '@src/lib/crossPlatformFetch'
 import { getNextFileName } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclManager, systemIOActor } from '@src/lib/singletons'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 
@@ -213,10 +216,13 @@ export async function submitAndAwaitTextToKclSystemIO({
           data: {
             requestedProjectName: projectName,
             requestedCode: value.code,
-            requestedFileName: newFileName,
+            requestedFileNameWithExtension: newFileName,
           },
         })
       }
+
+      // wait for the createKCLFile action to be completed
+      await waitForIdleState({ systemIOActor })
 
       return {
         ...value,

@@ -31,8 +31,6 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
@@ -46,7 +44,6 @@ import {
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
-  ArtifactGraph,
   CallExpressionKw,
   Expr,
   Literal,
@@ -106,7 +103,6 @@ export function startSketchOnDefault(
 
 export function insertNewStartProfileAt(
   node: Node<Program>,
-  sketchEntryNodePath: PathToNode,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: [number, number],
@@ -340,122 +336,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function extrudeSketch({
-  node,
-  pathToNode,
-  distance = createLiteral(4),
-  extrudeName,
-  artifact,
-  artifactGraph,
-}: {
-  node: Node<Program>
-  pathToNode: PathToNode
-  distance: Expr
-  extrudeName?: string
-  artifactGraph: ArtifactGraph
-  artifact?: Artifact
-}):
-  | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-      pathToExtrudeArg: PathToNode
-    }
-  | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToNode,
-    artifactGraph,
-    ast: node,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
-  const _node = structuredClone(node)
-  const _node1 = getNodeFromPath(_node, pathToNode)
-  if (err(_node1)) return _node1
-
-  // determine if sketchExpression is in a pipeExpression or not
-  const _node2 = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(_node2)) return _node2
-
-  const _node3 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  if (err(_node3)) return _node3
-  const { node: variableDeclarator } = _node3
-
-  const extrudeCall = createCallExpressionStdLibKw(
-    'extrude',
-    createLocalName(variableDeclarator.id.name),
-    [createLabeledArg('length', distance)]
-  )
-  // index of the 'length' arg above. If you reorder the labeled args above,
-  // make sure to update this too.
-  const argIndex = 0
-
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
-  const name =
-    extrudeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
-  const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-
-  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
-  const pathToExtrudeArg: PathToNode = [
-    ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-  return {
-    modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
-    pathToExtrudeArg,
-  }
-}
-
-export function loftSketches(
-  node: Node<Program>,
-  declarators: VariableDeclarator[]
-): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const elements = declarators.map((d) => createLocalName(d.id.name))
-  const loft = createCallExpressionStdLibKw(
-    'loft',
-    createArrayExpression(elements),
-    []
-  )
-  const declaration = createVariableDeclaration(name, loft)
-  modifiedAst.body.push(declaration)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['unlabeled', UNLABELED_ARG],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function addShell({
   node,
   sweepName,
@@ -497,63 +377,6 @@ export function addShell({
     modifiedAst.body.push(variable)
   }
 
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-export function addSweep({
-  node,
-  targetDeclarator,
-  trajectoryDeclarator,
-  sectional,
-  variableName,
-  insertIndex,
-}: {
-  node: Node<Program>
-  targetDeclarator: VariableDeclarator
-  trajectoryDeclarator: VariableDeclarator
-  sectional: boolean
-  variableName?: string
-  insertIndex?: number
-}): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const call = createCallExpressionStdLibKw(
-    'sweep',
-    createLocalName(targetDeclarator.id.name),
-    [
-      createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
-      createLabeledArg('sectional', createLiteral(sectional)),
-    ]
-  )
-  const variable = createVariableDeclaration(name, call)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, variable)
-    : modifiedAst.body.push(variable)
   const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
@@ -637,7 +460,8 @@ export function sketchOnExtrudedFace(
 
   const expressionIndex = Math.max(
     sketchPathToNode[1][0] as number,
-    extrudePathToNode[1][0] as number
+    extrudePathToNode[1][0] as number,
+    node.body.length - 1
   )
   _node.body.splice(expressionIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
@@ -1345,7 +1169,7 @@ export function createNodeFromExprSnippet(
 export function insertVariableAndOffsetPathToNode(
   variable: KclCommandValue,
   modifiedAst: Node<Program>,
-  pathToNode: PathToNode
+  pathToNode?: PathToNode
 ) {
   if ('variableName' in variable && variable.variableName) {
     modifiedAst.body.splice(
@@ -1353,7 +1177,7 @@ export function insertVariableAndOffsetPathToNode(
       0,
       variable.variableDeclarationAst
     )
-    if (typeof pathToNode[1][0] === 'number') {
+    if (pathToNode && pathToNode[1] && typeof pathToNode[1][0] === 'number') {
       pathToNode[1][0]++
     }
   }

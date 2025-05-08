@@ -666,10 +666,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 6.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -678,10 +683,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 6.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -690,10 +700,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 6.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -702,10 +717,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 6.0,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -1279,10 +1299,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 2.5,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -1291,10 +1316,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 2.5,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -1888,10 +1918,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 2.5,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -1900,10 +1935,15 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 2.5,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {

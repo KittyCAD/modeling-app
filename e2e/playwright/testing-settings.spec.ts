@@ -652,7 +652,7 @@ test.describe(
               `Set default unit to "${unitOfMeasure}" for this project`
             )
 
-            // Assert visibility and disapperance
+            // Assert visibility and disappearance
             await expect(toastMessage).toBeVisible()
             await expect(toastMessage).not.toBeVisible()
           })

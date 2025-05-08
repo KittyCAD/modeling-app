@@ -150,7 +150,7 @@ yo2 = hmm([identifierGuy + 5])`
     // because the unlabeled arg will default to %. However, the `isNodeSafeToReplacePath`
     // function doesn't yet check for this (because it cannot differentiate between
     // a function that relies on this default unlabeled arg, and a function with no unlabeled arg)
-    const rangeStart = code.indexOf('ine(%, end = [2.8,')
+    const rangeStart = code.indexOf('line(%, end = [2.8,')
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
@@ -631,7 +631,7 @@ describe('Testing traverse and pathToNode', () => {
       'very nested, array, object, callExpression, array, memberExpression',
       '.yo',
     ],
-  ])('testing %s', async (testName, literalOfInterest) => {
+  ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [3.29, 7.86])

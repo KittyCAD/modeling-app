@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 
 use schemars::{gen::SchemaGenerator, JsonSchema};
 use serde_json::{json, Value};
@@ -39,8 +39,8 @@ base_unit = "mm"
 text_wrapping = false
 "#;
 
-const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings-project.md";
-const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl/settings-user.md";
+const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/project.md";
+const USER_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/user.md";
 
 fn init_handlebars() -> handlebars::Handlebars<'static> {
     let mut hbs = handlebars::Handlebars::new();
@@ -118,15 +118,7 @@ fn init_handlebars() -> handlebars::Handlebars<'static> {
     hbs
 }
 
-fn ensure_settings_dir() {
-    let settings_dir = PathBuf::from("../../docs/kcl/settings");
-    if !settings_dir.exists() {
-        fs::create_dir_all(&settings_dir).expect("Failed to create settings directory");
-    }
-}
-
 pub fn generate_settings_docs() {
-    ensure_settings_dir();
     let hbs = init_handlebars();
 
     // Generate project settings documentation

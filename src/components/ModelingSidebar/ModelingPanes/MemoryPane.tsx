@@ -11,7 +11,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { useKclContext } from '@src/lang/KclProvider'
 import type { VariableMap } from '@src/lang/wasm'
-import { sketchFromKclValueOptional } from '@src/lang/wasm'
+import { humanDisplayNumber, sketchFromKclValueOptional } from '@src/lang/wasm'
 import { Reason, trap } from '@src/lib/trap'
 
 export const MemoryPaneMenu = () => {
@@ -22,7 +22,7 @@ export const MemoryPaneMenu = () => {
       navigator.clipboard
         .writeText(JSON.stringify(variables))
         .then(() => toast.success('Program memory copied to clipboard'))
-        .catch((e) =>
+        .catch((_e) =>
           trap(new Error('Failed to copy program memory to clipboard'))
         )
     }
@@ -81,31 +81,29 @@ export const MemoryPane = () => {
 }
 
 export const processMemory = (variables: VariableMap) => {
-  const processedMemory: any = {}
+  const processedMemory: Record<
+    string,
+    string | number | boolean | object | undefined
+  > = {}
   for (const [key, val] of Object.entries(variables)) {
     if (val === undefined) continue
-    if (
-      val.type === 'Sketch' ||
-      // @ts-ignore
-      val.type !== 'Function'
-    ) {
-      const sk = sketchFromKclValueOptional(val, key)
-      if (val.type === 'Solid') {
-        processedMemory[key] = val.value.value.map(
-          ({ ...rest }: ExtrudeSurface) => {
-            return rest
-          }
-        )
-      } else if (!(sk instanceof Reason)) {
-        processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
+    const sk = sketchFromKclValueOptional(val, key)
+    if (val.type === 'Solid') {
+      processedMemory[key] = val.value.value.map(
+        ({ ...rest }: ExtrudeSurface) => {
           return rest
-        })
-      } else {
-        processedMemory[key] = val.value
-      }
-      //@ts-ignore
+        }
+      )
+    } else if (!(sk instanceof Reason)) {
+      processedMemory[key] = sk.paths.map(({ __geoMeta, ...rest }: Path) => {
+        return rest
+      })
     } else if (val.type === 'Function') {
-      processedMemory[key] = `__function__`
+      processedMemory[key] = '__function__'
+    } else if (val.type === 'Number') {
+      processedMemory[key] = humanDisplayNumber(val.value, val.ty)
+    } else {
+      processedMemory[key] = val.value
     }
   }
   return processedMemory

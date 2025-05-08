@@ -57,6 +57,8 @@ pub struct EngineConnection {
     stats: EngineStats,
 
     async_tasks: AsyncTasks,
+
+    debug_info: Arc<RwLock<Option<OkWebSocketResponseData>>>,
 }
 
 pub struct TcpRead {
@@ -252,6 +254,8 @@ impl EngineConnection {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
         let response_information_cloned = response_information.clone();
+        let debug_info = Arc::new(RwLock::new(None));
+        let debug_info_cloned = debug_info.clone();
 
         let socket_health_tcp_read = socket_health.clone();
         let tcp_read_handle = tokio::spawn(async move {
@@ -338,6 +342,13 @@ impl EngineConnection {
                                     drop(pe);
                                 }
                             }
+                            WebSocketResponse::Success(SuccessWebSocketResponse {
+                                resp: debug @ OkWebSocketResponseData::Debug { .. },
+                                ..
+                            }) => {
+                                let mut handle = debug_info_cloned.write().await;
+                                *handle = Some(debug.clone());
+                            }
                             _ => {}
                         }
 
@@ -375,6 +386,7 @@ impl EngineConnection {
             session_data,
             stats: Default::default(),
             async_tasks: AsyncTasks::new(),
+            debug_info,
         })
     }
 }
@@ -412,6 +424,30 @@ impl EngineManager for EngineConnection {
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
         self.default_planes.clone()
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        self.debug_info.read().await.clone()
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        let (tx, rx) = oneshot::channel();
+
+        self.engine_req_tx
+            .send(ToEngineReq {
+                req: WebSocketRequest::Debug {},
+                request_sent: tx,
+            })
+            .await
+            .map_err(|e| {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to send debug: {}", e),
+                    source_ranges: vec![],
+                })
+            })?;
+
+        let _ = rx.await;
+        Ok(())
     }
 
     async fn clear_scene_post_hook(

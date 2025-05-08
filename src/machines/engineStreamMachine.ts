@@ -58,7 +58,7 @@ export async function holdOntoVideoFrameInCanvas(
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement
 ) {
-  await video.pause()
+  video.pause()
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
   canvas.style.width = video.videoWidth + 'px'
@@ -119,7 +119,7 @@ export const engineStreamMachine = setup({
         const video = context.videoRef.current
         if (!video) return
 
-        await video.pause()
+        video.pause()
 
         const canvas = context.canvasRef.current
         if (!canvas) return

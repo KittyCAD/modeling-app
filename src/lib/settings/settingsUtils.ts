@@ -455,7 +455,7 @@ export function clearSettingsAtLevel(
   allSettings: typeof settings,
   level: SettingsLevel
 ) {
-  Object.entries(allSettings).forEach(([category, settingsCategory]) => {
+  Object.entries(allSettings).forEach(([_category, settingsCategory]) => {
     Object.entries(settingsCategory).forEach(
       ([_, settingValue]: [string, Setting]) => {
         settingValue[level] = undefined

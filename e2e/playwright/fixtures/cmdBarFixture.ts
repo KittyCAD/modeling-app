@@ -147,7 +147,7 @@ export class CmdBarFixture {
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
       const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your kcl'
+        'Use Zoo AI to edit your parts and code.'
       )
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
@@ -224,7 +224,51 @@ export class CmdBarFixture {
     // Create a handler function that saves request bodies to a file
     const requestHandler = (route: Route, request: Request) => {
       try {
-        const requestBody = request.postDataJSON()
+        // Get the raw post data
+        const postData = request.postData()
+        if (!postData) {
+          console.error('No post data found in request')
+          return
+        }
+
+        // Extract all parts from the multipart form data
+        const boundary = postData.match(/------WebKitFormBoundary[^\r\n]*/)?.[0]
+        if (!boundary) {
+          console.error('Could not find form boundary')
+          return
+        }
+
+        const parts = postData.split(boundary).filter((part) => part.trim())
+        const files: Record<string, string> = {}
+        let eventData = null
+
+        for (const part of parts) {
+          // Skip the final boundary marker
+          if (part.startsWith('--')) continue
+
+          const nameMatch = part.match(/name="([^"]+)"/)
+          if (!nameMatch) continue
+
+          const name = nameMatch[1]
+          const content = part.split(/\r?\n\r?\n/)[1]?.trim()
+          if (!content) continue
+
+          if (name === 'event') {
+            eventData = JSON.parse(content)
+          } else {
+            files[name] = content
+          }
+        }
+
+        if (!eventData) {
+          console.error('Could not find event JSON in multipart form data')
+          return
+        }
+
+        const requestBody = {
+          ...eventData,
+          files,
+        }
 
         // Ensure directory exists
         const dir = path.dirname(outputPath)
@@ -245,7 +289,10 @@ export class CmdBarFixture {
     }
 
     // Start monitoring requests
-    await this.page.route('**/ml/text-to-cad/iteration', requestHandler)
+    await this.page.route(
+      '**/ml/text-to-cad/multi-file/iteration',
+      requestHandler
+    )
 
     console.log(
       `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
