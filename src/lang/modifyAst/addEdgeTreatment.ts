@@ -773,7 +773,7 @@ export async function editEdgeTreatment(
 
   // find the radius or length argument to update
   const objectArg = edgeTreatmentCall.node.arguments.find(
-    (arg) => arg.label.name === 'radius' || arg.label.name === 'length'
+    (arg) => arg.label.name === parameterName
   )
 
   // create a new argument with the updated value
