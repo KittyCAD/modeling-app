@@ -216,6 +216,7 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
@@ -373,6 +374,7 @@ impl PrimitiveType {
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
             (t1, t2) => t1 == t2,
         }
