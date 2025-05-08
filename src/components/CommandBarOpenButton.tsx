@@ -15,8 +15,8 @@ export function CommandBarOpenButton() {
       data-testid="command-bar-open-button"
     >
       <CustomIcon name="command" className="w-5 h-5" />
-      <span>Commands</span>
-      <kbd className="dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
+      <span className="max-xl:sr-only">Commands</span>
+      <kbd className="max-xl:sr-only dark:bg-chalkboard-80 font-mono rounded-sm text-primary/70 dark:text-inherit inline-block px-1">
         {hotkeyDisplay(COMMAND_PALETTE_HOTKEY, platform)}
       </kbd>
     </button>
