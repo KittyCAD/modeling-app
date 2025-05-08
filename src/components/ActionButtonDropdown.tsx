@@ -3,7 +3,7 @@ import { Popover } from '@headlessui/react'
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useEffect } from 'react'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
@@ -12,7 +12,7 @@ type ActionButtonSplitProps = ActionButtonProps & { Element: 'button' } & {
   splitMenuItems: {
     id: string
     label: string
-    hotkey?: string
+    hotkey?: string | string[]
     onClick: () => void
     disabled?: boolean
     status?: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
@@ -134,7 +134,7 @@ function ActionButtonDropdownListItem({
           </div>
         ) : item.hotkey ? (
           <kbd className="hotkey flex-none group-disabled/button:text-chalkboard-50 dark:group-disabled/button:text-chalkboard-70 group-disabled/button:border-chalkboard-20 dark:group-disabled/button:border-chalkboard-80">
-            {item.hotkey}
+            {filterEscHotkey(item.hotkey)}
           </kbd>
         ) : null}
         {item.status === 'experimental' ? (

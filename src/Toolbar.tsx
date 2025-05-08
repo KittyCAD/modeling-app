@@ -25,8 +25,8 @@ import type {
   ToolbarModeName,
 } from '@src/lib/toolbar'
 import { isToolbarItemResolvedDropdown, toolbarConfig } from '@src/lib/toolbar'
-import { isArray } from '@src/lib/utils'
 import { commandBarActor } from '@src/lib/singletons'
+import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
 
 export function Toolbar({
   className = '',
@@ -470,7 +470,7 @@ const ToolbarItemTooltipShortContent = ({
       {title}
       {hotkey && (
         <kbd className="inline-block ml-2 flex-none hotkey">
-          {displayHotkeys(hotkey)}
+          {filterEscHotkey(hotkey)}
         </kbd>
       )}
     </div>
@@ -511,7 +511,7 @@ const ToolbarItemTooltipRichContent = ({
         </div>
         {shouldBeEnabled && itemConfig.hotkey ? (
           <kbd className="flex-none hotkey">
-            {displayHotkeys(itemConfig.hotkey)}
+            {filterEscHotkey(itemConfig.hotkey)}
           </kbd>
         ) : itemConfig.status === 'kcl-only' ? (
           <>
@@ -572,11 +572,6 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
-}
-
-// We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
-function displayHotkeys(hotkey: string | string[]) {
-  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }
 
 function isToolbarDropdown(
