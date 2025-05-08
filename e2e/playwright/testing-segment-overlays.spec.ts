@@ -1445,7 +1445,7 @@ part001 = startSketchOn(XZ)
 
         await page.getByTestId('overlay-menu').click()
         await page.waitForTimeout(100)
-        await page.getByText('Remove constraints').click()
+        await page.getByRole('button', { name: 'Remove constraints' }).click()
 
         await editor.expectEditor.toContain(after, { shouldNormalise: true })
 
