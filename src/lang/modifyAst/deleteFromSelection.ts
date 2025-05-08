@@ -264,7 +264,7 @@ export async function deleteFromSelection(
             ).filter((wall) => wall?.pathIds?.length)
             const wallIds = wallsWithDependencies.map((wall) => wall.id)
 
-            Object.entries(variables).forEach(([key, _var]) => {
+            Object.entries(variables).forEach(([_key, _var]) => {
               if (
                 _var?.type === 'Face' &&
                 wallIds.includes(_var.value.artifactId)
