@@ -1,6 +1,6 @@
 ---
 title: "units::toRadians"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Converts a number to radians from its current units."
 layout: manual
 ---
@@ -17,11 +17,11 @@ units::toRadians(@num: number(rad)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(rad)` |  | Yes |
+| `num` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(rad)`
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

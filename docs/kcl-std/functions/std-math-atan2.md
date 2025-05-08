@@ -1,6 +1,6 @@
 ---
 title: "atan2"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the four quadrant arctangent of Y and X."
 layout: manual
 ---
@@ -20,12 +20,12 @@ atan2(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `y` | `number(Length)` |  | Yes |
-| `x` | `number(Length)` |  | Yes |
+| `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(rad)`
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

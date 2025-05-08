@@ -1,6 +1,6 @@
 ---
 title: "units::toMillimeters"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to millimeters from its current units."
 layout: manual
 ---
@@ -17,11 +17,11 @@ units::toMillimeters(@num: number(mm)): number(mm)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(mm)` |  | Yes |
+| `num` | [`number(mm)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(mm)`
+[`number(mm)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 

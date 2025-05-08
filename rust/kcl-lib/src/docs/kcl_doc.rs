@@ -117,8 +117,10 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 }
                 let qual = format!("{}::", &result.qual_name);
                 let mut dd = match var.kind {
-                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, name)),
-                    VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, name)),
+                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
+                    VariableKind::Const => {
+                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
+                    }
                 };
                 let key = format!("I:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
@@ -138,7 +140,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                     continue;
                 }
                 let qual = format!("{}::", &result.qual_name);
-                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, name));
+                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, &result.name));
                 let key = format!("T:{}", dd.qual_name());
                 if result.children.contains_key(&key) {
                     continue;
@@ -452,10 +454,10 @@ pub struct ModData {
 
 impl ModData {
     fn new(name: &str, preferred_prefix: &str) -> Self {
-        let (qual_name, module_name) = if name == "prelude" {
-            ("std".to_owned(), String::new())
+        let (name, qual_name, module_name) = if name == "prelude" {
+            ("std", "std".to_owned(), String::new())
         } else {
-            (format!("std::{}", name), "std".to_owned())
+            (name, format!("std::{}", name), "std".to_owned())
         };
         Self {
             preferred_name: format!("{preferred_prefix}{name}"),

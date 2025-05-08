@@ -1,6 +1,6 @@
 ---
 title: "rem"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: ""
 layout: manual
 ---

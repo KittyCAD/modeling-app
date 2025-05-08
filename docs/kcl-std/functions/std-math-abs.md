@@ -1,6 +1,6 @@
 ---
 title: "abs"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the absolute value of a number."
 layout: manual
 ---

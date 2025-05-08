@@ -1,6 +1,6 @@
 ---
 title: "units::toDegrees"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Converts a number to degrees from its current units."
 layout: manual
 ---
@@ -17,11 +17,11 @@ units::toDegrees(@num: number(deg)): number(deg)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(deg)` |  | Yes |
+| `num` | [`number(deg)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(deg)`
+[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

@@ -3678,10 +3678,15 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 0.508,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -3690,10 +3695,15 @@ description: Artifact commands pipe-flange-assembly.kcl
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
       "radius": 0.508,
       "tolerance": 0.0000001,
-      "cut_type": "fillet"
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {

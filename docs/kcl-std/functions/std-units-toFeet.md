@@ -1,6 +1,6 @@
 ---
 title: "units::toFeet"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to feet from its current units."
 layout: manual
 ---
@@ -17,11 +17,11 @@ units::toFeet(@num: number(ft)): number(ft)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(ft)` |  | Yes |
+| `num` | [`number(ft)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(ft)`
+[`number(ft)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 

@@ -1,6 +1,6 @@
 ---
 title: "PI"
-subtitle: "Constant in math"
+subtitle: "Constant in std::math"
 excerpt: "The value of `pi`, Archimedes’ constant (π)."
 layout: manual
 ---

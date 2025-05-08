@@ -1,6 +1,6 @@
 ---
 title: "cos"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the cosine of a number."
 layout: manual
 ---
@@ -17,11 +17,11 @@ cos(@num: number(Angle)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(Angle)` |  | Yes |
+| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(_)`
+[`number(_)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 ### Examples

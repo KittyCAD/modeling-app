@@ -1,6 +1,6 @@
 ---
 title: "floor"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the largest integer less than or equal to a number."
 layout: manual
 ---
