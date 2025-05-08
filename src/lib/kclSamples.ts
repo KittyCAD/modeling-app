@@ -1,7 +1,14 @@
 import kclSamplesManifest from '@public/kcl-samples/manifest.json'
 
-const kclSamplesManifestWithNoMultipleFiles = kclSamplesManifest.filter(
+export const kclSamplesManifestWithNoMultipleFiles = kclSamplesManifest.filter(
   (file) => !file.multipleFiles
 )
+export const everyKclSample = kclSamplesManifest
 
-export { kclSamplesManifest, kclSamplesManifestWithNoMultipleFiles }
+export const findKclSample = (pathFromProjectDirectoryToFirstFile: string) => {
+  return everyKclSample.find(
+    (sample) =>
+      sample.pathFromProjectDirectoryToFirstFile ===
+      pathFromProjectDirectoryToFirstFile
+  )
+}
