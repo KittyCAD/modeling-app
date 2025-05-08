@@ -17,11 +17,11 @@ sin(@num: number(Angle)): number(_)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(_)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(_)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

@@ -2,6 +2,9 @@
 ///
 /// Contains frequently used constants, functions for interacting with the KittyCAD servers to
 /// create sketches and geometry, and utility functions.
+///
+/// The standard library is organised into modules (listed below), but most things are always available
+/// in KCL programs.
 
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
@@ -17,34 +20,40 @@ export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
 
+/// An abstract 3d plane aligned with the X and Y axes. It's normal is the positive Z axis.
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
 }: Plane
 
+/// An abstract 3d plane aligned with the X and Z axes. It's normal is the negative Y axis.
 export XZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
+/// An abstract 3d plane aligned with the Y and Z axes. It's normal is the positive X axis.
 export YZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 0, y = 1, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
+/// The X-axis (can be used in both 2d and 3d contexts).
 export X = {
   origin = [0, 0, 0],
   direction = [1, 0, 0],
 }: Axis3d
 
+/// The Y-axis (can be used in both 2d and 3d contexts).
 export Y = {
   origin = [0, 0, 0],
   direction = [0, 1, 0],
 }: Axis3d
 
+/// The 3D Z-axis.
 export Z = {
   origin = [0, 0, 0],
   direction = [0, 0, 1],

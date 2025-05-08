@@ -17,11 +17,11 @@ Consider using `atan2()` instead for the true inverse of tangent.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

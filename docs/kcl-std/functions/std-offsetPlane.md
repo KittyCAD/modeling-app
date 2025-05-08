@@ -26,7 +26,7 @@ plane and 10 units away from it.
 
 ### Returns
 
-[`Plane`](/docs/kcl-std/types/std-types-Plane) - A plane.
+[`Plane`](/docs/kcl-std/types/std-types-Plane) - An abstract plane.
 
 
 ### Examples

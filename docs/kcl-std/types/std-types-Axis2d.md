@@ -1,11 +1,11 @@
 ---
 title: "Axis2d"
 subtitle: "Type in std::types"
-excerpt: "An infinite line in 2d space."
+excerpt: "An abstract and infinite line in 2d space."
 layout: manual
 ---
 
-An infinite line in 2d space.
+An abstract and infinite line in 2d space.
 
 
 

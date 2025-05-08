@@ -1,11 +1,11 @@
 ---
 title: "turns"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "This module contains a few handy constants for defining turns. "
 layout: manual
 ---
 
-
+This module contains a few handy constants for defining turns. 
 
 
 

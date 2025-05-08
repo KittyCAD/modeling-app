@@ -27,7 +27,7 @@ and `log10` can produce more accurate results for base 10.
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
