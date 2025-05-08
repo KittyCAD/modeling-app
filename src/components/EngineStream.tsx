@@ -37,6 +37,7 @@ import {
 } from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -54,12 +55,17 @@ export const EngineStream = (props: {
   const last = useRef<number>(Date.now())
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
-  const settingsEngine = {
+  /**
+   * We omit `pool` here because `engineStreamMachine` will override it anyway
+   * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
+   */
+  const settingsEngine: Omit<SettingsViaQueryString, 'pool'> = {
     theme: settings.app.theme.current,
     enableSSAO: settings.modeling.enableSSAO.current,
     highlightEdges: settings.modeling.highlightEdges.current,
     showScaleGrid: settings.modeling.showScaleGrid.current,
     cameraProjection: settings.modeling.cameraProjection.current,
+    cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
