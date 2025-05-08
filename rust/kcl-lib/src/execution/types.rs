@@ -162,6 +162,7 @@ impl RuntimeType {
         source_range: SourceRange,
     ) -> Result<Self, CompilationError> {
         Ok(match value {
+            AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
             AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
@@ -333,6 +334,7 @@ impl ArrayLen {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
+    Any,
     Number(NumericType),
     String,
     Boolean,
@@ -351,6 +353,7 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
+            PrimitiveType::Any => "any values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
@@ -379,6 +382,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
@@ -1020,6 +1024,7 @@ impl KclValue {
             _ => self,
         };
         match ty {
+            PrimitiveType::Any => Ok(value.clone()),
             PrimitiveType::Number(ty) => ty.coerce(value),
             PrimitiveType::String => match value {
                 KclValue::String { .. } => Ok(value.clone()),
