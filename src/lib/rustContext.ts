@@ -164,6 +164,10 @@ export default class RustContext {
   // scope of the current file the user is on. It collects all the dependencies
   // and checks if any of them have changed. If they have, it will bust the
   // cache and recompile the scene.
+  // The typescript side should never raw dog clear the scene since that would
+  // fuck with the cache as well. So if you _really_ want to just clear the scene
+  // AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
+  // re-execute.
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
