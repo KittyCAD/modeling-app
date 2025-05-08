@@ -17,11 +17,11 @@ units::toCentimeters(@num: number(cm)): number(cm)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(cm)` |  | Yes |
+| `num` | [`number(cm)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
 
 ### Returns
 
-`number(cm)`
+[`number(cm)`](/docs/kcl-std/types/std-types-number) - A number
 
 
 

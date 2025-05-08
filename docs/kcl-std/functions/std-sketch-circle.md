@@ -25,7 +25,7 @@ the provided (x, y) origin point.
 |----------|------|-------------|----------|
 | `sketch_or_surface` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Plane`](/docs/kcl-std/types/std-types-Plane) or [`Face`](/docs/kcl-std/types/std-types-Face) | Sketch to extend, or plane or surface to sketch on. | Yes |
 | `center` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The center of the circle. | Yes |
-| `radius` | `number(Length)` | The radius of the circle. | Yes |
+| `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the circle. | Yes |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this circle. | No |
 
 ### Returns
