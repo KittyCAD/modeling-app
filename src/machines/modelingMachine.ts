@@ -2327,8 +2327,9 @@ export const modelingMachine = setup({
           codeManager,
         }
 
-        // Edit existing fillet
+        // Apply or edit fillet
         if (nodeToEdit) {
+          // Edit existing fillet
           // selection is not the edge treatment itself,
           // but just the first edge in the fillet expression >
           // we need to find the edgeCut artifact
@@ -2362,10 +2363,8 @@ export const modelingMachine = setup({
 
           modifiedAst = editResult.modifiedAst
           focusPath = [editResult.pathToEdgeTreatmentNode]
-        }
-
-        // Apply fillet to selection
-        if (!nodeToEdit) {
+        } else {
+          // Apply fillet to selection
           const filletResult = await modifyAstWithEdgeTreatmentAndTag(
             ast,
             selection,
@@ -2418,8 +2417,9 @@ export const modelingMachine = setup({
           codeManager,
         }
 
-        // Edit existing chamfer
+        // Apply or edit chamfer
         if (nodeToEdit) {
+          // Edit existing chamfer
           // selection is not the edge treatment itself,
           // but just the first edge in the chamfer expression >
           // we need to find the edgeCut artifact
@@ -2453,10 +2453,8 @@ export const modelingMachine = setup({
 
           modifiedAst = editResult.modifiedAst
           focusPath = [editResult.pathToEdgeTreatmentNode]
-        }
-
-        // Apply chamfer to selection
-        if (!nodeToEdit) {
+        } else {
+          // Apply chamfer to selection
           const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
             ast,
             selection,
