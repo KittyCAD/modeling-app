@@ -229,10 +229,6 @@ const FileTreeItem = ({
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
       } else if (isImportedInCurrentFile && eventType === 'change') {
-        await rustContext.clearSceneAndBustCache(
-          await jsAppSettings(),
-          codeManager?.currentFilePath || undefined
-        )
         await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
