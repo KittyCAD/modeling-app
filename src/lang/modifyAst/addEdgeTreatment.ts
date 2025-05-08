@@ -771,8 +771,8 @@ export async function editEdgeTreatment(
   if (err(parameterResult)) return parameterResult
   const { parameterName, parameterValue } = parameterResult
 
-  // find the radius or length argument to update
-  const objectArg = edgeTreatmentCall.node.arguments.find(
+  // find the index of an argument to update
+  const index = edgeTreatmentCall.node.arguments.findIndex(
     (arg) => arg.label.name === parameterName
   )
 
@@ -780,15 +780,7 @@ export async function editEdgeTreatment(
   const newArg = createLabeledArg(parameterName, parameterValue)
 
   // replace the old argument with the new one
-  if (objectArg) {
-    const index = edgeTreatmentCall.node.arguments.indexOf(objectArg)
-    if (index !== -1) {
-      edgeTreatmentCall.node.arguments[index] = newArg
-    }
-  } else {
-    // If the argument doesn't exist, add it
-    edgeTreatmentCall.node.arguments.push(newArg)
-  }
+  edgeTreatmentCall.node.arguments[index] = newArg
 
   let pathToEdgeTreatmentNode = selection?.codeRef?.pathToNode
 
