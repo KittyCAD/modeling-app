@@ -197,5 +197,10 @@ test.describe('Basic sketch', () => {
       )
     }, PERSIST_MODELING_CONTEXT)
     await doBasicSketch(page, [], { cmdBar, scene, homePage, editor })
+    await expect(true).toBe(false)
+  })
+
+  test('new test for demo', async ({}) => {
+    await expect(true).toBe(true)
   })
 })
