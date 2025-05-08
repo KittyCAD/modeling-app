@@ -1,11 +1,11 @@
 ---
 title: "array"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "Functions for manipulating arrays of values. "
 layout: manual
 ---
 
-
+Functions for manipulating arrays of values. 
 
 
 

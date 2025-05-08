@@ -7,7 +7,7 @@ layout: manual
 
 A boolean value.
 
-`true` or `false`
+`true` or `false`.
 
 
 

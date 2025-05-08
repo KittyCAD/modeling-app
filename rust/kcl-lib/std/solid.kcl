@@ -1,3 +1,6 @@
+/// This module contains functions for modifying solids, e.g.. by adding a fillet or chamfer, or
+/// removing part of a solid.
+
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
