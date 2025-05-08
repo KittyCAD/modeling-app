@@ -2374,7 +2374,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
       })
       await cmdBar.progressCmdBar()
     })
-    await test.step('Confrm changes', async () => {
+    await test.step('Confirm changes', async () => {
       await toolbar.openPane('code')
       await toolbar.closePane('feature-tree')
       await editor.expectEditor.toContain('radius = 20')
