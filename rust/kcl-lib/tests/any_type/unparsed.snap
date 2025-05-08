@@ -11,8 +11,13 @@ fn singleton(@x: any): [any; 1] {
 }
 
 fn len(@a: [any]): number(_) {
-  // TODO
-  return 0
+  return reduce(
+    a,
+    initial = 0,
+    f = fn(_, count) {
+      return count + 1
+    },
+  )
 }
 
 one = id(1)
@@ -22,7 +27,9 @@ len0 = len([])
 len1 = len([1])
 
 assert(one, isEqualTo = 1)
-assert(a, isEqualTo = "a")
-assert(arr1, isEqualTo = [1])
+// TODO: we cannot currently assert on strings.
+// assert(a, isEqualTo = "a")
+// TODO: we cannot currently assert on arrays.
+// assert(arr1, isEqualTo = [1])
 assert(len0, isEqualTo = 0)
 assert(len1, isEqualTo = 1)
