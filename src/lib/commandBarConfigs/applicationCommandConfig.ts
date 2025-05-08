@@ -173,7 +173,7 @@ export function createApplicationCommands({
                   type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
                   data: {
                     files: requestedFiles,
-                    requestedProjectName: requestedProjectName,
+                    requestedProjectName: uniqueNameIfNeeded,
                   },
                 })
               }
