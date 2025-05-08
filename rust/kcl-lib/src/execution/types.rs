@@ -1185,12 +1185,6 @@ impl KclValue {
         exec_state: &mut ExecState,
         allow_shrink: bool,
     ) -> Result<KclValue, CoercionError> {
-        if len.satisfied(1, false).is_some() && self.has_type(ty) {
-            return Ok(KclValue::HomArray {
-                value: vec![self.clone()],
-                ty: ty.clone(),
-            });
-        }
         match self {
             KclValue::HomArray { value, ty: aty } => {
                 if aty.subtype(ty) {
@@ -1234,6 +1228,10 @@ impl KclValue {
 
                 Ok(KclValue::HomArray { value, ty: ty.clone() })
             }
+            _ if len.satisfied(1, false).is_some() && self.has_type(ty) => Ok(KclValue::HomArray {
+                value: vec![self.clone()],
+                ty: ty.clone(),
+            }),
             KclValue::KclNone { .. } if len.satisfied(0, false).is_some() => Ok(KclValue::HomArray {
                 value: Vec::new(),
                 ty: ty.clone(),
