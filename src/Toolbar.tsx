@@ -251,7 +251,8 @@ export function Toolbar({
                     !['available', 'experimental'].includes(
                       itemConfig.status
                     ) ||
-                    itemConfig.disabled === true,
+                    itemConfig.disabled === true ||
+                    itemConfig.disableHotkey === true,
                   status: itemConfig.status,
                 }))}
               >
@@ -406,6 +407,10 @@ const ToolbarItemTooltip = memo(function ToolbarItemContents({
   contentClassName = '',
   children,
 }: ToolbarItemContentsProps) {
+  /**
+   * GOTCHA: `useHotkeys` can only register one hotkey listener per component.
+   * TODO: make a global hotkey registration system. make them editable.
+   */
   useHotkeys(
     itemConfig.hotkey || '',
     () => {
