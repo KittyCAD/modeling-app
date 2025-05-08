@@ -2346,7 +2346,9 @@ export const modelingMachine = setup({
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
             return Promise.reject(
-              new Error('Failed to retrieve edgeCut artifact from sweepEdge selection')
+              new Error(
+                'Failed to retrieve edgeCut artifact from sweepEdge selection'
+              )
             )
           }
           const edgeTreatmentSelection = {
@@ -2436,7 +2438,9 @@ export const modelingMachine = setup({
           )
           if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
             return Promise.reject(
-              new Error('Failed to retrieve edgeCut artifact from sweepEdge selection')
+              new Error(
+                'Failed to retrieve edgeCut artifact from sweepEdge selection'
+              )
             )
           }
           const edgeTreatmentSelection = {
