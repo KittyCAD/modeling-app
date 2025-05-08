@@ -146,7 +146,7 @@ export function createApplicationCommands({
                 requestedFiles.push({
                   requestedCode: code,
                   requestedFileName: response.file,
-                  requestedProjectName: requestedProjectName,
+                  requestedProjectName: uniqueNameIfNeeded,
                 })
               }
 
