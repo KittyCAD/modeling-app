@@ -598,7 +598,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(400)
     let prevContent = await page.locator('.cm-content').innerText()
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
 
     // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
@@ -709,7 +709,7 @@ sketch001 = startSketchOn(XZ)
 
     const step5 = { steps: 5 }
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
 
     // drag startProfileAt handle
     await page.mouse.move(startPX[0], startPX[1])

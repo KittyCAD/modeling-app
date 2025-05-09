@@ -738,7 +738,7 @@ part002 = startSketchOn(XZ)
         const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
         await cmdBarSubmitButton.click()
         await expect(page.locator('.cm-content')).toContainText(changedCode)
-        
+
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
 

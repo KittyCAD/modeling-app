@@ -730,7 +730,7 @@ test.describe('Testing segment overlays', () => {
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(13)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(14)
 
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
@@ -1017,7 +1017,7 @@ part001 = startSketchOn(XZ)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(16)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(17)
       const deleteSegmentSequence = _deleteSegmentSequence(page, editor)
 
       let segmentToDelete
@@ -1414,7 +1414,7 @@ part001 = startSketchOn(XZ)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
 
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
         const hoverPos = await u.getBoundingBox(`[data-overlay-index="0"]`)
