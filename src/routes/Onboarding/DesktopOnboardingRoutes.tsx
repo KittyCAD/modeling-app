@@ -361,8 +361,8 @@ function OtherPanes() {
         <p className="my-4">
           These last two panes are the Variables Pane and Logs Pane. The
           Variables pane will display the numeric values of any parameters you
-          made, along with other entities and types created in your in your
-          file. The Logs pane will show error logs.
+          made, along with other entities and types created in your file. The
+          Logs pane will show error logs.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
