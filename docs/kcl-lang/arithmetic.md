@@ -29,7 +29,7 @@ KCL also supports comparison operators which operate on numbers and produce bool
 | `<=` | Less than or equal |
 | `>=` | Greater than or equal |
 
-Arithmetics and logic expressions can be arbitrairly combined with the usual rules of associativity and precedence, e.g.,
+Arithmetics and logic expressions can be arbitrarily combined with the usual rules of associativity and precedence, e.g.,
 
 ```
 myMathExpression = 3 + 1 * 2 / 3 - 7
