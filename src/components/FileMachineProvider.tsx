@@ -170,13 +170,20 @@ export const FileMachineProvider = ({
           let createdName = input.name.trim() || DEFAULT_FILE_NAME
           let createdPath: string
 
-          if (
-            (input.targetPathToClone &&
-              (await window.electron.statIsDirectory(
+          let isTargetPathToCloneADir = false
+          try {
+            if (input.targetPathToClone) {
+              isTargetPathToCloneADir = await window.electron.statIsDirectory(
                 input.targetPathToClone
-              ))) ||
-            input.makeDir
-          ) {
+              )
+            }
+          } catch (e) {
+            if (e === 'ENOENT') {
+              console.error('Error: targetPathToClone does not exist')
+            }
+          }
+
+          if (isTargetPathToCloneADir || input.makeDir) {
             let { name, path } = getNextDirName({
               entryName: input.targetPathToClone
                 ? window.electron.path.basename(input.targetPathToClone)
