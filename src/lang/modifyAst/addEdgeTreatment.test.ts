@@ -810,8 +810,8 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+${edgeTreatmentType}001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
         const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
