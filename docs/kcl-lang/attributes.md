@@ -6,7 +6,7 @@ layout: manual
 
 Attributes are syntax which affects the language item they annotate. In KCL they are indicated using `@`. For example, `@settings` affects the file in which it appears.
 
-There are two kinds of attributes: named and unnamed attributes. Named attributes (e.g., `@settings`) have a name immediately after the `@` (e.g., `settings`) and affect their surrounding scope. Unamed attributes have no name and affect the following item, e.g.,
+There are two kinds of attributes: named and unnamed attributes. Named attributes (e.g., `@settings`) have a name immediately after the `@` (e.g., `settings`) and affect their surrounding scope. Unnamed attributes have no name and affect the following item, e.g.,
 
 ```kcl,norun
 @(lengthUnit = ft, coords = opengl)
