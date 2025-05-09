@@ -3,16 +3,16 @@ import {
   PATHS,
   joinRouterPaths,
   joinOSPaths,
-    safeEncodeForRouterPaths,
-    webSafePathSplit,
-    getProjectDirectoryFromKCLFilePath,
+  safeEncodeForRouterPaths,
+  webSafePathSplit,
+  getProjectDirectoryFromKCLFilePath,
 } from '@src/lib/paths'
 import {
   billingActor,
   systemIOActor,
   useSettings,
   useToken,
-  kclManager
+  kclManager,
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -33,7 +33,7 @@ import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
-import { useLocation, useRouteLoaderData} from 'react-router-dom'
+import { useLocation, useRouteLoaderData } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 export function SystemIOMachineLogicListenerDesktop() {
@@ -47,26 +47,33 @@ export function SystemIOMachineLogicListenerDesktop() {
   const token = useToken()
   const folders = useFolders()
   const { onFileOpen, onFileClose } = useLspContext()
-  const {pathname} = useLocation()
+  const { pathname } = useLocation()
 
-  function safestNavigateToFile ({
+  function safestNavigateToFile({
     requestedPath,
     requestedFilePathWithExtension,
-    requestedProjectDirectory
-  }:{
+    requestedProjectDirectory,
+  }: {
     requestedPath: string
     requestedFilePathWithExtension: string | null
     requestedProjectDirectory: string | null
-  })  {
+  }) {
     let filePathWithExtension = null
     let projectDirectory = null
     // assumes /file/<encodedURIComponent>
     // e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
     const [iAmABlankString, file, encodedURI] = webSafePathSplit(pathname)
-    if (iAmABlankString === '' && file === makeUrlPathRelative(PATHS.FILE) && encodedURI) {
+    if (
+      iAmABlankString === '' &&
+      file === makeUrlPathRelative(PATHS.FILE) &&
+      encodedURI
+    ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
       const applicationProjectDirectory = settings.app.projectDirectory.current
-      projectDirectory = getProjectDirectoryFromKCLFilePath(filePathWithExtension, applicationProjectDirectory)
+      projectDirectory = getProjectDirectoryFromKCLFilePath(
+        filePathWithExtension,
+        applicationProjectDirectory
+      )
     }
 
     // Close current file in current project if it exists
@@ -77,7 +84,6 @@ export function SystemIOMachineLogicListenerDesktop() {
     kclManager.switchedFiles = true
     navigate(requestedPath)
   }
-
 
   /**
    * We watch objects because we want to be able to navigate to itself
@@ -103,11 +109,10 @@ export function SystemIOMachineLogicListenerDesktop() {
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: null,
-        requestedProjectDirectory: projectPathWithoutSpecificKCLFile
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
     }, [requestedProjectName])
   }
-
 
   /**
    * We watch objects because we want to be able to navigate to itself
@@ -138,7 +143,7 @@ export function SystemIOMachineLogicListenerDesktop() {
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: filePath,
-        requestedProjectDirectory: projectPathWithoutSpecificKCLFile
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
     }, [requestedFileName])
   }

@@ -177,9 +177,12 @@ export function getStringAfterLastSeparator(path: string): string {
  * assumes /file/<encodedURIComponent>
  * e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
  */
-export function getProjectDirectoryFromKCLFilePath(path: string, applicationProjectDirectory: string) : string {
+export function getProjectDirectoryFromKCLFilePath(
+  path: string,
+  applicationProjectDirectory: string
+): string {
   // /myCoolProject/subDir/cool.kcl
-  const replacedPath = path.replace(applicationProjectDirectory,'')
+  const replacedPath = path.replace(applicationProjectDirectory, '')
   const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
   return projectDirectory
 }
