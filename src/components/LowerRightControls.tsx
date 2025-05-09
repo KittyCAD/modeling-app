@@ -36,7 +36,10 @@ export function LowerRightControls({
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
         <Popover className="relative">
-          <Popover.Button className="p-0 !border-transparent">
+          <Popover.Button
+            className="p-0 !border-transparent"
+            data-testid="billing-remaining-bar"
+          >
             <BillingRemaining
               mode={BillingRemainingMode.ProgressBarFixed}
               billingActor={billingActor}
