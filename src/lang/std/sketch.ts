@@ -1187,6 +1187,159 @@ export const tangentialArc: SketchLineHelperKw = {
     return constraints
   },
 }
+
+export const startProfile: SketchLineHelperKw = {
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+    const { node: callExpression } = nodeMeta
+
+    const toArrExp = createArrayExpression([
+      createLiteral(roundOff(to[0], 2)),
+      createLiteral(roundOff(to[1], 2)),
+    ])
+
+    mutateKwArg(ARG_AT, callExpression, toArrExp)
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
+  add: ({ node, pathToNode, replaceExistingCallback, segmentInput }) => {
+    console.log('segmentInput', segmentInput)
+    if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
+    const { to } = segmentInput
+    const _node = structuredClone(node)
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpressionKw>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(nodeMeta2)) return nodeMeta2
+
+    const newXVal = createLiteral(roundOff(to[0], 2))
+    const newYVal = createLiteral(roundOff(to[1], 2))
+
+    if (!replaceExistingCallback && pipe.type === 'PipeExpression') {
+      const callExp = createCallExpressionStdLibKw('line', null, [
+        createLabeledArg(ARG_AT, createArrayExpression([newXVal, newYVal])),
+      ])
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        return new Error('pipeIndex is wrong')
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        callExp,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
+
+    if (replaceExistingCallback && pipe.type === 'PipeExpression') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const result = replaceExistingCallback([
+        {
+          type: 'labeledArgArrayItem',
+          key: ARG_AT,
+          index: 0,
+          argType: 'xAbsolute',
+          expr: newXVal,
+        },
+        {
+          type: 'labeledArgArrayItem',
+          key: ARG_AT,
+          index: 1,
+          argType: 'yAbsolute',
+          expr: newYVal,
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode: [...pathToNode],
+        valueUsedInTransform,
+      }
+    }
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getConstraintInfo: (callExp, code, pathToNode) => {
+    if (callExp.type !== 'CallExpressionKw') return []
+    if (callExp.callee.name.name !== 'startProfile') return []
+    const expr = findKwArgWithIndex(ARG_AT, callExp)?.expr
+    if (expr?.type !== 'ArrayExpression') {
+      return []
+    }
+    const argIndex = findKwArgAnyIndex([ARG_AT], callExp)
+    if (argIndex === undefined) {
+      return []
+    }
+    const pathToXYArray: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpressionKw'],
+      [argIndex, ARG_INDEX_FIELD],
+      ['arg', LABELED_ARG_FIELD],
+      ['elements', 'ArrayExpression'],
+    ]
+    const xArg = expr.elements[0]
+    const yArg = expr.elements[1]
+    const constraints: ConstrainInfo[] = [
+      {
+        stdLibFnName: 'startProfile',
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(xArg),
+        sourceRange: topLevelRange(xArg.start, xArg.end),
+        pathToNode: [...pathToXYArray, [0, 'index']],
+        value: code.slice(xArg.start, xArg.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 0,
+          key: ARG_AT,
+        },
+      },
+      {
+        stdLibFnName: 'startProfile',
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(yArg),
+        sourceRange: topLevelRange(yArg.start, yArg.end),
+        pathToNode: [...pathToXYArray, [1, 'index']],
+        value: code.slice(yArg.start, yArg.end),
+        argPosition: {
+          type: 'labeledArgArrayItem',
+          index: 1,
+          key: ARG_AT,
+        },
+      },
+    ]
+    return constraints
+  },
+}
+
 export const circle: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR()
@@ -3123,6 +3276,7 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   angledLineToX,
   angledLineToY,
   tangentialArc,
+  startProfile,
 } as const
 
 export function changeSketchArguments(
@@ -3215,6 +3369,7 @@ export function fnNameToToolTipFromSegment(
     case 'circle':
     case 'tangentialArc':
     case 'angledLine':
+    case 'startProfile':
       return fnName
     default:
       const err = `Unknown sketch line function ${fnName}`
@@ -3254,6 +3409,7 @@ export function fnNameToTooltip(
     case 'circleThreePoint':
     case 'circle':
     case 'tangentialArc':
+    case 'startProfile':
       return fnName
     case 'angledLine': {
       const argmap: Record<string, ToolTip> = {
@@ -3318,6 +3474,7 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name.name || ''
+  // console.log('fnName', fnName)
   const isAbsolute = isAbsoluteLine(callExpression)
   if (err(isAbsolute)) {
     console.error(
@@ -3878,6 +4035,29 @@ export const getArc = (
   )
 }
 
+export const getStartProfile = (
+  callExp: CallExpressionKw
+):
+  | {
+      val: [Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  console.log('yoyoyoyo')
+  const absoluteCoords = findKwArg('at', callExp)
+  const tag = findKwArg(ARG_TAG, callExp)
+  if (absoluteCoords) {
+    if (absoluteCoords.type === 'ArrayExpression') {
+      console.log('absoluteCoords', absoluteCoords)
+      return {
+        val: [absoluteCoords.elements[0], absoluteCoords.elements[1]],
+        tag,
+      }
+    }
+  }
+  return new Error('expected the arguments to be for a start profile')
+}
+
 /**
 Given a line call, return whether it's using absolute or relative end.
 */
@@ -3916,6 +4096,8 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
         findKwArgAny([ARG_END_ABSOLUTE_X, ARG_END_ABSOLUTE_Y], lineCall) !==
         undefined
       )
+    case 'startProfile':
+      return true
   }
   return new Error(`Unknown sketch function ${name}`)
 }
@@ -3946,6 +4128,8 @@ export function getArgForEnd(lineCall: CallExpressionKw):
       return getAngledLineThatIntersects(lineCall)
     case 'arc':
       return getArc(lineCall)
+    case 'startProfile':
+      return getStartProfile(lineCall)
     case 'yLine':
     case 'xLine': {
       const arg = findKwArgAny(DETERMINING_ARGS, lineCall)

@@ -314,7 +314,6 @@ export type ModelingMachineEvent =
       type: 'Delete selection'
     }
   | { type: 'Sketch no face' }
-  | { type: 'Toggle gui mode' }
   | { type: 'Cancel'; cleanup?: () => void }
   | { type: 'CancelSketch' }
   | {
