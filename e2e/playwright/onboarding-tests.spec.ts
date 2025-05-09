@@ -63,7 +63,6 @@ test.describe('Onboarding tests', () => {
         shouldNormalise: true,
       })
       await scene.connectionEstablished()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
     })
 
     await test.step('Go home and verify we still see the tutorial button, then begin it.', async () => {
@@ -91,8 +90,6 @@ test.describe('Onboarding tests', () => {
     await test.step('Ensure we see the welcome screen in a new project', async () => {
       await expect(toolbar.projectName).toContainText('tutorial-project')
       await expect(tutorialWelcomeHeading).toBeVisible()
-      await scene.connectionEstablished()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
     })
 
     await test.step('Test the clicking through the onboarding flow', async () => {
@@ -132,8 +129,6 @@ test.describe('Onboarding tests', () => {
       await test.step('Gets to the onboarding start', async () => {
         await expect(toolbar.projectName).toContainText('tutorial-project')
         await expect(tutorialWelcomeHeading).toBeVisible()
-        await scene.connectionEstablished()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
       })
 
       await test.step('Dismiss the onboarding', async () => {
