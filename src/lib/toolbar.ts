@@ -682,7 +682,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             links: [],
             hotkey: (state) =>
               state.matches({ Sketch: 'Center Rectangle tool' })
-                ? ['Esc', 'Alt+R']
+                ? ['Alt+R', 'Esc']
                 : 'Alt+R',
             isActive: (state) => {
               return state.matches({ Sketch: 'Center Rectangle tool' })
