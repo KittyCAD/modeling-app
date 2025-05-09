@@ -198,15 +198,9 @@ For more information on fuzzing you can check out
 
 ### Playwright tests
 
-You will need a `./e2e/playwright/playwright-secrets.env` file:
+Prepare these system dependencies:
 
-```bash
-$ touch ./e2e/playwright/playwright-secrets.env
-$ cat ./e2e/playwright/playwright-secrets.env
-token=<zoo.dev/account/api-tokens>
-snapshottoken=<zoo.dev/account/api-tokens>
-```
-or use `export` to set the environment variables `token` and `snapshottoken`.
+- Set $token from https://zoo.dev/account/api-tokens
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
