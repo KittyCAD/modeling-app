@@ -27,7 +27,7 @@ startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [3, 0])
   |> line(end = [0, 4])
-  |> line(endAbsolute = [0, 0]))
+  |> line(endAbsolute = [0, 0])
   |> close()
 ```
 
