@@ -75,7 +75,7 @@ both = intersect([cubeGreen, cubeBlue])
 
 This keeps only the small cube shape from where the previous two intersected. This is a new solid, so it can be transformed just like any other solid. 
 
-**Note**: Instead of writing `intersect([cubeGreen, cubeBlue])` you can use the shorthand `cubeGreen - cubeBlue`. This is a nice little shorthand you can use if you want to.
+**Note**: Instead of writing `intersect([cubeGreen, cubeBlue])` you can use the shorthand `cubeGreen & cubeBlue`. This is a nice little shorthand you can use if you want to.
 
 Lastly, let's try a `subtract` call:
 
