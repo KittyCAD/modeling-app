@@ -266,8 +266,27 @@ pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::None),
         exec_state,
     )?;
-    let item = args.get_kw_arg("item")?;
-    inner_push(array, item, &args)
+    let item: KclValue = args.get_kw_arg("item")?;
+
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push to a value of type {actual_type}, only an array"),
+        }));
+    };
+    let ty = if item.has_type(&ty) {
+        ty
+    } else {
+        // TODO: The user pushed an item of a different type than the array.
+        // What should happen here?
+        RuntimeType::any()
+    };
+
+    let new_array = inner_push(values, item);
+
+    Ok(KclValue::HomArray { value: new_array, ty })
 }
 
 /// Append an element to the end of an array.
@@ -289,25 +308,10 @@ pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     },
     tags = ["array"]
 }]
-fn inner_push(array: KclValue, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
-    let KclValue::HomArray { value: mut values, ty } = array else {
-        let meta = vec![args.source_range];
-        let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't push to a value of type {actual_type}, only an array"),
-        }));
-    };
-    let ty = if item.has_type(&ty) {
-        ty
-    } else {
-        // TODO: The user pushed an item of a different type than the array.
-        // What should happen here?
-        RuntimeType::any()
-    };
-    values.push(item);
+fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
+    array.push(item);
 
-    Ok(KclValue::HomArray { value: values, ty })
+    array
 }
 
 pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -316,8 +320,18 @@ pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::None),
         exec_state,
     )?;
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't pop from a value of type {actual_type}, only an array"),
+        }));
+    };
 
-    inner_pop(array, &args)
+    let new_array = inner_pop(values, &args)?;
+
+    Ok(KclValue::HomArray { value: new_array, ty })
 }
 
 /// Remove the last element from an array.
@@ -340,16 +354,8 @@ pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
     },
     tags = ["array"]
 }]
-fn inner_pop(array: KclValue, args: &Args) -> Result<KclValue, KclError> {
-    let KclValue::HomArray { value: values, ty } = array else {
-        let meta = vec![args.source_range];
-        let actual_type = array.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't pop from a value of type {actual_type}, only an array"),
-        }));
-    };
-    if values.is_empty() {
+fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
+    if array.is_empty() {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Cannot pop from an empty array".to_string(),
             source_ranges: vec![args.source_range],
@@ -357,7 +363,7 @@ fn inner_pop(array: KclValue, args: &Args) -> Result<KclValue, KclError> {
     }
 
     // Create a new array with all elements except the last one
-    let new_array = values[..values.len() - 1].to_vec();
+    let new_array = array[..array.len() - 1].to_vec();
 
-    Ok(KclValue::HomArray { value: new_array, ty })
+    Ok(new_array)
 }
