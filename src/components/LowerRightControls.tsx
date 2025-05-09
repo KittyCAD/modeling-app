@@ -14,11 +14,7 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import {
-  APP_VERSION,
-  IS_NIGHTLY_OR_DEBUG,
-  getReleaseUrl,
-} from '@src/routes/utils'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 import { billingActor } from '@src/lib/singletons'
 
@@ -39,22 +35,20 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
-        {IS_NIGHTLY_OR_DEBUG && (
-          <Popover className="relative">
-            <Popover.Button className="p-0 !border-transparent">
-              <BillingRemaining
-                mode={BillingRemainingMode.ProgressBarFixed}
-                billingActor={billingActor}
-              />
-              <Tooltip position="top" contentClassName="text-xs">
-                Text-to-CAD credits
-              </Tooltip>
-            </Popover.Button>
-            <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
-              <BillingDialog billingActor={billingActor} />
-            </Popover.Panel>
-          </Popover>
-        )}
+        <Popover className="relative">
+          <Popover.Button className="p-0 !border-transparent">
+            <BillingRemaining
+              mode={BillingRemainingMode.ProgressBarFixed}
+              billingActor={billingActor}
+            />
+            <Tooltip position="top" contentClassName="text-xs">
+              Text-to-CAD credits
+            </Tooltip>
+          </Popover.Button>
+          <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+            <BillingDialog billingActor={billingActor} />
+          </Popover.Panel>
+        </Popover>
         <a
           onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
           href={getReleaseUrl()}
