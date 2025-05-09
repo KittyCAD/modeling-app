@@ -30,7 +30,7 @@ description: Variables in memory after executing array_range_expr.kcl
     }
   },
   "r1": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -75,7 +75,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r2": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -120,7 +120,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r3": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -173,7 +173,7 @@ description: Variables in memory after executing array_range_expr.kcl
     ]
   },
   "r4": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

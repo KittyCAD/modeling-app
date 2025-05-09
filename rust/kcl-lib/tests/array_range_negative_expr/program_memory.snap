@@ -4,7 +4,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
 ---
 {
   "xs": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
