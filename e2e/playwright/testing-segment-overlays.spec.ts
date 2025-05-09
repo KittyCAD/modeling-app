@@ -1587,6 +1587,87 @@ profile002 = circle(sketch001, center = [345, 0], radius = 238.38)
       )
     })
   })
+  test('startProfile x y overlays', async ({
+    page,
+    editor,
+    homePage,
+    scene,
+    cmdBar,
+    toolbar,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [15, 15])
+  |> line(end = [114.78, 232])
+  |> line(end = [228.75, -208.39])
+`
+      )
+      // Set flag to always show overlays without hover
+      localStorage.setItem('showAllOverlays', 'true')
+    })
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await toolbar.editSketch(0)
+    await page.waitForTimeout(600)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+
+    // 1. constrain x coordinate
+    const xConstraintBtn = page.locator(
+      '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
+    )
+    await expect(xConstraintBtn).toBeVisible()
+    await xConstraintBtn.click()
+
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await cmdBar.progressCmdBar()
+
+    await editor.expectEditor.toContain('at = [xAbs001, 15]', {
+      shouldNormalise: true,
+    })
+
+    // 2. constrain y coordinate
+    const yConstraintBtn = page.locator(
+      '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
+    )
+    await expect(yConstraintBtn).toBeVisible()
+    await yConstraintBtn.click()
+
+    await expect(
+      page.getByTestId('cmd-bar-arg-value').getByRole('textbox')
+    ).toBeFocused()
+    await cmdBar.progressCmdBar()
+    await editor.expectEditor.toContain('at = [xAbs001, yAbs001]', {
+      shouldNormalise: true,
+    })
+    // 3. unconstrain x coordinate
+    const constrainedXBtn = page.locator(
+      '[data-constraint-type="xAbsolute"][data-is-constrained="true"]'
+    )
+    await expect(constrainedXBtn).toBeVisible()
+    await constrainedXBtn.click()
+    await editor.expectEditor.toContain('at = [15, yAbs001]', {
+      shouldNormalise: true,
+    })
+    // 4. unconstrain y coordinate
+    const constrainedYBtn = page.locator(
+      '[data-constraint-type="yAbsolute"][data-is-constrained="true"]'
+    )
+    await expect(constrainedYBtn).toBeVisible()
+    await constrainedYBtn.click()
+    await editor.expectEditor.toContain('at = [15, 15]', {
+      shouldNormalise: true,
+    })
+  })
   test('arc with interiorAbsolute and endAbsolute kwargs overlay constraints', async ({
     page,
     editor,
@@ -1605,7 +1686,7 @@ profile001 = circleThreePoint(
   p2 = [445.16, 116.92],
   p3 = [546.85, 103],
 )
-profile003 = startProfileAt([64.39, 35.16], sketch001)
+profile003 = startProfile(sketch001, at = [64.39, 35.16])
   |> line(end = [60.69, 23.02])
   |> arc(interiorAbsolute = [159.26, 100.58], endAbsolute = [237.05, 84.07])
   |> line(end = [70.31, 42.28])`
@@ -1628,7 +1709,7 @@ profile003 = startProfileAt([64.39, 35.16], sketch001)
 
     // Verify overlays are visible
     // 3 for the three point arc, and 4 for the 3 segments (arc has two)
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(7)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(8)
 
     // ---- Testing interior point constraints ----
 
@@ -1637,7 +1718,7 @@ profile003 = startProfileAt([64.39, 35.16], sketch001)
       .locator(
         '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
       )
-      .nth(3)
+      .nth(4)
     await expect(interiorXConstraintBtn).toBeVisible()
     await interiorXConstraintBtn.click()
 
@@ -1660,7 +1741,7 @@ profile003 = startProfileAt([64.39, 35.16], sketch001)
       .locator(
         '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
       )
-      .nth(3)
+      .nth(4)
     await expect(interiorYConstraintBtn).toBeVisible()
     await interiorYConstraintBtn.click()
 
@@ -1685,7 +1766,7 @@ profile003 = startProfileAt([64.39, 35.16], sketch001)
       .locator(
         '[data-constraint-type="xAbsolute"][data-is-constrained="false"]'
       )
-      .nth(3) // still number 3 because the interior ones are now constrained
+      .nth(4) // still number 3 because the interior ones are now constrained
     await expect(endXConstraintBtn).toBeVisible()
     await endXConstraintBtn.click()
 
@@ -1705,7 +1786,7 @@ profile003 = startProfileAt([64.39, 35.16], sketch001)
       .locator(
         '[data-constraint-type="yAbsolute"][data-is-constrained="false"]'
       )
-      .nth(3) // still number 3 because the interior ones are now constrained
+      .nth(4) // still number 3 because the interior ones are now constrained
     await expect(endYConstraintBtn).toBeVisible()
     await endYConstraintBtn.click()
 
