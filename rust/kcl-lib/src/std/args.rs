@@ -574,10 +574,14 @@ impl Args {
             meta: vec![meta],
             ty: p[1].ty.clone(),
         };
-        Ok(KclValue::MixedArray {
-            value: vec![x, y],
-            meta: vec![meta],
-        })
+        let ty = if p[0].ty == p[1].ty {
+            RuntimeType::Primitive(PrimitiveType::Number(p[0].ty.clone()))
+        } else {
+            // TODO: Can we do better here?
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Unknown))
+        };
+
+        Ok(KclValue::HomArray { value: vec![x, y], ty })
     }
 
     pub(super) fn make_user_val_from_f64_with_type(&self, f: TyF64) -> KclValue {
@@ -1139,8 +1143,11 @@ impl_from_kcl_for_vec!(TyF64);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
+        let value = match arg {
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => {
+                return None;
+            }
         };
         if value.len() != 3 {
             return None;

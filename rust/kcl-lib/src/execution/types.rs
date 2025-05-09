@@ -28,6 +28,10 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
+    pub fn any() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Any)
+    }
+
     pub fn edge() -> Self {
         RuntimeType::Primitive(PrimitiveType::Edge)
     }

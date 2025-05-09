@@ -867,11 +867,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (
-                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
-                Property::UInt(index),
-                _,
-            ) => {
+            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -882,7 +878,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p, _) => {
+            (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1595,9 +1591,9 @@ impl Node<ArrayExpression> {
             results.push(value);
         }
 
-        Ok(KclValue::MixedArray {
+        Ok(KclValue::HomArray {
             value: results,
-            meta: vec![self.into()],
+            ty: RuntimeType::Primitive(PrimitiveType::Any),
         })
     }
 }
@@ -1644,7 +1640,8 @@ impl Node<ArrayRangeExpression> {
         let meta = vec![Metadata {
             source_range: self.into(),
         }];
-        Ok(KclValue::MixedArray {
+
+        Ok(KclValue::HomArray {
             value: range
                 .into_iter()
                 .map(|num| KclValue::Number {
@@ -1653,7 +1650,7 @@ impl Node<ArrayRangeExpression> {
                     meta: meta.clone(),
                 })
                 .collect(),
-            meta,
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         })
     }
 }
@@ -2449,7 +2446,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce mixed array (list) value to type [string]"),
+                .contains("could not coerce array (list) value to type [string]"),
             "Expected error but found {err:?}"
         );
 
@@ -2460,7 +2457,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce mixed array (list) value to type [number(mm)]"),
+                .contains("could not coerce array (list) value to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }
