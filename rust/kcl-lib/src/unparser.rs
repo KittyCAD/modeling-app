@@ -405,9 +405,13 @@ impl CallExpressionKw {
 
 impl LabeledArg {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let label = &self.label.name;
-        let arg = self.arg.recast(options, indentation_level, ctxt);
-        format!("{label} = {arg}")
+        let mut result = String::new();
+        if let Some(l) = &self.label {
+            result.push_str(&l.name);
+            result.push_str(" = ");
+        }
+        result.push_str(&self.arg.recast(options, indentation_level, ctxt));
+        result
     }
 }
 

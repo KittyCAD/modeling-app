@@ -1295,13 +1295,20 @@ impl Node<CallExpressionKw> {
 
         // Build a hashmap from argument labels to the final evaluated values.
         let mut fn_args = IndexMap::with_capacity(self.arguments.len());
+        let mut errors = Vec::new();
         for arg_expr in &self.arguments {
             let source_range = SourceRange::from(arg_expr.arg.clone());
             let metadata = Metadata { source_range };
             let value = ctx
                 .execute_expr(&arg_expr.arg, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            fn_args.insert(arg_expr.label.name.clone(), Arg::new(value, source_range));
+            let arg = Arg::new(value, source_range);
+            match &arg_expr.label {
+                Some(l) => {
+                    fn_args.insert(l.name.clone(), arg);
+                }
+                None => errors.push(arg),
+            }
         }
         let fn_args = fn_args; // remove mutability
 
@@ -1321,6 +1328,7 @@ impl Node<CallExpressionKw> {
             KwArgs {
                 unlabeled,
                 labeled: fn_args,
+                errors,
             },
             self.into(),
             ctx.clone(),
@@ -1894,6 +1902,44 @@ fn type_check_params_kw(
         }
     }
 
+    if !args.errors.is_empty() {
+        let actuals = args.labeled.keys();
+        let formals: Vec<_> = function_expression
+            .params
+            .iter()
+            .filter_map(|p| {
+                if !p.labeled {
+                    return None;
+                }
+
+                let name = &p.identifier.name;
+                if actuals.clone().any(|a| a == name) {
+                    return None;
+                }
+
+                Some(format!("`{name}`"))
+            })
+            .collect();
+
+        let suggestion = if formals.is_empty() {
+            String::new()
+        } else {
+            format!("; suggested labels: {}", formals.join(", "))
+        };
+
+        let mut errors = args.errors.iter().map(|e| {
+            CompilationError::err(
+                e.source_range,
+                format!("This argument needs a label, but it doesn't have one{suggestion}"),
+            )
+        });
+
+        let first = errors.next().unwrap();
+        errors.for_each(|e| exec_state.err(e));
+
+        return Err(KclError::Semantic(first.into()));
+    }
+
     if let Some(arg) = &mut args.unlabeled {
         if let Some(p) = function_expression.params.iter().find(|p| !p.labeled) {
             if let Some(ty) = &p.type_ {
@@ -2313,6 +2359,7 @@ mod test {
             let args = KwArgs {
                 unlabeled: None,
                 labeled,
+                errors: Vec::new(),
             };
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(Box::new(
@@ -2551,5 +2598,31 @@ a = foo()
 "#;
 
         parse_execute(program).await.unwrap_err();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_sensible_error_when_missing_equals_in_kwarg() {
+        for (i, call) in ["f(x=1,y)", "f(x=1,3,z)", "f(x=1,y,z=1)", "f(x=1, 3 + 4, z=1)"]
+            .into_iter()
+            .enumerate()
+        {
+            let program = format!(
+                "fn foo() {{ return 0 }}
+y = 42
+z = 0
+fn f(x, y, z) {{ return 0 }}
+{call}"
+            );
+            let err = parse_execute(&program).await.unwrap_err();
+            let msg = err.message();
+            assert!(
+                msg.contains("This argument needs a label, but it doesn't have one"),
+                "failed test {i}: {msg}"
+            );
+            assert!(msg.contains("`y`"), "failed test {i}, missing `y`: {msg}");
+            if i == 0 {
+                assert!(msg.contains("`z`"), "failed test {i}, missing `z`: {msg}");
+            }
+        }
     }
 }
