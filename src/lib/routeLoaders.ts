@@ -12,7 +12,12 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
+import {
+  BROWSER_PATH,
+  PATHS,
+  getProjectMetaByRouteId,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
 import {
   loadAndValidateSettings,
   readLocalStorageAppSettingsFile,
@@ -61,6 +66,17 @@ export const fileLoader: LoaderFunction = async (
             fileExists = false
           }
         }
+      }
+
+      // If we are navigating to the project and want to navigate to its
+      // default file, redirect to it keeping everything else in the URL the same.
+      if (projectPath && !currentFileName && fileExists && params.id) {
+        const encodedId = safeEncodeForRouterPaths(params.id)
+        const requestUrlWithDefaultFile = routerData.request.url.replace(
+          encodedId,
+          safeEncodeForRouterPaths(fallbackFile)
+        )
+        return redirect(requestUrlWithDefaultFile)
       }
 
       if (!fileExists || !currentFileName || !currentFilePath || !projectName) {

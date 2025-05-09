@@ -1986,6 +1986,7 @@ test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ page, toolbar }, testInfo) => {
+    const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
@@ -2000,10 +2001,10 @@ test(
       await page.getByTestId('user-settings').click()
       await page.getByRole('button', { name: 'Replay Onboarding' }).click()
 
-      const numberOfOnboardingSteps = 12
-      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
-        await page.getByTestId('onboarding-next').click()
+      while ((await nextButton.innerText()) !== 'Finish') {
+        await nextButton.click()
       }
+      await nextButton.click()
 
       await page.getByTestId('project-sidebar-toggle').click()
     })
@@ -2013,7 +2014,7 @@ test(
     })
 
     await test.step('Should show the original project called wrist brace', async () => {
-      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      const projectNames = ['tutorial-project', 'wrist brace']
       for (const [index, projectLink] of (await getAllProjects()).entries()) {
         await expect(projectLink).toContainText(projectNames[index])
       }

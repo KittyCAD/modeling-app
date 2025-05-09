@@ -42,7 +42,6 @@ import {
   ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -91,10 +90,6 @@ export function App() {
   const settings = useSettings()
   const authToken = useToken()
 
-  const {
-    app: { onboardingStatus },
-  } = settings
-
   useHotkeys('backspace', (e) => {
     e.preventDefault()
   })
@@ -109,13 +104,6 @@ export function App() {
   useHotkeyWrapper(['mod + s'], () => {
     toast.success('Your work is auto-saved in real-time')
   })
-
-  const paneOpacity = [
-    ONBOARDING_SUBPATHS.CAMERA,
-    ONBOARDING_SUBPATHS.STREAMING,
-  ].some((p) => p === onboardingStatus.current)
-    ? 'opacity-20'
-    : ''
 
   useEngineConnectionSubscriptions()
 
@@ -160,7 +148,7 @@ export function App() {
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
-        className={`transition-opacity transition-duration-75 ${paneOpacity}`}
+        className="transition-opacity transition-duration-75"
         project={{ project, file }}
         enableMenu={true}
       >
@@ -168,7 +156,7 @@ export function App() {
         <ShareButton />
       </AppHeader>
       <ModalContainer />
-      <ModelingSidebar paneOpacity={paneOpacity} />
+      <ModelingSidebar />
       <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls navigate={navigate}>
