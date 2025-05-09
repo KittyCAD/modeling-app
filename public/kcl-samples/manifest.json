@@ -245,7 +245,10 @@
     "pathFromProjectDirectoryToFirstFile": "hammer/main.kcl",
     "multipleFiles": false,
     "title": "Claw Hammer",
-    "description": "Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails"
+    "description": "Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
@@ -384,7 +387,10 @@
     "pathFromProjectDirectoryToFirstFile": "piston/main.kcl",
     "multipleFiles": false,
     "title": "Piston",
-    "description": "A piston is the component of an engine that transfers linear motion into circular motion. The piston head is accelerated by exploding fuel, which drives a connecting rod to rotate a crankshaft."
+    "description": "A piston is the component of an engine that transfers linear motion into circular motion. The piston head is accelerated by exploding fuel, which drives a connecting rod to rotate a crankshaft.",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
@@ -401,7 +407,10 @@
     "pathFromProjectDirectoryToFirstFile": "prosthetic-hip/main.kcl",
     "multipleFiles": false,
     "title": "Prosthetic Hip",
-    "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint"
+    "description": "A prosthetic hip is a surgically implanted ball-and-socket intended to replace a damaged or worn hip joint",
+    "files": [
+      "main.kcl"
+    ]
   },
   {
     "file": "main.kcl",
