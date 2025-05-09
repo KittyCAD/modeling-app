@@ -12,6 +12,7 @@ chamfer(
   @solid: Solid,
   length: number(Length),
   tags: [Edge; 1+],
+  tolerance?: number(Length),
   tag?: tag,
 ): Solid
 ```
@@ -27,6 +28,7 @@ a sharp, straight transitional edge.
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be chamfered | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The length of the chamfer | Yes |
 | `tags` | [`[Edge; 1+]`](/docs/kcl-std/types/std-types-Edge) | The paths you want to chamfer | Yes |
+| `tolerance` | `number(Length)` | The tolerance for this fillet | No |
 | [`tag`](/docs/kcl-std/types/std-types-tag) | [`tag`](/docs/kcl-std/types/std-types-tag) | Create a new tag which refers to this chamfer | No |
 
 ### Returns

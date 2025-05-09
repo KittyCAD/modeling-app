@@ -144,6 +144,8 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer
   tags: [Edge; 1+],
+  /// The tolerance for this fillet
+  tolerance?: number(Length),
   /// Create a new tag which refers to this chamfer
   tag?: tag,
 ): Solid {}
