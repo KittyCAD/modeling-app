@@ -1,0 +1,118 @@
+// Claw Hammer
+// Often used in construction, a claw hammer is a levered metal hand tool that is used to strike and extract nails
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Sketch the side profile of the hammer head
+headSideProfile = startSketchOn(XZ)
+  |> startProfile(at = [0.33, 11.26])
+  |> yLine(length = 0.1)
+  |> tangentialArc(endAbsolute = [0.95, 11.92])
+  |> tangentialArc(endAbsolute = [2.72, 11.26], tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01) + 90, length = .2)
+  |> angledLine(angle = tangentToEnd(seg01) - 10, length = -0.5)
+  |> tangentialArc(endAbsolute = [-0.91, 12.78], tag = $seg03)
+  |> tangentialArc(endAbsolute = [-1.67, 12.85])
+  |> xLine(length = -.25)
+  |> tangentialArc(angle = 90, radius = .05)
+  |> yLine(length = -1.125, tag = $seg02)
+  |> tangentialArc(angle = 90, radius = .05)
+  |> xLine(length = .25, tag = $seg04)
+  |> angledLine(angle = 23, length = 0.1)
+  |> tangentialArc(endAbsolute = [-0.33, profileStartY(%)])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> close()
+  |> extrude(length = 3, symmetric = true)
+
+// Sketch the top profile of the hammer head
+headTopProfile = startSketchOn(offsetPlane(XY, offset = 13))
+leftSideCut = startProfile(headTopProfile, at = [-4, -1.6])
+  |> line(endAbsolute = [segEndX(seg02), -segLen(seg02) / 2])
+  |> arc(
+       %,
+       angleStart = 180,
+       angleEnd = 270,
+       radius = .05,
+     )
+  |> xLine(endAbsolute = segEndX(seg04))
+  |> arc(interiorAbsolute = [segEndX(seg03) - .1, lastSegY(%) + .03], endAbsolute = [segEndX(seg03), lastSegY(%)])
+  |> tangentialArc(endAbsolute = [3.39, -1.15])
+  |> yLine(endAbsolute = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -14)
+
+rearCut = startProfile(headTopProfile, at = [3.39, -0.56])
+  |> angledLine(angle = 177, length = 0.1)
+  |> tangentialArc(endAbsolute = [1.86, -0.37])
+  |> tangentialArc(endAbsolute = [lastSegX(%), -lastSegY(%)])
+  |> tangentialArc(endAbsolute = [profileStartX(%), -profileStartY(%)])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -14)
+
+rightSideCut = startProfile(headTopProfile, at = [-4, 1.6])
+  |> line(endAbsolute = [segEndX(seg02), segLen(seg02) / 2])
+  |> arc(
+       %,
+       angleStart = -180,
+       angleEnd = -270,
+       radius = .05,
+     )
+  |> xLine(endAbsolute = segEndX(seg04))
+  |> arc(interiorAbsolute = [segEndX(seg03) - .1, lastSegY(%) - .03], endAbsolute = [segEndX(seg03), lastSegY(%)])
+  |> tangentialArc(endAbsolute = [3.39, 1.15])
+  |> yLine(endAbsolute = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -14)
+
+// Subtract the top profiles from the side profile to create a CSG hammer shape
+firstProfiles = subtract(
+  [headSideProfile],
+  tools = [
+    union([
+  leftSideCut,
+  union([rearCut, rightSideCut])
+])
+  ],
+)
+
+// Extrude a polygon through the center of the hammer head to create the mounting hole for the handle
+handleHole = startSketchOn(XY)
+  |> polygon(
+       %,
+       radius = .28,
+       numSides = 10,
+       center = [0, 0],
+     )
+  |> extrude(length = 14)
+
+// Add an additional fillet feature to support the handle, and union it to the rest of the head
+baseSupport = startSketchOn(offsetPlane(XY, offset = 11.5))
+  |> circle(center = [0, 0], radius = .45, tag = $seg05)
+  |> extrude(length = 1, tagStart = $capStart001)
+  |> fillet(
+       radius = .05,
+       tags = [
+         getCommonEdge(faces = [seg05, capStart001])
+       ],
+     )
+
+// Union all pieces into a single solid, then cut the handle hole
+hammerHead = union([firstProfiles, baseSupport])
+  |> subtract(tools = [handleHole])
+
+// Draw a profile for the handle, then revolve around the center axis
+handleSketch = startSketchOn(XZ)
+  |> startProfile(at = [0.01, 0])
+  |> xLine(length = 1.125 / 2)
+  |> tangentialArc(angle = 90, radius = 0.05)
+  |> tangentialArc(endAbsolute = [0.38, 12.8 / 1.612])
+  |> tangentialArc(endAbsolute = [0.28, 12.8])
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+handle = revolve(handleSketch, angle = 360, axis = Y)
+  |> appearance(color = "#f14f04")
