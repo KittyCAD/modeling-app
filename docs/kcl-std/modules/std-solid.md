@@ -1,7 +1,7 @@
 ---
 title: "solid"
 subtitle: "Module in std"
-excerpt: "This module contains functions for modifying solids, e.g.. by adding a fillet or chamfer, or removing part of a solid. "
+excerpt: "This module contains functions for modifying solids, e.g. by adding a fillet or chamfer, or removing part of a solid. "
 layout: manual
 ---
 
