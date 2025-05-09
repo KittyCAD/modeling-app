@@ -1192,15 +1192,47 @@ impl KclValue {
         match self {
             KclValue::HomArray { value, ty: aty } => {
                 if aty.subtype(ty) {
-                    len.satisfied(value.len(), allow_shrink)
+                    // If the element type is a subtype of the target type and
+                    // the length constraint is satisfied, we can just return
+                    // the values unchanged, only adjusting the length.
+                    return len
+                        .satisfied(value.len(), allow_shrink)
                         .map(|len| KclValue::HomArray {
                             value: value[..len].to_vec(),
                             ty: aty.clone(),
                         })
-                        .ok_or(self.into())
-                } else {
-                    Err(self.into())
+                        .ok_or(self.into());
                 }
+
+                // Ignore the array type, and coerce the elements of the array.
+                let mut values = Vec::new();
+                for item in value {
+                    if let KclValue::HomArray {
+                        ty: inner_ty,
+                        value: inner_value,
+                    } = item
+                    {
+                        // Flatten elements.
+                        if inner_ty.subtype(ty) {
+                            values.extend(inner_value.iter().cloned());
+                        } else {
+                            values.push(item.clone());
+                        }
+                    } else {
+                        values.push(item.clone());
+                    }
+                }
+
+                let len = len
+                    .satisfied(values.len(), allow_shrink)
+                    .ok_or(CoercionError::from(self))?;
+
+                let value = values[..len]
+                    .iter()
+                    .map(|v| v.coerce(ty, exec_state))
+                    .collect::<Result<Vec<_>, _>>()?;
+
+                Ok(KclValue::HomArray { value, ty: ty.clone() })
             }
             KclValue::Tuple { value, .. } => {
                 // Check if we have a nested homogeneous array that we can flatten.
@@ -1232,14 +1264,22 @@ impl KclValue {
 
                 Ok(KclValue::HomArray { value, ty: ty.clone() })
             }
-            _ if len.satisfied(1, false).is_some() && self.has_type(ty) => Ok(KclValue::HomArray {
-                value: vec![self.clone()],
-                ty: ty.clone(),
-            }),
             KclValue::KclNone { .. } if len.satisfied(0, false).is_some() => Ok(KclValue::HomArray {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
+            _ if len.satisfied(1, false).is_some() => {
+                let singleton_value = if self.has_type(ty) {
+                    self.clone()
+                } else {
+                    // Recurse using the element type.
+                    self.coerce(ty, exec_state)?
+                };
+                Ok(KclValue::HomArray {
+                    value: vec![singleton_value],
+                    ty: ty.clone(),
+                })
+            }
             _ => Err(self.into()),
         }
     }
@@ -1426,45 +1466,53 @@ mod test {
             let aty1 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(1));
             let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::NonEmpty);
 
-            assert_coerce_results(
-                v,
-                &aty,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
-            assert_coerce_results(
-                v,
-                &aty1,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
-            assert_coerce_results(
-                v,
-                &aty0,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
+            match v {
+                KclValue::Tuple { .. } | KclValue::HomArray { .. } => {
+                    // TODO: We no longer blindly wrap arrays in HomArray when
+                    // coercing to an array type.
+                }
+                _ => {
+                    assert_coerce_results(
+                        v,
+                        &aty,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    assert_coerce_results(
+                        v,
+                        &aty1,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    assert_coerce_results(
+                        v,
+                        &aty0,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
 
-            // Tuple subtype
-            let tty = RuntimeType::Tuple(vec![ty.clone()]);
-            assert_coerce_results(
-                v,
-                &tty,
-                &KclValue::Tuple {
-                    value: vec![v.clone()],
-                    meta: Vec::new(),
-                },
-                &mut exec_state,
-            );
+                    // Tuple subtype
+                    let tty = RuntimeType::Tuple(vec![ty.clone()]);
+                    assert_coerce_results(
+                        v,
+                        &tty,
+                        &KclValue::Tuple {
+                            value: vec![v.clone()],
+                            meta: Vec::new(),
+                        },
+                        &mut exec_state,
+                    );
+                }
+            }
         }
 
         for v in &values[1..] {
