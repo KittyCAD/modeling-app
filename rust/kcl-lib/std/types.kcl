@@ -1,6 +1,6 @@
 /// KCL types. This module contains fundamental types like `number`, `string`, `Solid`, and `Sketch`.
 ///
-/// Types can (optionally) be used to describe a function's arguments returned value. They are checked
+/// Types can (optionally) be used to describe a function's arguments and returned value. They are checked
 /// when a program runs and can help avoid errors. They are also useful to help document what a function
 /// does.
 
@@ -32,13 +32,15 @@ export type any
 /// it is the type of any number. E.g.,
 ///
 /// - `number`: the type of any numbers,
-/// - `number(mm)`: the type of numbers in milimeters,
+/// - `number(mm)`: the type of numbers in millimeters,
 /// - `number(in)`: the type of numbers in inches,
 /// - `number(Length)`: the type of numbers in any length unit,
 /// - `number(deg)`: the type of numbers in degrees,
 /// - `number(Angle)`: the type of numbers in any angle unit,
 /// - `number(_)` or `number(Count)`: the type of unit-less numbers, representing a count of things,
 /// or a ratio, etc.
+///
+/// For more information, see [numeric types](/docs/kcl-lang/numeric).
 @(impl = primitive)
 export type number(unit)
 

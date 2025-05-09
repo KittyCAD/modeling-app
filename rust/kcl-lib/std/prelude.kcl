@@ -20,21 +20,21 @@ export import * from "std::solid"
 export import * from "std::transform"
 export import "std::turns"
 
-/// An abstract 3d plane aligned with the X and Y axes. It's normal is the positive Z axis.
+/// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
 }: Plane
 
-/// An abstract 3d plane aligned with the X and Z axes. It's normal is the negative Y axis.
+/// An abstract 3d plane aligned with the X and Z axes. Its normal is the negative Y axis.
 export XZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
-/// An abstract 3d plane aligned with the Y and Z axes. It's normal is the positive X axis.
+/// An abstract 3d plane aligned with the Y and Z axes. Its normal is the positive X axis.
 export YZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 0, y = 1, z = 0 },
