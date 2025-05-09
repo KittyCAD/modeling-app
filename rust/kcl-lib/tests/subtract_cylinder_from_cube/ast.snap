@@ -1161,6 +1161,17 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
               "type": "newLine"
             }
           }
+        ],
+        "3": [
+          {
+            "commentStart": 0,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
         ]
       },
       "startNodes": []

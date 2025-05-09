@@ -14,3 +14,4 @@ part002 = startSketchOn(XY)
   |> extrude(length = 5)
 
 fullPart = subtract([part001], tools=[part002])
+
