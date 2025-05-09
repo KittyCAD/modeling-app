@@ -17,9 +17,9 @@ use crate::{
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_end(&tag, exec_state, args.clone())?;
+    let (result, ty) = inner_segment_end(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point(result, ty)
 }
 
 /// Compute the ending point of the provided line segment.
@@ -56,7 +56,11 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     },
     tags = ["sketch"]
 }]
-fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
+fn inner_segment_end(
+    tag: &TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<([f64; 2], NumericType), KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -65,7 +69,7 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
         })
     })?;
 
-    Ok(path.get_to().clone())
+    Ok(path.end_point_components())
 }
 
 /// Returns the segment end of x.
@@ -156,9 +160,9 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_start(&tag, exec_state, args.clone())?;
+    let (result, ty) = inner_segment_start(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point(result, ty)
 }
 
 /// Compute the starting point of the provided line segment.
@@ -195,7 +199,11 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     },
     tags = ["sketch"]
 }]
-fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
+fn inner_segment_start(
+    tag: &TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<([f64; 2], NumericType), KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
     let path = line.path.clone().ok_or_else(|| {
         KclError::Type(KclErrorDetails {
@@ -204,7 +212,7 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    Ok(path.get_from().to_owned())
+    Ok(path.start_point_components())
 }
 
 /// Returns the segment start of x.
