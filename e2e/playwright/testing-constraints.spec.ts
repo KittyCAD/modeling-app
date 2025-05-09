@@ -108,7 +108,7 @@ test.describe('Testing constraints', () => {
     // Wait for overlays to populate
     await page.waitForTimeout(1000)
 
-    const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`)
+    const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`)
 
     await page.mouse.click(line3.x, line3.y)
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
@@ -127,7 +127,7 @@ test.describe('Testing constraints', () => {
     )
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
   })
   test.describe('Test perpendicular distance constraint', () => {
     const cases = [

@@ -1505,7 +1505,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(1000)
 
     // Verify segment is selected (you can check for visual indicators or state)
-    const element = page.locator('[data-overlay-index="1"]')
+    const element = page.locator('[data-overlay-index="2"]')
     await expect(element).toHaveAttribute('data-overlay-visible', 'true')
   })
 
