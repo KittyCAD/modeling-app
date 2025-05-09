@@ -20,7 +20,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 ## Snapshot and export
 
-When you submit a PR to add or modify KCL samples, images and STEP files will be generated and added to the repository automatically.
+When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
 
 ---
 #### [80-20-rail](80-20-rail/main.kcl) ([screenshot](screenshots/80-20-rail.png))
