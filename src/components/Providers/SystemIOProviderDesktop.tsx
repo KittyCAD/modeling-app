@@ -13,6 +13,7 @@ import {
   useSettings,
   useToken,
   kclManager,
+  engineCommandManager
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -35,6 +36,9 @@ import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
 import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -82,6 +86,10 @@ export function SystemIOMachineLogicListenerDesktop() {
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
     kclManager.switchedFiles = true
+    engineCommandManager.rejectAllModelingCommands(
+      EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
+    )
+    kclManager.isExecuting = false
     navigate(requestedPath)
   }
 

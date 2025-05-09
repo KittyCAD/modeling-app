@@ -619,8 +619,13 @@ impl ExecutorContext {
                             .await
                             .is_err()
                     {
+
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("SKETCH ID 1").into());
                         (true, program, None)
                     } else {
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("SKETCH ID 2").into());
                         (
                             clear_scene,
                             crate::Program {
@@ -637,11 +642,13 @@ impl ExecutorContext {
                 } => {
                     if reapply_settings
                         && self
-                            .engine
-                            .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
-                            .await
-                            .is_err()
+                        .engine
+                        .reapply_settings(&self.settings, Default::default(), old_state.id_generator())
+                        .await
+                        .is_err()
                     {
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("SKETCH ID 3").into());
                         (true, program, None)
                     } else {
                         // We need to check our imports to see if they changed.
@@ -669,8 +676,12 @@ impl ExecutorContext {
                             },
                             // We only care about this if we are clearing the scene.
                             if clear_scene {
+                                #[cfg(target_arch = "wasm32")]
+                                web_sys::console::log_1(&format!("SKETCH ID 4").into());
                                 Some((new_universe, new_universe_map, new_exec_state))
                             } else {
+                                #[cfg(target_arch = "wasm32")]
+                                web_sys::console::log_1(&format!("SKETCH ID 5").into());
                                 None
                             },
                         )
@@ -690,15 +701,19 @@ impl ExecutorContext {
                             settings: self.settings.clone(),
                             result_env,
                         })
-                        .await;
+                            .await;
 
                         let outcome = old_state.to_exec_outcome(result_env).await;
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("SKETCH ID 6").into());
                         return Ok(outcome);
                     }
                     (true, program, None)
                 }
                 CacheResult::NoAction(false) => {
                     let outcome = old_state.to_exec_outcome(result_env).await;
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("SKETCH ID 7").into());
                     return Ok(outcome);
                 }
             };
@@ -710,6 +725,8 @@ impl ExecutorContext {
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("SKETCH ID 8").into());
                     (new_exec_state, false, Some((new_universe, new_universe_map)))
                 } else if clear_scene {
                     // Pop the execution state, since we are starting fresh.
@@ -720,10 +737,14 @@ impl ExecutorContext {
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("SKETCH ID 9").into());
                     (exec_state, false, None)
                 } else {
                     old_state.mut_stack().restore_env(result_env);
 
+                    #[cfg(target_arch = "wasm32")]
+                    web_sys::console::log_1(&format!("SKETCH ID 10").into());
                     (old_state, true, None)
                 };
 
@@ -736,9 +757,15 @@ impl ExecutorContext {
             (program, exec_state, false, None)
         };
 
+
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("SKETCH ID 11").into());
         let result = self
             .run_concurrent(&program, &mut exec_state, imports_info, preserve_mem)
             .await;
+
+        #[cfg(target_arch = "wasm32")]
+        web_sys::console::log_1(&format!("SKETCH ID 12").into());
 
         if result.is_err() {
             cache::bust_cache().await;
@@ -754,9 +781,11 @@ impl ExecutorContext {
             settings: self.settings.clone(),
             result_env: result.0,
         })
-        .await;
+            .await;
 
         let outcome = exec_state.to_exec_outcome(result.0).await;
+        #[cfg(target_arch = "wasm32")]
+                                web_sys::console::log_1(&format!("SKETCH ID 13").into());
         Ok(outcome)
     }
 

@@ -417,6 +417,10 @@ export class KclManager {
   // this function, too many other things that don't want it exist. For that,
   // use updateModelingState().
   async executeAst(args: ExecuteArgs = {}): Promise<void> {
+    console.log('[HIYA]0.0', args)
+    // TODO FUCKING LOOK AT THIS STACK TRACE ON NAVIGATE FOR FIRST TIME
+    // NEXT CALL CLEAR SCENE AND BUST CACHE
+    console.log(new Error().stack)
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -427,6 +431,7 @@ export class KclManager {
       )
       // Exit early if we are already executing.
 
+      console.log('[HIYA]0')
       return
     }
 
@@ -439,11 +444,13 @@ export class KclManager {
     this.isExecuting = true
     await this.ensureWasmInit()
 
+    console.log('[HIYA]1')
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
       rustContext: this.singletons.rustContext,
     })
+    console.log('[HIYA]1')
 
     // Program was not interrupted, setup the scene
     // Do not send send scene commands if the program was interrupted, go to clean up
