@@ -156,7 +156,6 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 
 async fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array.push(item);
-
     array
 }
 

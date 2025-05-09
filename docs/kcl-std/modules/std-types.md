@@ -18,6 +18,7 @@ Types can (optionally) be used to describe a function's arguments and returned v
 * [`Edge`](/docs/kcl-std/types/std-types-Edge)
 * [`Face`](/docs/kcl-std/types/std-types-Face)
 * [`Helix`](/docs/kcl-std/types/std-types-Helix)
+* [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
 * [`Plane`](/docs/kcl-std/types/std-types-Plane)
 * [`Point2d`](/docs/kcl-std/types/std-types-Point2d)
 * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)

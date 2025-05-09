@@ -76,7 +76,6 @@ lazy_static! {
         Box::new(crate::std::sketch::TangentialArc),
         Box::new(crate::std::sketch::BezierCurve),
         Box::new(crate::std::sketch::Subtract2D),
-        Box::new(crate::std::clone::Clone),
         Box::new(crate::std::patterns::PatternLinear2D),
         Box::new(crate::std::patterns::PatternLinear3D),
         Box::new(crate::std::patterns::PatternCircular2D),
@@ -276,6 +275,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("array", "pop") => (
             |e, a| Box::pin(crate::std::array::pop(e, a)),
             StdFnProps::default("std::array::pop"),
+        ),
+        ("prelude", "clone") => (
+            |e, a| Box::pin(crate::std::clone::clone(e, a)),
+            StdFnProps::default("std::clone"),
         ),
         _ => unreachable!(),
     }

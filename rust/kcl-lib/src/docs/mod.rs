@@ -22,9 +22,23 @@ use tower_lsp::lsp_types::{
 use crate::execution::{types::NumericType, Sketch};
 
 // These types are declared in (KCL) std.
-const DECLARED_TYPES: [&str; 15] = [
-    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
-    "Point3d", "Axis2d", "Axis3d",
+const DECLARED_TYPES: [&str; 16] = [
+    "any",
+    "number",
+    "string",
+    "tag",
+    "bool",
+    "Sketch",
+    "Solid",
+    "Plane",
+    "Helix",
+    "Face",
+    "Edge",
+    "Point2d",
+    "Point3d",
+    "Axis2d",
+    "Axis3d",
+    "ImportedGeometry",
 ];
 
 lazy_static::lazy_static! {
@@ -547,8 +561,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
-        } else if self.name() == "clone" {
-            return Ok("clone(${0:part001})".to_string());
         } else if self.name() == "union" {
             return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract" {
@@ -1026,7 +1038,7 @@ mod tests {
             panic!();
         };
         let snippet = map_fn.to_autocomplete_snippet();
-        assert_eq!(snippet, r#"map(${0:[0..9]})"#);
+        assert_eq!(snippet, r#"map()"#);
     }
 
     #[test]
@@ -1146,8 +1158,11 @@ mod tests {
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_clone() {
-        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
-        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(clone_fn) = data.find_by_name("clone").unwrap() else {
+            panic!();
+        };
+        let snippet = clone_fn.to_autocomplete_snippet();
         assert_eq!(snippet, r#"clone(${0:part001})"#);
     }
 

@@ -163,6 +163,10 @@ export type string
 @(impl = primitive)
 export type tag
 
+/// Represents geometry which is defined using some other CAD system and imported into KCL.
+@(impl = primitive)
+export type ImportedGeometry
+
 /// An abstract plane.
 ///
 /// A plane has a position and orientation in space defined by its origin and axes. A plane is abstract
