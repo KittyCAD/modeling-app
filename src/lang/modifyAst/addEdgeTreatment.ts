@@ -615,7 +615,7 @@ export async function deleteEdgeTreatment(
   selection: Selection
 ): Promise<Node<Program> | Error> {
   /**
-   * Deletes an edge treatment (fillet or chamfer) from the AST 
+   * Deletes an edge treatment (fillet or chamfer) from the AST
    *
    * Supported cases:
    * [+] fillet and chamfer
