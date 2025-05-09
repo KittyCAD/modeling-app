@@ -198,7 +198,9 @@ For more information on fuzzing you can check out
 
 ### Playwright tests
 
-You will need to use `export` to set the environment variable `token`
+Prepare these system dependencies:
+
+- Set $token from https://zoo.dev/account/api-tokens
 
 #### Snapshot tests (Google Chrome on Ubuntu only)
 
