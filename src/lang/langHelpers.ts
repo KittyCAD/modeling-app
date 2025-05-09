@@ -68,6 +68,7 @@ export async function executeAst({
     const settings = await jsAppSettings()
     const execState = await rustContext.execute(ast, settings, path)
 
+    console.log('execstate', execState)
     await rustContext.waitForAllEngineCommands()
     return {
       logs: [],

@@ -2244,7 +2244,7 @@ w = f() + f()
     |> line(end = [0, 0])
     |> close()
 }
-  
+
 sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])
