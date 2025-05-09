@@ -765,24 +765,24 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                     {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "2",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.0,
+                        "value": 2.0,
                         "suffix": "None"
                       }
                     },
                     {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "0",
+                      "raw": "2",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 0.0,
+                        "value": 2.0,
                         "suffix": "None"
                       }
                     }
@@ -867,7 +867,7 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "XY",
+                    "name": "XZ",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -894,24 +894,24 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                         {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "2",
+                          "raw": "5",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 2.0,
+                            "value": 5.0,
                             "suffix": "None"
                           }
                         },
                         {
                           "commentStart": 0,
                           "end": 0,
-                          "raw": "2",
+                          "raw": "5",
                           "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
-                            "value": 2.0,
+                            "value": 5.0,
                             "suffix": "None"
                           }
                         }
@@ -981,12 +981,12 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                     "arg": {
                       "commentStart": 0,
                       "end": 0,
-                      "raw": "5",
+                      "raw": "34",
                       "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
-                        "value": 5.0,
+                        "value": 34.0,
                         "suffix": "None"
                       }
                     }
@@ -1000,6 +1000,53 @@ description: Result of parsing subtract_cylinder_from_cube.kcl
                     "commentStart": 0,
                     "end": 0,
                     "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
+                  "start": 0,
+                  "type": "Name"
+                },
+                "commentStart": 0,
+                "end": 0,
+                "start": 0,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": "z",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "raw": "3.14",
+                      "start": 0,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 3.14,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "abs_path": false,
+                  "commentStart": 0,
+                  "end": 0,
+                  "name": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "name": "translate",
                     "start": 0,
                     "type": "Identifier"
                   },
