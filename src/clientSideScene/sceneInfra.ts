@@ -233,7 +233,7 @@ export class SceneInfra {
 
       let _angle = 45
       if (group.name !== PROFILE_START) {
-        typeof angle === 'number' ? angle : getAngle(from, to)
+        _angle = typeof angle === 'number' ? angle : getAngle(from, to)
       }
 
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth

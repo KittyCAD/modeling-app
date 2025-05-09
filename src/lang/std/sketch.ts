@@ -3474,7 +3474,6 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name.name || ''
-  // console.log('fnName', fnName)
   const isAbsolute = isAbsoluteLine(callExpression)
   if (err(isAbsolute)) {
     console.error(

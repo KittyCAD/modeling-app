@@ -289,8 +289,8 @@ test.describe('Testing constraints', () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         await page.mouse.click(line1.x, line1.y)
@@ -335,7 +335,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })

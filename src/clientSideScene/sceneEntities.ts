@@ -3107,7 +3107,7 @@ export class SceneEntities {
         variables,
         kclManager: this.kclManager,
       })
-      const callBacks: (() => SegmentOverlayPayload | null)[] = []
+      const callbacks: (() => SegmentOverlayPayload | null)[] = []
       for (const sketchInfo of sketchesInfo) {
         const { sketch, pathToNode: _pathToNode } = sketchInfo
         const varDecIndex = Number(_pathToNode[1][0])
@@ -3127,7 +3127,19 @@ export class SceneEntities {
           snappedToTangent
         )
 
-        callBacks.push(
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: group,
+            group: group,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+        callbacks.push(startProfileCallBack)
+
+        callbacks.push(
           ...sgPaths.map((group, index) =>
             this.updateSegment(
               group,
@@ -3141,7 +3153,7 @@ export class SceneEntities {
           )
         )
       }
-      this.sceneInfra.overlayCallbacks(callBacks)
+      this.sceneInfra.overlayCallbacks(callbacks)
     })().catch(reportRejection)
   }
 
