@@ -25,7 +25,7 @@ legAngX(
 
 ### Returns
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

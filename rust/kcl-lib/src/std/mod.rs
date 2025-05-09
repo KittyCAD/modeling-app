@@ -83,10 +83,6 @@ lazy_static! {
         Box::new(crate::std::patterns::PatternCircular3D),
         Box::new(crate::std::patterns::PatternTransform),
         Box::new(crate::std::patterns::PatternTransform2D),
-        Box::new(crate::std::array::Reduce),
-        Box::new(crate::std::array::Map),
-        Box::new(crate::std::array::Push),
-        Box::new(crate::std::array::Pop),
         Box::new(crate::std::edge::GetOppositeEdge),
         Box::new(crate::std::edge::GetNextAdjacentEdge),
         Box::new(crate::std::edge::GetPreviousAdjacentEdge),
@@ -264,6 +260,22 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "hollow") => (
             |e, a| Box::pin(crate::std::shell::hollow(e, a)),
             StdFnProps::default("std::solid::hollow").include_in_feature_tree(),
+        ),
+        ("array", "map") => (
+            |e, a| Box::pin(crate::std::array::map(e, a)),
+            StdFnProps::default("std::array::map"),
+        ),
+        ("array", "reduce") => (
+            |e, a| Box::pin(crate::std::array::reduce(e, a)),
+            StdFnProps::default("std::array::reduce"),
+        ),
+        ("array", "push") => (
+            |e, a| Box::pin(crate::std::array::push(e, a)),
+            StdFnProps::default("std::array::push"),
+        ),
+        ("array", "pop") => (
+            |e, a| Box::pin(crate::std::array::pop(e, a)),
+            StdFnProps::default("std::array::pop"),
         ),
         _ => unreachable!(),
     }

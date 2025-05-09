@@ -1021,8 +1021,11 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_map() {
-        let map_fn: Box<dyn StdLibFn> = Box::new(crate::std::array::Map);
-        let snippet = map_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(map_fn) = data.find_by_name("map").unwrap() else {
+            panic!();
+        };
+        let snippet = map_fn.to_autocomplete_snippet();
         assert_eq!(snippet, r#"map(${0:[0..9]})"#);
     }
 
