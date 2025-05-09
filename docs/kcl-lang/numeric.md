@@ -31,7 +31,7 @@ You can also use `number(Length)`, `number(Angle)`, or `number(Count)`. These ty
 
 ## Function calls
 
-When calling a function with an argument with numeric type, the decalred numeric type in the function signature and the units of the argument value used in the function call must be compatible. Units are adjusted automatically. For example, if a function requires an argument with type `number(mm)`, then you can call it with `2in` and the units will be automatically adjusted, but calling it with `90deg` will cause an error.
+When calling a function with an argument with numeric type, the declared numeric type in the function signature and the units of the argument value used in the function call must be compatible. Units are adjusted automatically. For example, if a function requires an argument with type `number(mm)`, then you can call it with `2in` and the units will be automatically adjusted, but calling it with `90deg` will cause an error.
 
 
 ## Mixing units with arithmetic
