@@ -744,10 +744,10 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [6.44, -12.07])
-  |> line(end = [14.72, 1.97])
+  |> startProfile(at = [8.41, -9.97]) 
+  |> line(end = [12.73, -0.09])
+  |> line(end = [1.99, 2.06])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
-  |> line(end = [1.97, 2.06])
   |> close()
   |> revolve(axis = X)`,
       { shouldNormalise: true }
