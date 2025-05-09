@@ -190,7 +190,10 @@ const commonConstraintInfoHelper = (
             if (lengthishIndex === undefined) {
               return [undefined, undefined]
             }
-            const lengthKey = callExp.arguments[lengthishIndex].label.name
+            const lengthKey = callExp.arguments[lengthishIndex].label?.name
+            if (lengthKey === undefined) {
+              return [undefined, undefined]
+            }
             const lengthVal = callExp.arguments[lengthishIndex].arg
             // Note: The order of keys here matters.
             // Always assumes the angle was the first param, and then the length followed.
@@ -1057,7 +1060,7 @@ export const tangentialArc: SketchLineHelperKw = {
     }
 
     for (const arg of callExpression.arguments) {
-      if (arg.label.name !== ARG_END_ABSOLUTE && arg.label.name !== ARG_TAG) {
+      if (arg.label?.name !== ARG_END_ABSOLUTE && arg.label?.name !== ARG_TAG) {
         console.debug(
           'Trying to edit unsupported tangentialArc keyword arguments; skipping'
         )

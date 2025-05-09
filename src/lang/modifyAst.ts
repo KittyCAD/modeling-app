@@ -223,7 +223,7 @@ export function mutateKwArg(
 ): boolean | 'no-mutate' {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       if (isLiteralArrayOrStatic(val) && isLiteralArrayOrStatic(arg.arg)) {
         node.arguments[i].arg = val
         return true
@@ -259,7 +259,7 @@ export function mutateKwArgOnly(
 ): boolean {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       node.arguments[i].arg = val
       return true
     }
@@ -273,7 +273,7 @@ Mutates the given node by removing the labeled arguments.
 */
 export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   for (const label of labels) {
-    const i = node.arguments.findIndex((la) => la.label.name === label)
+    const i = node.arguments.findIndex((la) => la.label?.name === label)
     if (i == -1) {
       continue
     }
