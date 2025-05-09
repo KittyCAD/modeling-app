@@ -2401,14 +2401,14 @@ extrude001 = extrude(sketch001, length = -12)
   |> fillet(radius = 5, tags = [seg01]) // fillet01
   |> fillet(radius = 5, tags = [seg02]) // fillet02
 fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
-fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
+fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
 `
-    const pipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
+    const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
     const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
-    const standaloneFilletDeclaration =
+    const standaloneAssignedFilletDeclaration =
       'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
-    const secondStandaloneFilletDeclaration =
-      'fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
+    const standaloneUnassignedFilletDeclaration =
+      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
 
     // Locators
     const pipedFilletEdgeLocation = { x: 600, y: 193 }
@@ -2451,10 +2451,14 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
 
       await test.step('Delete piped fillet via feature tree selection', async () => {
         await test.step('Verify all fillets are present in the editor', async () => {
-          await editor.expectEditor.toContain(pipedFilletDeclaration)
+          await editor.expectEditor.toContain(firstPipedFilletDeclaration)
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.toContain(standaloneFilletDeclaration)
-          await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+          await editor.expectEditor.toContain(
+            standaloneAssignedFilletDeclaration
+          )
+          await editor.expectEditor.toContain(
+            standaloneUnassignedFilletDeclaration
+          )
         })
         await test.step('Verify test fillets are present in the scene', async () => {
           await scene.expectPixelColor(
@@ -2478,10 +2482,14 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await page.waitForTimeout(500)
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
-          await editor.expectEditor.not.toContain(pipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.toContain(standaloneFilletDeclaration)
-          await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+          await editor.expectEditor.toContain(
+            standaloneAssignedFilletDeclaration
+          )
+          await editor.expectEditor.toContain(
+            standaloneUnassignedFilletDeclaration
+          )
         })
         await test.step('Verify piped fillet is deleted but non-piped is not (in the scene)', async () => {
           await scene.expectPixelColor(
@@ -2497,8 +2505,8 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
         })
       })
 
-      await test.step('Delete non-piped fillet via feature tree selection', async () => {
-        await test.step('Delete non-piped fillet', async () => {
+      await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
+        await test.step('Delete standalone assigned fillet', async () => {
           const operationButton = await toolbar.getFeatureTreeOperation(
             'Fillet',
             1
@@ -2507,12 +2515,41 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           await page.keyboard.press('Delete')
           await page.waitForTimeout(500)
         })
-        await test.step('Verify non-piped fillet is deleted but other two fillets are not (in the editor)', async () => {
+        await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.not.toContain(standaloneFilletDeclaration)
-          await editor.expectEditor.toContain(secondStandaloneFilletDeclaration)
+          await editor.expectEditor.not.toContain(
+            standaloneAssignedFilletDeclaration
+          )
+          await editor.expectEditor.toContain(
+            standaloneUnassignedFilletDeclaration
+          )
         })
-        await test.step('Verify non-piped fillet is deleted but piped is not (in the scene)', async () => {
+        await test.step('Verify standalone assigned fillet is deleted but piped is not (in the scene)', async () => {
+          await scene.expectPixelColor(
+            edgeColorWhite,
+            standaloneFilletEdgeLocation,
+            lowTolerance
+          )
+        })
+      })
+
+      await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
+        await test.step('Delete standalone unassigned fillet', async () => {
+          const operationButton = await toolbar.getFeatureTreeOperation(
+            'Fillet',
+            1
+          )
+          await operationButton.click({ button: 'left' })
+          await page.keyboard.press('Delete')
+          await page.waitForTimeout(500)
+        })
+        await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
+          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
+          await editor.expectEditor.not.toContain(
+            standaloneUnassignedFilletDeclaration
+          )
+        })
+        await test.step('Verify standalone unassigned fillet is deleted but piped is not (in the scene)', async () => {
           await scene.expectPixelColor(
             edgeColorWhite,
             standaloneFilletEdgeLocation,
