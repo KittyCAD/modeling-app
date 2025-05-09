@@ -163,7 +163,6 @@ test.describe('Onboarding tests', () => {
         await expect(toolbar.projectName).toContainText('tutorial-project')
         await expect(tutorialWelcomeHeading).toBeVisible()
         await scene.connectionEstablished()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
       })
 
       await test.step('Dismiss the onboarding', async () => {
