@@ -1026,7 +1026,7 @@ impl KclValue {
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         let value = match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } if value.len() == 1 => &value[0],
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == 1 => &value[0],
             _ => self,
         };
         match ty {
@@ -1202,7 +1202,7 @@ impl KclValue {
                     Err(self.into())
                 }
             }
-            KclValue::MixedArray { value, .. } => {
+            KclValue::Tuple { value, .. } => {
                 // Check if we have a nested homogeneous array that we can flatten.
                 let mut values = Vec::new();
                 for item in value {
@@ -1246,22 +1246,22 @@ impl KclValue {
 
     fn coerce_to_tuple_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
                     result.push(value[i].coerce(t, exec_state)?);
                 }
 
-                Ok(KclValue::MixedArray {
+                Ok(KclValue::Tuple {
                     value: result,
                     meta: Vec::new(),
                 })
             }
-            KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::MixedArray {
+            KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Tuple {
                 value: Vec::new(),
                 meta: meta.clone(),
             }),
-            value if tys.len() == 1 && value.has_type(&tys[0]) => Ok(KclValue::MixedArray {
+            value if tys.len() == 1 && value.has_type(&tys[0]) => Ok(KclValue::Tuple {
                 value: vec![value.clone()],
                 meta: Vec::new(),
             }),
@@ -1321,7 +1321,7 @@ impl KclValue {
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
-            KclValue::MixedArray { value, .. } => Some(RuntimeType::Tuple(
+            KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(
                 value.iter().map(|v| v.principal_type()).collect::<Option<Vec<_>>>()?,
             )),
             KclValue::HomArray { ty, value, .. } => {
@@ -1357,7 +1357,7 @@ mod test {
                 value: "hello".to_owned(),
                 meta: Vec::new(),
             },
-            KclValue::MixedArray {
+            KclValue::Tuple {
                 value: Vec::new(),
                 meta: Vec::new(),
             },
@@ -1459,7 +1459,7 @@ mod test {
             assert_coerce_results(
                 v,
                 &tty,
-                &KclValue::MixedArray {
+                &KclValue::Tuple {
                     value: vec![v.clone()],
                     meta: Vec::new(),
                 },
@@ -1512,7 +1512,7 @@ mod test {
         assert_coerce_results(
             &none,
             &tty,
-            &KclValue::MixedArray {
+            &KclValue::Tuple {
                 value: Vec::new(),
                 meta: Vec::new(),
             },
@@ -1643,7 +1643,7 @@ mod test {
             ],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
-        let mixed1 = KclValue::MixedArray {
+        let mixed1 = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -1658,7 +1658,7 @@ mod test {
             ],
             meta: Vec::new(),
         };
-        let mixed2 = KclValue::MixedArray {
+        let mixed2 = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -1748,7 +1748,7 @@ mod test {
             ],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
-        let mixed0 = KclValue::MixedArray {
+        let mixed0 = KclValue::Tuple {
             value: vec![],
             meta: Vec::new(),
         };
@@ -2165,7 +2165,7 @@ d = cos(30)
     async fn coerce_nested_array() {
         let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
 
-        let mixed1 = KclValue::MixedArray {
+        let mixed1 = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 0.0,

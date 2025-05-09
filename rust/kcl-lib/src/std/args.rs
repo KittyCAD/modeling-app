@@ -803,7 +803,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
-            KclValue::MixedArray { value, .. } => {
+            KclValue::Tuple { value, .. } => {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
@@ -1144,7 +1144,7 @@ impl_from_kcl_for_vec!(TyF64);
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let value = match arg {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => value,
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
             _ => {
                 return None;
             }
@@ -1344,7 +1344,7 @@ impl<'a> FromKclValue<'a> for TyF64 {
 impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 2 {
                     return None;
                 }
@@ -1361,7 +1361,7 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
 impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 3 {
                     return None;
                 }

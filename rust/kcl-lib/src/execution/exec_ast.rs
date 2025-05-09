@@ -1166,7 +1166,7 @@ impl Node<UnaryExpression> {
                 };
 
                 let direction = match direction {
-                    KclValue::MixedArray { value: values, meta } => {
+                    KclValue::Tuple { value: values, meta } => {
                         let values = values
                             .iter()
                             .map(|v| match v {
@@ -1179,7 +1179,7 @@ impl Node<UnaryExpression> {
                             })
                             .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::MixedArray {
+                        KclValue::Tuple {
                             value: values,
                             meta: meta.clone(),
                         }
@@ -1547,7 +1547,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
                 update_memory_for_tags_of_geometry(v, exec_state)?;
             }
