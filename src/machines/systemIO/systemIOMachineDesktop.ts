@@ -121,15 +121,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
 
           // if it's not a directory ignore.
           // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          let isDirectory = false
-          try {
-            isDirectory = await window.electron.statIsDirectory(projectPath)
-          } catch (e) {
-            if (e === 'ENOENT') {
-              console.error(`Error: ${projectPath} does not exist.`, e)
-            }
-          }
-
+          const isDirectory = await window.electron.statIsDirectory(projectPath)
           if (!isDirectory) {
             continue
           }

@@ -201,15 +201,7 @@ export async function listProjects(
 
     // if it's not a directory ignore.
     // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-    let isDirectory = false
-    try {
-      isDirectory = await window.electron.statIsDirectory(projectPath)
-    } catch (e) {
-      if (e === 'ENOENT') {
-        console.error('File does not exist', e)
-      }
-    }
-
+    const isDirectory = await window.electron.statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
     }
@@ -248,15 +240,7 @@ const collectAllFilesRecursiveFrom = async (
   }
 
   // Make sure the path is a directory.
-  let isPathDir = false
-  try {
-    isPathDir = await window.electron.statIsDirectory(path)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.log('File does not exist', e)
-    }
-  }
-
+  const isPathDir = await window.electron.statIsDirectory(path)
   if (!isPathDir) {
     return Promise.reject(new Error(`Path ${path} is not a directory`))
   }
@@ -297,15 +281,7 @@ const collectAllFilesRecursiveFrom = async (
     }
 
     const ePath = window.electron.path.join(path, e)
-    let isEDir = false
-    try {
-      isEDir = await window.electron.statIsDirectory(ePath)
-    } catch (e) {
-      if (e === 'ENOENT') {
-        console.error('File does not exist', e)
-        continue
-      }
-    }
+    const isEDir = await window.electron.statIsDirectory(ePath)
 
     if (isEDir) {
       const subChildren = await collectAllFilesRecursiveFrom(
@@ -338,15 +314,7 @@ export async function getDefaultKclFileForDir(
   file: FileEntry
 ) {
   // Make sure the dir is a directory.
-  let isFileEntryDir = false
-  try {
-    isFileEntryDir = await window.electron.statIsDirectory(file.path)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-    }
-  }
-
+  const isFileEntryDir = await window.electron.statIsDirectory(projectDir)
   if (!isFileEntryDir) {
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
   }
@@ -416,8 +384,9 @@ const directoryCount = (file: FileEntry) => {
 
 export async function getProjectInfo(projectPath: string): Promise<Project> {
   // Check the directory.
+  let metadata
   try {
-    await window.electron.stat(projectPath)
+    metadata = await window.electron.stat(projectPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(
@@ -427,14 +396,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   }
 
   // Make sure it is a directory.
-  let projectPathIsDir = false
-  try {
-    projectPathIsDir = await window.electron.statIsDirectory(projectPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-    }
-  }
+  const projectPathIsDir = await window.electron.statIsDirectory(projectPath)
 
   if (!projectPathIsDir) {
     return Promise.reject(
@@ -445,14 +407,6 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   // Detect the projectPath has read write permission
   const { value: canReadWriteProjectPath } =
     await window.electron.canReadWriteDirectory(projectPath)
-  let metadata: any
-  try {
-    metadata = await window.electron.stat(projectPath)
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-    }
-  }
 
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
