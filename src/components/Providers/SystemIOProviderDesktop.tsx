@@ -33,7 +33,7 @@ import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import { useLspContext } from '@src/components/LspProvider'
-import { useLocation, useRouteLoaderData } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 export function SystemIOMachineLogicListenerDesktop() {
