@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test'
-import { secrets } from '@e2e/playwright/secrets'
+import { token } from '@e2e/playwright/test-utils'
 
 export class SignInPageFixture {
   public page: Page
@@ -25,7 +25,7 @@ export class SignInPageFixture {
     // Device flow: stolen from the tauri days
     // https://github.com/KittyCAD/modeling-app/blob/d916c7987452e480719004e6d11fd2e595c7d0eb/e2e/tauri/specs/app.spec.ts#L19
     const headers = {
-      Authorization: `Bearer ${secrets.token}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/json',
       'Content-Type': 'application/json',
     }
