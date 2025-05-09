@@ -75,7 +75,7 @@ There's an optional argument called `angle`. In the above example, we didn't pro
 ```kcl=donut240
 startSketchOn(XZ)
   |> circle(center = [-200, 0], radius = 100)
-  |> revolve(axis = Y)
+  |> revolve(axis = Y, angle = 240)
 ```
 
 ![The circle, revolved partway around the axis, to make part of a donut](images/dynamic/donut240.png)
