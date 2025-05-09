@@ -28,21 +28,13 @@ pub mod utils;
 
 use anyhow::Result;
 pub use args::Args;
-use args::TyF64;
 use indexmap::IndexMap;
-use kcl_derive_docs::stdlib;
 use lazy_static::lazy_static;
-use parse_display::{Display, FromStr};
-use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
 
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{
-        types::{NumericType, PrimitiveType, RuntimeType, UnitAngle, UnitType},
-        ExecState, KclValue,
-    },
+    execution::{types::PrimitiveType, ExecState, KclValue},
     parsing::ast::types::Name,
 };
 
@@ -53,9 +45,6 @@ pub type StdFn = fn(
 
 lazy_static! {
     static ref CORE_FNS: Vec<Box<dyn StdLibFn>> = vec![
-        Box::new(LegLen),
-        Box::new(LegAngX),
-        Box::new(LegAngY),
         Box::new(crate::std::appearance::Appearance),
         Box::new(crate::std::extrude::Extrude),
         Box::new(crate::std::segment::SegEnd),
@@ -149,84 +138,96 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
     match (path, fn_name) {
         ("math", "cos") => (
             |e, a| Box::pin(crate::std::math::cos(e, a)),
-            StdFnProps::default("std::cos"),
+            StdFnProps::default("std::math::cos"),
         ),
         ("math", "sin") => (
             |e, a| Box::pin(crate::std::math::sin(e, a)),
-            StdFnProps::default("std::sin"),
+            StdFnProps::default("std::math::sin"),
         ),
         ("math", "tan") => (
             |e, a| Box::pin(crate::std::math::tan(e, a)),
-            StdFnProps::default("std::tan"),
+            StdFnProps::default("std::math::tan"),
         ),
         ("math", "acos") => (
             |e, a| Box::pin(crate::std::math::acos(e, a)),
-            StdFnProps::default("std::acos"),
+            StdFnProps::default("std::math::acos"),
         ),
         ("math", "asin") => (
             |e, a| Box::pin(crate::std::math::asin(e, a)),
-            StdFnProps::default("std::asin"),
+            StdFnProps::default("std::math::asin"),
         ),
         ("math", "atan") => (
             |e, a| Box::pin(crate::std::math::atan(e, a)),
-            StdFnProps::default("std::atan"),
+            StdFnProps::default("std::math::atan"),
         ),
         ("math", "atan2") => (
             |e, a| Box::pin(crate::std::math::atan2(e, a)),
-            StdFnProps::default("std::atan2"),
+            StdFnProps::default("std::math::atan2"),
         ),
         ("math", "sqrt") => (
             |e, a| Box::pin(crate::std::math::sqrt(e, a)),
-            StdFnProps::default("std::sqrt"),
+            StdFnProps::default("std::math::sqrt"),
         ),
 
         ("math", "abs") => (
             |e, a| Box::pin(crate::std::math::abs(e, a)),
-            StdFnProps::default("std::abs"),
+            StdFnProps::default("std::math::abs"),
         ),
         ("math", "rem") => (
             |e, a| Box::pin(crate::std::math::rem(e, a)),
-            StdFnProps::default("std::rem"),
+            StdFnProps::default("std::math::rem"),
         ),
         ("math", "round") => (
             |e, a| Box::pin(crate::std::math::round(e, a)),
-            StdFnProps::default("std::round"),
+            StdFnProps::default("std::math::round"),
         ),
         ("math", "floor") => (
             |e, a| Box::pin(crate::std::math::floor(e, a)),
-            StdFnProps::default("std::floor"),
+            StdFnProps::default("std::math::floor"),
         ),
         ("math", "ceil") => (
             |e, a| Box::pin(crate::std::math::ceil(e, a)),
-            StdFnProps::default("std::ceil"),
+            StdFnProps::default("std::math::ceil"),
         ),
         ("math", "min") => (
             |e, a| Box::pin(crate::std::math::min(e, a)),
-            StdFnProps::default("std::min"),
+            StdFnProps::default("std::math::min"),
         ),
         ("math", "max") => (
             |e, a| Box::pin(crate::std::math::max(e, a)),
-            StdFnProps::default("std::max"),
+            StdFnProps::default("std::math::max"),
         ),
         ("math", "pow") => (
             |e, a| Box::pin(crate::std::math::pow(e, a)),
-            StdFnProps::default("std::pow"),
+            StdFnProps::default("std::math::pow"),
         ),
         ("math", "log") => (
             |e, a| Box::pin(crate::std::math::log(e, a)),
-            StdFnProps::default("std::log"),
+            StdFnProps::default("std::math::log"),
         ),
         ("math", "log2") => (
             |e, a| Box::pin(crate::std::math::log2(e, a)),
-            StdFnProps::default("std::log2"),
+            StdFnProps::default("std::math::log2"),
         ),
         ("math", "log10") => (
             |e, a| Box::pin(crate::std::math::log10(e, a)),
-            StdFnProps::default("std::log10"),
+            StdFnProps::default("std::math::log10"),
         ),
         ("math", "ln") => (
             |e, a| Box::pin(crate::std::math::ln(e, a)),
-            StdFnProps::default("std::ln"),
+            StdFnProps::default("std::math::ln"),
+        ),
+        ("math", "legLen") => (
+            |e, a| Box::pin(crate::std::math::leg_length(e, a)),
+            StdFnProps::default("std::math::legLen"),
+        ),
+        ("math", "legAngX") => (
+            |e, a| Box::pin(crate::std::math::leg_angle_x(e, a)),
+            StdFnProps::default("std::math::legAngX"),
+        ),
+        ("math", "legAngY") => (
+            |e, a| Box::pin(crate::std::math::leg_angle_y(e, a)),
+            StdFnProps::default("std::math::legAngY"),
         ),
         ("sketch", "circle") => (
             |e, a| Box::pin(crate::std::shapes::circle(e, a)),
@@ -341,110 +342,3 @@ pub enum FunctionKind {
 
 /// The default tolerance for modeling commands in [`kittycad_modeling_cmds::length_unit::LengthUnit`].
 const DEFAULT_TOLERANCE: f64 = 0.0000001;
-
-/// Compute the length of the given leg.
-pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
-    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
-    let result = inner_leg_length(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
-}
-
-/// Compute the length of the given leg.
-///
-/// ```kcl,no_run
-/// legLen(hypotenuse = 5, leg = 3)
-/// ```
-#[stdlib {
-    name = "legLen",
-    keywords = true,
-    unlabeled_first = false,
-    args = {
-        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
-        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
-    },
-    tags = ["math"],
-}]
-fn inner_leg_length(hypotenuse: f64, leg: f64) -> f64 {
-    (hypotenuse.powi(2) - f64::min(hypotenuse.abs(), leg.abs()).powi(2)).sqrt()
-}
-
-/// Compute the angle of the given leg for x.
-pub async fn leg_angle_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
-    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
-    let result = inner_leg_angle_x(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(
-        result,
-        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
-        vec![args.into()],
-    ))
-}
-
-/// Compute the angle of the given leg for x.
-///
-/// ```kcl,no_run
-/// legAngX(hypotenuse = 5, leg = 3)
-/// ```
-#[stdlib {
-    name = "legAngX",
-    keywords = true,
-    unlabeled_first = false,
-    args = {
-        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
-        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
-    },
-    tags = ["math"],
-}]
-fn inner_leg_angle_x(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).acos().to_degrees()
-}
-
-/// Compute the angle of the given leg for y.
-pub async fn leg_angle_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let hypotenuse: TyF64 = args.get_kw_arg_typed("hypotenuse", &RuntimeType::length(), exec_state)?;
-    let leg: TyF64 = args.get_kw_arg_typed("leg", &RuntimeType::length(), exec_state)?;
-    let (hypotenuse, leg, _ty) = NumericType::combine_eq_coerce(hypotenuse, leg);
-    let result = inner_leg_angle_y(hypotenuse, leg);
-    Ok(KclValue::from_number_with_type(
-        result,
-        NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
-        vec![args.into()],
-    ))
-}
-
-/// Compute the angle of the given leg for y.
-///
-/// ```kcl,no_run
-/// legAngY(hypotenuse = 5, leg = 3)
-/// ```
-#[stdlib {
-    name = "legAngY",
-    keywords = true,
-    unlabeled_first = false,
-    args = {
-        hypotenuse = { docs = "The length of the triangle's hypotenuse" },
-        leg = { docs = "The length of one of the triangle's legs (i.e. non-hypotenuse side)" },
-    },
-    tags = ["math"],
-}]
-fn inner_leg_angle_y(hypotenuse: f64, leg: f64) -> f64 {
-    (leg.min(hypotenuse) / hypotenuse).asin().to_degrees()
-}
-
-/// The primitive types that can be used in a KCL file.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, JsonSchema, Display, FromStr)]
-#[serde(rename_all = "lowercase")]
-#[display(style = "lowercase")]
-pub enum Primitive {
-    /// A boolean value.
-    Bool,
-    /// A number value.
-    Number,
-    /// A string value.
-    String,
-    /// A uuid value.
-    Uuid,
-}

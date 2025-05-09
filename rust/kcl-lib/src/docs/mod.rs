@@ -11,6 +11,7 @@ use std::{
 
 use anyhow::Result;
 use kcl_doc::ModData;
+use parse_display::Display;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -18,10 +19,7 @@ use tower_lsp::lsp_types::{
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
-use crate::{
-    execution::{types::NumericType, Sketch},
-    std::Primitive,
-};
+use crate::execution::{types::NumericType, Sketch};
 
 // These types are declared in (KCL) std.
 const DECLARED_TYPES: [&str; 15] = [
@@ -36,6 +34,21 @@ lazy_static::lazy_static! {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         generator.root_schema_for::<NumericType>().schema
     };
+}
+
+/// The primitive types that can be used in a KCL file.
+#[derive(Debug, Clone, PartialEq, Serialize, JsonSchema, Display)]
+#[serde(rename_all = "lowercase")]
+#[display(style = "lowercase")]
+enum Primitive {
+    /// A boolean value.
+    Bool,
+    /// A number value.
+    Number,
+    /// A string value.
+    String,
+    /// A uuid value.
+    Uuid,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
@@ -702,7 +715,7 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     None
 }
 
-pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
+fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
             if o.enum_values.is_some() {
