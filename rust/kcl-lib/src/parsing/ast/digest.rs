@@ -488,7 +488,9 @@ impl CallExpressionKw {
         }
         hasher.update(slf.arguments.len().to_ne_bytes());
         for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.label.compute_digest());
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
             hasher.update(argument.arg.compute_digest());
         }
     });

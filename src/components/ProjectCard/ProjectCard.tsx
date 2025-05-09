@@ -66,7 +66,14 @@ function ProjectCard({
         const imageData = await window.electron.readFile(projectImagePath)
         const blob = new Blob([imageData], { type: 'image/png' })
         const imageUrl = URL.createObjectURL(blob)
-        setImageUrl(imageUrl)
+
+        if (blob.size > 0) {
+          /**
+           * Off chance that a thumbnail.png is cancelled writing and ends up writing 0 bytes
+           * We do not want to load a 0 byte image
+           */
+          setImageUrl(imageUrl)
+        }
       }
     }
 

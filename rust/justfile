@@ -4,9 +4,9 @@ kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
 # Run the same lint checks we run in CI.
 lint:
-    cargo clippy --workspace --all-targets --tests --all-features --examples --benches -- -D warnings
+    cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Ensure we can build without extra feature flags.
-    cargo clippy -p kcl-lib --tests --examples --benches -- -D warnings
+    cargo clippy -p kcl-lib --all-targets -- -D warnings
 
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:

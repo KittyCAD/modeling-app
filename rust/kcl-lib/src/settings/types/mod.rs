@@ -496,43 +496,84 @@ pub enum OnboardingStatus {
     /// The user has dismissed onboarding.
     Dismissed,
 
-    // Routes
-    #[serde(rename = "/")]
-    #[display("/")]
-    Index,
-    #[serde(rename = "/camera")]
-    #[display("/camera")]
-    Camera,
-    #[serde(rename = "/streaming")]
-    #[display("/streaming")]
-    Streaming,
-    #[serde(rename = "/editor")]
-    #[display("/editor")]
-    Editor,
-    #[serde(rename = "/parametric-modeling")]
-    #[display("/parametric-modeling")]
-    ParametricModeling,
-    #[serde(rename = "/interactive-numbers")]
-    #[display("/interactive-numbers")]
-    InteractiveNumbers,
-    #[serde(rename = "/command-k")]
-    #[display("/command-k")]
-    CommandK,
-    #[serde(rename = "/user-menu")]
-    #[display("/user-menu")]
-    UserMenu,
-    #[serde(rename = "/project-menu")]
-    #[display("/project-menu")]
-    ProjectMenu,
-    #[serde(rename = "/export")]
-    #[display("/export")]
-    Export,
-    #[serde(rename = "/sketching")]
-    #[display("/sketching")]
-    Sketching,
-    #[serde(rename = "/future-work")]
-    #[display("/future-work")]
-    FutureWork,
+    // Desktop Routes
+    #[serde(rename = "/desktop")]
+    #[display("/desktop")]
+    DesktopWelcome,
+    #[serde(rename = "/desktop/scene")]
+    #[display("/desktop/scene")]
+    DesktopScene,
+    #[serde(rename = "/desktop/toolbar")]
+    #[display("/desktop/toolbar")]
+    DesktopToolbar,
+    #[serde(rename = "/desktop/text-to-cad")]
+    #[display("/desktop/text-to-cad")]
+    DesktopTextToCadWelcome,
+    #[serde(rename = "/desktop/text-to-cad-prompt")]
+    #[display("/desktop/text-to-cad-prompt")]
+    DesktopTextToCadPrompt,
+    #[serde(rename = "/desktop/feature-tree-pane")]
+    #[display("/desktop/feature-tree-pane")]
+    DesktopFeatureTreePane,
+    #[serde(rename = "/desktop/code-pane")]
+    #[display("/desktop/code-pane")]
+    DesktopCodePane,
+    #[serde(rename = "/desktop/project-pane")]
+    #[display("/desktop/project-pane")]
+    DesktopProjectFilesPane,
+    #[serde(rename = "/desktop/other-panes")]
+    #[display("/desktop/other-panes")]
+    DesktopOtherPanes,
+    #[serde(rename = "/desktop/prompt-to-edit")]
+    #[display("/desktop/prompt-to-edit")]
+    DesktopPromptToEditWelcome,
+    #[serde(rename = "/desktop/prompt-to-edit-prompt")]
+    #[display("/desktop/prompt-to-edit-prompt")]
+    DesktopPromptToEditPrompt,
+    #[serde(rename = "/desktop/prompt-to-edit-result")]
+    #[display("/desktop/prompt-to-edit-result")]
+    DesktopPromptToEditResult,
+    #[serde(rename = "/desktop/imports")]
+    #[display("/desktop/imports")]
+    DesktopImports,
+    #[serde(rename = "/desktop/exports")]
+    #[display("/desktop/exports")]
+    DesktopExports,
+    #[serde(rename = "/desktop/conclusion")]
+    #[display("/desktop/conclusion")]
+    DesktopConclusion,
+
+    // Browser Routes
+    #[serde(rename = "/browser")]
+    #[display("/browser")]
+    BrowserWelcome,
+    #[serde(rename = "/browser/scene")]
+    #[display("/browser/scene")]
+    BrowserScene,
+    #[serde(rename = "/browser/toolbar")]
+    #[display("/browser/toolbar")]
+    BrowserToolbar,
+    #[serde(rename = "/browser/text-to-cad")]
+    #[display("/browser/text-to-cad")]
+    BrowserTextToCadWelcome,
+    #[serde(rename = "/browser/text-to-cad-prompt")]
+    #[display("/browser/text-to-cad-prompt")]
+    BrowserTextToCadPrompt,
+    #[serde(rename = "/browser/feature-tree-pane")]
+    #[display("/browser/feature-tree-pane")]
+    BrowserFeatureTreePane,
+    #[serde(rename = "/browser/prompt-to-edit")]
+    #[display("/browser/prompt-to-edit")]
+    BrowserPromptToEditWelcome,
+    #[serde(rename = "/browser/prompt-to-edit-prompt")]
+    #[display("/browser/prompt-to-edit-prompt")]
+    BrowserPromptToEditPrompt,
+    #[serde(rename = "/browser/prompt-to-edit-result")]
+    #[display("/browser/prompt-to-edit-result")]
+    BrowserPromptToEditResult,
+    #[serde(rename = "/browser/conclusion")]
+    #[display("/browser/conclusion")]
+    BrowserConclusion,
 }
 
 fn is_default<T: Default + PartialEq>(t: &T) -> bool {

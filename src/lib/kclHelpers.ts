@@ -60,7 +60,7 @@ export async function retrieveArgFromPipedCallExpression(
   name: string
 ): Promise<KclCommandValue | undefined> {
   const arg = callExpression.arguments.find(
-    (a) => a.label.type === 'Identifier' && a.label.name === name
+    (a) => a.label?.type === 'Identifier' && a.label?.name === name
   )
   if (
     arg?.type === 'LabeledArg' &&

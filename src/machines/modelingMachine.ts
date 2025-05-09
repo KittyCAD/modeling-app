@@ -58,7 +58,8 @@ import type {
 } from '@src/lang/modifyAst/addEdgeTreatment'
 import {
   EdgeTreatmentType,
-  applyEdgeTreatmentToSelection,
+  modifyAstWithEdgeTreatmentAndTag,
+  editEdgeTreatment,
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/addEdgeTreatment'
@@ -133,7 +134,6 @@ import {
 import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 
 export type SetSelections =
@@ -2311,17 +2311,106 @@ export const modelingMachine = setup({
 
         // Extract inputs
         const ast = kclManager.ast
+        let modifiedAst = structuredClone(ast)
+        let focusPath: PathToNode[] = []
         const { nodeToEdit, selection, radius } = input
-
-        // If this is an edit flow, first we're going to remove the old node
-        if (nodeToEdit) {
-          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
-          if (err(oldNodeDeletion)) return oldNodeDeletion
-        }
 
         const parameters: FilletParameters = {
           type: EdgeTreatmentType.Fillet,
           radius,
+        }
+
+        const dependencies = {
+          kclManager,
+          engineCommandManager,
+          editorManager,
+          codeManager,
+        }
+
+        // Apply or edit fillet
+        if (nodeToEdit) {
+          // Edit existing fillet
+          // selection is not the edge treatment itself,
+          // but just the first edge in the fillet expression >
+          // we need to find the edgeCut artifact
+          // and build a new selection from it
+          // TODO: this is a bit of a hack, we should be able
+          // to get the edgeCut artifact from the selection
+          const firstSelection = selection.graphSelections[0]
+          const edgeCutArtifact = Array.from(
+            kclManager.artifactGraph.values()
+          ).find(
+            (artifact) =>
+              artifact.type === 'edgeCut' &&
+              artifact.consumedEdgeId === firstSelection.artifact?.id
+          )
+          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+            return Promise.reject(
+              new Error(
+                'Failed to retrieve edgeCut artifact from sweepEdge selection'
+              )
+            )
+          }
+          const edgeTreatmentSelection = {
+            artifact: edgeCutArtifact,
+            codeRef: edgeCutArtifact.codeRef,
+          }
+
+          const editResult = await editEdgeTreatment(
+            ast,
+            edgeTreatmentSelection,
+            parameters
+          )
+          if (err(editResult)) return Promise.reject(editResult)
+
+          modifiedAst = editResult.modifiedAst
+          focusPath = [editResult.pathToEdgeTreatmentNode]
+        } else {
+          // Apply fillet to selection
+          const filletResult = await modifyAstWithEdgeTreatmentAndTag(
+            ast,
+            selection,
+            parameters,
+            dependencies
+          )
+          if (err(filletResult)) return Promise.reject(filletResult)
+          modifiedAst = filletResult.modifiedAst
+          focusPath = filletResult.pathToEdgeTreatmentNode
+        }
+
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: focusPath,
+          }
+        )
+      }
+    ),
+    chamferAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['Chamfer'] | undefined
+      }) => {
+        if (!input) {
+          return Promise.reject(new Error('No input provided'))
+        }
+
+        // Extract inputs
+        const ast = kclManager.ast
+        let modifiedAst = structuredClone(ast)
+        let focusPath: PathToNode[] = []
+        const { nodeToEdit, selection, length } = input
+
+        const parameters: ChamferParameters = {
+          type: EdgeTreatmentType.Chamfer,
+          length,
         }
         const dependencies = {
           kclManager,
@@ -2330,14 +2419,69 @@ export const modelingMachine = setup({
           codeManager,
         }
 
-        // Apply fillet to selection
-        const filletResult = await applyEdgeTreatmentToSelection(
-          ast,
-          selection,
-          parameters,
-          dependencies
+        // Apply or edit chamfer
+        if (nodeToEdit) {
+          // Edit existing chamfer
+          // selection is not the edge treatment itself,
+          // but just the first edge in the chamfer expression >
+          // we need to find the edgeCut artifact
+          // and build a new selection from it
+          // TODO: this is a bit of a hack, we should be able
+          // to get the edgeCut artifact from the selection
+          const firstSelection = selection.graphSelections[0]
+          const edgeCutArtifact = Array.from(
+            kclManager.artifactGraph.values()
+          ).find(
+            (artifact) =>
+              artifact.type === 'edgeCut' &&
+              artifact.consumedEdgeId === firstSelection.artifact?.id
+          )
+          if (!edgeCutArtifact || edgeCutArtifact.type !== 'edgeCut') {
+            return Promise.reject(
+              new Error(
+                'Failed to retrieve edgeCut artifact from sweepEdge selection'
+              )
+            )
+          }
+          const edgeTreatmentSelection = {
+            artifact: edgeCutArtifact,
+            codeRef: edgeCutArtifact.codeRef,
+          }
+
+          const editResult = await editEdgeTreatment(
+            ast,
+            edgeTreatmentSelection,
+            parameters
+          )
+          if (err(editResult)) return Promise.reject(editResult)
+
+          modifiedAst = editResult.modifiedAst
+          focusPath = [editResult.pathToEdgeTreatmentNode]
+        } else {
+          // Apply chamfer to selection
+          const chamferResult = await modifyAstWithEdgeTreatmentAndTag(
+            ast,
+            selection,
+            parameters,
+            dependencies
+          )
+          if (err(chamferResult)) return Promise.reject(chamferResult)
+          modifiedAst = chamferResult.modifiedAst
+          focusPath = chamferResult.pathToEdgeTreatmentNode
+        }
+
+        await updateModelingState(
+          modifiedAst,
+          EXECUTION_TYPE_REAL,
+          {
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: focusPath,
+          }
         )
-        if (err(filletResult)) return filletResult
       }
     ),
     'actor.parameter.create': fromPromise(
@@ -2459,47 +2603,6 @@ export const modelingMachine = setup({
     'split-sketch-pipe-if-needed': fromPromise(
       async (_: { input: Pick<ModelingMachineContext, 'sketchDetails'> }) => {
         return {} as SketchDetailsUpdate
-      }
-    ),
-    chamferAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input: ModelingCommandSchema['Chamfer'] | undefined
-      }) => {
-        if (!input) {
-          return new Error('No input provided')
-        }
-
-        // Extract inputs
-        const ast = kclManager.ast
-        const { nodeToEdit, selection, length } = input
-
-        // If this is an edit flow, first we're going to remove the old node
-        if (nodeToEdit) {
-          const oldNodeDeletion = deleteNodeInExtrudePipe(nodeToEdit, ast)
-          if (err(oldNodeDeletion)) return oldNodeDeletion
-        }
-
-        const parameters: ChamferParameters = {
-          type: EdgeTreatmentType.Chamfer,
-          length,
-        }
-        const dependencies = {
-          kclManager,
-          engineCommandManager,
-          editorManager,
-          codeManager,
-        }
-
-        // Apply chamfer to selection
-        const chamferResult = await applyEdgeTreatmentToSelection(
-          ast,
-          selection,
-          parameters,
-          dependencies
-        )
-        if (err(chamferResult)) return chamferResult
       }
     ),
     'submit-prompt-edit': fromPromise(

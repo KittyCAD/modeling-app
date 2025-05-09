@@ -1375,12 +1375,12 @@ export function removeSingleConstraint({
 
         // 1. Filter out any existing tag argument since it will be handled separately
         const filteredArgs = existingArgs.filter(
-          (arg) => arg.label.name !== ARG_TAG
+          (arg) => arg.label?.name !== ARG_TAG
         )
 
         // 2. Map through the args, replacing only the one we want to change
         const labeledArgs = filteredArgs.map((arg) => {
-          if (arg.label.name === toReplace) {
+          if (arg.label?.name === toReplace) {
             // Find the raw value to use for the argument being replaced
             const rawArgVersion = rawArgs.find(
               (a) => a.type === 'labeledArg' && a.key === toReplace
@@ -1430,7 +1430,7 @@ export function removeSingleConstraint({
         const labeledArgs = existingArgs.map((arg) => {
           // Only modify the specific argument that matches the targeted key
           if (
-            arg.label.name === targetKey &&
+            arg.label?.name === targetKey &&
             arg.arg.type === 'ArrayExpression'
           ) {
             // We're dealing with an array expression within a labeled argument
@@ -1560,7 +1560,7 @@ export function removeSingleConstraint({
             arrayInput[inputToReplace.key][inputToReplace.index] =
               rawLiteralArrayInObjectExpr
             let existingKwgForKey = kwArgInput.find(
-              (kwArg) => kwArg.label.name === currentArg.key
+              (kwArg) => kwArg.label?.name === currentArg.key
             )
             if (!existingKwgForKey) {
               existingKwgForKey = createLabeledArg(
@@ -1586,7 +1586,7 @@ export function removeSingleConstraint({
             if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
             arrayInput[currentArg.key][currentArg.index] = currentArgExpr
             let existingKwgForKey = kwArgInput.find(
-              (kwArg) => kwArg.label.name === currentArg.key
+              (kwArg) => kwArg.label?.name === currentArg.key
             )
             if (!existingKwgForKey) {
               existingKwgForKey = createLabeledArg(
@@ -2190,7 +2190,7 @@ export function getConstraintLevelFromSourceRange(
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {
-            const argStr = nodeMeta.node.arguments.map((a) => a.label.name)
+            const argStr = nodeMeta.node.arguments.map((a) => a.label?.name)
             return new Error(
               `call to expression ${name} has unexpected args: ${argStr} `
             )

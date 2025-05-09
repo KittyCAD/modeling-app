@@ -698,7 +698,8 @@ description: Result of parsing gear.kcl
                         "name": "i",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -934,7 +935,8 @@ description: Result of parsing gear.kcl
                         "name": "r",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -1135,7 +1137,8 @@ description: Result of parsing gear.kcl
                         "name": "a",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -1337,7 +1340,8 @@ description: Result of parsing gear.kcl
                         "name": "i",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -1559,7 +1563,8 @@ description: Result of parsing gear.kcl
                         "name": "i",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -2119,7 +2124,7 @@ description: Result of parsing gear.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "sg",
+                        "name": "accum",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -2169,14 +2174,15 @@ description: Result of parsing gear.kcl
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               },
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sg",
+                  "name": "accum",
                   "start": 0,
                   "type": "Identifier"
                 }
@@ -2735,7 +2741,7 @@ description: Result of parsing gear.kcl
                       "name": {
                         "commentStart": 0,
                         "end": 0,
-                        "name": "sg",
+                        "name": "accum",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -2767,14 +2773,15 @@ description: Result of parsing gear.kcl
                   "name": "i",
                   "start": 0,
                   "type": "Identifier"
-                }
+                },
+                "labeled": false
               },
               {
                 "type": "Parameter",
                 "identifier": {
                   "commentStart": 0,
                   "end": 0,
-                  "name": "sg",
+                  "name": "accum",
                   "start": 0,
                   "type": "Identifier"
                 }

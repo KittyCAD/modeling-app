@@ -46,7 +46,7 @@ shellExtrude = startSketchOn(s, "start")
   |> close()
   |> extrude(length = -(height - t))
 
-fn tr(i) {
+fn tr(@i) {
   j = i + 1
   x = (j/wbumps) * pitch
   y = (j % wbumps) * pitch

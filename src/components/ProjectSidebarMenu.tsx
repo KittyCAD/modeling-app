@@ -83,12 +83,12 @@ function AppLogoLink({
       to={PATHS.HOME}
       className={wrapperClassName + ' hover:before:brightness-110'}
     >
-      <Logo className={logoClassName} />
+      <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </Link>
   ) : (
     <div className={wrapperClassName} data-testid="app-logo">
-      <Logo className={logoClassName} />
+      <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
     </div>
   )

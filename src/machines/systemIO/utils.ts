@@ -84,7 +84,7 @@ export type SystemIOContext = {
   /** has the application gone through the initialization of systemIOMachine at least once.
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
-  requestedProjectName: { name: string }
+  requestedProjectName: { name: string; subRoute?: string }
   requestedFileName: { project: string; file: string; subRoute?: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
@@ -106,7 +106,9 @@ export type RequestedKCLFile = {
 
 export const waitForIdleState = async ({
   systemIOActor,
-}: { systemIOActor: ActorRefFrom<typeof systemIOMachine> }) => {
+}: {
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+}) => {
   // Check if already idle before setting up subscription
   if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
     return Promise.resolve()

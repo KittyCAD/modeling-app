@@ -28,7 +28,10 @@ export function ActionButtonDropdown({
 }: ActionButtonSplitProps) {
   const baseClassNames = `action-button p-0 m-0 group mono text-xs leading-none flex items-center gap-2 rounded-sm border-solid border border-chalkboard-30 hover:border-chalkboard-40 enabled:dark:border-chalkboard-70 dark:hover:border-chalkboard-60 dark:bg-chalkboard-90/50 text-chalkboard-100 dark:text-chalkboard-10`
   return (
-    <Popover className={`${baseClassNames} ${className}`}>
+    <Popover
+      className={`${baseClassNames} ${className}`}
+      data-onboarding-id={`${props.name}-group`}
+    >
       {({ close }) => (
         <>
           {children}
@@ -39,6 +42,7 @@ export function ActionButtonDropdown({
               'enabled:hover:bg-chalkboard-10 dark:enabled:hover:bg-chalkboard-100 ' +
               'pressed:!bg-primary pressed:enabled:hover:!text-chalkboard-10 p-0 m-0 rounded-none !outline-none ui-open:border-primary ui-open:bg-primary'
             }
+            data-onboarding-id={`${props.name}-dropdown-button`}
           >
             <CustomIcon
               name="caretDown"
@@ -110,6 +114,7 @@ function ActionButtonDropdownListItem({
         tabIndex={-1}
         disabled={item.disabled}
         data-testid={'dropdown-' + item.id}
+        data-onboarding-id={`${item.id}-dropdown-item`}
       >
         <span className="capitalize flex-grow text-left">{item.label}</span>
         {item.status === 'unavailable' ? (
