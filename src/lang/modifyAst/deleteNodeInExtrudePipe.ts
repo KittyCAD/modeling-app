@@ -5,8 +5,8 @@ import { locateExtrudeDeclarator } from '@src/lang/modifyAst/addEdgeTreatment'
 import { err } from '@src/lib/trap'
 
 export function deleteNodeInExtrudePipe(
-  node: PathToNode,
-  ast: Node<Program>
+  ast: Node<Program>,
+  node: PathToNode
 ): Error | void {
   const pipeIndex = node.findIndex(([_, type]) => type === 'PipeExpression') + 1
   if (!(node[pipeIndex][0] && typeof node[pipeIndex][0] === 'number')) {
