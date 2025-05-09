@@ -452,7 +452,7 @@ async fn make_transform<T: GeometryTrait>(
     })?;
     let transforms = match transform_fn_return {
         KclValue::Object { value, meta: _ } => vec![value],
-        KclValue::MixedArray { value, meta: _ } => {
+        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
             let transforms: Vec<_> = value
                 .into_iter()
                 .map(|val| {
@@ -671,10 +671,42 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::types::NumericType;
+    use crate::execution::types::{NumericType, PrimitiveType};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
+        let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
+        let input = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 1.1,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 2.2,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 3.3,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+        };
+        let expected = [
+            TyF64::new(1.1, NumericType::mm()),
+            TyF64::new(2.2, NumericType::mm()),
+            TyF64::new(3.3, NumericType::mm()),
+        ];
+        let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
+        assert_eq!(actual.unwrap(), expected);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tuple_to_point3d() {
         let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
         let input = KclValue::MixedArray {
             value: vec![
