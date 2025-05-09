@@ -560,26 +560,21 @@ impl Args {
         Ok(())
     }
 
-    pub(crate) fn make_user_val_from_point(&self, p: [TyF64; 2]) -> Result<KclValue, KclError> {
+    pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
         let meta = Metadata {
             source_range: self.source_range,
         };
         let x = KclValue::Number {
-            value: p[0].n,
+            value: p[0],
             meta: vec![meta],
-            ty: p[0].ty.clone(),
+            ty: ty.clone(),
         };
         let y = KclValue::Number {
-            value: p[1].n,
+            value: p[1],
             meta: vec![meta],
-            ty: p[1].ty.clone(),
+            ty: ty.clone(),
         };
-        let ty = if p[0].ty == p[1].ty {
-            RuntimeType::Primitive(PrimitiveType::Number(p[0].ty.clone()))
-        } else {
-            // TODO: Can we do better here?
-            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Unknown))
-        };
+        let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
 
         Ok(KclValue::HomArray { value: vec![x, y], ty })
     }
