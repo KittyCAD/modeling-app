@@ -174,8 +174,8 @@ test.describe('Testing constraints', () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         await page.mouse.click(line1.x, line1.y)
@@ -223,7 +223,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -405,7 +405,7 @@ test.describe('Testing constraints', () => {
         await page.waitForTimeout(1000)
 
         const [line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         if (constraint === 'Absolute X') {
@@ -454,7 +454,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -519,8 +519,8 @@ test.describe('Testing constraints', () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         if (axisSelect) {
@@ -569,7 +569,7 @@ test.describe('Testing constraints', () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -622,7 +622,7 @@ test.describe('Testing constraints', () => {
         await page.waitForTimeout(1000)
 
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
 
         await page.mouse.click(line3.x, line3.y)
@@ -647,7 +647,7 @@ test.describe('Testing constraints', () => {
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -715,7 +715,7 @@ part002 = startSketchOn(XZ)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
 
         await page.mouse.click(line3.x, line3.y)
@@ -733,16 +733,17 @@ part002 = startSketchOn(XZ)
           })
         }
         await expect(cmdBarKclInput).toHaveText('78.33')
-        await cmdBarSubmitButton.click()
-
+        await page.waitForTimeout(500)
         const [ang, len] = value.split(', ')
         const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
+        await cmdBarSubmitButton.click()
         await expect(page.locator('.cm-content')).toContainText(changedCode)
+        
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -799,13 +800,13 @@ part002 = startSketchOn(XZ)
         await page.waitForTimeout(1000)
 
         const line1 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${0}"]`
+          `[data-overlay-index="${1}"]`
         )
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
         const line4 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${3}"]`
+          `[data-overlay-index="${4}"]`
         )
 
         // select two segments by holding down shift
@@ -899,8 +900,8 @@ part002 = startSketchOn(XZ)
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
 
-        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
-        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${1}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select two segments by holding down shift
         await page.mouse.click(line1.x - 20, line1.y + 20)
@@ -981,7 +982,7 @@ part002 = startSketchOn(XZ)
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
 
-        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select segment and axis by holding down shift
         await page.mouse.click(line3.x - 3, line3.y + 20)
@@ -1044,7 +1045,7 @@ part002 = startSketchOn(XZ)
 
     await page.waitForTimeout(100)
     const lineBefore = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
+      `[data-overlay-index="2"]`,
       0
     )
     expect(
@@ -1075,15 +1076,15 @@ part002 = startSketchOn(XZ)
 
     // If the overlay-angle is updated the THREE.js scene is in a good state
     await expect(
-      await page.locator('[data-overlay-index="1"]')
+      await page.locator('[data-overlay-index="2"]')
     ).toHaveAttribute('data-overlay-angle', '0')
 
     const lineAfter = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
+      `[data-overlay-index="2"]`,
       0
     )
 
-    const linebb = await u.getBoundingBox('[data-overlay-index="1"]')
+    const linebb = await u.getBoundingBox('[data-overlay-index="2"]')
     await page.mouse.move(linebb.x, linebb.y, { steps: 25 })
     await page.mouse.click(linebb.x, linebb.y)
 
@@ -1097,6 +1098,7 @@ part002 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
     await page.getByTestId('constraint-length').click()
+    await page.waitForTimeout(500)
 
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
     await page
@@ -1112,7 +1114,7 @@ part002 = startSketchOn(XZ)
     )
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
   })
 })
 test.describe('Electron constraint tests', () => {
