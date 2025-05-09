@@ -51,7 +51,7 @@ const ProjectSidebarMenu = ({
         <ProjectMenuPopover project={project} file={file} />
       ) : (
         <span
-          className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+          className="hidden select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap xl:block"
           data-testid="project-name"
         >
           {project?.name ? project.name : APP_NAME}
@@ -259,12 +259,12 @@ function ProjectMenuPopover({
   return (
     <Popover className="relative">
       <Popover.Button
-        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-0 py-1 px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
+        className="gap-1 rounded-sm h-9 mr-auto max-h-min min-w-max border-transparent dark:border-transparent p-0 xl:py-1 xl:px-2 flex items-center  focus-visible:outline-appForeground dark:hover:bg-chalkboard-90"
         data-testid="project-sidebar-toggle"
       >
-        <div className="flex flex-col items-start py-0.5">
+        <div className="hidden xl:flex flex-col items-start py-0.5">
           <span
-            className="hidden text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
+            className="text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap"
             data-testid="app-header-file-name"
           >
             {isDesktop() && file?.name
@@ -275,7 +275,7 @@ function ProjectMenuPopover({
           </span>
           {isDesktop() && project?.name && (
             <span
-              className="hidden text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap lg:block"
+              className="text-xs text-chalkboard-70 dark:text-chalkboard-40 whitespace-nowrap"
               data-testid="app-header-project-name"
             >
               {project.name}
@@ -284,8 +284,9 @@ function ProjectMenuPopover({
         </div>
         <CustomIcon
           name="caretDown"
-          className="w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
+          className="hidden xl:block w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"
         />
+        <CustomIcon name="three-dots" className="xl:hidden w-5 h-5" />
       </Popover.Button>
 
       <Transition
