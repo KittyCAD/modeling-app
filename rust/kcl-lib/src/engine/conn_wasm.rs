@@ -4,7 +4,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::websocket::{WebSocketRequest, WebSocketResponse};
+use kcmc::websocket::{OkWebSocketResponseData, WebSocketRequest, WebSocketResponse};
 use kittycad_modeling_cmds as kcmc;
 use tokio::sync::RwLock;
 use uuid::Uuid;
@@ -21,6 +21,12 @@ use crate::{
 extern "C" {
     #[derive(Debug, Clone)]
     pub type EngineCommandManager;
+
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> EngineCommandManager;
+
+    #[wasm_bindgen(method, js_name = startFromWasm, catch)]
+    pub async fn start_from_wasm(this: &EngineCommandManager, token: &str) -> Result<JsValue, js_sys::Error>;
 
     #[wasm_bindgen(method, js_name = fireModelingCommandFromWasm, catch)]
     fn fire_modeling_cmd_from_wasm(
@@ -305,6 +311,14 @@ impl crate::engine::EngineManager for EngineConnection {
         })?;
 
         Ok(())
+    }
+
+    async fn fetch_debug(&self) -> Result<(), KclError> {
+        unimplemented!();
+    }
+
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData> {
+        None
     }
 
     async fn inner_fire_modeling_cmd(

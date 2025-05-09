@@ -5,7 +5,13 @@ import {
   joinOSPaths,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
-import { systemIOActor, useSettings, useToken } from '@src/lib/singletons'
+import {
+  billingActor,
+  systemIOActor,
+  useSettings,
+  useToken,
+} from '@src/lib/singletons'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useHasListedProjects,
   useProjectDirectoryPath,
@@ -46,7 +52,8 @@ export function SystemIOMachineLogicListenerDesktop() {
       )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
-        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile)
+        safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
+        requestedProjectName.subRoute || ''
       )
       navigate(requestedPath)
     }, [requestedProjectName])
@@ -148,7 +155,14 @@ export function SystemIOMachineLogicListenerDesktop() {
         token,
         isProjectNew,
         settings: { highlightEdges: settings.modeling.highlightEdges.current },
-      }).catch(reportRejection)
+      })
+        .then(() => {
+          billingActor.send({
+            type: BillingTransition.Update,
+            apiToken: token,
+          })
+        })
+        .catch(reportRejection)
     }, [requestedTextToCadGeneration])
   }
 

@@ -1,5 +1,6 @@
 ---
 title: "tag"
+subtitle: "Type in std::types"
 excerpt: "Tags are used to give a name (tag) to a specific path."
 layout: manual
 ---

@@ -1,5 +1,6 @@
 ---
 title: "string"
+subtitle: "Type in std::types"
 excerpt: "A sequence of characters"
 layout: manual
 ---

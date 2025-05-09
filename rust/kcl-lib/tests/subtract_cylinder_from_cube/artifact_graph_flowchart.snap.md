@@ -16,8 +16,8 @@ flowchart LR
   1["Plane<br>[27, 44, 0]"]
   2["Plane<br>[372, 389, 0]"]
   12["Sweep Extrusion<br>[306, 326, 0]"]
-  13["Sweep Extrusion<br>[436, 455, 0]"]
-  14["CompositeSolid Subtract<br>[468, 504, 0]"]
+  13["Sweep Extrusion<br>[436, 456, 0]"]
+  14["CompositeSolid Subtract<br>[494, 530, 0]"]
   15[Wall]
   16[Wall]
   17[Wall]
@@ -45,11 +45,11 @@ flowchart LR
   3 --- 8
   3 --- 11
   3 ---- 12
-  3 <--x 14
+  3 --- 14
   4 --- 9
   4 --- 10
   4 ---- 13
-  4 <--x 14
+  4 --- 14
   5 --- 18
   5 x--> 21
   5 --- 25

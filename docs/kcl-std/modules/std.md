@@ -1,5 +1,6 @@
 ---
 title: "std"
+subtitle: "Module in std::"
 excerpt: "The KCL standard library "
 layout: manual
 ---
@@ -29,6 +30,11 @@ Contains frequently used constants, functions for interacting with the KittyCAD 
 * [`Y`](/docs/kcl-std/consts/std-Y)
 * [`YZ`](/docs/kcl-std/consts/std-YZ)
 * [`Z`](/docs/kcl-std/consts/std-Z)
+* [`appearance`](/docs/kcl-std/appearance)
+* [`assert`](/docs/kcl-std/assert)
+* [`assertIs`](/docs/kcl-std/assertIs)
+* [`clone`](/docs/kcl-std/clone)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
+* [`patternLinear2d`](/docs/kcl-std/patternLinear2d)
 

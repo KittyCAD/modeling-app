@@ -130,14 +130,14 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
         functions
             .entry(module.to_owned())
             .or_default()
-            .push((internal_fn.name(), internal_fn.name()));
+            .push((internal_fn.name(), format!("/docs/kcl-std/{}", internal_fn.name())));
     }
 
     for name in SPECIAL_TYPES {
         types
             .get_mut("Primitive types")
             .unwrap()
-            .push((name.to_owned(), format!("types#{name}")));
+            .push((name.to_owned(), format!("/docs/kcl-lang/types#{name}")));
     }
 
     for d in kcl_lib.all_docs() {
@@ -152,7 +152,10 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             DocData::Mod(_) => continue,
         };
 
-        group.push((d.preferred_name().to_owned(), d.file_name()));
+        group.push((
+            d.preferred_name().to_owned(),
+            format!("/docs/kcl-std/{}", d.file_name()),
+        ));
     }
 
     let mut sorted_fns: Vec<_> = functions
@@ -161,7 +164,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             fns.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
                 "items": fns.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -179,7 +182,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
             consts.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
                 "items": consts.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -194,10 +197,15 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModD
     let mut sorted_types: Vec<_> = types
         .into_iter()
         .map(|(m, mut tys)| {
+            let file_name = if m == "Primitive types" {
+                "/docs/kcl-lang/types".to_owned()
+            } else {
+                format!("/docs/kcl-std/modules/{}", m.replace("::", "-"))
+            };
             tys.sort();
             let val = json!({
                 "name": m,
-                "file_name": m.replace("::", "-"),
+                "file_name": file_name,
                 "items": tys.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
@@ -264,7 +272,8 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
         .collect();
 
     let data = json!({
-        "name": ty.qual_name(),
+        "name": ty.preferred_name,
+        "module": mod_name_std(&ty.module_name),
         "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
         "summary": ty.summary,
         "description": ty.description,
@@ -279,14 +288,38 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     Ok(())
 }
 
-fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
-    fn list_items(m: &ModData, namespace: &str) -> Vec<gltf_json::Value> {
+fn generate_mod_from_kcl(m: &ModData, file_name: String, combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+    fn list_items(
+        m: &ModData,
+        namespace: &str,
+        combined: &IndexMap<String, Box<dyn StdLibFn>>,
+    ) -> Vec<gltf_json::Value> {
         let mut items: Vec<_> = m
             .children
             .iter()
             .filter(|(k, _)| k.starts_with(namespace))
-            .map(|(_, v)| (v.preferred_name(), v.file_name()))
+            .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
             .collect();
+
+        if namespace == "I:" {
+            // Add in functions declared in Rust
+            items.extend(
+                combined
+                    .values()
+                    .filter(|f| {
+                        if f.unpublished() || f.deprecated() {
+                            return false;
+                        }
+
+                        let tags = f.tags();
+                        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
+                        module == m.qual_name
+                    })
+                    .map(|f| (f.name(), f.name())),
+            )
+        }
+
         items.sort();
         items
             .into_iter()
@@ -300,13 +333,13 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     }
     let hbs = init_handlebars()?;
 
-    // TODO for prelude, items from Rust
-    let functions = list_items(m, "I:");
-    let modules = list_items(m, "M:");
-    let types = list_items(m, "T:");
+    let functions = list_items(m, "I:", combined);
+    let modules = list_items(m, "M:", combined);
+    let types = list_items(m, "T:", combined);
 
     let data = json!({
-        "name": m.qual_name,
+        "name": m.name,
+        "module": mod_name_std(&m.module_name),
         "summary": m.summary,
         "description": m.description,
         "modules": modules,
@@ -318,6 +351,15 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
+}
+
+fn mod_name_std(name: &str) -> String {
+    assert_ne!(name, "prelude");
+    if name == "std" {
+        name.to_owned()
+    } else {
+        format!("std::{name}")
+    }
 }
 
 fn generate_function_from_kcl(
@@ -340,7 +382,8 @@ fn generate_function_from_kcl(
         .collect();
 
     let data = json!({
-        "name": function.qual_name,
+        "name": function.preferred_name,
+        "module": mod_name_std(&function.module_name),
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
@@ -383,7 +426,8 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .collect();
 
     let data = json!({
-        "name": cnst.qual_name,
+        "name": cnst.preferred_name,
+        "module": mod_name_std(&cnst.module_name),
         "summary": cnst.summary,
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,
@@ -435,10 +479,15 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Resul
         .collect();
 
     let tags = internal_fn.tags();
-    let qual = tags.first().map(|s| &**s).unwrap_or("");
+    let module = tags
+        .first()
+        .map(|s| &**s)
+        .map(|m| format!("std::{m}"))
+        .unwrap_or("std".to_owned());
 
     let data = json!({
-        "name": format!("std::{qual}{}{fn_name}", if qual.is_empty() { "" } else {"::"}),
+        "name": fn_name,
+        "module": module,
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
@@ -615,7 +664,9 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
             // If we can handle signatures more manually we could get highlighting and links and
             // we might want to restore the links by not checking `fmt_for_text` here.
 
-            if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
+            if fmt_for_text && ty.starts_with("number") {
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
+            } else if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
             } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
                 format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
@@ -668,10 +719,10 @@ fn test_generate_stdlib_markdown_docs() {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
-            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name()).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name(), &combined).unwrap(),
         }
     }
-    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned()).unwrap();
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned(), &combined).unwrap();
 }
 
 #[test]
@@ -701,7 +752,11 @@ fn test_generate_stdlib_json_schema() {
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
     for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
-        let path = entry.unwrap().path();
+        let entry = entry.unwrap();
+        if entry.file_type().unwrap().is_dir() {
+            continue;
+        }
+        let path = entry.path();
         let text = std::fs::read_to_string(&path).unwrap();
 
         for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {

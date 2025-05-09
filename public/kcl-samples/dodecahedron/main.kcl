@@ -51,7 +51,7 @@ faceRotations = [
 // Create faces by mapping over the rotations array
 dodecFaces = map(
   faceRotations,
-  f = fn(rotation) {
+  f = fn(@rotation) {
     return createFaceTemplate(rotation[3])
       |> rotate(
            pitch = rotation[0],
@@ -66,15 +66,15 @@ fn calculateArrayLength(@arr) {
   return reduce(
     arr,
     initial = 0,
-    f = fn(item, accumulator) {
-      return accumulator + 1
+    f = fn(@item, accum) {
+      return accum + 1
     },
   )
 }
 
 fn createIntersection(@solids) {
-  fn reduceIntersect(previous, current) {
-    return intersect([previous, current])
+  fn reduceIntersect(@previous, accum) {
+    return intersect([previous, accum])
   }
   lastIndex = calculateArrayLength(solids) - 1
   lastSolid = solids[lastIndex]

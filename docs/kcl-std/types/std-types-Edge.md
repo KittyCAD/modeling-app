@@ -1,5 +1,6 @@
 ---
-title: "std::types::Edge"
+title: "Edge"
+subtitle: "Type in std::types"
 excerpt: "The edge of a solid."
 layout: manual
 ---

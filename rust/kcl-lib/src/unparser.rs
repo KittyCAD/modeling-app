@@ -405,9 +405,13 @@ impl CallExpressionKw {
 
 impl LabeledArg {
     fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
-        let label = &self.label.name;
-        let arg = self.arg.recast(options, indentation_level, ctxt);
-        format!("{label} = {arg}")
+        let mut result = String::new();
+        if let Some(l) = &self.label {
+            result.push_str(&l.name);
+            result.push_str(" = ");
+        }
+        result.push_str(&self.arg.recast(options, indentation_level, ctxt));
+        result
     }
 }
 
@@ -2532,7 +2536,7 @@ sketch002 = startSketchOn({
         let input = r#"squares_out = reduce(
   arr,
   n = 0: number,
-  f = fn(i, squares) {
+  f = fn(@i, accum) {
     return 1
   },
 )

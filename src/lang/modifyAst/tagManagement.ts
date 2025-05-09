@@ -500,7 +500,7 @@ function modifyAstWithTagForCapFace(
 
   // Check for existing tag with this parameter name
   const existingTag = callExp.node.arguments.find(
-    (arg) => arg.label.name === tagParamName
+    (arg) => arg.label?.name === tagParamName
   )
 
   if (existingTag && existingTag.arg.type === 'TagDeclarator') {

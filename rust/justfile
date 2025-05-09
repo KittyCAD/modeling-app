@@ -4,9 +4,9 @@ kcl_lib_flags := "-p kcl-lib --features artifact-graph"
 
 # Run the same lint checks we run in CI.
 lint:
-    cargo clippy --workspace --all-targets --tests --all-features --examples --benches -- -D warnings
+    cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Ensure we can build without extra feature flags.
-    cargo clippy -p kcl-lib --tests --examples --benches -- -D warnings
+    cargo clippy -p kcl-lib --all-targets -- -D warnings
 
 # Run the stdlib docs generation
 redo-kcl-stdlib-docs-no-imgs:
@@ -39,20 +39,21 @@ overwrite-sim-test-sample test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::parse_{{test_name}}
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::unparse_{{test_name}}
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::kcl_test_execute_{{test_name}}
-    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine_generate_manifest
+    EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::kcl_samples::test_after_engine
 
 overwrite-sim-test test_name:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::parse
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::unparse
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::kcl_test_execute
-    [ {{test_name}} != "kcl_samples" ] || EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::test_after_engine_generate_manifest
+    [ {{test_name}} != "kcl_samples" ] || EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests::{{test_name}}::test_after_engine
 
 # Regenerate all the simulation test output.
 redo-sim-tests:
     EXPECTORATE=overwrite TWENTY_TWENTY=overwrite {{cita}} {{kcl_lib_flags}} --no-quiet -- simulation_tests
 
 test:
-    export RUST_BRACKTRACE="full" && {{cnr}} --workspace --features artifact-graph --no-fail-fast
+    cargo install cargo-nextest
+    {{cnr}} --workspace --features artifact-graph --no-fail-fast
 
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.

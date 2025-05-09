@@ -38,11 +38,12 @@ const LOCAL_USER: Models['User_type'] = {
   last_name: 'User',
   can_train_on_data: false,
   is_service_account: false,
+  deletion_scheduled: false,
 }
 
 export interface UserContext {
   user?: Models['User_type']
-  token?: string
+  token: string
 }
 
 export type Events =
@@ -203,7 +204,7 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-function getCookie(cname: string): string | null {
+export function getCookie(cname: string): string | null {
   if (isDesktop()) {
     return null
   }

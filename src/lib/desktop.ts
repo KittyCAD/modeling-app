@@ -462,7 +462,7 @@ const getAppFolderName = () => {
     return APP_ID
   }
   // TODO: we need to make linux use the same convention this is weird
-  // This variable below gets the -nightly suffix on nighly too thru scripts/flip-files-to-nightly.sh
+  // This variable below gets the -nightly suffix on nightly too thru scripts/flip-files-to-nightly.sh
   // But it should be consistent with the reserve domain app id we use on Windows and Linux
   return window.electron.packageJson.name
 }

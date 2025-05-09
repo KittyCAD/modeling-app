@@ -90,6 +90,7 @@ pub use errors::{
 };
 pub use execution::{
     bust_cache, clear_mem_cache,
+    typed_path::TypedPath,
     types::{UnitAngle, UnitLen},
     ExecOutcome, ExecState, ExecutorContext, ExecutorSettings, MetaSettings, Point2d,
 };

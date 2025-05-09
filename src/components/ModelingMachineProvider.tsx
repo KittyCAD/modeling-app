@@ -22,29 +22,18 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  SEGMENT_BODIES,
-  getParentGroup,
-} from '@src/clientSideScene/sceneConstants'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
-import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from '@src/components/Toolbar/SetAngleBetween'
-import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
-import {
   applyConstraintAngleLength,
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
+import {
+  SEGMENT_BODIES,
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
 import { useFileContext } from '@src/hooks/useFileContext'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -70,34 +59,33 @@ import {
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
-  EngineConnectionEvents,
   EngineConnectionStateType,
+  EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
+import { err, reportRejection, trap, reject } from '@src/lib/trap'
+import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
+import { promptToEditFlow } from '@src/lib/promptToEdit'
+import type { FileMeta } from '@src/lib/types'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import { commandBarActor } from '@src/lib/singletons'
+import { useToken, useSettings } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 import {
-  crossProduct,
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
-import type {
-  KclValue,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import {
-  EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  EXECUTION_TYPE_MOCK,
+  FILE_EXT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileEntry } from '@src/lib/project'
+import type { WebContentSendPayload } from '@src/menu/channels'
+import {
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingMachine'
 import {
   codeManager,
   editorManager,
@@ -107,18 +95,39 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
-import { platform, uuidv4 } from '@src/lib/utils'
-import { useSettings, useToken } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
-import type { WebContentSendPayload } from '@src/menu/channels'
+  handleSelectionBatch,
+  updateSelections,
+  type Selections,
+} from '@src/lib/selections'
+import {
+  crossProduct,
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
+import {
+  modelingMachineCommandConfig,
+  type ModelingCommandSchema,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type {
+  KclValue,
+  PathToNode,
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -1480,7 +1489,6 @@ export const ModelingMachineProvider = ({
               return reject('No sketch details or data')
 
             const result = await sceneEntitiesManager.setupDraftCircle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1501,7 +1509,6 @@ export const ModelingMachineProvider = ({
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
-                sketchDetails.sketchEntryNodePath,
                 sketchDetails.sketchNodePaths,
                 sketchDetails.planeNodePath,
                 sketchDetails.zAxis,
@@ -1522,7 +1529,6 @@ export const ModelingMachineProvider = ({
               return reject('No sketch details or data')
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1541,7 +1547,6 @@ export const ModelingMachineProvider = ({
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1562,7 +1567,6 @@ export const ModelingMachineProvider = ({
             const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1581,7 +1585,6 @@ export const ModelingMachineProvider = ({
             const result = await sceneEntitiesManager.setupDraftArc(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1726,8 +1729,94 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
+          let projectFiles: FileMeta[] = [
+            {
+              type: 'kcl',
+              relPath: 'main.kcl',
+              absPath: 'main.kcl',
+              fileContents: codeManager.code,
+              execStateFileNamesIndex: 0,
+            },
+          ]
+          const execStateNameToIndexMap: { [fileName: string]: number } = {}
+          Object.entries(kclManager.execState.filenames).forEach(
+            ([index, val]) => {
+              if (val?.type === 'Local') {
+                execStateNameToIndexMap[val.value] = Number(index)
+              }
+            }
+          )
+          let basePath = ''
+          if (isDesktop() && context?.project?.children) {
+            basePath = context?.selectedDirectory?.path
+            const filePromises: Promise<FileMeta | null>[] = []
+            let uploadSize = 0
+            const recursivelyPushFilePromises = (files: FileEntry[]) => {
+              // mutates filePromises declared above, so this function definition should stay here
+              // if pulled out, it would need to be refactored.
+              for (const file of files) {
+                if (file.children !== null) {
+                  // is directory
+                  recursivelyPushFilePromises(file.children)
+                  continue
+                }
+
+                const absolutePathToFileNameWithExtension = file.path
+                const fileNameWithExtension = window.electron.path.relative(
+                  basePath,
+                  absolutePathToFileNameWithExtension
+                )
+
+                const filePromise = window.electron
+                  .readFile(absolutePathToFileNameWithExtension)
+                  .then((file): FileMeta => {
+                    uploadSize += file.byteLength
+                    const decoder = new TextDecoder('utf-8')
+                    const fileType = window.electron.path.extname(
+                      absolutePathToFileNameWithExtension
+                    )
+                    if (fileType === FILE_EXT) {
+                      return {
+                        type: 'kcl',
+                        absPath: absolutePathToFileNameWithExtension,
+                        relPath: fileNameWithExtension,
+                        fileContents: decoder.decode(file),
+                        execStateFileNamesIndex:
+                          execStateNameToIndexMap[
+                            absolutePathToFileNameWithExtension
+                          ],
+                      }
+                    }
+                    const blob = new Blob([file], {
+                      type: 'application/octet-stream',
+                    })
+                    return {
+                      type: 'other',
+                      relPath: fileNameWithExtension,
+                      data: blob,
+                    }
+                  })
+                  .catch((e) => {
+                    console.error('error reading file', e)
+                    return null
+                  })
+
+                filePromises.push(filePromise)
+              }
+            }
+            recursivelyPushFilePromises(context?.project?.children)
+            projectFiles = (await Promise.all(filePromises)).filter(
+              isNonNullable
+            )
+            const MB20 = 2 ** 20 * 20
+            if (uploadSize > MB20) {
+              toast.error(
+                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
+              )
+            }
+          }
           return await promptToEditFlow({
-            code: codeManager.code,
+            projectFiles,
             prompt: input.prompt,
             selections: input.selection,
             token,

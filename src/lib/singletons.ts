@@ -1,3 +1,5 @@
+import { VITE_KC_API_BASE_URL } from '@src/env'
+
 import EditorManager from '@src/editor/manager'
 import { KclManager } from '@src/lang/KclSingleton'
 import CodeManager from '@src/lang/codeManager'
@@ -10,12 +12,16 @@ import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 
 import { useSelector } from '@xstate/react'
-import type { SnapshotFrom } from 'xstate'
-import { createActor, setup, assign } from 'xstate'
+import type { ActorRefFrom, SnapshotFrom } from 'xstate'
+import { createActor, setup, spawnChild } from 'xstate'
 
 import { isDesktop } from '@src/lib/isDesktop'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { authMachine } from '@src/machines/authMachine'
+import {
+  BILLING_CONTEXT_DEFAULTS,
+  billingMachine,
+} from '@src/machines/billingMachine'
 import {
   engineStreamContextCreate,
   engineStreamMachine,
@@ -110,20 +116,21 @@ if (typeof window !== 'undefined') {
       },
     })
 }
-const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR } = ACTOR_IDS
+const { AUTH, SETTINGS, SYSTEM_IO, ENGINE_STREAM, COMMAND_BAR, BILLING } =
+  ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
   [SYSTEM_IO]: isDesktop() ? systemIOMachineDesktop : systemIOMachineWeb,
   [ENGINE_STREAM]: engineStreamMachine,
   [COMMAND_BAR]: commandBarMachine,
+  [BILLING]: billingMachine,
 } as const
 
 const appMachine = setup({
   types: {} as {
     context: AppMachineContext
   },
-  actors: appMachineActors,
 }).createMachine({
   id: 'modeling-app',
   context: {
@@ -135,40 +142,35 @@ const appMachine = setup({
   },
   entry: [
     /**
-     * We originally wanted to use spawnChild but the inferred type blew up. The more children we
-     * created the type complexity went through the roof. This functionally should act the same.
-     * the system and parent internals are tracked properly. After reading the documentation
-     * it suggests either method but this method requires manual clean up as described in the gotcha
-     * comment block below. If this becomes an issue we can always move this spawn into createActor functions
-     * in javascript above and reference those directly but the system and parent internals within xstate
-     * will not work.
+     * We have been battling XState's type unions exploding in size,
+     * so for these global actors, we have decided to forego creating them by reference
+     * using the `actors` property in the `setup` function, and
+     * inline them instead.
      */
-    assign({
-      // Gotcha, if you use spawn, make sure you remove the ActorRef from context
-      // to prevent memory leaks when the spawned actor is no longer needed
-      authActor: ({ spawn }) => spawn(AUTH, { id: AUTH, systemId: AUTH }),
-      settingsActor: ({ spawn }) =>
-        spawn(SETTINGS, {
-          id: SETTINGS,
-          systemId: SETTINGS,
-          input: createSettings(),
-        }),
-      systemIOActor: ({ spawn }) =>
-        spawn(SYSTEM_IO, { id: SYSTEM_IO, systemId: SYSTEM_IO }),
-      engineStreamActor: ({ spawn }) =>
-        spawn(ENGINE_STREAM, {
-          id: ENGINE_STREAM,
-          systemId: ENGINE_STREAM,
-          input: engineStreamContextCreate(),
-        }),
-      commandBarActor: ({ spawn }) =>
-        spawn(COMMAND_BAR, {
-          id: COMMAND_BAR,
-          systemId: COMMAND_BAR,
-          input: {
-            commands: [],
-          },
-        }),
+    spawnChild(appMachineActors[AUTH], { systemId: AUTH }),
+    spawnChild(appMachineActors[SETTINGS], {
+      systemId: SETTINGS,
+      input: createSettings(),
+    }),
+    spawnChild(appMachineActors[ENGINE_STREAM], {
+      systemId: ENGINE_STREAM,
+      input: engineStreamContextCreate(),
+    }),
+    spawnChild(appMachineActors[SYSTEM_IO], {
+      systemId: SYSTEM_IO,
+    }),
+    spawnChild(appMachineActors[COMMAND_BAR], {
+      systemId: COMMAND_BAR,
+      input: {
+        commands: [],
+      },
+    }),
+    spawnChild(appMachineActors[BILLING], {
+      systemId: BILLING,
+      input: {
+        ...BILLING_CONTEXT_DEFAULTS,
+        urlUserService: VITE_KC_API_BASE_URL,
+      },
     }),
   ],
 })
@@ -182,7 +184,9 @@ export const appActor = createActor(appMachine, {
  * the lifetime of {appActor}, but would not work if it were invoked
  * or if it were destroyed under any conditions during {appActor}'s life
  */
-export const authActor = appActor.getSnapshot().context.authActor!
+export const authActor = appActor.system.get(AUTH) as ActorRefFrom<
+  (typeof appMachineActors)[typeof AUTH]
+>
 export const useAuthState = () => useSelector(authActor, (state) => state)
 export const useToken = () =>
   useSelector(authActor, (state) => state.context.token)
@@ -194,7 +198,9 @@ export const useUser = () =>
  * the lifetime of {appActor}, but would not work if it were invoked
  * or if it were destroyed under any conditions during {appActor}'s life
  */
-export const settingsActor = appActor.getSnapshot().context.settingsActor!
+export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
+  (typeof appMachineActors)[typeof SETTINGS]
+>
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
@@ -206,12 +212,21 @@ export const useSettings = () =>
     return settings
   })
 
-export const systemIOActor = appActor.getSnapshot().context.systemIOActor!
+export const systemIOActor = appActor.system.get(SYSTEM_IO) as ActorRefFrom<
+  (typeof appMachineActors)[typeof SYSTEM_IO]
+>
 
-export const engineStreamActor =
-  appActor.getSnapshot().context.engineStreamActor!
+export const engineStreamActor = appActor.system.get(
+  ENGINE_STREAM
+) as ActorRefFrom<(typeof appMachineActors)[typeof ENGINE_STREAM]>
 
-export const commandBarActor = appActor.getSnapshot().context.commandBarActor!
+export const commandBarActor = appActor.system.get(COMMAND_BAR) as ActorRefFrom<
+  (typeof appMachineActors)[typeof COMMAND_BAR]
+>
+
+export const billingActor = appActor.system.get(BILLING) as ActorRefFrom<
+  (typeof appMachineActors)[typeof BILLING]
+>
 
 const cmdBarStateSelector = (state: SnapshotFrom<typeof commandBarActor>) =>
   state

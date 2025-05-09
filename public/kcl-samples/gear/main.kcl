@@ -19,7 +19,7 @@ gearHeight = 3
 cmo = 101
 rs = map(
   [0..cmo],
-  f = fn(i) {
+  f = fn(@i) {
     return baseDiameter / 2 + i / cmo * (tipDiameter - baseDiameter) / 2
   },
 )
@@ -27,7 +27,7 @@ rs = map(
 // Calculate operating pressure angle
 angles = map(
   rs,
-  f = fn(r) {
+  f = fn(@r) {
     return units::toDegrees(acos(baseDiameter / 2 / r))
   },
 )
@@ -35,7 +35,7 @@ angles = map(
 // Calculate the involute function
 invas = map(
   angles,
-  f = fn(a) {
+  f = fn(@a) {
     return tan(a) - units::toRadians(a)
   },
 )
@@ -43,14 +43,14 @@ invas = map(
 // Map the involute curve
 xs = map(
   [0..cmo],
-  f = fn(i) {
+  f = fn(@i) {
     return rs[i] * cos(invas[i]: number(rad))
   },
 )
 
 ys = map(
   [0..cmo],
-  f = fn(i) {
+  f = fn(@i) {
     return rs[i] * sin(invas[i]: number(rad))
   },
 )
@@ -63,15 +63,15 @@ body = startSketchOn(XY)
 toothAngle = 360 / nTeeth / 1.5
 
 // Plot the involute curve
-fn leftInvolute(i, sg) {
+fn leftInvolute(@i, accum) {
   j = 100 - i // iterate backwards
-  return line(sg, endAbsolute = [xs[j], ys[j]])
+  return line(accum, endAbsolute = [xs[j], ys[j]])
 }
 
-fn rightInvolute(i, sg) {
+fn rightInvolute(@i, accum) {
   x = rs[i] * cos(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
   y = -rs[i] * sin(-toothAngle + units::toDegrees(atan(ys[i] / xs[i])))
-  return line(sg, endAbsolute = [x, y])
+  return line(accum, endAbsolute = [x, y])
 }
 
 // Draw gear teeth

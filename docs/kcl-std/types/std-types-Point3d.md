@@ -1,5 +1,6 @@
 ---
-title: "std::types::Point3d"
+title: "Point3d"
+subtitle: "Type in std::types"
 excerpt: "A point in three dimensional space."
 layout: manual
 ---

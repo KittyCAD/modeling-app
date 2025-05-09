@@ -101,7 +101,6 @@ export class SceneInfra {
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
-  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System

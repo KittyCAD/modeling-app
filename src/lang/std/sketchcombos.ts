@@ -620,14 +620,14 @@ const setAngledIntersectLineForLines: CreateStdLibSketchCallExpr = ({
     angle = asNum(args[0].expr.value)
   if (err(val) || err(angle)) return REF_NUM_ERR
   const valueUsedInTransform = roundOff(val, 2)
-  const varNamMap: { [key: number]: string } = {
+  const varNameMap: { [key: number]: string } = {
     0: 'ZERO',
     90: 'QUARTER_TURN',
     180: 'HALF_TURN',
     270: 'THREE_QUARTER_TURN',
   }
   const angleVal = [0, 90, 180, 270].includes(angle)
-    ? createName(['turns'], varNamMap[angle])
+    ? createName(['turns'], varNameMap[angle])
     : createLiteral(angle)
   return intersectCallWrapper({
     fnName: 'angledLineThatIntersects',
@@ -660,7 +660,7 @@ const setAngledIntersectForAngledLines: CreateStdLibSketchCallExpr = ({
 }
 
 const setAngleBetweenCreateNode =
-  (tranformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
+  (transformToType: 'none' | 'xAbs' | 'yAbs'): CreateStdLibSketchCallExpr =>
   ({
     referenceSegName,
     tag,
@@ -689,14 +689,14 @@ const setAngleBetweenCreateNode =
       forceValueUsedInTransform || createLiteral(valueUsedInTransform),
     ])
     return createCallWrapper(
-      tranformToType === 'none'
+      transformToType === 'none'
         ? 'angledLine'
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? 'angledLineToX'
           : 'angledLineToY',
-      tranformToType === 'none'
+      transformToType === 'none'
         ? [binExp, args[1].expr]
-        : tranformToType === 'xAbs'
+        : transformToType === 'xAbs'
           ? [binExp, inputs[0].expr]
           : [binExp, inputs[1].expr],
       tag,
@@ -1244,8 +1244,7 @@ const transformMap: TransformMap = {
 }
 
 export function getRemoveConstraintsTransform(
-  sketchFnExp: CallExpressionKw,
-  constraintType: ConstraintType
+  sketchFnExp: CallExpressionKw
 ): TransformInfo | false {
   let name = sketchFnExp.callee.name.name as ToolTip
   if (!toolTips.includes(name)) {
@@ -1376,12 +1375,12 @@ export function removeSingleConstraint({
 
         // 1. Filter out any existing tag argument since it will be handled separately
         const filteredArgs = existingArgs.filter(
-          (arg) => arg.label.name !== ARG_TAG
+          (arg) => arg.label?.name !== ARG_TAG
         )
 
         // 2. Map through the args, replacing only the one we want to change
         const labeledArgs = filteredArgs.map((arg) => {
-          if (arg.label.name === toReplace) {
+          if (arg.label?.name === toReplace) {
             // Find the raw value to use for the argument being replaced
             const rawArgVersion = rawArgs.find(
               (a) => a.type === 'labeledArg' && a.key === toReplace
@@ -1431,7 +1430,7 @@ export function removeSingleConstraint({
         const labeledArgs = existingArgs.map((arg) => {
           // Only modify the specific argument that matches the targeted key
           if (
-            arg.label.name === targetKey &&
+            arg.label?.name === targetKey &&
             arg.arg.type === 'ArrayExpression'
           ) {
             // We're dealing with an array expression within a labeled argument
@@ -1561,7 +1560,7 @@ export function removeSingleConstraint({
             arrayInput[inputToReplace.key][inputToReplace.index] =
               rawLiteralArrayInObjectExpr
             let existingKwgForKey = kwArgInput.find(
-              (kwArg) => kwArg.label.name === currentArg.key
+              (kwArg) => kwArg.label?.name === currentArg.key
             )
             if (!existingKwgForKey) {
               existingKwgForKey = createLabeledArg(
@@ -1587,7 +1586,7 @@ export function removeSingleConstraint({
             if (!arrayInput[currentArg.key]) arrayInput[currentArg.key] = []
             arrayInput[currentArg.key][currentArg.index] = currentArgExpr
             let existingKwgForKey = kwArgInput.find(
-              (kwArg) => kwArg.label.name === currentArg.key
+              (kwArg) => kwArg.label?.name === currentArg.key
             )
             if (!existingKwgForKey) {
               existingKwgForKey = createLabeledArg(
@@ -1779,8 +1778,7 @@ export function getTransformInfos(
 
 export function getRemoveConstraintsTransforms(
   selectionRanges: Selections,
-  ast: Program,
-  constraintType: ConstraintType
+  ast: Program
 ): TransformInfo[] | Error {
   const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
     getNodeFromPath<Expr>(ast, codeRef.pathToNode)
@@ -1796,7 +1794,7 @@ export function getRemoveConstraintsTransforms(
 
     const node = nodeMeta.node
     if (node?.type === 'CallExpressionKw') {
-      return getRemoveConstraintsTransform(node, constraintType)
+      return getRemoveConstraintsTransform(node)
     }
 
     return false
@@ -2192,7 +2190,7 @@ export function getConstraintLevelFromSourceRange(
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {
-            const argStr = nodeMeta.node.arguments.map((a) => a.label.name)
+            const argStr = nodeMeta.node.arguments.map((a) => a.label?.name)
             return new Error(
               `call to expression ${name} has unexpected args: ${argStr} `
             )

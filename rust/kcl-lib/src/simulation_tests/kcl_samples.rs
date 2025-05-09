@@ -220,6 +220,7 @@ struct KclMetadata {
     multiple_files: bool,
     title: String,
     description: String,
+    files: Vec<String>,
 }
 
 // Function to read and parse .kcl files
@@ -263,12 +264,16 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
         primary_kcl_file.clone()
     };
 
+    let mut files = files.to_vec();
+    files.sort();
+
     Some(KclMetadata {
         file: primary_kcl_file,
         path_from_project_directory_to_first_file: path_from_project_dir,
         multiple_files: files.len() > 1,
         title,
         description,
+        files,
     })
 }
 

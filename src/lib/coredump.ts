@@ -441,7 +441,7 @@ export class CoreDumpManager {
       screenshot()
         .then((screenshotStr: string) => screenshotStr)
         // maybe rust should handle an error, but an empty string at least doesn't cause the core dump to fail entirely
-        .catch((error: any) => ``)
+        .catch((_error: any) => ``)
     )
   }
 }

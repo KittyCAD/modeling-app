@@ -24,7 +24,7 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
@@ -32,7 +32,6 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { commandBarActor } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -229,10 +228,6 @@ const FileTreeItem = ({
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
       } else if (isImportedInCurrentFile && eventType === 'change') {
-        await rustContext.clearSceneAndBustCache(
-          await jsAppSettings(),
-          codeManager?.currentFilePath || undefined
-        )
         await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })

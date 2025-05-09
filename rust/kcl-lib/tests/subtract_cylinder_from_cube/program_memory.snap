@@ -53,13 +53,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              -10.0,
-              -10.0
+              -8.0,
+              -8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              -10.0
+              12.0,
+              -8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -72,13 +72,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              -10.0
+              12.0,
+              -8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              10.0
+              12.0,
+              12.0
             ],
             "type": "ToPoint",
             "units": {
@@ -91,13 +91,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              10.0
+              12.0,
+              12.0
             ],
             "tag": null,
             "to": [
-              -10.0,
-              10.0
+              -8.0,
+              12.0
             ],
             "type": "ToPoint",
             "units": {
@@ -110,13 +110,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              -10.0,
-              10.0
+              -8.0,
+              12.0
             ],
             "tag": null,
             "to": [
-              -10.0,
-              -10.0
+              -8.0,
+              -8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -156,12 +156,12 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         },
         "start": {
           "from": [
-            -10.0,
-            -10.0
+            -8.0,
+            -8.0
           ],
           "to": [
-            -10.0,
-            -10.0
+            -8.0,
+            -8.0
           ],
           "units": {
             "type": "Mm"
@@ -233,13 +233,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              -10.0,
-              -10.0
+              -8.0,
+              -8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              -10.0
+              12.0,
+              -8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -252,13 +252,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              -10.0
+              12.0,
+              -8.0
             ],
             "tag": null,
             "to": [
-              10.0,
-              10.0
+              12.0,
+              12.0
             ],
             "type": "ToPoint",
             "units": {
@@ -271,13 +271,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              10.0,
-              10.0
+              12.0,
+              12.0
             ],
             "tag": null,
             "to": [
-              -10.0,
-              10.0
+              -8.0,
+              12.0
             ],
             "type": "ToPoint",
             "units": {
@@ -290,13 +290,13 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
               "sourceRange": []
             },
             "from": [
-              -10.0,
-              10.0
+              -8.0,
+              12.0
             ],
             "tag": null,
             "to": [
-              -10.0,
-              -10.0
+              -8.0,
+              -8.0
             ],
             "type": "ToPoint",
             "units": {
@@ -336,12 +336,12 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         },
         "start": {
           "from": [
-            -10.0,
-            -10.0
+            -8.0,
+            -8.0
           ],
           "to": [
-            -10.0,
-            -10.0
+            -8.0,
+            -8.0
           ],
           "units": {
             "type": "Mm"
@@ -393,18 +393,18 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
             },
             "ccw": true,
             "center": [
-              2.0,
-              2.0
+              5.0,
+              5.0
             ],
             "from": [
-              4.0,
-              2.0
+              7.0,
+              5.0
             ],
             "radius": 2.0,
             "tag": null,
             "to": [
-              4.0,
-              2.0
+              7.0,
+              5.0
             ],
             "type": "Circle",
             "units": {
@@ -424,7 +424,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
             }
           },
           "type": "plane",
-          "value": "XY",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -435,8 +435,8 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           },
           "yAxis": {
             "x": 0.0,
-            "y": 1.0,
-            "z": 0.0,
+            "y": 0.0,
+            "z": 1.0,
             "units": {
               "type": "Unknown"
             }
@@ -444,12 +444,12 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
         },
         "start": {
           "from": [
-            4.0,
-            2.0
+            7.0,
+            5.0
           ],
           "to": [
-            4.0,
-            2.0
+            7.0,
+            5.0
           ],
           "units": {
             "type": "Mm"
@@ -466,7 +466,7 @@ description: Variables in memory after executing subtract_cylinder_from_cube.kcl
           "type": "Mm"
         }
       },
-      "height": 5.0,
+      "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {

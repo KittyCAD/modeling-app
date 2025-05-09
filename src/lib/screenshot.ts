@@ -1,3 +1,6 @@
+import { isDesktop } from '@src/lib/isDesktop'
+import { writeProjectThumbnailFile } from '@src/lib/desktop'
+
 export function takeScreenshotOfVideoStreamCanvas() {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
@@ -40,4 +43,28 @@ export default async function screenshot(): Promise<string> {
   }
 
   return takeScreenshotOfVideoStreamCanvas()
+}
+
+export function createThumbnailPNGOnDesktop({
+  projectDirectoryWithoutEndingSlash,
+}: {
+  projectDirectoryWithoutEndingSlash: string
+}) {
+  if (isDesktop()) {
+    setTimeout(() => {
+      if (!projectDirectoryWithoutEndingSlash) {
+        return
+      }
+      const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
+      // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
+      writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+        .then(() => {})
+        .catch((e) => {
+          console.error(
+            `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
+          )
+          console.error(e)
+        })
+    }, 500)
+  }
 }

@@ -20,7 +20,7 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  networkingMasks,
+  lowerRightMasks,
   settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -652,7 +652,7 @@ test.describe(
               `Set default unit to "${unitOfMeasure}" for this project`
             )
 
-            // Assert visibility and disapperance
+            // Assert visibility and disappearance
             await expect(toastMessage).toBeVisible()
             await expect(toastMessage).not.toBeVisible()
           })
@@ -1061,7 +1061,7 @@ fn cube`
         'toggle-settings-initial.png',
         {
           maxDiffPixels: 15,
-          mask: networkingMasks(page),
+          mask: lowerRightMasks(page),
         }
       )
 
@@ -1078,7 +1078,7 @@ fn cube`
         'toggle-settings-initial.png',
         {
           maxDiffPixels: 15,
-          mask: networkingMasks(page),
+          mask: lowerRightMasks(page),
         }
       )
     })

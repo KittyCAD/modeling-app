@@ -2714,13 +2714,18 @@ fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
 }
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
-    separated_pair(
-        terminated(nameable_identifier, opt(whitespace)),
-        terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+    (
+        opt((
+            terminated(nameable_identifier, opt(whitespace)),
+            terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+        )),
         expression,
     )
-    .map(|(label, arg)| LabeledArg { label, arg })
-    .parse_next(i)
+        .map(|(label, arg)| LabeledArg {
+            label: label.map(|(l, _)| l),
+            arg,
+        })
+        .parse_next(i)
 }
 
 /// A type of a function argument.
@@ -3040,6 +3045,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         return Ok(result);
     }
 
+    #[derive(Debug)]
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -3068,24 +3074,17 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::UnlabeledArg(arg) => {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
-                    let err = if followed_by_equals {
-                        ErrMode::Cut(
+                    if followed_by_equals {
+                        return Err(ErrMode::Cut(
                             CompilationError::fatal(
                                 SourceRange::from(arg),
                                 "This argument has a label, but no value. Put some value after the equals sign",
                             )
                             .into(),
-                        )
+                        ));
                     } else {
-                        ErrMode::Cut(
-                            CompilationError::fatal(
-                                SourceRange::from(arg),
-                                "This argument needs a label, but it doesn't have one",
-                            )
-                            .into(),
-                        )
-                    };
-                    return Err(err);
+                        args.push(LabeledArg { label: None, arg });
+                    }
                 }
             }
             Ok((args, non_code_nodes))
@@ -3098,7 +3097,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     // Validate there aren't any duplicate labels.
     let mut counted_labels = IndexMap::with_capacity(args.len());
     for arg in &args {
-        *counted_labels.entry(&arg.label.inner.name).or_insert(0) += 1;
+        if let Some(l) = &arg.label {
+            *counted_labels.entry(&l.inner.name).or_insert(0) += 1;
+        }
     }
     if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
         let msg = format!(
@@ -4921,27 +4922,6 @@ bar = 1
         };
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
-    }
-
-    #[test]
-    fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, program) in ["f(x=1,y)", "f(x=1,y,z)", "f(x=1,y,z=1)", "f(x=1, y, z=1)"]
-            .into_iter()
-            .enumerate()
-        {
-            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
-            let cause = err.inner().cause.as_ref().unwrap();
-            assert_eq!(
-                cause.message, "This argument needs a label, but it doesn't have one",
-                "failed test {i}: {program}"
-            );
-            assert_eq!(
-                cause.source_range.start(),
-                program.find("y").unwrap(),
-                "failed test {i}: {program}"
-            );
-        }
     }
 
     #[test]

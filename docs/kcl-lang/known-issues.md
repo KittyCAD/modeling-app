@@ -1,5 +1,5 @@
 ---
-title: "KCL Known Issues"
+title: "Known Issues"
 excerpt: "Known issues with the KCL standard library for the Zoo Design Studio."
 layout: manual
 ---
@@ -14,12 +14,6 @@ once fixed in engine will just start working here with no language changes.
 
 - **Import**: Right now you can import a file, even if that file has brep data
     you cannot edit it, after v1, the engine will account for this. 
-
-- **Fillets**: Fillets cannot intersect, you will get an error. Only simple fillet
-    cases work currently.
-
-- **Chamfers**: Chamfers cannot intersect, you will get an error. Only simple
-    chamfer cases work currently.
 
 - **Appearance**: Changing the appearance on a loft does not work. 
 

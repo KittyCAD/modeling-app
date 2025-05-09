@@ -1,4 +1,11 @@
 import { Link, type NavigateFunction, useLocation } from 'react-router-dom'
+import { Popover } from '@headlessui/react'
+import {
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@src/components/BillingRemaining'
+import { BillingDialog } from '@src/components/BillingDialog'
+
 import { CustomIcon } from '@src/components/CustomIcon'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { NetworkHealthIndicator } from '@src/components/NetworkHealthIndicator'
@@ -8,6 +15,8 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+
+import { billingActor } from '@src/lib/singletons'
 
 export function LowerRightControls({
   children,
@@ -26,6 +35,23 @@ export function LowerRightControls({
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
+        <Popover className="relative">
+          <Popover.Button
+            className="p-0 !border-transparent"
+            data-testid="billing-remaining-bar"
+          >
+            <BillingRemaining
+              mode={BillingRemainingMode.ProgressBarFixed}
+              billingActor={billingActor}
+            />
+            <Tooltip position="top" contentClassName="text-xs">
+              Text-to-CAD credits
+            </Tooltip>
+          </Popover.Button>
+          <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+            <BillingDialog billingActor={billingActor} />
+          </Popover.Panel>
+        </Popover>
         <a
           onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
           href={getReleaseUrl()}

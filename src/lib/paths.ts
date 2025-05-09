@@ -7,26 +7,9 @@ import {
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-type OnboardingPaths = {
-  [K in keyof typeof ONBOARDING_SUBPATHS]: `/onboarding${(typeof ONBOARDING_SUBPATHS)[K]}`
-}
 
 const SETTINGS = '/settings'
 
@@ -46,14 +29,14 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(ONBOARDING_SUBPATHS)(
-    '/onboarding'
-  ) as OnboardingPaths,
+  ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
+  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
+  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
@@ -145,10 +128,12 @@ export function parseProjectRoute(
  * /dog/cat
  */
 export function joinRouterPaths(...parts: string[]): string {
-  return `/${parts
-    .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
-    .filter((part) => part.length > 0) // Remove empty segments
-    .join('/')}`
+  const cleanedUpPath = webSafeJoin(
+    parts
+      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0)
+  ) // Remove empty segments
+  return `/${cleanedUpPath}`
 }
 
 /**
@@ -185,4 +170,31 @@ export function safeEncodeForRouterPaths(dynamicValue: string): string {
  */
 export function getStringAfterLastSeparator(path: string): string {
   return path.split(window.electron.sep).pop() || ''
+}
+
+/**
+ * Use this for only web related paths not paths in OS or on disk
+ * e.g. document.location.pathname
+ */
+export function webSafePathSplit(path: string): string[] {
+  const webSafeSep = '/'
+  return path.split(webSafeSep)
+}
+
+export function webSafeJoin(paths: string[]): string {
+  const webSafeSep = '/'
+  return paths.join(webSafeSep)
+}
+
+/**
+ * Splits any paths safely based on the runtime
+ */
+export function desktopSafePathSplit(path: string): string[] {
+  return isDesktop()
+    ? path.split(window?.electron?.sep)
+    : webSafePathSplit(path)
+}
+
+export function desktopSafePathJoin(paths: string[]): string {
+  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
 }
