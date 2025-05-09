@@ -430,6 +430,7 @@ async fn make_transform<T: GeometryTrait>(
     let kw_args = KwArgs {
         unlabeled: Some(Arg::new(repetition_num, source_range)),
         labeled: Default::default(),
+        errors: Vec::new(),
     };
     let transform_fn_args = Args::new_kw(
         kw_args,

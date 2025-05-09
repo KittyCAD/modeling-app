@@ -88,6 +88,7 @@ async fn call_map_closure(
     let kw_args = KwArgs {
         unlabeled: Some(Arg::new(input, source_range)),
         labeled: Default::default(),
+        errors: Vec::new(),
     };
     let args = Args::new_kw(
         kw_args,
@@ -233,6 +234,7 @@ async fn call_reduce_closure(
     let kw_args = KwArgs {
         unlabeled: Some(Arg::new(elem, source_range)),
         labeled,
+        errors: Vec::new(),
     };
     let reduce_fn_args = Args::new_kw(
         kw_args,

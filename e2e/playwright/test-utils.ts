@@ -31,8 +31,9 @@ export const headerMasks = (page: Page) => [
   page.locator('#sidebar-bottom-ribbon'),
 ]
 
-export const networkingMasks = (page: Page) => [
+export const lowerRightMasks = (page: Page) => [
   page.getByTestId('network-toggle'),
+  page.getByTestId('billing-remaining-bar'),
 ]
 
 export type TestColor = [number, number, number]

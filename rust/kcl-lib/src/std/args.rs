@@ -62,6 +62,7 @@ pub struct KwArgs {
     pub unlabeled: Option<Arg>,
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
+    pub errors: Vec<Arg>,
 }
 
 impl KwArgs {
