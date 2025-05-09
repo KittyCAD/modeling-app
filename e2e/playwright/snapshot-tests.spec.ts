@@ -5,7 +5,7 @@ import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import {
   getUtils,
   headerMasks,
-  networkingMasks,
+  lowerRightMasks,
   settingsToToml,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -88,7 +88,7 @@ const extrudeDefaultPlane = async (
 
   await expect(page).toHaveScreenshot({
     maxDiffPixels: 100,
-    mask: networkingMasks(page),
+    mask: lowerRightMasks(page),
   })
   await u.openKclCodePanel()
 }
@@ -173,7 +173,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
 
     const lineEndClick = () =>
@@ -200,7 +200,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
     await endOfTangentClk()
 
@@ -210,7 +210,7 @@ test(
     await threePointArcMidPointMv()
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
     await threePointArcMidPointClk()
     await page.waitForTimeout(100)
@@ -219,7 +219,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
 
     await threePointArcEndPointClk()
@@ -239,7 +239,7 @@ test(
     await page.waitForTimeout(500)
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
     await arcEndClk()
   }
@@ -286,7 +286,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   }
 )
@@ -328,7 +328,7 @@ test(
     // Ensure the draft rectangle looks the same as it usually does
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
     await expect(page.locator('.cm-content')).toHaveText(
       `sketch001 = startSketchOn(XZ)profile001 = circle(sketch001, center = [366.89, -62.01], radius = 1)`
@@ -395,7 +395,7 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: networkingMasks(page),
+        mask: lowerRightMasks(page),
       })
 
       await u.doAndWaitForImageDiff(
@@ -408,7 +408,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: networkingMasks(page),
+        mask: lowerRightMasks(page),
       })
     })
 
@@ -490,7 +490,7 @@ test.describe(
       // screen shot should show the sketch
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: networkingMasks(page),
+        mask: lowerRightMasks(page),
       })
 
       // exit sketch
@@ -504,7 +504,7 @@ test.describe(
       // second screen shot should look almost identical, i.e. scale should be the same.
       await expect(page).toHaveScreenshot({
         maxDiffPixels: 100,
-        mask: networkingMasks(page),
+        mask: lowerRightMasks(page),
       })
     })
   }
@@ -563,7 +563,7 @@ part002 = startSketchOn(part001, face = seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   }
 )
@@ -599,7 +599,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   }
 )
@@ -636,7 +636,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   }
 )
@@ -701,7 +701,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [...headerMasks(page), ...networkingMasks(page)],
+      mask: [...headerMasks(page), ...lowerRightMasks(page)],
     })
   })
 
@@ -722,7 +722,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [...headerMasks(page), ...networkingMasks(page)],
+      mask: [...headerMasks(page), ...lowerRightMasks(page)],
     })
   })
 
@@ -761,7 +761,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 
     await expect(stream).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: [...headerMasks(page), ...networkingMasks(page)],
+      mask: [...headerMasks(page), ...lowerRightMasks(page)],
     })
   })
 })
@@ -829,7 +829,7 @@ test('theme persists', async ({ page, context }) => {
 
   await expect(page, 'expect screenshot to have light theme').toHaveScreenshot({
     maxDiffPixels: 100,
-    mask: networkingMasks(page),
+    mask: lowerRightMasks(page),
   })
 })
 
@@ -870,7 +870,7 @@ sweepSketch = startSketchOn(XY)
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   })
 
@@ -923,7 +923,7 @@ sweepSketch = startSketchOn(XY)
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
-      mask: networkingMasks(page),
+      mask: lowerRightMasks(page),
     })
   })
 })
