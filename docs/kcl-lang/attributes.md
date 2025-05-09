@@ -27,4 +27,4 @@ The `@no_std` attribute affects the current file, takes no arguments, and causes
 
 Unnamed attributes may be used on `import` statements when importing non-KCL files. See [projects, modules, and imports](/docs/kcl-lang/modules) for details.
 
-Other unnamed attirbutes are used on functions inside the standard library, but these are not available in user code.
+Other unnamed attributes are used on functions inside the standard library, but these are not available in user code.
