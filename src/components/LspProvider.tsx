@@ -309,6 +309,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       filePath || PROJECT_ENTRYPOINT,
       projectPath || ''
     )
+    console.log("YOYOYOOYOYOYOYO", filePath, projectPath)
     lspClients.forEach((lspClient) => {
       lspClient.textDocumentDidClose({
         textDocument: {

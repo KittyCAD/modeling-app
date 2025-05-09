@@ -3,13 +3,16 @@ import {
   PATHS,
   joinRouterPaths,
   joinOSPaths,
-  safeEncodeForRouterPaths,
+    safeEncodeForRouterPaths,
+    webSafePathSplit,
+    getProjectDirectoryFromKCLFilePath,
 } from '@src/lib/paths'
 import {
   billingActor,
   systemIOActor,
   useSettings,
   useToken,
+  kclManager
 } from '@src/lib/singletons'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -29,6 +32,9 @@ import { useEffect } from 'react'
 import { submitAndAwaitTextToKclSystemIO } from '@src/lib/textToCad'
 import { reportRejection } from '@src/lib/trap'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { useLspContext } from '@src/components/LspProvider'
+import { useLocation, useRouteLoaderData} from 'react-router-dom'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 
 export function SystemIOMachineLogicListenerDesktop() {
   const requestedProjectName = useRequestedProjectName()
@@ -40,7 +46,46 @@ export function SystemIOMachineLogicListenerDesktop() {
   const requestedTextToCadGeneration = useRequestedTextToCadGeneration()
   const token = useToken()
   const folders = useFolders()
+  const { onFileOpen, onFileClose } = useLspContext()
+  const {pathname} = useLocation()
 
+  function safestNavigateToFile ({
+    requestedPath,
+    requestedFilePathWithExtension,
+    requestedProjectDirectory
+  }:{
+    requestedPath: string
+    requestedFilePathWithExtension: string | null
+    requestedProjectDirectory: string | null
+  })  {
+    let filePathWithExtension = null
+    let projectDirectory = null
+    // assumes /file/<encodedURIComponent>
+    // e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
+    const [iAmABlankString, file, encodedURI] = webSafePathSplit(pathname)
+    if (iAmABlankString === '' && file === makeUrlPathRelative(PATHS.FILE) && encodedURI) {
+      filePathWithExtension = decodeURIComponent(encodedURI)
+      const applicationProjectDirectory = settings.app.projectDirectory.current
+      projectDirectory = getProjectDirectoryFromKCLFilePath(filePathWithExtension, applicationProjectDirectory)
+    }
+
+    // Close current file in current project if it exists
+    onFileClose(filePathWithExtension, projectDirectory)
+    // Open the requested file in the requested project
+    onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
+
+    kclManager.switchedFiles = true
+    navigate(requestedPath)
+  }
+
+
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   * e.g. context.projectName if this was a string we would not be able to
+   * navigate to CoolProject N times in a row. If we wrap this in an object
+   * the object is watched not the string value
+   */
   const useGlobalProjectNavigation = () => {
     useEffect(() => {
       if (!requestedProjectName.name) {
@@ -55,10 +100,22 @@ export function SystemIOMachineLogicListenerDesktop() {
         safeEncodeForRouterPaths(projectPathWithoutSpecificKCLFile),
         requestedProjectName.subRoute || ''
       )
-      navigate(requestedPath)
+      safestNavigateToFile({
+        requestedPath,
+        requestedFilePathWithExtension: null,
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile
+      })
     }, [requestedProjectName])
   }
 
+
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   * e.g. context.projectName if this was a string we would not be able to
+   * navigate to coolFile.kcl N times in a row. If we wrap this in an object
+   * the object is watched not the string value
+   */
   const useGlobalFileNavigation = () => {
     useEffect(() => {
       if (!requestedFileName.file || !requestedFileName.project) {
@@ -69,12 +126,20 @@ export function SystemIOMachineLogicListenerDesktop() {
         requestedFileName.project,
         requestedFileName.file
       )
+      const projectPathWithoutSpecificKCLFile = joinOSPaths(
+        projectDirectoryPath,
+        requestedProjectName.name
+      )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(filePath),
         requestedFileName.subRoute || ''
       )
-      navigate(requestedPath)
+      safestNavigateToFile({
+        requestedPath,
+        requestedFilePathWithExtension: filePath,
+        requestedProjectDirectory: projectPathWithoutSpecificKCLFile
+      })
     }, [requestedFileName])
   }
 
