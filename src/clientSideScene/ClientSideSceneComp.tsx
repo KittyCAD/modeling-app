@@ -563,7 +563,6 @@ const ConstraintSymbol = ({
 
               if (!transform) return
               const { modifiedAst } = transform
-              console.log('modifiedAst', modifiedAst)
 
               await kclManager.updateAst(modifiedAst, true)
 

@@ -4042,7 +4042,6 @@ export const getStartProfile = (
       tag?: Expr
     }
   | Error => {
-  console.log('yoyoyoyo')
   const absoluteCoords = findKwArg('at', callExp)
   const tag = findKwArg(ARG_TAG, callExp)
   if (absoluteCoords) {
