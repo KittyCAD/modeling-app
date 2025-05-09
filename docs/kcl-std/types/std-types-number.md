@@ -14,13 +14,15 @@ it is never just '42'. The [`number`](/docs/kcl-std/types/std-types-number) type
 it is the type of any number. E.g.,
 
 - [`number`](/docs/kcl-std/types/std-types-number): the type of any numbers,
-- [`number(mm)`](/docs/kcl-std/types/std-types-number): the type of numbers in milimeters,
+- [`number(mm)`](/docs/kcl-std/types/std-types-number): the type of numbers in millimeters,
 - [`number(in)`](/docs/kcl-std/types/std-types-number): the type of numbers in inches,
 - [`number(Length)`](/docs/kcl-std/types/std-types-number): the type of numbers in any length unit,
 - [`number(deg)`](/docs/kcl-std/types/std-types-number): the type of numbers in degrees,
 - [`number(Angle)`](/docs/kcl-std/types/std-types-number): the type of numbers in any angle unit,
 - [`number(_)`](/docs/kcl-std/types/std-types-number) or [`number(Count)`](/docs/kcl-std/types/std-types-number): the type of unit-less numbers, representing a count of things,
 or a ratio, etc.
+
+For more information, see [numeric types](/docs/kcl-lang/numeric).
 
 
 
