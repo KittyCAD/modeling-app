@@ -16,7 +16,7 @@ import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
   traverse,
-  locateExtrudeDeclarator,
+  locateVariableWithCallOrPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -165,12 +165,12 @@ export async function modifyAstWithEdgeTreatmentAndTag(
     )
 
     // Locate the extrude call
-    const locatedExtrudeDeclarator = locateExtrudeDeclarator(
+    const locatedExtrudeDeclarator = locateVariableWithCallOrPipe(
       clonedAst,
       pathToExtrudeNode
     )
     if (err(locatedExtrudeDeclarator)) return locatedExtrudeDeclarator
-    const { extrudeDeclarator } = locatedExtrudeDeclarator
+    const { variableDeclarator } = locatedExtrudeDeclarator
 
     // Modify the extrude expression to include this edge treatment expression
     // CallExpression - no edge treatment
@@ -178,33 +178,33 @@ export async function modifyAstWithEdgeTreatmentAndTag(
 
     let pathToEdgeTreatmentNode: PathToNode
 
-    if (extrudeDeclarator.init.type === 'CallExpressionKw') {
+    if (variableDeclarator.init.type === 'CallExpressionKw') {
       // 1. case when no edge treatment exists
 
       // modify ast with new edge treatment call by mutating the extrude node
-      extrudeDeclarator.init = createPipeExpression([
-        extrudeDeclarator.init,
+      variableDeclarator.init = createPipeExpression([
+        variableDeclarator.init,
         edgeTreatmentCall,
       ])
 
       // get path to the edge treatment node
       pathToEdgeTreatmentNode = getPathToNodeOfEdgeTreatmentLiteral(
         pathToExtrudeNode,
-        extrudeDeclarator,
+        variableDeclarator,
         firstTag,
         parameters
       )
       pathToEdgeTreatmentNodes.push(pathToEdgeTreatmentNode)
-    } else if (extrudeDeclarator.init.type === 'PipeExpression') {
+    } else if (variableDeclarator.init.type === 'PipeExpression') {
       // 2. case when edge treatment exists or extrude in sketch pipe
 
       // mutate the extrude node with the new edge treatment call
-      extrudeDeclarator.init.body.push(edgeTreatmentCall)
+      variableDeclarator.init.body.push(edgeTreatmentCall)
 
       // get path to the edge treatment node
       pathToEdgeTreatmentNode = getPathToNodeOfEdgeTreatmentLiteral(
         pathToExtrudeNode,
-        extrudeDeclarator,
+        variableDeclarator,
         firstTag,
         parameters
       )

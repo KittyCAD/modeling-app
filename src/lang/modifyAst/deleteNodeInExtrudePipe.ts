@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { PathToNode, Program } from '@src/lang/wasm'
-import { locateExtrudeDeclarator } from '@src/lang/queryAst'
+import { locateVariableWithCallOrPipe } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 
 export function deleteNodeInExtrudePipe(
@@ -13,14 +13,14 @@ export function deleteNodeInExtrudePipe(
     return new Error("Couldn't find node to delete in ast")
   }
 
-  const lookup = locateExtrudeDeclarator(ast, node)
+  const lookup = locateVariableWithCallOrPipe(ast, node)
   if (err(lookup)) {
     return lookup
   }
 
-  if (lookup.extrudeDeclarator.init.type !== 'PipeExpression') {
+  if (lookup.variableDeclarator.init.type !== 'PipeExpression') {
     return new Error("Couldn't find node to delete in looked up extrusion")
   }
 
-  lookup.extrudeDeclarator.init.body.splice(node[pipeIndex][0], 1)
+  lookup.variableDeclarator.init.body.splice(node[pipeIndex][0], 1)
 }
