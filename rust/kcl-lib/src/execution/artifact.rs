@@ -1182,65 +1182,72 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetNextAdjacentEdge(kcmc::Solid3dGetNextAdjacentEdge { face_id, edge_id, .. })
-        | ModelingCmd::Solid3dGetOppositeEdge(kcmc::Solid3dGetOppositeEdge { face_id, edge_id, .. }) => {
-            let sub_type = match cmd {
-                ModelingCmd::Solid3dGetNextAdjacentEdge(_) => SweepEdgeSubType::Adjacent,
-                ModelingCmd::Solid3dGetOppositeEdge(_) => SweepEdgeSubType::Opposite,
-                _ => unreachable!(),
-            };
-            let face_id = ArtifactId::new(*face_id);
-            let edge_id = ArtifactId::new(*edge_id);
-            let Some(Artifact::Wall(wall)) = artifacts.get(&face_id) else {
+        ModelingCmd::Solid3dGetAdjancencyInfo(kcmc::Solid3dGetAdjancencyInfo { .. }) => {
+            let OkModelingCmdResponse::Solid3dGetAdjancencyInfo(info) = response else {
                 return Ok(Vec::new());
-            };
-            let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
-                return Ok(Vec::new());
-            };
-            let response_edge_id = match response {
-                OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(r) => {
-                    let Some(edge_id) = r.edge else {
-                        return Err(KclError::Internal(KclErrorDetails {
-                            message:format!(
-                                "Expected Solid3dGetNextAdjacentEdge response to have an edge ID, but found none: id={id:?}, {response:?}"
-                            ),
-                            source_ranges: vec![range],
-                        }));
-                    };
-                    edge_id.into()
-                }
-                OkModelingCmdResponse::Solid3dGetOppositeEdge(r) => r.edge.into(),
-                _ => {
-                    return Err(KclError::Internal(KclErrorDetails {
-                        message:format!(
-                            "Expected Solid3dGetNextAdjacentEdge or Solid3dGetOppositeEdge response, but got: id={id:?}, {response:?}"
-                        ),
-                        source_ranges: vec![range],
-                    }));
-                }
             };
 
             let mut return_arr = Vec::new();
-            return_arr.push(Artifact::SweepEdge(SweepEdge {
-                id: response_edge_id,
-                sub_type,
-                seg_id: edge_id,
-                cmd_id: artifact_command.cmd_id,
-                sweep_id: sweep.id,
-                common_surface_ids: Vec::new(),
-            }));
-            let mut new_segment = segment.clone();
-            new_segment.edge_ids = vec![response_edge_id];
-            return_arr.push(Artifact::Segment(new_segment));
-            let mut new_sweep = sweep.clone();
-            new_sweep.edge_ids = vec![response_edge_id];
-            return_arr.push(Artifact::Sweep(new_sweep));
+            for edge in &info.edges {
+                let edge_id = ArtifactId::new(edge.edge_id);
+                let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
+                    continue;
+                };
+                let Some(surface_id) = segment.surface_id else {
+                    continue;
+                };
+                let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
+                    continue;
+                };
+                let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
+                    continue;
+                };
+                let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
+                    continue;
+                };
+                let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
+                    continue;
+                };
+
+                if let Some(opposite_info) = &edge.opposite_info {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: opposite_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::Opposite,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        sweep_id: sweep.id,
+                        common_surface_ids: opposite_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![opposite_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+                if let Some(adjacent_info) = &edge.adjacent_info {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::Adjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        sweep_id: sweep.id,
+                        common_surface_ids: adjacent_info.faces.iter().map(|face| ArtifactId::new(*face)).collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
+            }
             return Ok(return_arr);
         }
         ModelingCmd::Solid3dGetAllEdgeFaces(kcmc::Solid3dGetAllEdgeFaces { edge_id, .. }) => {
