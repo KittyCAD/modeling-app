@@ -321,6 +321,18 @@ export class SceneEntities {
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: segment,
+            group: segment,
+            isHandlesVisible: true,
+            from: segment.userData.from,
+            to: segment.userData.to,
+            hasThreeDotMenu: false,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
     })
     if (this.axisGroup) {
@@ -702,10 +714,7 @@ export class SceneEntities {
         maybeModdedAst,
         sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
       )
-      if (
-        ['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) ===
-        false
-      ) {
+      if (!['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type)) {
         const _profileStart = createProfileStartHandle({
           from: sketch.start.from,
           id: sketch.start.__geoMeta.id,
@@ -723,6 +732,18 @@ export class SceneEntities {
         }
         group.add(_profileStart)
         this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: _profileStart,
+            group: _profileStart,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
@@ -3086,7 +3107,7 @@ export class SceneEntities {
         variables,
         kclManager: this.kclManager,
       })
-      const callBacks: (() => SegmentOverlayPayload | null)[] = []
+      const callbacks: (() => SegmentOverlayPayload | null)[] = []
       for (const sketchInfo of sketchesInfo) {
         const { sketch, pathToNode: _pathToNode } = sketchInfo
         const varDecIndex = Number(_pathToNode[1][0])
@@ -3106,7 +3127,19 @@ export class SceneEntities {
           snappedToTangent
         )
 
-        callBacks.push(
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: group,
+            group: group,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+        callbacks.push(startProfileCallBack)
+
+        callbacks.push(
           ...sgPaths.map((group, index) =>
             this.updateSegment(
               group,
@@ -3120,7 +3153,7 @@ export class SceneEntities {
           )
         )
       }
-      this.sceneInfra.overlayCallbacks(callBacks)
+      this.sceneInfra.overlayCallbacks(callbacks)
     })().catch(reportRejection)
   }
 
