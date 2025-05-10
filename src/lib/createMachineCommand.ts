@@ -16,7 +16,7 @@ import type {
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
+import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 
 interface CreateMachineCommandProps<
   T extends AnyStateMachine,
@@ -86,7 +86,7 @@ export function createMachineCommand<
   } else if ('status' in commandConfig) {
     const { status } = commandConfig
     if (status === 'inactive') return null
-    if (status === 'development' && !(DEV || IS_NIGHTLY_OR_DEBUG)) return null
+    if (status === 'development' && !(DEV || IS_STAGING_OR_DEBUG)) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined

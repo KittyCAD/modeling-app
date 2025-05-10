@@ -469,9 +469,9 @@ function OnboardingConclusion() {
           We highly encourage you to{' '}
           <a
             onClick={openExternalBrowserIfDesktop(
-              `${VITE_KC_SITE_BASE_URL}/modeling-app/download/nightly`
+              `${VITE_KC_SITE_BASE_URL}/modeling-app/download/staging`
             )}
-            href="https://zoo.dev/modeling-app/download/nightly"
+            href="https://zoo.dev/modeling-app/download/staging"
             target="_blank"
             rel="noopener noreferrer"
           >

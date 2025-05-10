@@ -30,7 +30,7 @@ import {
   settingsActor,
   useSettings,
 } from '@src/lib/singletons'
-import { APP_VERSION, IS_NIGHTLY, getReleaseUrl } from '@src/routes/utils'
+import { APP_VERSION, IS_STAGING, getReleaseUrl } from '@src/routes/utils'
 import {
   acceptOnboarding,
   catchOnboardingWarnError,
@@ -276,25 +276,6 @@ export const AllSettingsFields = forwardRef(
               , and start a discussion if you don't see it! Your feedback will
               help us prioritize what to build next.
             </p>
-            {!IS_NIGHTLY && (
-              <p className="max-w-2xl mt-6">
-                Want to experience the latest and (hopefully) greatest from our
-                main development branch?{' '}
-                <a
-                  onClick={openExternalBrowserIfDesktop(
-                    'https://zoo.dev/modeling-app/download/nightly'
-                  )}
-                  href="https://zoo.dev/modeling-app/download/nightly"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Click here to grab Zoo Design Studio (Nightly)
-                </a>
-                . It can be installed side-by-side with the stable version
-                you're running now. But careful there, a lot less testing is
-                involved in their release 🤖.
-              </p>
-            )}
           </div>
         </div>
       </div>

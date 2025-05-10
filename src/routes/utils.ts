@@ -16,13 +16,13 @@ export const PACKAGE_NAME = isDesktop()
   ? window.electron.packageJson.name
   : 'zoo-modeling-app'
 
-export const IS_NIGHTLY = PACKAGE_NAME.indexOf('-nightly') > -1
+export const IS_STAGING = PACKAGE_NAME.indexOf('-staging') > -1
 
-export const IS_NIGHTLY_OR_DEBUG =
-  IS_NIGHTLY || APP_VERSION === '0.0.0' || APP_VERSION === '11.22.33'
+export const IS_STAGING_OR_DEBUG =
+  IS_STAGING || APP_VERSION === '0.0.0' || APP_VERSION === '11.22.33'
 
 export function getReleaseUrl(version: string = APP_VERSION) {
   return `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    IS_NIGHTLY ? 'nightly-' : ''
+    IS_STAGING ? 'staging-' : ''
   }v${version}`
 }
