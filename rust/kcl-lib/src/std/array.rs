@@ -9,7 +9,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::{FunctionSource, KclValue},
-        types::{ArrayLen, RuntimeType},
+        types::RuntimeType,
         ExecState,
     },
     source_range::SourceRange,
@@ -260,12 +260,8 @@ async fn call_reduce_closure(
     Ok(out)
 }
 
-pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array = args.get_unlabeled_kw_arg_typed(
-        "array",
-        &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::None),
-        exec_state,
-    )?;
+pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
     let item: KclValue = args.get_kw_arg("item")?;
 
     let KclValue::HomArray { value: values, ty } = array else {
@@ -317,12 +313,8 @@ fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array
 }
 
-pub async fn pop(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let array = args.get_unlabeled_kw_arg_typed(
-        "array",
-        &RuntimeType::Array(Box::new(RuntimeType::any()), ArrayLen::None),
-        exec_state,
-    )?;
+pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
     let KclValue::HomArray { value: values, ty } = array else {
         let meta = vec![args.source_range];
         let actual_type = array.human_friendly_type();

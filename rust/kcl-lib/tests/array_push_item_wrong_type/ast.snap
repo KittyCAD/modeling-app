@@ -46,18 +46,6 @@ description: Result of parsing array_push_item_wrong_type.kcl
                     "value": 2.0,
                     "suffix": "None"
                   }
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "raw": "3",
-                  "start": 0,
-                  "type": "Literal",
-                  "type": "Literal",
-                  "value": {
-                    "value": 3.0,
-                    "suffix": "None"
-                  }
                 }
               ],
               "end": 0,
