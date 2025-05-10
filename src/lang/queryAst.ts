@@ -1064,10 +1064,9 @@ export function getSketchExprsFromSelection(
   nodeToEdit?: PathToNode
 ): Error | Expr[] {
   const sketches: Expr[] = selection.graphSelections.flatMap((s) => {
-    const path = getNodePathFromSourceRange(ast, s?.codeRef.range)
     const sketchVariable = getNodeFromPath<VariableDeclarator>(
       ast,
-      path,
+      s?.codeRef.pathToNode,
       'VariableDeclarator'
     )
     if (err(sketchVariable)) {
