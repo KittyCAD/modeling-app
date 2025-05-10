@@ -208,7 +208,7 @@ impl RuntimeType {
                 .collect::<Vec<_>>()
                 .join(" or "),
             RuntimeType::Tuple(tys) => format!(
-                "an array with values of types ({})",
+                "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Object(_) => format!("an object with fields {}", self),
@@ -271,7 +271,7 @@ impl RuntimeType {
                 .map(|t| t.display_multiple())
                 .collect::<Vec<_>>()
                 .join(" or "),
-            RuntimeType::Tuple(_) => "arrays".to_owned(),
+            RuntimeType::Tuple(_) => "tuples".to_owned(),
             RuntimeType::Object(_) => format!("objects with fields {self}"),
         }
     }
@@ -288,7 +288,7 @@ impl fmt::Display for RuntimeType {
             },
             RuntimeType::Tuple(ts) => write!(
                 f,
-                "[{}]",
+                "({})",
                 ts.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Union(ts) => write!(
