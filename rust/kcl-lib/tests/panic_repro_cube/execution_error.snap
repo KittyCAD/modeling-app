@@ -1,0 +1,14 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing panic_repro_cube.kcl
+---
+KCL Semantic error
+
+  × semantic: This function expected the input argument to be Edge
+    ╭─[42:5]
+ 41 │     getNextAdjacentEdge(seg02),
+ 42 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
+    ·     ───────────────────────┬───────────────────────
+    ·                            ╰── tests/panic_repro_cube/input.kcl
+ 43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
+    ╰────
