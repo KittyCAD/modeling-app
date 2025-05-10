@@ -39,6 +39,7 @@ filletedCube = fillet(
   tags = [
     getNextAdjacentEdge(seg01),
     getNextAdjacentEdge(seg02),
+    // these double wrapped functions are the point of this test
     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
   ]
