@@ -691,7 +691,13 @@ test.describe('Testing segment overlays', () => {
         locator: '[data-overlay-toolbar-index="11"]',
       })
     })
-    test('for segment [tangentialArc]', async ({ page, editor, homePage }) => {
+    test('for segment [tangentialArc]', async ({
+      page,
+      editor,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -719,6 +725,7 @@ test.describe('Testing segment overlays', () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       // wait for execution done
       await u.openDebugPanel()
@@ -735,8 +742,8 @@ test.describe('Testing segment overlays', () => {
       const clickUnconstrained = _clickUnconstrained(page, editor)
       const clickConstrained = _clickConstrained(page, editor)
 
-      const tangentialArc = await u.getBoundingBox('[data-overlay-index="12"]')
-      let ang = await u.getAngle('[data-overlay-index="12"]')
+      const tangentialArc = await u.getBoundingBox('[data-overlay-index="13"]')
+      let ang = await u.getAngle('[data-overlay-index="13"]')
       console.log('tangentialArc')
       await clickConstrained({
         hoverPos: { x: tangentialArc.x, y: tangentialArc.y },
@@ -747,7 +754,7 @@ test.describe('Testing segment overlays', () => {
         expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 6,
-        locator: '[data-overlay-toolbar-index="12"]',
+        locator: '[data-overlay-toolbar-index="13"]',
       })
       console.log('tangentialArc2')
       await clickUnconstrained({
@@ -760,7 +767,7 @@ test.describe('Testing segment overlays', () => {
         expectFinal: 'tangentialArc(endAbsolute = [xAbs001, -3.14])',
         ang: ang + 180,
         steps: 10,
-        locator: '[data-overlay-toolbar-index="12"]',
+        locator: '[data-overlay-toolbar-index="13"]',
       })
     })
     test('for segment [arcTo]', async ({
