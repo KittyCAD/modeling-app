@@ -311,8 +311,9 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # TODO: enable on push to main for staging
-    if: ${{ github.ref_type == 'tag' }}
+    # TODO: add push to main for staging
+    # Equivalent to IS_RELEASE || IS_STAGING
+    if: ${{ github.ref_type == 'tag' || github.event_name == 'push' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -373,16 +374,17 @@ jobs:
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
+          VERSION_NO_COMMIT_SUFFIX=$(echo $VERSION_NO_V | cut -f1 -d"+")
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
-            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
-            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.exe" \
-            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.exe" \
-            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
-            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
+            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-mac.dmg" \
+            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x64-mac.dmg" \
+            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-win.exe" \
+            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x64-win.exe" \
+            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-linux.AppImage" \
+            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x86_64-linux.AppImage" \
             '{
               "version": $version,
               "pub_date": $pub_date,
