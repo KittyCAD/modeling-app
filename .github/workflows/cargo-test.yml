@@ -98,9 +98,7 @@ jobs:
           popd
           git add \
             rust/kcl-lib/tests \
-            public/kcl-samples/manifest.json \
-            public/kcl-samples/README.md \
-            public/kcl-samples/screenshots
+            public/kcl-samples
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
