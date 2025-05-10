@@ -99,8 +99,8 @@ jobs:
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
           # TODO: add commit count today on main
-          OFFSET=1
-          export VERSION=$DATE-staging.$OFFSET-$COMMIT
+          OFFSET=$(date +'%H%M')
+          export VERSION=$DATE-staging.$OFFSET+$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
 
@@ -311,6 +311,7 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
+    # TODO: enable on push to main for staging
     if: ${{ github.ref_type == 'tag' }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}

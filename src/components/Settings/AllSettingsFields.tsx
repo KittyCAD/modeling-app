@@ -30,7 +30,7 @@ import {
   settingsActor,
   useSettings,
 } from '@src/lib/singletons'
-import { APP_VERSION, IS_STAGING, getReleaseUrl } from '@src/routes/utils'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import {
   acceptOnboarding,
   catchOnboardingWarnError,
