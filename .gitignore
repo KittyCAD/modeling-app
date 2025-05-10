@@ -86,3 +86,7 @@ venv
 .vscode-test
 .biome/
 .million
+
+# KCL book
+kcl-book/book
+
