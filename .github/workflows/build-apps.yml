@@ -100,7 +100,7 @@ jobs:
           DATE=$(date +'%-y.%-m.%-d')
           # TODO: add commit count today on main
           OFFSET=1
-          export VERSION=v$DATE-staging.$OFFSET-$COMMIT
+          export VERSION=$DATE-staging.$OFFSET-$COMMIT
           npm run files:set-version
           npm run files:flip-to-staging
 
