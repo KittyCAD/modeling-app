@@ -249,12 +249,11 @@ export function createSettings() {
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
+        /** Unhide this once we make sketch mode unbreakable */
+        hideOnPlatform: 'both',
         defaultValue: false,
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
