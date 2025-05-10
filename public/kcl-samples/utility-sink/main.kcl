@@ -1,19 +1,19 @@
-// Dual-Basin Utility Sink
-// A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments.
+// Utility Sink
+// A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.
 
 // Set units
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 tableHeight = 850
-tableWidth = 3400
-tableDepth = 400
+tableWidth = 1200
+tableDepth = 600
 
 profileThickness = 13
 metalThickness = 2
 
-blockCount = 3
-blockWidth = (tableWidth - profileThickness) / 3
+blockCount = 1
+blockWidth = (tableWidth - profileThickness) / blockCount
 blockHeight = tableHeight - metalThickness - 0.5
 blockDepth = tableDepth - profileThickness
 
@@ -109,12 +109,12 @@ tableTopBody = startProfile(tableTopPlane, at = [0, 0])
   |> close()
   |> extrude(length = -metalThickness)
 
-sinkCount = 2
-sinkWidth = 1000
-sinkLength = 250
+sinkCount = blockCount
+sinkWidth = blockWidth / 2
+sinkLength = tableDepth - 150
 sinkDepth = 200
 sinkOffsetFront = 40
-sinkOffsetLeft = 350
+sinkOffsetLeft = (blockWidth - sinkWidth) / 2
 sinkSpacing = tableWidth - sinkWidth - (sinkOffsetLeft * 2)
 
 sinkPlaneOutside = startSketchOn(tableTopBody, face = START)
@@ -143,6 +143,24 @@ sinkBodyInside = startProfile(
   |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
   |> extrude(length = -sinkDepth)
 
+// tap
+tapPlate = startSketchOn(offsetPlane(XY, offset = tableHeight))
+  |> circle(%, center = [blockWidth / 2, tableDepth - 55], radius = 40)
+  |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
+  |> extrude(length = 5)
+tapPillar = startSketchOn(offsetPlane(XY, offset = tableHeight))
+  |> circle(%, center = [blockWidth / 2, tableDepth - 55], radius = 15)
+  |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
+  |> extrude(length = 170)
+tapNose = startSketchOn(offsetPlane(XZ, offset = 55 - tableDepth))
+  |> circle(%, center = [blockWidth / 2, tableHeight + 100], radius = 10)
+  |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
+  |> extrude(length = sinkWidth / 2.5)
+tapHandle = startSketchOn(offsetPlane(XZ, offset = 55 - tableDepth))
+  |> circle(%, center = [blockWidth / 2, tableHeight + 150], radius = 4)
+  |> patternLinear2d(axis = [1, 0], instances = sinkCount, distance = sinkSpacing)
+  |> extrude(length = 70)
+
 // door panels
 doorGap = 2
 doorWidth = blockSubdivisionWidth - profileThickness - (doorGap * 2)
@@ -160,6 +178,12 @@ doorBody = startProfile(doorPlane, at = [doorStart, 0])
   |> close()
   |> patternLinear2d(axis = [1, 0], instances = doorCount, distance = blockSubdivisionWidth)
   |> extrude(length = doorHeight)
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = blockDepth,
+       axis = [0, 1, 0],
+     )
 
 // side panels
 panelWidth = blockDepth - profileThickness - (doorGap * 2)
