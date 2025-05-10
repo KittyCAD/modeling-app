@@ -1175,6 +1175,41 @@ export function getSketchSelectionsFromOperation(
   }
 }
 
+export function locateVariableWithCallOrPipe(
+  ast: Program,
+  pathToNode: PathToNode
+): { variableDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
+  const variableDeclarationNode = getNodeFromPath<VariableDeclaration>(
+    ast,
+    pathToNode,
+    'VariableDeclaration'
+  )
+  if (err(variableDeclarationNode)) return variableDeclarationNode
+
+  const { node: variableDecl } = variableDeclarationNode
+  const variableDeclarator = variableDecl.declaration
+  if (!variableDeclarator) {
+    return new Error('Variable Declarator not found.')
+  }
+
+  const initializer = variableDeclarator?.init
+  if (!initializer) {
+    return new Error('Initializer not found.')
+  }
+
+  if (
+    initializer.type !== 'CallExpressionKw' &&
+    initializer.type !== 'PipeExpression'
+  ) {
+    return new Error('Initializer must be a PipeExpression or CallExpressionKw')
+  }
+
+  return {
+    variableDeclarator,
+    shallowPath: variableDeclarationNode.shallowPath,
+  }
+}
+
 export function findImportNodeAndAlias(
   ast: Node<Program>,
   pathToNode: PathToNode
