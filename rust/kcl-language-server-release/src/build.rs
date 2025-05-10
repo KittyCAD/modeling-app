@@ -42,7 +42,7 @@ impl Build {
             .to_string();
 
         if !stable {
-            version = format!("{}-nightly", version);
+            version = format!("{}-staging", version);
         }
 
         let release_tag = if stable {
@@ -53,7 +53,7 @@ impl Build {
                 .replace("refs/tags/", "")
                 .to_string()
         } else {
-            "nightly".to_string()
+            "staging".to_string()
         };
 
         if stable && !release_tag.contains(&version) {

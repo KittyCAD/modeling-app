@@ -42,8 +42,6 @@ The 3D view in Design Studio is just a video stream from our hosted geometry eng
 
 We recommend downloading the latest application binary from our [releases](https://github.com/KittyCAD/modeling-app/releases) page. If you don't see your platform or architecture supported there, please file an issue.
 
-If you'd like to try out upcoming changes sooner, you can also download those from our [nightly releases](https://zoo.dev/modeling-app/download/nightly) page.
-
 ## Developing
 
 Finally, if you'd like to run a development build or contribute to the project, please visit our [contributor guide](CONTRIBUTING.md) to get started.
