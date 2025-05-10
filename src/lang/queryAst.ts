@@ -1204,7 +1204,10 @@ export function locateVariableWithCallOrPipe(
     return new Error('Initializer must be a PipeExpression or CallExpressionKw')
   }
 
-  return { variableDeclarator, shallowPath: variableDeclarationNode.shallowPath }
+  return {
+    variableDeclarator,
+    shallowPath: variableDeclarationNode.shallowPath,
+  }
 }
 
 export function findImportNodeAndAlias(
