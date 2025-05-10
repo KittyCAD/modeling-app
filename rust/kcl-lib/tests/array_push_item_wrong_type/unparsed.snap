@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_push_item_wrong_type.kcl
+---
+arr = [1, 2, 3]: [number(_)]
+arrPrime = push(arr, item = 4mm)
+assertIs(false, error = "shouldn't make it here")
