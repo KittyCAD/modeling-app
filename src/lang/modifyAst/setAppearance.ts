@@ -23,7 +23,7 @@ export function setAppearance({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
 
-  // Locate the call (not necessarily an extrude here)
+  // Locate the call
   const result = locateVariableWithCallOrPipe(modifiedAst, nodeToEdit)
   if (err(result)) {
     return result
