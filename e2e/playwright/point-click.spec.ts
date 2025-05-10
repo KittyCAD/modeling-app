@@ -2388,6 +2388,7 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     scene,
     editor,
     toolbar,
+    cmdBar,
   }) => {
     // Code samples
     const initialCode = `sketch001 = startSketchOn(XY)
@@ -2430,6 +2431,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
       }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
       // verify modeling scene is loaded
       await scene.expectPixelColor(
@@ -2446,7 +2448,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     await test.step('Delete fillet via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
         await toolbar.openPane('feature-tree')
-        await page.waitForTimeout(500)
+        await scene.settled(cmdBar)
       })
 
       await test.step('Delete piped fillet via feature tree selection', async () => {
@@ -2479,7 +2481,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
@@ -2513,7 +2515,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
@@ -2541,7 +2543,7 @@ fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedFilletDeclaration)
@@ -3047,7 +3049,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
     await test.step('Delete chamfer via feature tree selection', async () => {
       await test.step('Open Feature Tree Pane', async () => {
         await toolbar.openPane('feature-tree')
-        await page.waitForTimeout(500)
+        await scene.settled(cmdBar)
       })
 
       await test.step('Delete piped chamfer via feature tree selection', async () => {
@@ -3080,7 +3082,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify piped chamfer is deleted but other chamfers are not (in the editor)', async () => {
           await editor.expectEditor.not.toContain(firstPipedChamferDeclaration)
@@ -3114,7 +3116,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify standalone assigned chamfer is deleted but other two chamfers are not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedChamferDeclaration)
@@ -3142,7 +3144,7 @@ chamfer(extrude001, length = 5, tags = [getOppositeEdge(seg02)])
           )
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
-          await page.waitForTimeout(500)
+          await scene.settled(cmdBar)
         })
         await test.step('Verify standalone unassigned chamfer is deleted but piped chamfer is not (in the editor)', async () => {
           await editor.expectEditor.toContain(secondPipedChamferDeclaration)
