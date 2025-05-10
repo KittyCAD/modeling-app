@@ -8,7 +8,7 @@ KCL Type error
   │ element type number(Count). Try coercing either the array or the item
   │ first.
    ╭─[2:12]
- 1 │ arr = [1, 2, 3]: [number(_)]
+ 1 │ arr = [1, 2]: [number(_)]
  2 │ arrPrime = push(arr, item = 4mm)
    ·            ──────────┬──────────
    ·                      ╰── tests/array_push_item_wrong_type/input.kcl

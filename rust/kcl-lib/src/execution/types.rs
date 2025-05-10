@@ -1194,12 +1194,15 @@ impl KclValue {
                 if aty.subtype(ty) {
                     // If the element type is a subtype of the target type and
                     // the length constraint is satisfied, we can just return
-                    // the values unchanged, only adjusting the length.
+                    // the values unchanged, only adjusting the length. The new
+                    // array element type should be the target type because the
+                    // user may be trying to coerce to a more general type in
+                    // order to add other elements to the array.
                     return len
                         .satisfied(value.len(), allow_shrink)
                         .map(|len| KclValue::HomArray {
                             value: value[..len].to_vec(),
-                            ty: aty.clone(),
+                            ty: ty.clone(),
                         })
                         .ok_or(self.into());
                 }
