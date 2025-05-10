@@ -25,7 +25,7 @@ legAngY(
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

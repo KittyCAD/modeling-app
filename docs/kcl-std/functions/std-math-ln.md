@@ -17,11 +17,11 @@ ln(@input: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`number`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `input` | [`number`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

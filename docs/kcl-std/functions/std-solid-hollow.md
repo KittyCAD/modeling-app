@@ -26,7 +26,7 @@ provided thickness remains around the exterior of the shape.
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
 
 ### Examples

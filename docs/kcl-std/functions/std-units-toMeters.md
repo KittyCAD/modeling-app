@@ -17,11 +17,11 @@ units::toMeters(@num: number(m)): number(m)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(m)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(m)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(m)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(m)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 
