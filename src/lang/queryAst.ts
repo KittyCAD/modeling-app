@@ -1175,6 +1175,38 @@ export function getSketchSelectionsFromOperation(
   }
 }
 
+export function locateExtrudeDeclarator(
+  node: Program,
+  pathToExtrudeNode: PathToNode
+): { extrudeDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
+  const nodeOfExtrudeCall = getNodeFromPath<VariableDeclaration>(
+    node,
+    pathToExtrudeNode,
+    'VariableDeclaration'
+  )
+  if (err(nodeOfExtrudeCall)) return nodeOfExtrudeCall
+
+  const { node: extrudeVarDecl } = nodeOfExtrudeCall
+  const extrudeDeclarator = extrudeVarDecl.declaration
+  if (!extrudeDeclarator) {
+    return new Error('Extrude Declarator not found.')
+  }
+
+  const extrudeInit = extrudeDeclarator?.init
+  if (!extrudeInit) {
+    return new Error('Extrude Init not found.')
+  }
+
+  if (
+    extrudeInit.type !== 'CallExpressionKw' &&
+    extrudeInit.type !== 'PipeExpression'
+  ) {
+    return new Error('Extrude must be a PipeExpression or CallExpressionKw')
+  }
+
+  return { extrudeDeclarator, shallowPath: nodeOfExtrudeCall.shallowPath }
+}
+
 export function findImportNodeAndAlias(
   ast: Node<Program>,
   pathToNode: PathToNode

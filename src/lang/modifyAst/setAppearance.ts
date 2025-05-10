@@ -7,7 +7,7 @@ import {
   createPipeExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
-import { locateExtrudeDeclarator } from '@src/lang/modifyAst/addEdgeTreatment'
+import { locateExtrudeDeclarator } from '@src/lang/queryAst'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import { COMMAND_APPEARANCE_COLOR_DEFAULT } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { err } from '@src/lib/trap'

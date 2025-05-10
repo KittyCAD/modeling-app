@@ -16,6 +16,7 @@ import {
   getNodeFromPath,
   hasSketchPipeBeenExtruded,
   traverse,
+  locateExtrudeDeclarator,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
@@ -33,7 +34,6 @@ import {
   type ObjectExpression,
   type PathToNode,
   type Program,
-  type VariableDeclaration,
   type VariableDeclarator,
   type ExpressionStatement,
 } from '@src/lang/wasm'
@@ -329,38 +329,6 @@ export function getEdgeTagCall(
     tagCall = createCallExpressionStdLibKw('getNextAdjacentEdge', tagCall, [])
   }
   return tagCall
-}
-
-export function locateExtrudeDeclarator(
-  node: Program,
-  pathToExtrudeNode: PathToNode
-): { extrudeDeclarator: VariableDeclarator; shallowPath: PathToNode } | Error {
-  const nodeOfExtrudeCall = getNodeFromPath<VariableDeclaration>(
-    node,
-    pathToExtrudeNode,
-    'VariableDeclaration'
-  )
-  if (err(nodeOfExtrudeCall)) return nodeOfExtrudeCall
-
-  const { node: extrudeVarDecl } = nodeOfExtrudeCall
-  const extrudeDeclarator = extrudeVarDecl.declaration
-  if (!extrudeDeclarator) {
-    return new Error('Extrude Declarator not found.')
-  }
-
-  const extrudeInit = extrudeDeclarator?.init
-  if (!extrudeInit) {
-    return new Error('Extrude Init not found.')
-  }
-
-  if (
-    extrudeInit.type !== 'CallExpressionKw' &&
-    extrudeInit.type !== 'PipeExpression'
-  ) {
-    return new Error('Extrude must be a PipeExpression or CallExpressionKw')
-  }
-
-  return { extrudeDeclarator, shallowPath: nodeOfExtrudeCall.shallowPath }
 }
 
 function getPathToNodeOfEdgeTreatmentLiteral(

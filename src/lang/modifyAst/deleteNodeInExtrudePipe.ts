@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { PathToNode, Program } from '@src/lang/wasm'
-import { locateExtrudeDeclarator } from '@src/lang/modifyAst/addEdgeTreatment'
+import { locateExtrudeDeclarator } from '@src/lang/queryAst'
 import { err } from '@src/lib/trap'
 
 export function deleteNodeInExtrudePipe(
