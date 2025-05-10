@@ -36,6 +36,7 @@ We can use tangential arcs to make a spiral too.
 
 
 ```kcl
+height = 100
 startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> tangentialArc(angle = 180, radius = height)

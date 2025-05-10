@@ -99,7 +99,7 @@ startSketchOn(XY)
   |> startProfile(at = start)
   |> line(end = [3, 0])
   |> line(end = [0, 4])
-  |> line(endAbsolute = start))
+  |> line(endAbsolute = start)
   |> close()
 ```
 
@@ -110,7 +110,7 @@ startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [3, 0])
   |> line(end = [0, 4])
-  |> line(endAbsolute = profileStart()))
+  |> line(endAbsolute = profileStart())
   |> close()
 ```
 
@@ -125,7 +125,7 @@ startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> xLine(length = 3)
   |> yLine(length = 4)
-  |> line(endAbsolute = profileStart()))
+  |> line(endAbsolute = profileStart())
   |> close()
 ```
 

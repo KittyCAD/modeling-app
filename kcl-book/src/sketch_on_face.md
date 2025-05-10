@@ -25,7 +25,7 @@ When our triangle is extruded, its 3 edges create 3 new side faces, one for each
 
 Now, if we want to start a new sketch _on that face_, we can do so!
 
-```kcl
+```kcl=parse
 sketch001 = startSketchOn(triangle, face = b)
 ```
 
@@ -166,13 +166,9 @@ You can define your own plane with your own axes like this:
 
 ```kcl
 customPlane = {
-  origin = {
-    x = 0,
-    y = -(wallsWidth / 2 - (wallThickness / 2)),
-    z = 0
-  },
+  origin = { x = 0, y = 1, z = 0},
   xAxis = { x = 1, y = 0, z = 0 },
-  yAxis = { x = 0, y = 0, z = 1 }
+  yAxis = { x = 0, y = 0, z = 1 },
 }
 ```
 
@@ -211,6 +207,13 @@ startSketchOn(customPlane)
 Great! Custom planes give you a lot of power and flexibility. You can draw sketches in any orientation now. But they can be a bit verbose and complicated to define, so you should use [`offsetPlane`] if you've already defined a plane on the same X and Y axis. You can even use `offsetPlane` to offset a custom plane, like this:
 
 ```kcl
+// Make a custom plane.
+customPlane = {
+  origin = { x = 0, y = 1, z = 0},
+  xAxis = { x = 1, y = 0, z = 0 },
+  yAxis = { x = 0, y = 0, z = 1 },
+}
+// Now offset it 20 up its normal axis.
 newPlane = offsetPlane(customPlane, offset = 20)
 ```
 

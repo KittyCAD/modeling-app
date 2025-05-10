@@ -39,8 +39,16 @@ fn run() -> Result<()> {
     let kcl_programs = files.flat_map(kcl_code_blocks);
 
     for code_block in kcl_programs {
+        println!(
+            "Running {} {} {}",
+            code_block.file,
+            code_block.block_number,
+            code_block.name.clone().unwrap_or_else(|| "unnamed".to_owned())
+        );
         if let Some(name) = code_block.name {
             render_snapshot(code_block.contents, &name, book_dir.clone(), mode)?;
+        } else {
+            render_snapshot(code_block.contents, "foo", book_dir.clone(), mode)?;
         }
     }
     Ok(())
@@ -58,7 +66,6 @@ fn render_snapshot(program: String, name: &str, book_dir: Utf8PathBuf, mode: Mod
         // PNG already exists, so skip it.
         return Ok(());
     }
-    println!("Running {name}.kcl");
     let mut cmd = Command::new("zoo")
         .args(["kcl", "snapshot", "-", png_dst.as_ref()])
         .stdin(Stdio::piped())
@@ -106,6 +113,19 @@ fn read_markdown_files(book_dir: &Utf8Path) -> Result<impl Iterator<Item = Utf8P
 struct CodeBlock {
     contents: String,
     name: Option<String>,
+    file: String,
+    block_number: usize,
+}
+
+impl CodeBlock {
+    fn new(file: String, block_number: usize) -> Self {
+        Self {
+            contents: String::new(),
+            name: None,
+            file,
+            block_number,
+        }
+    }
 }
 
 /// Extract all KCL code blocks from a Markdown file.
@@ -119,7 +139,7 @@ fn kcl_code_blocks(p: Utf8PathBuf) -> impl Iterator<Item = CodeBlock> {
     };
     let mut blocks: Vec<CodeBlock> = Vec::new();
     let mut in_block = false;
-    let mut curr_block = CodeBlock::default();
+    let mut curr_block = CodeBlock::new(p.to_string(), 0);
     for line in file_contents.lines() {
         if line.trim_start().starts_with("```kcl") {
             in_block = true;
@@ -129,7 +149,7 @@ fn kcl_code_blocks(p: Utf8PathBuf) -> impl Iterator<Item = CodeBlock> {
         if line.trim() == "```" {
             in_block = false;
             blocks.push(curr_block.clone());
-            curr_block = Default::default();
+            curr_block = CodeBlock::new(p.to_string(), blocks.len());
             continue;
         }
         if !in_block {

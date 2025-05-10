@@ -16,7 +16,7 @@ fn square(sideLength) {
   emptySketch = startSketchOn(XY)
     |> startProfile(at = [0, 0])
   angle = 90
-  fn addOneSide(@, accum) {
+  fn addOneSide(@i, accum) {
     return angledLine(accum, angle = i * angle, length = sideLength)
   }
   return reduce([1..4], initial = emptySketch, f = addOneSide)

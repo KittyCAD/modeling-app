@@ -115,7 +115,7 @@ That's how reduce can take a long list of items and _reduce_ it to a single item
 What are some other things we can do with `reduce`? We could calculate the product of an array:
 
 ```kcl
-reduce(inputArray, initial = 1, f = fn(@i, accum) => { return i * accum})
+reduce(inputArray, initial = 1, f = fn(@i, accum) { return i * accum})
 ```
 
 In the next chapter we'll cover one of the most powerful uses for `reduce`: dynamically building up geometry.
