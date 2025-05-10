@@ -238,7 +238,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanUnion',
             status: 'available',
             title: 'Union',
-            hotkey: 'Shift + B U',
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
@@ -257,7 +256,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanSubtract',
             status: 'available',
             title: 'Subtract',
-            hotkey: 'Shift + B S',
             description: 'Subtract one solid from another.',
             links: [
               {
@@ -276,7 +274,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanIntersect',
             status: 'available',
             title: 'Intersect',
-            hotkey: 'Shift + B I',
             description: 'Create a solid from the intersection of two solids.',
             links: [
               {
@@ -631,7 +628,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             isActive: (state) =>
               state.matches({ Sketch: 'Circle three point tool' }),
             hotkey: (state) =>
-              state.matches({ Sketch: 'Circle three point tool' }) ? 'Esc' : [],
+              state.matches({ Sketch: 'Circle three point tool' })
+                ? ['Alt+C', 'Esc']
+                : 'Alt+C',
             showTitle: false,
             description: 'Draw a circle defined by three points',
             links: [],
@@ -681,6 +680,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: 'Center rectangle',
             description: 'Start drawing a rectangle from its center',
             links: [],
+            hotkey: (state) =>
+              state.matches({ Sketch: 'Center Rectangle tool' })
+                ? ['Alt+R', 'Esc']
+                : 'Alt+R',
             isActive: (state) => {
               return state.matches({ Sketch: 'Center Rectangle tool' })
             },
