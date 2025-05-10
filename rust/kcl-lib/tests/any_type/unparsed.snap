@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing any_type.kcl
+---
+fn id(@x: any): any {
+  return x
+}
+
+fn singleton(@x: any): [any; 1] {
+  return [x]
+}
+
+fn len(@a: [any]): number(_) {
+  return reduce(
+    a,
+    initial = 0,
+    f = fn(@_, accum) {
+      return accum + 1
+    },
+  )
+}
+
+one = id(1)
+a = id("a")
+arr1 = singleton(1)
+len0 = len([])
+len1 = len([1])
+
+assert(one, isEqualTo = 1)
+// TODO: we cannot currently assert on strings.
+// assert(a, isEqualTo = "a")
+// TODO: we cannot currently assert on arrays.
+// assert(arr1, isEqualTo = [1])
+assert(len0, isEqualTo = 0)
+assert(len1, isEqualTo = 1)

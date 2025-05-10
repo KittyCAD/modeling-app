@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart array_push_item_wrong_type.kcl
+extension: md
+snapshot_kind: binary
+---

@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed array_push_item_wrong_type.kcl
+---
+[]

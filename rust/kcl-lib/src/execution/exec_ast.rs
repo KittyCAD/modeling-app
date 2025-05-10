@@ -867,11 +867,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (
-                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
-                Property::UInt(index),
-                _,
-            ) => {
+            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -882,7 +878,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p, _) => {
+            (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1170,7 +1166,7 @@ impl Node<UnaryExpression> {
                 };
 
                 let direction = match direction {
-                    KclValue::MixedArray { value: values, meta } => {
+                    KclValue::Tuple { value: values, meta } => {
                         let values = values
                             .iter()
                             .map(|v| match v {
@@ -1183,7 +1179,7 @@ impl Node<UnaryExpression> {
                             })
                             .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::MixedArray {
+                        KclValue::Tuple {
                             value: values,
                             meta: meta.clone(),
                         }
@@ -1551,7 +1547,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
                 update_memory_for_tags_of_geometry(v, exec_state)?;
             }
@@ -1595,9 +1591,9 @@ impl Node<ArrayExpression> {
             results.push(value);
         }
 
-        Ok(KclValue::MixedArray {
+        Ok(KclValue::HomArray {
             value: results,
-            meta: vec![self.into()],
+            ty: RuntimeType::Primitive(PrimitiveType::Any),
         })
     }
 }
@@ -1644,7 +1640,8 @@ impl Node<ArrayRangeExpression> {
         let meta = vec![Metadata {
             source_range: self.into(),
         }];
-        Ok(KclValue::MixedArray {
+
+        Ok(KclValue::HomArray {
             value: range
                 .into_iter()
                 .map(|num| KclValue::Number {
@@ -1653,7 +1650,7 @@ impl Node<ArrayRangeExpression> {
                     meta: meta.clone(),
                 })
                 .collect(),
-            meta,
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         })
     }
 }
@@ -1868,7 +1865,7 @@ fn type_check_params_kw(
                     arg.value = arg
                         .value
                         .coerce(
-                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).map_err(|e| KclError::Semantic(e.into()))?,
                             exec_state,
                         )
                         .map_err(|e| {
@@ -1946,7 +1943,8 @@ fn type_check_params_kw(
                 arg.value = arg
                     .value
                     .coerce(
-                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                            .map_err(|e| KclError::Semantic(e.into()))?,
                         exec_state,
                     )
                     .map_err(|_| {
@@ -2131,7 +2129,8 @@ impl FunctionSource {
                             arg.value = arg
                                 .value
                                 .coerce(
-                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                        .map_err(|e| KclError::Semantic(e.into()))?,
                                     exec_state,
                                 )
                                 .map_err(|_| {
@@ -2242,9 +2241,10 @@ mod test {
 
     use super::*;
     use crate::{
+        exec::UnitType,
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
-        ExecutorSettings,
+        ExecutorSettings, UnitLen,
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2392,6 +2392,7 @@ p = {
   yAxis = { x = 0, y = 1, z = 0 },
   zAxis = { x = 0, y = 0, z = 1 }
 }: Plane
+arr1 = [42]: [number(cm)]
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -2402,6 +2403,24 @@ p = {
                 .unwrap(),
             KclValue::Plane { .. }
         ));
+        let arr1 = mem
+            .memory
+            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        if let KclValue::HomArray { value, ty } = arr1 {
+            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {:?}", value);
+            assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
+            // Compare, ignoring meta.
+            if let KclValue::Number { value, ty, .. } = &value[0] {
+                // Converted from mm to cm.
+                assert_eq!(*value, 4.2);
+                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
+            } else {
+                panic!("Expected a number; found {:?}", value[0]);
+            }
+        } else {
+            panic!("Expected HomArray; found {arr1:?}");
+        }
 
         let program = r#"
 a = 42: string
@@ -2420,6 +2439,28 @@ a = 42: Plane
             .unwrap_err()
             .to_string()
             .contains("could not coerce number value to type Plane"));
+
+        let program = r#"
+arr = [0]: [string]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [string]"),
+            "Expected error but found {err:?}"
+        );
+
+        let program = r#"
+mixedArr = [0, "a"]: [number(mm)]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [number(mm)]"),
+            "Expected error but found {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

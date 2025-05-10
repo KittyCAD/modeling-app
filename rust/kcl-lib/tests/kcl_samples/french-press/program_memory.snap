@@ -4190,7 +4190,7 @@ description: Variables in memory after executing french-press.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4234,7 +4234,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4278,7 +4278,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4322,7 +4322,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",

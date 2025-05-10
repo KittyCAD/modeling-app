@@ -553,24 +553,23 @@ impl Args {
         Ok(())
     }
 
-    pub(crate) fn make_user_val_from_point(&self, p: [TyF64; 2]) -> Result<KclValue, KclError> {
+    pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
         let meta = Metadata {
             source_range: self.source_range,
         };
         let x = KclValue::Number {
-            value: p[0].n,
+            value: p[0],
             meta: vec![meta],
-            ty: p[0].ty.clone(),
+            ty: ty.clone(),
         };
         let y = KclValue::Number {
-            value: p[1].n,
+            value: p[1],
             meta: vec![meta],
-            ty: p[1].ty.clone(),
+            ty: ty.clone(),
         };
-        Ok(KclValue::MixedArray {
-            value: vec![x, y],
-            meta: vec![meta],
-        })
+        let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
+
+        Ok(KclValue::HomArray { value: vec![x, y], ty })
     }
 
     pub(super) fn make_user_val_from_f64_with_type(&self, f: TyF64) -> KclValue {
@@ -792,7 +791,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
-            KclValue::MixedArray { value, .. } => {
+            KclValue::Tuple { value, .. } => {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
@@ -1132,8 +1131,11 @@ impl_from_kcl_for_vec!(TyF64);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
+        let value = match arg {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => {
+                return None;
+            }
         };
         if value.len() != 3 {
             return None;
@@ -1330,7 +1332,7 @@ impl<'a> FromKclValue<'a> for TyF64 {
 impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 2 {
                     return None;
                 }
@@ -1347,7 +1349,7 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
 impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 3 {
                     return None;
                 }

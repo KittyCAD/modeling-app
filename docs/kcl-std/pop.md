@@ -8,7 +8,7 @@ layout: manual
 Remove the last element from an array.
 
 ```kcl
-pop(@array: [any]): any
+pop(@array: [any]): [any]
 ```
 
 Returns a new array with the last element removed.
@@ -21,7 +21,7 @@ Returns a new array with the last element removed.
 
 ### Returns
 
-[`any`](/docs/kcl-std/types/std-types-any) - Any KCL value.
+[`[any]`](/docs/kcl-std/types/std-types-any)
 
 
 ### Examples

@@ -11,7 +11,7 @@ Append an element to the end of an array.
 push(
   @array: [any],
   item: any,
-): any
+): [any]
 ```
 
 Returns a new array with the element appended.
@@ -25,7 +25,7 @@ Returns a new array with the element appended.
 
 ### Returns
 
-[`any`](/docs/kcl-std/types/std-types-any) - Any KCL value.
+[`[any]`](/docs/kcl-std/types/std-types-any)
 
 
 ### Examples

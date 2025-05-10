@@ -1,0 +1,69 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing any_type.kcl
+---
+{
+  "a": {
+    "type": "String",
+    "value": "a"
+  },
+  "arr1": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
+        }
+      }
+    ]
+  },
+  "id": {
+    "type": "Function",
+    "value": null
+  },
+  "len": {
+    "type": "Function",
+    "value": null
+  },
+  "len0": {
+    "type": "Number",
+    "value": 0.0,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    }
+  },
+  "len1": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Known",
+      "type": "Count"
+    }
+  },
+  "one": {
+    "type": "Number",
+    "value": 1.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "singleton": {
+    "type": "Function",
+    "value": null
+  }
+}

@@ -12,7 +12,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -43,7 +43,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -79,7 +79,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -110,7 +110,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20212,7 +20212,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20256,7 +20256,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20300,7 +20300,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20349,7 +20349,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20393,7 +20393,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20437,7 +20437,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20486,7 +20486,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20530,7 +20530,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -20574,7 +20574,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",

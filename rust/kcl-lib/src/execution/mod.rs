@@ -1932,7 +1932,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: mixed array (list)",
+            "Cannot apply unary operator ! to non-boolean value: array (list)",
         );
 
         let code6 = "
