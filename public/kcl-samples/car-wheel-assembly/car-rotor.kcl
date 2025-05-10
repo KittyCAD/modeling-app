@@ -37,7 +37,7 @@ secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
 secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 
 lugHoles2 = startSketchOn(secondRotor, face = END)
-  |> circle(center = [-lugSpacing / 2, 0], radius = 0.315)
+  |> circle(center = [lugSpacing / 2, 0], radius = 0.315)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],
