@@ -6965,7 +6965,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -57.15,
+          "x": 57.15,
           "y": 0.0
         },
         "radius": 8.001,
@@ -6988,7 +6988,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -49.149,
+        "x": 65.151,
         "y": 0.0,
         "z": 0.0
       }
