@@ -1,0 +1,51 @@
+@settings(defaultLengthUnit = in)
+
+sketch002 = startSketchOn(XY)
+
+sketch002Profile000 = startProfile(sketch002, at = [-0.75, 0.75])
+  |> yLine(length = -1.5)
+  |> xLine(length = 1.5)
+  |> arc(
+       angleStart = 0,
+       angleEnd = 90,
+       radius = 0.25
+     )
+  |> xLine(length = -0.688)
+  |> arc(
+       angleStart = 270,
+       angleEnd = 180,
+       radius = 0.312
+     )
+  |> yLine(length = 0.688)
+  |> arc(
+       angleStart = 0,
+       angleEnd = 90,
+       radius = 0.25
+     )
+  |> close()
+
+extrude000 = extrude(sketch002Profile000, length = 0.655, bidirectionalLength = 0.655)
+
+sketch003 = startSketchOn(XZ)
+
+sketch003Profile000 = circle(
+  sketch003,
+  center = [0, 0],
+  radius = 0.164
+)
+
+cut000Extrude = extrude([sketch003Profile000], length = 1.0, bidirectionalLength = 0)
+
+cut000 = subtract(extrude000, tools = cut000Extrude)
+
+sketch004 = startSketchOn(-YZ)
+
+sketch004Profile000 = circle(
+  sketch004,
+  center = [0, 0],
+  radius = 0.164
+)
+
+cut001Extrude = extrude([sketch004Profile000], length = 1.0, bidirectionalLength = 0)
+
+cut001 = subtract(cut000, tools = cut001Extrude)
