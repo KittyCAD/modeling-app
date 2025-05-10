@@ -1648,7 +1648,7 @@ function getTransformMapPathKw(
       }
     return false
   }
-  if (name === 'startProfile') {
+  if (name === 'startProfile' || name === 'startSketchOn') {
     return false
   }
   const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
