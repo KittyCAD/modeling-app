@@ -47,6 +47,7 @@ import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
+import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -230,7 +231,10 @@ export class SceneInfra {
       // Project that position to screen space
       vector.project(this.camControls.camera)
 
-      const _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+      let _angle = 45
+      if (group.name !== PROFILE_START) {
+        _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+      }
 
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth
       const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
