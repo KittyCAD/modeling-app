@@ -231,7 +231,7 @@ jobs:
           CSC_KEY_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           CSC_KEYCHAIN: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           WINDOWS_CERTIFICATE_THUMBPRINT: ${{ secrets.WINDOWS_CERTIFICATE_THUMBPRINT }}
-        run: npm run tronb:package:prod
+        run: npm run tronb:package:${{ env.IS_RELEASE == 'true' && 'prod' || 'dev' }}
 
       - name: List artifacts in out/
         run: ls -R out
@@ -416,17 +416,6 @@ jobs:
 
       - name: List artifacts
         run: "ls -R out"
-
-      - name: Set more complete staging release notes
-        if: ${{ env.IS_STAGING == 'true' }}
-        run: |
-          # Note: preferred going this way instead of a full clone in the checkout step,
-          # see https://github.com/actions/checkout/issues/1471
-          git fetch --prune --unshallow --tags
-          export TAG="staging-${VERSION}"
-          export PREVIOUS_TAG=$(git tag --list --sort=-committerdate "staging-v[0-9]*" | head -n2 | tail -n1)
-          export NOTES=$(./scripts/get-staging-changelog.sh)
-          npm run files:set-notes
 
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_STAGING == 'true' }}
