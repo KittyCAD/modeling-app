@@ -1180,6 +1180,8 @@ sketch001 = startSketchOn(XZ)
     page,
     homePage,
     editor,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -1198,9 +1200,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await expect(
-      page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    await scene.settled(cmdBar)
 
     await page.waitForTimeout(100)
     await u.openAndClearDebugPanel()
@@ -1236,7 +1236,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(400)
     let prevContent = await page.locator('.cm-content').innerText()
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
 
     // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
@@ -1278,9 +1278,9 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [2.71, -2.71])
-    |> line(end = [15.4, -2.78])
-    |> tangentialArc(endAbsolute = [27.6, -3.05])
+    |> startProfile(at = [5.36, -5.36])
+    |> line(end = [12.73, -0.09])
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
       { shouldNormalise: true }
@@ -1294,7 +1294,7 @@ sketch001 = startSketchOn(XZ)
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [2.71, -2.71])
-    |> line(end = [15.4, -2.78])
+    |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
@@ -1308,7 +1308,7 @@ sketch001 = startSketchOn(XZ)
 
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [2.71, -2.71])
+    |> startProfile(at = [4.61, -10.01])
     |> line(end = [12.73, -0.09])
     |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
@@ -1505,7 +1505,7 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(1000)
 
     // Verify segment is selected (you can check for visual indicators or state)
-    const element = page.locator('[data-overlay-index="1"]')
+    const element = page.locator('[data-overlay-index="2"]')
     await expect(element).toHaveAttribute('data-overlay-visible', 'true')
   })
 
