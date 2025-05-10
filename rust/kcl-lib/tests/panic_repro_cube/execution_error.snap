@@ -2,13 +2,13 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing panic_repro_cube.kcl
 ---
-[31mKCL Semantic error[0m
+KCL Semantic error
 
-  [31m×[0m semantic: This function expected the input argument to be Edge
+  × semantic: This function expected the input argument to be Edge
     ╭─[43:5]
- [2m42[0m │     // these double wrapped functions are the point of this test
- [2m43[0m │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
-    · [35;1m    ───────────────────────┬───────────────────────[0m
-    ·                            [35;1m╰── [35;1mtests/panic_repro_cube/input.kcl[0m[0m
- [2m44[0m │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
+ 42 │     // these double wrapped functions are the point of this test
+ 43 │     getNextAdjacentEdge(getNextAdjacentEdge(seg01)),
+    ·     ───────────────────────┬───────────────────────
+    ·                            ╰── tests/panic_repro_cube/input.kcl
+ 44 │     getNextAdjacentEdge(getNextAdjacentEdge(seg02))
     ╰────
