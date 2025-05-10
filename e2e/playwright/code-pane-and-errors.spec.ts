@@ -138,7 +138,9 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).toContainText('notification', {timeout: 20_000})
+    await expect(codePaneButtonHolder).toContainText('notification', {
+      timeout: 20_000,
+    })
 
     // Ensure we have no errors in the gutter, since error out of view.
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

@@ -983,7 +983,7 @@ part001 = startSketchOn(XZ)
           'persistCode',
           `@settings(defaultLengthUnit = in)
 part001 = startSketchOn(XZ)
-  |>startProfile(at = [0, 0])
+  |> startProfile(at = [0, 0])
   |> line(end = [0.5, -14 + 0])
   |> angledLine(angle = 3 + 0, length = 32 + 0)
   |> line(endAbsolute = [33, 11.5 + 0])
@@ -1021,137 +1021,163 @@ part001 = startSketchOn(XZ)
       const deleteSegmentSequence = _deleteSegmentSequence(page, editor)
 
       let segmentToDelete
+      let ang = 0
 
       const getOverlayByIndex = (index: number) =>
         u.getBoundingBox(`[data-overlay-index="${index}"]`)
 
-      segmentToDelete = await getOverlayByIndex(14)
-      let ang = await u.getAngle('[data-overlay-index="14"]')
+      let overlayIndex = 15
 
-      await editor.scrollToText('angleEnd')
-
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `arc(angleStart = 40.27, angleEnd = -38.05, radius = 9.03)`,
         stdLibFnName: 'arc',
         ang: ang + 180,
         steps: 6,
-        locator: '[data-overlay-toolbar-index="14"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
-      segmentToDelete = await getOverlayByIndex(13)
-      ang = await u.getAngle('[data-overlay-index="13"]')
+
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `arc(interiorAbsolute = [16.25, 5.12], endAbsolute = [21.61, 4.15])`,
         stdLibFnName: 'arc',
         ang: ang,
         steps: 6,
-        locator: '[data-overlay-toolbar-index="13"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
-      segmentToDelete = await getOverlayByIndex(12)
-      ang = await u.getAngle('[data-overlay-index="12"]')
+
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'tangentialArc(endAbsolute = [3.14 + 13, 1.14])',
         stdLibFnName: 'tangentialArc',
         ang: ang + 180,
         steps: 6,
-        locator: '[data-overlay-toolbar-index="12"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(11)
-      ang = await u.getAngle('[data-overlay-index="11"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: `angledLineThatIntersects(angle = 4.14, intersectTag = a, offset = 9)`,
         stdLibFnName: 'angledLineThatIntersects',
         ang: ang + 180,
         steps: 7,
-        locator: '[data-overlay-toolbar-index="11"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(10)
-      ang = await u.getAngle('[data-overlay-index="10"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine(angle = 89, endAbsoluteY = 9.14 + 0)',
         stdLibFnName: 'angledLineToY',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="10"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(9)
-      ang = await u.getAngle('[data-overlay-index="9"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine(angle = 3 + 0, endAbsoluteX = 26)',
         stdLibFnName: 'angledLineToX',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="9"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(8)
-      ang = await u.getAngle('[data-overlay-index="8"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine(angle = -91, lengthY = 19 + 0)',
         stdLibFnName: 'angledLineOfYLength',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="8"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(7)
-      ang = await u.getAngle('[data-overlay-index="7"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine(angle = 181 + 0, lengthX = 23.14)',
         stdLibFnName: 'angledLineOfXLength',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="7"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(6)
-      ang = await u.getAngle('[data-overlay-index="6"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'yLine(length = 21.14 + 0)',
         stdLibFnName: 'yLine',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="6"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(5)
-      ang = await u.getAngle('[data-overlay-index="5"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'xLine(length = 26.04)',
         stdLibFnName: 'xLine',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="5"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(4)
-      ang = await u.getAngle('[data-overlay-index="4"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'yLine(endAbsolute = -10.77, tag = $a)',
         stdLibFnName: 'yLineTo',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="4"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(3)
-      ang = await u.getAngle('[data-overlay-index="3"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'xLine(endAbsolute = 9 - 5)',
         stdLibFnName: 'xLineTo',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="3"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(2)
-      ang = await u.getAngle('[data-overlay-index="2"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await expect(page.getByText('Added variable')).not.toBeVisible()
 
       const hoverPos = { x: segmentToDelete.x, y: segmentToDelete.y }
@@ -1167,7 +1193,7 @@ part001 = startSketchOn(XZ)
         ang,
         10,
         5,
-        '[data-overlay-toolbar-index="2"]'
+        `[data-overlay-toolbar-index="${overlayIndex}"]`
       )
       await page.mouse.move(hoverPos.x, hoverPos.y)
 
@@ -1183,18 +1209,22 @@ part001 = startSketchOn(XZ)
         shouldNormalise: true,
       })
 
-      segmentToDelete = await getOverlayByIndex(1)
-      ang = await u.getAngle('[data-overlay-index="1"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'angledLine(angle = 3 + 0, length = 32 + 0)',
         stdLibFnName: 'angledLine',
         ang: ang + 180,
-        locator: '[data-overlay-toolbar-index="1"]',
+        locator: `[data-overlay-toolbar-index="${overlayIndex}"]`,
       })
 
-      segmentToDelete = await getOverlayByIndex(0)
-      ang = await u.getAngle('[data-overlay-index="0"]')
+      overlayIndex--
+
+      segmentToDelete = await getOverlayByIndex(overlayIndex)
+      ang = await u.getAngle(`[data-overlay-index="${overlayIndex}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
         codeToBeDeleted: 'line(end = [0.5, -14 + 0])',
@@ -1417,8 +1447,8 @@ part001 = startSketchOn(XZ)
         await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
         await expect(page.getByText('Added variable')).not.toBeVisible()
 
-        const hoverPos = await u.getBoundingBox(`[data-overlay-index="0"]`)
-        let ang = await u.getAngle('[data-overlay-index="0"]')
+        const hoverPos = await u.getBoundingBox(`[data-overlay-index="1"]`)
+        let ang = await u.getAngle('[data-overlay-index="1"]')
         ang += 180
 
         await page.mouse.move(0, 0)
@@ -1437,7 +1467,7 @@ part001 = startSketchOn(XZ)
           ang,
           10,
           5,
-          '[data-overlay-toolbar-index="0"]'
+          '[data-overlay-toolbar-index="1"]'
         )
         await page.mouse.move(x, y)
 
@@ -1451,7 +1481,7 @@ part001 = startSketchOn(XZ)
 
         // check the cursor was left in the correct place after transform
         await expect(page.locator('.cm-activeLine')).toHaveText('|> ' + after)
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
       })
     }
   })

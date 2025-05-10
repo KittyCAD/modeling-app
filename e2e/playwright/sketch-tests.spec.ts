@@ -543,6 +543,9 @@ sketch001 = startSketchOn(XZ)
     page,
     homePage,
     editor,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -559,10 +562,12 @@ sketch001 = startSketchOn(XZ)
     })
 
     await homePage.goToModelingScene()
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    ).not.toBeDisabled({ timeout: 10_000 })
 
     await page.waitForTimeout(100)
     await u.openAndClearDebugPanel()
@@ -612,7 +617,7 @@ sketch001 = startSketchOn(XZ)
     // drag line handle
     await page.waitForTimeout(100)
 
-    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: lineEnd.x - 15, y: lineEnd.y },
       targetPosition: { x: lineEnd.x, y: lineEnd.y + 15 },
@@ -622,7 +627,7 @@ sketch001 = startSketchOn(XZ)
     prevContent = await page.locator('.cm-content').innerText()
 
     // drag tangentialArc handle
-    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+    const tangentEnd = await u.getBoundingBox('[data-overlay-index="0"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
       targetPosition: {
@@ -638,7 +643,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [7.12, -12.68])
     |> line(end = [12.68, -1.09])
-    |> tangentialArc(endAbsolute = [24.89, 0.68])
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
       { shouldNormalise: true }
