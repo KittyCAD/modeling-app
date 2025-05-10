@@ -47,7 +47,7 @@ import {
 import { isArray } from '../lib/utils'
 import lspGoToDefinitionExt from './go-to-definition'
 import lspRenameExt from './rename'
-import lspSignatureHelpExt from './signature-help'
+import { lspSignatureHelpExt, setSignatureTooltip } from './signature-help'
 
 const useLast = (values: readonly any[]) => values.reduce((_, v) => v, '')
 export const docPathFacet = Facet.define<string, string>({
@@ -695,6 +695,8 @@ export class LanguageServerPlugin implements PluginValue {
 
       // Create the tooltip container
       const dom = this.createTooltipContainer()
+      dom.className =
+        'documentation hover-tooltip cm-tooltip cm-signature-tooltip'
 
       // Get active signature
       const activeSignatureIndex = result.activeSignature ?? 0
@@ -769,42 +771,7 @@ export class LanguageServerPlugin implements PluginValue {
     )
 
     if (tooltip) {
-      // Create and show the tooltip manually
-      const { pos: tooltipPos, create } = tooltip
-      const tooltipView = create(view)
-
-      const tooltipElement = document.createElement('div')
-      tooltipElement.className =
-        'documentation hover-tooltip cm-tooltip cm-signature-tooltip'
-      tooltipElement.style.position = 'absolute'
-      tooltipElement.style.zIndex = '99999999'
-
-      tooltipElement.appendChild(tooltipView.dom)
-
-      // Position the tooltip
-      const coords = view.coordsAtPos(tooltipPos)
-      if (coords) {
-        tooltipElement.style.left = `${coords.left}px`
-        tooltipElement.style.top = `${coords.bottom + 5}px`
-
-        // Add to DOM
-        document.body.appendChild(tooltipElement)
-
-        // Remove after a delay or on editor changes
-        setTimeout(() => {
-          removeTooltip() // Use the function that also cleans up event listeners
-        }, 10000) // Show for 10 seconds
-
-        // Also remove on any user input
-        const removeTooltip = () => {
-          tooltipElement.remove()
-          view.dom.removeEventListener('keydown', removeTooltip)
-          view.dom.removeEventListener('mousedown', removeTooltip)
-        }
-
-        view.dom.addEventListener('keydown', removeTooltip)
-        view.dom.addEventListener('mousedown', removeTooltip)
-      }
+      view.dispatch({ effects: setSignatureTooltip.of(tooltip) })
     }
   }
 

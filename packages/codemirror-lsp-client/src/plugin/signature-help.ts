@@ -1,12 +1,68 @@
-import type { Extension } from '@codemirror/state'
-import { Prec } from '@codemirror/state'
-import type { ViewPlugin } from '@codemirror/view'
-import { EditorView } from '@codemirror/view'
-import { keymap } from '@codemirror/view'
+import {
+  type EditorState,
+  type Extension,
+  Prec,
+  StateEffect,
+  StateField,
+} from '@codemirror/state'
+import type { Tooltip } from '@codemirror/view'
+import { type ViewPlugin, showTooltip } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
+import { syntaxTree } from '@codemirror/language'
+import { type SyntaxNode } from '@lezer/common'
 
 import type { LanguageServerPlugin } from './lsp'
 
-export default function lspSignatureHelpExt(
+export const setSignatureTooltip = StateEffect.define<Tooltip | null>()
+
+function findParenthesized(
+  state: EditorState,
+  pos: number,
+  side: 1 | 0 | -1 = 0
+) {
+  let context: SyntaxNode | null = syntaxTree(state).resolveInner(pos, side)
+  while (context) {
+    const open = context.firstChild
+    if (
+      open &&
+      open.from == context.from &&
+      open.to == context.from + 1 &&
+      state.doc.sliceString(open.from, open.to) == '('
+    )
+      break
+    context = context.parent
+  }
+  return context
+}
+
+const signatureTooltip = StateField.define<Tooltip | null>({
+  create: () => null,
+  update(value, tr) {
+    for (let effect of tr.effects) {
+      if (effect.is(setSignatureTooltip)) return effect.value
+    }
+    if (!value) return null
+    if (tr.selection) {
+      let parens = findParenthesized(tr.state, tr.selection.main.head)
+      if (!parens || parens.from != value.pos) return null
+    }
+    return tr.docChanged
+      ? { ...value, pos: tr.changes.mapPos(value.pos) }
+      : value
+  },
+  provide: (f) => [
+    showTooltip.from(f),
+    EditorView.domEventHandlers({
+      blur: (_, view) => {
+        if (view.state.field(f)) {
+          view.dispatch({ effects: setSignatureTooltip.of(null) })
+        }
+      },
+    }),
+  ],
+})
+
+export function lspSignatureHelpExt(
   plugin: ViewPlugin<LanguageServerPlugin>
 ): Extension {
   return [
@@ -18,9 +74,13 @@ export default function lspSignatureHelpExt(
             const value = view.plugin(plugin)
             if (!value) return false
 
-            const pos = view.state.selection.main.head
+            const parens = findParenthesized(
+              view.state,
+              view.state.selection.main.head
+            )
+            if (!parens) return false
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            value.showSignatureHelpTooltip(view, pos)
+            value.showSignatureHelpTooltip(view, parens.from)
             return true
           },
         },
@@ -66,12 +126,16 @@ export default function lspSignatureHelpExt(
       })
 
       if (triggerPos >= 0) {
-        await value.showSignatureHelpTooltip(
-          update.view,
-          triggerPos,
-          triggerCharacter
-        )
+        const parens = findParenthesized(update.view.state, triggerPos, -1)
+        if (parens) {
+          await value.showSignatureHelpTooltip(
+            update.view,
+            parens.from,
+            triggerCharacter
+          )
+        }
       }
     }),
+    signatureTooltip,
   ]
 }
