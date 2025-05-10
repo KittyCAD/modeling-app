@@ -279,9 +279,12 @@ pub async fn push(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let ty = if item.has_type(&ty) {
         ty
     } else {
-        // TODO: The user pushed an item of a different type than the array.
-        // What should happen here?
-        RuntimeType::any()
+        let meta = vec![args.source_range];
+        let item_type = item.human_friendly_type();
+        return Err(KclError::Type(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push a value of type {item_type} to an array with element type {ty}. Try coercing either the array or the item first."),
+        }));
     };
 
     let new_array = inner_push(values, item);
