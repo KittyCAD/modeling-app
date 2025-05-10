@@ -162,6 +162,7 @@ impl RuntimeType {
         source_range: SourceRange,
     ) -> Result<Self, CompilationError> {
         Ok(match value {
+            AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
             AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
@@ -215,6 +216,7 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
@@ -333,6 +335,7 @@ impl ArrayLen {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
+    Any,
     Number(NumericType),
     String,
     Boolean,
@@ -351,6 +354,7 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
+            PrimitiveType::Any => "any values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
@@ -370,6 +374,7 @@ impl PrimitiveType {
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
             (t1, t2) => t1 == t2,
         }
@@ -379,6 +384,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
@@ -994,9 +1000,9 @@ impl KclValue {
         self_ty.subtype(ty)
     }
 
-    /// Coerce `self` to a new value which has `ty` as it's closest supertype.
+    /// Coerce `self` to a new value which has `ty` as its closest supertype.
     ///
-    /// If the result is Some, then:
+    /// If the result is Ok, then:
     ///   - result.principal_type().unwrap().subtype(ty)
     ///
     /// If self.principal_type() == ty then result == self
@@ -1020,6 +1026,7 @@ impl KclValue {
             _ => self,
         };
         match ty {
+            PrimitiveType::Any => Ok(value.clone()),
             PrimitiveType::Number(ty) => ty.coerce(value),
             PrimitiveType::String => match value {
                 KclValue::String { .. } => Ok(value.clone()),
@@ -1178,12 +1185,6 @@ impl KclValue {
         exec_state: &mut ExecState,
         allow_shrink: bool,
     ) -> Result<KclValue, CoercionError> {
-        if len.satisfied(1, false).is_some() && self.has_type(ty) {
-            return Ok(KclValue::HomArray {
-                value: vec![self.clone()],
-                ty: ty.clone(),
-            });
-        }
         match self {
             KclValue::HomArray { value, ty: aty } => {
                 if aty.subtype(ty) {
@@ -1227,6 +1228,10 @@ impl KclValue {
 
                 Ok(KclValue::HomArray { value, ty: ty.clone() })
             }
+            _ if len.satisfied(1, false).is_some() && self.has_type(ty) => Ok(KclValue::HomArray {
+                value: vec![self.clone()],
+                ty: ty.clone(),
+            }),
             KclValue::KclNone { .. } if len.satisfied(0, false).is_some() => Ok(KclValue::HomArray {
                 value: Vec::new(),
                 ty: ty.clone(),
