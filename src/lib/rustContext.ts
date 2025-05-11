@@ -172,7 +172,6 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    console.log('ALARM ALARM WE HAVE CALLED CLEAR SCENE AND BUST CACHE')
     const instance = await this._checkInstance()
 
     try {
