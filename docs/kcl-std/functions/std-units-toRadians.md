@@ -17,11 +17,11 @@ units::toRadians(@num: number(rad)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

@@ -17,11 +17,11 @@ units::toYards(@num: number(yd)): number(yd)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(yd)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(yd)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(yd)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(yd)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 

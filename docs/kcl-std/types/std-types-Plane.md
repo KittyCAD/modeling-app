@@ -1,13 +1,14 @@
 ---
 title: "Plane"
 subtitle: "Type in std::types"
-excerpt: "A plane."
+excerpt: "An abstract plane."
 layout: manual
 ---
 
-A plane.
+An abstract plane.
 
-
+A plane has a position and orientation in space defined by its origin and axes. A plane can be used
+to sketch on.
 
 
 

@@ -17,11 +17,11 @@ units::toDegrees(@num: number(deg)): number(deg)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(deg)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(deg)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(deg)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples
