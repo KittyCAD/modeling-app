@@ -408,13 +408,10 @@ impl Args {
         })?;
 
         T::from_kcl_val(&arg).ok_or_else(|| {
-            KclError::Semantic(KclErrorDetails {
+            KclError::Internal(KclErrorDetails {
                 source_ranges: vec![self.source_range],
-                message: format!(
-                    "This function expected the input argument to be {}",
-                    ty.human_friendly_type(),
-                ),
-            })
+                message: "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
+           })
         })
     }
 
