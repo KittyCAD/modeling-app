@@ -67,17 +67,9 @@ sweepUpperHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg07)]
   |> sweep(%, path = upperHook)
 
 sweepLowerHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg08)], radius = 1)
-  |> sweep(%, path = upperHook)
+  |> sweep(%, path = lowerHook)
 
-  // Union each piece of the wire into a single continuous sweep
-  // union([sweepUpperArm, sweepUpperHook])
-  // union([sweepLowerArm, sweepLowerHook])
-
-  // union([
-  // union([sweepUpperArm, sweepUpperHook]),
-  // union([sweepLowerArm, sweepLowerHook])
-// ])
-
+// Union each piece of the wire into a single continuous sweep
 [
        sweepLowerArm,
        sweepLowerHook,
