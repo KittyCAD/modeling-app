@@ -122,7 +122,7 @@ jobs:
             assets/icon.png
 
       - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
+        run: echo "version=`cat package.json | jq -r '.version' | cut -f1 -d"+"`" >> "$GITHUB_OUTPUT"
 
       - id: export_notes
         run: echo "notes=`cat release-notes.md`" >> "$GITHUB_OUTPUT"
@@ -241,8 +241,8 @@ jobs:
           name: out-arm64-${{ matrix.platform }}
           # first two will pick both Zoo Design Studio-$VERSION-arm64-win.exe and Zoo Design Studio-$VERSION-win.exe
           path: |
-            out/*-${{ env.VERSION_NO_V }}*-win.*
-            out/*-${{ env.VERSION_NO_V }}*-arm64-win.*
+            out/*-${{ env.VERSION_NO_V }}-win.*
+            out/*-${{ env.VERSION_NO_V }}-arm64-win.*
             out/*-arm64-mac.*
             out/*-arm64-linux.*
 
@@ -261,7 +261,7 @@ jobs:
           path: |
             out/latest*.yml
 
-      # TODO: add the 'Build for Mac TestFlight (staging)' stage back
+      # TODO: add the 'Build for Mac TestFlight' stage back
 
       # The steps below are for updater-test builds, only on release
 
@@ -374,17 +374,16 @@ jobs:
           URL_CODED_NAME: ${{ env.IS_STAGING == 'true' && 'Zoo%20Design%20Studio%20%28Staging%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
-          VERSION_NO_COMMIT_SUFFIX=$(echo $VERSION_NO_V | cut -f1 -d"+")
           jq --null-input \
             --arg version "${VERSION}" \
             --arg pub_date "${PUB_DATE}" \
             --arg notes "${NOTES}" \
-            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-mac.dmg" \
-            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x64-mac.dmg" \
-            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-win.exe" \
-            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x64-win.exe" \
-            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-arm64-linux.AppImage" \
-            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_COMMIT_SUFFIX}-x86_64-linux.AppImage" \
+            --arg mac_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-mac.dmg" \
+            --arg mac_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-mac.dmg" \
+            --arg windows_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-win.exe" \
+            --arg windows_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x64-win.exe" \
+            --arg linux_arm64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-arm64-linux.AppImage" \
+            --arg linux_x64_url "$RELEASE_DIR/${{ env.URL_CODED_NAME }}-${VERSION_NO_V}-x86_64-linux.AppImage" \
             '{
               "version": $version,
               "pub_date": $pub_date,
