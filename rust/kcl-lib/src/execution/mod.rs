@@ -64,7 +64,7 @@ pub mod typed_path;
 pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -659,6 +659,13 @@ impl ExecutorContext {
                                 clear_scene = true;
                                 break;
                             }
+                        }
+
+                        if !clear_scene {
+                            println!("No need to clear the scene, return early");
+                            // Return early we don't need to clear the scene.
+                            let outcome = old_state.to_exec_outcome(result_env).await;
+                            return Ok(outcome);
                         }
 
                         (
