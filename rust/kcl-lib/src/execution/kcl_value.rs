@@ -404,6 +404,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_int_with_ty(&self) -> Option<(i64, NumericType)> {
+        match self {
+            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, ty.clone())),
+            _ => None,
+        }
+    }
+
     pub fn as_object(&self) -> Option<&KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = &self {
             Some(value)

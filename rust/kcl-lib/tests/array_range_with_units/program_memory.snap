@@ -1,0 +1,35 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing array_range_with_units.kcl
+---
+{
+  "a": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 3.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  }
+}
