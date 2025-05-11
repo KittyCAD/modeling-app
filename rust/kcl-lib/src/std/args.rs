@@ -161,7 +161,7 @@ pub struct Args {
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
-    pipe_value: Option<Arg>,
+    pub pipe_value: Option<Arg>,
 }
 
 impl Args {
