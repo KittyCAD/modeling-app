@@ -1,1 +1,1 @@
-npm run fmt
+npm run fmt:check
