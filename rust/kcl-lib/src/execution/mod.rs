@@ -387,6 +387,7 @@ impl ExecutorContext {
             .commands_ws(
                 None,
                 None,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
