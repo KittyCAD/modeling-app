@@ -156,7 +156,6 @@ const FileTreeItem = ({
   parentDir,
   project,
   currentFile,
-  lastDirectoryClicked,
   fileOrDir,
   onNavigateToFile,
   onClickDirectory,
@@ -173,7 +172,6 @@ const FileTreeItem = ({
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
-  lastDirectoryClicked?: FileEntry
   fileOrDir: FileEntry
   onNavigateToFile?: () => void
   onClickDirectory: (
@@ -454,7 +452,6 @@ const FileTreeItem = ({
                         onCloneFileOrFolder={onCloneFileOrFolder}
                         onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
-                        lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
                         onNavigateToFile={onNavigateToFile}
                         level={level + 1}
@@ -690,10 +687,6 @@ export const FileTreeInner = ({
   const { errors } = useKclContext()
   const runtimeErrors = kclErrorsByFilename(errors)
 
-  const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
-    FileEntry | undefined
-  >(undefined)
-
   const [treeSelection, setTreeSelection] = useState<FileEntry | undefined>(
     loaderData.file
   )
@@ -751,7 +744,6 @@ export const FileTreeInner = ({
     if (!target) return
 
     setTreeSelection(target)
-    setLastDirectoryClicked(target)
     fileSend({
       type: 'Set selected directory',
       directory: target,
@@ -787,7 +779,6 @@ export const FileTreeInner = ({
                 parentDir={fileContext.project}
                 project={fileContext.project}
                 currentFile={loaderData?.file}
-                lastDirectoryClicked={lastDirectoryClicked}
                 fileOrDir={fileOrDir}
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
