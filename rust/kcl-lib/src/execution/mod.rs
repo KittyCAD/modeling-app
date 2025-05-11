@@ -654,14 +654,13 @@ impl ExecutorContext {
                         keys.sort();
                         for key in keys {
                             let (_, id, _, _) = &new_universe[key];
-                            match (old_state.get_source(*id), new_exec_state.get_source(*id)) {
-                                (Some(source0), Some(source1)) => {
-                                    if source0.source != source1.source {
-                                        clear_scene = true;
-                                        break;
-                                    }
+                            if let (Some(source0), Some(source1)) =
+                                (old_state.get_source(*id), new_exec_state.get_source(*id))
+                            {
+                                if source0.source != source1.source {
+                                    clear_scene = true;
+                                    break;
                                 }
-                                _ => {}
                             }
                         }
 
