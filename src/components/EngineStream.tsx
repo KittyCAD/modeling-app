@@ -241,28 +241,30 @@ export const EngineStream = (props: {
   useEffect(() => {
     console.log(`FILE! ${file?.path}`)
     console.log(file)
-    console.log(`engineREADY!! ${engineCommandManager.engineConnection?.isReady()}`)
+    console.log(
+      `engineREADY!! ${engineCommandManager.engineConnection?.isReady()}`
+    )
     if (engineCommandManager.engineConnection?.isReady() && file?.path) {
       console.log('file changed, executing code')
       kclManager
-             .executeCode()
-             .catch(trap)
-             .then(() =>
-               // It makes sense to also call zoom to fit here, when a new file is
-               // loaded for the first time, but not overtaking the work kevin did
-               // so the camera isn't moving all the time.
-               engineCommandManager.sendSceneCommand({
-                 type: 'modeling_cmd_req',
-                 cmd_id: uuidv4(),
-                 cmd: {
-                   type: 'zoom_to_fit',
-                   object_ids: [], // leave empty to zoom to all objects
-                   padding: 0.1, // padding around the objects
-                   animated: false, // don't animate the zoom for now
-                 },
-               })
-             )
-             .catch(trap)
+        .executeCode()
+        .catch(trap)
+        .then(() =>
+          // It makes sense to also call zoom to fit here, when a new file is
+          // loaded for the first time, but not overtaking the work kevin did
+          // so the camera isn't moving all the time.
+          engineCommandManager.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'zoom_to_fit',
+              object_ids: [], // leave empty to zoom to all objects
+              padding: 0.1, // padding around the objects
+              animated: false, // don't animate the zoom for now
+            },
+          })
+        )
+        .catch(trap)
     }
   }, [file])
 
