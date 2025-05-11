@@ -125,6 +125,7 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
         options: isDesktop()
           ? [
               { name: 'New project', value: 'newProject' },
@@ -145,6 +146,7 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
         options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
@@ -164,6 +166,7 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
       prompt: {
         inputType: 'text',
