@@ -9,7 +9,8 @@ project="https://github.com/KittyCAD/modeling-app"
 branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
 commit="${CI_COMMIT_SHA:-${GITHUB_SHA:-}}"
 
-curl --request POST \
+echo "Uploading batch results"
+curl --silent --request POST \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --form "project=${project}" \
   --form "branch=${branch}" \
@@ -27,7 +28,9 @@ curl --request POST \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
   ${TAB_API_URL}/api/results/bulk
 
-curl --request POST \
+echo
+echo "Sharing updated report"
+curl --silent --request POST \
   --header "Content-Type: application/json" \
   --header "X-API-Key: ${TAB_API_KEY}" \
   --data "{
