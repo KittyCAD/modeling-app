@@ -753,7 +753,11 @@ export const ModelingMachineProvider = ({
               let isIdentifierUsed = false
               traverse(newAst, {
                 enter: (node) => {
-                  if (node.type === 'Name' && node.name.name === variableName) {
+                  if (
+                    (node.type === 'Name' && node.name.name === variableName) ||
+                    (node.type === 'VariableDeclarator' &&
+                      node.id.name === variableName)
+                  ) {
                     isIdentifierUsed = true
                   }
                 },
