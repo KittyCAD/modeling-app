@@ -5,12 +5,13 @@ if [ -z "${TAB_API_URL:-}" ] || [ -z "${TAB_API_KEY:-}" ]; then
     exit 0
 fi
 
+project="https://github.com/KittyCAD/modeling-app"
 branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-}}"
 commit="${CI_COMMIT_SHA:-${GITHUB_SHA:-}}"
 
 curl --request POST \
   --header "X-API-Key: ${TAB_API_KEY}" \
-  --form "project=https://github.com/KittyCAD/modeling-app" \
+  --form "project=${project}" \
   --form "branch=${branch}" \
   --form "commit=${commit}" \
   --form "tests=@test-results/junit.xml" \
@@ -25,3 +26,13 @@ curl --request POST \
   --form "GITHUB_WORKFLOW=${GITHUB_WORKFLOW:-}" \
   --form "RUNNER_ARCH=${RUNNER_ARCH:-}" \
   ${TAB_API_URL}/api/results/bulk
+
+curl --request POST \
+  --header "Content-Type: application/json" \
+  --header "X-API-Key: ${TAB_API_KEY}" \
+  --data "{
+    \"project\": \"${project}\",
+    \"branch\": \"${branch}\",
+    \"commit\": \"${commit}\"
+  }" \
+  ${TAB_API_URL}/api/share
