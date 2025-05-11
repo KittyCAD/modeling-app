@@ -1190,39 +1190,33 @@ impl KclValue {
         allow_shrink: bool,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::HomArray { value, ty: aty } => {
-                if aty.subtype(ty) {
-                    // If the element type is a subtype of the target type and
-                    // the length constraint is satisfied, we can just return
-                    // the values unchanged, only adjusting the length. The new
-                    // array element type should preserve its type because the
-                    // target type oftentimes includes an unknown type as a way
-                    // to say that the caller doesn't care.
-                    return len
-                        .satisfied(value.len(), allow_shrink)
-                        .map(|len| KclValue::HomArray {
-                            value: value[..len].to_vec(),
-                            ty: aty.clone(),
-                        })
-                        .ok_or(self.into());
-                }
+            KclValue::HomArray { value, .. } => {
+                let satisfied_len = len.satisfied(value.len(), allow_shrink);
 
                 // Ignore the array type, and coerce the elements of the array.
+                if let Some(satisfied_len) = satisfied_len {
+                    let value_result = value
+                        .iter()
+                        .take(satisfied_len)
+                        .map(|v| v.coerce(ty, exec_state))
+                        .collect::<Result<Vec<_>, _>>();
+
+                    if let Ok(value) = value_result {
+                        // We were able to coerce all the elements.
+                        return Ok(KclValue::HomArray { value, ty: ty.clone() });
+                    }
+                }
+
+                // As a last resort, try to flatten the array.
                 let mut values = Vec::new();
                 for item in value {
-                    if let KclValue::HomArray {
-                        ty: inner_ty,
-                        value: inner_value,
-                    } = item
-                    {
+                    if let KclValue::HomArray { value: inner_value, .. } = item {
                         // Flatten elements.
-                        if inner_ty.subtype(ty) {
-                            values.extend(inner_value.iter().cloned());
-                        } else {
-                            values.push(item.clone());
+                        for item in inner_value {
+                            values.push(item.coerce(ty, exec_state)?);
                         }
                     } else {
-                        values.push(item.clone());
+                        values.push(item.coerce(ty, exec_state)?);
                     }
                 }
 
@@ -1230,39 +1224,22 @@ impl KclValue {
                     .satisfied(values.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
 
-                let value = values[..len]
-                    .iter()
-                    .map(|v| v.coerce(ty, exec_state))
-                    .collect::<Result<Vec<_>, _>>()?;
+                assert!(len <= values.len());
+                values.truncate(len);
 
-                Ok(KclValue::HomArray { value, ty: ty.clone() })
+                Ok(KclValue::HomArray {
+                    value: values,
+                    ty: ty.clone(),
+                })
             }
             KclValue::Tuple { value, .. } => {
-                // Check if we have a nested homogeneous array that we can flatten.
-                let mut values = Vec::new();
-                for item in value {
-                    if let KclValue::HomArray {
-                        ty: inner_ty,
-                        value: inner_value,
-                    } = item
-                    {
-                        if inner_ty.subtype(ty) {
-                            values.extend(inner_value.iter().cloned());
-                        } else {
-                            values.push(item.clone());
-                        }
-                    } else {
-                        values.push(item.clone());
-                    }
-                }
-
                 let len = len
-                    .satisfied(values.len(), allow_shrink)
+                    .satisfied(value.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
-
-                let value = values[..len]
+                let value = value
                     .iter()
-                    .map(|v| v.coerce(ty, exec_state))
+                    .map(|item| item.coerce(ty, exec_state))
+                    .take(len)
                     .collect::<Result<Vec<_>, _>>()?;
 
                 Ok(KclValue::HomArray { value, ty: ty.clone() })
