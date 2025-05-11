@@ -662,11 +662,22 @@ impl ExecutorContext {
                             let (_, id, _, _) = &new_universe[key];
                             let old_source = old_state.get_source(*id);
                             let new_source = new_exec_state.get_source(*id);
+
+
+                            #[cfg(target_arch = "wasm32")]
+                            web_sys::console::log_1(&format!("SKETCH ID new source {:?}", old_source).into());
+
+                            #[cfg(target_arch = "wasm32")]
+                            web_sys::console::log_1(&format!("SKETCH ID old source{:?}", new_source).into());
                             if old_source != new_source {
                                 clear_scene = true;
                                 break;
                             }
                         }
+
+
+                        #[cfg(target_arch = "wasm32")]
+                        web_sys::console::log_1(&format!("SKETCH ID Check imports only {:?}", clear_scene).into());
 
                         (
                             clear_scene,
@@ -751,6 +762,8 @@ impl ExecutorContext {
             (program, exec_state, preserve_mem, universe_info)
         } else {
             let mut exec_state = ExecState::new(self);
+            #[cfg(target_arch = "wasm32")]
+            web_sys::console::log_1(&format!("SKETCH ID gotem bois").into());
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;

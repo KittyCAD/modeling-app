@@ -312,12 +312,14 @@ export default class RustContext {
     const instance = await this._checkInstance()
 
     try {
+      console.log('[cache bust] attempt')
       const result = await instance.bustCacheAndResetScene(
         JSON.stringify(settings),
         path
       )
       /* Set the default planes, safe to call after execute. */
       const outcome = execStateFromRust(result)
+      console.log('[cache bust] success')
 
       this._defaultPlanes = outcome.defaultPlanes
 
