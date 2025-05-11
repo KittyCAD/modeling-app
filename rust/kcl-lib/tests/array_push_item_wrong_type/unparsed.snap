@@ -4,4 +4,4 @@ description: Result of unparsing array_push_item_wrong_type.kcl
 ---
 arr = [1, 2]: [number(_)]
 arrPrime = push(arr, item = 4mm)
-assertIs(false, error = "shouldn't make it here")
+assert(arrPrime[2], isEqualTo = 4mm, error = "should have been added to the end of the array")

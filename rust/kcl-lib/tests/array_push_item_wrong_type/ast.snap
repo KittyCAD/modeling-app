@@ -171,6 +171,28 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "label": {
                 "commentStart": 0,
                 "end": 0,
+                "name": "isEqualTo",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "4mm",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 4.0,
+                  "suffix": "Mm"
+                }
+              }
+            },
+            {
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
                 "name": "error",
                 "start": 0,
                 "type": "Identifier"
@@ -178,11 +200,11 @@ description: Result of parsing array_push_item_wrong_type.kcl
               "arg": {
                 "commentStart": 0,
                 "end": 0,
-                "raw": "\"shouldn't make it here\"",
+                "raw": "\"should have been added to the end of the array\"",
                 "start": 0,
                 "type": "Literal",
                 "type": "Literal",
-                "value": "shouldn't make it here"
+                "value": "should have been added to the end of the array"
               }
             }
           ],
@@ -193,7 +215,7 @@ description: Result of parsing array_push_item_wrong_type.kcl
             "name": {
               "commentStart": 0,
               "end": 0,
-              "name": "assertIs",
+              "name": "assert",
               "start": 0,
               "type": "Identifier"
             },
@@ -208,12 +230,31 @@ description: Result of parsing array_push_item_wrong_type.kcl
           "type": "CallExpressionKw",
           "unlabeled": {
             "commentStart": 0,
+            "computed": false,
             "end": 0,
-            "raw": "false",
+            "object": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "arrPrime",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "property": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "2",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
             "start": 0,
-            "type": "Literal",
-            "type": "Literal",
-            "value": false
+            "type": "MemberExpression",
+            "type": "MemberExpression"
           }
         },
         "start": 0,
