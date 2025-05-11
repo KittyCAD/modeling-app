@@ -1471,8 +1471,22 @@ mod test {
 
             match v {
                 KclValue::Tuple { .. } | KclValue::HomArray { .. } => {
-                    // TODO: We no longer blindly wrap arrays in HomArray when
-                    // coercing to an array type.
+                    // These will not get wrapped if possible.
+                    assert_coerce_results(
+                        v,
+                        &aty,
+                        &KclValue::HomArray {
+                            value: vec![],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    // Coercing an empty tuple or array to an array of length 1
+                    // should fail.
+                    v.coerce(&aty1, &mut exec_state).unwrap_err();
+                    // Coercing an empty tuple or array to an array that's
+                    // non-empty should fail.
+                    v.coerce(&aty0, &mut exec_state).unwrap_err();
                 }
                 _ => {
                     assert_coerce_results(
