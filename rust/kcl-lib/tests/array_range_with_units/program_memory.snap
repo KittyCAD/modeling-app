@@ -11,7 +11,8 @@ description: Variables in memory after executing array_range_with_units.kcl
         "value": 1.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "type": "Length",
+          "type": "Cm"
         }
       },
       {
@@ -19,7 +20,8 @@ description: Variables in memory after executing array_range_with_units.kcl
         "value": 2.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "type": "Length",
+          "type": "Cm"
         }
       },
       {
@@ -27,7 +29,8 @@ description: Variables in memory after executing array_range_with_units.kcl
         "value": 3.0,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "type": "Length",
+          "type": "Cm"
         }
       }
     ]
