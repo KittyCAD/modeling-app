@@ -654,16 +654,18 @@ impl ExecutorContext {
                         keys.sort();
                         for key in keys {
                             let (_, id, _, _) = &new_universe[key];
-                            let old_source = old_state.get_source(*id);
-                            let new_source = new_exec_state.get_source(*id);
-                            if old_source != new_source {
-                                clear_scene = true;
-                                break;
+                            match (old_state.get_source(*id), new_exec_state.get_source(*id)) {
+                                (Some(source0), Some(source1)) => {
+                                    if source0.source != source1.source {
+                                        clear_scene = true;
+                                        break;
+                                    }
+                                }
+                                _ => {}
                             }
                         }
 
                         if !clear_scene {
-                            println!("No need to clear the scene, return early");
                             // Return early we don't need to clear the scene.
                             let outcome = old_state.to_exec_outcome(result_env).await;
                             return Ok(outcome);
