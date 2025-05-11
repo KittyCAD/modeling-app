@@ -611,8 +611,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_)
-                | Expr::LabelledExpression(..)
-                | Expr::AscribedExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,
@@ -638,6 +637,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
+                Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
             };
             Ok(expr)
         })
@@ -2048,7 +2048,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
+    let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
@@ -2061,7 +2061,14 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
     ))
-    .parse_next(i)
+    .parse_next(i)?;
+
+    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    if let Some((_, _, ty)) = ty {
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+    }
+
+    Ok(expr)
 }
 
 /// Parse an item visibility specifier, e.g. export.
