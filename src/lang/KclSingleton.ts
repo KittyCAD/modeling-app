@@ -560,15 +560,19 @@ export class KclManager {
     })
   }
   async executeCode(): Promise<void> {
+    console.log('executeCode')
+    console.log(new Error().stack)
     const ast = await this.safeParse(this.singletons.codeManager.code)
 
     if (!ast) {
       // By clearing the AST we indicate to our callers that there was an issue with execution and
       // the pre-execution state should be restored.
       this.clearAst()
+      console.log('executeCode nevermind!')
       return
     }
 
+    console.log('Going to executeAST')
     return this.executeAst({ ast })
   }
 
