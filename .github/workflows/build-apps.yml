@@ -309,7 +309,7 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_NIGHTLY (but we can't access those env vars here)
-    if: ${{ github.ref_type == 'tag' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
