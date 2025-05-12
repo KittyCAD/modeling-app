@@ -1306,3 +1306,17 @@ export function findPipesWithImportAlias(
 
   return pipes
 }
+
+export const getPathNormalisedForTruncatedAst = (
+  entryNodePath: PathToNode,
+  sketchNodePaths: PathToNode[]
+): PathToNode => {
+  const nodePathWithCorrectedIndexForTruncatedAst =
+    structuredClone(entryNodePath)
+  const minIndex = Math.min(
+    ...sketchNodePaths.map((path) => Number(path[1][0]))
+  )
+  nodePathWithCorrectedIndexForTruncatedAst[1][0] =
+    Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) - minIndex
+  return nodePathWithCorrectedIndexForTruncatedAst
+}

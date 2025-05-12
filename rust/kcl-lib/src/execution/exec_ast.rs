@@ -16,6 +16,7 @@ use crate::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
         TagIdentifier,
     },
+    fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
         Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
@@ -1611,7 +1612,7 @@ impl Node<ArrayRangeExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let metadata = Metadata::from(&self.start_element);
-        let start = ctx
+        let start_val = ctx
             .execute_expr(
                 &self.start_element,
                 exec_state,
@@ -1620,18 +1621,29 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start = start.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+        let (start, start_ty) = start_val.as_int_with_ty().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
-            message: format!("Expected int but found {}", start.human_friendly_type()),
+            message: format!("Expected int but found {}", start_val.human_friendly_type()),
         }))?;
         let metadata = Metadata::from(&self.end_element);
-        let end = ctx
+        let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let end = end.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+        let (end, end_ty) = end_val.as_int_with_ty().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
-            message: format!("Expected int but found {}", end.human_friendly_type()),
+            message: format!("Expected int but found {}", end_val.human_friendly_type()),
         }))?;
+
+        if start_ty != end_ty {
+            let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
+            let start = fmt::human_display_number(start.n, start.ty);
+            let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
+            let end = fmt::human_display_number(end.n, end.ty);
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.into()],
+                message: format!("Range start and end must be of the same type, but found {start} and {end}"),
+            }));
+        }
 
         if end < start {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -1655,11 +1667,11 @@ impl Node<ArrayRangeExpression> {
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: NumericType::count(),
+                    ty: start_ty.clone(),
                     meta: meta.clone(),
                 })
                 .collect(),
-            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+            ty: RuntimeType::Primitive(PrimitiveType::Number(start_ty)),
         })
     }
 }
