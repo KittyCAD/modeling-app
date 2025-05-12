@@ -1815,7 +1815,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "anyhow",
  "clap",
@@ -1826,7 +1826,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "Inflector",
  "anyhow",
@@ -1845,7 +1845,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1854,7 +1854,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.68"
+version = "0.2.69"
 dependencies = [
  "anyhow",
  "clap",
@@ -1875,7 +1875,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "anyhow",
  "clap",
@@ -1895,7 +1895,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.68"
+version = "0.2.69"
 dependencies = [
  "anyhow",
  "approx 0.5.1",
@@ -1959,6 +1959,7 @@ dependencies = [
  "url",
  "uuid",
  "validator",
+ "walkdir",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -1970,7 +1971,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.68"
+version = "0.3.69"
 dependencies = [
  "anyhow",
  "kcl-lib",
@@ -1985,7 +1986,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -1998,7 +1999,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-to-core"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2012,7 +2013,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.68"
+version = "0.1.69"
 dependencies = [
  "anyhow",
  "bson",
@@ -2042,9 +2043,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.3.36"
+version = "0.3.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a345fd2a4cb16205f32bd1aa41715045830c59d78c59927fca6580e2a651ac9"
+checksum = "b48a9698d68c791df76aa020b596c324177a614e38ff3dd67eedd04db76e222f"
 dependencies = [
  "anyhow",
  "async-trait",

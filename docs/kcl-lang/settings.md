@@ -1,6 +1,6 @@
 ---
 title: "Settings"
-excerpt: "Documentation of settings for the KCL language and Zoo Design Studio."
+excerpt: "Documentation of the KCL language for the Zoo Design Studio."
 layout: manual
 ---
 

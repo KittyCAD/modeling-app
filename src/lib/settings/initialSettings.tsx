@@ -211,8 +211,9 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: undefined,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
+        hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
         validate: (v) =>
           String(v) == 'undefined' ||

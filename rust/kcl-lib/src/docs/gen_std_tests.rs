@@ -16,7 +16,7 @@ use crate::{
 };
 
 // Types with special handling.
-const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
+const SPECIAL_TYPES: [&str; 4] = ["TagDeclarator", "TagIdentifier", "Start", "End"];
 
 const TYPE_REWRITES: [(&str, &str); 11] = [
     ("TagNode", "TagDeclarator"),
@@ -380,6 +380,21 @@ fn generate_function_from_kcl(
         .enumerate()
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
+    let args = function.args.iter().map(|arg| {
+        let docs = arg.docs.clone();
+        if let Some(docs) = &docs {
+            // We deliberately truncate to one line in the template so that if we are using the docs
+            // from the type, then we only take the summary. However, if there's a newline in the 
+            // arg docs, then they would get truncated unintentionally.
+            assert!(!docs.contains('\n'), "Arg docs will get truncated");
+        };
+        json!({
+            "name": arg.name,
+            "type_": arg.ty,
+            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
+            "required": arg.kind.required(),
+        })
+    }).collect::<Vec<_>>();
 
     let data = json!({
         "name": function.preferred_name,
@@ -389,14 +404,7 @@ fn generate_function_from_kcl(
         "deprecated": function.properties.deprecated,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
-        "args": function.args.iter().map(|arg| {
-            json!({
-                "name": arg.name,
-                "type_": arg.ty,
-                "description": arg.docs.clone().or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
-                "required": arg.kind.required(),
-            })
-        }).collect::<Vec<_>>(),
+        "args": args,
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,

@@ -22,14 +22,14 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) | The solid(s) whose appearance is being set | Yes |
+| `solids` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid(s) whose appearance is being set | Yes |
 | `color` | [`string`](/docs/kcl-std/types/std-types-string) | Color of the new material, a hex string like '#ff0000' | Yes |
 | `metalness` | [`number`](/docs/kcl-std/types/std-types-number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number`](/docs/kcl-std/types/std-types-number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) - Data for a solid or an imported geometry.
+[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples

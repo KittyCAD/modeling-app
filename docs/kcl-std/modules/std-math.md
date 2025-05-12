@@ -1,11 +1,11 @@
 ---
 title: "math"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "Functions for mathematical operations and some useful constants. "
 layout: manual
 ---
 
-
+Functions for mathematical operations and some useful constants. 
 
 
 
@@ -23,9 +23,9 @@ layout: manual
 * [`ceil`](/docs/kcl-std/functions/std-math-ceil)
 * [`cos`](/docs/kcl-std/functions/std-math-cos)
 * [`floor`](/docs/kcl-std/functions/std-math-floor)
-* [`legAngX`](/docs/kcl-std/legAngX)
-* [`legAngY`](/docs/kcl-std/legAngY)
-* [`legLen`](/docs/kcl-std/legLen)
+* [`legAngX`](/docs/kcl-std/functions/std-math-legAngX)
+* [`legAngY`](/docs/kcl-std/functions/std-math-legAngY)
+* [`legLen`](/docs/kcl-std/functions/std-math-legLen)
 * [`ln`](/docs/kcl-std/functions/std-math-ln)
 * [`log`](/docs/kcl-std/functions/std-math-log)
 * [`log10`](/docs/kcl-std/functions/std-math-log10)

@@ -22,7 +22,9 @@ export const IS_NIGHTLY_OR_DEBUG =
   IS_NIGHTLY || APP_VERSION === '0.0.0' || APP_VERSION === '11.22.33'
 
 export function getReleaseUrl(version: string = APP_VERSION) {
-  return `https://github.com/KittyCAD/modeling-app/releases/tag/${
-    IS_NIGHTLY ? 'nightly-' : ''
-  }v${version}`
+  if (IS_NIGHTLY_OR_DEBUG || version === 'main') {
+    return 'https://github.com/KittyCAD/modeling-app/commits/main'
+  }
+
+  return `https://github.com/KittyCAD/modeling-app/releases/tag/v${version}`
 }

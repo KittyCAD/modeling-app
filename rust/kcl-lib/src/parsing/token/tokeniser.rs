@@ -34,14 +34,12 @@ lazy_static! {
         set.insert("true", TokenType::Keyword);
         set.insert("false", TokenType::Keyword);
         set.insert("nil", TokenType::Keyword);
-        // This isn't a type because brackets are used for the type.
-        set.insert("array", TokenType::Keyword);
         set.insert("and", TokenType::Keyword);
         set.insert("or", TokenType::Keyword);
         set.insert("not", TokenType::Keyword);
         set.insert("var", TokenType::Keyword);
         set.insert("const", TokenType::Keyword);
-        // "import" is special because of import().
+        set.insert("import", TokenType::Keyword);
         set.insert("export", TokenType::Keyword);
         set.insert("type", TokenType::Keyword);
         set.insert("interface", TokenType::Keyword);
@@ -181,7 +179,7 @@ fn word(i: &mut Input<'_>) -> PResult<Token> {
 
 fn operator(i: &mut Input<'_>) -> PResult<Token> {
     let (value, range) = alt((
-        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "|", "&",
+        ">=", "<=", "==", "=>", "!=", "|>", "*", "+", "-", "/", "%", "=", "<", ">", r"\", "^", "||", "&&", "|", "&",
     ))
     .with_span()
     .parse_next(i)?;

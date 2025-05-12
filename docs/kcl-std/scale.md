@@ -29,7 +29,7 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
+| `objects` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
 | `x` | [`number`](/docs/kcl-std/types/std-types-number) | The scale factor for the x axis. Default is 1 if not provided. | No |
 | `y` | [`number`](/docs/kcl-std/types/std-types-number) | The scale factor for the y axis. Default is 1 if not provided. | No |
 | `z` | [`number`](/docs/kcl-std/types/std-types-number) | The scale factor for the z axis. Default is 1 if not provided. | No |
@@ -37,7 +37,7 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
+[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
 
 
 ### Examples
