@@ -43,7 +43,7 @@ export function ContextMenu({
     (e: globalThis.MouseEvent) => {
       if (guard && !guard(e)) return
       e.preventDefault()
-      // This stopPropgation is needed in case multiple nested items use a separeate context menu each,
+      // This stopPropagation is needed in case multiple nested items use a separate context menu each,
       // which would cause the parent context menu to receive the event even if the child was clicked on.
       // Eg. this happens in FileTree causing a bug where the parent folder is going into renaming mode when trying to rename a child.
       e.stopPropagation()
