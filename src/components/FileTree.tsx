@@ -306,11 +306,6 @@ const FileTreeItem = ({
       onFileOpen(fileOrDir.path, project?.path || null)
       kclManager.switchedFiles = true
 
-      console.log('[SUP] open file!')
-      console.log(`[SUP] currentFilePath:${currentFile?.path}`)
-      console.log(`[SUP] projectPath:${project?.path}`)
-      console.log(`[SUP] fileorDir.Path:${fileOrDir?.path}`)
-
       // Open kcl files
       navigate(`${PATHS.FILE}/${encodeURIComponent(fileOrDir.path)}`)
     }
