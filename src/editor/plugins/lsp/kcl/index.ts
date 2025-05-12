@@ -71,7 +71,7 @@ export class KclPlugin implements PluginValue {
         isUserSelect = true
       } else if (tr.isUserEvent('input')) {
         isRelevant = true
-        didUserType
+        didUserType = true
       } else if (tr.isUserEvent('delete')) {
         isRelevant = true
       } else if (tr.isUserEvent('undo')) {
