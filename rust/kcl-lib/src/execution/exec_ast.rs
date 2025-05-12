@@ -16,12 +16,13 @@ use crate::{
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
         TagIdentifier,
     },
+    fmt,
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+        BinaryPart, BodyItem, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -707,14 +708,22 @@ impl ExecutorContext {
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
             }
-            Expr::AscribedExpression(expr) => {
-                let result = self
-                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
-                    .await?;
-                apply_ascription(&result, &expr.ty, exec_state, expr.into())?
-            }
+            Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
+    }
+}
+
+impl Node<AscribedExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        let result = ctx
+            .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?;
+        apply_ascription(&result, &self.ty, exec_state, self.into())
     }
 }
 
@@ -758,6 +767,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
         }
     }
 }
@@ -867,11 +877,7 @@ impl Node<MemberExpression> {
                     source_ranges: vec![self.clone().into()],
                 }))
             }
-            (
-                KclValue::MixedArray { value: arr, .. } | KclValue::HomArray { value: arr, .. },
-                Property::UInt(index),
-                _,
-            ) => {
+            (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned())
@@ -882,7 +888,7 @@ impl Node<MemberExpression> {
                     }))
                 }
             }
-            (KclValue::MixedArray { .. } | KclValue::HomArray { .. }, p, _) => {
+            (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);
                 Err(KclError::Semantic(KclErrorDetails {
@@ -1170,7 +1176,7 @@ impl Node<UnaryExpression> {
                 };
 
                 let direction = match direction {
-                    KclValue::MixedArray { value: values, meta } => {
+                    KclValue::Tuple { value: values, meta } => {
                         let values = values
                             .iter()
                             .map(|v| match v {
@@ -1183,7 +1189,7 @@ impl Node<UnaryExpression> {
                             })
                             .collect::<Result<Vec<_>, _>>()?;
 
-                        KclValue::MixedArray {
+                        KclValue::Tuple {
                             value: values,
                             meta: meta.clone(),
                         }
@@ -1551,7 +1557,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
             }
         }
-        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
                 update_memory_for_tags_of_geometry(v, exec_state)?;
             }
@@ -1595,9 +1601,9 @@ impl Node<ArrayExpression> {
             results.push(value);
         }
 
-        Ok(KclValue::MixedArray {
+        Ok(KclValue::HomArray {
             value: results,
-            meta: vec![self.into()],
+            ty: RuntimeType::Primitive(PrimitiveType::Any),
         })
     }
 }
@@ -1606,7 +1612,7 @@ impl Node<ArrayRangeExpression> {
     #[async_recursion]
     pub async fn execute(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let metadata = Metadata::from(&self.start_element);
-        let start = ctx
+        let start_val = ctx
             .execute_expr(
                 &self.start_element,
                 exec_state,
@@ -1615,18 +1621,29 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start = start.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+        let (start, start_ty) = start_val.as_int_with_ty().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
-            message: format!("Expected int but found {}", start.human_friendly_type()),
+            message: format!("Expected int but found {}", start_val.human_friendly_type()),
         }))?;
         let metadata = Metadata::from(&self.end_element);
-        let end = ctx
+        let end_val = ctx
             .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
             .await?;
-        let end = end.as_int().ok_or(KclError::Semantic(KclErrorDetails {
+        let (end, end_ty) = end_val.as_int_with_ty().ok_or(KclError::Semantic(KclErrorDetails {
             source_ranges: vec![self.into()],
-            message: format!("Expected int but found {}", end.human_friendly_type()),
+            message: format!("Expected int but found {}", end_val.human_friendly_type()),
         }))?;
+
+        if start_ty != end_ty {
+            let start = start_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: start_ty });
+            let start = fmt::human_display_number(start.n, start.ty);
+            let end = end_val.as_ty_f64().unwrap_or(TyF64 { n: 0.0, ty: end_ty });
+            let end = fmt::human_display_number(end.n, end.ty);
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.into()],
+                message: format!("Range start and end must be of the same type, but found {start} and {end}"),
+            }));
+        }
 
         if end < start {
             return Err(KclError::Semantic(KclErrorDetails {
@@ -1644,16 +1661,17 @@ impl Node<ArrayRangeExpression> {
         let meta = vec![Metadata {
             source_range: self.into(),
         }];
-        Ok(KclValue::MixedArray {
+
+        Ok(KclValue::HomArray {
             value: range
                 .into_iter()
                 .map(|num| KclValue::Number {
                     value: num as f64,
-                    ty: NumericType::count(),
+                    ty: start_ty.clone(),
                     meta: meta.clone(),
                 })
                 .collect(),
-            meta,
+            ty: RuntimeType::Primitive(PrimitiveType::Number(start_ty)),
         })
     }
 }
@@ -1868,7 +1886,7 @@ fn type_check_params_kw(
                     arg.value = arg
                         .value
                         .coerce(
-                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                            &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).map_err(|e| KclError::Semantic(e.into()))?,
                             exec_state,
                         )
                         .map_err(|e| {
@@ -1946,7 +1964,8 @@ fn type_check_params_kw(
                 arg.value = arg
                     .value
                     .coerce(
-                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                            .map_err(|e| KclError::Semantic(e.into()))?,
                         exec_state,
                     )
                     .map_err(|_| {
@@ -2125,7 +2144,8 @@ impl FunctionSource {
                             arg.value = arg
                                 .value
                                 .coerce(
-                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range).unwrap(),
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                        .map_err(|e| KclError::Semantic(e.into()))?,
                                     exec_state,
                                 )
                                 .map_err(|_| {
@@ -2235,9 +2255,10 @@ mod test {
 
     use super::*;
     use crate::{
+        exec::UnitType,
         execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
-        ExecutorSettings,
+        ExecutorSettings, UnitLen,
     };
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2391,6 +2412,7 @@ p = {
   yAxis = { x = 0, y = 1, z = 0 },
   zAxis = { x = 0, y = 0, z = 1 }
 }: Plane
+arr1 = [42]: [number(cm)]
 "#;
 
         let result = parse_execute(program).await.unwrap();
@@ -2401,6 +2423,24 @@ p = {
                 .unwrap(),
             KclValue::Plane { .. }
         ));
+        let arr1 = mem
+            .memory
+            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        if let KclValue::HomArray { value, ty } = arr1 {
+            assert_eq!(value.len(), 1, "Expected Vec with specific length: found {:?}", value);
+            assert_eq!(*ty, RuntimeType::known_length(UnitLen::Cm));
+            // Compare, ignoring meta.
+            if let KclValue::Number { value, ty, .. } = &value[0] {
+                // Converted from mm to cm.
+                assert_eq!(*value, 4.2);
+                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLen::Cm)));
+            } else {
+                panic!("Expected a number; found {:?}", value[0]);
+            }
+        } else {
+            panic!("Expected HomArray; found {arr1:?}");
+        }
 
         let program = r#"
 a = 42: string
@@ -2419,6 +2459,28 @@ a = 42: Plane
             .unwrap_err()
             .to_string()
             .contains("could not coerce number value to type Plane"));
+
+        let program = r#"
+arr = [0]: [string]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [string]"),
+            "Expected error but found {err:?}"
+        );
+
+        let program = r#"
+mixedArr = [0, "a"]: [number(mm)]
+"#;
+        let result = parse_execute(program).await;
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce array (list) value to type [number(mm)]"),
+            "Expected error but found {err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2637,5 +2699,20 @@ sketch001 = startSketchOn(XY)
 "#;
 
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn ascription_in_binop() {
+        let ast = r#"foo = tan(0): number(rad) - 4deg"#;
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn neg_sqrt() {
+        let ast = r#"bad = sqrt(-2)"#;
+
+        let e = parse_execute(ast).await.unwrap_err();
+        // Make sure we get a useful error message and not an engine error.
+        assert!(e.message().contains("sqrt"), "Error message: '{}'", e.message());
     }
 }

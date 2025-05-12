@@ -387,6 +387,7 @@ impl ExecutorContext {
             .commands_ws(
                 None,
                 None,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -660,18 +661,13 @@ impl ExecutorContext {
                         keys.sort();
                         for key in keys {
                             let (_, id, _, _) = &new_universe[key];
-                            let old_source = old_state.get_source(*id);
-                            let new_source = new_exec_state.get_source(*id);
-
-
-                            #[cfg(target_arch = "wasm32")]
-                            web_sys::console::log_1(&format!("SKETCH ID new source {:?}", old_source).into());
-
-                            #[cfg(target_arch = "wasm32")]
-                            web_sys::console::log_1(&format!("SKETCH ID old source{:?}", new_source).into());
-                            if old_source != new_source {
-                                clear_scene = true;
-                                break;
+                            if let (Some(source0), Some(source1)) =
+                                (old_state.get_source(*id), new_exec_state.get_source(*id))
+                            {
+                                if source0.source != source1.source {
+                                    clear_scene = true;
+                                    break;
+                                }
                             }
                         }
 
@@ -1977,7 +1973,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: mixed array (list)",
+            "Cannot apply unary operator ! to non-boolean value: array (list)",
         );
 
         let code6 = "

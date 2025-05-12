@@ -8,7 +8,7 @@ layout: manual
 Converts a number to radians from its current units.
 
 ```kcl
-units::toRadians(@num: number(rad)): number(rad)
+units::toRadians(@num: number(Angle)): number(rad)
 ```
 
 
@@ -17,7 +17,7 @@ units::toRadians(@num: number(rad)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `num` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 

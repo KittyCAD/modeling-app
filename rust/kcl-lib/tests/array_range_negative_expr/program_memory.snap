@@ -4,94 +4,149 @@ description: Variables in memory after executing array_range_negative_expr.kcl
 ---
 {
   "xs": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
         "value": -5.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": -4.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": -3.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": -2.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": -1.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 0.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 1.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 2.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 3.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 4.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       },
       {
         "type": "Number",
         "value": 5.0,
         "ty": {
-          "type": "Known",
-          "type": "Count"
+          "type": "Default",
+          "len": {
+            "type": "Mm"
+          },
+          "angle": {
+            "type": "Degrees"
+          }
         }
       }
     ]

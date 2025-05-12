@@ -252,15 +252,7 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert!(first.1 == last.1, "The images should be the same");
-    let mut first_outcome = first.2.clone();
-    let mut last_outcome = last.2.clone();
-    // Ignore the filename because of the tests they will change.
-    // The paths of the modules will change depending on where we write them.
-    first_outcome.filenames = Default::default();
-    last_outcome.filenames = Default::default();
-    // Make sure the outcomes are the exact same.
-    // Specifically the default planes would have new ids if re-executed.
-    assert_eq!(first_outcome, last_outcome);
+    assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -621,13 +613,5 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert!(first.1 != last.1, "The images should be different for the grid");
-    let mut first_outcome = first.2.clone();
-    let mut last_outcome = last.2.clone();
-    // Ignore the filename because of the tests they will change.
-    // The paths of the modules will change depending on where we write them.
-    first_outcome.filenames = Default::default();
-    last_outcome.filenames = Default::default();
-    // Make sure the outcomes are the exact same.
-    // Specifically the default planes would have new ids if re-executed.
-    assert_eq!(first_outcome.default_planes, last_outcome.default_planes);
+    assert_eq!(first.2, last.2, "The outcomes should be the same");
 }

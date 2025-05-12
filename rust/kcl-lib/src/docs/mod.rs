@@ -167,6 +167,7 @@ impl StdLibFnArg {
     pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
+            assert!(!self.description.contains('\n'), "Arg docs will get truncated");
             return Some(self.description.clone());
         }
 
