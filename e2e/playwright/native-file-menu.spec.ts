@@ -141,7 +141,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await page.waitForTimeout(7000)
         await homePage.projectsLoaded()
       })
-      await test.step('Home.Help.Reset onboarding', async () => {
+      await test.step('Home.Help.Replay onboarding tutorial', async () => {
         await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
@@ -520,8 +520,11 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await findElectronNativeMenuById(tronApp, 'Help.Report a bug')
       })
 
-      await test.step('Modeling.Help.Reset onboarding', async () => {
-        await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
+      await test.step('Modeling.Help.Replay onboarding tutorial', async () => {
+        await findElectronNativeMenuById(
+          tronApp,
+          'Help.Replay onboarding tutorial'
+        )
       })
 
       await test.step('Modeling.File.Preferences.Sign out', async () => {
