@@ -82,8 +82,10 @@ function RenameForm({
   const inputRef = useRef<HTMLInputElement>(null)
   const fileContext = useFileContext()
 
-  function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function handleRenameSubmit(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter') {
+      return
+    }
 
     send({
       type: 'Rename file',
@@ -107,7 +109,7 @@ function RenameForm({
   }
 
   return (
-    <form onSubmit={handleRenameSubmit}>
+    <div onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
@@ -127,7 +129,7 @@ function RenameForm({
       <button className="sr-only" type="submit">
         Submit
       </button>
-    </form>
+    </div>
   )
 }
 
