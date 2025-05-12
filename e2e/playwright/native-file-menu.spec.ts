@@ -12,41 +12,45 @@ import { expect, test } from '@e2e/playwright/zoo-test'
  * Test file menu actions that trigger something in the frontend
  */
 test.describe('Native file menu', { tag: ['@electron'] }, () => {
-  test.describe('Home page', () => {
-    test.describe('File role', () => {
-      test('Home.File.Create project', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+  test(
+    'Home page all in one test but uses steps',
+    { tag: ['@electron'] },
+    async ({ tronApp, cmdBar, page, homePage }) => {
+      page.on('console', (msg) => {
+        console.log(`PAGE LOG: ${msg.text()}`)
+      })
+
+      tronApp?.electron.on('window', async (page) => {
+        page.on('console', (msg) => {
+          console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+        })
+      })
+
+      // Capture Electron main process logs
+      tronApp?.electron.on('console', (msg) => {
+        console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+      })
+      await test.step('Home.File.Create project', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(tronApp, 'File.New project')
+        await clickElectronNativeMenuById(tronApp, 'File.Create project')
         await cmdBar.toBeOpened()
         await cmdBar.expectArgValue('untitled')
       })
-      test('Home.File.Open project', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Open project', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'File.Open project')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Open project')
       })
-      test('Home.File.Preferences.User settings', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Preferences.User settings', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(
@@ -55,12 +59,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectText(page, 'The overall appearance of the app')
       })
-      test('Home.File.Preferences.Keybindings', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Preferences.Keybindings', async () => {
         if (!tronApp) {
           fail()
         }
@@ -72,12 +71,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectLocator(page, '#enter-sketch-mode')
       })
-      test('Home.File.Preferences.User default units', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Preferences.User default units', async () => {
         if (!tronApp) {
           fail()
         }
@@ -89,26 +83,18 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectLocator(page, '#defaultUnit')
       })
-      test('Home.File.Preferences.Theme', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Preferences.Theme', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
       })
-      test('Home.File.Preferences.Theme color', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.File.Preferences.Theme color', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(
@@ -117,57 +103,27 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectLocator(page, '#themeColor')
       })
-      test('Home.File.Preferences.Sign out', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Edit.Rename project', async () => {
         if (!tronApp) fail()
-        await homePage.projectsLoaded()
-        await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(tronApp, 'File.Sign out')
-        // FIXME: When signing out during E2E the page is not bound correctly.
-        // It cannot find the button
-        // const signIn = page.getByTestId('sign-in-button')
-        // await expect(signIn).toBeVisible()
-      })
-    })
-
-    test.describe('Edit role', () => {
-      test('Home.Edit.Rename project', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
-        if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Edit.Rename project')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Rename project')
       })
-      test('Home.Edit.Delete project', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Edit.Delete project', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Edit.Delete project')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Delete project')
       })
-      test('Home.Edit.Change project directory', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Edit.Change project directory', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(
@@ -176,15 +132,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectLocator(page, '#projectDirectory')
       })
-    })
-    test.describe('View role', () => {
-      test('Home.View.Command Palette...', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+
+      await test.step('Home.View.Command Palette...', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'View.Command Palette...')
@@ -192,15 +143,10 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
       })
-    })
-    test.describe('Help role', () => {
-      test('Home.Help.Show all commands', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+
+      await test.step('Home.Help.Show all commands', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Help.Show all commands')
@@ -208,47 +154,46 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
         await expect(actual).toBeVisible()
       })
-      test('Home.Help.KCL code samples', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Help.KCL code samples', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Help.KCL code samples')
       })
-      test('Home.Help.Refresh and report a bug', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Help.Refresh and report a bug', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
-        await clickElectronNativeMenuById(
-          tronApp,
-          'Help.Refresh and report a bug'
-        )
+        await clickElectronNativeMenuById(tronApp, 'Help.Report a bug')
         // Core dump and refresh magic number timeout
         await page.waitForTimeout(7000)
         await homePage.projectsLoaded()
       })
-      test('Home.Help.Reset onboarding', async ({
-        tronApp,
-        cmdBar,
-        page,
-        homePage,
-      }) => {
+      await test.step('Home.Help.Reset onboarding', async () => {
         if (!tronApp) fail()
+        await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
-        await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
+        await findElectronNativeMenuById(
+          tronApp,
+          'Help.Replay onboarding tutorial'
+        )
       })
-    })
-  })
+      await test.step('Home.File.Preferences.Sign out', async () => {
+        if (!tronApp) fail()
+        await page.reload()
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await clickElectronNativeMenuById(tronApp, 'File.Sign out')
+        // FIXME: When signing out during E2E the page is not bound correctly.
+        // It cannot find the button
+        // const signIn = page.getByTestId('sign-in-button')
+        // await expect(signIn).toBeVisible()
+      })
+    }
+  )
   test.describe('Modeling page', () => {
     test.describe('File Role', () => {
       test('Modeling.File.Create project', async ({

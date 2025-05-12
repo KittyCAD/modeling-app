@@ -1160,9 +1160,12 @@ export async function clickElectronNativeMenuById(
   const clickWasTriggered = await tronApp.electron.evaluate(
     async ({ app }, menuId) => {
       if (!app || !app.applicationMenu) {
+        console.log('failed1')
         return false
       }
       const menu = app.applicationMenu.getMenuItemById(menuId)
+      console.log(menuId)
+      console.log('failed2')
       if (!menu) return false
       menu.click()
       return true
