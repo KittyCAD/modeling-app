@@ -14,7 +14,11 @@ import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+import {
+  APP_VERSION,
+  getReleaseUrl,
+  IS_NIGHTLY_OR_DEBUG,
+} from '@src/routes/utils'
 
 import { billingActor } from '@src/lib/singletons'
 
@@ -53,8 +57,12 @@ export function LowerRightControls({
           </Popover.Panel>
         </Popover>
         <a
-          onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
-          href={getReleaseUrl()}
+          onClick={
+            !IS_NIGHTLY_OR_DEBUG
+              ? openExternalBrowserIfDesktop(getReleaseUrl())
+              : undefined
+          }
+          href={!IS_NIGHTLY_OR_DEBUG ? getReleaseUrl() : undefined}
           target="_blank"
           rel="noopener noreferrer"
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
