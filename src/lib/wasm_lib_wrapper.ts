@@ -8,11 +8,12 @@
  */
 import type {
   base64_decode as Base64Decode,
-  change_kcl_settings as ChangeKclSettings,
+  change_default_units as ChangeDefaultUnits,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
-  format_number as FormatNumber,
+  format_number_literal as FormatNumberLiteral,
+  human_display_number as HumanDisplayNumber,
   get_kcl_version as GetKclVersion,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
   import_file_extensions as ImportFileExtensions,
@@ -20,6 +21,7 @@ import type {
   is_points_ccw as IsPointsCcw,
   kcl_lint as KclLint,
   kcl_settings as KclSettings,
+  node_path_from_range as NodePathFromRange,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
   parse_wasm as ParseWasm,
@@ -54,11 +56,17 @@ export const parse_wasm: typeof ParseWasm = (...args) => {
 export const recast_wasm: typeof RecastWasm = (...args) => {
   return getModule().recast_wasm(...args)
 }
-export const format_number: typeof FormatNumber = (...args) => {
-  return getModule().format_number(...args)
+export const format_number_literal: typeof FormatNumberLiteral = (...args) => {
+  return getModule().format_number_literal(...args)
+}
+export const human_display_number: typeof HumanDisplayNumber = (...args) => {
+  return getModule().human_display_number(...args)
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)
+}
+export const node_path_from_range: typeof NodePathFromRange = (...args) => {
+  return getModule().node_path_from_range(...args)
 }
 export const is_points_ccw: typeof IsPointsCcw = (...args) => {
   return getModule().is_points_ccw(...args)
@@ -93,8 +101,8 @@ export const base64_decode: typeof Base64Decode = (...args) => {
 export const kcl_settings: typeof KclSettings = (...args) => {
   return getModule().kcl_settings(...args)
 }
-export const change_kcl_settings: typeof ChangeKclSettings = (...args) => {
-  return getModule().change_kcl_settings(...args)
+export const change_default_units: typeof ChangeDefaultUnits = (...args) => {
+  return getModule().change_default_units(...args)
 }
 export const is_kcl_empty_or_only_settings: typeof IsKclEmptyOrOnlySettings = (
   ...args

@@ -126,10 +126,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -138,12 +136,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -151,19 +151,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -201,7 +190,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -324,7 +314,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -332,15 +322,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -464,10 +446,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XZ",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -476,12 +456,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -489,19 +471,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -539,7 +510,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -574,7 +546,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude003": {
@@ -709,7 +682,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -717,15 +690,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -846,7 +811,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -854,15 +819,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -986,10 +943,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       }
                     ],
                     "on": {
-                      "type": "plane",
-                      "id": "[uuid]",
                       "artifactId": "[uuid]",
-                      "value": "XZ",
+                      "id": "[uuid]",
                       "origin": {
                         "x": 0.0,
                         "y": 0.0,
@@ -998,12 +953,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "type": "Mm"
                         }
                       },
+                      "type": "plane",
+                      "value": "XZ",
                       "xAxis": {
                         "x": 1.0,
                         "y": 0.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -1011,19 +968,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 1.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "units": {
-                        "type": "Mm"
                       }
                     },
                     "start": {
@@ -1061,7 +1007,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -1096,7 +1043,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1137,7 +1085,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -1260,7 +1209,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1268,15 +1217,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -1409,7 +1350,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -1417,15 +1358,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
-                  }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "solid": {
@@ -1546,7 +1479,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 0.0,
                         "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "yAxis": {
@@ -1554,15 +1487,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "y": 0.0,
                         "z": 1.0,
                         "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "zAxis": {
-                        "x": 0.0,
-                        "y": -1.0,
-                        "z": 0.0,
-                        "units": {
-                          "type": "Mm"
+                          "type": "Unknown"
                         }
                       },
                       "solid": {
@@ -1686,10 +1611,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             }
                           ],
                           "on": {
-                            "type": "plane",
-                            "id": "[uuid]",
                             "artifactId": "[uuid]",
-                            "value": "XZ",
+                            "id": "[uuid]",
                             "origin": {
                               "x": 0.0,
                               "y": 0.0,
@@ -1698,12 +1621,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 "type": "Mm"
                               }
                             },
+                            "type": "plane",
+                            "value": "XZ",
                             "xAxis": {
                               "x": 1.0,
                               "y": 0.0,
                               "z": 0.0,
                               "units": {
-                                "type": "Mm"
+                                "type": "Unknown"
                               }
                             },
                             "yAxis": {
@@ -1711,19 +1636,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "y": 0.0,
                               "z": 1.0,
                               "units": {
-                                "type": "Mm"
+                                "type": "Unknown"
                               }
-                            },
-                            "zAxis": {
-                              "x": 0.0,
-                              "y": -1.0,
-                              "z": 0.0,
-                              "units": {
-                                "type": "Mm"
-                              }
-                            },
-                            "units": {
-                              "type": "Mm"
                             }
                           },
                           "start": {
@@ -1761,7 +1675,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        }
+                        },
+                        "sectional": false
                       },
                       "units": {
                         "type": "Mm"
@@ -1796,7 +1711,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  }
+                  },
+                  "sectional": false
                 },
                 "units": {
                   "type": "Mm"
@@ -1837,7 +1753,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -1872,7 +1789,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -1975,10 +1893,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1987,12 +1903,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2000,19 +1918,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -2139,7 +2046,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2147,15 +2054,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -2279,10 +2178,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2291,12 +2188,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2304,19 +2203,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2354,7 +2242,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -2484,7 +2373,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -2492,15 +2381,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -2621,7 +2502,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2629,15 +2510,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2761,10 +2634,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2773,12 +2644,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2786,19 +2659,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -2836,7 +2698,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2871,7 +2734,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -3001,7 +2865,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -3009,15 +2873,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -3150,7 +3006,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3158,15 +3014,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3287,7 +3135,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3295,15 +3143,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "solid": {
@@ -3427,10 +3267,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           }
                         ],
                         "on": {
-                          "type": "plane",
-                          "id": "[uuid]",
                           "artifactId": "[uuid]",
-                          "value": "XZ",
+                          "id": "[uuid]",
                           "origin": {
                             "x": 0.0,
                             "y": 0.0,
@@ -3439,12 +3277,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               "type": "Mm"
                             }
                           },
+                          "type": "plane",
+                          "value": "XZ",
                           "xAxis": {
                             "x": 1.0,
                             "y": 0.0,
                             "z": 0.0,
                             "units": {
-                              "type": "Mm"
+                              "type": "Unknown"
                             }
                           },
                           "yAxis": {
@@ -3452,19 +3292,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "y": 0.0,
                             "z": 1.0,
                             "units": {
-                              "type": "Mm"
+                              "type": "Unknown"
                             }
-                          },
-                          "zAxis": {
-                            "x": 0.0,
-                            "y": -1.0,
-                            "z": 0.0,
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "units": {
-                            "type": "Mm"
                           }
                         },
                         "start": {
@@ -3502,7 +3331,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Mm"
-                      }
+                      },
+                      "sectional": false
                     },
                     "units": {
                       "type": "Mm"
@@ -3537,7 +3367,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3578,7 +3409,8 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

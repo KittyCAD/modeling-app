@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fmt, str::FromStr};
+use std::{collections::HashMap, fmt, str::FromStr};
 
 use regex::Regex;
 use tower_lsp::lsp_types::{
@@ -9,93 +9,156 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, ImportSelector, Node, PrimitiveType, Type, VariableKind},
+        ast::types::{Annotation, ImportSelector, ItemVisibility, Node, NonCodeValue, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
 };
 
-pub fn walk_prelude() -> Vec<DocData> {
-    let mut visitor = CollectionVisitor::default();
-    visitor.visit_module("prelude", "").unwrap();
-    visitor.result
+pub fn walk_prelude() -> ModData {
+    visit_module("prelude", "", WalkForNames::All).unwrap()
 }
 
-#[derive(Debug, Clone, Default)]
-struct CollectionVisitor {
-    name: String,
-    result: Vec<DocData>,
-    id: usize,
+#[derive(Clone, Debug)]
+enum WalkForNames<'a> {
+    All,
+    Selected(Vec<&'a str>),
 }
 
-impl CollectionVisitor {
-    fn visit_module(&mut self, name: &str, preferred_prefix: &str) -> Result<(), String> {
-        let old_name = std::mem::replace(&mut self.name, name.to_owned());
-        let source = crate::modules::read_std(name).unwrap();
-        let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(self.id))
-            .parse_errs_as_err()
-            .unwrap();
-        self.id += 1;
+impl<'a> WalkForNames<'a> {
+    fn contains(&self, name: &str) -> bool {
+        match self {
+            WalkForNames::All => true,
+            WalkForNames::Selected(names) => names.contains(&name),
+        }
+    }
 
-        for n in &parsed.body {
-            match n {
-                crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
-                    match &import.path {
-                        crate::parsing::ast::types::ImportPath::Std { path } => {
-                            match import.selector {
-                                ImportSelector::Glob(..) => self.visit_module(&path[1], "")?,
-                                ImportSelector::None { .. } => {
-                                    self.visit_module(&path[1], &format!("{}::", import.module_name().unwrap()))?
-                                }
-                                // Only supports glob or whole-module imports for now.
-                                _ => unimplemented!(),
+    fn intersect(&self, names: impl Iterator<Item = &'a str>) -> Self {
+        match self {
+            WalkForNames::All => WalkForNames::Selected(names.collect()),
+            WalkForNames::Selected(mine) => WalkForNames::Selected(names.filter(|n| mine.contains(n)).collect()),
+        }
+    }
+}
+
+fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Result<ModData, String> {
+    let mut result = ModData::new(name, preferred_prefix);
+
+    let source = crate::modules::read_std(name).unwrap();
+    let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(0))
+        .parse_errs_as_err()
+        .unwrap();
+
+    // TODO handle examples; use with_comments
+    let mut summary = String::new();
+    let mut description = None;
+    for n in &parsed.non_code_meta.start_nodes {
+        match &n.value {
+            NonCodeValue::BlockComment { value, .. } if value.starts_with('/') => {
+                let line = value[1..].trim();
+                if line.is_empty() {
+                    match &mut description {
+                        None => description = Some(String::new()),
+                        Some(d) => d.push_str("\n\n"),
+                    }
+                } else {
+                    match &mut description {
+                        None => {
+                            summary.push_str(line);
+                            summary.push(' ');
+                        }
+                        Some(d) => {
+                            d.push_str(line);
+                            d.push(' ');
+                        }
+                    }
+                }
+            }
+            _ => break,
+        }
+    }
+    if !summary.is_empty() {
+        result.summary = Some(summary);
+    }
+    result.description = description;
+
+    for n in &parsed.body {
+        if n.visibility() != ItemVisibility::Export {
+            continue;
+        }
+        match n {
+            crate::parsing::ast::types::BodyItem::ImportStatement(import) => match &import.path {
+                crate::parsing::ast::types::ImportPath::Std { path } => {
+                    let m = match &import.selector {
+                        ImportSelector::Glob(..) => Some(visit_module(&path[1], "", names.clone())?),
+                        ImportSelector::None { .. } => {
+                            let name = import.module_name().unwrap();
+                            if names.contains(&name) {
+                                Some(visit_module(&path[1], &format!("{}::", name), WalkForNames::All)?)
+                            } else {
+                                None
                             }
                         }
-                        p => return Err(format!("Unexpected import: `{p}`")),
+                        ImportSelector::List { items } => Some(visit_module(
+                            &path[1],
+                            "",
+                            names.intersect(items.iter().map(|n| &*n.name.name)),
+                        )?),
+                    };
+                    if let Some(m) = m {
+                        result.children.insert(format!("M:{}", m.qual_name), DocData::Mod(m));
                     }
                 }
-                crate::parsing::ast::types::BodyItem::VariableDeclaration(var) if !var.visibility.is_default() => {
-                    let qual_name = if self.name == "prelude" {
-                        "std::".to_owned()
-                    } else {
-                        format!("std::{}::", self.name)
-                    };
-                    let mut dd = match var.kind {
-                        VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual_name, preferred_prefix)),
-                        VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name, preferred_prefix)),
-                    };
-
-                    dd.with_meta(&var.outer_attrs);
-                    for a in &var.outer_attrs {
-                        dd.with_comments(&a.pre_comments);
-                    }
-                    dd.with_comments(n.get_comments());
-
-                    self.result.push(dd);
+                p => return Err(format!("Unexpected import: `{p}`")),
+            },
+            crate::parsing::ast::types::BodyItem::VariableDeclaration(var) => {
+                if !names.contains(var.name()) {
+                    continue;
                 }
-                crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) if !ty.visibility.is_default() => {
-                    let qual_name = if self.name == "prelude" {
-                        "std::".to_owned()
-                    } else {
-                        format!("std::{}::", self.name)
-                    };
-                    let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name, preferred_prefix));
-
-                    dd.with_meta(&ty.outer_attrs);
-                    for a in &ty.outer_attrs {
-                        dd.with_comments(&a.pre_comments);
+                let qual = format!("{}::", &result.qual_name);
+                let mut dd = match var.kind {
+                    VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
+                    VariableKind::Const => {
+                        DocData::Const(ConstData::from_ast(var, qual, preferred_prefix, &result.name))
                     }
-                    dd.with_comments(n.get_comments());
-
-                    self.result.push(dd);
+                };
+                let key = format!("I:{}", dd.qual_name());
+                if result.children.contains_key(&key) {
+                    continue;
                 }
-                _ => {}
+
+                dd.with_meta(&var.outer_attrs);
+                for a in &var.outer_attrs {
+                    dd.with_comments(&a.pre_comments);
+                }
+                dd.with_comments(n.get_comments());
+
+                result.children.insert(key, dd);
             }
-        }
+            crate::parsing::ast::types::BodyItem::TypeDeclaration(ty) => {
+                if !names.contains(ty.name()) {
+                    continue;
+                }
+                let qual = format!("{}::", &result.qual_name);
+                let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, &result.name));
+                let key = format!("T:{}", dd.qual_name());
+                if result.children.contains_key(&key) {
+                    continue;
+                }
 
-        self.name = old_name;
-        Ok(())
+                dd.with_meta(&ty.outer_attrs);
+                for a in &ty.outer_attrs {
+                    dd.with_comments(&a.pre_comments);
+                }
+                dd.with_comments(n.get_comments());
+
+                result.children.insert(key, dd);
+            }
+            _ => {}
+        }
     }
+
+    Ok(result)
 }
 
 #[derive(Debug, Clone)]
@@ -103,6 +166,7 @@ pub enum DocData {
     Fn(FnData),
     Const(ConstData),
     Ty(TyData),
+    Mod(ModData),
 }
 
 impl DocData {
@@ -111,27 +175,61 @@ impl DocData {
             DocData::Fn(f) => &f.name,
             DocData::Const(c) => &c.name,
             DocData::Ty(t) => &t.name,
+            DocData::Mod(m) => &m.name,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub fn preferred_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.preferred_name,
+            DocData::Const(c) => &c.preferred_name,
+            DocData::Ty(t) => &t.preferred_name,
+            DocData::Mod(m) => &m.preferred_name,
+        }
+    }
+
+    pub fn qual_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.qual_name,
+            DocData::Const(c) => &c.qual_name,
+            DocData::Ty(t) => &t.qual_name,
+            DocData::Mod(m) => &m.qual_name,
+        }
+    }
+
+    /// The name of the module in which the item is declared, e.g., `sketch`
+    #[allow(dead_code)]
+    pub fn module_name(&self) -> &str {
+        match self {
+            DocData::Fn(f) => &f.module_name,
+            DocData::Const(c) => &c.module_name,
+            DocData::Ty(t) => &t.module_name,
+            DocData::Mod(m) => &m.module_name,
         }
     }
 
     #[allow(dead_code)]
     pub fn file_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("functions/{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("consts/{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => format!("types/{}", t.name.clone()),
+            DocData::Ty(t) => format!("types/{}", t.qual_name.replace("::", "-")),
+            DocData::Mod(m) => format!("modules/{}", m.qual_name.replace("::", "-")),
         }
     }
 
     #[allow(dead_code)]
     pub fn example_name(&self) -> String {
         match self {
-            DocData::Fn(f) => f.qual_name.replace("::", "-"),
+            DocData::Fn(f) => format!("fn_{}", f.qual_name.replace("::", "-")),
             DocData::Const(c) => format!("const_{}", c.qual_name.replace("::", "-")),
-            DocData::Ty(t) => t.name.clone(),
+            DocData::Ty(t) => format!("ty_{}", t.qual_name.replace("::", "-")),
+            DocData::Mod(_) => unimplemented!(),
         }
     }
 
+    /// The path to the module through which the item is accessed, e.g., `std::sketch`
     #[allow(dead_code)]
     pub fn mod_name(&self) -> String {
         let q = match self {
@@ -143,6 +241,7 @@ impl DocData {
                 }
                 &t.qual_name
             }
+            DocData::Mod(m) => &m.qual_name,
         };
         q[0..q.rfind("::").unwrap()].to_owned()
     }
@@ -153,14 +252,16 @@ impl DocData {
             DocData::Fn(f) => f.properties.doc_hidden || f.properties.deprecated,
             DocData::Const(c) => c.properties.doc_hidden || c.properties.deprecated,
             DocData::Ty(t) => t.properties.doc_hidden || t.properties.deprecated,
+            DocData::Mod(_) => false,
         }
     }
 
-    pub fn to_completion_item(&self) -> CompletionItem {
+    pub fn to_completion_item(&self) -> Option<CompletionItem> {
         match self {
-            DocData::Fn(f) => f.to_completion_item(),
-            DocData::Const(c) => c.to_completion_item(),
-            DocData::Ty(t) => t.to_completion_item(),
+            DocData::Fn(f) => Some(f.to_completion_item()),
+            DocData::Const(c) => Some(c.to_completion_item()),
+            DocData::Ty(t) => Some(t.to_completion_item()),
+            DocData::Mod(_) => None,
         }
     }
 
@@ -169,6 +270,7 @@ impl DocData {
             DocData::Fn(f) => Some(f.to_signature_help()),
             DocData::Const(_) => None,
             DocData::Ty(_) => None,
+            DocData::Mod(_) => None,
         }
     }
 
@@ -177,6 +279,7 @@ impl DocData {
             DocData::Fn(f) => f.with_meta(attrs),
             DocData::Const(c) => c.with_meta(attrs),
             DocData::Ty(t) => t.with_meta(attrs),
+            DocData::Mod(m) => m.with_meta(attrs),
         }
     }
 
@@ -185,6 +288,7 @@ impl DocData {
             DocData::Fn(f) => f.with_comments(comments),
             DocData::Const(c) => c.with_comments(comments),
             DocData::Ty(t) => t.with_comments(comments),
+            DocData::Mod(m) => m.with_comments(comments),
         }
     }
 
@@ -194,8 +298,25 @@ impl DocData {
             DocData::Fn(f) => f.examples.iter(),
             DocData::Const(c) => c.examples.iter(),
             DocData::Ty(t) => t.examples.iter(),
+            DocData::Mod(_) => unimplemented!(),
         }
         .filter_map(|(s, p)| (!p.norun).then_some(s))
+    }
+
+    fn expect_mod(&self) -> &ModData {
+        match self {
+            DocData::Mod(m) => m,
+            _ => unreachable!(),
+        }
+    }
+
+    pub(super) fn summary(&self) -> Option<&String> {
+        match self {
+            DocData::Fn(f) => f.summary.as_ref(),
+            DocData::Const(c) => c.summary.as_ref(),
+            DocData::Ty(t) => t.summary.as_ref(),
+            DocData::Mod(m) => m.summary.as_ref(),
+        }
     }
 }
 
@@ -217,6 +338,8 @@ pub struct ConstData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
+
+    pub module_name: String,
 }
 
 impl ConstData {
@@ -224,6 +347,7 @@ impl ConstData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Const);
 
@@ -263,6 +387,7 @@ impl ConstData {
             summary: None,
             description: None,
             examples: Vec::new(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -312,6 +437,69 @@ impl ConstData {
 }
 
 #[derive(Debug, Clone)]
+pub struct ModData {
+    pub name: String,
+    /// How the module is indexed, etc.
+    pub preferred_name: String,
+    /// The fully qualified name.
+    pub qual_name: String,
+    /// The summary of the module.
+    pub summary: Option<String>,
+    /// The description of the module.
+    pub description: Option<String>,
+    pub module_name: String,
+
+    pub children: HashMap<String, DocData>,
+}
+
+impl ModData {
+    fn new(name: &str, preferred_prefix: &str) -> Self {
+        let (name, qual_name, module_name) = if name == "prelude" {
+            ("std", "std".to_owned(), String::new())
+        } else {
+            (name, format!("std::{}", name), "std".to_owned())
+        };
+        Self {
+            preferred_name: format!("{preferred_prefix}{name}"),
+            name: name.to_owned(),
+            qual_name,
+            summary: None,
+            description: None,
+            children: HashMap::new(),
+            module_name,
+        }
+    }
+
+    pub fn find_by_name(&self, name: &str) -> Option<&DocData> {
+        if let Some(result) = self.children.values().find(|dd| dd.name() == name) {
+            return Some(result);
+        }
+
+        #[allow(clippy::iter_over_hash_type)]
+        for (k, v) in &self.children {
+            if k.starts_with("M:") {
+                if let Some(result) = v.expect_mod().find_by_name(name) {
+                    return Some(result);
+                }
+            }
+        }
+
+        None
+    }
+
+    pub fn all_docs(&self) -> impl Iterator<Item = &DocData> {
+        let result = self.children.values();
+        // TODO really this should be recursive, currently assume std is only one module deep.
+        result.chain(
+            self.children
+                .iter()
+                .filter(|(k, _)| k.starts_with("M:"))
+                .flat_map(|(_, d)| d.expect_mod().children.values()),
+        )
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct FnData {
     /// The name of the function.
     pub name: String,
@@ -332,8 +520,8 @@ pub struct FnData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl FnData {
@@ -341,6 +529,7 @@ impl FnData {
         var: &crate::parsing::ast::types::VariableDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         assert_eq!(var.kind, crate::parsing::ast::types::VariableKind::Fn);
         let crate::parsing::ast::types::Expr::FunctionExpression(expr) = &var.declaration.init else {
@@ -348,16 +537,6 @@ impl FnData {
         };
         let name = var.declaration.id.name.clone();
         qual_name.push_str(&name);
-
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &expr.return_type {
-            collect_type_names(&mut referenced_types, t);
-        }
-        for p in &expr.params {
-            if let Some(t) = &p.type_ {
-                collect_type_names(&mut referenced_types, t);
-            }
-        }
 
         FnData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -374,7 +553,7 @@ impl FnData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -603,7 +782,9 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{}:X}}"#, index))),
+            Some("Axis2d | Edge") | Some("Axis3d | Edge") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
+            Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
+            Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
 
             Some("string") => Some((index, format!(r#"{label}${{{}:"string"}}"#, index))),
             Some("bool") => Some((index, format!(r#"{label}${{{}:false}}"#, index))),
@@ -652,8 +833,8 @@ pub struct TyData {
     /// Code examples.
     /// These are tested and we know they compile and execute.
     pub examples: Vec<(String, ExampleProperties)>,
-    #[allow(dead_code)]
-    pub referenced_types: Vec<String>,
+
+    pub module_name: String,
 }
 
 impl TyData {
@@ -661,13 +842,10 @@ impl TyData {
         ty: &crate::parsing::ast::types::TypeDeclaration,
         mut qual_name: String,
         preferred_prefix: &str,
+        module_name: &str,
     ) -> Self {
         let name = ty.name.name.clone();
         qual_name.push_str(&name);
-        let mut referenced_types = HashSet::new();
-        if let Some(t) = &ty.alias {
-            collect_type_names(&mut referenced_types, t);
-        }
 
         TyData {
             preferred_name: format!("{preferred_prefix}{name}"),
@@ -683,7 +861,7 @@ impl TyData {
             summary: None,
             description: None,
             examples: Vec::new(),
-            referenced_types: referenced_types.into_iter().collect(),
+            module_name: module_name.to_owned(),
         }
     }
 
@@ -922,6 +1100,29 @@ impl ApplyMeta for FnData {
     }
 }
 
+impl ApplyMeta for ModData {
+    fn apply_docs(
+        &mut self,
+        summary: Option<String>,
+        description: Option<String>,
+        examples: Vec<(String, ExampleProperties)>,
+    ) {
+        self.summary = summary;
+        self.description = description;
+        assert!(examples.is_empty());
+    }
+
+    fn deprecated(&mut self, deprecated: bool) {
+        assert!(!deprecated);
+    }
+
+    fn doc_hidden(&mut self, doc_hidden: bool) {
+        assert!(!doc_hidden);
+    }
+
+    fn impl_kind(&mut self, _: annotations::Impl) {}
+}
+
 impl ApplyMeta for TyData {
     fn apply_docs(
         &mut self,
@@ -978,52 +1179,23 @@ impl ApplyMeta for ArgData {
     }
 }
 
-fn collect_type_names(acc: &mut HashSet<String>, ty: &Type) {
-    match ty {
-        Type::Primitive(primitive_type) => {
-            acc.insert(collect_type_names_from_primitive(primitive_type));
-        }
-        Type::Array { ty, .. } => {
-            acc.insert(collect_type_names_from_primitive(ty));
-        }
-        Type::Union { tys } => tys.iter().for_each(|t| {
-            acc.insert(collect_type_names_from_primitive(t));
-        }),
-        Type::Object { properties } => properties.iter().for_each(|p| {
-            if let Some(t) = &p.type_ {
-                collect_type_names(acc, t)
-            }
-        }),
-    }
-}
-
-fn collect_type_names_from_primitive(ty: &PrimitiveType) -> String {
-    match ty {
-        PrimitiveType::String => "string".to_owned(),
-        PrimitiveType::Number(_) => "number".to_owned(),
-        PrimitiveType::Boolean => "bool".to_owned(),
-        PrimitiveType::Tag => "tag".to_owned(),
-        PrimitiveType::Named(id) => id.name.clone(),
-    }
-}
-
 #[cfg(test)]
 mod test {
+    use kcl_derive_docs::for_each_std_mod;
+
     use super::*;
 
     #[test]
     fn smoke() {
         let result = walk_prelude();
-        for d in result {
-            if let DocData::Const(d) = d {
-                if d.name == "PI" {
-                    assert!(d.value.unwrap().starts_with('3'));
-                    assert_eq!(d.ty, Some("number".to_owned()));
-                    assert_eq!(d.qual_name, "std::math::PI");
-                    assert!(d.summary.is_some());
-                    assert!(!d.examples.is_empty());
-                    return;
-                }
+        if let DocData::Const(d) = result.find_by_name("PI").unwrap() {
+            if d.name == "PI" {
+                assert!(d.value.as_ref().unwrap().starts_with('3'));
+                assert_eq!(d.ty, Some("number(_?)".to_owned()));
+                assert_eq!(d.qual_name, "std::math::PI");
+                assert!(d.summary.is_some());
+                assert!(!d.examples.is_empty());
+                return;
             }
         }
         panic!("didn't find PI");
@@ -1047,18 +1219,39 @@ mod test {
         );
     }
 
-    #[tokio::test(flavor = "multi_thread", worker_threads = 5)]
-    async fn test_examples() -> miette::Result<()> {
+    #[for_each_std_mod]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_examples() {
         let std = walk_prelude();
-        for d in std {
+        let mut errs = Vec::new();
+
+        let data = if STD_MOD_NAME == "prelude" {
+            &std
+        } else {
+            std.children
+                .get(&format!("M:std::{STD_MOD_NAME}"))
+                .unwrap()
+                .expect_mod()
+        };
+
+        #[allow(clippy::iter_over_hash_type)]
+        for d in data.children.values() {
+            if let DocData::Mod(_) = d {
+                continue;
+            }
+
             for (i, eg) in d.examples().enumerate() {
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
-                        return Err(miette::Report::new(crate::errors::Report {
-                            error: e.error,
-                            filename: format!("{}{i}", d.name()),
-                            kcl_source: eg.to_string(),
-                        }));
+                        errs.push(
+                            miette::Report::new(crate::errors::Report {
+                                error: e.error,
+                                filename: format!("{}{i}", d.name()),
+                                kcl_source: eg.to_string(),
+                            })
+                            .to_string(),
+                        );
+                        continue;
                     }
                     Err(other_err) => panic!("{}", other_err),
                     Ok(img) => img,
@@ -1071,6 +1264,8 @@ mod test {
             }
         }
 
-        Ok(())
+        if !errs.is_empty() {
+            panic!("{}", errs.join("\n\n"));
+        }
     }
 }

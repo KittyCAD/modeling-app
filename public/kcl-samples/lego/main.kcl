@@ -2,7 +2,7 @@
 // A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code.
 
 // Set Units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Define parameters
 lbumps = 3 // number of bumps long
@@ -22,12 +22,12 @@ lSegments = totalLength / lbumps
 wSegments = totalWidth / wbumps
 
 // Add assertions to ensure that the number of bumps are greater than 1
-assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
-assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
+assert(lbumps, isGreaterThan = 1, error = "lbumps must be greater than 1")
+assert(wbumps, isGreaterThan = 1, error = "wbumps must be greater than 1")
 
 // Make the base
 base = startSketchOn(XY)
-  |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
+  |> startProfile(at = [-totalWidth / 2, -totalLength / 2])
   |> line(end = [totalWidth, 0])
   |> line(end = [0, totalLength])
   |> line(end = [-totalWidth, 0])
@@ -36,10 +36,10 @@ base = startSketchOn(XY)
 
 // Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
 shellExtrude = startSketchOn(base, face = START)
-  |> startProfileAt([
+  |> startProfile(at = [
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
-     ], %)
+     ])
   |> line(end = [totalWidth - (2 * t), 0])
   |> line(end = [0, totalLength - (2 * t)])
   |> line(end = [-(totalWidth - (2 * t)), 0])

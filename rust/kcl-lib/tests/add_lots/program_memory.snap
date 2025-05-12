@@ -4,7 +4,8 @@ description: Variables in memory after executing add_lots.kcl
 ---
 {
   "f": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "x": {
     "type": "Number",

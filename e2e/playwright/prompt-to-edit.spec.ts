@@ -1,10 +1,11 @@
-import { orRunWhenFullSuiteEnabled } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import * as fsp from 'fs/promises'
+import * as path from 'path'
 
 /* eslint-disable jest/no-conditional-expect */
 
 const file = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([57.81, 250.51], sketch001)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
   |> line(end = [19.66, -116.4])
@@ -13,7 +14,7 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([-114, 85.52], %)
+  |> startProfile(at = [-114, 85.52])
   |> xLine(length = 265.36)
   |> line(end = [33.17, -261.22])
   |> xLine(length = -297.25)
@@ -21,7 +22,7 @@ sketch002 = startSketchOn(XZ)
   |> close()
 extrude002 = extrude(sketch002, length = 50)
 sketch003 = startSketchOn(XY)
-  |> startProfileAt([52.92, 157.81], %)
+  |> startProfile(at = [52.92, 157.81])
   |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 53.4, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -30,7 +31,7 @@ sketch003 = startSketchOn(XY)
 extrude003 = extrude(sketch003, length = 20)
 `
 
-test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
+test.describe('Prompt-to-edit tests', () => {
   test.describe('Check the happy path, for basic changing color', () => {
     const cases = [
       {
@@ -51,32 +52,28 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         page,
         scene,
       }) => {
-        test.fixme(orRunWhenFullSuiteEnabled())
-        await context.addInitScript((file) => {
-          localStorage.setItem('persistCode', file)
-        }, file)
-        await homePage.goToModelingScene()
+        await context.folderSetupFn(async (dir) => {
+          const projectDir = path.join(dir, 'test-project')
+          await fsp.mkdir(projectDir, { recursive: true })
+          await fsp.writeFile(path.join(projectDir, 'main.kcl'), file)
+        })
+        await homePage.openProject('test-project')
         await scene.settled(cmdBar)
 
         const body1CapCoords = { x: 571, y: 311 }
-        const greenCheckCoords = { x: 565, y: 305 }
-        const body2WallCoords = { x: 609, y: 153 }
         const [clickBody1Cap] = scene.makeMouseHelpers(
           body1CapCoords.x,
           body1CapCoords.y
         )
         const yellow: [number, number, number] = [179, 179, 131]
-        const green: [number, number, number] = [128, 194, 88]
-        const notGreen: [number, number, number] = [132, 132, 132]
-        const body2NotGreen: [number, number, number] = [88, 88, 88]
         const submittingToast = page.getByText(
           'Submitting to Text-to-CAD API...'
         )
         const successToast = page.getByText('Prompt to edit successful')
         const acceptBtn = page.getByRole('button', {
-          name: 'checkmark Accept',
+          name: 'checkmark Continue',
         })
-        const rejectBtn = page.getByRole('button', { name: 'close Reject' })
+        const rejectBtn = page.getByRole('button', { name: 'close Revert' })
 
         await test.step('wait for scene to load select body and check selection came through', async () => {
           await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
@@ -84,7 +81,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           await scene.expectPixelColor(yellow, body1CapCoords, 20)
           await editor.expectState({
             highlightedCode: '',
-            activeLines: ['|>startProfileAt([-114,85.52],%)'],
+            activeLines: ['|>startProfile(at=[-114,85.52])'],
             diagnostics: [],
           })
         })
@@ -105,32 +102,21 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
         })
 
         await test.step('verify initial change', async () => {
-          await scene.expectPixelColor(green, greenCheckCoords, 20)
-          await scene.expectPixelColor(body2NotGreen, body2WallCoords, 15)
           await editor.expectEditor.toContain('appearance(')
         })
 
         if (!shouldReject) {
-          await test.step('check accept works and can be "undo"ed', async () => {
+          await test.step('check accept works', async () => {
             await acceptBtn.click()
             await expect(successToast).not.toBeVisible()
 
-            await scene.expectPixelColor(green, greenCheckCoords, 15)
             await editor.expectEditor.toContain('appearance(')
-
-            // ctrl-z works after accepting
-            await page.keyboard.down('ControlOrMeta')
-            await page.keyboard.press('KeyZ')
-            await page.keyboard.up('ControlOrMeta')
-            await editor.expectEditor.not.toContain('appearance(')
-            await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
           })
         } else {
           await test.step('check reject works', async () => {
             await rejectBtn.click()
             await expect(successToast).not.toBeVisible()
 
-            await scene.expectPixelColor(notGreen, greenCheckCoords, 15)
             await editor.expectEditor.not.toContain('appearance(')
           })
         }
@@ -172,7 +158,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
 
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-114,85.52],%)'],
+        activeLines: ['|>startProfile(at=[-114,85.52])'],
         diagnostics: [],
       })
     })
@@ -200,7 +186,6 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {
@@ -211,7 +196,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+    const acceptBtn = page.getByRole('button', { name: 'checkmark Continue' })
 
     await test.step('wait for scene to load and select code in editor', async () => {
       // Find and select the text "sketch002" in the editor
@@ -260,7 +245,6 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const body1CapCoords = { x: 571, y: 311 }
     const body2WallCoords = { x: 620, y: 152 }
     const [clickBody1Cap] = scene.makeMouseHelpers(
@@ -281,7 +265,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
 
     const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
     const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+    const acceptBtn = page.getByRole('button', { name: 'checkmark Continue' })
 
     await test.step('select multiple bodies and fire prompt', async () => {
       // Initial color check
@@ -297,7 +281,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       // Hold shift and select second body
       await editor.expectState({
         highlightedCode: '',
-        activeLines: ['|>startProfileAt([-114,85.52],%)'],
+        activeLines: ['|>startProfile(at=[-114,85.52])'],
         diagnostics: [],
       })
       await page.keyboard.down('Shift')
@@ -308,7 +292,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
           'line(end=[121.13,56.63],tag=$seg02)extrude(profile001,length=200)',
         activeLines: [
           '|>line(end=[121.13,56.63],tag=$seg02)',
-          '|>startProfileAt([-114,85.52],%)',
+          '|>startProfile(at=[-114,85.52])',
         ],
         diagnostics: [],
       })

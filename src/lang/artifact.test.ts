@@ -10,11 +10,11 @@ describe('testing artifacts', () => {
   // Enable rotations #152
   test('sketch artifacts', async () => {
     const code = `
-const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+mySketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)`
+  // |> rx(45)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
@@ -68,11 +68,11 @@ const mySketch001 = startSketchOn(XY)
   test('extrude artifacts', async () => {
     // Enable rotations #152
     const code = `
-const mySketch001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+mySketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)
+  // |> rx(45)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
@@ -134,6 +134,7 @@ const mySketch001 = startSketchOn(XY)
           ],
         },
         height: 2,
+        sectional: false,
         startCapId: expect.any(String),
         endCapId: expect.any(String),
         units: {
@@ -146,22 +147,22 @@ const mySketch001 = startSketchOn(XY)
     // Enable rotations #152
     // TODO #153 in order for getExtrudeWallTransform to work we need to query the engine for the location of a face.
     const code = `
-const sk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+sk1 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
   |> line(endAbsolute = [2.5, 0])
-  // |> rx(45, %)
-  // |> translate([1,0,1], %)
-  // |> ry(5, %)
-const theExtrude = extrude(sk1, length = 2)
-// const theTransf = getExtrudeWallTransform('p', theExtrude)
-const sk2 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  // |> rx(45)
+  // |> translate(x = 1, y = 0, z = 1)
+  // |> ry(5)
+theExtrude = extrude(sk1, length = 2)
+// theTransf = getExtrudeWallTransform('p', theExtrude)
+sk2 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
   |> line(endAbsolute = [2.5, 0])
-  // |> transform(theTransf, %)
+  // |> transform(theTransf)
   |> extrude(length = 2)
 
 `
@@ -188,8 +189,8 @@ const sk2 = startSketchOn(XY)
               type: 'extrudePlane',
               faceId: expect.any(String),
               tag: {
-                end: 138,
-                start: 136,
+                end: 132,
+                start: 130,
                 commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'p',
@@ -264,6 +265,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {
@@ -365,6 +367,7 @@ const sk2 = startSketchOn(XY)
             ],
           },
           height: 2,
+          sectional: false,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
           units: {

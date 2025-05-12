@@ -6,9 +6,8 @@ description: Variables in memory after executing color-cube.kcl
   "bluePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -17,12 +16,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -30,19 +30,8 @@ description: Variables in memory after executing color-cube.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -62,9 +51,8 @@ description: Variables in memory after executing color-cube.kcl
   "greenPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 50.0,
@@ -73,12 +61,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -86,19 +75,8 @@ description: Variables in memory after executing color-cube.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -131,9 +109,8 @@ description: Variables in memory after executing color-cube.kcl
   "purplePlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": -50.0,
@@ -142,12 +119,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
-        "x": 1.0,
+        "x": -1.0,
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -155,28 +133,16 @@ description: Variables in memory after executing color-cube.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": -0.0,
-        "y": 1.0,
-        "z": -0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
   "redPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 49.0,
         "y": 0.0,
@@ -185,12 +151,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -198,19 +165,8 @@ description: Variables in memory after executing color-cube.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
@@ -241,14 +197,14 @@ description: Variables in memory after executing color-cube.kcl
     }
   },
   "sketchRectangle": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "tealPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": -50.0,
         "y": 0.0,
@@ -257,12 +213,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 0.0,
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -270,28 +227,16 @@ description: Variables in memory after executing color-cube.kcl
         "y": 0.0,
         "z": 1.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   },
   "yellowPlane": {
     "type": "Plane",
     "value": {
-      "id": "[uuid]",
       "artifactId": "[uuid]",
-      "value": "Custom",
+      "id": "[uuid]",
       "origin": {
         "x": 0.0,
         "y": 0.0,
@@ -300,12 +245,13 @@ description: Variables in memory after executing color-cube.kcl
           "type": "Mm"
         }
       },
+      "value": "Custom",
       "xAxis": {
         "x": 1.0,
         "y": 0.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
       },
       "yAxis": {
@@ -313,19 +259,8 @@ description: Variables in memory after executing color-cube.kcl
         "y": 1.0,
         "z": 0.0,
         "units": {
-          "type": "Mm"
+          "type": "Unknown"
         }
-      },
-      "zAxis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0,
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "units": {
-        "type": "Mm"
       }
     }
   }

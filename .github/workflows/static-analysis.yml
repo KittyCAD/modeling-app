@@ -25,7 +25,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - run: npm install
-      - run: npm run fmt-check
+      - run: npm run fmt:check
 
   npm-build-wasm:
     # Build the wasm blob once on the fastest runner.
@@ -171,13 +171,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
-      - name: Install codespell
-        run: |
-            python -m pip install codespell
       - name: Run codespell
-        run: codespell --config .codespellrc # Edit this file to tweak the typo list and other configuration.
+        uses: crate-ci/typos@v1.32.0
 
   npm-unit-test-kcl-samples:
     runs-on: ubuntu-latest

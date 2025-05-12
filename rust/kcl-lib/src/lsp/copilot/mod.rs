@@ -262,16 +262,16 @@ impl Backend {
         // if self.dev_mode
         if false {
             completion_list.push(
-                r#"fn cube = (pos, scale) => {
-  const sg = startSketchOn('XY')
-    |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+                r#"fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
   return sg
 }
-const part001 = cube([0,0], 20)
-    |> close(%)
+part001 = cube(pos = [0,0], scale = 20)
+    |> close()
     |> extrude(length=20)"#
                     .to_string(),
             );

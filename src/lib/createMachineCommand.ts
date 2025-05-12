@@ -123,6 +123,9 @@ export function createMachineCommand<
   if ('reviewMessage' in commandConfig) {
     command.reviewMessage = commandConfig.reviewMessage
   }
+  if ('status' in commandConfig) {
+    command.status = commandConfig.status
+  }
 
   return command
 }
@@ -211,6 +214,15 @@ export function buildCommandArgument<
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,
     } satisfies CommandArgument<O, T> & { inputType: 'kcl' }
+  } else if (arg.inputType === 'string') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
+        : arg.defaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'string' }
   } else {
     return {
       inputType: arg.inputType,

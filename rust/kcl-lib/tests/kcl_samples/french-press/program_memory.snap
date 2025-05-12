@@ -110,24 +110,24 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.0,
+            "z": 25.4,
             "units": {
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -135,19 +135,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -179,7 +168,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -311,7 +301,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -319,15 +309,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -374,24 +356,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -399,19 +381,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -443,7 +414,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -478,7 +450,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -607,7 +580,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -615,15 +588,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -670,24 +635,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -695,19 +660,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -739,7 +693,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -774,7 +729,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -903,7 +859,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -911,15 +867,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -966,24 +914,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.0,
+                      "z": 25.4,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -991,19 +939,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1035,7 +972,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1070,7 +1008,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -1121,24 +1060,24 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
-            "z": 1.12,
+            "z": 28.448,
             "units": {
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -1146,19 +1085,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -1190,7 +1118,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude004": {
@@ -1251,7 +1180,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1259,15 +1188,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1314,24 +1235,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1339,19 +1260,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1383,7 +1293,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1418,7 +1329,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1476,7 +1388,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1484,15 +1396,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1539,24 +1443,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1564,19 +1468,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1608,7 +1501,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1643,7 +1537,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1701,7 +1596,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1709,15 +1604,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1764,24 +1651,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1789,19 +1676,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -1833,7 +1709,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -1868,7 +1745,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1926,7 +1804,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1934,15 +1812,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1989,24 +1859,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2014,19 +1884,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2058,7 +1917,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2093,7 +1953,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2151,7 +2012,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2159,15 +2020,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2214,24 +2067,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2239,19 +2092,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2283,7 +2125,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2318,7 +2161,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2376,7 +2220,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2384,15 +2228,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2439,24 +2275,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2464,19 +2300,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2508,7 +2333,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2543,7 +2369,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2601,7 +2428,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2609,15 +2436,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2664,24 +2483,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2689,19 +2508,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2733,7 +2541,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2768,7 +2577,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2826,7 +2636,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2834,15 +2644,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2889,24 +2691,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2914,19 +2716,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -2958,7 +2749,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -2993,7 +2785,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3056,7 +2849,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3064,15 +2857,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3119,24 +2904,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3144,19 +2929,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3188,7 +2962,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3223,7 +2998,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3281,7 +3057,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3289,15 +3065,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3344,24 +3112,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3369,19 +3137,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3413,7 +3170,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3448,7 +3206,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3506,7 +3265,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3514,15 +3273,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3569,24 +3320,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3594,19 +3345,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3638,7 +3378,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3673,7 +3414,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3731,7 +3473,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3739,15 +3481,7 @@ description: Variables in memory after executing french-press.kcl
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3794,24 +3528,24 @@ description: Variables in memory after executing french-press.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "Custom",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
-                      "z": 1.12,
+                      "z": 28.448,
                       "units": {
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "Custom",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3819,19 +3553,8 @@ description: Variables in memory after executing french-press.kcl
                       "y": 1.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": 0.0,
-                      "z": 1.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Inches"
                     }
                   },
                   "start": {
@@ -3863,7 +3586,8 @@ description: Variables in memory after executing french-press.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Inches"
@@ -3898,7 +3622,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": null,
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -3949,10 +3674,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -3961,12 +3684,14 @@ description: Variables in memory after executing french-press.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -3974,19 +3699,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4018,7 +3732,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude007": {
@@ -4396,24 +4111,24 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
-            "y": -0.325,
+            "y": -8.254999999999999,
             "z": 0.0,
             "units": {
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -4421,19 +4136,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4465,7 +4169,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "handleThickness": {
@@ -4485,7 +4190,7 @@ description: Variables in memory after executing french-press.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4529,7 +4234,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4573,7 +4278,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4617,7 +4322,7 @@ description: Variables in memory after executing french-press.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -4694,9 +4399,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 357,
-            "end": 378,
-            "start": 357,
+            "commentStart": 375,
+            "end": 396,
+            "start": 375,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -4707,9 +4412,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 461,
-            "end": 482,
-            "start": 461,
+            "commentStart": 479,
+            "end": 500,
+            "start": 479,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -4720,9 +4425,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 584,
-            "end": 605,
-            "start": 584,
+            "commentStart": 602,
+            "end": 623,
+            "start": 602,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -4750,9 +4455,9 @@ description: Variables in memory after executing french-press.kcl
               5.7
             ],
             "tag": {
-              "commentStart": 357,
-              "end": 378,
-              "start": 357,
+              "commentStart": 375,
+              "end": 396,
+              "start": 375,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -4775,9 +4480,9 @@ description: Variables in memory after executing french-press.kcl
               5.7
             ],
             "tag": {
-              "commentStart": 461,
-              "end": 482,
-              "start": 461,
+              "commentStart": 479,
+              "end": 500,
+              "start": 479,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -4800,9 +4505,9 @@ description: Variables in memory after executing french-press.kcl
               6.45
             ],
             "tag": {
-              "commentStart": 584,
-              "end": 605,
-              "start": 584,
+              "commentStart": 602,
+              "end": 623,
+              "start": 602,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -4855,10 +4560,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -4867,12 +4570,14 @@ description: Variables in memory after executing french-press.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -4880,19 +4585,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -4938,7 +4632,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch002": {
@@ -4963,9 +4658,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1073,
-                "end": 1079,
-                "start": 1073,
+                "commentStart": 1091,
+                "end": 1097,
+                "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -4983,9 +4678,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1205,
+                "end": 1211,
+                "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5003,9 +4698,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1326,
+                "end": 1332,
+                "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5023,9 +4718,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1425,
+                "end": 1433,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5043,9 +4738,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1511,
+                "end": 1517,
+                "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5063,9 +4758,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1642,
+                "end": 1648,
+                "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5083,9 +4778,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1775,
+                "end": 1781,
+                "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5139,9 +4834,9 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1073,
-                  "end": 1079,
-                  "start": 1073,
+                  "commentStart": 1091,
+                  "end": 1097,
+                  "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5189,9 +4884,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1205,
+                  "end": 1211,
+                  "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5239,9 +4934,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1326,
+                  "end": 1332,
+                  "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5289,9 +4984,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1425,
+                  "end": 1433,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -5333,9 +5028,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1511,
+                  "end": 1517,
+                  "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -5383,9 +5078,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1642,
+                  "end": 1648,
+                  "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -5433,9 +5128,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1775,
+                  "end": 1781,
+                  "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -5513,10 +5208,8 @@ description: Variables in memory after executing french-press.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -5525,12 +5218,14 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Inches"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
-                "x": 1.0,
-                "y": 1.0,
+                "x": 0.7071067811865475,
+                "y": 0.7071067811865475,
                 "z": 0.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5538,19 +5233,8 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -5612,7 +5296,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5634,9 +5319,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1073,
-                "end": 1079,
-                "start": 1073,
+                "commentStart": 1091,
+                "end": 1097,
+                "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -5654,9 +5339,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1205,
+                "end": 1211,
+                "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -5674,9 +5359,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1326,
+                "end": 1332,
+                "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -5694,9 +5379,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1425,
+                "end": 1433,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -5714,9 +5399,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1511,
+                "end": 1517,
+                "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -5734,9 +5419,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1642,
+                "end": 1648,
+                "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -5754,9 +5439,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1775,
+                "end": 1781,
+                "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -5810,9 +5495,9 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1073,
-                  "end": 1079,
-                  "start": 1073,
+                  "commentStart": 1091,
+                  "end": 1097,
+                  "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -5860,9 +5545,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1205,
+                  "end": 1211,
+                  "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -5910,9 +5595,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1326,
+                  "end": 1332,
+                  "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -5960,9 +5645,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1425,
+                  "end": 1433,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6004,9 +5689,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1511,
+                  "end": 1517,
+                  "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6054,9 +5739,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1642,
+                  "end": 1648,
+                  "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6104,9 +5789,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1775,
+                  "end": 1781,
+                  "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6184,10 +5869,8 @@ description: Variables in memory after executing french-press.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6196,12 +5879,14 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Inches"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
-                "x": 1.0,
-                "y": 1.0,
+                "x": 0.7071067811865475,
+                "y": 0.7071067811865475,
                 "z": 0.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6209,19 +5894,8 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -6283,7 +5957,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6305,9 +5980,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1073,
-                "end": 1079,
-                "start": 1073,
+                "commentStart": 1091,
+                "end": 1097,
+                "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6325,9 +6000,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1205,
+                "end": 1211,
+                "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -6345,9 +6020,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1326,
+                "end": 1332,
+                "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -6365,9 +6040,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1425,
+                "end": 1433,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -6385,9 +6060,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1511,
+                "end": 1517,
+                "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -6405,9 +6080,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1642,
+                "end": 1648,
+                "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -6425,9 +6100,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1775,
+                "end": 1781,
+                "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -6481,9 +6156,9 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1073,
-                  "end": 1079,
-                  "start": 1073,
+                  "commentStart": 1091,
+                  "end": 1097,
+                  "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -6531,9 +6206,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1205,
+                  "end": 1211,
+                  "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -6581,9 +6256,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1326,
+                  "end": 1332,
+                  "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -6631,9 +6306,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1425,
+                  "end": 1433,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -6675,9 +6350,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1511,
+                  "end": 1517,
+                  "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -6725,9 +6400,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1642,
+                  "end": 1648,
+                  "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -6775,9 +6450,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1775,
+                  "end": 1781,
+                  "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -6855,10 +6530,8 @@ description: Variables in memory after executing french-press.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -6867,12 +6540,14 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Inches"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
-                "x": 1.0,
-                "y": 1.0,
+                "x": 0.7071067811865475,
+                "y": 0.7071067811865475,
                 "z": 0.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6880,19 +6555,8 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -6954,7 +6618,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6976,9 +6641,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1073,
-                "end": 1079,
-                "start": 1073,
+                "commentStart": 1091,
+                "end": 1097,
+                "start": 1091,
                 "type": "TagDeclarator",
                 "value": "edge1"
               },
@@ -6996,9 +6661,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1220,
-                "end": 1226,
-                "start": 1220,
+                "commentStart": 1205,
+                "end": 1211,
+                "start": 1205,
                 "type": "TagDeclarator",
                 "value": "edge2"
               },
@@ -7016,9 +6681,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1374,
-                "end": 1380,
-                "start": 1374,
+                "commentStart": 1326,
+                "end": 1332,
+                "start": 1326,
                 "type": "TagDeclarator",
                 "value": "edge3"
               },
@@ -7036,9 +6701,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1506,
-                "end": 1514,
-                "start": 1506,
+                "commentStart": 1425,
+                "end": 1433,
+                "start": 1425,
                 "type": "TagDeclarator",
                 "value": "edgeLen"
               },
@@ -7056,9 +6721,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1592,
-                "end": 1598,
-                "start": 1592,
+                "commentStart": 1511,
+                "end": 1517,
+                "start": 1511,
                 "type": "TagDeclarator",
                 "value": "edge4"
               },
@@ -7076,9 +6741,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1756,
-                "end": 1762,
-                "start": 1756,
+                "commentStart": 1642,
+                "end": 1648,
+                "start": 1642,
                 "type": "TagDeclarator",
                 "value": "edge5"
               },
@@ -7096,9 +6761,9 @@ description: Variables in memory after executing french-press.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 1922,
-                "end": 1928,
-                "start": 1922,
+                "commentStart": 1775,
+                "end": 1781,
+                "start": 1775,
                 "type": "TagDeclarator",
                 "value": "edge6"
               },
@@ -7152,9 +6817,9 @@ description: Variables in memory after executing french-press.kcl
                   5.7
                 ],
                 "tag": {
-                  "commentStart": 1073,
-                  "end": 1079,
-                  "start": 1073,
+                  "commentStart": 1091,
+                  "end": 1097,
+                  "start": 1091,
                   "type": "TagDeclarator",
                   "value": "edge1"
                 },
@@ -7202,9 +6867,9 @@ description: Variables in memory after executing french-press.kcl
                   0.3732
                 ],
                 "tag": {
-                  "commentStart": 1220,
-                  "end": 1226,
-                  "start": 1220,
+                  "commentStart": 1205,
+                  "end": 1211,
+                  "start": 1205,
                   "type": "TagDeclarator",
                   "value": "edge2"
                 },
@@ -7252,9 +6917,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.966
                 ],
                 "tag": {
-                  "commentStart": 1374,
-                  "end": 1380,
-                  "start": 1374,
+                  "commentStart": 1326,
+                  "end": 1332,
+                  "start": 1326,
                   "type": "TagDeclarator",
                   "value": "edge3"
                 },
@@ -7302,9 +6967,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.133
                 ],
                 "tag": {
-                  "commentStart": 1506,
-                  "end": 1514,
-                  "start": 1506,
+                  "commentStart": 1425,
+                  "end": 1433,
+                  "start": 1425,
                   "type": "TagDeclarator",
                   "value": "edgeLen"
                 },
@@ -7346,9 +7011,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.033
                 ],
                 "tag": {
-                  "commentStart": 1592,
-                  "end": 1598,
-                  "start": 1592,
+                  "commentStart": 1511,
+                  "end": 1517,
+                  "start": 1511,
                   "type": "TagDeclarator",
                   "value": "edge4"
                 },
@@ -7396,9 +7061,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1134
                 ],
                 "tag": {
-                  "commentStart": 1756,
-                  "end": 1762,
-                  "start": 1756,
+                  "commentStart": 1642,
+                  "end": 1648,
+                  "start": 1642,
                   "type": "TagDeclarator",
                   "value": "edge5"
                 },
@@ -7446,9 +7111,9 @@ description: Variables in memory after executing french-press.kcl
                   -0.1789
                 ],
                 "tag": {
-                  "commentStart": 1922,
-                  "end": 1928,
-                  "start": 1922,
+                  "commentStart": 1775,
+                  "end": 1781,
+                  "start": 1775,
                   "type": "TagDeclarator",
                   "value": "edge6"
                 },
@@ -7526,10 +7191,8 @@ description: Variables in memory after executing french-press.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": -0.26,
                 "y": 0.26,
@@ -7538,12 +7201,14 @@ description: Variables in memory after executing french-press.kcl
                   "type": "Inches"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
-                "x": 1.0,
-                "y": 1.0,
+                "x": 0.7071067811865475,
+                "y": 0.7071067811865475,
                 "z": 0.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7551,19 +7216,8 @@ description: Variables in memory after executing french-press.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Inches"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "units": {
-                "type": "Inches"
               }
             },
             "start": {
@@ -7625,7 +7279,8 @@ description: Variables in memory after executing french-press.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Inches"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -7663,24 +7318,24 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.0,
+          "z": 25.4,
           "units": {
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -7688,19 +7343,8 @@ description: Variables in memory after executing french-press.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -7830,7 +7474,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -7838,15 +7482,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -7893,24 +7529,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -7918,19 +7554,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -7962,7 +7587,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8092,7 +7718,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -8100,15 +7726,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -8155,24 +7773,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -8180,19 +7798,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -8224,7 +7831,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8354,7 +7962,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -8362,15 +7970,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -8417,24 +8017,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
+                    "z": 25.4,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -8442,19 +8042,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -8486,7 +8075,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -8538,9 +8128,9 @@ description: Variables in memory after executing french-press.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3142,
-            "end": 3147,
-            "start": 3142,
+            "commentStart": 2929,
+            "end": 2934,
+            "start": 2929,
             "type": "TagDeclarator",
             "value": "seg1"
           },
@@ -8608,9 +8198,9 @@ description: Variables in memory after executing french-press.kcl
               1.11
             ],
             "tag": {
-              "commentStart": 3142,
-              "end": 3147,
-              "start": 3142,
+              "commentStart": 2929,
+              "end": 2934,
+              "start": 2929,
               "type": "TagDeclarator",
               "value": "seg1"
             },
@@ -8720,10 +8310,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -8732,12 +8320,14 @@ description: Variables in memory after executing french-press.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -8745,19 +8335,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -8795,7 +8374,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch006": {
@@ -9018,10 +8598,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -9030,12 +8608,14 @@ description: Variables in memory after executing french-press.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -9043,19 +8623,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -9087,7 +8656,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch007": {
@@ -9123,24 +8693,24 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
-          "z": 1.12,
+          "z": 28.448,
           "units": {
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -9148,19 +8718,8 @@ description: Variables in memory after executing french-press.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -9233,7 +8792,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -9241,15 +8800,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -9296,24 +8847,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -9321,19 +8872,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9365,7 +8905,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9438,7 +8979,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -9446,15 +8987,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -9501,24 +9034,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -9526,19 +9059,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9570,7 +9092,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9643,7 +9166,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -9651,15 +9174,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -9706,24 +9221,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -9731,19 +9246,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9775,7 +9279,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -9848,7 +9353,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -9856,15 +9361,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -9911,24 +9408,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -9936,19 +9433,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -9980,7 +9466,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10053,7 +9540,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -10061,15 +9548,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -10116,24 +9595,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -10141,19 +9620,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10185,7 +9653,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10258,7 +9727,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -10266,15 +9735,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -10321,24 +9782,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -10346,19 +9807,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10390,7 +9840,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10463,7 +9914,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -10471,15 +9922,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -10526,24 +9969,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -10551,19 +9994,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10595,7 +10027,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10668,7 +10101,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -10676,15 +10109,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -10731,24 +10156,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -10756,19 +10181,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -10800,7 +10214,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -10878,7 +10293,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -10886,15 +10301,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -10941,24 +10348,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -10966,19 +10373,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11010,7 +10406,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11083,7 +10480,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -11091,15 +10488,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -11146,24 +10535,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -11171,19 +10560,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11215,7 +10593,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11288,7 +10667,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -11296,15 +10675,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -11351,24 +10722,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -11376,19 +10747,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11420,7 +10780,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11493,7 +10854,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 0.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "yAxis": {
@@ -11501,15 +10862,7 @@ description: Variables in memory after executing french-press.kcl
               "y": 1.0,
               "z": 0.0,
               "units": {
-                "type": "Mm"
-              }
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0,
-              "units": {
-                "type": "Mm"
+                "type": "Unknown"
               }
             },
             "solid": {
@@ -11556,24 +10909,24 @@ description: Variables in memory after executing french-press.kcl
                   }
                 ],
                 "on": {
-                  "type": "plane",
-                  "id": "[uuid]",
                   "artifactId": "[uuid]",
-                  "value": "Custom",
+                  "id": "[uuid]",
                   "origin": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.12,
+                    "z": 28.448,
                     "units": {
                       "type": "Mm"
                     }
                   },
+                  "type": "plane",
+                  "value": "Custom",
                   "xAxis": {
                     "x": 1.0,
                     "y": 0.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
                   },
                   "yAxis": {
@@ -11581,19 +10934,8 @@ description: Variables in memory after executing french-press.kcl
                     "y": 1.0,
                     "z": 0.0,
                     "units": {
-                      "type": "Mm"
+                      "type": "Unknown"
                     }
-                  },
-                  "zAxis": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 1.0,
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "units": {
-                    "type": "Inches"
                   }
                 },
                 "start": {
@@ -11625,7 +10967,8 @@ description: Variables in memory after executing french-press.kcl
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              }
+              },
+              "sectional": false
             },
             "units": {
               "type": "Inches"
@@ -11691,10 +11034,8 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -11703,12 +11044,14 @@ description: Variables in memory after executing french-press.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -11716,19 +11059,8 @@ description: Variables in memory after executing french-press.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {
@@ -11971,10 +11303,8 @@ description: Variables in memory after executing french-press.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -11983,12 +11313,14 @@ description: Variables in memory after executing french-press.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -11996,19 +11328,8 @@ description: Variables in memory after executing french-press.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -12040,7 +11361,8 @@ description: Variables in memory after executing french-press.kcl
       "endCapId": null,
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "sketch012": {
@@ -12328,24 +11650,24 @@ description: Variables in memory after executing french-press.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "Custom",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
-          "y": -0.325,
+          "y": -8.254999999999999,
           "z": 0.0,
           "units": {
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "Custom",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -12353,19 +11675,8 @@ description: Variables in memory after executing french-press.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

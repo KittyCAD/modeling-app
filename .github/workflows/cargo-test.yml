@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - main
-
   pull_request:
   workflow_dispatch:
 permissions:
@@ -13,10 +12,14 @@ concurrency:
   cancel-in-progress: true
 name: cargo test
 jobs:
-  cargotest:
-    name: cargo test
-    runs-on: ubuntu-latest-8-cores
+  build-test-artifacts:
+    name: Build test artifacts
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=8cpu-linux-x64
+      - extras=s3-cache
     steps:
+      - uses: runs-on/action@v1
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
@@ -39,7 +42,6 @@ jobs:
         env:
           GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
           OS_NAME: ${{ env.OS_NAME }}
-      - uses: taiki-e/install-action@cargo-llvm-cov
       - uses: taiki-e/install-action@nextest
       - name: Install just
         uses: taiki-e/install-action@just
@@ -81,11 +83,11 @@ jobs:
         run: |
           set -euo pipefail
           cd rust
-          cargo nextest run --workspace --retries=2 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run --workspace --features artifact-graph --retries=10 --no-fail-fast --profile ci simulation_tests::kcl_samples 2>&1 | tee /tmp/github-actions.log
         env:
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_HOST: https://api.dev.zoo.dev
           RUST_BACKTRACE: full
-          RUST_MIN_STACK: 10485760000
       - name: Commit differences
         if: steps.path-changes.outputs.outside-kcl-samples == 'false' && steps.cargo-test-kcl-samples.outcome == 'failure'
         shell: bash
@@ -96,9 +98,7 @@ jobs:
           popd
           git add \
             rust/kcl-lib/tests \
-            public/kcl-samples/manifest.json \
-            public/kcl-samples/README.md \
-            public/kcl-samples/screenshots
+            public/kcl-samples
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
@@ -114,27 +114,116 @@ jobs:
         env:
           # The default is auto, and insta behaves differently in CI vs. not.
           INSTA_UPDATE: always
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_HOST: https://api.dev.zoo.dev
           # Configure nextest when it's run by insta (via just).
           NEXTEST_PROFILE: ci
           RUST_BACKTRACE: full
-          RUST_MIN_STACK: 10485760000
-      - name: cargo test
-        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
+      - name: Build and archive tests
+        run: |
+          cd rust
+          cargo nextest archive --workspace --features artifact-graph --archive-file nextest-archive.tar.zst
+      - name: Upload archive to workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: nextest-archive
+          path: rust/nextest-archive.tar.zst
+  run-test-artifacts:
+    name: cargo test (shard ${{ matrix.partitionIndex}})
+    runs-on:
+      - runs-on=${{ github.run_id }}
+      - runner=32cpu-linux-x64
+      - extras=s3-cache
+    needs: build-test-artifacts
+    strategy:
+      fail-fast: false
+      matrix:
+        partitionIndex: [1, 2, 3, 4, 5, 6]
+        partitionTotal: [6]
+    steps:
+      - uses: runs-on/action@v1
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false # Configured below.
+      - name: Start Vector
+        run: .github/ci-cd-scripts/start-vector-ubuntu.sh
+        env:
+          GH_ACTIONS_AXIOM_TOKEN: ${{ secrets.GH_ACTIONS_AXIOM_TOKEN }}
+          OS_NAME: ${{ env.OS_NAME }}
+      - uses: taiki-e/install-action@nextest
+      - name: Download archive
+        uses: actions/download-artifact@v4
+        with:
+          name: nextest-archive
+      - name: Run tests
         shell: bash
         run: |-
+          cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
+          ls -lah
           cd rust
-          cargo llvm-cov nextest --workspace --lcov --output-path lcov.info --retries=2 --no-fail-fast -P ci 2>&1 | tee /tmp/github-actions.log
+          cargo nextest run \
+           --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
+           --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
+           2>&1 | tee /tmp/github-actions.log
         env:
-          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN}}
-          RUST_MIN_STACK: 10485760000
-      - name: Upload to codecov.io
-        if: steps.path-changes.outputs.outside-kcl-samples == 'true'
-        uses: codecov/codecov-action@v5
+          KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
+          ZOO_HOST: https://api.dev.zoo.dev
+      - name: Upload results
+        if: always()
+        run: .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+  run-wasm-tests:
+    name: Run wasm tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use correct Rust toolchain
+        shell: bash
+        run: |
+          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
+      - name: Install rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          token: ${{secrets.CODECOV_TOKEN}}
-          fail_ci_if_error: true
-          flags: rust
-          verbose: true
-          files: lcov.info
-
+          cache: false # Configured below.
+      - uses: taiki-e/install-action@d4635f2de61c8b8104d59cd4aede2060638378cc
+        with:
+          tool: wasm-pack
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: './rust'
+      - name: Build Wasm
+        shell: bash
+        run: |
+          npm install
+          npm run build:wasm
+      - name: Run wasm tests
+        run: |
+          cd rust
+          cd kcl-wasm-lib
+          #wasm-pack test --headless --chrome
+        env:
+          KITTYCAD_API_TOKEN: ${{ secrets.KITTYCAD_API_TOKEN_DEV }}
+          NODE_ENV: development

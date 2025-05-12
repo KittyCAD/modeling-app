@@ -22,9 +22,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 124,
-            "end": 130,
-            "start": 124,
+            "commentStart": 122,
+            "end": 128,
+            "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -35,9 +35,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 164,
-            "end": 170,
-            "start": 164,
+            "commentStart": 162,
+            "end": 168,
+            "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -84,9 +84,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "tag": {
-              "commentStart": 124,
-              "end": 130,
-              "start": 124,
+              "commentStart": 122,
+              "end": 128,
+              "start": 122,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -109,9 +109,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "tag": {
-              "commentStart": 164,
-              "end": 170,
-              "start": 164,
+              "commentStart": 162,
+              "end": 168,
+              "start": 162,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -164,10 +164,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -176,12 +174,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -189,19 +189,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -263,7 +252,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -386,7 +376,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -394,15 +384,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -422,9 +404,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 124,
-                  "end": 130,
-                  "start": 124,
+                  "commentStart": 122,
+                  "end": 128,
+                  "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -435,9 +417,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 164,
-                  "end": 170,
-                  "start": 164,
+                  "commentStart": 162,
+                  "end": 168,
+                  "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -484,9 +466,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "tag": {
-                    "commentStart": 124,
-                    "end": 130,
-                    "start": 124,
+                    "commentStart": 122,
+                    "end": 128,
+                    "start": 122,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -509,9 +491,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "tag": {
-                    "commentStart": 164,
-                    "end": 170,
-                    "start": 164,
+                    "commentStart": 162,
+                    "end": 168,
+                    "start": 162,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -564,10 +546,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XY",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -576,12 +556,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XY",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -589,19 +571,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "y": 1.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": 0.0,
-                  "z": 1.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -663,7 +634,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             ],
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -698,7 +670,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -746,9 +719,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "tag": {
-            "commentStart": 124,
-            "end": 130,
-            "start": 124,
+            "commentStart": 122,
+            "end": 128,
+            "start": 122,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -771,9 +744,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "tag": {
-            "commentStart": 164,
-            "end": 170,
-            "start": 164,
+            "commentStart": 162,
+            "end": 168,
+            "start": 162,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -826,10 +799,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -838,12 +809,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -851,19 +824,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -994,7 +956,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1002,15 +964,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -1030,9 +984,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 124,
-                "end": 130,
-                "start": 124,
+                "commentStart": 122,
+                "end": 128,
+                "start": 122,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1043,9 +997,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 164,
-                "end": 170,
-                "start": 164,
+                "commentStart": 162,
+                "end": 168,
+                "start": 162,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1092,9 +1046,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 124,
-                  "end": 130,
-                  "start": 124,
+                  "commentStart": 122,
+                  "end": 128,
+                  "start": 122,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1117,9 +1071,9 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "tag": {
-                  "commentStart": 164,
-                  "end": 170,
-                  "start": 164,
+                  "commentStart": 162,
+                  "end": 168,
+                  "start": 162,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1172,10 +1126,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XY",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1184,12 +1136,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XY",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1197,19 +1151,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": 0.0,
-                "z": 1.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1271,7 +1214,8 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

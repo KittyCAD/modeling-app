@@ -2,7 +2,6 @@ import * as TWEEN from '@tweenjs/tween.js'
 import type {
   Group,
   Intersection,
-  Mesh,
   MeshBasicMaterial,
   Object3D,
   Object3DEventMap,
@@ -13,6 +12,7 @@ import {
   Color,
   GridHelper,
   LineBasicMaterial,
+  Mesh,
   OrthographicCamera,
   Raycaster,
   Scene,
@@ -42,11 +42,12 @@ import { compareVec2Epsilon2 } from '@src/lang/std/sketch'
 import type { Axis, NonCodeSelection } from '@src/lib/selections'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
-import { getAngle, throttle } from '@src/lib/utils'
+import { getAngle, getLength, throttle } from '@src/lib/utils'
 import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingMachine'
+import { PROFILE_START } from '@src/clientSideScene/sceneConstants'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -68,6 +69,7 @@ interface OnDragCallbackArgs extends OnMouseEnterLeaveArgs {
   }
   intersects: Intersection<Object3D<Object3DEventMap>>[]
 }
+
 export interface OnClickCallbackArgs {
   mouseEvent: MouseEvent
   intersectionPoint?: {
@@ -93,13 +95,13 @@ interface OnMoveCallbackArgs {
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
 
 type Voidish = void | Promise<void>
+
 export class SceneInfra {
   static instance: SceneInfra
   readonly scene: Scene
   readonly renderer: WebGLRenderer
   readonly labelRenderer: CSS2DRenderer
   readonly camControls: CameraControls
-  private readonly fov = 45
   isFovAnimationInProgress = false
   _baseUnitMultiplier = 1
   _theme: Themes = Themes.System
@@ -130,6 +132,7 @@ export class SceneInfra {
     this.onMouseLeave = callbacks.onMouseLeave || this.onMouseLeave
     this.selected = null // following selections between callbacks being set is too tricky
   }
+
   set baseUnit(unit: BaseUnit) {
     this._baseUnitMultiplier = baseUnitTomm(unit)
     this.scene.scale.set(
@@ -138,9 +141,11 @@ export class SceneInfra {
       this._baseUnitMultiplier
     )
   }
+
   set theme(theme: Themes) {
     this._theme = theme
   }
+
   resetMouseListeners = () => {
     this.setCallbacks({
       onDragStart: () => {},
@@ -155,22 +160,25 @@ export class SceneInfra {
 
   modelingSend: SendType = (() => {}) as any
   throttledModelingSend: any = (() => {}) as any
+
   setSend(send: SendType) {
     this.modelingSend = send
     this.throttledModelingSend = throttle(send, 100)
   }
+
   overlayTimeout = 0
   callbacks: (() => SegmentOverlayPayload | null)[] = []
+
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
-      type: 'add-many',
+      type: 'set-many',
       overlays: {},
     }
     callbacks.forEach((cb) => {
       const overlay = cb()
       if (overlay?.type === 'set-one') {
         segmentOverlayPayload.overlays[overlay.pathToNodeString] = overlay.seg
-      } else if (overlay?.type === 'add-many') {
+      } else if (overlay?.type === 'set-many') {
         Object.assign(segmentOverlayPayload.overlays, overlay.overlays)
       }
     })
@@ -179,6 +187,7 @@ export class SceneInfra {
       data: segmentOverlayPayload,
     })
   }
+
   overlayCallbacks(
     callbacks: (() => SegmentOverlayPayload | null)[],
     instant = false
@@ -195,6 +204,7 @@ export class SceneInfra {
   }
 
   overlayThrottleMap: { [pathToNodeString: string]: number } = {}
+
   updateOverlayDetails({
     handle,
     group,
@@ -221,7 +231,10 @@ export class SceneInfra {
       // Project that position to screen space
       vector.project(this.camControls.camera)
 
-      const _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+      let _angle = 45
+      if (group.name !== PROFILE_START) {
+        _angle = typeof angle === 'number' ? angle : getAngle(from, to)
+      }
 
       const x = (vector.x * 0.5 + 0.5) * window.innerWidth
       const y = (-vector.y * 0.5 + 0.5) * window.innerHeight
@@ -254,6 +267,8 @@ export class SceneInfra {
     hasBeenDragged: boolean
   } | null = null
   mouseDownVector: null | Vector2 = null
+  private isRenderingPaused = false
+  private lastFrameTime = 0
 
   constructor(engineCommandManager: EngineCommandManager) {
     // SCENE
@@ -338,8 +353,20 @@ export class SceneInfra {
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
-      this.renderer.render(this.scene, this.camControls.camera)
-      this.labelRenderer.render(this.scene, this.camControls.camera)
+
+      // If rendering is paused, only render if enough time has passed to maintain smooth animation
+      if (this.isRenderingPaused) {
+        const currentTime = performance.now()
+        if (currentTime - this.lastFrameTime > 1000 / 30) {
+          // Limit to 30fps while paused
+          this.renderer.render(this.scene, this.camControls.camera)
+          this.labelRenderer.render(this.scene, this.camControls.camera)
+          this.lastFrameTime = currentTime
+        }
+      } else {
+        this.renderer.render(this.scene, this.camControls.camera)
+        this.labelRenderer.render(this.scene, this.camControls.camera)
+      }
     }
   }
 
@@ -349,6 +376,7 @@ export class SceneInfra {
     window.removeEventListener('resize', this.onWindowResize)
     // Dispose of any other resources like geometries, materials, textures
   }
+
   getClientSceneScaleFactor(meshOrGroup: Mesh | Group) {
     const orthoFactor = orthoScale(this.camControls.camera)
     const factor =
@@ -358,6 +386,7 @@ export class SceneInfra {
       this._baseUnitMultiplier
     return factor
   }
+
   getPlaneIntersectPoint = (): {
     twoD?: Vector2
     threeD?: Vector3
@@ -556,6 +585,7 @@ export class SceneInfra {
       (a, b) => a.distance - b.distance
     )
   }
+
   updateMouseState(mouseState: MouseState) {
     if (this.lastMouseState.type === mouseState.type) return
     this.lastMouseState = mouseState
@@ -664,6 +694,22 @@ export class SceneInfra {
         mesh.userData.isSelected = false
       }
     })
+  }
+
+  screenSpaceDistance(a: Coords2d, b: Coords2d): number {
+    const dummy = new Mesh()
+    dummy.position.set(0, 0, 0)
+    const scale = this.getClientSceneScaleFactor(dummy)
+    return getLength(a, b) / scale
+  }
+  pauseRendering() {
+    this.isRenderingPaused = true
+    // Store the current time to prevent unnecessary updates
+    this.lastFrameTime = performance.now()
+  }
+
+  resumeRendering() {
+    this.isRenderingPaused = false
   }
 }
 

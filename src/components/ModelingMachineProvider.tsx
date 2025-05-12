@@ -8,7 +8,7 @@ import React, {
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { useLoaderData, useNavigate } from 'react-router-dom'
+import { useLoaderData } from 'react-router-dom'
 import type { Actor, ContextFrom, Prop, SnapshotFrom, StateFrom } from 'xstate'
 import { assign, fromPromise } from 'xstate'
 
@@ -22,29 +22,18 @@ import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
 import {
-  SEGMENT_BODIES,
-  getParentGroup,
-} from '@src/clientSideScene/sceneConstants'
-import type { MachineManager } from '@src/components/MachineManagerProvider'
-import { MachineManagerContext } from '@src/components/MachineManagerProvider'
-import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
-import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
-import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
-import {
-  angleBetweenInfo,
-  applyConstraintAngleBetween,
-} from '@src/components/Toolbar/SetAngleBetween'
-import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
-import {
   applyConstraintAngleLength,
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
+import {
+  SEGMENT_BODIES_PLUS_PROFILE_START,
+  getParentGroup,
+} from '@src/clientSideScene/sceneConstants'
 import { useFileContext } from '@src/hooks/useFileContext'
 import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -70,33 +59,33 @@ import {
   getPlaneFromArtifact,
 } from '@src/lang/std/artifactGraph'
 import {
-  EngineConnectionEvents,
   EngineConnectionStateType,
+  EngineConnectionEvents,
 } from '@src/lang/std/engineConnection'
+import { err, reportRejection, trap, reject } from '@src/lib/trap'
+import { isNonNullable, platform, uuidv4 } from '@src/lib/utils'
+import { promptToEditFlow } from '@src/lib/promptToEdit'
+import type { FileMeta } from '@src/lib/types'
+import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import { commandBarActor } from '@src/lib/singletons'
+import { useToken, useSettings } from '@src/lib/singletons'
+import type { IndexLoaderData } from '@src/lib/types'
 import {
-  isCursorInSketchCommandRange,
-  updateSketchDetailsNodePaths,
-} from '@src/lang/util'
-import type {
-  KclValue,
-  PathToNode,
-  PipeExpression,
-  Program,
-  VariableDeclaration,
-} from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import {
-  EXECUTION_TYPE_MOCK,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  EXECUTION_TYPE_MOCK,
+  FILE_EXT,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { promptToEditFlow } from '@src/lib/promptToEdit'
-import type { Selections } from '@src/lib/selections'
-import { handleSelectionBatch, updateSelections } from '@src/lib/selections'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { FileEntry } from '@src/lib/project'
+import type { WebContentSendPayload } from '@src/menu/channels'
+import {
+  getPersistedContext,
+  modelingMachine,
+  modelingMachineDefaultContext,
+} from '@src/machines/modelingMachine'
 import {
   codeManager,
   editorManager,
@@ -106,19 +95,39 @@ import {
   sceneEntitiesManager,
   sceneInfra,
 } from '@src/lib/singletons'
-import { submitAndAwaitTextToKcl } from '@src/lib/textToCad'
-import { err, reject, reportRejection, trap } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
-import { platform, uuidv4 } from '@src/lib/utils'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import { kclEditorActor } from '@src/machines/kclEditorMachine'
+import type { MachineManager } from '@src/components/MachineManagerProvider'
+import { MachineManagerContext } from '@src/components/MachineManagerProvider'
 import {
-  getPersistedContext,
-  modelingMachine,
-  modelingMachineDefaultContext,
-} from '@src/machines/modelingMachine'
-import type { WebContentSendPayload } from '@src/menu/channels'
+  handleSelectionBatch,
+  updateSelections,
+  type Selections,
+} from '@src/lib/selections'
+import {
+  crossProduct,
+  isCursorInSketchCommandRange,
+  updateSketchDetailsNodePaths,
+} from '@src/lang/util'
+import {
+  modelingMachineCommandConfig,
+  type ModelingCommandSchema,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import type {
+  KclValue,
+  PathToNode,
+  PipeExpression,
+  Program,
+  VariableDeclaration,
+} from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import { applyConstraintHorzVertDistance } from '@src/components/Toolbar/SetHorzVertDistance'
+import {
+  angleBetweenInfo,
+  applyConstraintAngleBetween,
+} from '@src/components/Toolbar/SetAngleBetween'
+import { applyConstraintIntersect } from '@src/components/Toolbar/Intersect'
+import { applyConstraintAbsDistance } from '@src/components/Toolbar/SetAbsDistance'
+import type { SidebarType } from '@src/components/ModelingSidebar/ModelingPanes'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -138,11 +147,10 @@ export const ModelingMachineProvider = ({
   children: React.ReactNode
 }) => {
   const {
-    app: { theme, allowOrbitInSketchMode },
-    modeling: { defaultUnit, cameraProjection, highlightEdges, cameraOrbit },
+    app: { allowOrbitInSketchMode },
+    modeling: { defaultUnit, cameraProjection, cameraOrbit },
   } = useSettings()
-  const navigate = useNavigate()
-  const { context, send: fileMachineSend } = useFileContext()
+  const { context } = useFileContext()
   const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
@@ -214,14 +222,15 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
-              const parent = getParentGroup(event.data.on, SEGMENT_BODIES)
+              const parent = getParentGroup(
+                event.data.on,
+                SEGMENT_BODIES_PLUS_PROFILE_START
+              )
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
               if (!parent || !pathToNode) return context.segmentHoverMap
               if (context.segmentHoverMap[pathToNodeString] !== undefined)
-                clearTimeout(
-                  context.segmentHoverMap[JSON.stringify(pathToNode)]
-                )
+                clearTimeout(context.segmentHoverMap[pathToNodeString])
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: 0,
@@ -232,7 +241,7 @@ export const ModelingMachineProvider = ({
             ) {
               const mouseOnParent = getParentGroup(
                 context.mouseState.on,
-                SEGMENT_BODIES
+                SEGMENT_BODIES_PLUS_PROFILE_START
               )
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return context.segmentHoverMap
@@ -268,11 +277,11 @@ export const ModelingMachineProvider = ({
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
             if (event.type !== 'Set Segment Overlays') return {}
-            if (event.data.type === 'add-many')
+            if (event.data.type === 'set-many') {
               return {
-                ...segmentOverlays,
                 ...event.data.overlays,
               }
+            }
             if (event.data.type === 'set-one')
               return {
                 ...segmentOverlays,
@@ -330,6 +339,13 @@ export const ModelingMachineProvider = ({
             }
             if (setSelections.selectionType === 'singleCodeCursor') {
               if (!setSelections.selection && editorManager.isShiftDown) {
+                // if the user is holding shift, but they didn't select anything
+                // don't nuke their other selections (frustrating to have one bad click ruin your
+                // whole selection)
+                selections = {
+                  graphSelections: selectionRanges.graphSelections,
+                  otherSelections: selectionRanges.otherSelections,
+                }
               } else if (
                 !setSelections.selection &&
                 !editorManager.isShiftDown
@@ -525,23 +541,6 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        'Submit to Text-to-CAD API': ({ event }) => {
-          if (event.type !== 'Text-to-CAD') return
-          const trimmedPrompt = event.data.prompt.trim()
-          if (!trimmedPrompt) return
-
-          submitAndAwaitTextToKcl({
-            trimmedPrompt,
-            fileMachineSend,
-            navigate,
-            context,
-            token,
-            settings: {
-              theme: theme.current,
-              highlightEdges: highlightEdges.current,
-            },
-          }).catch(reportRejection)
-        },
       },
       guards: {
         'has valid selection for deletion': ({
@@ -550,6 +549,9 @@ export const ModelingMachineProvider = ({
           if (!isCommandBarClosed) return false
           if (selectionRanges.graphSelections.length <= 0) return false
           return true
+        },
+        'is-error-free': () => {
+          return kclManager.errors.length === 0 && !kclManager.hasErrors()
         },
         'Selection is on face': ({ context: { selectionRanges }, event }) => {
           if (event.type !== 'Enter sketch') return false
@@ -749,13 +751,22 @@ export const ModelingMachineProvider = ({
               if (err(varDec)) return reject(new Error('No varDec'))
               const variableName = varDec.node.declaration.id.name
               let isIdentifierUsed = false
-              traverse(newAst, {
-                enter: (node) => {
-                  if (node.type === 'Name' && node.name.name === variableName) {
-                    isIdentifierUsed = true
-                  }
-                },
-              })
+              const isInitAPipe =
+                varDec.node.declaration.init.type === 'PipeExpression'
+              if (isInitAPipe) {
+                isIdentifierUsed = true
+              } else {
+                traverse(newAst, {
+                  enter: (node) => {
+                    if (
+                      node.type === 'Name' &&
+                      node.name.name === variableName
+                    ) {
+                      isIdentifierUsed = true
+                    }
+                  },
+                })
+              }
               if (isIdentifierUsed) return
 
               // remove body item at varDecIndex
@@ -854,6 +865,7 @@ export const ModelingMachineProvider = ({
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
             let planeVar: Plane | null = null
+
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -884,6 +896,7 @@ export const ModelingMachineProvider = ({
                 planeVar = variable.value
               }
             }
+
             if (!sketch || sketch.type !== 'Sketch') {
               if (artifact?.type !== 'plane')
                 return Promise.reject(new Error('No sketch'))
@@ -902,11 +915,12 @@ export const ModelingMachineProvider = ({
                   engineCommandManager,
                   artifact.id
                 )
+                const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
                 return {
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
                   sketchNodePaths: [],
-                  zAxis: toTuple(planeVar.zAxis),
+                  zAxis: toTuple(normal),
                   yAxis: toTuple(planeVar.yAxis),
                   origin: toTuple(planeVar.origin),
                 }
@@ -1398,6 +1412,8 @@ export const ModelingMachineProvider = ({
                   })
                 )
               )
+              result.exprInsertIndex = data.namedValue.insertIndex
+
               if (
                 trap(parseResultAfterInsertion) ||
                 !resultIsOk(parseResultAfterInsertion)
@@ -1406,7 +1422,7 @@ export const ModelingMachineProvider = ({
               result = {
                 modifiedAst: parseResultAfterInsertion.program,
                 pathToReplaced: astAfterReplacement.pathToReplaced,
-                exprInsertIndex: astAfterReplacement.exprInsertIndex,
+                exprInsertIndex: result.exprInsertIndex,
               }
             } else if ('valueText' in data.namedValue) {
               // If they didn't provide a constant name,
@@ -1482,10 +1498,8 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftCircle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1503,11 +1517,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result =
               await sceneEntitiesManager.setupDraftCircleThreePoint(
-                sketchDetails.sketchEntryNodePath,
                 sketchDetails.sketchNodePaths,
                 sketchDetails.planeNodePath,
                 sketchDetails.zAxis,
@@ -1526,10 +1538,8 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
 
             const result = await sceneEntitiesManager.setupDraftRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1547,9 +1557,7 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftCenterRectangle(
-              sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
               sketchDetails.planeNodePath,
               sketchDetails.zAxis,
@@ -1567,11 +1575,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArcThreePoint(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1587,11 +1593,9 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, data } }) => {
             if (!sketchDetails || !data)
               return reject('No sketch details or data')
-            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             const result = await sceneEntitiesManager.setupDraftArc(
               sketchDetails.sketchEntryNodePath,
               sketchDetails.sketchNodePaths,
-              sketchDetails.planeNodePath,
               sketchDetails.zAxis,
               sketchDetails.yAxis,
               sketchDetails.origin,
@@ -1607,9 +1611,6 @@ export const ModelingMachineProvider = ({
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
             if (!sketchDetails.sketchEntryNodePath?.length) return
-            if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
-              sceneEntitiesManager.tearDownSketch({ removeAxis: false })
-            }
             sceneInfra.resetMouseListeners()
             await sceneEntitiesManager.setupSketch({
               sketchEntryNodePath: sketchDetails?.sketchEntryNodePath || [],
@@ -1695,7 +1696,7 @@ export const ModelingMachineProvider = ({
                 if (
                   lastInPipe &&
                   Number(pathToProfile[1][0]) === indexToDelete &&
-                  lastInPipe.type === 'CallExpression' &&
+                  lastInPipe.type === 'CallExpressionKw' &&
                   lastInPipe.callee.type === 'Name' &&
                   lastInPipe.callee.name.name === 'arcTo'
                 ) {
@@ -1739,8 +1740,94 @@ export const ModelingMachineProvider = ({
           }
         ),
         'submit-prompt-edit': fromPromise(async ({ input }) => {
+          let projectFiles: FileMeta[] = [
+            {
+              type: 'kcl',
+              relPath: 'main.kcl',
+              absPath: 'main.kcl',
+              fileContents: codeManager.code,
+              execStateFileNamesIndex: 0,
+            },
+          ]
+          const execStateNameToIndexMap: { [fileName: string]: number } = {}
+          Object.entries(kclManager.execState.filenames).forEach(
+            ([index, val]) => {
+              if (val?.type === 'Local') {
+                execStateNameToIndexMap[val.value] = Number(index)
+              }
+            }
+          )
+          let basePath = ''
+          if (isDesktop() && context?.project?.children) {
+            basePath = context?.selectedDirectory?.path
+            const filePromises: Promise<FileMeta | null>[] = []
+            let uploadSize = 0
+            const recursivelyPushFilePromises = (files: FileEntry[]) => {
+              // mutates filePromises declared above, so this function definition should stay here
+              // if pulled out, it would need to be refactored.
+              for (const file of files) {
+                if (file.children !== null) {
+                  // is directory
+                  recursivelyPushFilePromises(file.children)
+                  continue
+                }
+
+                const absolutePathToFileNameWithExtension = file.path
+                const fileNameWithExtension = window.electron.path.relative(
+                  basePath,
+                  absolutePathToFileNameWithExtension
+                )
+
+                const filePromise = window.electron
+                  .readFile(absolutePathToFileNameWithExtension)
+                  .then((file): FileMeta => {
+                    uploadSize += file.byteLength
+                    const decoder = new TextDecoder('utf-8')
+                    const fileType = window.electron.path.extname(
+                      absolutePathToFileNameWithExtension
+                    )
+                    if (fileType === FILE_EXT) {
+                      return {
+                        type: 'kcl',
+                        absPath: absolutePathToFileNameWithExtension,
+                        relPath: fileNameWithExtension,
+                        fileContents: decoder.decode(file),
+                        execStateFileNamesIndex:
+                          execStateNameToIndexMap[
+                            absolutePathToFileNameWithExtension
+                          ],
+                      }
+                    }
+                    const blob = new Blob([file], {
+                      type: 'application/octet-stream',
+                    })
+                    return {
+                      type: 'other',
+                      relPath: fileNameWithExtension,
+                      data: blob,
+                    }
+                  })
+                  .catch((e) => {
+                    console.error('error reading file', e)
+                    return null
+                  })
+
+                filePromises.push(filePromise)
+              }
+            }
+            recursivelyPushFilePromises(context?.project?.children)
+            projectFiles = (await Promise.all(filePromises)).filter(
+              isNonNullable
+            )
+            const MB20 = 2 ** 20 * 20
+            if (uploadSize > MB20) {
+              toast.error(
+                'Your project exceeds 20Mb, this will slow down Text-to-CAD\nPlease remove any unnecessary files'
+              )
+            }
+          }
           return await promptToEditFlow({
-            code: codeManager.code,
+            projectFiles,
             prompt: input.prompt,
             selections: input.selection,
             token,
@@ -1887,11 +1974,6 @@ export const ModelingMachineProvider = ({
         groupId: 'modeling',
       },
       {
-        menuLabel: 'Design.Create with Zoo Text-To-CAD',
-        commandName: 'Text-to-CAD',
-        groupId: 'modeling',
-      },
-      {
         menuLabel: 'Design.Modify with Zoo Text-To-CAD',
         commandName: 'Prompt-to-edit',
         groupId: 'modeling',
@@ -1910,18 +1992,6 @@ export const ModelingMachineProvider = ({
       }
     }
   }, [modelingActor])
-
-  useEffect(() => {
-    kclManager.registerExecuteCallback(() => {
-      modelingSend({ type: 'Re-execute' })
-    })
-
-    // Before this component unmounts, call the 'Cancel'
-    // event to clean up any state in the modeling machine.
-    return () => {
-      modelingSend({ type: 'Cancel' })
-    }
-  }, [modelingSend])
 
   // Give the state back to the editorManager.
   useEffect(() => {
@@ -1993,8 +2063,27 @@ export const ModelingMachineProvider = ({
   // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
     platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
+
   useHotkeys(deleteKeys, () => {
-    modelingSend({ type: 'Delete selection' })
+    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
+    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
+    const selections =
+      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
+        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
+      )
+    selections.forEach((selection) => {
+      modelingSend({
+        type: 'Delete segment',
+        data: selection.codeRef.pathToNode,
+      })
+    })
+    if (
+      modelingState.context.selectionRanges.graphSelections.length >
+      selections.length
+    ) {
+      // Not all selection were segments -> keep the default delete behavior
+      modelingSend({ type: 'Delete selection' })
+    }
   })
 
   // Allow ctrl+alt+c to center to selection

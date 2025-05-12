@@ -1,14 +1,14 @@
 // Robot Arm Base
 
 // Set Units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import Constants
 import basePlateRadius, basePlateThickness, baseChamfer, baseHeight from "globals.kcl"
 
 // Base Plate
 sketch001 = startSketchOn(XY)
-  |> startProfileAt([-basePlateRadius, -basePlateRadius], %)
+  |> startProfile(at = [-basePlateRadius, -basePlateRadius])
   |> angledLine(angle = 0, length = 2 * basePlateRadius, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 2 * basePlateRadius, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)

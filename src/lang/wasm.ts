@@ -16,6 +16,7 @@ import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
 import type { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -26,10 +27,9 @@ import type { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import type { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 
 import { KCLError } from '@src/lang/errors'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
-  defaultArtifactGraph,
   type Artifact,
+  defaultArtifactGraph,
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/std/sketch'
 import {
@@ -43,17 +43,19 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import {
   base64_decode,
-  change_kcl_settings,
+  change_default_units,
   coredump,
   default_app_settings,
   default_project_settings,
-  format_number,
+  format_number_literal,
   get_kcl_version,
   get_tangential_arc_to_info,
+  human_display_number,
   is_kcl_empty_or_only_settings,
   is_points_ccw,
   kcl_lint,
   kcl_settings,
+  node_path_from_range,
   parse_app_settings,
   parse_project_settings,
   parse_wasm,
@@ -61,6 +63,12 @@ import {
   serialize_configuration,
   serialize_project_configuration,
 } from '@src/lib/wasm_lib_wrapper'
+import {
+  ARG_INDEX_FIELD,
+  LABELED_ARG_FIELD,
+  UNLABELED_ARG,
+} from '@src/lang/queryAstConstants'
+import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -81,7 +89,6 @@ export type {
 } from '@rust/kcl-lib/bindings/Artifact'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
-export type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
@@ -109,7 +116,6 @@ export type SyntaxType =
   | 'Program'
   | 'ExpressionStatement'
   | 'BinaryExpression'
-  | 'CallExpression'
   | 'CallExpressionKw'
   | 'Name'
   | 'ReturnStatement'
@@ -126,6 +132,7 @@ export type SyntaxType =
   | 'LiteralValue'
   | 'NonCodeNode'
   | 'UnaryExpression'
+  | 'ImportStatement'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
 export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
@@ -293,19 +300,13 @@ export function emptyExecState(): ExecState {
   }
 }
 
-export function execStateFromRust(
-  execOutcome: RustExecOutcome,
-  program: Node<Program>
-): ExecState {
+export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
-  // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
+  // Translate NodePath to PathToNode.
   for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
     if (!('codeRef' in artifact)) continue
-    const pathToNode = getNodePathFromSourceRange(
-      program,
-      sourceRangeFromRust(artifact.codeRef.range)
-    )
+    const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
     artifact.codeRef.pathToNode = pathToNode
   }
 
@@ -405,6 +406,35 @@ export const kclLint = async (ast: Program): Promise<Array<Discovered>> => {
   }
 }
 
+export async function rustImplPathToNode(
+  ast: Program,
+  range: SourceRange
+): Promise<PathToNode> {
+  const nodePath = await nodePathFromRange(ast, range)
+  if (!nodePath) {
+    // When a NodePath can't be found, we use an empty PathToNode.
+    return []
+  }
+  return pathToNodeFromRustNodePath(nodePath)
+}
+
+async function nodePathFromRange(
+  ast: Program,
+  range: SourceRange
+): Promise<NodePath | null> {
+  try {
+    const nodePath: NodePath | null = await node_path_from_range(
+      JSON.stringify(ast),
+      JSON.stringify(range)
+    )
+    return nodePath
+  } catch (e: any) {
+    return Promise.reject(
+      new Error('Caught error getting node path from range', { cause: e })
+    )
+  }
+}
+
 export const recast = (ast: Program): string | Error => {
   return recast_wasm(JSON.stringify(ast))
 }
@@ -412,8 +442,35 @@ export const recast = (ast: Program): string | Error => {
 /**
  * Format a number with suffix as KCL.
  */
-export function formatNumber(value: number, suffix: NumericSuffix): string {
-  return format_number(value, JSON.stringify(suffix))
+export function formatNumberLiteral(
+  value: number,
+  suffix: NumericSuffix
+): string | Error {
+  try {
+    return format_number_literal(value, JSON.stringify(suffix))
+  } catch (e) {
+    return new Error(
+      `Error formatting number literal: value=${value}, suffix=${suffix}`,
+      { cause: e }
+    )
+  }
+}
+
+/**
+ * Debug display a number with suffix, for human consumption only.
+ */
+export function humanDisplayNumber(
+  value: number,
+  ty: NumericType
+): string | Error {
+  try {
+    return human_display_number(value, JSON.stringify(ty))
+  } catch (e) {
+    return new Error(
+      `Error formatting number for human display: value=${value}, ty=${JSON.stringify(ty)}`,
+      { cause: e }
+    )
+  }
 }
 
 export function isPointsCCW(points: Coords2d[]): number {
@@ -489,6 +546,143 @@ export async function coreDump(
   }
 }
 
+function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
+  const pathToNode: PathToNode = []
+  for (const step of nodePath.steps) {
+    switch (step.type) {
+      case 'ProgramBodyItem':
+        pathToNode.push(['body', ''])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'CallCallee':
+        pathToNode.push(['callee', 'CallExpression'])
+        break
+      case 'CallArg':
+        pathToNode.push(['arguments', 'CallExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'CallKwCallee':
+        pathToNode.push(['callee', 'CallExpressionKw'])
+        break
+      case 'CallKwUnlabeledArg':
+        pathToNode.push(['unlabeled', UNLABELED_ARG])
+        break
+      case 'CallKwArg':
+        pathToNode.push(['arguments', 'CallExpressionKw'])
+        pathToNode.push([step.index, ARG_INDEX_FIELD])
+        pathToNode.push(['arg', LABELED_ARG_FIELD])
+        break
+      case 'BinaryLeft':
+        pathToNode.push(['left', 'BinaryExpression'])
+        break
+      case 'BinaryRight':
+        pathToNode.push(['right', 'BinaryExpression'])
+        break
+      case 'UnaryArg':
+        pathToNode.push(['argument', 'UnaryExpression'])
+        break
+      case 'PipeBodyItem':
+        pathToNode.push(['body', 'PipeExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ArrayElement':
+        pathToNode.push(['elements', 'ArrayExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ArrayRangeStart':
+        pathToNode.push(['startElement', 'ArrayRangeExpression'])
+        break
+      case 'ArrayRangeEnd':
+        pathToNode.push(['endElement', 'ArrayRangeExpression'])
+        break
+      case 'ObjectProperty':
+        pathToNode.push(['properties', 'ObjectExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ObjectPropertyKey':
+        pathToNode.push(['key', 'Property'])
+        break
+      case 'ObjectPropertyValue':
+        pathToNode.push(['value', 'Property'])
+        break
+      case 'ExpressionStatementExpr':
+        pathToNode.push(['expression', 'ExpressionStatement'])
+        break
+      case 'VariableDeclarationDeclaration':
+        pathToNode.push(['declaration', 'VariableDeclaration'])
+        break
+      case 'VariableDeclarationInit':
+        pathToNode.push(['init', ''])
+        break
+      case 'FunctionExpressionParam':
+        pathToNode.push(['params', 'FunctionExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'FunctionExpressionBody':
+        pathToNode.push(['body', 'FunctionExpression'])
+        break
+      case 'FunctionExpressionBodyItem':
+        pathToNode.push(['body', 'FunctionExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ReturnStatementArg':
+        pathToNode.push(['argument', 'ReturnStatement'])
+        break
+      case 'MemberExpressionObject':
+        pathToNode.push(['object', 'MemberExpression'])
+        break
+      case 'MemberExpressionProperty':
+        pathToNode.push(['property', 'MemberExpression'])
+        break
+      case 'IfExpressionCondition':
+        pathToNode.push(['cond', 'IfExpression'])
+        break
+      case 'IfExpressionThen':
+        pathToNode.push(['then_val', 'IfExpression'])
+        pathToNode.push(['body', 'IfExpression'])
+        break
+      case 'IfExpressionElseIf':
+        pathToNode.push(['else_ifs', 'IfExpression'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'IfExpressionElseIfCond':
+        pathToNode.push(['cond', 'IfExpression'])
+        break
+      case 'IfExpressionElseIfBody':
+        pathToNode.push(['then_val', 'IfExpression'])
+        pathToNode.push(['body', 'IfExpression'])
+        break
+      case 'IfExpressionElse':
+        pathToNode.push(['final_else', 'IfExpression'])
+        pathToNode.push(['body', 'IfExpression'])
+        break
+      case 'ImportStatementItem':
+        pathToNode.push(['selector', 'ImportStatement'])
+        pathToNode.push(['items', 'ImportSelector'])
+        pathToNode.push([step.index, 'index'])
+        break
+      case 'ImportStatementItemName':
+        pathToNode.push(['name', 'ImportItem'])
+        break
+      case 'ImportStatementItemAlias':
+        pathToNode.push(['alias', 'ImportItem'])
+        break
+      case 'LabeledExpressionExpr':
+        pathToNode.push(['expr', 'LabeledExpression'])
+        break
+      case 'LabeledExpressionLabel':
+        pathToNode.push(['label', 'LabeledExpression'])
+        break
+      case 'AscribedExpressionExpr':
+        pathToNode.push(['expr', 'AscribedExpression'])
+        break
+      default:
+        const _exhaustiveCheck: never = step
+    }
+  }
+  return pathToNode
+}
+
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
 }
@@ -550,12 +744,13 @@ export function kclSettings(
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
-export function changeKclSettings(
+export function changeDefaultUnits(
   kcl: string,
-  settings: MetaSettings
+  len: UnitLen | null,
+  angle: UnitAng | null
 ): string | Error {
   try {
-    return change_kcl_settings(kcl, JSON.stringify(settings))
+    return change_default_units(kcl, JSON.stringify(len), JSON.stringify(angle))
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
@@ -585,8 +780,12 @@ export function isKclEmptyOrOnlySettings(kcl: string): boolean {
  * Convert a `UnitLength` (used in settings and modeling commands) to a
  * `UnitLen` (used in execution).
  */
-export function unitLengthToUnitLen(input: UnitLength): UnitLen {
+export function unitLengthToUnitLen(
+  input: UnitLength | undefined
+): UnitLen | null {
   switch (input) {
+    case 'mm':
+      return { type: 'Mm' }
     case 'm':
       return { type: 'M' }
     case 'cm':
@@ -598,7 +797,7 @@ export function unitLengthToUnitLen(input: UnitLength): UnitLen {
     case 'in':
       return { type: 'Inches' }
     default:
-      return { type: 'Mm' }
+      return null
   }
 }
 
@@ -627,12 +826,16 @@ export function unitLenToUnitLength(input: UnitLen): UnitLength {
  * Convert a `UnitAngle` (used in modeling commands) to a `UnitAng` (used in
  * execution).
  */
-export function unitAngleToUnitAng(input: UnitAngle): UnitAng {
+export function unitAngleToUnitAng(
+  input: UnitAngle | undefined
+): UnitAng | null {
   switch (input) {
     case 'radians':
       return { type: 'Radians' }
-    default:
+    case 'degrees':
       return { type: 'Degrees' }
+    default:
+      return null
   }
 }
 
@@ -659,7 +862,9 @@ export function getKclVersion(): string {
 /**
  * Serialize a project configuration to a TOML string.
  */
-export function serializeConfiguration(configuration: any): string | Error {
+export function serializeConfiguration(
+  configuration: DeepPartial<Configuration>
+): string | Error {
   try {
     return serialize_configuration(configuration)
   } catch (e: any) {
@@ -671,7 +876,7 @@ export function serializeConfiguration(configuration: any): string | Error {
  * Serialize a project configuration to a TOML string.
  */
 export function serializeProjectConfiguration(
-  configuration: any
+  configuration: DeepPartial<ProjectConfiguration>
 ): string | Error {
   try {
     return serialize_project_configuration(configuration)

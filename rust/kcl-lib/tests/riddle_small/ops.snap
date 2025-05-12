@@ -8,51 +8,65 @@ description: Operations executed riddle_small.kcl
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
-      "unlabeledArg": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 205804.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {}
     },
     "sourceRange": []
-  },
-  {
-    "type": "GroupEnd"
   },
   {
     "type": "GroupBegin",
     "group": {
       "type": "FunctionCall",
       "name": "t",
-      "functionSourceRange": [
-        20,
-        66,
-        0
-      ],
-      "unlabeledArg": null,
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "Number",
+          "value": 71816.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "type": "GroupEnd"
-  },
-  {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "String",
-          "value": "XZ"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -85,5 +99,11 @@ description: Operations executed riddle_small.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
   }
 ]

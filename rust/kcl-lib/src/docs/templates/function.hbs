@@ -1,5 +1,6 @@
 ---
 title: "{{name}}"
+subtitle: "Function in {{module}}"
 excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
@@ -10,20 +11,11 @@ layout: manual
 {{/if}}
 {{{summary}}}
 
-{{{description}}}
-
-```js
+```kcl
 {{{fn_signature}}}
 ```
 
-{{#if tags}}
-### Tags
-
-{{#each tags}}
-* `{{this}}`
-{{/each}}
-
-{{/if}}
+{{{description}}}
 
 {{#if args}}
 ### Arguments
@@ -47,17 +39,15 @@ layout: manual
 
 {{#each examples}}
 {{#if this.content}}
-```js
+```kcl
 {{{this.content}}}
 ```
 {{/if}}
 
-{{#unless @root.is_utilities}}
 {{#if this.image_base64}}
 ![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
 {{/if}}
 
-{{/unless}}
 {{/each}}
 {{/if}}
 

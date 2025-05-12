@@ -6,7 +6,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
 import { getActorNextEvents } from '@src/lib/utils'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 
 function CommandComboBox({
   options,
@@ -102,6 +102,12 @@ function CommandComboBox({
                   </p>
                 )}
               </div>
+              {option.status === 'experimental' && (
+                <div className="text-xs flex items-center justify-center gap-1 text-primary">
+                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <span>Experimental</span>
+                </div>
+              )}
             </Combobox.Option>
           ))}
         </Combobox.Options>

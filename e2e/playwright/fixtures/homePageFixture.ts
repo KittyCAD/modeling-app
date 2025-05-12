@@ -25,6 +25,7 @@ export class HomePageFixture {
   sortByDateBtn!: Locator
   sortByNameBtn!: Locator
   appHeader!: Locator
+  tutorialBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -45,6 +46,7 @@ export class HomePageFixture {
     this.sortByDateBtn = this.page.getByTestId('home-sort-by-modified')
     this.sortByNameBtn = this.page.getByTestId('home-sort-by-name')
     this.appHeader = this.page.getByTestId('app-header')
+    this.tutorialBtn = this.page.getByTestId('home-tutorial-button')
   }
 
   private _serialiseSortBy = async (): Promise<
@@ -92,6 +94,13 @@ export class HomePageFixture {
     for (const projectCard of expectedState.projectCards) {
       await expect.poll(this._serialiseProjectCards).toContainEqual(projectCard)
     }
+  }
+
+  expectIsCurrentPage = async () => {
+    await expect(this.page).toHaveURL(/.*home/)
+    await expect(
+      this.page.getByRole('heading', { name: 'Projects' })
+    ).toBeVisible()
   }
 
   projectsLoaded = async () => {

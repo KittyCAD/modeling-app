@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -6,7 +6,6 @@ import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { Toggle } from '@src/components/Toggle/Toggle'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
@@ -24,7 +23,7 @@ import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
-import { isArray, toSync } from '@src/lib/utils'
+import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
 
 /**
  * A setting that can be set at the user or project level
@@ -212,117 +211,50 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: undefined,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
+        hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
         validate: (v) =>
-          v === undefined ||
-          (typeof v === 'number' &&
-            v >= 1 * MS_IN_MINUTE &&
-            v <= 60 * MS_IN_MINUTE),
-        Component: ({
-          value: settingValueInStorage,
-          updateValue: writeSettingValueToStorage,
-        }) => {
-          const [timeoutId, setTimeoutId] = useState<
-            ReturnType<typeof setTimeout> | undefined
-          >(undefined)
-          const [preview, setPreview] = useState(
-            settingValueInStorage === undefined
-              ? settingValueInStorage
-              : settingValueInStorage / MS_IN_MINUTE
-          )
-          const onChangeRange = (e: React.SyntheticEvent) => {
-            if (
-              !(
-                e.isTrusted &&
-                'value' in e.currentTarget &&
-                e.currentTarget.value
-              )
-            )
-              return
-            setPreview(Number(e.currentTarget.value))
-          }
-          const onSaveRange = (e: React.SyntheticEvent) => {
-            if (preview === undefined) return
-            if (
-              !(
-                e.isTrusted &&
-                'value' in e.currentTarget &&
-                e.currentTarget.value
-              )
-            )
-              return
-            writeSettingValueToStorage(
-              Number(e.currentTarget.value) * MS_IN_MINUTE
-            )
-          }
-
-          return (
-            <div className="flex item-center gap-4 m-0 py-0">
-              <Toggle
-                name="streamIdleModeToggle"
-                offLabel="Off"
-                onLabel="On"
-                checked={settingValueInStorage !== undefined}
-                onChange={(event: React.SyntheticEvent<HTMLInputElement>) => {
-                  if (timeoutId) {
-                    return
-                  }
-                  const isChecked = event.currentTarget.checked
-                  clearTimeout(timeoutId)
-                  setTimeoutId(
-                    setTimeout(() => {
-                      const requested = !isChecked ? undefined : 5
-                      setPreview(requested)
-                      writeSettingValueToStorage(
-                        requested === undefined
-                          ? undefined
-                          : Number(requested) * MS_IN_MINUTE
-                      )
-                      setTimeoutId(undefined)
-                    }, 100)
-                  )
-                }}
-                className="block w-4 h-4"
-              />
-              <div className="flex flex-col grow">
-                <input
-                  type="range"
-                  onChange={onChangeRange}
-                  onMouseUp={onSaveRange}
-                  onKeyUp={onSaveRange}
-                  onPointerUp={onSaveRange}
-                  disabled={preview === undefined}
-                  value={
-                    preview !== null && preview !== undefined ? preview : 5
-                  }
-                  min={1}
-                  max={60}
-                  step={1}
-                  className="block flex-1"
-                />
-                {preview !== undefined && preview !== null && (
-                  <div>
-                    {preview / MS_IN_MINUTE === 60
-                      ? '1 hour'
-                      : preview / MS_IN_MINUTE === 1
-                        ? '1 minute'
-                        : preview + ' minutes'}
-                  </div>
-                )}
-              </div>
-            </div>
-          )
+          String(v) == 'undefined' ||
+          (Number(v) >= 0 && Number(v) <= 60 * MS_IN_MINUTE),
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.app.streamIdleMode.current,
+          options: (cmdContext, settingsContext) =>
+            [
+              undefined,
+              5 * 1000,
+              30 * 1000,
+              1 * MS_IN_MINUTE,
+              2 * MS_IN_MINUTE,
+              5 * MS_IN_MINUTE,
+              15 * MS_IN_MINUTE,
+              30 * MS_IN_MINUTE,
+              60 * MS_IN_MINUTE,
+            ].map((v) => ({
+              name:
+                v === undefined
+                  ? 'Off'
+                  : v < MS_IN_MINUTE
+                    ? `${Math.floor(v / 1000)} seconds`
+                    : `${Math.floor(v / MS_IN_MINUTE)} minutes`,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.app.streamIdleMode[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
+        /** Unhide this once we make sketch mode unbreakable */
+        hideOnPlatform: 'both',
         defaultValue: false,
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
@@ -390,7 +322,7 @@ export function createSettings() {
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
-        validate: (v) => true,
+        validate: (_v) => true,
         hideOnLevel: 'user',
       }),
     },
@@ -509,7 +441,7 @@ export function createSettings() {
               : 'perspective',
           options: (cmdContext, settingsContext) =>
             (['perspective', 'orthographic'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraProjection.shouldShowCurrentLabel(
@@ -533,7 +465,7 @@ export function createSettings() {
             context.modeling.cameraOrbit.current,
           options: (cmdContext, settingsContext) =>
             (['spherical', 'trackball'] as const).map((v) => ({
-              name: v.charAt(0).toUpperCase() + v.slice(1),
+              name: capitaliseFC(v),
               value: v,
               isCurrent:
                 settingsContext.modeling.cameraOrbit.shouldShowCurrentLabel(

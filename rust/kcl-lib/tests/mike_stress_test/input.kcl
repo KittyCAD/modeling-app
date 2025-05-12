@@ -1,5 +1,5 @@
-part001 = startSketchOn('XY')
-  |> startProfileAt([0.0, 0.0], %)
+part001 = startSketchOn(XY)
+  |> startProfile(at = [0.0, 0.0])
   |> line(end = [
        -0.3670208139314082,
        0.21201331909674526

@@ -1,565 +1,192 @@
-import { bracket } from '@e2e/playwright/fixtures/bracket'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import fsp from 'fs/promises'
-import { join } from 'path'
-
-import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
-import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS_ONBOARDING_EXPORT,
-  TEST_SETTINGS_ONBOARDING_START,
-  TEST_SETTINGS_ONBOARDING_USER_MENU,
-} from '@e2e/playwright/storageStates'
-import {
-  createProject,
-  executorInputPath,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
-  settingsToToml,
-} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-// Because our default test settings have the onboardingStatus set to 'dismissed',
-// we must set it to empty for the tests where we want to see the onboarding immediately.
-
 test.describe('Onboarding tests', () => {
-  test('Onboarding code is shown in the editor', async ({
+  test('Desktop onboarding flow works', async ({
     page,
     homePage,
-    tronApp,
-  }) => {
-    if (!tronApp) {
-      fail()
-    }
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '',
-      },
-    })
-
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-
-    // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
-
-    // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
-
-    // *and* that the code is shown in the editor
-    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
-
-    // Make sure the model loaded
-    const XYPlanePoint = { x: 774, y: 116 } as const
-    const modelColor: [number, number, number] = [45, 45, 45]
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    expect(await u.getGreatestPixDiff(XYPlanePoint, modelColor)).toBeLessThan(8)
-  })
-
-  test(
-    'Desktop: fresh onboarding executes and loads',
-    {
-      tag: '@electron',
-    },
-    async ({ page, tronApp }) => {
-      if (!tronApp) {
-        fail()
-      }
-      await tronApp.cleanProjectDir({
-        app: {
-          onboarding_status: '',
-        },
-      })
-      const u = await getUtils(page)
-
-      const viewportSize = { width: 1200, height: 500 }
-      await page.setBodyDimensions(viewportSize)
-
-      await test.step(`Create a project and open to the onboarding`, async () => {
-        await createProject({ name: 'project-link', page })
-        await test.step(`Ensure the engine connection works by testing the sketch button`, async () => {
-          await u.waitForPageLoad()
-        })
-      })
-
-      await test.step(`Ensure we see the onboarding stuff`, async () => {
-        // Test that the onboarding pane loaded
-        await expect(
-          page.getByText('Welcome to Design Studio! This')
-        ).toBeVisible()
-
-        // *and* that the code is shown in the editor
-        await expect(page.locator('.cm-content')).toContainText(
-          '// Shelf Bracket'
-        )
-
-        // TODO: jess make less shit
-        // Make sure the model loaded
-        //const XYPlanePoint = { x: 986, y: 522 } as const
-        //const modelColor: [number, number, number] = [76, 76, 76]
-        //await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-
-        //await expectPixelColor(page, modelColor, XYPlanePoint, 8)
-      })
-    }
-  )
-
-  test('Code resets after confirmation', async ({
-    context,
-    page,
-    homePage,
-    tronApp,
+    toolbar,
+    editor,
     scene,
-    cmdBar,
-  }) => {
-    if (!tronApp) {
-      fail()
-    }
-    await tronApp.cleanProjectDir()
-
-    const initialCode = `sketch001 = startSketchOn(XZ)`
-
-    // Load the page up with some code so we see the confirmation warning
-    // when we go to replay onboarding
-    await page.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, initialCode)
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-
-    // Replay the onboarding
-    await page.getByRole('link', { name: 'Settings' }).last().click()
-    const replayButton = page.getByRole('button', {
-      name: 'Replay onboarding',
-    })
-    await expect(replayButton).toBeVisible()
-    await replayButton.click()
-
-    // Ensure we see the warning, and that the code has not yet updated
-    await expect(page.getByText('Would you like to create')).toBeVisible()
-    await expect(page.locator('.cm-content')).toHaveText(initialCode)
-
-    const nextButton = page.getByTestId('onboarding-next')
-    await nextButton.hover()
-    await nextButton.click()
-
-    // Ensure we see the introduction and that the code has been reset
-    await expect(page.getByText('Welcome to Design Studio!')).toBeVisible()
-    await expect(page.locator('.cm-content')).toContainText('// Shelf Bracket')
-
-    // There used to be old code here that checked if we stored the reset
-    // code into localStorage but that isn't the case on desktop. It gets
-    // saved to the file system, which we have other tests for.
-  })
-
-  test('Click through each onboarding step and back', async ({
-    context,
-    page,
-    homePage,
     tronApp,
   }) => {
     if (!tronApp) {
       fail()
     }
+
+    // Because our default test settings have the onboardingStatus set to 'dismissed',
+    // we must set it to empty for the tests where we want to see the onboarding UI.
     await tronApp.cleanProjectDir({
       app: {
         onboarding_status: '',
       },
     })
-    // Override beforeEach test setup
-    await context.addInitScript(
-      async ({ settingsKey, settings }) => {
-        // Give no initial code, so that the onboarding start is shown immediately
-        localStorage.setItem('persistCode', '')
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: TEST_SETTINGS_ONBOARDING_START,
-        }),
-      }
+
+    const tutorialWelcomeHeading = page.getByText(
+      'Welcome to Zoo Design Studio'
     )
-
-    await page.setBodyDimensions({ width: 1200, height: 1080 })
-    await homePage.goToModelingScene()
-
-    // Test that the onboarding pane loaded
-    await expect(page.getByText('Welcome to Design Studio! This')).toBeVisible()
-
     const nextButton = page.getByTestId('onboarding-next')
     const prevButton = page.getByTestId('onboarding-prev')
-
-    while ((await nextButton.innerText()) !== 'Finish') {
-      await nextButton.hover()
-      await nextButton.click()
-    }
-
-    while ((await prevButton.innerText()) !== 'Dismiss') {
-      await prevButton.hover()
-      await prevButton.click()
-    }
-
-    // Dismiss the onboarding
-    await prevButton.hover()
-    await prevButton.click()
-
-    // Test that the onboarding pane is gone
-    await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
-    await expect.poll(() => page.url()).not.toContain('/onboarding')
-  })
-
-  test('Onboarding redirects and code updating', async ({
-    context,
-    page,
-    homePage,
-    tronApp,
-  }) => {
-    if (!tronApp) {
-      fail()
-    }
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '/export',
-      },
+    const userMenuButton = toolbar.userSidebarButton
+    const userMenuSettingsButton = page.getByRole('button', {
+      name: 'User settings',
     })
-
-    const originalCode = 'sigmaAllow = 15000'
-
-    // Override beforeEach test setup
-    await context.addInitScript(
-      async ({ settingsKey, settings, code }) => {
-        // Give some initial code, so we can test that it's cleared
-        localStorage.setItem('persistCode', code)
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: TEST_SETTINGS_ONBOARDING_EXPORT,
-        }),
-        code: originalCode,
-      }
+    const settingsHeading = page.getByRole('heading', {
+      name: 'Settings',
+      exact: true,
+    })
+    const restartOnboardingSettingsButton = page.getByRole('button', {
+      name: 'Replay onboarding',
+    })
+    const helpMenuButton = page.getByRole('button', {
+      name: 'Help and resources',
+    })
+    const helpMenuRestartOnboardingButton = page.getByRole('button', {
+      name: 'Replay onboarding tutorial',
+    })
+    const postDismissToast = page.getByText(
+      'Click the question mark in the lower-right corner if you ever want to redo the tutorial!'
     )
 
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-
-    // Test that the redirect happened
-    await expect.poll(() => page.url()).toContain('/onboarding/export')
-
-    // Test that you come back to this page when you refresh
-    await page.reload()
-    await expect.poll(() => page.url()).toContain('/onboarding/export')
-
-    // Test that the code changes when you advance to the next step
-    await page.getByTestId('onboarding-next').hover()
-    await page.getByTestId('onboarding-next').click()
-
-    // Test that the onboarding pane loaded
-    const title = page.locator('[data-testid="onboarding-content"]')
-    await expect(title).toBeAttached()
-
-    await expect(page.locator('.cm-content')).not.toHaveText(originalCode)
-
-    // Test that the code is not empty when you click on the next step
-    await page.locator('[data-testid="onboarding-next"]').hover()
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await expect(page.locator('.cm-content')).toHaveText(/.+/)
-  })
-
-  test('Onboarding code gets reset to demo on Interactive Numbers step', async ({
-    page,
-    homePage,
-    tronApp,
-  }) => {
-    if (!tronApp) {
-      fail()
-    }
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '/parametric-modeling',
-      },
-    })
-
-    const u = await getUtils(page)
-    const badCode = `// This is bad code we shouldn't see`
-
-    await page.setBodyDimensions({ width: 1200, height: 1080 })
-    await homePage.goToModelingScene()
-
-    await expect
-      .poll(() => page.url())
-      .toContain(onboardingPaths.PARAMETRIC_MODELING)
-
-    const bracketNoNewLines = bracket.replace(/\n/g, '')
-
-    // Check the code got reset on load
-    await expect(page.locator('#code-pane')).toBeVisible()
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines, {
-      timeout: 10_000,
-    })
-
-    // Mess with the code again
-    await u.codeLocator.selectText()
-    await u.codeLocator.fill(badCode)
-    await expect(u.codeLocator).toHaveText(badCode)
-
-    // Click to the next step
-    await page.locator('[data-testid="onboarding-next"]').hover()
-    await page.locator('[data-testid="onboarding-next"]').click()
-    await page.waitForURL('**' + onboardingPaths.INTERACTIVE_NUMBERS, {
-      waitUntil: 'domcontentloaded',
-    })
-
-    // Check that the code has been reset
-    await expect(u.codeLocator).toHaveText(bracketNoNewLines)
-  })
-
-  // (lee) The two avatar tests are weird because even on main, we don't have
-  // anything to do with the avatar inside the onboarding test. Due to the
-  // low impact of an avatar not showing I'm changing this to fixme.
-  test('Avatar text updates depending on image load success', async ({
-    context,
-    page,
-    homePage,
-    tronApp,
-  }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-    if (!tronApp) {
-      fail()
-    }
-
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '',
-      },
-    })
-
-    // Override beforeEach test setup
-    await context.addInitScript(
-      async ({ settingsKey, settings }) => {
-        localStorage.setItem(settingsKey, settings)
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-        }),
-      }
-    )
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-
-    // Test that the text in this step is correct
-    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
-    const onboardingOverlayLocator = page
-      .getByTestId('onboarding-content')
-      .locator('div')
-      .nth(1)
-
-    // Expect the avatar to be visible and for the text to reference it
-    await expect(avatarLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toContainText('your avatar')
-
-    // This is to force the avatar to 404.
-    // For our test image (only triggers locally. on CI, it's Kurt's /
-    // gravatar image )
-    await page.route('/cat.jpg', async (route) => {
-      await route.fulfill({
-        status: 404,
-        contentType: 'text/plain',
-        body: 'Not Found!',
+    await test.step('Test initial home page view, showing a tutorial button', async () => {
+      await expect(homePage.tutorialBtn).toBeVisible()
+      await homePage.expectState({
+        projectCards: [],
+        sortBy: 'last-modified-desc',
       })
     })
 
-    // 404 the CI avatar image
-    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
-      await route.fulfill({
-        status: 404,
-        contentType: 'text/plain',
-        body: 'Not Found!',
+    await test.step('Create a blank project and verify no onboarding chrome is shown', async () => {
+      await homePage.goToModelingScene()
+      await expect(toolbar.projectName).toContainText('testDefault')
+      await expect(tutorialWelcomeHeading).not.toBeVisible()
+      await editor.expectEditor.toContain('@settings(defaultLengthUnit = in)', {
+        shouldNormalise: true,
+      })
+      await scene.connectionEstablished()
+    })
+
+    await test.step('Go home and verify we still see the tutorial button, then begin it.', async () => {
+      await toolbar.logoLink.click()
+      await expect(homePage.tutorialBtn).toBeVisible()
+      await homePage.expectState({
+        projectCards: [
+          {
+            title: 'testDefault',
+            fileCount: 1,
+          },
+        ],
+        sortBy: 'last-modified-desc',
+      })
+      await homePage.tutorialBtn.click()
+    })
+
+    // This is web-only.
+    // TODO: write a new test just for the onboarding in browser
+    // await test.step('Ensure the onboarding request toast appears', async () => {
+    //   await expect(page.getByTestId('onboarding-toast')).toBeVisible()
+    //   await page.getByTestId('onboarding-next').click()
+    // })
+
+    await test.step('Ensure we see the welcome screen in a new project', async () => {
+      await expect(toolbar.projectName).toContainText('tutorial-project')
+      await expect(tutorialWelcomeHeading).toBeVisible()
+    })
+
+    await test.step('Test the clicking through the onboarding flow', async () => {
+      await test.step('Going forward', async () => {
+        while ((await nextButton.innerText()) !== 'Finish') {
+          await nextButton.hover()
+          await nextButton.click()
+        }
+      })
+
+      await test.step('Going backward', async () => {
+        while ((await prevButton.innerText()) !== 'Dismiss') {
+          await prevButton.hover()
+          await prevButton.click()
+        }
+      })
+
+      // Dismiss the onboarding
+      await test.step('Dismiss the onboarding', async () => {
+        await prevButton.hover()
+        await prevButton.click()
+        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+        await expect(postDismissToast).toBeVisible()
+        await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
     })
 
-    await page.reload({ waitUntil: 'domcontentloaded' })
+    await test.step('Resetting onboarding from inside project should always overwrite `tutorial-project`', async () => {
+      await test.step('Reset onboarding from settings', async () => {
+        await userMenuButton.click()
+        await userMenuSettingsButton.click()
+        await expect(settingsHeading).toBeVisible()
+        await expect(restartOnboardingSettingsButton).toBeVisible()
+        await restartOnboardingSettingsButton.click()
+      })
 
-    // Now expect the text to be different
-    await expect(avatarLocator).not.toBeVisible()
-    await expect(onboardingOverlayLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toContainText('the menu button')
-  })
+      await test.step('Gets to the onboarding start', async () => {
+        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(tutorialWelcomeHeading).toBeVisible()
+      })
 
-  test("Avatar text doesn't mention avatar when no avatar", async ({
-    context,
-    page,
-    homePage,
-    tronApp,
-  }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
-    if (!tronApp) {
-      fail()
-    }
+      await test.step('Dismiss the onboarding', async () => {
+        await postDismissToast.waitFor({ state: 'hidden' })
+        await page.keyboard.press('Escape')
+        await expect(postDismissToast).toBeVisible()
+        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+        await expect.poll(() => page.url()).not.toContain('/onboarding')
+      })
 
-    await tronApp.cleanProjectDir({
-      app: {
-        onboarding_status: '',
-      },
-    })
-    // Override beforeEach test setup
-    await context.addInitScript(
-      async ({ settingsKey, settings }) => {
-        localStorage.setItem(settingsKey, settings)
-        localStorage.setItem('FORCE_NO_IMAGE', 'FORCE_NO_IMAGE')
-      },
-      {
-        settingsKey: TEST_SETTINGS_KEY,
-        settings: settingsToToml({
-          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-        }),
-      }
-    )
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-
-    // Test that the text in this step is correct
-    const sidebar = page.getByTestId('user-sidebar-toggle')
-    const avatar = sidebar.locator('img')
-    const onboardingOverlayLocator = page
-      .getByTestId('onboarding-content')
-      .locator('div')
-      .nth(1)
-
-    // Expect the avatar to be visible and for the text to reference it
-    await expect(avatar).not.toBeVisible()
-    await expect(onboardingOverlayLocator).toBeVisible()
-    await expect(onboardingOverlayLocator).toContainText('the menu button')
-
-    // Test we mention what else is in this menu for https://github.com/KittyCAD/modeling-app/issues/2939
-    // which doesn't deserver its own full test spun up
-    const userMenuFeatures = [
-      'manage your account',
-      'report a bug',
-      'request a feature',
-      'sign out',
-    ]
-    for (const feature of userMenuFeatures) {
-      await expect(onboardingOverlayLocator).toContainText(feature)
-    }
-  })
-})
-
-test('Restarting onboarding on desktop takes one attempt', async ({
-  context,
-  page,
-  tronApp,
-}) => {
-  test.fixme(orRunWhenFullSuiteEnabled())
-  if (!tronApp) {
-    fail()
-  }
-
-  await tronApp.cleanProjectDir({
-    app: {
-      onboarding_status: 'dismissed',
-    },
-  })
-
-  await context.folderSetupFn(async (dir) => {
-    const routerTemplateDir = join(dir, 'router-template-slate')
-    await fsp.mkdir(routerTemplateDir, { recursive: true })
-    await fsp.copyFile(
-      executorInputPath('router-template-slate.kcl'),
-      join(routerTemplateDir, 'main.kcl')
-    )
-  })
-
-  // Our constants
-  const u = await getUtils(page)
-  const projectCard = page.getByText('router-template-slate')
-  const helpMenuButton = page.getByRole('button', {
-    name: 'Help and resources',
-  })
-  const restartOnboardingButton = page.getByRole('button', {
-    name: 'Reset onboarding',
-  })
-  const nextButton = page.getByTestId('onboarding-next')
-
-  const tutorialProjectIndicator = page
-    .getByTestId('project-sidebar-toggle')
-    .filter({ hasText: 'Tutorial Project 00' })
-  const tutorialModalText = page.getByText('Welcome to Design Studio!')
-  const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
-  const userMenuButton = page.getByTestId('user-sidebar-toggle')
-  const userMenuSettingsButton = page.getByRole('button', {
-    name: 'User settings',
-  })
-  const settingsHeading = page.getByRole('heading', {
-    name: 'Settings',
-    exact: true,
-  })
-  const restartOnboardingSettingsButton = page.getByRole('button', {
-    name: 'Replay onboarding',
-  })
-
-  await test.step('Navigate into project', async () => {
-    await expect(
-      page.getByRole('heading', { name: 'Your Projects' })
-    ).toBeVisible()
-    await expect(projectCard).toBeVisible()
-    await projectCard.click()
-    await u.waitForPageLoad()
-  })
-
-  await test.step('Restart the onboarding from help menu', async () => {
-    await helpMenuButton.click()
-    await restartOnboardingButton.click()
-
-    await nextButton.hover()
-    await nextButton.click()
-  })
-
-  await test.step('Confirm that the onboarding has restarted', async () => {
-    await expect(tutorialProjectIndicator).toBeVisible()
-    await expect(tutorialModalText).toBeVisible()
-    // Make sure the model loaded
-    const XYPlanePoint = { x: 988, y: 523 } as const
-    const modelColor: [number, number, number] = [76, 76, 76]
-
-    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
-    await tutorialDismissButton.click()
-    // Make sure model still there.
-    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
-  })
-
-  await test.step('Clear code and restart onboarding from settings', async () => {
-    await u.openKclCodePanel()
-    await expect(u.codeLocator).toContainText('// Shelf Bracket')
-    await u.codeLocator.selectText()
-    await u.codeLocator.fill('')
-
-    await test.step('Navigate to settings', async () => {
-      await userMenuButton.click()
-      await userMenuSettingsButton.click()
-      await expect(settingsHeading).toBeVisible()
-      await expect(restartOnboardingSettingsButton).toBeVisible()
+      await test.step('Verify no new projects were created', async () => {
+        await toolbar.logoLink.click()
+        await expect(homePage.tutorialBtn).not.toBeVisible()
+        await homePage.expectState({
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 7 },
+            {
+              title: 'testDefault',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
     })
 
-    await restartOnboardingSettingsButton.click()
-    // Since the code is empty, we should not see the confirmation dialog
-    await expect(nextButton).not.toBeVisible()
-    await expect(tutorialProjectIndicator).toBeVisible()
-    await expect(tutorialModalText).toBeVisible()
+    await test.step('Resetting onboarding from home help menu overwrites the `tutorial-project`', async () => {
+      await helpMenuButton.click()
+      await helpMenuRestartOnboardingButton.click()
+
+      await test.step('Gets to the onboarding start', async () => {
+        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(tutorialWelcomeHeading).toBeVisible()
+        await scene.connectionEstablished()
+      })
+
+      await test.step('Dismiss the onboarding', async () => {
+        await postDismissToast.waitFor({ state: 'hidden' })
+        await page.keyboard.press('Escape')
+        await expect(postDismissToast).toBeVisible()
+        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+        await expect.poll(() => page.url()).not.toContain('/onboarding')
+      })
+
+      await test.step('Verify no new projects were created', async () => {
+        await toolbar.logoLink.click()
+        await expect(homePage.tutorialBtn).not.toBeVisible()
+        await homePage.expectState({
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 7 },
+            {
+              title: 'testDefault',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
+    })
   })
 })

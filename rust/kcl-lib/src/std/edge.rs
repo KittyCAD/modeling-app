@@ -8,15 +8,15 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, ExtrudeSurface, KclValue, TagIdentifier},
+    execution::{types::RuntimeType, ExecState, ExtrudeSurface, KclValue, TagIdentifier},
     std::Args,
 };
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_data()?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
-    let edge = inner_get_opposite_edge(tag, exec_state, args.clone()).await?;
+    let edge = inner_get_opposite_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
         value: edge,
         meta: vec![args.source_range.into()],
@@ -26,8 +26,8 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// Get the opposite edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -53,15 +53,25 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
 /// ```
 #[stdlib {
     name = "getOppositeEdge",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        edge = { docs = "The tag of the edge you want to find the opposite edge of." },
+    },
+    tags = ["sketch"]
 }]
-async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_opposite_edge(
+    edge: TagIdentifier,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Uuid, KclError> {
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
     let id = exec_state.next_uuid();
-    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -88,9 +98,9 @@ async fn inner_get_opposite_edge(tag: TagIdentifier, exec_state: &mut ExecState,
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_data()?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
-    let edge = inner_get_next_adjacent_edge(tag, exec_state, args.clone()).await?;
+    let edge = inner_get_next_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
         value: edge,
         meta: vec![args.source_range.into()],
@@ -100,8 +110,8 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// Get the next adjacent edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -127,19 +137,25 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
 /// ```
 #[stdlib {
     name = "getNextAdjacentEdge",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        edge = { docs = "The tag of the edge you want to find the next adjacent edge of." },
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_next_adjacent_edge(
-    tag: TagIdentifier,
+    edge: TagIdentifier,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
     let id = exec_state.next_uuid();
-    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -167,7 +183,7 @@ async fn inner_get_next_adjacent_edge(
 
     adjacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found next adjacent to tag: `{}`", tag.value),
+            message: format!("No edge found next adjacent to tag: `{}`", edge.value),
             source_ranges: vec![args.source_range],
         })
     })
@@ -175,9 +191,9 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let tag: TagIdentifier = args.get_data()?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
-    let edge = inner_get_previous_adjacent_edge(tag, exec_state, args.clone()).await?;
+    let edge = inner_get_previous_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
         value: edge,
         meta: vec![args.source_range.into()],
@@ -187,8 +203,8 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// Get the previous adjacent edge to the edge given.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> angledLine(
 ///        angle = 60,
@@ -214,19 +230,25 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
 /// ```
 #[stdlib {
     name = "getPreviousAdjacentEdge",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        edge = { docs = "The tag of the edge you want to find the previous adjacent edge of." },
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_previous_adjacent_edge(
-    tag: TagIdentifier,
+    edge: TagIdentifier,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Uuid, KclError> {
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &tag, false).await?;
+    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
 
     let id = exec_state.next_uuid();
-    let tagged_path = args.get_tag_engine_info(exec_state, &tag)?;
+    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
 
     let resp = args
         .send_modeling_cmd(
@@ -253,7 +275,7 @@ async fn inner_get_previous_adjacent_edge(
 
     adjacent_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No edge found previous adjacent to tag: `{}`", tag.value),
+            message: format!("No edge found previous adjacent to tag: `{}`", edge.value),
             source_ranges: vec![args.source_range],
         })
     })
@@ -276,8 +298,8 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
 /// // Get an edge shared between two faces, created after a chamfer.
 ///
 /// scale = 20
-/// part001 = startSketchOn('XY')
-///     |> startProfileAt([0, 0], %)
+/// part001 = startSketchOn(XY)
+///     |> startProfile(at = [0, 0])
 ///     |> line(end = [0, scale])
 ///     |> line(end = [scale, 0])
 ///     |> line(end = [0, -scale])
@@ -301,6 +323,7 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
     args = {
         faces = { docs = "The tags of the faces you want to find the common edge between" },
     },
+    tags = ["sketch"]
 }]
 async fn inner_get_common_edge(
     faces: Vec<TagIdentifier>,

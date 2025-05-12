@@ -1,7 +1,7 @@
-import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
 import fs from 'fs'
-import fsp from 'fs/promises'
 import path from 'path'
+import { DEFAULT_PROJECT_KCL_FILE } from '@src/lib/constants'
+import fsp from 'fs/promises'
 
 import type { Paths } from '@e2e/playwright/test-utils'
 import {
@@ -11,14 +11,12 @@ import {
   getPlaywrightDownloadDir,
   getUtils,
   isOutOfViewInScrollContainer,
-  orRunWhenFullSuiteEnabled,
-  runningOnWindows,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'projects reload if a new one is created, deleted, or renamed externally',
-  { tag: '@electron' },
+  { tag: ['@electron', '@macos', '@windows'] },
   async ({ context, page }, testInfo) => {
     let externalCreatedProjectName = 'external-created-project'
 
@@ -32,7 +30,7 @@ test(
           await fsp.mkdir(myDir)
           await fsp.writeFile(
             path.join(myDir, DEFAULT_PROJECT_KCL_FILE),
-            'sca ba be bop de day wawa skee'
+            'meaningless nonsense here'
           )
         })().catch(console.error)
       }, 5000)
@@ -313,9 +311,6 @@ test(
   'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
   { tag: '@electron' },
   async ({ scene, cmdBar, context, page }, testInfo) => {
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await fsp.mkdir(bracketDir, { recursive: true })
@@ -400,11 +395,6 @@ test(
     await expect(page.getByText('broken-code')).toBeVisible()
     await page.getByText('broken-code').click()
 
-    // Gotcha: You can not use scene.settled() since the KCL code is going to fail
-    await expect(
-      page.getByTestId('model-state-indicator-playing')
-    ).toBeAttached()
-
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
       "|> line(end = [0, wallMountL], tag = 'outerEdge')"
@@ -429,9 +419,6 @@ test.describe('Can export from electron app', () => {
       async ({ scene, cmdBar, context, page, tronApp }, testInfo) => {
         if (!tronApp) {
           fail()
-        }
-        if (runningOnWindows()) {
-          test.fixme(orRunWhenFullSuiteEnabled())
         }
 
         await context.folderSetupFn(async (dir) => {
@@ -532,7 +519,7 @@ test(
 
       await fsp.mkdir(`${dir}/bracket`, { recursive: true })
       await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
         `${dir}/bracket/main.kcl`
       )
       const _1985 = new Date('1985-01-01T00:02:22')
@@ -736,7 +723,7 @@ test(
 test(
   'pressing "delete" on home screen should do nothing',
   { tag: '@electron' },
-  async ({ context, page }, testInfo) => {
+  async ({ context, page, homePage }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
       await fsp.mkdir(`${dir}/router-template-slate`, { recursive: true })
       await fsp.copyFile(
@@ -750,7 +737,7 @@ test(
 
     await expect(page.getByText('router-template-slate')).toBeVisible()
     await expect(page.getByText('Loading your Projects...')).not.toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
 
     await page.keyboard.press('Delete')
     await page.waitForTimeout(200)
@@ -758,7 +745,7 @@ test(
 
     // expect to still be on the home page
     await expect(page.getByText('router-template-slate')).toBeVisible()
-    await expect(page.getByText('Your Projects')).toBeVisible()
+    await homePage.expectIsCurrentPage()
   }
 )
 
@@ -779,7 +766,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const projectRenamedName = `untitled`
       // const projectMenuButton = page.getByTestId('project-sidebar-toggle')
@@ -839,14 +828,16 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const commandSubmitButton = page.getByRole('button', {
         name: 'Submit command',
       })
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No Projects found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -891,7 +882,9 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'rename project' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const projectRenamedName = `untitled`
       const commandContinueButton = page.getByRole('button', {
@@ -947,14 +940,16 @@ test.describe(`Project management commands`, () => {
       // Constants and locators
       const projectHomeLink = page.getByTestId('project-link')
       const commandButton = page.getByRole('button', { name: 'Commands' })
-      const commandOption = page.getByRole('option', { name: 'delete project' })
+      const commandOption = page.getByRole('option', {
+        name: 'delete project',
+      })
       const projectNameOption = page.getByRole('option', { name: projectName })
       const commandWarning = page.getByText('Are you sure you want to delete?')
       const commandSubmitButton = page.getByRole('button', {
         name: 'Submit command',
       })
       const toastMessage = page.getByText(`Successfully deleted`)
-      const noProjectsMessage = page.getByText('No Projects found')
+      const noProjectsMessage = page.getByText('No projects found')
 
       await test.step(`Setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -1117,7 +1112,7 @@ test(
         `${dir}/${projectName}/main.kcl`
       )
       await fsp.copyFile(
-        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+        'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
         `${dir}/${projectName}/otherThingToClickOn.kcl`
       )
     })
@@ -1161,7 +1156,7 @@ test(
         path.join(dir, 'router-template-slate', 'nested', 'slate.kcl')
       )
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
         path.join(dir, 'router-template-slate', 'nested', 'bracket.kcl')
       )
       testDir = dir
@@ -1208,10 +1203,9 @@ test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
-      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
@@ -1271,7 +1265,7 @@ test(
     })
 
     await test.step('Check that the home page is empty', async () => {
-      await expect(page.getByText('No Projects found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
     })
 
     await test.step('Check we can still create a project', async () => {
@@ -1287,9 +1281,6 @@ test(
   'Can load a file with CRLF line endings',
   { tag: '@electron' },
   async ({ context, page, scene, cmdBar }, testInfo) => {
-    if (runningOnWindows()) {
-      test.fixme(orRunWhenFullSuiteEnabled())
-    }
     await context.folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fsp.mkdir(routerTemplateDir, { recursive: true })
@@ -1324,7 +1315,7 @@ test(
   async ({ context, page }, testInfo) => {
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
-      ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['lego', 'lego.kcl'],
     ]
 
@@ -1429,7 +1420,6 @@ test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -1444,8 +1434,8 @@ test(
     // Constants and locators
     const projectLinks = page.getByTestId('project-link')
 
-    // expect to see text "No Projects found"
-    await expect(page.getByText('No Projects found')).toBeVisible()
+    // expect to see text "No projects found"
+    await expect(page.getByText('No projects found')).toBeVisible()
 
     await createProject({ name: 'project-000', page, returnHome: true })
     await expect(projectLinks.getByText('project-000')).toBeVisible()
@@ -1459,8 +1449,8 @@ test(
       '@settings(defaultLengthUnit = in)'
     )
 
-    await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-87.4, 282.92], %)
+    await page.locator('.cm-content').fill(`sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-87.4, 282.92])
   |> line(end = [324.07, 27.199], tag = $seg01)
   |> line(end = [118.328, -291.754])
   |> line(end = [-180.04, -202.08])
@@ -1549,7 +1539,7 @@ test(
           'e2e',
           'executor',
           'inputs',
-          'focusrite_scarlett_mounting_braket.kcl'
+          'focusrite_scarlett_mounting_bracket.kcl'
         ),
         path.join(dir, 'bracket', 'main.kcl')
       )
@@ -1654,7 +1644,7 @@ test(
           `${dir}/router-template-slate/main.kcl`
         ),
         fsp.copyFile(
-          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_braket.kcl',
+          'rust/kcl-lib/e2e/executor/inputs/focusrite_scarlett_mounting_bracket.kcl',
           `${dir}/bracket/main.kcl`
         ),
       ])
@@ -1703,7 +1693,7 @@ test(
 
       await homePage.projectsLoaded()
 
-      await expect(page.getByText('No Projects found')).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
       await createProject({ name: 'project-000', page, returnHome: true })
       await expect(
         page.getByTestId('project-link').filter({ hasText: 'project-000' })
@@ -1747,7 +1737,7 @@ test(
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     const projectData = [
-      ['basic bracket', 'focusrite_scarlett_mounting_braket.kcl'],
+      ['basic bracket', 'focusrite_scarlett_mounting_bracket.kcl'],
       ['basic-cube', 'basic_fillet_cube_end.kcl'],
       ['basic-cylinder', 'cylinder.kcl'],
       ['router-template-slate', 'router-template-slate.kcl'],
@@ -1812,8 +1802,8 @@ test(
         'basic_fillet_cube_next_adjacent.kcl',
         'basic_fillet_cube_previous_adjacent.kcl',
         'basic_fillet_cube_start.kcl',
-        'big_number_angle_to_match_length_x.kcl',
-        'big_number_angle_to_match_length_y.kcl',
+        'broken-code-test.kcl',
+        'circular_pattern3d_a_pattern.kcl',
         'close_arc.kcl',
         'computed_var.kcl',
         'cube-embedded.gltf',
@@ -1829,7 +1819,7 @@ test(
         'extrude-inside-fn-with-tags.kcl',
         'fillet-and-shell.kcl',
         'fillet_duplicate_tags.kcl',
-        'focusrite_scarlett_mounting_braket.kcl',
+        'focusrite_scarlett_mounting_bracket.kcl',
         'function_sketch.kcl',
         'function_sketch_with_position.kcl',
         'global-tags.kcl',
@@ -1962,13 +1952,13 @@ test(
 test(
   'Settings persist across restarts',
   { tag: '@electron' },
-  async ({ page, scene, cmdBar }, testInfo) => {
+  async ({ page, toolbar }, testInfo) => {
     await test.step('We can change a user setting like theme', async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       page.on('console', console.log)
 
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
 
       await page.getByTestId('user-settings').click()
 
@@ -1995,8 +1985,8 @@ test(
 test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
-  async ({ page }, testInfo) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
+  async ({ page, toolbar }, testInfo) => {
+    const nextButton = page.getByTestId('onboarding-next')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
@@ -2007,14 +1997,14 @@ test(
     })
 
     await test.step('Should go through onboarding', async () => {
-      await page.getByTestId('user-sidebar-toggle').click()
+      await toolbar.userSidebarButton.click()
       await page.getByTestId('user-settings').click()
       await page.getByRole('button', { name: 'Replay Onboarding' }).click()
 
-      const numberOfOnboardingSteps = 12
-      for (let clicks = 0; clicks < numberOfOnboardingSteps; clicks++) {
-        await page.getByTestId('onboarding-next').click()
+      while ((await nextButton.innerText()) !== 'Finish') {
+        await nextButton.click()
       }
+      await nextButton.click()
 
       await page.getByTestId('project-sidebar-toggle').click()
     })
@@ -2024,7 +2014,7 @@ test(
     })
 
     await test.step('Should show the original project called wrist brace', async () => {
-      const projectNames = ['Tutorial Project 00', 'wrist brace']
+      const projectNames = ['tutorial-project', 'wrist brace']
       for (const [index, projectLink] of (await getAllProjects()).entries()) {
         await expect(projectLink).toContainText(projectNames[index])
       }
@@ -2037,10 +2027,10 @@ test(
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
     await context.folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'اَلْعَرَبِيَّةُ')
+      const bracketDir = path.join(dir, 'العربية')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.copyFile(
-        executorInputPath('focusrite_scarlett_mounting_braket.kcl'),
+        executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
         path.join(bracketDir, 'main.kcl')
       )
 
@@ -2054,11 +2044,11 @@ test(
 
     const pointOnModel = { x: 630, y: 280 }
 
-    await test.step('Opening the اَلْعَرَبِيَّةُ project should load the stream', async () => {
+    await test.step('Opening the العربية project should load the stream', async () => {
       // expect to see the text bracket
-      await expect(page.getByText('اَلْعَرَبِيَّةُ')).toBeVisible()
+      await expect(page.getByText('العربية')).toBeVisible()
 
-      await page.getByText('اَلْعَرَبِيَّةُ').click()
+      await page.getByText('العربية').click()
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })

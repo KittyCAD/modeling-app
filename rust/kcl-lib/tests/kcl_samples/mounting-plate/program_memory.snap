@@ -87,9 +87,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 690,
-            "end": 696,
-            "start": 690,
+            "commentStart": 708,
+            "end": 714,
+            "start": 708,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -100,9 +100,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 764,
-            "end": 770,
-            "start": 764,
+            "commentStart": 782,
+            "end": 788,
+            "start": 782,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -113,9 +113,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 840,
-            "end": 846,
-            "start": 840,
+            "commentStart": 858,
+            "end": 864,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -126,9 +126,9 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 867,
-            "end": 873,
-            "start": 867,
+            "commentStart": 885,
+            "end": 891,
+            "start": 885,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -149,9 +149,9 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 690,
-              "end": 696,
-              "start": 690,
+              "commentStart": 708,
+              "end": 714,
+              "start": 708,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -174,9 +174,9 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
-              "commentStart": 764,
-              "end": 770,
-              "start": 764,
+              "commentStart": 782,
+              "end": 788,
+              "start": 782,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -199,9 +199,9 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 840,
-              "end": 846,
-              "start": 840,
+              "commentStart": 858,
+              "end": 864,
+              "start": 858,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -224,9 +224,9 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
-              "commentStart": 867,
-              "end": 873,
-              "start": 867,
+              "commentStart": 885,
+              "end": 891,
+              "start": 885,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -241,10 +241,8 @@ description: Variables in memory after executing mounting-plate.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -253,12 +251,14 @@ description: Variables in memory after executing mounting-plate.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -266,19 +266,8 @@ description: Variables in memory after executing mounting-plate.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Inches"
           }
         },
         "start": {
@@ -402,7 +391,8 @@ description: Variables in memory after executing mounting-plate.kcl
       ],
       "units": {
         "type": "Inches"
-      }
+      },
+      "sectional": false
     }
   },
   "plateLength": {
@@ -445,7 +435,8 @@ description: Variables in memory after executing mounting-plate.kcl
     }
   },
   "rectShape": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "rs": {
     "type": "Sketch",
@@ -463,9 +454,9 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 690,
-            "end": 696,
-            "start": 690,
+            "commentStart": 708,
+            "end": 714,
+            "start": 708,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -488,9 +479,9 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
-            "commentStart": 764,
-            "end": 770,
-            "start": 764,
+            "commentStart": 782,
+            "end": 788,
+            "start": 782,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -513,9 +504,9 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 840,
-            "end": 846,
-            "start": 840,
+            "commentStart": 858,
+            "end": 864,
+            "start": 858,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -538,9 +529,9 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
-            "commentStart": 867,
-            "end": 873,
-            "start": 867,
+            "commentStart": 885,
+            "end": 891,
+            "start": 885,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -555,10 +546,8 @@ description: Variables in memory after executing mounting-plate.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -567,12 +556,14 @@ description: Variables in memory after executing mounting-plate.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -580,19 +571,8 @@ description: Variables in memory after executing mounting-plate.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Inches"
         }
       },
       "start": {

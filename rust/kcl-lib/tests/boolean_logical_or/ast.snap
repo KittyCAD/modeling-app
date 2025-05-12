@@ -156,26 +156,15 @@ description: Result of parsing boolean_logical_or.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
-                "abs_path": false,
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "a",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "1",
@@ -186,19 +175,26 @@ description: Result of parsing boolean_logical_or.kcl
                   "value": 1.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"left branch of or is true makes the whole expression true\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "left branch of or is true makes the whole expression true"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"left branch of or is true makes the whole expression true\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "left branch of or is true makes the whole expression true"
+              }
             }
           ],
           "callee": {
@@ -219,8 +215,24 @@ description: Result of parsing boolean_logical_or.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "a",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -377,26 +389,15 @@ description: Result of parsing boolean_logical_or.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
-                "abs_path": false,
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "b",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "1",
@@ -407,19 +408,26 @@ description: Result of parsing boolean_logical_or.kcl
                   "value": 1.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"right branch of or is true makes the whole expression true\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "right branch of or is true makes the whole expression true"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"right branch of or is true makes the whole expression true\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "right branch of or is true makes the whole expression true"
+              }
             }
           ],
           "callee": {
@@ -440,8 +448,24 @@ description: Result of parsing boolean_logical_or.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "b",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -598,26 +622,15 @@ description: Result of parsing boolean_logical_or.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
-                "abs_path": false,
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "c",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "1",
@@ -628,19 +641,26 @@ description: Result of parsing boolean_logical_or.kcl
                   "value": 1.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"both branches of or are true makes the whole expression true\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "both branches of or are true makes the whole expression true"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"both branches of or are true makes the whole expression true\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "both branches of or are true makes the whole expression true"
+              }
             }
           ],
           "callee": {
@@ -661,8 +681,24 @@ description: Result of parsing boolean_logical_or.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "c",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -819,26 +855,15 @@ description: Result of parsing boolean_logical_or.kcl
         "expression": {
           "arguments": [
             {
-              "commentStart": 0,
-              "end": 0,
-              "left": {
-                "abs_path": false,
+              "type": "LabeledArg",
+              "label": {
                 "commentStart": 0,
                 "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "d",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
+                "name": "isEqualTo",
                 "start": 0,
-                "type": "Name",
-                "type": "Name"
+                "type": "Identifier"
               },
-              "operator": "==",
-              "right": {
+              "arg": {
                 "commentStart": 0,
                 "end": 0,
                 "raw": "2",
@@ -849,19 +874,26 @@ description: Result of parsing boolean_logical_or.kcl
                   "value": 2.0,
                   "suffix": "None"
                 }
-              },
-              "start": 0,
-              "type": "BinaryExpression",
-              "type": "BinaryExpression"
+              }
             },
             {
-              "commentStart": 0,
-              "end": 0,
-              "raw": "\"both branches of or are false makes the whole expression false\"",
-              "start": 0,
-              "type": "Literal",
-              "type": "Literal",
-              "value": "both branches of or are false makes the whole expression false"
+              "type": "LabeledArg",
+              "label": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "error",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "arg": {
+                "commentStart": 0,
+                "end": 0,
+                "raw": "\"both branches of or are false makes the whole expression false\"",
+                "start": 0,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "both branches of or are false makes the whole expression false"
+              }
             }
           ],
           "callee": {
@@ -882,8 +914,24 @@ description: Result of parsing boolean_logical_or.kcl
           "commentStart": 0,
           "end": 0,
           "start": 0,
-          "type": "CallExpression",
-          "type": "CallExpression"
+          "type": "CallExpressionKw",
+          "type": "CallExpressionKw",
+          "unlabeled": {
+            "abs_path": false,
+            "commentStart": 0,
+            "end": 0,
+            "name": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "d",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
+            "start": 0,
+            "type": "Name",
+            "type": "Name"
+          }
         },
         "start": 0,
         "type": "ExpressionStatement",

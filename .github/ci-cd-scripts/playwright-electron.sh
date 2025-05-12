@@ -7,11 +7,11 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
     # If no last run artifact, than run Playwright normally
     echo "run playwright normally"
     if [[ "$3" == *ubuntu* ]]; then
-        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron:ubuntu -- --shard=$1/$2 || true
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron -- --shard=$1/$2 || true
     elif [[ "$3" == *windows* ]]; then
-        npm run test:playwright:electron:windows -- --shard=$1/$2 || true
+        npm run test:playwright:electron -- --grep=@windows --shard=$1/$2 || true
     elif [[ "$3" == *macos* ]]; then
-        npm run test:playwright:electron:macos  -- --shard=$1/$2 || true
+        npm run test:playwright:electron -- --grep=@macos --shard=$1/$2 || true
     else
         echo "Do not run Playwright. Unable to detect os runtime."
         exit 1
@@ -26,16 +26,16 @@ max_retries=1
 # Retry failed tests, doing our own retries because using inbuilt Playwright retries causes connection issues
 while [[ $retry -le $max_retries ]]; do
     if [[ -f "test-results/.last-run.json" ]]; then
-        failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-        if [[ $failed_tests -gt 0 ]]; then
+        status=$(jq -r '.status' test-results/.last-run.json)
+        if [[ "$status" == "failed" ]]; then
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
-                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron:ubuntu -- --last-failed || true
+                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run test:playwright:electron -- --last-failed || true
             elif [[ "$3" == *windows* ]]; then
-                npm run test:playwright:electron:windows -- --last-failed || true
+                npm run test:playwright:electron -- --grep=@windows --last-failed || true
             elif [[ "$3" == *macos* ]]; then
-                npm run test:playwright:electron:macos -- --last-failed || true
+                npm run test:playwright:electron -- --grep=@macos --last-failed || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1
@@ -56,10 +56,11 @@ done
 echo "retried=false" >>$GITHUB_OUTPUT
 
 if [[ -f "test-results/.last-run.json" ]]; then
-    failed_tests=$(jq '.failedTests | length' test-results/.last-run.json)
-    if [[ $failed_tests -gt 0 ]]; then
-        # If it still fails after 3 retries, then fail the job
+    status=$(jq -r '.status' test-results/.last-run.json)
+    if [[ "$status" == "failed" ]]; then
+        # If it still fails after retries, then fail the job
         exit 1
     fi
 fi
+
 exit 0

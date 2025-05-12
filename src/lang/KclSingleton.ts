@@ -19,15 +19,14 @@ import {
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
-import { CommandLogType } from '@src/lang/std/engineConnection'
 import { topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
   ExecState,
   PathToNode,
   Program,
-  SourceRange,
   VariableMap,
 } from '@src/lang/wasm'
 import { emptyExecState, getKclVersion, parse, recast } from '@src/lang/wasm'
@@ -48,7 +47,8 @@ import type {
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 import { err, reportRejection } from '@src/lib/trap'
-import { deferExecution, isOverlap, uuidv4 } from '@src/lib/utils'
+import { deferExecution, uuidv4 } from '@src/lib/utils'
+import type { PlaneVisibilityMap } from '@src/machines/modelingMachine'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -71,9 +71,23 @@ export class KclManager {
    */
   artifactGraph: ArtifactGraph = new Map()
   artifactIndex: ArtifactIndex = []
-  defaultPlanesShown: boolean = false
 
   private _ast: Node<Program> = {
+    body: [],
+    shebang: null,
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    nonCodeMeta: {
+      nonCodeNodes: {},
+      startNodes: [],
+    },
+    innerAttrs: [],
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+  }
+  _lastAst: Node<Program> = {
     body: [],
     shebang: null,
     start: 0,
@@ -108,20 +122,25 @@ export class KclManager {
 
   private _isExecutingCallback: (arg: boolean) => void = () => {}
   private _astCallBack: (arg: Node<Program>) => void = () => {}
-  private _variablesCallBack: (arg: {
-    [key in string]?: KclValue | undefined
-  }) => void = () => {}
+  private _variablesCallBack: (
+    arg: {
+      [key in string]?: KclValue | undefined
+    }
+  ) => void = () => {}
   private _logsCallBack: (arg: string[]) => void = () => {}
   private _kclErrorsCallBack: (errors: KCLError[]) => void = () => {}
   private _diagnosticsCallback: (errors: Diagnostic[]) => void = () => {}
   private _wasmInitFailedCallback: (arg: boolean) => void = () => {}
-  private _executeCallback: () => void = () => {}
   sceneInfraBaseUnitMultiplierSetter: (unit: BaseUnit) => void = () => {}
 
   get ast() {
     return this._ast
   }
   set ast(ast) {
+    if (this._ast.body.length !== 0) {
+      // last intact ast, if the user makes a typo with a syntax error, we want to keep the one before they made that mistake
+      this._lastAst = structuredClone(this._ast)
+    }
     this._ast = ast
     this._astCallBack(ast)
   }
@@ -242,6 +261,8 @@ export class KclManager {
       await this.safeParse(this.singletons.codeManager.code).then((ast) => {
         if (ast) {
           this.ast = ast
+          // on setup, set _lastAst so it's populated.
+          this._lastAst = ast
         }
       })
     })
@@ -271,9 +292,6 @@ export class KclManager {
     this._diagnosticsCallback = setDiagnostics
     this._isExecutingCallback = setIsExecuting
     this._wasmInitFailedCallback = setWasmInitFailed
-  }
-  registerExecuteCallback(callback: () => void) {
-    this._executeCallback = callback
   }
 
   clearAst() {
@@ -306,7 +324,7 @@ export class KclManager {
     // the cache and clear the scene.
     if (this._astParseFailed && this._switchedFiles) {
       await this.singletons.rustContext.clearSceneAndBustCache(
-        { settings: await jsAppSettings() },
+        await jsAppSettings(),
         this.singletons.codeManager.currentFilePath || undefined
       )
     } else if (this._switchedFiles) {
@@ -336,24 +354,15 @@ export class KclManager {
         })
       }, 200)(null)
     }
-  }
 
-  // Some "objects" have the same source range, such as sketch_mode_start and start_path.
-  // So when passing a range, we need to also specify the command type
-  private mapRangeToObjectId(
-    range: SourceRange,
-    commandTypeToTarget: string
-  ): string | undefined {
-    for (const [artifactId, artifact] of this.artifactGraph) {
-      if (
-        'codeRef' in artifact &&
-        artifact.codeRef &&
-        isOverlap(range, artifact.codeRef.range)
-      ) {
-        if (commandTypeToTarget === artifact.type) return artifactId
+    // Send the 'artifact graph initialized' event for modelingMachine, only once, when default planes are also initialized.
+    deferExecution((a?: null) => {
+      if (this.defaultPlanes) {
+        this.engineCommandManager.modelingSend({
+          type: 'Artifact graph initialized',
+        })
       }
-    }
-    return undefined
+    }, 200)(null)
   }
 
   async safeParse(code: string): Promise<Node<Program> | null> {
@@ -417,6 +426,7 @@ export class KclManager {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
+
       return
     }
 
@@ -428,6 +438,7 @@ export class KclManager {
 
     this.isExecuting = true
     await this.ensureWasmInit()
+
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,
@@ -447,11 +458,6 @@ export class KclManager {
     if (this._cancelTokens.get(currentExecutionId)) {
       this._cancelTokens.delete(currentExecutionId)
       return
-    }
-
-    // Exit sketch mode if the AST is empty
-    if (this._isAstEmpty(ast)) {
-      await this.disableSketchMode()
     }
 
     let fileSettings = getSettingsAnnotation(ast)
@@ -474,10 +480,9 @@ export class KclManager {
       this.lastSuccessfulVariables = execState.variables
       this.lastSuccessfulOperations = execState.operations
     }
-    this.ast = { ...ast }
+    this.ast = structuredClone(ast)
     // updateArtifactGraph relies on updated executeState/variables
     await this.updateArtifactGraph(execState.artifactGraph)
-    this._executeCallback()
     if (!isInterrupted) {
       this.singletons.sceneInfra.modelingSend({
         type: 'code edit during sketch',
@@ -557,8 +562,7 @@ export class KclManager {
       return
     }
 
-    this.ast = { ...ast }
-    return this.executeAst()
+    return this.executeAst({ ast })
   }
 
   async format() {
@@ -709,6 +713,19 @@ export class KclManager {
     }
     return Promise.all(thePromises)
   }
+
+  setPlaneVisibilityByKey(
+    planeKey: keyof PlaneVisibilityMap,
+    visible: boolean
+  ) {
+    const planeId = this.defaultPlanes?.[planeKey]
+    if (!planeId) {
+      console.warn(`Plane ${planeKey} not found`)
+      return
+    }
+    return this.engineCommandManager.setPlaneHidden(planeId, !visible)
+  }
+
   /** TODO: this function is hiding unawaited asynchronous work */
   defaultSelectionFilter(selectionsToRestore?: Selections) {
     setSelectionFilterToDefault(this.engineCommandManager, selectionsToRestore)
@@ -718,22 +735,21 @@ export class KclManager {
     setSelectionFilter(filter, this.engineCommandManager)
   }
 
-  /**
-   * We can send a single command of 'enable_sketch_mode' or send this in a batched request.
-   * When there is no code in the KCL editor we should be sending 'sketch_mode_disable' since any previous half finished
-   * code could leave the state of the application in sketch mode on the engine side.
-   */
-  async disableSketchMode() {
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'sketch_mode_disable' },
-    })
-  }
-
   // Determines if there is no KCL code which means it is executing a blank KCL file
   _isAstEmpty(ast: Node<Program>) {
     return ast.start === 0 && ast.end === 0 && ast.body.length === 0
+  }
+
+  /**
+   * Determines if there is no code to execute. If there is a @settings annotation
+   * that adds to the overall ast.start and ast.end but not the body which is the program
+   *
+   *
+   * If you need to know if there is any program code or not, use this function otherwise
+   * use _isAstEmpty
+   */
+  isAstBodyEmpty(ast: Node<Program>) {
+    return ast.body.length === 0
   }
 
   get fileSettings() {

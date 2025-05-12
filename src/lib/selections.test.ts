@@ -19,66 +19,48 @@ beforeAll(async () => {
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([105.55, 105.55], sketch001)
-  |> xLine(332.55, %, $seg01)
-  |> yLine(-310.12, %, $seg02)
-  |> xLine(-373.65, %)
+profile001 = startProfile(sketch001, at = [105.55, 105.55])
+  |> xLine(length = 332.55, tag = $seg01)
+  |> yLine(length = -310.12, tag = $seg02)
+  |> xLine(length = -373.65)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(profile001, length = 500)
 
-sketch002 = startSketchOn(extrude001, seg01)
-profile002 = startProfileAt([-321.34, 361.76], sketch002)
+sketch002 = startSketchOn(extrude001, face = seg01)
+profile002 = startProfile(sketch002, at = [-321.34, 361.76])
   |> line(end = [109.03, -61.79])
   |> line(end = [-124.48, -132.65])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 500)
-sketch005 = startSketchOn(extrude002, 'END')
-profile006 = circle(sketch005,
-  center = [-292.57, 302.55],
-  radius = 25.89
-)
-sketch004 = startSketchOn(extrude001, seg02)
-profile005 = startProfileAt([36.1, 174.49], sketch004)
+sketch005 = startSketchOn(extrude002, face = END)
+profile006 = circle(sketch005, center = [-292.57, 302.55], radius = 25.89)
+sketch004 = startSketchOn(extrude001, face = seg02)
+profile005 = startProfile(sketch004, at = [36.1, 174.49])
   |> angledLine(angle = 0, length = 22.33, tag = $rectangleSegmentA003)
-  |> angledLine(
-       angle = segAng(rectangleSegmentA003) - 90,
-       length = 155.27,
-     )
-  |> angledLine(
-       angle = segAng(rectangleSegmentA003),
-       length = -segLen(rectangleSegmentA003),
-     )
+  |> angledLine(angle = segAng(rectangleSegmentA003) - 90, length = 155.27)
+  |> angledLine(angle = segAng(rectangleSegmentA003), length = -segLen(rectangleSegmentA003))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-sketch003 = startSketchOn(extrude001, seg02)
-profile003 = startProfileAt([-115.59, 439.4], sketch003)
+sketch003 = startSketchOn(extrude001, face = seg02)
+profile003 = startProfile(sketch003, at = [-115.59, 439.4])
   |> angledLine(angle = 0, length = 130.08, tag = $rectangleSegmentA002)
-  |> angledLine(
-       angle = segAng(rectangleSegmentA002) - 90,
-       length = 123.84,
-     )
-  |> angledLine(
-       angle = segAng(rectangleSegmentA002),
-       length = -segLen(rectangleSegmentA002),
-     )
+  |> angledLine(angle = segAng(rectangleSegmentA002) - 90, length = 123.84)
+  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-profile004 = circle(sketch003,
-  center = [-88.54, 209.41],
-  radius = 42.72
-)
+profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
 `
   const ___artifactGraph = new Map([
     [
-      'c25d213e-0d04-4ec0-85f9-21deb17a9eca',
+      '9b6f2a00-d871-5dc9-8912-aef56b59035d',
       {
         type: 'plane',
-        id: 'c25d213e-0d04-4ec0-85f9-21deb17a9eca',
-        pathIds: ['8b84b28e-b521-45e6-bea0-2b57e5dc2064'],
+        id: '9b6f2a00-d871-5dc9-8912-aef56b59035d',
+        pathIds: ['a02393ed-4452-5b91-9ee9-4c42db7a50a3'],
         codeRef: {
-          range: [12, 31, 0],
+          range: [12, 29, 0],
           pathToNode: [
             ['body', ''],
             [0, 'index'],
@@ -89,22 +71,22 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
+      'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
       {
         type: 'path',
-        id: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
-        planeId: 'c25d213e-0d04-4ec0-85f9-21deb17a9eca',
+        id: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
+        planeId: '9b6f2a00-d871-5dc9-8912-aef56b59035d',
         segIds: [
-          '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
-          'a19c04df-107c-4744-b575-d76957eed2de',
-          'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
-          '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
-          'e211240e-c634-43e2-a502-41dc9c291708',
+          '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
+          '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
+          '0edcccdd-3f57-5e86-84d9-90aac061b21e',
+          'f7861c82-8117-5bb5-af9c-be285026b0c6',
+          'f124c577-7b49-512d-ad8e-4cc84b2c53ba',
         ],
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        solid2dId: '5289aace-0493-4238-a32e-1c61b3e10b9e',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        solid2dId: '76214ae9-592c-4e91-bef7-cfbf5530e393',
         codeRef: {
-          range: [45, 88, 0],
+          range: [43, 89, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -117,18 +99,18 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
       {
         type: 'segment',
-        id: '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
-        surfaceId: '08c1481a-9c17-41df-baf9-8ef253cb8c83',
+        id: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
+        surfaceId: '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
         edgeIds: [
-          '447ea755-6f79-40de-8cf5-17685a0b039d',
-          '24ae3c52-3bd2-4a21-b48a-37439375cd5f',
+          'f87a7e1e-a594-4c7d-bb06-e19b76092678',
+          'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
         ],
         codeRef: {
-          range: [94, 118, 0],
+          range: [95, 131, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -138,21 +120,25 @@ profile004 = circle(sketch003,
             [1, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+          'b9e275c1-5147-46f5-af49-b3d762933748',
+        ],
       },
     ],
     [
-      'a19c04df-107c-4744-b575-d76957eed2de',
+      '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
       {
         type: 'segment',
-        id: 'a19c04df-107c-4744-b575-d76957eed2de',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
-        surfaceId: '9314d48d-5963-492e-8bda-2acbe5df29e9',
+        id: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
+        surfaceId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
         edgeIds: [
-          '32079948-0977-42be-95c3-662cc455d9ff',
-          '9c7b1d9b-fd4d-4c58-a7e9-262627ba0fdd',
+          '6ddaad54-f49d-498a-8935-0af5e055f5fd',
+          '3315f045-caf3-46d6-9cb5-7b1c658ae562',
         ],
         codeRef: {
-          range: [124, 149, 0],
+          range: [137, 174, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -162,21 +148,25 @@ profile004 = circle(sketch003,
             [2, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          'c30f705c-f778-48df-8e1d-33f07dcceb90',
+          'b9e275c1-5147-46f5-af49-b3d762933748',
+        ],
       },
     ],
     [
-      'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
+      '0edcccdd-3f57-5e86-84d9-90aac061b21e',
       {
         type: 'segment',
-        id: 'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
-        surfaceId: 'ab90c913-ed62-4802-a5a6-0082789a97e3',
+        id: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
+        surfaceId: '35628e3b-78d6-4de4-a43d-d96220004fe1',
         edgeIds: [
-          '89acf940-0d8b-4eea-bc42-f0536b8da366',
-          '05a4f54b-3fd6-4842-b871-fff7379fef33',
+          'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
+          'b063089b-f929-4fe7-8df6-044f8b469990',
         ],
         codeRef: {
-          range: [155, 172, 0],
+          range: [180, 203, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -186,21 +176,25 @@ profile004 = circle(sketch003,
             [3, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          '35628e3b-78d6-4de4-a43d-d96220004fe1',
+          'b9e275c1-5147-46f5-af49-b3d762933748',
+        ],
       },
     ],
     [
-      '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
+      'f7861c82-8117-5bb5-af9c-be285026b0c6',
       {
         type: 'segment',
-        id: '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
-        surfaceId: '793445be-45df-4126-aa57-3260984b1a3a',
+        id: 'f7861c82-8117-5bb5-af9c-be285026b0c6',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
+        surfaceId: '36584687-7151-4406-a51f-f07933ae1695',
         edgeIds: [
-          '22245d83-6502-4d39-a665-86cf44a3aeb0',
-          'f870f7d8-35cb-4190-a46b-0154b01f5b7e',
+          '8ddb1c33-8519-4467-a50f-b3879f47ea03',
+          'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
         ],
         codeRef: {
-          range: [178, 234, 0],
+          range: [209, 265, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -210,16 +204,20 @@ profile004 = circle(sketch003,
             [4, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          '36584687-7151-4406-a51f-f07933ae1695',
+          'b9e275c1-5147-46f5-af49-b3d762933748',
+        ],
       },
     ],
     [
-      'e211240e-c634-43e2-a502-41dc9c291708',
+      'f124c577-7b49-512d-ad8e-4cc84b2c53ba',
       {
         type: 'segment',
-        id: 'e211240e-c634-43e2-a502-41dc9c291708',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
+        id: 'f124c577-7b49-512d-ad8e-4cc84b2c53ba',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
         codeRef: {
-          range: [240, 247, 0],
+          range: [271, 278, 0],
           pathToNode: [
             ['body', ''],
             [1, 'index'],
@@ -232,40 +230,39 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '5289aace-0493-4238-a32e-1c61b3e10b9e',
+      '76214ae9-592c-4e91-bef7-cfbf5530e393',
       {
         type: 'solid2d',
-        id: '5289aace-0493-4238-a32e-1c61b3e10b9e',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
+        id: '76214ae9-592c-4e91-bef7-cfbf5530e393',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
       },
     ],
     [
-      '07cade68-136c-4ba9-8e69-87e56998d264',
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
       {
         type: 'sweep',
-        id: '07cade68-136c-4ba9-8e69-87e56998d264',
+        id: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
         subType: 'extrusion',
-        pathId: '8b84b28e-b521-45e6-bea0-2b57e5dc2064',
+        pathId: 'a02393ed-4452-5b91-9ee9-4c42db7a50a3',
         surfaceIds: [
-          '793445be-45df-4126-aa57-3260984b1a3a',
-          'ab90c913-ed62-4802-a5a6-0082789a97e3',
-          '9314d48d-5963-492e-8bda-2acbe5df29e9',
-          '08c1481a-9c17-41df-baf9-8ef253cb8c83',
-          '169e55f4-8439-4040-b531-e6e63c7a22f1',
-          '9f50004b-2015-4e6f-b79a-652ea66ad229',
+          '36584687-7151-4406-a51f-f07933ae1695',
+          '35628e3b-78d6-4de4-a43d-d96220004fe1',
+          'c30f705c-f778-48df-8e1d-33f07dcceb90',
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+          'b9e275c1-5147-46f5-af49-b3d762933748',
+          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
         ],
         edgeIds: [
-          '22245d83-6502-4d39-a665-86cf44a3aeb0',
-          'f870f7d8-35cb-4190-a46b-0154b01f5b7e',
-          '89acf940-0d8b-4eea-bc42-f0536b8da366',
-          '05a4f54b-3fd6-4842-b871-fff7379fef33',
-          '32079948-0977-42be-95c3-662cc455d9ff',
-          '9c7b1d9b-fd4d-4c58-a7e9-262627ba0fdd',
-          '447ea755-6f79-40de-8cf5-17685a0b039d',
-          '24ae3c52-3bd2-4a21-b48a-37439375cd5f',
+          '8ddb1c33-8519-4467-a50f-b3879f47ea03',
+          'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
+          'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
+          'b063089b-f929-4fe7-8df6-044f8b469990',
+          '6ddaad54-f49d-498a-8935-0af5e055f5fd',
+          '3315f045-caf3-46d6-9cb5-7b1c658ae562',
+          'f87a7e1e-a594-4c7d-bb06-e19b76092678',
         ],
         codeRef: {
-          range: [261, 294, 0],
+          range: [292, 325, 0],
           pathToNode: [
             ['body', ''],
             [2, 'index'],
@@ -276,167 +273,111 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '793445be-45df-4126-aa57-3260984b1a3a',
+      '36584687-7151-4406-a51f-f07933ae1695',
       {
         type: 'wall',
-        id: '793445be-45df-4126-aa57-3260984b1a3a',
-        segId: '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        id: '36584687-7151-4406-a51f-f07933ae1695',
+        segId: 'f7861c82-8117-5bb5-af9c-be285026b0c6',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      'ab90c913-ed62-4802-a5a6-0082789a97e3',
+      '35628e3b-78d6-4de4-a43d-d96220004fe1',
       {
         type: 'wall',
-        id: 'ab90c913-ed62-4802-a5a6-0082789a97e3',
-        segId: 'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        id: '35628e3b-78d6-4de4-a43d-d96220004fe1',
+        segId: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      '9314d48d-5963-492e-8bda-2acbe5df29e9',
+      'c30f705c-f778-48df-8e1d-33f07dcceb90',
       {
         type: 'wall',
-        id: '9314d48d-5963-492e-8bda-2acbe5df29e9',
-        segId: 'a19c04df-107c-4744-b575-d76957eed2de',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
+        id: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
+        segId: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
         pathIds: [
-          '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
-          '04a1735a-3ce9-476f-b35f-e4e9439485ea',
-          '64c477ee-6206-424f-98e2-baecc387de86',
+          '6d22e8ef-40c6-5663-84a7-f974e53c8226',
+          '403d6680-758a-5228-9c69-b1cba8437ec1',
+          'cbce7813-eaee-59a6-9f30-8a964229c8ee',
         ],
-        faceCodeRef: { range: [853, 885, 0], pathToNode: [] },
+        faceCodeRef: {
+          range: [769, 808, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      '08c1481a-9c17-41df-baf9-8ef253cb8c83',
+      '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
       {
         type: 'wall',
-        id: '08c1481a-9c17-41df-baf9-8ef253cb8c83',
-        segId: '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        pathIds: ['9c837ce4-a600-43e8-a799-496016816409'],
-        faceCodeRef: { range: [308, 340, 0], pathToNode: [] },
+        id: '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        segId: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        pathIds: ['2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d'],
+        faceCodeRef: {
+          range: [339, 378, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      '169e55f4-8439-4040-b531-e6e63c7a22f1',
+      'b9e275c1-5147-46f5-af49-b3d762933748',
       {
         type: 'cap',
-        id: '169e55f4-8439-4040-b531-e6e63c7a22f1',
+        id: 'b9e275c1-5147-46f5-af49-b3d762933748',
         subType: 'start',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      '9f50004b-2015-4e6f-b79a-652ea66ad229',
+      'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
       {
         type: 'cap',
-        id: '9f50004b-2015-4e6f-b79a-652ea66ad229',
+        id: 'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
         subType: 'end',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '6754a9b3-9b1e-5e6f-b872-7849d82fa323',
       },
     ],
     [
-      '22245d83-6502-4d39-a665-86cf44a3aeb0',
-      {
-        type: 'sweepEdge',
-        id: '22245d83-6502-4d39-a665-86cf44a3aeb0',
-        subType: 'opposite',
-        segId: '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      'f870f7d8-35cb-4190-a46b-0154b01f5b7e',
-      {
-        type: 'sweepEdge',
-        id: 'f870f7d8-35cb-4190-a46b-0154b01f5b7e',
-        subType: 'adjacent',
-        segId: '631d0a75-05da-48be-9ad5-ea0bfa7efc12',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '89acf940-0d8b-4eea-bc42-f0536b8da366',
-      {
-        type: 'sweepEdge',
-        id: '89acf940-0d8b-4eea-bc42-f0536b8da366',
-        subType: 'opposite',
-        segId: 'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '05a4f54b-3fd6-4842-b871-fff7379fef33',
-      {
-        type: 'sweepEdge',
-        id: '05a4f54b-3fd6-4842-b871-fff7379fef33',
-        subType: 'adjacent',
-        segId: 'bbba630d-3b40-4c18-b9ce-97e2c63c4198',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '32079948-0977-42be-95c3-662cc455d9ff',
-      {
-        type: 'sweepEdge',
-        id: '32079948-0977-42be-95c3-662cc455d9ff',
-        subType: 'opposite',
-        segId: 'a19c04df-107c-4744-b575-d76957eed2de',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '9c7b1d9b-fd4d-4c58-a7e9-262627ba0fdd',
-      {
-        type: 'sweepEdge',
-        id: '9c7b1d9b-fd4d-4c58-a7e9-262627ba0fdd',
-        subType: 'adjacent',
-        segId: 'a19c04df-107c-4744-b575-d76957eed2de',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '447ea755-6f79-40de-8cf5-17685a0b039d',
-      {
-        type: 'sweepEdge',
-        id: '447ea755-6f79-40de-8cf5-17685a0b039d',
-        subType: 'opposite',
-        segId: '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '24ae3c52-3bd2-4a21-b48a-37439375cd5f',
-      {
-        type: 'sweepEdge',
-        id: '24ae3c52-3bd2-4a21-b48a-37439375cd5f',
-        subType: 'adjacent',
-        segId: '0ac92ce1-384d-42c2-93ee-d6073cb6301c',
-        sweepId: '07cade68-136c-4ba9-8e69-87e56998d264',
-      },
-    ],
-    [
-      '9c837ce4-a600-43e8-a799-496016816409',
+      '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
       {
         type: 'path',
-        id: '9c837ce4-a600-43e8-a799-496016816409',
-        planeId: '08c1481a-9c17-41df-baf9-8ef253cb8c83',
+        id: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
+        planeId: '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
         segIds: [
-          'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
-          '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
-          '500f8da6-c0b0-4953-87e7-67e6615094b7',
-          '567628ff-0f5c-4cab-aaa2-3e5812c23f55',
+          '73b27fd2-22b5-54dd-89c3-2278d82ae319',
+          '5aa38d46-878d-5283-991a-bc7c92e01b9d',
+          '184c29e4-fcc5-52de-8325-db46e621428a',
+          'bad45333-61e7-5c3a-ac4b-4efa333a6b90',
         ],
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-        solid2dId: 'f614b055-bd1c-422c-9f97-6ddf59138a2b',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        solid2dId: 'fd13e492-2201-4ac5-b169-82d1b42f8d10',
         codeRef: {
-          range: [354, 398, 0],
+          range: [392, 439, 0],
           pathToNode: [
             ['body', ''],
             [4, 'index'],
@@ -449,18 +390,18 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
+      '73b27fd2-22b5-54dd-89c3-2278d82ae319',
       {
         type: 'segment',
-        id: 'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
-        surfaceId: '04f5614d-9558-4ec4-9374-d6cf1513ee49',
+        id: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
+        surfaceId: '02acb19d-cc92-4cae-9e55-d6dbefb78705',
         edgeIds: [
-          '20a8f3a1-6628-4484-9aa6-eec15044eecd',
-          '49113603-5e8c-49f8-a371-d68ee32b72fa',
+          '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
+          '9ed007ff-3149-4a72-9b43-04f74c38a171',
         ],
         codeRef: {
-          range: [404, 432, 0],
+          range: [445, 473, 0],
           pathToNode: [
             ['body', ''],
             [4, 'index'],
@@ -470,21 +411,25 @@ profile004 = circle(sketch003,
             [1, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        ],
       },
     ],
     [
-      '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
+      '5aa38d46-878d-5283-991a-bc7c92e01b9d',
       {
         type: 'segment',
-        id: '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
-        surfaceId: '96766e17-a80b-42d1-a3e2-a3d8d53a6a2c',
+        id: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
+        surfaceId: '79031810-43db-4b9f-a058-1b4f3b528796',
         edgeIds: [
-          'd06ed974-d3d9-4374-b5ee-9778877d4c4e',
-          '240d085b-4e1a-4838-9457-cae006c5f3cd',
+          '872ea68a-b67d-4568-84c1-b891cb68f602',
+          'e8691126-6320-40ee-ab78-c6033e9044a4',
         ],
         codeRef: {
-          range: [438, 468, 0],
+          range: [479, 509, 0],
           pathToNode: [
             ['body', ''],
             [4, 'index'],
@@ -494,21 +439,25 @@ profile004 = circle(sketch003,
             [2, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          '79031810-43db-4b9f-a058-1b4f3b528796',
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        ],
       },
     ],
     [
-      '500f8da6-c0b0-4953-87e7-67e6615094b7',
+      '184c29e4-fcc5-52de-8325-db46e621428a',
       {
         type: 'segment',
-        id: '500f8da6-c0b0-4953-87e7-67e6615094b7',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
-        surfaceId: '93c02952-c588-49d6-8df4-c666cdfae566',
+        id: '184c29e4-fcc5-52de-8325-db46e621428a',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
+        surfaceId: 'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
         edgeIds: [
-          'd8acb73e-0856-419e-8f0c-08ca5a50248e',
-          '05d17802-82a2-4c9b-bb3f-6ee8b0deeefa',
+          '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
+          '9ed007ff-3149-4a72-9b43-04f74c38a171',
         ],
         codeRef: {
-          range: [474, 530, 0],
+          range: [515, 571, 0],
           pathToNode: [
             ['body', ''],
             [4, 'index'],
@@ -518,16 +467,20 @@ profile004 = circle(sketch003,
             [3, 'index'],
           ],
         },
+        commonSurfaceIds: [
+          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        ],
       },
     ],
     [
-      '567628ff-0f5c-4cab-aaa2-3e5812c23f55',
+      'bad45333-61e7-5c3a-ac4b-4efa333a6b90',
       {
         type: 'segment',
-        id: '567628ff-0f5c-4cab-aaa2-3e5812c23f55',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
+        id: 'bad45333-61e7-5c3a-ac4b-4efa333a6b90',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
         codeRef: {
-          range: [536, 543, 0],
+          range: [577, 584, 0],
           pathToNode: [
             ['body', ''],
             [4, 'index'],
@@ -540,36 +493,35 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'f614b055-bd1c-422c-9f97-6ddf59138a2b',
+      'fd13e492-2201-4ac5-b169-82d1b42f8d10',
       {
         type: 'solid2d',
-        id: 'f614b055-bd1c-422c-9f97-6ddf59138a2b',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
+        id: 'fd13e492-2201-4ac5-b169-82d1b42f8d10',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
       },
     ],
     [
-      '1c8e1237-9df0-407a-8278-84f634f1a88f',
+      '513a2eb1-ada0-51b1-83d7-4990db8676dc',
       {
         type: 'sweep',
-        id: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        id: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
         subType: 'extrusion',
-        pathId: '9c837ce4-a600-43e8-a799-496016816409',
+        pathId: '2d6f6d5f-0e5f-5a4a-b262-2d11f87e411d',
         surfaceIds: [
-          '93c02952-c588-49d6-8df4-c666cdfae566',
-          '96766e17-a80b-42d1-a3e2-a3d8d53a6a2c',
-          '04f5614d-9558-4ec4-9374-d6cf1513ee49',
-          '88f83820-9c86-4c62-9f5f-0c48db2bb055',
+          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
+          '79031810-43db-4b9f-a058-1b4f3b528796',
+          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+          'eecb1d39-c251-449a-b815-c0fddeb31989',
         ],
         edgeIds: [
-          'd8acb73e-0856-419e-8f0c-08ca5a50248e',
-          '05d17802-82a2-4c9b-bb3f-6ee8b0deeefa',
-          'd06ed974-d3d9-4374-b5ee-9778877d4c4e',
-          '240d085b-4e1a-4838-9457-cae006c5f3cd',
-          '20a8f3a1-6628-4484-9aa6-eec15044eecd',
-          '49113603-5e8c-49f8-a371-d68ee32b72fa',
+          '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
+          '9ed007ff-3149-4a72-9b43-04f74c38a171',
+          '872ea68a-b67d-4568-84c1-b891cb68f602',
+          'e8691126-6320-40ee-ab78-c6033e9044a4',
+          '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
         ],
         codeRef: {
-          range: [557, 590, 0],
+          range: [598, 631, 0],
           pathToNode: [
             ['body', ''],
             [5, 'index'],
@@ -580,119 +532,177 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '93c02952-c588-49d6-8df4-c666cdfae566',
+      'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
       {
         type: 'wall',
-        id: '93c02952-c588-49d6-8df4-c666cdfae566',
-        segId: '500f8da6-c0b0-4953-87e7-67e6615094b7',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        id: 'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
+        segId: '184c29e4-fcc5-52de-8325-db46e621428a',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '467f144c-9023-5dca-8cde-52aa366a50f0',
       },
     ],
     [
-      '96766e17-a80b-42d1-a3e2-a3d8d53a6a2c',
+      '79031810-43db-4b9f-a058-1b4f3b528796',
       {
         type: 'wall',
-        id: '96766e17-a80b-42d1-a3e2-a3d8d53a6a2c',
-        segId: '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        id: '79031810-43db-4b9f-a058-1b4f3b528796',
+        segId: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '467f144c-9023-5dca-8cde-52aa366a50f0',
       },
     ],
     [
-      '04f5614d-9558-4ec4-9374-d6cf1513ee49',
+      '02acb19d-cc92-4cae-9e55-d6dbefb78705',
       {
         type: 'wall',
-        id: '04f5614d-9558-4ec4-9374-d6cf1513ee49',
-        segId: 'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-        faceCodeRef: { range: [0, 0, 0], pathToNode: [] },
+        id: '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+        segId: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        faceCodeRef: {
+          range: [0, 0, 0],
+          pathToNode: [],
+        },
+        cmdId: '467f144c-9023-5dca-8cde-52aa366a50f0',
       },
     ],
     [
-      '88f83820-9c86-4c62-9f5f-0c48db2bb055',
+      'eecb1d39-c251-449a-b815-c0fddeb31989',
       {
         type: 'cap',
-        id: '88f83820-9c86-4c62-9f5f-0c48db2bb055',
+        id: 'eecb1d39-c251-449a-b815-c0fddeb31989',
         subType: 'end',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-        pathIds: [
-          '4316b730-b653-422c-b7ca-cc1591870de5',
-          '0e1815f5-a128-4323-9d5d-c1c17642ef74',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        pathIds: ['77937daa-3eb5-5987-815d-f0f60051c9c6'],
+        faceCodeRef: {
+          range: [644, 681, 0],
+          pathToNode: [],
+        },
+        cmdId: '467f144c-9023-5dca-8cde-52aa366a50f0',
+      },
+    ],
+    [
+      '8ddb1c33-8519-4467-a50f-b3879f47ea03',
+      {
+        type: 'sweepEdge',
+        id: '8ddb1c33-8519-4467-a50f-b3879f47ea03',
+        subType: 'opposite',
+        segId: 'f7861c82-8117-5bb5-af9c-be285026b0c6',
+        cmdId: 'fc48a210-666e-5981-9498-be796451c958',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '36584687-7151-4406-a51f-f07933ae1695',
+          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
         ],
-        faceCodeRef: { range: [603, 635, 0], pathToNode: [] },
       },
     ],
     [
-      'd8acb73e-0856-419e-8f0c-08ca5a50248e',
+      'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
       {
         type: 'sweepEdge',
-        id: 'd8acb73e-0856-419e-8f0c-08ca5a50248e',
-        subType: 'opposite',
-        segId: '500f8da6-c0b0-4953-87e7-67e6615094b7',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
-      },
-    ],
-    [
-      '05d17802-82a2-4c9b-bb3f-6ee8b0deeefa',
-      {
-        type: 'sweepEdge',
-        id: '05d17802-82a2-4c9b-bb3f-6ee8b0deeefa',
+        id: 'b197cdad-d60f-4e3c-afdd-58e6f1c323f1',
         subType: 'adjacent',
-        segId: '500f8da6-c0b0-4953-87e7-67e6615094b7',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        segId: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
+        cmdId: 'eadced5f-a463-5a9e-bb11-44174fe799a8',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '36584687-7151-4406-a51f-f07933ae1695',
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        ],
       },
     ],
     [
-      'd06ed974-d3d9-4374-b5ee-9778877d4c4e',
+      'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
       {
         type: 'sweepEdge',
-        id: 'd06ed974-d3d9-4374-b5ee-9778877d4c4e',
+        id: 'feb3eb40-cc3f-4a56-bb97-4a6d31e95d15',
         subType: 'opposite',
-        segId: '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        segId: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
+        cmdId: 'ddad9bdf-fa37-5479-8d16-1c3d898e9c05',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '35628e3b-78d6-4de4-a43d-d96220004fe1',
+          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
+        ],
       },
     ],
     [
-      '240d085b-4e1a-4838-9457-cae006c5f3cd',
+      'b063089b-f929-4fe7-8df6-044f8b469990',
       {
         type: 'sweepEdge',
-        id: '240d085b-4e1a-4838-9457-cae006c5f3cd',
+        id: 'b063089b-f929-4fe7-8df6-044f8b469990',
         subType: 'adjacent',
-        segId: '83921e4a-fd8b-4b91-a38e-42b10bd0f1d6',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        segId: '0edcccdd-3f57-5e86-84d9-90aac061b21e',
+        cmdId: '4b3930b1-3abd-5f35-b000-e52afece5054',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '36584687-7151-4406-a51f-f07933ae1695',
+          '35628e3b-78d6-4de4-a43d-d96220004fe1',
+        ],
       },
     ],
     [
-      '20a8f3a1-6628-4484-9aa6-eec15044eecd',
+      '6ddaad54-f49d-498a-8935-0af5e055f5fd',
       {
         type: 'sweepEdge',
-        id: '20a8f3a1-6628-4484-9aa6-eec15044eecd',
+        id: '6ddaad54-f49d-498a-8935-0af5e055f5fd',
         subType: 'opposite',
-        segId: 'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        segId: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
+        cmdId: '66bcc54e-e7b8-5cfc-b167-fadf8600ebd4',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          'c30f705c-f778-48df-8e1d-33f07dcceb90',
+          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
+        ],
       },
     ],
     [
-      '49113603-5e8c-49f8-a371-d68ee32b72fa',
+      '3315f045-caf3-46d6-9cb5-7b1c658ae562',
       {
         type: 'sweepEdge',
-        id: '49113603-5e8c-49f8-a371-d68ee32b72fa',
+        id: '3315f045-caf3-46d6-9cb5-7b1c658ae562',
         subType: 'adjacent',
-        segId: 'c7620b36-0eee-42dd-89dd-8b49a808d9fa',
-        sweepId: '1c8e1237-9df0-407a-8278-84f634f1a88f',
+        segId: '2bba5d49-d2a4-56bb-88c8-302a3fe1aca7',
+        cmdId: '0d7c74ca-d669-596b-acc6-12bce78b5d00',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '35628e3b-78d6-4de4-a43d-d96220004fe1',
+          'c30f705c-f778-48df-8e1d-33f07dcceb90',
+        ],
       },
     ],
     [
-      '4316b730-b653-422c-b7ca-cc1591870de5',
+      'f87a7e1e-a594-4c7d-bb06-e19b76092678',
+      {
+        type: 'sweepEdge',
+        id: 'f87a7e1e-a594-4c7d-bb06-e19b76092678',
+        subType: 'opposite',
+        segId: '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e',
+        cmdId: '83a24ce2-6149-50fa-8a2e-05f52fbadc26',
+        sweepId: '0bfb95e2-1eae-560f-96e1-354e1ece4ac2',
+        commonSurfaceIds: [
+          '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+          'f7afc2dd-859c-4b3b-8cac-01fcc13672ab',
+        ],
+      },
+    ],
+    [
+      '77937daa-3eb5-5987-815d-f0f60051c9c6',
       {
         type: 'path',
-        id: '4316b730-b653-422c-b7ca-cc1591870de5',
-        planeId: '88f83820-9c86-4c62-9f5f-0c48db2bb055',
-        segIds: ['7e23a6a6-4a90-43a5-8a86-78ba915ad489'],
-        solid2dId: 'db576b79-8e6d-443e-9cb7-64022e2cf4be',
+        id: '77937daa-3eb5-5987-815d-f0f60051c9c6',
+        planeId: 'eecb1d39-c251-449a-b815-c0fddeb31989',
+        segIds: ['982833c0-35c7-57ac-89dd-f832a7fdf422'],
+        solid2dId: 'cccd1fe8-c69a-41ae-bca3-51479890cccd',
         codeRef: {
-          range: [649, 718, 0],
+          range: [695, 756, 0],
           pathToNode: [
             ['body', ''],
             [7, 'index'],
@@ -703,13 +713,13 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '7e23a6a6-4a90-43a5-8a86-78ba915ad489',
+      '982833c0-35c7-57ac-89dd-f832a7fdf422',
       {
         type: 'segment',
-        id: '7e23a6a6-4a90-43a5-8a86-78ba915ad489',
-        pathId: '4316b730-b653-422c-b7ca-cc1591870de5',
+        id: '982833c0-35c7-57ac-89dd-f832a7fdf422',
+        pathId: '77937daa-3eb5-5987-815d-f0f60051c9c6',
         codeRef: {
-          range: [649, 718, 0],
+          range: [695, 756, 0],
           pathToNode: [
             ['body', ''],
             [7, 'index'],
@@ -720,28 +730,32 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'db576b79-8e6d-443e-9cb7-64022e2cf4be',
+      'cccd1fe8-c69a-41ae-bca3-51479890cccd',
       {
         type: 'solid2d',
-        id: 'db576b79-8e6d-443e-9cb7-64022e2cf4be',
-        pathId: '4316b730-b653-422c-b7ca-cc1591870de5',
+        id: 'cccd1fe8-c69a-41ae-bca3-51479890cccd',
+        pathId: '77937daa-3eb5-5987-815d-f0f60051c9c6',
       },
     ],
     [
-      '0e1815f5-a128-4323-9d5d-c1c17642ef74',
+      '6d22e8ef-40c6-5663-84a7-f974e53c8226',
       {
         type: 'path',
-        id: '0e1815f5-a128-4323-9d5d-c1c17642ef74',
-        planeId: '88f83820-9c86-4c62-9f5f-0c48db2bb055',
+        id: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
+        planeId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
         segIds: [
-          '5b2448be-ae92-41cc-a9ac-e96393c79b9c',
-          '27effd70-97fd-4057-ad5b-041eb3e2998b',
+          'b488bc50-6fa9-5036-8b6a-c80e325fceee',
+          '88a5fb18-3a08-5dbb-8de5-365fe1bec329',
+          '67ded251-2cf9-5a55-a7c7-59369f204c40',
+          'd336f530-1154-5a0e-b032-1246a52f383b',
+          'b9bce958-792d-5190-ba3c-eaa8ee7aa368',
         ],
+        solid2dId: 'cb118790-15e0-4f71-87d7-15a9e42ca40d',
         codeRef: {
-          range: [732, 776, 0],
+          range: [822, 866, 0],
           pathToNode: [
             ['body', ''],
-            [8, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -751,16 +765,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '5b2448be-ae92-41cc-a9ac-e96393c79b9c',
+      'b488bc50-6fa9-5036-8b6a-c80e325fceee',
       {
         type: 'segment',
-        id: '5b2448be-ae92-41cc-a9ac-e96393c79b9c',
-        pathId: '0e1815f5-a128-4323-9d5d-c1c17642ef74',
+        id: 'b488bc50-6fa9-5036-8b6a-c80e325fceee',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
         codeRef: {
-          range: [782, 808, 0],
+          range: [872, 938, 0],
           pathToNode: [
             ['body', ''],
-            [8, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -770,16 +784,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '27effd70-97fd-4057-ad5b-041eb3e2998b',
+      '88a5fb18-3a08-5dbb-8de5-365fe1bec329',
       {
         type: 'segment',
-        id: '27effd70-97fd-4057-ad5b-041eb3e2998b',
-        pathId: '0e1815f5-a128-4323-9d5d-c1c17642ef74',
+        id: '88a5fb18-3a08-5dbb-8de5-365fe1bec329',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
         codeRef: {
-          range: [814, 840, 0],
+          range: [944, 1014, 0],
           pathToNode: [
             ['body', ''],
-            [8, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -789,81 +803,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
-      {
-        type: 'path',
-        id: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
-        planeId: '9314d48d-5963-492e-8bda-2acbe5df29e9',
-        segIds: [
-          'f149263c-1e58-40e0-b5a3-3cb87fa75d8c',
-          'f26505c7-4d98-4f88-af22-d257deac07be',
-          'c77ff330-afbc-4709-b735-b651ea034866',
-          'fbba311f-ecc9-4a3e-bca3-3c66878978c0',
-          'fc85af86-cfed-4c2c-bc66-e67d208b9385',
-        ],
-        solid2dId: '6d78b893-6a95-432c-b342-bdb14a012833',
-        codeRef: {
-          range: [899, 940, 0],
-          pathToNode: [
-            ['body', ''],
-            [10, 'index'],
-            ['declaration', 'VariableDeclaration'],
-            ['init', ''],
-            ['body', 'PipeExpression'],
-            [0, 'index'],
-          ],
-        },
-      },
-    ],
-    [
-      'f149263c-1e58-40e0-b5a3-3cb87fa75d8c',
+      '67ded251-2cf9-5a55-a7c7-59369f204c40',
       {
         type: 'segment',
-        id: 'f149263c-1e58-40e0-b5a3-3cb87fa75d8c',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
+        id: '67ded251-2cf9-5a55-a7c7-59369f204c40',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
         codeRef: {
-          range: [946, 994, 0],
+          range: [1020, 1108, 0],
           pathToNode: [
             ['body', ''],
-            [10, 'index'],
-            ['declaration', 'VariableDeclaration'],
-            ['init', ''],
-            ['body', 'PipeExpression'],
-            [1, 'index'],
-          ],
-        },
-      },
-    ],
-    [
-      'f26505c7-4d98-4f88-af22-d257deac07be',
-      {
-        type: 'segment',
-        id: 'f26505c7-4d98-4f88-af22-d257deac07be',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
-        codeRef: {
-          range: [1000, 1079, 0],
-          pathToNode: [
-            ['body', ''],
-            [10, 'index'],
-            ['declaration', 'VariableDeclaration'],
-            ['init', ''],
-            ['body', 'PipeExpression'],
-            [2, 'index'],
-          ],
-        },
-      },
-    ],
-    [
-      'c77ff330-afbc-4709-b735-b651ea034866',
-      {
-        type: 'segment',
-        id: 'c77ff330-afbc-4709-b735-b651ea034866',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
-        codeRef: {
-          range: [1085, 1182, 0],
-          pathToNode: [
-            ['body', ''],
-            [10, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -873,16 +822,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'fbba311f-ecc9-4a3e-bca3-3c66878978c0',
+      'd336f530-1154-5a0e-b032-1246a52f383b',
       {
         type: 'segment',
-        id: 'fbba311f-ecc9-4a3e-bca3-3c66878978c0',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
+        id: 'd336f530-1154-5a0e-b032-1246a52f383b',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
         codeRef: {
-          range: [1188, 1244, 0],
+          range: [1114, 1170, 0],
           pathToNode: [
             ['body', ''],
-            [10, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -892,16 +841,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'fc85af86-cfed-4c2c-bc66-e67d208b9385',
+      'b9bce958-792d-5190-ba3c-eaa8ee7aa368',
       {
         type: 'segment',
-        id: 'fc85af86-cfed-4c2c-bc66-e67d208b9385',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
+        id: 'b9bce958-792d-5190-ba3c-eaa8ee7aa368',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
         codeRef: {
-          range: [1250, 1257, 0],
+          range: [1176, 1183, 0],
           pathToNode: [
             ['body', ''],
-            [10, 'index'],
+            [9, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -911,32 +860,32 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '6d78b893-6a95-432c-b342-bdb14a012833',
+      'cb118790-15e0-4f71-87d7-15a9e42ca40d',
       {
         type: 'solid2d',
-        id: '6d78b893-6a95-432c-b342-bdb14a012833',
-        pathId: '8a98773e-d965-4ef8-b7a0-784cd0e05fcb',
+        id: 'cb118790-15e0-4f71-87d7-15a9e42ca40d',
+        pathId: '6d22e8ef-40c6-5663-84a7-f974e53c8226',
       },
     ],
     [
-      '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+      '403d6680-758a-5228-9c69-b1cba8437ec1',
       {
         type: 'path',
-        id: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
-        planeId: '9314d48d-5963-492e-8bda-2acbe5df29e9',
+        id: '403d6680-758a-5228-9c69-b1cba8437ec1',
+        planeId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
         segIds: [
-          'ca369e71-6d1b-483c-a9c4-f5ebdef24479',
-          '5a3ebb81-8050-4ad1-a668-0882f005a4a8',
-          'c9cf1dfa-1c3a-490f-9d26-071ea3c38e30',
-          'a0e58546-572d-41f1-99dd-5d18db18cb00',
-          '870eb08f-cef2-4fd3-8f7e-f5ef52fd7867',
+          'af5fda78-d536-572d-b62e-a7bd379ee293',
+          'a5116914-4686-5755-8085-41f27b6b7e44',
+          'f3589016-3628-5507-947a-ec1b811af83e',
+          '376c9e4e-0778-54f9-bdf2-5f8401c2db17',
+          'b8d0780e-3def-5ac1-bd15-98ca3b053d16',
         ],
-        solid2dId: 'c3b75c5f-6976-4054-a7f1-8f5a5191771c',
+        solid2dId: 'befee397-994b-4ed4-825a-9f80457fe85a',
         codeRef: {
-          range: [1316, 1359, 0],
+          range: [1249, 1295, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -946,16 +895,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'ca369e71-6d1b-483c-a9c4-f5ebdef24479',
+      'af5fda78-d536-572d-b62e-a7bd379ee293',
       {
         type: 'segment',
-        id: 'ca369e71-6d1b-483c-a9c4-f5ebdef24479',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: 'af5fda78-d536-572d-b62e-a7bd379ee293',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
         codeRef: {
-          range: [1365, 1414, 0],
+          range: [1301, 1368, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -965,16 +914,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '5a3ebb81-8050-4ad1-a668-0882f005a4a8',
+      'a5116914-4686-5755-8085-41f27b6b7e44',
       {
         type: 'segment',
-        id: '5a3ebb81-8050-4ad1-a668-0882f005a4a8',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: 'a5116914-4686-5755-8085-41f27b6b7e44',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
         codeRef: {
-          range: [1420, 1499, 0],
+          range: [1374, 1444, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -984,16 +933,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'c9cf1dfa-1c3a-490f-9d26-071ea3c38e30',
+      'f3589016-3628-5507-947a-ec1b811af83e',
       {
         type: 'segment',
-        id: 'c9cf1dfa-1c3a-490f-9d26-071ea3c38e30',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: 'f3589016-3628-5507-947a-ec1b811af83e',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
         codeRef: {
-          range: [1505, 1602, 0],
+          range: [1450, 1538, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -1003,16 +952,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'a0e58546-572d-41f1-99dd-5d18db18cb00',
+      '376c9e4e-0778-54f9-bdf2-5f8401c2db17',
       {
         type: 'segment',
-        id: 'a0e58546-572d-41f1-99dd-5d18db18cb00',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: '376c9e4e-0778-54f9-bdf2-5f8401c2db17',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
         codeRef: {
-          range: [1608, 1664, 0],
+          range: [1544, 1600, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -1022,16 +971,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      '870eb08f-cef2-4fd3-8f7e-f5ef52fd7867',
+      'b8d0780e-3def-5ac1-bd15-98ca3b053d16',
       {
         type: 'segment',
-        id: '870eb08f-cef2-4fd3-8f7e-f5ef52fd7867',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: 'b8d0780e-3def-5ac1-bd15-98ca3b053d16',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
         codeRef: {
-          range: [1670, 1677, 0],
+          range: [1606, 1613, 0],
           pathToNode: [
             ['body', ''],
-            [12, 'index'],
+            [11, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
             ['body', 'PipeExpression'],
@@ -1041,26 +990,26 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'c3b75c5f-6976-4054-a7f1-8f5a5191771c',
+      'befee397-994b-4ed4-825a-9f80457fe85a',
       {
         type: 'solid2d',
-        id: 'c3b75c5f-6976-4054-a7f1-8f5a5191771c',
-        pathId: '04a1735a-3ce9-476f-b35f-e4e9439485ea',
+        id: 'befee397-994b-4ed4-825a-9f80457fe85a',
+        pathId: '403d6680-758a-5228-9c69-b1cba8437ec1',
       },
     ],
     [
-      '64c477ee-6206-424f-98e2-baecc387de86',
+      'cbce7813-eaee-59a6-9f30-8a964229c8ee',
       {
         type: 'path',
-        id: '64c477ee-6206-424f-98e2-baecc387de86',
-        planeId: '9314d48d-5963-492e-8bda-2acbe5df29e9',
-        segIds: ['daa846da-c2f4-40ea-9c89-24c0ce558a10'],
-        solid2dId: 'd7f1c4f1-1095-4a23-878d-723a0dadfc18',
+        id: 'cbce7813-eaee-59a6-9f30-8a964229c8ee',
+        planeId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
+        segIds: ['ef0c6ea8-bf67-5d81-9a3d-c5370ecbce4e'],
+        solid2dId: 'db11f442-d447-456b-9a01-cb6ddfae0629',
         codeRef: {
-          range: [1691, 1759, 0],
+          range: [1627, 1687, 0],
           pathToNode: [
             ['body', ''],
-            [13, 'index'],
+            [12, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
           ],
@@ -1068,16 +1017,16 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'daa846da-c2f4-40ea-9c89-24c0ce558a10',
+      'ef0c6ea8-bf67-5d81-9a3d-c5370ecbce4e',
       {
         type: 'segment',
-        id: 'daa846da-c2f4-40ea-9c89-24c0ce558a10',
-        pathId: '64c477ee-6206-424f-98e2-baecc387de86',
+        id: 'ef0c6ea8-bf67-5d81-9a3d-c5370ecbce4e',
+        pathId: 'cbce7813-eaee-59a6-9f30-8a964229c8ee',
         codeRef: {
-          range: [1691, 1759, 0],
+          range: [1627, 1687, 0],
           pathToNode: [
             ['body', ''],
-            [13, 'index'],
+            [12, 'index'],
             ['declaration', 'VariableDeclaration'],
             ['init', ''],
           ],
@@ -1085,11 +1034,154 @@ profile004 = circle(sketch003,
       },
     ],
     [
-      'd7f1c4f1-1095-4a23-878d-723a0dadfc18',
+      'db11f442-d447-456b-9a01-cb6ddfae0629',
       {
         type: 'solid2d',
-        id: 'd7f1c4f1-1095-4a23-878d-723a0dadfc18',
-        pathId: '64c477ee-6206-424f-98e2-baecc387de86',
+        id: 'db11f442-d447-456b-9a01-cb6ddfae0629',
+        pathId: 'cbce7813-eaee-59a6-9f30-8a964229c8ee',
+      },
+    ],
+    [
+      '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
+      {
+        type: 'sweepEdge',
+        id: '742d0d3e-e7e4-4484-b85c-31a76db8dd7c',
+        subType: 'opposite',
+        segId: '184c29e4-fcc5-52de-8325-db46e621428a',
+        cmdId: '281c7b2f-b60b-5916-a22a-2f95550bfa02',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        commonSurfaceIds: [
+          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
+          'eecb1d39-c251-449a-b815-c0fddeb31989',
+        ],
+      },
+    ],
+    [
+      '9ed007ff-3149-4a72-9b43-04f74c38a171',
+      {
+        type: 'sweepEdge',
+        id: '9ed007ff-3149-4a72-9b43-04f74c38a171',
+        subType: 'adjacent',
+        segId: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
+        cmdId: 'a202df40-568c-5004-b1ac-bee90c9270bd',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        commonSurfaceIds: [
+          'd3f21af4-0c87-4b1b-88ff-754d1d3df39f',
+          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+        ],
+      },
+    ],
+    [
+      '872ea68a-b67d-4568-84c1-b891cb68f602',
+      {
+        type: 'sweepEdge',
+        id: '872ea68a-b67d-4568-84c1-b891cb68f602',
+        subType: 'opposite',
+        segId: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
+        cmdId: 'cbe914d4-4778-5956-956d-856cc2f84ae1',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        commonSurfaceIds: [
+          '79031810-43db-4b9f-a058-1b4f3b528796',
+          'eecb1d39-c251-449a-b815-c0fddeb31989',
+        ],
+      },
+    ],
+    [
+      'e8691126-6320-40ee-ab78-c6033e9044a4',
+      {
+        type: 'sweepEdge',
+        id: 'e8691126-6320-40ee-ab78-c6033e9044a4',
+        subType: 'adjacent',
+        segId: '5aa38d46-878d-5283-991a-bc7c92e01b9d',
+        cmdId: '05e502ad-9a39-5a1f-9dcb-c0bc86816bd1',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        commonSurfaceIds: [
+          '79031810-43db-4b9f-a058-1b4f3b528796',
+          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+        ],
+      },
+    ],
+    [
+      '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
+      {
+        type: 'sweepEdge',
+        id: '3e4b5133-5570-44f8-92c7-b39bd5baaa55',
+        subType: 'opposite',
+        segId: '73b27fd2-22b5-54dd-89c3-2278d82ae319',
+        cmdId: '86edfd76-987d-56c0-bd0c-5535d1bbc20a',
+        sweepId: '513a2eb1-ada0-51b1-83d7-4990db8676dc',
+        commonSurfaceIds: [
+          '02acb19d-cc92-4cae-9e55-d6dbefb78705',
+          'eecb1d39-c251-449a-b815-c0fddeb31989',
+        ],
+      },
+    ],
+    [
+      '87f9e2b6-7694-5281-97b0-9a4f7cbaa5c8',
+      {
+        type: 'startSketchOnFace',
+        id: '87f9e2b6-7694-5281-97b0-9a4f7cbaa5c8',
+        faceId: '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a',
+        codeRef: {
+          range: [339, 378, 0],
+          pathToNode: [
+            ['body', ''],
+            [3, 'index'],
+            ['declaration', 'VariableDeclaration'],
+            ['init', ''],
+          ],
+        },
+      },
+    ],
+    [
+      '66a241c7-4422-5e26-b1dd-e01ff9137412',
+      {
+        type: 'startSketchOnFace',
+        id: '66a241c7-4422-5e26-b1dd-e01ff9137412',
+        faceId: 'eecb1d39-c251-449a-b815-c0fddeb31989',
+        codeRef: {
+          range: [644, 681, 0],
+          pathToNode: [
+            ['body', ''],
+            [6, 'index'],
+            ['declaration', 'VariableDeclaration'],
+            ['init', ''],
+          ],
+        },
+      },
+    ],
+    [
+      '0923234b-36f9-5dcf-8d97-bee05df4583d',
+      {
+        type: 'startSketchOnFace',
+        id: '0923234b-36f9-5dcf-8d97-bee05df4583d',
+        faceId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
+        codeRef: {
+          range: [769, 808, 0],
+          pathToNode: [
+            ['body', ''],
+            [8, 'index'],
+            ['declaration', 'VariableDeclaration'],
+            ['init', ''],
+          ],
+        },
+      },
+    ],
+    [
+      'f06738bb-2e28-5a48-869a-8f9a0bcfaae1',
+      {
+        type: 'startSketchOnFace',
+        id: 'f06738bb-2e28-5a48-869a-8f9a0bcfaae1',
+        faceId: 'c30f705c-f778-48df-8e1d-33f07dcceb90',
+        codeRef: {
+          range: [1196, 1235, 0],
+          pathToNode: [
+            ['body', ''],
+            [10, 'index'],
+            ['declaration', 'VariableDeclaration'],
+            ['init', ''],
+          ],
+        },
       },
     ],
   ]) as ArtifactGraph
@@ -1130,7 +1222,7 @@ profile004 = circle(sketch003,
     [
       'segment 2',
       {
-        snippet: 'yLine(-310.12, %, $seg02)',
+        snippet: 'yLine(length = -310.12, tag = $seg02)',
         artifactDetails: {
           type: 'segment',
           range: [149, 149, 0],
@@ -1142,7 +1234,7 @@ profile004 = circle(sketch003,
     [
       'sketch on face plane selection',
       {
-        snippet: 'sketch002 = startSketchOn(extrude001, seg01)',
+        snippet: 'sketch002 = startSketchOn(extrude001, face = seg01)',
         artifactDetails: {
           type: 'wall',
           range: [340, 340, 0],
@@ -1162,7 +1254,7 @@ profile004 = circle(sketch003,
           singleIdsKeys: ['id', 'pathId'],
           arrayIdsKeys: [
             { key: 'surfaceIds', length: 6 },
-            { key: 'edgeIds', length: 8 },
+            { key: 'edgeIds', length: 7 },
           ],
         },
       },
@@ -1170,7 +1262,7 @@ profile004 = circle(sketch003,
     [
       'path selection for a sketch on face',
       {
-        snippet: 'profile002 = startProfileAt([-321.34, 361.76], sketch002)',
+        snippet: 'profile002 = startProfile(sketch002, at = [-321.34, 361.76])',
         artifactDetails: {
           type: 'solid2d',
           range: [398, 398, 0],
@@ -1182,13 +1274,13 @@ profile004 = circle(sketch003,
     [
       'startSketch on for a end cap that is also sketch on face on face',
       {
-        snippet: "sketch005 = startSketchOn(extrude002, 'END')",
+        snippet: 'sketch005 = startSketchOn(extrude002, face = END)',
         artifactDetails: {
           type: 'cap',
           subType: 'end',
           range: [635, 635, 0],
           singleIdsKeys: ['id', 'sweepId'],
-          arrayIdsKeys: [{ key: 'pathIds', length: 2 }],
+          arrayIdsKeys: [{ key: 'pathIds', length: 1 }],
         },
       },
     ],
@@ -1291,6 +1383,26 @@ describe('findLastRangeStartingBefore', () => {
       {
         range: [30, 40, 0] as SourceRange,
         entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+    ] as ArtifactIndex
+
+    const result = findLastRangeStartingBefore(mockIndex, 50)
+    expect(result).toBe(1)
+  })
+
+  test('handles duplicate ranges', () => {
+    const mockIndex = [
+      {
+        range: [10, 20, 0] as SourceRange,
+        entry: { id: '1', artifact: { id: '1', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '2', artifact: { id: '2', type: 'segment' } as Artifact },
+      },
+      {
+        range: [30, 40, 0] as SourceRange,
+        entry: { id: '3', artifact: { id: '3', type: 'segment' } as Artifact },
       },
     ] as ArtifactIndex
 

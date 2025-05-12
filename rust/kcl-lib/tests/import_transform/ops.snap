@@ -7,8 +7,8 @@ description: Operations executed import_transform.kcl
     "type": "GroupBegin",
     "group": {
       "type": "ModuleInstance",
-      "name": "screw",
-      "moduleId": 5
+      "name": "2-5-long-m8-chc-screw.stl",
+      "moduleId": 0
     },
     "sourceRange": []
   },

@@ -6,17 +6,31 @@ layout: manual
 
 ## Table of Contents
 
-### Language
+### Functions
 
-{{#each lang_topics}}
-* [`{{name}}`](kcl/{{file_name}})
+{{#each functions}}
+* [**{{name}}**]({{file_name}})
+{{#each items}}
+  * [`{{name}}`]({{file_name}})
+{{/each}}
 {{/each}}
 
-### Standard library
+### Constants
 
-{{#each modules}}
-* **{{name}}**
-{{#each functions}}
-  * [`{{name}}`](kcl/{{file_name}})
+{{#each consts}}
+* [**{{name}}**]({{file_name}})
+{{#each items}}
+  * [`{{name}}`]({{file_name}})
+{{/each}}
+{{/each}}
+
+### Types
+
+See also the [types overview](/docs/kcl-lang/types)
+
+{{#each types}}
+* [**{{name}}**]({{file_name}})
+{{#each items}}
+  * [`{{name}}`]({{file_name}})
 {{/each}}
 {{/each}}

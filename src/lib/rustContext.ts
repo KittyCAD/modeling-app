@@ -7,7 +7,9 @@ import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { BSON } from 'bson'
 
+import type { Models } from '@kittycad/lib/dist/types/src'
 import type { EngineCommandManager } from '@src/lang/std/engineConnection'
 import { fileSystemManager } from '@src/lang/std/fileSystemManager'
 import type { ExecState } from '@src/lang/wasm'
@@ -58,6 +60,7 @@ export default class RustContext {
   // Create a new context instance
   async create(): Promise<Context> {
     this.rustInstance = getModule()
+
     // We need this await here, DO NOT REMOVE it even if your editor says it's
     // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
@@ -84,7 +87,7 @@ export default class RustContext {
         JSON.stringify(settings)
       )
       /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, node)
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 
@@ -152,27 +155,24 @@ export default class RustContext {
   }
 
   // Clear/reset the scene and bust the cache.
+  // Do not use this function unless you absolutely need to. In most cases,
+  // we should just fix the  cache for whatever bug you are seeing.
+  // The only time it makes sense to run this is if the engine disconnects and
+  // reconnects. The rust side has no idea that happened and will think the
+  // cache is still valid.
+  // Caching on the rust side accounts for changes to files outside of the
+  // scope of the current file the user is on. It collects all the dependencies
+  // and checks if any of them have changed. If they have, it will bust the
+  // cache and recompile the scene.
+  // The typescript side should never raw dog clear the scene since that would
+  // fuck with the cache as well. So if you _really_ want to just clear the scene
+  // AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
+  // re-execute.
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
     const instance = await this._checkInstance()
-
-    const ast: Node<Program> = {
-      body: [],
-      shebang: null,
-      start: 0,
-      end: 0,
-      moduleId: 0,
-      nonCodeMeta: {
-        nonCodeNodes: {},
-        startNodes: [],
-      },
-      innerAttrs: [],
-      outerAttrs: [],
-      preComments: [],
-      commentStart: 0,
-    }
 
     try {
       const result = await instance.bustCacheAndResetScene(
@@ -180,7 +180,7 @@ export default class RustContext {
         path
       )
       /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result, ast)
+      const outcome = execStateFromRust(result)
 
       this._defaultPlanes = outcome.defaultPlanes
 
@@ -201,6 +201,21 @@ export default class RustContext {
       return key
     }
     return this.defaultPlanes[key]
+  }
+
+  // Send a response back to the rust side, that we got back from the engine.
+  async sendResponse(
+    response: Models['WebSocketResponse_type']
+  ): Promise<void> {
+    const instance = await this._checkInstance()
+
+    try {
+      const serialized = BSON.serialize(response)
+      await instance.sendResponse(serialized)
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
   }
 
   // Helper to check if context instance exists

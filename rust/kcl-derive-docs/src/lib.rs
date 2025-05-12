@@ -6,11 +6,12 @@
 mod tests;
 mod unbox;
 
-use std::collections::HashMap;
+use std::{collections::HashMap, fs};
 
 use convert_case::Casing;
 use inflector::{cases::camelcase::to_camel_case, Inflector};
 use once_cell::sync::Lazy;
+use proc_macro2::Span;
 use quote::{format_ident, quote, quote_spanned, ToTokens};
 use regex::Regex;
 use serde::Deserialize;
@@ -20,6 +21,16 @@ use syn::{
     Attribute, Signature, Visibility,
 };
 use unbox::unbox;
+
+#[proc_macro_attribute]
+pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_output(do_stdlib(attr.into(), item.into()))
+}
+
+#[proc_macro_attribute]
+pub fn for_each_std_mod(_attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    do_for_each_std_mod(item.into()).into()
+}
 
 /// Describes an argument of a stdlib function.
 #[derive(Deserialize, Debug)]
@@ -73,17 +84,37 @@ struct StdlibMetadata {
     args: HashMap<String, ArgMetadata>,
 }
 
-#[proc_macro_attribute]
-pub fn stdlib(attr: proc_macro::TokenStream, item: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    do_output(do_stdlib(attr.into(), item.into()))
-}
-
 fn do_stdlib(
     attr: proc_macro2::TokenStream,
     item: proc_macro2::TokenStream,
 ) -> Result<(proc_macro2::TokenStream, Vec<Error>), Error> {
     let metadata = from_tokenstream(&attr)?;
     do_stdlib_inner(metadata, attr, item)
+}
+
+fn do_for_each_std_mod(item: proc_macro2::TokenStream) -> proc_macro2::TokenStream {
+    let item: syn::ItemFn = syn::parse2(item.clone()).unwrap();
+    let mut result = proc_macro2::TokenStream::new();
+    for name in fs::read_dir("kcl-lib/std").unwrap().filter_map(|e| {
+        let e = e.unwrap();
+        let filename = e.file_name();
+        filename.to_str().unwrap().strip_suffix(".kcl").map(str::to_owned)
+    }) {
+        let mut item = item.clone();
+        item.sig.ident = syn::Ident::new(&format!("{}_{}", item.sig.ident, name), Span::call_site());
+        let stmts = &item.block.stmts;
+        //let name = format!("\"{name}\"");
+        let block = quote! {
+            {
+                const STD_MOD_NAME: &str = #name;
+                #(#stmts)*
+            }
+        };
+        item.block = Box::new(syn::parse2(block).unwrap());
+        result.extend(Some(item.into_token_stream()));
+    }
+
+    result
 }
 
 fn do_output(res: Result<(proc_macro2::TokenStream, Vec<Error>), Error>) -> proc_macro::TokenStream {
@@ -201,30 +232,16 @@ fn do_stdlib_inner(
         quote! { "" }
     };
 
-    let cb = doc_info.code_blocks.clone();
-    let code_blocks = if !cb.is_empty() {
-        quote! {
-            let code_blocks = vec![#(#cb),*];
-            code_blocks.iter().map(|cb| {
-                let program = crate::Program::parse_no_errs(cb).unwrap();
-
-                let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
-                options.insert_final_newline = false;
-                program.ast.recast(&options, 0)
-            }).collect::<Vec<String>>()
-        }
-    } else {
+    if doc_info.code_blocks.is_empty() {
         errors.push(Error::new_spanned(
             &ast.sig,
             "stdlib functions must have at least one code block",
         ));
-
-        quote! { vec![] }
-    };
+    }
 
     // Make sure the function name is in all the code blocks.
     for code_block in doc_info.code_blocks.iter() {
-        if !code_block.contains(&name) {
+        if !code_block.0.contains(&name) {
             errors.push(Error::new_spanned(
                 &ast.sig,
                 format!(
@@ -239,8 +256,27 @@ fn do_stdlib_inner(
         .code_blocks
         .iter()
         .enumerate()
-        .map(|(index, code_block)| generate_code_block_test(&fn_name_str, code_block, index))
+        .map(|(index, (code_block, norun))| {
+            if !norun {
+                generate_code_block_test(&fn_name_str, code_block, index)
+            } else {
+                quote! {}
+            }
+        })
         .collect::<Vec<_>>();
+
+    let (cb, norun): (Vec<_>, Vec<_>) = doc_info.code_blocks.into_iter().unzip();
+    let code_blocks = quote! {
+        let code_blocks = vec![#(#cb),*];
+        let norun = vec![#(#norun),*];
+        code_blocks.iter().zip(norun).map(|(cb, norun)| {
+            let program = crate::Program::parse_no_errs(cb).unwrap();
+
+            let mut options: crate::parsing::ast::types::FormatOptions = Default::default();
+            options.insert_final_newline = false;
+            (program.ast.recast(&options, 0), norun)
+        }).collect::<Vec<(String, bool)>>()
+    };
 
     let tags = metadata
         .tags
@@ -503,7 +539,7 @@ fn do_stdlib_inner(
                 #feature_tree_operation
             }
 
-            fn examples(&self) -> Vec<String> {
+            fn examples(&self) -> Vec<(String, bool)> {
                 #code_blocks
             }
 
@@ -546,7 +582,7 @@ fn get_crate(var: Option<String>) -> proc_macro2::TokenStream {
 struct DocInfo {
     pub summary: Option<String>,
     pub description: Option<String>,
-    pub code_blocks: Vec<String>,
+    pub code_blocks: Vec<(String, bool)>,
 }
 
 fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
@@ -566,21 +602,22 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
     });
 
     // Parse any code blocks from the doc string.
-    let mut code_blocks: Vec<String> = Vec::new();
-    let mut code_block: Option<String> = None;
+    let mut code_blocks: Vec<(String, bool)> = Vec::new();
+    let mut code_block: Option<(String, bool)> = None;
     let mut parsed_lines = Vec::new();
     for line in raw_lines {
         if line.starts_with("```") {
-            if let Some(ref inner_code_block) = code_block {
-                code_blocks.push(inner_code_block.trim().to_string());
+            if let Some((inner_code_block, norun)) = code_block {
+                code_blocks.push((inner_code_block.trim().to_owned(), norun));
                 code_block = None;
             } else {
-                code_block = Some(String::new());
+                let norun = line.contains("kcl,norun") || line.contains("kcl,no_run");
+                code_block = Some((String::new(), norun));
             }
 
             continue;
         }
-        if let Some(ref mut code_block) = code_block {
+        if let Some((code_block, _)) = &mut code_block {
             code_block.push_str(&line);
             code_block.push('\n');
         } else {
@@ -588,8 +625,8 @@ fn extract_doc_from_attrs(attrs: &[syn::Attribute]) -> DocInfo {
         }
     }
 
-    if let Some(code_block) = code_block {
-        code_blocks.push(code_block.trim().to_string());
+    if let Some((code_block, norun)) = code_block {
+        code_blocks.push((code_block.trim().to_string(), norun));
     }
 
     let mut summary = None;
@@ -671,6 +708,7 @@ fn normalize_comment_string(s: String) -> Vec<String> {
 
 /// Represent an item without concern for its body which may (or may not)
 /// contain syntax errors.
+#[derive(Clone)]
 struct ItemFnForSignature {
     pub attrs: Vec<Attribute>,
     pub vis: Visibility,
@@ -760,15 +798,21 @@ fn rust_type_to_openapi_type(t: &str) -> String {
     if t.starts_with("Option<") {
         t = t.replace("Option<", "").replace('>', "");
     }
+
+    if t == "[TyF64;2]" {
+        return "Point2d".to_owned();
+    }
+    if t == "[TyF64;3]" {
+        return "Point3d".to_owned();
+    }
+
     if let Some((inner_type, _length)) = parse_array_type(&t) {
         t = format!("[{inner_type}]")
     }
 
-    if t == "f64" || t == "TyF64" {
+    if t == "f64" || t == "TyF64" || t == "u32" || t == "NonZeroU32" {
         return "number".to_string();
-    } else if t == "u32" {
-        return "integer".to_string();
-    } else if t == "str" {
+    } else if t == "str" || t == "String" {
         return "string".to_string();
     } else {
         return t.replace("f64", "number").replace("TyF64", "number").to_string();

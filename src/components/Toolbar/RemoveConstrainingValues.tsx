@@ -52,14 +52,13 @@ export function removeConstrainingValuesInfo({
     : selectionRanges
   const isAllTooltips = nodes.every(
     (node) =>
-      (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
+      node?.type === 'CallExpressionKw' &&
       toolTips.includes(node.callee.name.name as any)
   )
 
   const transforms = getRemoveConstraintsTransforms(
     updatedSelectionRanges,
-    kclManager.ast,
-    'removeConstrainingValues'
+    kclManager.ast
   )
   if (err(transforms)) return transforms
 

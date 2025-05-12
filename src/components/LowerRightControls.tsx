@@ -1,26 +1,29 @@
-import toast from 'react-hot-toast'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, type NavigateFunction, useLocation } from 'react-router-dom'
+import { Popover } from '@headlessui/react'
+import {
+  BillingRemaining,
+  BillingRemainingMode,
+} from '@src/components/BillingRemaining'
+import { BillingDialog } from '@src/components/BillingDialog'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { HelpMenu } from '@src/components/HelpMenu'
-import { ModelStateIndicator } from '@src/components/ModelStateIndicator'
 import { NetworkHealthIndicator } from '@src/components/NetworkHealthIndicator'
 import { NetworkMachineIndicator } from '@src/components/NetworkMachineIndicator'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { coreDump } from '@src/lang/wasm'
-import type { CoreDumpManager } from '@src/lib/coredump'
-import openWindow, { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
+
+import { billingActor } from '@src/lib/singletons'
 
 export function LowerRightControls({
   children,
-  coreDumpManager,
+  navigate = () => {},
 }: {
   children?: React.ReactNode
-  coreDumpManager?: CoreDumpManager
+  navigate?: NavigateFunction
 }) {
   const location = useLocation()
   const filePath = useAbsoluteFilePath()
@@ -28,50 +31,27 @@ export function LowerRightControls({
   const linkOverrideClassName =
     '!text-chalkboard-70 hover:!text-chalkboard-80 dark:!text-chalkboard-40 dark:hover:!text-chalkboard-30'
 
-  function reportbug(event: {
-    preventDefault: () => void
-    stopPropagation: () => void
-  }) {
-    event?.preventDefault()
-    event?.stopPropagation()
-
-    if (!coreDumpManager) {
-      // open default reporting option
-      openWindow(
-        'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-      ).catch(reportRejection)
-    } else {
-      toast
-        .promise(
-          coreDump(coreDumpManager, true),
-          {
-            loading: 'Preparing bug report...',
-            success: 'Bug report opened in new window',
-            error: 'Unable to export a core dump. Using default reporting.',
-          },
-          {
-            success: {
-              // Note: this extended duration is especially important for Playwright e2e testing
-              // default duration is 2000 - https://react-hot-toast.com/docs/toast#default-durations
-              duration: 6000,
-            },
-          }
-        )
-        .catch((err: Error) => {
-          if (err) {
-            openWindow(
-              'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-            ).catch(reportRejection)
-          }
-        })
-    }
-  }
-
   return (
     <section className="fixed bottom-2 right-2 flex flex-col items-end gap-3 pointer-events-none">
       {children}
       <menu className="flex items-center justify-end gap-3 pointer-events-auto">
-        {!location.pathname.startsWith(PATHS.HOME) && <ModelStateIndicator />}
+        <Popover className="relative">
+          <Popover.Button
+            className="p-0 !border-transparent"
+            data-testid="billing-remaining-bar"
+          >
+            <BillingRemaining
+              mode={BillingRemainingMode.ProgressBarFixed}
+              billingActor={billingActor}
+            />
+            <Tooltip position="top" contentClassName="text-xs">
+              Text-to-CAD credits
+            </Tooltip>
+          </Popover.Button>
+          <Popover.Panel className="absolute right-0 left-auto bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch rounded-lg shadow-lg text-sm">
+            <BillingDialog billingActor={billingActor} />
+          </Popover.Panel>
+        </Popover>
         <a
           onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
           href={getReleaseUrl()}
@@ -80,20 +60,6 @@ export function LowerRightControls({
           className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
         >
           v{APP_VERSION}
-        </a>
-        <a
-          onClick={reportbug}
-          href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <CustomIcon
-            name="bug"
-            className={`w-5 h-5 ${linkOverrideClassName}`}
-          />
-          <Tooltip position="top" contentClassName="text-xs">
-            Report a bug
-          </Tooltip>
         </a>
         <Link
           to={
@@ -133,7 +99,7 @@ export function LowerRightControls({
         {!location.pathname.startsWith(PATHS.HOME) && (
           <NetworkHealthIndicator />
         )}
-        <HelpMenu />
+        <HelpMenu navigate={navigate} />
       </menu>
     </section>
   )

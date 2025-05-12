@@ -11,10 +11,12 @@ use std::{
 
 use anyhow::Result;
 use parse_display::{Display, FromStr};
+pub use path::NodePath;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
-    CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange, FoldingRangeKind, SymbolKind,
+    Color, ColorInformation, ColorPresentation, CompletionItem, CompletionItemKind, DocumentSymbol, FoldingRange,
+    FoldingRangeKind, SymbolKind,
 };
 
 pub use crate::parsing::ast::types::{
@@ -25,7 +27,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
+    execution::{
+        annotations,
+        types::{ArrayLen, UnitAngle, UnitLen},
+        KclValue, Metadata, TagIdentifier,
+    },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -34,6 +40,7 @@ use crate::{
 mod condition;
 mod literal_value;
 mod none;
+mod path;
 
 #[derive(Debug)]
 pub enum Definition<'a> {
@@ -156,6 +163,10 @@ impl<T> Node<T> {
 
     pub fn contains(&self, pos: usize) -> bool {
         self.start <= pos && pos <= self.end
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        self.as_source_range().contains_range(range)
     }
 
     pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
@@ -312,7 +323,7 @@ impl Node<Program> {
         let v = Arc::new(Mutex::new(vec![]));
         crate::walk::walk(self, |node: crate::walk::Node<'a>| {
             let mut findings = v.lock().map_err(|_| anyhow::anyhow!("mutex"))?;
-            findings.append(&mut rule.check(node)?);
+            findings.append(&mut rule.check(node, self)?);
             Ok::<bool, anyhow::Error>(true)
         })?;
         let x = v.lock().unwrap();
@@ -323,7 +334,7 @@ impl Node<Program> {
         let rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
-            crate::lint::checks::lint_call_expressions,
+            crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
         ];
 
@@ -347,12 +358,28 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_meta_settings(&self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<UnitLen>,
+        angle_units: Option<UnitAngle>,
+    ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                node.inner = Annotation::new_from_meta_settings(&settings);
+                if let Some(len) = length_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_LENGTH,
+                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    );
+                }
+                if let Some(angle) = angle_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_ANGLE,
+                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                    );
+                }
+
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -362,9 +389,21 @@ impl Node<Program> {
         }
 
         if !found {
-            new_program
-                .inner_attrs
-                .push(Node::no_src(Annotation::new_from_meta_settings(&settings)));
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(len) = length_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_LENGTH,
+                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+            if let Some(angle) = angle_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_ANGLE,
+                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
         }
 
         Ok(new_program)
@@ -388,6 +427,101 @@ impl Node<Program> {
         }
 
         true
+    }
+
+    /// Find all the color strings in the program.
+    /// For example `appearance(color = "#ff0000")`
+    /// This is to fulfill the `documentColor` request in LSP.
+    pub fn document_color<'a>(&'a self, code: &str) -> Result<Vec<ColorInformation>> {
+        let colors = Rc::new(RefCell::new(vec![]));
+
+        let add_color = |literal: &Node<Literal>| {
+            // Check if the string is a color.
+            if let Some(c) = literal.value.is_color() {
+                let color = ColorInformation {
+                    range: literal.as_source_range().to_lsp_range(code),
+                    color: tower_lsp::lsp_types::Color {
+                        red: c.r,
+                        green: c.g,
+                        blue: c.b,
+                        alpha: c.a,
+                    },
+                };
+                if colors.borrow().iter().any(|c| *c == color) {
+                    return;
+                }
+                colors.borrow_mut().push(color);
+            }
+        };
+
+        // The position must be within the variable declaration.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::CallExpressionKw(call) => {
+                    if call.inner.callee.inner.name.inner.name == "appearance" {
+                        for arg in &call.arguments {
+                            if let Some(l) = &arg.label {
+                                if l.inner.name == "color" {
+                                    // Get the value of the argument.
+                                    if let Expr::Literal(literal) = &arg.arg {
+                                        add_color(literal);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                crate::walk::Node::Literal(literal) => {
+                    // Check if the literal is a color.
+                    add_color(literal);
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let colors = colors.take();
+        Ok(colors)
+    }
+
+    /// This is to fulfill the `colorPresentation` request in LSP.
+    pub fn color_presentation<'a>(
+        &'a self,
+        color: &Color,
+        pos_start: usize,
+        pos_end: usize,
+    ) -> Result<Option<ColorPresentation>> {
+        let found = Rc::new(RefCell::new(false));
+        // Find the literal with the same start and end.
+        crate::walk::walk(self, |node: crate::walk::Node<'a>| {
+            match node {
+                crate::walk::Node::Literal(literal) => {
+                    if literal.start == pos_start && literal.end == pos_end && literal.value.is_color().is_some() {
+                        found.replace(true);
+                        return Ok(true);
+                    }
+                }
+                _ => {
+                    // Do nothing.
+                }
+            }
+            Ok::<bool, anyhow::Error>(true)
+        })?;
+
+        let found = found.take();
+        if !found {
+            return Ok(None);
+        }
+
+        let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
+        Ok(Some(ColorPresentation {
+            // The label will be what they replace the color with.
+            label: new_color.to_hex_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }))
     }
 }
 
@@ -442,6 +576,16 @@ impl Program {
         }
     }
 
+    /// Checks if the ast has any import statements.    
+    pub fn has_import_statements(&self) -> bool {
+        for item in &self.body {
+            if let BodyItem::ImportStatement(_) = item {
+                return true;
+            }
+        }
+        false
+    }
+
     pub fn in_comment(&self, pos: usize) -> bool {
         // Check if its in the body.
         if self.non_code_meta.in_comment(pos) {
@@ -450,7 +594,6 @@ impl Program {
 
         for item in &self.body {
             let r = item.comment_range();
-            eprintln!("item {r:?}");
             if pos >= r.0 && pos < r.1 {
                 return true;
             }
@@ -725,6 +868,11 @@ impl BodyItem {
         }
     }
 
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let item_range = SourceRange::from(self);
+        item_range.contains_range(range)
+    }
+
     pub(crate) fn set_attrs(&mut self, attr: NodeList<Annotation>) {
         match self {
             BodyItem::ImportStatement(node) => node.outer_attrs = attr,
@@ -784,6 +932,15 @@ impl BodyItem {
             BodyItem::ReturnStatement(node) => (node.comment_start, node.start),
         }
     }
+
+    pub(crate) fn visibility(&self) -> ItemVisibility {
+        match self {
+            BodyItem::ImportStatement(node) => node.visibility,
+            BodyItem::VariableDeclaration(node) => node.visibility,
+            BodyItem::TypeDeclaration(node) => node.visibility,
+            BodyItem::ExpressionStatement(_) | BodyItem::ReturnStatement(_) => ItemVisibility::Default,
+        }
+    }
 }
 
 impl From<BodyItem> for SourceRange {
@@ -809,7 +966,6 @@ pub enum Expr {
     TagDeclarator(BoxNode<TagDeclarator>),
     BinaryExpression(BoxNode<BinaryExpression>),
     FunctionExpression(BoxNode<FunctionExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     PipeExpression(BoxNode<PipeExpression>),
     PipeSubstitution(BoxNode<PipeSubstitution>),
@@ -820,7 +976,7 @@ pub enum Expr {
     UnaryExpression(BoxNode<UnaryExpression>),
     IfExpression(BoxNode<IfExpression>),
     LabelledExpression(BoxNode<LabelledExpression>),
-    AscribedExpression(BoxNode<Ascription>),
+    AscribedExpression(BoxNode<AscribedExpression>),
     None(Node<KclNone>),
 }
 
@@ -855,7 +1011,6 @@ impl Expr {
             Expr::MemberExpression(_mem_exp) => None,
             Expr::Literal(_literal) => None,
             Expr::FunctionExpression(_func_exp) => None,
-            Expr::CallExpression(_call_exp) => None,
             Expr::CallExpressionKw(_call_exp) => None,
             Expr::Name(_ident) => None,
             Expr::TagDeclarator(_tag) => None,
@@ -883,7 +1038,6 @@ impl Expr {
             Expr::MemberExpression(_) => {}
             Expr::Literal(_) => {}
             Expr::FunctionExpression(ref mut func_exp) => func_exp.replace_value(source_range, new_value),
-            Expr::CallExpression(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::CallExpressionKw(ref mut call_exp) => call_exp.replace_value(source_range, new_value),
             Expr::Name(_) => {}
             Expr::TagDeclarator(_) => {}
@@ -904,7 +1058,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.start,
             Expr::BinaryExpression(binary_expression) => binary_expression.start,
             Expr::FunctionExpression(function_expression) => function_expression.start,
-            Expr::CallExpression(call_expression) => call_expression.start,
             Expr::CallExpressionKw(call_expression) => call_expression.start,
             Expr::PipeExpression(pipe_expression) => pipe_expression.start,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.start,
@@ -927,7 +1080,6 @@ impl Expr {
             Expr::TagDeclarator(tag) => tag.end,
             Expr::BinaryExpression(binary_expression) => binary_expression.end,
             Expr::FunctionExpression(function_expression) => function_expression.end,
-            Expr::CallExpression(call_expression) => call_expression.end,
             Expr::CallExpressionKw(call_expression) => call_expression.end,
             Expr::PipeExpression(pipe_expression) => pipe_expression.end,
             Expr::PipeSubstitution(pipe_substitution) => pipe_substitution.end,
@@ -943,6 +1095,11 @@ impl Expr {
         }
     }
 
+    fn contains_range(&self, range: &SourceRange) -> bool {
+        let expr_range = SourceRange::from(self);
+        expr_range.contains_range(range)
+    }
+
     /// Rename all identifiers that have the old name to the new given name.
     fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
         match self {
@@ -953,7 +1110,6 @@ impl Expr {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
             Expr::FunctionExpression(_function_identifier) => {}
-            Expr::CallExpression(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::CallExpressionKw(ref mut call_expression) => call_expression.rename_identifiers(old_name, new_name),
             Expr::PipeExpression(ref mut pipe_expression) => pipe_expression.rename_identifiers(old_name, new_name),
             Expr::PipeSubstitution(_) => {}
@@ -982,7 +1138,6 @@ impl Expr {
             Expr::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
 
             Expr::FunctionExpression(function_identifier) => function_identifier.get_constraint_level(),
-            Expr::CallExpression(call_expression) => call_expression.get_constraint_level(),
             Expr::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_constraint_level(),
             Expr::PipeSubstitution(pipe_substitution) => ConstraintLevel::Ignore {
@@ -997,16 +1152,6 @@ impl Expr {
             Expr::LabelledExpression(expr) => expr.expr.get_constraint_level(),
             Expr::AscribedExpression(expr) => expr.expr.get_constraint_level(),
             Expr::None(none) => none.get_constraint_level(),
-        }
-    }
-
-    pub fn has_substitution_arg(&self) -> bool {
-        match self {
-            Expr::CallExpression(call_expression) => call_expression.has_substitution_arg(),
-            Expr::CallExpressionKw(call_expression) => call_expression.has_substitution_arg(),
-            Expr::LabelledExpression(expr) => expr.expr.has_substitution_arg(),
-            Expr::AscribedExpression(expr) => expr.expr.has_substitution_arg(),
-            _ => false,
         }
     }
 
@@ -1060,6 +1205,21 @@ impl From<&Expr> for SourceRange {
     }
 }
 
+impl From<&BinaryPart> for Expr {
+    fn from(value: &BinaryPart) -> Self {
+        match value {
+            BinaryPart::Literal(literal) => Expr::Literal(literal.clone()),
+            BinaryPart::Name(name) => Expr::Name(name.clone()),
+            BinaryPart::BinaryExpression(binary_expression) => Expr::BinaryExpression(binary_expression.clone()),
+            BinaryPart::CallExpressionKw(call_expression) => Expr::CallExpressionKw(call_expression.clone()),
+            BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
+            BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
+            BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+            BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -1093,7 +1253,7 @@ impl LabelledExpression {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
-pub struct Ascription {
+pub struct AscribedExpression {
     pub expr: Expr,
     pub ty: Node<Type>,
 
@@ -1102,12 +1262,12 @@ pub struct Ascription {
     pub digest: Option<Digest>,
 }
 
-impl Ascription {
-    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<Ascription> {
+impl AscribedExpression {
+    pub(crate) fn new(expr: Expr, ty: Node<Type>) -> Node<AscribedExpression> {
         let start = expr.start();
         let end = ty.end;
         let module_id = expr.module_id();
-        Node::new(Ascription { expr, ty, digest: None }, start, end, module_id)
+        Node::new(AscribedExpression { expr, ty, digest: None }, start, end, module_id)
     }
 }
 
@@ -1118,11 +1278,11 @@ pub enum BinaryPart {
     Literal(BoxNode<Literal>),
     Name(BoxNode<Name>),
     BinaryExpression(BoxNode<BinaryExpression>),
-    CallExpression(BoxNode<CallExpression>),
     CallExpressionKw(BoxNode<CallExpressionKw>),
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
+    AscribedExpression(BoxNode<AscribedExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1144,11 +1304,11 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.get_constraint_level(),
             BinaryPart::Name(identifier) => identifier.get_constraint_level(),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_constraint_level(),
-            BinaryPart::CallExpression(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::CallExpressionKw(call_expression) => call_expression.get_constraint_level(),
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
+            BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
     }
 
@@ -1159,9 +1319,6 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.replace_value(source_range, new_value)
             }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.replace_value(source_range, new_value)
-            }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.replace_value(source_range, new_value)
             }
@@ -1170,6 +1327,7 @@ impl BinaryPart {
             }
             BinaryPart::MemberExpression(_) => {}
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
     }
 
@@ -1178,11 +1336,11 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.start,
             BinaryPart::Name(identifier) => identifier.start,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.start,
-            BinaryPart::CallExpression(call_expression) => call_expression.start,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.start,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
+            BinaryPart::AscribedExpression(e) => e.start,
         }
     }
 
@@ -1191,11 +1349,11 @@ impl BinaryPart {
             BinaryPart::Literal(literal) => literal.end,
             BinaryPart::Name(identifier) => identifier.end,
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.end,
-            BinaryPart::CallExpression(call_expression) => call_expression.end,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.end,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
+            BinaryPart::AscribedExpression(e) => e.end,
         }
     }
 
@@ -1207,9 +1365,6 @@ impl BinaryPart {
             BinaryPart::BinaryExpression(ref mut binary_expression) => {
                 binary_expression.rename_identifiers(old_name, new_name)
             }
-            BinaryPart::CallExpression(ref mut call_expression) => {
-                call_expression.rename_identifiers(old_name, new_name)
-            }
             BinaryPart::CallExpressionKw(ref mut call_expression) => {
                 call_expression.rename_identifiers(old_name, new_name)
             }
@@ -1220,6 +1375,7 @@ impl BinaryPart {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(ref mut e) => e.expr.rename_identifiers(old_name, new_name),
         }
     }
 }
@@ -1421,6 +1577,15 @@ pub struct Annotation {
 }
 
 impl Annotation {
+    // Creates a named annotation with an empty (but present) property list, `@name()`.
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Annotation {
+            name: Some(Identifier::new(name)),
+            properties: Some(vec![]),
+            digest: None,
+        })
+    }
+
     pub fn is_inner(&self) -> bool {
         self.name.is_some()
     }
@@ -1429,22 +1594,16 @@ impl Annotation {
         self.name.as_ref().map(|n| &*n.name)
     }
 
-    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
-        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
-            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
-        )];
-
-        if settings.default_angle_units != Default::default() {
-            properties.push(ObjectProperty::new(
-                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
-            ));
-        }
-        Annotation {
-            name: Some(Identifier::new(annotations::SETTINGS)),
-            properties: Some(properties),
-            digest: None,
+    pub(crate) fn add_or_update(&mut self, label: &str, value: Expr) {
+        match &mut self.properties {
+            Some(props) => match props.iter_mut().find(|p| p.key.name == label) {
+                Some(p) => {
+                    p.value = value;
+                    p.digest = None;
+                }
+                None => props.push(ObjectProperty::new(Identifier::new(label), value)),
+            },
+            None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
 }
@@ -1703,18 +1862,6 @@ pub struct ExpressionStatement {
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
-pub struct CallExpression {
-    pub callee: Node<Name>,
-    pub arguments: Vec<Expr>,
-
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    #[ts(optional)]
-    pub digest: Option<Digest>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
 #[serde(rename_all = "camelCase", tag = "type")]
 pub struct CallExpressionKw {
     pub callee: Node<Name>,
@@ -1734,38 +1881,13 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: Node<Identifier>,
+    pub label: Option<Node<Identifier>>,
     pub arg: Expr,
-}
-
-impl From<Node<CallExpression>> for Expr {
-    fn from(call_expression: Node<CallExpression>) -> Self {
-        Expr::CallExpression(Box::new(call_expression))
-    }
 }
 
 impl From<Node<CallExpressionKw>> for Expr {
     fn from(call_expression: Node<CallExpressionKw>) -> Self {
         Expr::CallExpressionKw(Box::new(call_expression))
-    }
-}
-
-impl Node<CallExpression> {
-    /// Return the constraint level for this call expression.
-    pub fn get_constraint_level(&self) -> ConstraintLevel {
-        if self.arguments.is_empty() {
-            return ConstraintLevel::Ignore {
-                source_ranges: vec![self.into()],
-            };
-        }
-
-        // Iterate over the arguments and get the constraint level for each one.
-        let mut constraint_levels = ConstraintLevels::new();
-        for arg in &self.arguments {
-            constraint_levels.push(arg.get_constraint_level());
-        }
-
-        constraint_levels.get_constraint_level(self.into())
     }
 }
 
@@ -1788,38 +1910,6 @@ impl Node<CallExpressionKw> {
     }
 }
 
-impl CallExpression {
-    pub fn new(name: &str, arguments: Vec<Expr>) -> Result<Node<Self>, KclError> {
-        Ok(Node::no_src(Self {
-            callee: Name::new(name),
-            arguments,
-            digest: None,
-        }))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg, Expr::PipeSubstitution(_)))
-    }
-
-    pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
-        for arg in &mut self.arguments {
-            arg.replace_value(source_range, new_value.clone());
-        }
-    }
-
-    /// Rename all identifiers that have the old name to the new given name.
-    fn rename_identifiers(&mut self, old_name: &str, new_name: &str) {
-        self.callee.rename(old_name, new_name);
-
-        for arg in &mut self.arguments {
-            arg.rename_identifiers(old_name, new_name);
-        }
-    }
-}
-
 impl CallExpressionKw {
     pub fn new(name: &str, unlabeled: Option<Expr>, arguments: Vec<LabeledArg>) -> Result<Node<Self>, KclError> {
         Ok(Node::no_src(Self {
@@ -1836,14 +1926,7 @@ impl CallExpressionKw {
         self.unlabeled
             .iter()
             .map(|e| (None, e))
-            .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
-    }
-
-    /// Is at least one argument the '%' i.e. the substitution operator?
-    pub fn has_substitution_arg(&self) -> bool {
-        self.arguments
-            .iter()
-            .any(|arg| matches!(arg.arg, Expr::PipeSubstitution(_)))
+            .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -1916,6 +1999,12 @@ pub struct TypeDeclaration {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
     pub digest: Option<Digest>,
+}
+
+impl TypeDeclaration {
+    pub(crate) fn name(&self) -> &str {
+        &self.name.name
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -1995,6 +2084,10 @@ impl VariableDeclaration {
             kind,
             digest: None,
         }
+    }
+
+    pub(crate) fn name(&self) -> &str {
+        &self.declaration.id.name
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -2683,6 +2776,11 @@ impl MemberObject {
             MemberObject::Identifier(identifier) => identifier.end,
         }
     }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
+    }
 }
 
 impl From<MemberObject> for SourceRange {
@@ -2718,6 +2816,11 @@ impl LiteralIdentifier {
             LiteralIdentifier::Identifier(identifier) => identifier.end,
             LiteralIdentifier::Literal(literal) => literal.end,
         }
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 
@@ -3081,8 +3184,10 @@ impl PipeExpression {
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
-#[serde(tag = "type")]
+#[serde(tag = "p_type")]
 pub enum PrimitiveType {
+    /// The super type of all other types.
+    Any,
     /// A string type.
     String,
     /// A number type.
@@ -3099,6 +3204,7 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
+            ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
@@ -3112,6 +3218,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
@@ -3130,12 +3237,13 @@ impl fmt::Display for PrimitiveType {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type")]
+#[allow(clippy::large_enum_variant)]
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
     Array {
-        ty: PrimitiveType,
+        ty: Box<Type>,
         len: ArrayLen,
     },
     // Union/enum types
@@ -3235,6 +3343,11 @@ impl Parameter {
     /// Is the parameter optional?
     pub fn optional(&self) -> bool {
         self.default_value.is_some()
+    }
+
+    pub(crate) fn contains_range(&self, range: &SourceRange) -> bool {
+        let sr = SourceRange::from(self);
+        sr.contains_range(range)
     }
 }
 
@@ -3624,21 +3737,21 @@ mod tests {
 
     #[test]
     fn test_get_lsp_folding_ranges() {
-        let code = r#"const part001 = startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
-    |> line([0.4900857016, -0.0240763666], %)
+        let code = r#"part001 = startSketchOn(XY)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
+    |> line([0.4900857016, -0.0240763666])
 
 startSketchOn(XY)
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
-    |> line([0.4900857016, -0.0240763666], %)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
+    |> line([0.4900857016, -0.0240763666])
 
-const part002 = "part002"
-const things = [part001, 0.0]
-let blah = 1
-const foo = false
-let baz = {a: 1, b: "thing"}
+part002 = "part002"
+things = [part001, 0.0]
+blah = 1
+foo = false
+baz = {a = 1, b = "thing"}
 
-fn ghi = (x) => {
+fn ghi(@x) {
   return x
 }
 
@@ -3648,32 +3761,32 @@ ghi("things")
         let folding_ranges = program.get_lsp_folding_ranges();
         assert_eq!(folding_ranges.len(), 3);
         assert_eq!(folding_ranges[0].start_line, 27);
-        assert_eq!(folding_ranges[0].end_line, 132);
+        assert_eq!(folding_ranges[0].end_line, 123);
         assert_eq!(
             folding_ranges[0].collapsed_text,
             Some("part001 = startSketchOn(XY)".to_string())
         );
-        assert_eq!(folding_ranges[1].start_line, 151);
-        assert_eq!(folding_ranges[1].end_line, 250);
+        assert_eq!(folding_ranges[1].start_line, 142);
+        assert_eq!(folding_ranges[1].end_line, 238);
         assert_eq!(folding_ranges[1].collapsed_text, Some("startSketchOn(XY)".to_string()));
-        assert_eq!(folding_ranges[2].start_line, 380);
-        assert_eq!(folding_ranges[2].end_line, 399);
-        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(x) {".to_string()));
+        assert_eq!(folding_ranges[2].start_line, 345);
+        assert_eq!(folding_ranges[2].end_line, 358);
+        assert_eq!(folding_ranges[2].collapsed_text, Some("fn ghi(@x) {".to_string()));
     }
 
     #[test]
     fn test_get_lsp_symbols() {
-        let code = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0.0000000000, 5.0000000000], %)
-    |> line([0.4900857016, -0.0240763666], %)
+        let code = r#"part001 = startSketchOn(XY)
+  |> startProfile(at = [0.0000000000, 5.0000000000])
+    |> line([0.4900857016, -0.0240763666])
 
-const part002 = "part002"
-const things = [part001, 0.0]
-let blah = 1
-const foo = false
-let baz = {a: 1, b: "thing"}
+part002 = "part002"
+things = [part001, 0.0]
+blah = 1
+foo = false
+baz = {a = 1, b = "thing"}
 
-fn ghi = (x) => {
+fn ghi(x) {
   return x
 }
 "#;
@@ -3684,59 +3797,60 @@ fn ghi = (x) => {
 
     #[test]
     fn test_ast_in_comment() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
-const h = 30
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
+h = 30
 
 // st
-const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
-  |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: r
-     }, %)
-  |> extrude(h, %)
+
+cylinder = startSketchOn(-XZ)
+  |> startProfile(at = [50, 0])
+  |> arc(
+       angle_end = 360,
+       angle_start = 0,
+       radius = r
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(50));
+        assert!(program.in_comment(43));
     }
 
     #[test]
     fn test_ast_in_comment_pipe() {
-        let some_program_string = r#"const r = 20 / pow(pi(), 1 / 3)
-const h = 30
+        let some_program_string = r#"r = 20 / pow(pi(), exp = 1 / 3)
+h = 30
 
 // st
-const cylinder = startSketchOn('-XZ')
-  |> startProfileAt([50, 0], %)
+cylinder = startSketchOn(-XZ)
+  |> startProfile(at = [50, 0])
   // comment
-  |> arc({
-       angle_end: 360,
-       angle_start: 0,
-       radius: r
-     }, %)
-  |> extrude(h, %)
+  |> arc(
+       angle_end= 360,
+       angle_start= 0,
+       radius= r
+     )
+  |> extrude(h)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(124));
+        assert!(program.in_comment(117));
     }
 
     #[test]
     fn test_ast_in_comment_inline() {
-        let some_program_string = r#"const part001 = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+        let some_program_string = r#"part001 = startSketchOn(XY)
+  |> startProfile(at = [0,0])
   |> xLine(length = 5) // lin
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
-        assert!(program.in_comment(92));
+        assert!(program.in_comment(85));
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number(mm), arg1: string, tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: number(mm), arg1: string, tag?: string) {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3767,7 +3881,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_array_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: [number], arg1: [string], tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: [string], tag?: string) {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3785,14 +3899,14 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::String,
+                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                 len: ArrayLen::None
             }
         );
@@ -3804,7 +3918,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) => {
+        let some_program_string = r#"fn thing(arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -3823,7 +3937,7 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
             Type::Array {
-                ty: PrimitiveType::Number(NumericSuffix::None),
+                ty: Box::new(Type::Primitive(PrimitiveType::Number(NumericSuffix::None))),
                 len: ArrayLen::None
             }
         );
@@ -3837,14 +3951,14 @@ const cylinder = startSketchOn('-XZ')
                                 name: "thing".to_owned(),
                                 digest: None,
                             },
-                            35,
-                            40,
+                            32,
+                            37,
                             module_id,
                         ),
                         type_: Some(Node::new(
                             Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
-                            42,
-                            48,
+                            39,
+                            45,
                             module_id
                         )),
                         default_value: None,
@@ -3857,17 +3971,17 @@ const cylinder = startSketchOn('-XZ')
                                 name: "things".to_owned(),
                                 digest: None,
                             },
-                            50,
-                            56,
+                            47,
+                            53,
                             module_id,
                         ),
                         type_: Some(Node::new(
                             Type::Array {
-                                ty: PrimitiveType::String,
+                                ty: Box::new(Type::Primitive(PrimitiveType::String)),
                                 len: ArrayLen::None
                             },
-                            59,
-                            65,
+                            56,
+                            62,
                             module_id
                         )),
                         default_value: None,
@@ -3880,11 +3994,11 @@ const cylinder = startSketchOn('-XZ')
                                 name: "more".to_owned(),
                                 digest: None
                             },
-                            68,
-                            72,
+                            65,
+                            69,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 75, 81, module_id)),
+                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 72, 78, module_id)),
                         labeled: true,
                         default_value: Some(DefaultParamVal::none()),
                         digest: None
@@ -3895,91 +4009,6 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(
             params[2].type_.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
-        );
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing(): {thing: number, things: [string], more?: string} {
-    return 1
-}"#;
-        let module_id = ModuleId::default();
-        let program = crate::parsing::parse_str(some_program_string, module_id).unwrap();
-
-        // Check the program output for the types of the parameters.
-        let function = program.body.first().unwrap();
-        let BodyItem::VariableDeclaration(var_decl) = function else {
-            panic!("expected a variable declaration")
-        };
-        let Expr::FunctionExpression(ref func_expr) = var_decl.declaration.init else {
-            panic!("expected a function expression")
-        };
-        let params = &func_expr.params;
-        assert_eq!(params.len(), 0);
-        assert_eq!(
-            func_expr.return_type.as_ref().unwrap().inner,
-            Type::Object {
-                properties: vec![
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "thing".to_owned(),
-                                digest: None
-                            },
-                            13,
-                            18,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(
-                            Type::Primitive(PrimitiveType::Number(NumericSuffix::None)),
-                            20,
-                            26,
-                            module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "things".to_owned(),
-                                digest: None
-                            },
-                            28,
-                            34,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(
-                            Type::Array {
-                                ty: PrimitiveType::String,
-                                len: ArrayLen::None
-                            },
-                            37,
-                            43,
-                            module_id
-                        )),
-                        default_value: None,
-                        labeled: true,
-                        digest: None
-                    },
-                    Parameter {
-                        identifier: Node::new(
-                            Identifier {
-                                name: "more".to_owned(),
-                                digest: None
-                            },
-                            46,
-                            50,
-                            module_id,
-                        ),
-                        type_: Some(Node::new(Type::Primitive(PrimitiveType::String), 53, 59, module_id)),
-                        labeled: true,
-                        default_value: Some(DefaultParamVal::none()),
-                        digest: None
-                    }
-                ]
-            }
         );
     }
 
@@ -4076,7 +4105,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_object_bool() {
-        let some_program_string = r#"some_func({thing: true, other_thing: false})"#;
+        let some_program_string = r#"some_func({thing = true, other_thing = false})"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // We want to get the bool and verify it is a bool.
@@ -4094,14 +4123,17 @@ const cylinder = startSketchOn('-XZ')
             panic!("expected a function!");
         };
 
-        let Expr::CallExpression(ce) = expression else {
-            panic!("expected a function!");
-        };
+        let oe = match expression {
+            Expr::CallExpressionKw(ce) => {
+                assert!(ce.unlabeled.is_some());
 
-        assert!(!ce.arguments.is_empty());
+                let Expr::ObjectExpression(oe) = ce.unlabeled.as_ref().unwrap() else {
+                    panic!("expected a object!");
+                };
+                oe
+            }
 
-        let Expr::ObjectExpression(oe) = ce.arguments.first().unwrap() else {
-            panic!("expected a object!");
+            other => panic!("expected a CallKw, found {other:?}"),
         };
 
         assert_eq!(oe.properties.len(), 2);
@@ -4152,10 +4184,7 @@ startSketchOn(XY)"#;
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4184,10 +4213,7 @@ startSketchOn(XY)
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4222,10 +4248,7 @@ startSketchOn(XY)
         let program = crate::parsing::top_level_parse(code).unwrap();
 
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Cm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();

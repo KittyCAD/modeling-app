@@ -7,17 +7,18 @@ import type {
 } from '@playwright/test'
 import { _electron as electron } from '@playwright/test'
 
+import fs from 'node:fs'
+import path from 'path'
 import { SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
-import fs from 'node:fs'
-import path from 'path'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 
@@ -66,6 +67,7 @@ export interface Fixtures {
   toolbar: ToolbarFixture
   scene: SceneFixture
   homePage: HomePageFixture
+  signInPage: SignInPageFixture
 }
 
 export class ElectronZoo {
@@ -245,7 +247,7 @@ export class ElectronZoo {
     }
 
     if (!this.firstUrl) {
-      await this.page.getByText('Your Projects').count()
+      await this.page.getByRole('heading', { name: 'Projects' }).count()
       this.firstUrl = this.page.url()
     }
 
@@ -386,6 +388,9 @@ const fixturesBasedOnProcessEnvPlatform = {
   },
   homePage: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new HomePageFixture(page))
+  },
+  signInPage: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new SignInPageFixture(page))
   },
 }
 

@@ -33,6 +33,10 @@ module.exports = {
     extend: {
       colors: {
         primary: `oklch(var(--_primary) / <alpha-value>)`,
+        'ml-green': '#29FFA4',
+        'ml-black': 'var(--chalkboard-100)',
+        'ml-white': '#FFFFFF',
+        'ml-grey': 'var(--chalkboard-80)',
         ...themeColors,
       },
       fontFamily: {

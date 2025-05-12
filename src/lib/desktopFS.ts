@@ -1,17 +1,6 @@
-import {
-  FILE_EXT,
-  INDEX_IDENTIFIER,
-  MAX_PADDING,
-  ONBOARDING_PROJECT_NAME,
-} from '@src/lib/constants'
-import {
-  createNewProjectDirectory,
-  listProjects,
-  readAppSettingsFile,
-} from '@src/lib/desktop'
-import { bracket } from '@src/lib/exampleKcl'
+import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 
 export const isHidden = (fileOrDir: FileEntry) =>
@@ -131,65 +120,6 @@ export async function getSettingsFolderPaths(projectPath?: string) {
   }
 }
 
-export async function createAndOpenNewTutorialProject({
-  onProjectOpen,
-  navigate,
-}: {
-  onProjectOpen: (
-    project: {
-      name: string | null
-      path: string | null
-    } | null,
-    file: FileEntry | null
-  ) => void
-  navigate: (path: string) => void
-}) {
-  // Create a new project with the onboarding project name
-  const configuration = await readAppSettingsFile()
-  const projects = await listProjects(configuration)
-  const nextIndex = getNextProjectIndex(ONBOARDING_PROJECT_NAME, projects)
-  const name = interpolateProjectNameWithIndex(
-    ONBOARDING_PROJECT_NAME,
-    nextIndex
-  )
-
-  // Delete the tutorial project if it already exists.
-  if (isDesktop()) {
-    if (configuration.settings?.project?.directory === undefined) {
-      return Promise.reject(new Error('configuration settings are undefined'))
-    }
-
-    const fullPath = window.electron.join(
-      configuration.settings.project.directory,
-      name
-    )
-    if (window.electron.exists(fullPath)) {
-      await window.electron.rm(fullPath)
-    }
-  }
-
-  const newProject = await createNewProjectDirectory(
-    name,
-    bracket,
-    configuration
-  )
-
-  // Prep the LSP and navigate to the onboarding start
-  onProjectOpen(
-    {
-      name: newProject.name,
-      path: newProject.path,
-    },
-    null
-  )
-  navigate(
-    `${PATHS.FILE}/${encodeURIComponent(newProject.default_file)}${
-      PATHS.ONBOARDING.INDEX
-    }`
-  )
-  return newProject
-}
-
 /**
  * Get the next available file name by appending a hyphen and number to the end of the name
  */
@@ -200,14 +130,20 @@ export function getNextFileName({
   entryName: string
   baseDir: string
 }) {
+  // Preserve the extension in case of a relevant but foreign file
+  let extension = window.electron.path.extname(entryName)
+  if (!relevantFileExtensions().includes(extension.replace('.', ''))) {
+    extension = FILE_EXT
+  }
+
   // Remove any existing index from the name before adding a new one
-  let createdName = entryName.replace(FILE_EXT, '') + FILE_EXT
+  let createdName = entryName.replace(extension, '') + extension
   let createdPath = window.electron.path.join(baseDir, createdName)
   let i = 1
   while (window.electron.exists(createdPath)) {
-    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${FILE_EXT})?$`)
+    const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
     createdName =
-      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + FILE_EXT
+      entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
     createdPath = window.electron.path.join(baseDir, createdName)
     i++
   }

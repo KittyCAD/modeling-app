@@ -1,18 +1,49 @@
 import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
+import * as THREE from 'three'
+
+import type { EngineCommandManager } from '@src/lang/std/engineConnection'
+import type {
+  CameraViewState_type,
+  UnitLength_type,
+} from '@kittycad/lib/dist/types/src/models'
+
 export const uuidv4 = v4
+
+/**
+ * Refresh the browser page after reporting to Plausible.
+ */
+export async function refreshPage(method = 'UI button') {
+  if (window && 'plausible' in window) {
+    const p = window.plausible as (
+      event: string,
+      options?: { props: Record<string, string> }
+    ) => Promise<void>
+    // Send a refresh event to Plausible so we can track how often users get stuck
+    await p('Refresh', {
+      props: {
+        method,
+        // optionally add more data here
+      },
+    })
+  }
+
+  // Window may not be available in some environments
+  window?.location.reload()
+}
 
 /**
  * Get all labels for a keyword call expression.
  */
 export function allLabels(callExpression: CallExpressionKw): string[] {
-  return callExpression.arguments.map((a) => a.label.name)
+  return callExpression.arguments
+    .map((a) => a.label?.name)
+    .filter((a) => a !== undefined)
 }
 
 /**
@@ -21,6 +52,10 @@ export function allLabels(callExpression: CallExpressionKw): string[] {
 export function isArray(val: any): val is unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
+}
+
+export type SafeArray<T> = Omit<Array<T>, number> & {
+  [index: number]: T | undefined
 }
 
 /**
@@ -415,6 +450,11 @@ export function isClockwise(points: [number, number][]): boolean {
   return sum > 0
 }
 
+/** Capitalise a string's first character */
+export function capitaliseFC(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 /**
  * Converts a binary buffer to a UUID string.
  *
@@ -501,4 +541,133 @@ export function getInVariableCase(name: string, prefixIfDigit = 'm') {
   }
 
   return likelyPascalCase.slice(0, 1).toLowerCase() + likelyPascalCase.slice(1)
+}
+
+export function computeIsometricQuaternionForEmptyScene() {
+  // Create the direction vector you want to look from
+  const isoDir = new THREE.Vector3(1, 1, 1).normalize() // isometric look direction
+
+  // Target is the point you want to look at (e.g., origin)
+  const target = new THREE.Vector3(0, 0, 0)
+
+  // Compute quaternion for isometric view
+  const up = new THREE.Vector3(0, 0, 1) // default up direction
+  const quaternion = new THREE.Quaternion()
+  quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), isoDir) // align -Z with isoDir
+
+  // Align up vector using a lookAt matrix
+  const m = new THREE.Matrix4()
+  m.lookAt(new THREE.Vector3().addVectors(target, isoDir), target, up)
+  quaternion.setFromRotationMatrix(m)
+  return quaternion
+}
+
+export async function engineStreamZoomToFit({
+  engineCommandManager,
+  padding,
+}: {
+  engineCommandManager: EngineCommandManager
+  padding: number
+}) {
+  // It makes sense to also call zoom to fit here, when a new file is
+  // loaded for the first time, but not overtaking the work kevin did
+  // so the camera isn't moving all the time.
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'zoom_to_fit',
+      object_ids: [], // leave empty to zoom to all objects
+      padding, // padding around the objects
+      animated: false, // don't animate the zoom for now
+    },
+  })
+}
+
+export async function engineViewIsometricWithGeometryPresent({
+  engineCommandManager,
+  padding,
+}: {
+  engineCommandManager: EngineCommandManager
+  padding: number
+}) {
+  /**
+   * Default all users to view_isometric when loading into the engine.
+   * This works for perspective projection and orthographic projection
+   * This does not change the projection of the camera only the view direction which makes
+   * it safe to use with either projection defaulted
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'view_isometric',
+      padding, // padding around the objects
+    },
+  })
+
+  /**
+   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+   * to render which makes the axis point in an old direction.
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+}
+
+export async function engineViewIsometricWithoutGeometryPresent({
+  engineCommandManager,
+  unit,
+}: {
+  engineCommandManager: EngineCommandManager
+  unit?: UnitLength_type
+}) {
+  // If you load an empty scene with any file unit it will have an eye offset of this
+  const MAGIC_ENGINE_EYE_OFFSET = 1378.0057
+  const quat = computeIsometricQuaternionForEmptyScene()
+  const isometricView: CameraViewState_type = {
+    pivot_rotation: {
+      x: quat.x,
+      y: quat.y,
+      z: quat.z,
+      w: quat.w,
+    },
+    pivot_position: {
+      x: 0,
+      y: 0,
+      z: 0,
+    },
+    eye_offset: MAGIC_ENGINE_EYE_OFFSET,
+    fov_y: 45,
+    ortho_scale_factor: 1.4063792,
+    is_ortho: true,
+    ortho_scale_enabled: true,
+    world_coord_system: 'right_handed_up_z',
+  }
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_set_view',
+      view: {
+        ...isometricView,
+      },
+    },
+  })
+
+  /**
+   * HACK: We need to update the gizmo, the command above doesn't trigger gizmo
+   * to render which makes the axis point in an old direction.
+   */
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
 }

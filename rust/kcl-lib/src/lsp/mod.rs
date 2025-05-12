@@ -19,10 +19,7 @@ use crate::{
 
 impl IntoDiagnostic for CompilationError {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
-        let edit = self.suggestion.as_ref().map(|s| {
-            let range = s.source_range.to_lsp_range(code);
-            serde_json::to_value((s, range)).unwrap()
-        });
+        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
 
         vec![Diagnostic {
             range: self.source_range.to_lsp_range(code),
@@ -33,7 +30,7 @@ impl IntoDiagnostic for CompilationError {
             message: self.message.clone(),
             related_information: None,
             tags: self.tag.to_lsp_tags(),
-            data: edit,
+            data: edit.map(|e| serde_json::to_value(e).unwrap()),
         }]
     }
 

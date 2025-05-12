@@ -1,34 +1,45 @@
+import path from 'path'
 import * as TOML from '@iarna/toml'
 import type { Models } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
-import { COOKIE_NAME } from '@src/lib/constants'
+import { COOKIE_NAME, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import fsp from 'fs/promises'
-import path from 'path'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import dotenv from 'dotenv'
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
+export const token = process.env.token || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
-import { secrets } from '@e2e/playwright/secrets'
-import {
-  IS_PLAYWRIGHT_KEY,
-  TEST_SETTINGS,
-  TEST_SETTINGS_KEY,
-} from '@e2e/playwright/storageStates'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
 }
+
+export const headerMasks = (page: Page) => [
+  page.locator('#app-header'),
+  page.locator('#sidebar-top-ribbon'),
+  page.locator('#sidebar-bottom-ribbon'),
+]
+
+export const lowerRightMasks = (page: Page) => [
+  page.getByTestId('network-toggle'),
+  page.getByTestId('billing-remaining-bar'),
+]
 
 export type TestColor = [number, number, number]
 export const TEST_COLORS: { [key: string]: TestColor } = {
@@ -66,21 +77,10 @@ export function runningOnWindows() {
   return process.platform === 'win32'
 }
 
-export function orRunWhenFullSuiteEnabled() {
-  const branch = process.env.GITHUB_REF?.replace('refs/heads/', '')
-  return branch !== 'all-e2e'
-}
-
 async function waitForPageLoadWithRetry(page: Page) {
   await expect(async () => {
     await page.goto('/')
     const errorMessage = 'App failed to load - 🔃 Retrying ...'
-    await expect(
-      page.getByTestId('model-state-indicator-playing'),
-      errorMessage
-    ).toBeAttached({
-      timeout: 20_000,
-    })
 
     await expect(
       page.getByRole('button', { name: 'sketch Start Sketch' }),
@@ -93,11 +93,6 @@ async function waitForPageLoadWithRetry(page: Page) {
 
 // lee: This needs to be replaced by scene.settled() eventually.
 async function waitForPageLoad(page: Page) {
-  // wait for all spinners to be gone
-  await expect(page.getByTestId('model-state-indicator-playing')).toBeVisible({
-    timeout: 20_000,
-  })
-
   await expect(page.getByRole('button', { name: 'Start Sketch' })).toBeEnabled({
     timeout: 20_000,
   })
@@ -418,6 +413,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     closeFilePanel: () => closeFilePanel(page),
     openVariablesPane: () => openVariablesPane(page),
     openLogsPane: () => openLogsPane(page),
+    goToHomePageFromModeling: () => goToHomePageFromModeling(page),
     openAndClearDebugPanel: () => openAndClearDebugPanel(page),
     clearAndCloseDebugPanel: async () => {
       await clearCommandLogs(page)
@@ -900,7 +896,7 @@ export async function setup(
       localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
     },
     {
-      token: secrets.token,
+      token,
       settingsKey: TEST_SETTINGS_KEY,
       settings: settingsToToml({
         settings: {
@@ -928,7 +924,7 @@ export async function setup(
   await context.addCookies([
     {
       name: COOKIE_NAME,
-      value: secrets.token,
+      value: token,
       path: '/',
       domain: 'localhost',
       secure: true,
@@ -1018,12 +1014,21 @@ export async function createProject({
   })
 }
 
+async function goToHomePageFromModeling(page: Page) {
+  await page.getByTestId('app-logo').click()
+  await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
+}
+
 export function executorInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'e2e', 'executor', 'inputs', fileName)
 }
 
 export function testsInputPath(fileName: string): string {
   return path.join('rust', 'kcl-lib', 'tests', 'inputs', fileName)
+}
+
+export function kclSamplesPath(fileName: string): string {
+  return path.join('public', 'kcl-samples', fileName)
 }
 
 export async function doAndWaitForImageDiff(

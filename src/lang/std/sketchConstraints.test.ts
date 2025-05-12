@@ -69,7 +69,7 @@ async function testingSwapSketchFnCall({
 describe('testing swapping out sketch calls with xLine/xLineTo', () => {
   const bigExampleArr = [
     `part001 = startSketchOn(XY)`,
-    `  |> startProfileAt([0, 0], %)`,
+    `  |> startProfile(at = [0, 0])`,
     `  |> line(endAbsolute = [1, 1], tag = $abc1)`,
     `  |> line(end = [-2.04, -0.7], tag = $abc2)`,
     `  |> angledLine(angle = 157, length = 1.69, tag = $abc3)`,
@@ -264,8 +264,8 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
     `angledLineToXx = -1.86`,
     `angledLineToYy = -0.76`,
     `part001 = startSketchOn(XY)`,
-    `  |> startProfileAt([0, 0], %)`,
-    // `  |> rx(90, %)`,
+    `  |> startProfile(at = [0, 0])`,
+    // `  |> rx(90)`,
     `  |> line(endAbsolute = [1, 1])`,
     `  |> line(end = [lineX, 2.13])`,
     `  |> line(endAbsolute = [lineToX, 2.85])`,
@@ -358,7 +358,7 @@ describe('testing swapping out sketch calls with xLine/xLineTo while keeping var
 describe('testing getSketchSegmentIndexFromSourceRange', () => {
   const code = `
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0.04], %) // segment-in-start
+  |> startProfile(at = [0, 0.04]) // segment-in-start
   |> line(end = [0, 0.4])
   |> xLine(length = 3.48)
   |> line(end = [2.14, 1.35]) // normal-segment

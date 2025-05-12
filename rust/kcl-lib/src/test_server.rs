@@ -31,6 +31,7 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
 
 /// Executes a kcl program and takes a snapshot of the result.
 /// This returns the bytes of the snapshot.
+#[cfg(test)]
 pub async fn execute_and_snapshot_ast(
     ast: Program,
     current_file: Option<PathBuf>,
@@ -133,7 +134,7 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         current_file: None,
     };
     if let Some(current_file) = current_file {
-        settings.with_current_file(current_file);
+        settings.with_current_file(crate::TypedPath(current_file));
     }
     let ctx = ExecutorContext::new(&client, settings)
         .await

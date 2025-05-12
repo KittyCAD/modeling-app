@@ -36,13 +36,6 @@ import {
   setSettingsAtLevel,
 } from '@src/lib/settings/settingsUtils'
 import {
-  codeManager,
-  engineCommandManager,
-  kclManager,
-  sceneEntitiesManager,
-  sceneInfra,
-} from '@src/lib/singletons'
-import {
   Themes,
   darkModeMatcher,
   getOppositeTheme,
@@ -50,7 +43,7 @@ import {
   setThemeClass,
 } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { ACTOR_IDS } from '@src/machines/machineConstants'
 
 type SettingsMachineContext = SettingsType & {
   currentProject?: Project
@@ -95,13 +88,14 @@ export const settingsMachine = setup({
         doNotPersist: boolean
         context: SettingsMachineContext
         toastCallback?: () => void
+        rootContext: any
       }
     >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist) return
 
-      codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
+      input.rootContext.codeManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
       const { currentProject, ...settings } = input.context
 
       const val = await saveSettings(settings, currentProject?.path)
@@ -147,7 +141,9 @@ export const settingsMachine = setup({
     registerCommands: fromCallback<
       { type: 'update' },
       { settings: SettingsType; actor: AnyActorRef }
-    >(({ input, receive }) => {
+    >(({ input, receive, system }) => {
+      // This assumes this actor is running in a system with a command palette
+      const commandBarActor = system.get(ACTOR_IDS.COMMAND_BAR)
       // If the user wants to hide the settings commands
       //from the command bar don't add them.
       if (settings.commandBar.includeSettings.current === false) return
@@ -162,14 +158,19 @@ export const settingsMachine = setup({
             })
           )
           .filter((c) => c !== null)
+      if (commandBarActor === undefined) {
+        console.warn(
+          'Tried to register commands, but no command bar actor was found'
+        )
+      }
       const addCommands = () =>
-        commandBarActor.send({
+        commandBarActor?.send({
           type: 'Add commands',
           data: { commands: commands },
         })
 
       const removeCommands = () =>
-        commandBarActor.send({
+        commandBarActor?.send({
           type: 'Remove commands',
           data: { commands: commands },
         })
@@ -190,20 +191,28 @@ export const settingsMachine = setup({
     }),
   },
   actions: {
-    setEngineTheme: ({ context }) => {
+    setEngineTheme: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const engineCommandManager = rootContext.engineCommandManager
       if (engineCommandManager && context.app.theme.current) {
         engineCommandManager
           .setTheme(context.app.theme.current)
           .catch(reportRejection)
       }
     },
-    setClientTheme: ({ context }) => {
+    setClientTheme: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
+      const sceneEntitiesManager = rootContext.sceneEntitiesManager
+
       if (!sceneInfra || !sceneEntitiesManager) return
       const opposingTheme = getOppositeTheme(context.app.theme.current)
       sceneInfra.theme = opposingTheme
       sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     },
-    setAllowOrbitInSketchMode: ({ context }) => {
+    setAllowOrbitInSketchMode: ({ context, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
       if (!sceneInfra.camControls) return
       sceneInfra.camControls._setting_allowOrbitInSketchMode =
         context.app.allowOrbitInSketchMode.current
@@ -232,7 +241,9 @@ export const settingsMachine = setup({
         id: `${event.type}.success`,
       })
     },
-    'Execute AST': ({ context, event }) => {
+    'Execute AST': ({ context, event, self }) => {
+      const rootContext = self.system.get('root').getSnapshot().context
+      const kclManager = rootContext.kclManager
       try {
         const relevantSetting = (s: typeof settings) => {
           return (
@@ -302,6 +313,8 @@ export const settingsMachine = setup({
     resetSettings: assign(({ context, event }) => {
       if (!('level' in event)) return {}
 
+      console.log('Resetting settings at level', event.level)
+
       // Create a new, blank payload
       const newPayload =
         event.level === 'user'
@@ -345,8 +358,10 @@ export const settingsMachine = setup({
         currentTheme === Themes.System ? getSystemTheme() : currentTheme
       )
     },
-    setEngineCameraProjection: ({ context }) => {
+    setEngineCameraProjection: ({ context, self }) => {
       const newCurrentProjection = context.modeling.cameraProjection.current
+      const rootContext = self.system.get('root').getSnapshot().context
+      const sceneInfra = rootContext.sceneInfra
       sceneInfra.camControls.setEngineCameraProjection(newCurrentProjection)
     },
     sendThemeToWatcher: sendTo('watchSystemTheme', ({ context }) => ({
@@ -532,7 +547,7 @@ export const settingsMachine = setup({
             console.error('Error persisting settings')
           },
         },
-        input: ({ context, event }) => {
+        input: ({ context, event, self }) => {
           if (
             event.type === 'set.app.namedViews' &&
             'toastCallback' in event.data
@@ -541,12 +556,14 @@ export const settingsMachine = setup({
               doNotPersist: event.doNotPersist ?? false,
               context,
               toastCallback: event.data.toastCallback,
+              rootContext: self.system.get('root').getSnapshot().context,
             }
           }
 
           return {
             doNotPersist: event.doNotPersist ?? false,
             context,
+            rootContext: self.system.get('root').getSnapshot().context,
           }
         },
       },

@@ -1,46 +1,29 @@
 import type { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 import toast from 'react-hot-toast'
 
-import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import { DEV } from '@src/env'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { addImportAndInsert } from '@src/lang/modifyAst'
+import { addModuleImport } from '@src/lang/modifyAst'
 import {
-  changeKclSettings,
+  changeDefaultUnits,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
 } from '@src/lang/wasm'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
-  DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
   EXECUTION_TYPE_REAL,
-  FILE_EXT,
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
-import { isDesktop } from '@src/lib/isDesktop'
 import { copyFileShareLink } from '@src/lib/links'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, editorManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
-
-interface OnSubmitProps {
-  sampleName: string
-  code: string
-  sampleUnits?: UnitLength_type
-  method: 'overwrite' | 'newFile'
-}
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
-  specialPropsForSampleCommand: {
-    onSubmit: (p: OnSubmitProps) => Promise<void>
-    providedOptions: CommandArgumentOption<string>[]
-  }
   specialPropsForInsertCommand: {
     providedOptions: CommandArgumentOption<string>[]
   }
@@ -82,13 +65,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
       onSubmit: (data) => {
         if (typeof data === 'object' && 'unit' in data) {
-          const newCode = changeKclSettings(codeManager.code, {
-            defaultLengthUnits: unitLengthToUnitLen(data.unit),
-            defaultAngleUnits: unitAngleToUnitAng(
-              kclManager.fileSettings.defaultAngleUnit ??
-                DEFAULT_DEFAULT_ANGLE_UNIT
-            ),
-          })
+          const newCode = changeDefaultUnits(
+            codeManager.code,
+            unitLengthToUnitLen(data.unit),
+            unitAngleToUnitAng(undefined)
+          )
           if (err(newCode)) {
             toast.error(`Failed to set per-file units: ${newCode.message}`)
           } else {
@@ -111,15 +92,27 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       description: 'Insert from a file in the current project directory',
       icon: 'import',
       groupId: 'code',
-      hide: DEV || IS_NIGHTLY_OR_DEBUG ? 'web' : 'both',
+      hide: 'web',
       needsReview: true,
-      reviewMessage:
-        'Reminder: point-and-click insert is in development and only supports one part instance per assembly.',
       args: {
         path: {
           inputType: 'options',
           required: true,
           options: commandProps.specialPropsForInsertCommand.providedOptions,
+          validation: async ({ data }) => {
+            const importExists = kclManager.ast.body.find(
+              (n) =>
+                n.type === 'ImportStatement' &&
+                ((n.path.type === 'Kcl' && n.path.filename === data.path) ||
+                  (n.path.type === 'Foreign' && n.path.path === data.path))
+            )
+            if (importExists) {
+              return 'This file is already imported, use the Clone command instead.'
+              // TODO: see if we can transition to the clone command, see #6515
+            }
+
+            return true
+          },
         },
         localName: {
           inputType: 'string',
@@ -132,6 +125,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
             const path = context.argumentsToSubmit['path'] as string
             return getPathFilenameInVariableCase(path)
           },
+          validation: async ({ data }) => {
+            const variableExists = kclManager.variables[data.localName]
+            if (variableExists) {
+              return 'This variable name is already in use.'
+            }
+
+            return true
+          },
         },
       },
       onSubmit: (data) => {
@@ -141,19 +142,17 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         const ast = kclManager.ast
         const { path, localName } = data
-        const { modifiedAst, pathToImportNode, pathToInsertNode } =
-          addImportAndInsert({
-            node: ast,
-            path,
-            localName,
-          })
+        const { modifiedAst, pathToNode } = addModuleImport({
+          ast,
+          path,
+          localName,
+        })
         updateModelingState(
           modifiedAst,
           EXECUTION_TYPE_REAL,
           { kclManager, editorManager, codeManager },
           {
-            skipUpdateAst: true,
-            focusPath: [pathToImportNode, pathToInsertNode],
+            focusPath: [pathToNode],
           }
         ).catch(reportRejection)
       },
@@ -170,108 +169,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
-      name: 'open-kcl-example',
-      displayName: 'Open sample',
-      description: 'Imports an example KCL program into the editor.',
-      needsReview: true,
-      icon: 'code',
-      reviewMessage: ({ argumentsToSubmit }) =>
-        CommandBarOverwriteWarning({
-          heading:
-            'method' in argumentsToSubmit &&
-            argumentsToSubmit.method === 'newFile'
-              ? 'Create a new file from sample?'
-              : 'Overwrite current file with sample?',
-          message:
-            'method' in argumentsToSubmit &&
-            argumentsToSubmit.method === 'newFile'
-              ? 'This will create a new file in the current project and open it.'
-              : 'This will erase your current file and load the sample part.',
-        }),
-      groupId: 'code',
-      onSubmit(data) {
-        if (!data?.sample) {
-          return
-        }
-        const pathParts = data.sample.split('/')
-        const projectPathPart = pathParts[0]
-        const primaryKclFile = pathParts[1]
-        // local only
-        const sampleCodeUrl =
-          (isDesktop() ? '.' : '') +
-          `/kcl-samples/${encodeURIComponent(
-            projectPathPart
-          )}/${encodeURIComponent(primaryKclFile)}`
-
-        fetch(sampleCodeUrl)
-          .then(async (codeResponse): Promise<OnSubmitProps> => {
-            if (!codeResponse.ok) {
-              console.error(
-                'Failed to fetch sample code:',
-                codeResponse.statusText
-              )
-              return Promise.reject(new Error('Failed to fetch sample code'))
-            }
-            const code = await codeResponse.text()
-            return {
-              sampleName: data.sample.split('/')[0] + FILE_EXT,
-              code,
-              method: data.method,
-            }
-          })
-          .then((props) => {
-            if (props?.code) {
-              commandProps.specialPropsForSampleCommand
-                .onSubmit(props)
-                .catch(reportError)
-            }
-          })
-          .catch(reportError)
-      },
-      args: {
-        method: {
-          inputType: 'options',
-          required: true,
-          skip: true,
-          defaultValue: isDesktop() ? 'newFile' : 'overwrite',
-          options() {
-            return [
-              {
-                value: 'overwrite',
-                name: 'Overwrite current code',
-                isCurrent: !isDesktop(),
-              },
-              ...(isDesktop()
-                ? [
-                    {
-                      value: 'newFile',
-                      name: 'Create a new file',
-                      isCurrent: true,
-                    },
-                  ]
-                : []),
-            ]
-          },
-        },
-        sample: {
-          inputType: 'options',
-          required: true,
-          valueSummary(value) {
-            const MAX_LENGTH = 12
-            if (typeof value === 'string') {
-              return value.length > MAX_LENGTH
-                ? value.substring(0, MAX_LENGTH) + '...'
-                : value
-            }
-            return value
-          },
-          options: commandProps.specialPropsForSampleCommand.providedOptions,
-        },
-      },
-    },
-    {
       name: 'share-file-link',
-      displayName: 'Share current part (via Zoo link)',
+      displayName: 'Share part via Zoo link',
       description: 'Create a link that contains a copy of the current file.',
       groupId: 'code',
       needsReview: false,

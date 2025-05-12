@@ -1,6 +1,6 @@
 use indexmap::IndexMap;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 
 use super::{types::NumericType, ArtifactId, KclValue};
 use crate::{docs::StdLibFn, ModuleId, SourceRange};
@@ -47,6 +47,33 @@ pub enum Operation {
         source_range: SourceRange,
     },
     GroupEnd,
+}
+
+/// A way for sorting the operations in the timeline.  This is used to sort
+/// operations in the timeline and to determine the order of operations.
+/// We use this for the multi-threaded snapshotting, so that we can have deterministic
+/// output.
+impl PartialOrd for Operation {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(match (self, other) {
+            (Self::StdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::StdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::KclStdLibCall { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::KclStdLibCall { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::GroupBegin { source_range: a, .. }, Self::GroupBegin { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { source_range: a, .. }, Self::StdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { source_range: a, .. }, Self::KclStdLibCall { source_range: b, .. }) => a.cmp(b),
+            (Self::GroupBegin { .. }, Self::GroupEnd) => std::cmp::Ordering::Less,
+            (Self::GroupEnd, Self::StdLibCall { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::KclStdLibCall { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::GroupBegin { .. }) => std::cmp::Ordering::Greater,
+            (Self::GroupEnd, Self::GroupEnd) => std::cmp::Ordering::Equal,
+        })
+    }
 }
 
 impl Operation {
@@ -220,21 +247,21 @@ pub enum OpKclValue {
 
 pub type OpKclObjectFields = IndexMap<String, OpKclValue>;
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSketch {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpSolid {
     artifact_id: ArtifactId,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export_to = "Operation.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct OpHelix {
@@ -251,7 +278,7 @@ impl From<&KclValue> for OpKclValue {
                 ty: ty.clone(),
             },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
             }

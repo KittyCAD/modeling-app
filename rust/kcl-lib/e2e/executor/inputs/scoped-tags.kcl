@@ -1,6 +1,6 @@
-fn rect = (origin) => {
+fn rect(@origin) {
   return startSketchOn(XZ)
-  |> startProfileAt(origin, %)
+  |> startProfile(at = origin)
   |> angledLine(
        angle = 0,
        length = 191.26,

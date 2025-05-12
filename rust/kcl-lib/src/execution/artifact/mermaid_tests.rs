@@ -92,10 +92,14 @@ impl Artifact {
     /// the graph.
     pub(crate) fn child_ids(&self) -> Vec<ArtifactId> {
         match self {
-            Artifact::CompositeSolid(_) => {
+            Artifact::CompositeSolid(a) => {
                 // Note: Don't include these since they're parents: solid_ids,
                 // tool_ids.
-                Vec::new()
+                let mut ids = Vec::new();
+                if let Some(composite_solid_id) = a.composite_solid_id {
+                    ids.push(composite_solid_id);
+                }
+                ids
             }
             Artifact::Plane(a) => a.path_ids.clone(),
             Artifact::Path(a) => {
@@ -106,6 +110,9 @@ impl Artifact {
                 }
                 if let Some(solid2d_id) = a.solid2d_id {
                     ids.push(solid2d_id);
+                }
+                if let Some(composite_solid_id) = a.composite_solid_id {
+                    ids.push(composite_solid_id);
                 }
                 ids
             }
@@ -119,6 +126,7 @@ impl Artifact {
                 if let Some(edge_cut_id) = a.edge_cut_id {
                     ids.push(edge_cut_id);
                 }
+                ids.extend(&a.common_surface_ids);
                 ids
             }
             Artifact::Solid2d(_) => {
@@ -155,10 +163,12 @@ impl Artifact {
                 ids.extend(&a.path_ids);
                 ids
             }
-            Artifact::SweepEdge(_) => {
+            Artifact::SweepEdge(a) => {
                 // Note: Don't include these since they're parents: seg_id,
                 // sweep_id.
-                Vec::new()
+                let mut ids = Vec::new();
+                ids.extend(&a.common_surface_ids);
+                ids
             }
             Artifact::EdgeCut(a) => {
                 // Note: Don't include these since they're parents:
@@ -191,6 +201,7 @@ impl ArtifactGraph {
 
         let mut next_id = 1_u32;
         let mut stable_id_map = FnvHashMap::default();
+
         for id in self.map.keys() {
             stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
@@ -449,6 +460,7 @@ impl ArtifactGraph {
         }
 
         // Output the edges.
+        edges.par_sort_by(|ak, _, bk, _| (if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) }));
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more

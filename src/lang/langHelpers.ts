@@ -1,5 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
-
+import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError } from '@src/lang/errors'
@@ -8,6 +8,7 @@ import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import type { EditorView } from 'codemirror'
 
 export type ToolTip =
   | 'lineTo'
@@ -27,6 +28,7 @@ export type ToolTip =
   | 'circleThreePoint'
   | 'arcTo'
   | 'arc'
+  | 'startProfile'
 
 export const toolTips: Array<ToolTip> = [
   'line',
@@ -45,6 +47,7 @@ export const toolTips: Array<ToolTip> = [
   'circleThreePoint',
   'arc',
   'arcTo',
+  'startProfile',
 ]
 
 interface ExecutionResult {
@@ -64,7 +67,7 @@ export async function executeAst({
   path?: string
 }): Promise<ExecutionResult> {
   try {
-    const settings = { settings: await jsAppSettings() }
+    const settings = await jsAppSettings()
     const execState = await rustContext.execute(ast, settings, path)
 
     await rustContext.waitForAllEngineCommands()
@@ -91,7 +94,7 @@ export async function executeAstMock({
   usePrevMemory?: boolean
 }): Promise<ExecutionResult> {
   try {
-    const settings = { settings: await jsAppSettings() }
+    const settings = await jsAppSettings()
     const execState = await rustContext.executeMock(
       ast,
       settings,
@@ -143,11 +146,31 @@ export async function lintAst({
   try {
     const discovered_findings = await kclLint(ast)
     return discovered_findings.map((lint) => {
+      let actions
+      const suggestion = lint.suggestion
+      if (suggestion) {
+        actions = [
+          {
+            name: suggestion.title,
+            apply: (view: EditorView, from: number, to: number) => {
+              view.dispatch({
+                changes: {
+                  from: suggestion.source_range[0],
+                  to: suggestion.source_range[1],
+                  insert: suggestion.insert,
+                },
+                annotations: [lspCodeActionEvent],
+              })
+            },
+          },
+        ]
+      }
       return {
-        message: lint.finding.title,
-        severity: 'info',
         from: lint.pos[0],
         to: lint.pos[1],
+        message: lint.finding.title,
+        severity: 'info',
+        actions,
       }
     })
   } catch (e: any) {

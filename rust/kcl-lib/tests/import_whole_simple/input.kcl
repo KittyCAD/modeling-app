@@ -1,0 +1,6 @@
+@settings(defaultLengthUnit = mm)
+
+import "exported_mod.kcl" as foo
+
+bar = foo
+    |> translate(z=1)

@@ -2,7 +2,7 @@
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 binLength = 41.5
@@ -34,9 +34,9 @@ height = firstStep + secondStep + thirdStep
 lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
 
 // Define a function which builds the profile of the baseplate bin
-fn face(plane) {
+fn face(@plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([binBaseLength + binTol, 0], %)
+    |> startProfile(at = [binBaseLength + binTol, 0])
     |> yLine(length = height)
     |> xLine(length = -binBaseLength)
     |> angledLine(angle = -45, lengthY = thirdStep)
@@ -90,10 +90,10 @@ corners = patternCircular3d(
 )
 
 singleBinFill = startSketchOn(XY)
-  |> startProfileAt([
+  |> startProfile(at = [
        binBaseLength + binTol,
        binBaseLength + binTol
-     ], %)
+     ])
   |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
   |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
   |> xLine(endAbsolute = profileStartX(%), tag = $line002)
@@ -156,7 +156,7 @@ binFill = patternLinear3d(
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 binTop = startSketchOn(offsetPlane(XY, offset = height))
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(length = (binLength + 2 * binTol) * countBinWidth, tag = $line010)
   |> yLine(length = (binLength + 2 * binTol) * countBinLength, tag = $line011)
   |> xLine(endAbsolute = profileStartX(%), tag = $line012)
@@ -174,16 +174,17 @@ binTop = startSketchOn(offsetPlane(XY, offset = height))
   |> shell(faces = [END], thickness = binThk)
 
 // Define a function which builds the profile of the baseplate bin
-fn lipFace(plane) {
+fn lipFace(@plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     // |> yLine(length = lipHeight, tag = $line100)
     |> line(end = [0.0, 5.792893], tag = $line000)
-    |> arc({
+    |> arc(
          angleStart = 180.0,
          angleEnd = 45.0,
-         radius = 0.500000
-       }, %, $arc000)
+         radius = 0.500000,
+         tag = $arc000,
+       )
     // |> angledLine(angle = -45, lengthY = lipStep5 )
     |> line(end = [1.046447, -1.046447], tag = $line001)
     |> yLine(length = -lipStep4)
@@ -201,19 +202,17 @@ plane000 = {
     height + binHeight * countBinHeight
   ],
   xAxis = [0.0, 1.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 plane001 = {
   origin = [
     0.0,
-    cornerRadius,
+    countBinLength * (binLength + 2 * binTol) - cornerRadius,
     height + binHeight * countBinHeight
   ],
   xAxis = [1.0, 0.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [0.0, 1.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 plane002 = {
@@ -223,8 +222,7 @@ plane002 = {
     height + binHeight * countBinHeight
   ],
   xAxis = [0.0, 1.0, 0.0],
-  yAxis = [0.0, 0.0, 1.0],
-  zAxis = [1.0, 0.0, 0.0]
+  yAxis = [0.0, 0.0, 1.0]
 }
 
 // Extrude a single side of the lip of the bin

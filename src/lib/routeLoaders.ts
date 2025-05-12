@@ -12,21 +12,24 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { BROWSER_PATH, PATHS, getProjectMetaByRouteId } from '@src/lib/paths'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  BROWSER_PATH,
+  PATHS,
+  getProjectMetaByRouteId,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import {
+  loadAndValidateSettings,
+  readLocalStorageAppSettingsFile,
+} from '@src/lib/settings/settingsUtils'
 import { codeManager } from '@src/lib/singletons'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { settingsActor } from '@src/machines/appMachine'
-
-export const telemetryLoader: LoaderFunction = async ({
-  params,
-}): Promise<null> => {
-  return null
-}
+import { settingsActor } from '@src/lib/singletons'
+import { readAppSettingsFile } from '@src/lib/desktop'
 
 export const fileLoader: LoaderFunction = async (
   routerData
@@ -35,6 +38,8 @@ export const fileLoader: LoaderFunction = async (
   let { configuration } = await loadAndValidateSettings()
 
   const projectPathData = await getProjectMetaByRouteId(
+    readAppSettingsFile,
+    readLocalStorageAppSettingsFile,
     params.id,
     configuration
   )
@@ -61,6 +66,17 @@ export const fileLoader: LoaderFunction = async (
             fileExists = false
           }
         }
+      }
+
+      // If we are navigating to the project and want to navigate to its
+      // default file, redirect to it keeping everything else in the URL the same.
+      if (projectPath && !currentFileName && fileExists && params.id) {
+        const encodedId = safeEncodeForRouterPaths(params.id)
+        const requestUrlWithDefaultFile = routerData.request.url.replace(
+          encodedId,
+          safeEncodeForRouterPaths(fallbackFile)
+        )
+        return redirect(requestUrlWithDefaultFile)
       }
 
       if (!fileExists || !currentFileName || !currentFilePath || !projectName) {

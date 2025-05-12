@@ -1,14 +1,14 @@
-import * as fsp from 'fs/promises'
 import { join } from 'path'
+import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(x) {
+const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
 }
 export fn triangle() {
   return startSketchOn(XZ)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> xLine(length = 10)
     |> line(end = [-10, -5])
     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -17,7 +17,7 @@ export fn triangle() {
 
 length001 = timesFive(1) * 5
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([20, 10], %)
+  |> startProfile(at = [20, 10])
   |> line(end = [10, 10])
   |> angledLine(angle = -45, length = length001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -27,7 +27,7 @@ triangle()
   |> extrude(length = 30)
 plane001 = offsetPlane(XY, offset = 10)
 sketch002 = startSketchOn(plane001)
-  |> startProfileAt([-20, 0], %)
+  |> startProfile(at = [-20, 0])
   |> line(end = [5, -15])
   |> xLine(length = -10)
   |> line(endAbsolute = [-40, 0])
@@ -37,7 +37,7 @@ extrude001 = extrude(sketch002, length = 10)
 `
 
 const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2, tag = $rectangleSegmentB001)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
@@ -229,7 +229,7 @@ test.describe('Feature Tree pane', () => {
     const initialCode = `sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
-    const newConstantName = 'distance001'
+    const newConstantName = 'length001'
     const expectedCode = `${newConstantName} = 23
     sketch001 = startSketchOn(XZ)
       |> circle(center = [0, 0], radius = 5)
@@ -270,12 +270,12 @@ test.describe('Feature Tree pane', () => {
       await cmdBar.expectState({
         commandName: 'Extrude',
         stage: 'arguments',
-        currentArgKey: 'distance',
+        currentArgKey: 'length',
         currentArgValue: initialInput,
         headerArguments: {
-          Distance: initialInput,
+          Length: initialInput,
         },
-        highlightedHeaderArg: 'distance',
+        highlightedHeaderArg: 'length',
       })
     })
 
@@ -290,7 +290,7 @@ test.describe('Feature Tree pane', () => {
         stage: 'review',
         headerArguments: {
           // The calculated value is shown in the argument summary
-          Distance: initialInput,
+          Length: initialInput,
         },
         commandName: 'Extrude',
       })
@@ -397,9 +397,9 @@ test.describe('Feature Tree pane', () => {
     const beforeKclCode = `plane001 = offsetPlane(XY, offset = 5)
 sketch001 = startSketchOn(plane001)
 profile001 = circle(sketch001, center = [0, 20], radius = 12)
-profile002 = startProfileAt([0, 7.25], sketch001)
+profile002 = startProfile(sketch001, at = [0, 7.25])
   |> xLine(length = 13.3)
-profile003 = startProfileAt([0, -4.93], sketch001)
+profile003 = startProfile(sketch001, at = [0, -4.93])
   |> line(endAbsolute = [-5.56, 0])`
     await context.folderSetupFn(async (dir) => {
       const testProject = join(dir, 'test-sample')
@@ -429,6 +429,18 @@ profile003 = startProfileAt([0, -4.93], sketch001)
       await editor.expectEditor.toContain('plane001 =')
       await editor.expectEditor.not.toContain('sketch001 =')
       await editor.expectEditor.not.toContain('profile002 = ')
+    })
+
+    await test.step(`Delete the remaining plane via feature tree`, async () => {
+      const operationButton = await toolbar.getFeatureTreeOperation(
+        'Offset Plane',
+        0
+      )
+      await operationButton.click({ button: 'left' })
+      await page.keyboard.press('Delete')
+
+      // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
+      await editor.expectEditor.not.toContain('plane001 =')
     })
   })
 })

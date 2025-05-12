@@ -14,7 +14,6 @@ import { findKwArg } from '@src/lang/util'
 import type {
   ArrayExpression,
   BinaryExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
@@ -32,28 +31,48 @@ import type {
   VariableDeclaration,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import { formatNumber } from '@src/lang/wasm'
+import { formatNumberLiteral } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
+
+export function createLiteral(value: number | string | boolean): Node<Literal> {
+  // TODO: Should we handle string escape sequences?
+  return {
+    type: 'Literal',
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    value: typeof value === 'number' ? { value, suffix: 'None' } : value,
+    raw: `${value}`,
+    outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
+  }
+}
 
 /**
  * Note: This depends on WASM, but it's not async.  Callers are responsible for
  * awaiting init of the WASM module.
  */
-export function createLiteral(value: LiteralValue | number): Node<Literal> {
-  if (typeof value === 'number') {
-    value = { value, suffix: 'None' }
+export function createLiteralMaybeSuffix(
+  value: LiteralValue
+): Node<Literal> | Error {
+  if (typeof value === 'string' || typeof value === 'boolean') {
+    return createLiteral(value)
   }
+
   let raw: string
-  if (typeof value === 'string') {
-    // TODO: Should we handle escape sequences?
-    raw = `${value}`
-  } else if (typeof value === 'boolean') {
-    raw = `${value}`
-  } else if (typeof value.value === 'number' && value.suffix === 'None') {
+  if (typeof value.value === 'number' && value.suffix === 'None') {
     // Fast path for numbers when there are no units.
     raw = `${value.value}`
   } else {
-    raw = formatNumber(value.value, value.suffix)
+    const formatted = formatNumberLiteral(value.value, value.suffix)
+    if (err(formatted)) {
+      return new Error(
+        `Invalid number literal: value=${value.value}, suffix=${value.suffix}`,
+        { cause: formatted }
+      )
+    }
+    raw = formatted
   }
   return {
     type: 'Literal',
@@ -140,23 +159,6 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
   }
 }
 
-export function createCallExpressionStdLib(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
-    arguments: args,
-  }
-}
-
 export const nonCodeMetaEmpty = () => {
   return { nonCodeNodes: {}, startNodes: [], start: 0, end: 0 }
 }
@@ -178,23 +180,6 @@ export function createCallExpressionStdLibKw(
     nonCodeMeta: nonCodeMeta ?? nonCodeMetaEmpty(),
     callee: createLocalName(name),
     unlabeled,
-    arguments: args,
-  }
-}
-
-export function createCallExpression(
-  name: string,
-  args: CallExpression['arguments']
-): Node<CallExpression> {
-  return {
-    type: 'CallExpression',
-    start: 0,
-    end: 0,
-    moduleId: 0,
-    outerAttrs: [],
-    preComments: [],
-    commentStart: 0,
-    callee: createLocalName(name),
     arguments: args,
   }
 }
@@ -427,39 +412,19 @@ export function giveSketchFnCallTag(
   | Error {
   const path = getNodePathFromSourceRange(ast, range)
   const maybeTag = (() => {
-    const callNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-      ast,
-      path,
-      ['CallExpression', 'CallExpressionKw']
-    )
-    if (!err(callNode) && callNode.node.type === 'CallExpressionKw') {
-      const { node: primaryCallExp } = callNode
-      const existingTag = findKwArg(ARG_TAG, primaryCallExp)
-      const tagDeclarator =
-        existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
-      const isTagExisting = !!existingTag
-      if (!isTagExisting) {
-        callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
-      }
-      return { tagDeclarator, isTagExisting }
+    const callNode = getNodeFromPath<CallExpressionKw>(ast, path, [
+      'CallExpressionKw',
+    ])
+    if (err(callNode)) {
+      return callNode
     }
-
-    // We've handled CallExpressionKw above, so this has to be positional.
-    const _node1 = getNodeFromPath<CallExpression>(ast, path, 'CallExpression')
-    if (err(_node1)) return _node1
-    const { node: primaryCallExp } = _node1
-
-    // Tag is always 3rd expression now, using arg index feels brittle
-    // but we can come up with a better way to identify tag later.
-    const thirdArg = primaryCallExp.arguments?.[2]
+    const { node: primaryCallExp } = callNode
+    const existingTag = findKwArg(ARG_TAG, primaryCallExp)
     const tagDeclarator =
-      thirdArg ||
-      (createTagDeclarator(
-        tag || findUniqueName(ast, 'seg', 2)
-      ) as TagDeclarator)
-    const isTagExisting = !!thirdArg
+      existingTag || createTagDeclarator(tag || findUniqueName(ast, 'seg', 2))
+    const isTagExisting = !!existingTag
     if (!isTagExisting) {
-      primaryCallExp.arguments[2] = tagDeclarator
+      callNode.node.arguments.push(createLabeledArg(ARG_TAG, tagDeclarator))
     }
     return { tagDeclarator, isTagExisting }
   })()

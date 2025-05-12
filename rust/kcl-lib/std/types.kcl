@@ -1,0 +1,310 @@
+/// KCL types. This module contains fundamental types like `number`, `string`, `Solid`, and `Sketch`.
+///
+/// Types can (optionally) be used to describe a function's arguments and returned value. They are checked
+/// when a program runs and can help avoid errors. They are also useful to help document what a function
+/// does.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// The `any` type is the type of all possible values in KCL. I.e., if a function accepts an argument
+/// with type `any`, then it can accept any value.
+///
+/// ```kcl,norun
+/// fn acceptAnything(@input: any) {
+///   return true
+/// }
+///
+/// acceptAnything(42)
+/// acceptAnything('hello')
+/// acceptAnything(XY)
+/// acceptAnything([0, 1, 2])
+/// ```
+@(impl = primitive)
+export type any
+
+/// A number.
+///
+/// May be signed or unsigned, an integer or decimal value.
+///
+/// KCL numbers always include units, e.g., the number `42` is always '42 mm' or '42 degrees', etc.
+/// it is never just '42'. The `number` type may or may not include units, if none are specified, then
+/// it is the type of any number. E.g.,
+///
+/// - `number`: the type of any numbers,
+/// - `number(mm)`: the type of numbers in millimeters,
+/// - `number(in)`: the type of numbers in inches,
+/// - `number(Length)`: the type of numbers in any length unit,
+/// - `number(deg)`: the type of numbers in degrees,
+/// - `number(Angle)`: the type of numbers in any angle unit,
+/// - `number(_)` or `number(Count)`: the type of unit-less numbers, representing a count of things,
+/// or a ratio, etc.
+///
+/// For more information, see [numeric types](/docs/kcl-lang/numeric).
+@(impl = primitive)
+export type number(unit)
+
+/// A boolean value.
+///
+/// `true` or `false`.
+@(impl = primitive)
+export type bool
+
+/// A sequence of characters
+///
+/// Strings may be delimited using either single or double quotes.
+///
+/// ```kcl,norun
+/// "hello,"
+/// 'world!'
+/// ```
+@(impl = primitive)
+export type string
+
+/// Tags are used to give a name (tag) to a specific path.
+///
+/// ### Tag Declaration
+///
+/// The syntax for declaring a tag is `$myTag` you would use it in the following
+/// way:
+///
+/// ```norun,inline
+/// startSketchOn(XZ)
+///   |> startProfile(at = origin)
+///   |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///   |> angledLine(
+///        angle = segAng(rectangleSegmentA001) - 90,
+///        length = 196.99,
+///        tag = $rectangleSegmentB001,
+///      )
+///   |> angledLine(
+///        angle = segAng(rectangleSegmentA001),
+///        length = -segLen(rectangleSegmentA001),
+///        tag = $rectangleSegmentC001,
+///      )
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// ```
+///
+/// ### Tag Identifier
+///
+/// As per the example above you can use the tag identifier to get a reference to the 
+/// tagged object. The syntax for this is `myTag`.
+/// 
+/// In the example above we use the tag identifier to get the angle of the segment
+/// `segAng(rectangleSegmentA001)`.
+///
+/// ### Tag Scope
+///
+/// Tags are scoped globally if in the root context meaning in this example you can 
+/// use the tag `rectangleSegmentA001` in any function or expression in the file.
+///
+/// However if the code was written like this:
+///
+/// ```norun,inline
+/// fn rect(origin) {
+///   return startSketchOn(XZ)
+///     |> startProfile(at = origin)
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///          angle = segAng(rectangleSegmentA001) - 90,
+///          length = 196.99,
+///          tag = $rectangleSegmentB001)
+///     |> angledLine(
+///          angle = segAng(rectangleSegmentA001),
+///          length = -segLen(rectangleSegmentA001),
+///          tag = $rectangleSegmentC001
+///        )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+/// }
+/// 
+/// rect(origin = [0, 0])
+/// rect(origin = [20, 0])
+/// ```
+///
+/// Those tags would only be available in the `rect` function and not globally.
+///
+/// However you likely want to use those tags somewhere outside the `rect` function.
+///
+/// Tags are accessible through the sketch group they are declared in.
+/// For example the following code works.
+///
+/// ```norun,inline
+/// fn rect(origin) {
+///   return startSketchOn(XZ)
+///     |> startProfile(at = origin)
+///     |> angledLine(angle = 0, length = 191.26, tag = $rectangleSegmentA001)
+///     |> angledLine(
+///          angle = segAng(rectangleSegmentA001) - 90,
+///          length = 196.99
+///          tag = $rectangleSegmentB001,
+///        )
+///     |> angledLine(
+///          angle = segAng(rectangleSegmentA001),
+///          length = -segLen(rectangleSegmentA001)
+///          tag = $rectangleSegmentC001,
+///        )
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+/// }
+/// 
+/// rect(origin = [0, 0])
+/// myRect = rect(origin = [20, 0])
+/// 
+/// myRect
+///   |> extrude(length = 10)
+///   |> fillet(radius = 0.5, tags = [myRect.tags.rectangleSegmentA001])
+/// ```
+///
+/// See how we use the tag `rectangleSegmentA001` in the `fillet` function outside
+/// the `rect` function. This is because the `rect` function is returning the
+/// sketch group that contains the tags.
+@(impl = primitive)
+export type tag
+
+/// An abstract plane.
+///
+/// A plane has a position and orientation in space defined by its origin and axes. A plane is abstract
+/// in the sense that it is not part of the objects being drawn. A plane can be used to sketch on.
+///
+/// A plane can be created in several ways:
+/// - you can use one of the default planes, e.g., `XY`.
+/// - you can use `offsetPlane` to create a new plane offset from an existing one, e.g., `offsetPlane(XY, offset = 150)`.
+/// - you can use negation to create a plane from an existing one which is identical but has an opposite normal
+/// e.g., `-XY`.
+/// - you can define an entirely custom plane, e.g.,
+///
+/// ```kcl,inline,norun
+/// myXY = {
+///   origin = { x = 0, y = 0, z = 0 },
+///   xAxis = { x = 1, y = 0, z = 0 },
+///   yAxis = { x = 0, y = 1, z = 0 },
+/// }
+/// ```
+///
+/// Any object with appropriate `origin`, `xAxis`, and `yAxis` fields can be used as a plane.
+@(impl = std_rust)
+export type Plane
+
+/// A sketch is a collection of paths.
+///
+/// When you define a sketch to a variable like:
+///
+/// ```kcl,inline
+/// mySketch = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+/// ```
+///
+/// The `mySketch` variable will be an executed `Sketch` object. Executed being past
+/// tense, because the engine has already executed the commands to create the sketch.
+///
+/// The previous sketch commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the sketch any time you call it,
+/// you can use a function.
+///
+/// ```kcl,inline
+/// fn createSketch() {
+///    return startSketchOn(XY)
+///         |> startProfile(at = [-12, 12])
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+/// }
+/// ```
+///
+/// Now, every time you call `createSketch()`, the commands will be
+/// executed and a new sketch will be created.
+///
+/// When you assign the result of `createSketch()` to a variable (`mySketch = createSketch()`), you are assigning
+/// the executed sketch to that variable. Meaning that the sketch `mySketch` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the sketch like `extrude`, `revolve`, `loft`, etc. and
+/// the sketch will be updated.
+@(impl = std_rust)
+export type Sketch
+
+/// A solid is a collection of extruded surfaces.
+///
+/// When you define a solid to a variable like:
+///
+/// ```kcl,inline
+/// myPart = startSketchOn(XY)
+///     |> startProfile(at = [-12, 12])
+///     |> line(end = [24, 0])
+///     |> line(end = [0, -24])
+///     |> line(end = [-24, 0])
+///     |> close()
+///     |> extrude(length = 6)
+/// ```
+///
+/// The `myPart` variable will be an executed `Solid` object. Executed being past
+/// tense, because the engine has already executed the commands to create the solid.
+///
+/// The previous solid commands will never be executed again, in this case.
+///
+/// If you would like to encapsulate the commands to create the solid any time you call it,
+/// you can use a function.
+///
+/// ```kcl,inline
+/// fn createPart() {
+///    return startSketchOn(XY)
+///         |> startProfile(at = [-12, 12])
+///         |> line(end = [24, 0])
+///         |> line(end = [0, -24])
+///         |> line(end = [-24, 0])
+///         |> close()
+///         |> extrude(length = 6)
+/// }
+/// ```
+///
+/// Now, every time you call `createPart()`, the commands will be
+/// executed and a new solid will be created.
+///
+/// When you assign the result of `createPart()` to a variable (`myPart = createPart()`), you are assigning
+/// the executed solid to that variable. Meaning that the solid `myPart` will not be executed
+/// again.
+///
+/// You can still execute _new_ commands on the solid like `shell`, `fillet`, `chamfer`, etc.
+/// and the solid will be updated.
+@(impl = std_rust)
+export type Solid
+
+/// A face of a solid.
+@(impl = std_rust)
+export type Face
+
+/// A helix; created by the `helix` function.
+@(impl = std_rust)
+export type Helix
+
+/// An edge of a solid.
+@(impl = std_rust)
+export type Edge
+
+/// A point in two dimensional space.
+///
+/// `Point2d` is an alias for a two-element array of [number](/docs/kcl-std/types/std-types-number)s. To write a value
+/// with type `Point2d`, use an array, e.g., `[0, 0]` or `[5.0, 3.14]`.
+export type Point2d = [number(Length); 2]
+
+/// A point in three dimensional space.
+///
+/// `Point3d` is an alias for a three-element array of [number](/docs/kcl-std/types/std-types-number)s. To write a value
+/// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
+export type Point3d = [number(Length); 3]
+
+/// An abstract and infinite line in 2d space.
+@(impl = std_rust)
+export type Axis2d
+
+/// An abstract and infinite line in 3d space.
+@(impl = std_rust)
+export type Axis3d

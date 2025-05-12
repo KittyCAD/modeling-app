@@ -1,12 +1,12 @@
+import fsSync from 'node:fs'
+import fs from 'node:fs/promises'
+import os from 'node:os'
+import path from 'path'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/components/MachineManagerProvider'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
-import fsSync from 'node:fs'
-import fs from 'node:fs/promises'
-import os from 'node:os'
-import path from 'path'
 
 import type { Channel } from '@src/channels'
 import type { WebContentSendPayload } from '@src/menu/channels'
@@ -21,6 +21,7 @@ const resizeWindow = (width: number, height: number) =>
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
 const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const takeElectronWindowScreenshot = ({
   width,
   height,
@@ -113,8 +114,19 @@ const stat = (path: string) => {
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-const statIsDirectory = (path: string) =>
-  stat(path).then((res) => res.isDirectory())
+async function statIsDirectory(path: string): Promise<boolean> {
+  try {
+    const res = await stat(path)
+    return res.isDirectory()
+  } catch (e) {
+    if (e === 'ENOENT') {
+      console.error('File does not exist', e)
+      return false
+    }
+    return false // either way we don't know if it is a directory
+  }
+}
+
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
 
 const canReadWriteDirectory = async (
@@ -248,6 +260,7 @@ contextBridge.exposeInMainWorld('electron', {
   save,
   // opens the URL
   openExternal,
+  openInNewWindow,
   showInFolder,
   getPath,
   packageJson,

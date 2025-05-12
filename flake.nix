@@ -20,6 +20,12 @@
           targets = ["wasm32-unknown-unknown"];
           extensions = ["rustfmt" "llvm-tools-preview" "rust-src"];
         };
+
+        # stand-alone nightly formatter so we get the fancy unstable flags
+        nightlyRustfmt = super.rust-bin.selectLatestNightlyWith (toolchain:
+          toolchain.default.override {
+            extensions = ["rustfmt"]; # just the formatter
+          });
       })
     ];
 
@@ -44,7 +50,10 @@
         packages =
           (with pkgs; [
             rustToolchain
+            nightlyRustfmt
+            cargo-criterion
             cargo-nextest
+            cargo-sort
             just
             postgresql.lib
             openssl
@@ -52,6 +61,7 @@
             nodejs_22
             electron
             playwright-driver.browsers
+            chromedriver
             wasm-pack
             python3Full
           ])
@@ -62,11 +72,16 @@
 
         TARGET_CC = "${pkgs.stdenv.cc}/bin/${pkgs.stdenv.cc.targetPrefix}cc";
         LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
-        ELECTRON_OVERRIDE_DIST_PATH = "${pkgs.electron}/bin/";
+        ELECTRON_OVERRIDE_DIST_PATH =
+          if pkgs.stdenv.isDarwin
+          then "${pkgs.electron}/Applications"
+          else "${pkgs.electron}/bin";
         PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
         PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
         NODE_ENV = "development";
+        RUSTFMT = "${pkgs.nightlyRustfmt}/bin/rustfmt";
+        CHROMEDRIVER = "${pkgs.chromedriver}/bin/chromedriver";
       };
     });
 

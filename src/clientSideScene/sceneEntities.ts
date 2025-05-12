@@ -5,6 +5,7 @@ import type {
   Object3DEventMap,
   Quaternion,
 } from 'three'
+
 import {
   BoxGeometry,
   DoubleSide,
@@ -25,18 +26,17 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { radToDeg } from 'three/src/math/MathUtils'
 
 import type { Models } from '@kittycad/lib/dist/types/src'
-import type { CallExpression } from '@rust/kcl-lib/bindings/CallExpression'
 import type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Path } from '@rust/kcl-lib/bindings/Path'
 import type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
-import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { VariableDeclaration } from '@rust/kcl-lib/bindings/VariableDeclaration'
 import type { VariableDeclarator } from '@rust/kcl-lib/bindings/VariableDeclarator'
-import { uuidv4 } from '@src/lib/utils'
+import type { SafeArray } from '@src/lib/utils'
+import { getAngle, getLength, uuidv4 } from '@src/lib/utils'
 
 import {
   createGridHelper,
@@ -48,6 +48,7 @@ import {
 import {
   ARC_ANGLE_END,
   ARC_SEGMENT,
+  ARC_SEGMENT_TYPES,
   CIRCLE_CENTER_HANDLE,
   CIRCLE_SEGMENT,
   CIRCLE_THREE_POINT_HANDLE1,
@@ -73,6 +74,7 @@ import type {
   OnMouseEnterLeaveArgs,
   SceneInfra,
 } from '@src/clientSideScene/sceneInfra'
+
 import {
   ANGLE_SNAP_THRESHOLD_DEGREES,
   ARROWHEAD,
@@ -91,14 +93,15 @@ import type { SegmentUtils } from '@src/clientSideScene/segments'
 import {
   createProfileStartHandle,
   dashedStraight,
+  getTanPreviousPoint,
   segmentUtils,
 } from '@src/clientSideScene/segments'
 import type EditorManager from '@src/editor/manager'
+import type { KclManager } from '@src/lang/KclSingleton'
 import type CodeManager from '@src/lang/codeManager'
-import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
+import { ARG_END, ARG_AT, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -108,7 +111,6 @@ import {
   createVariableDeclaration,
   findUniqueName,
 } from '@src/lang/create'
-import type { KclManager } from '@src/lang/KclSingleton'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
@@ -116,9 +118,14 @@ import {
   createNodeFromExprSnippet,
   getInsertIndex,
   insertNewStartProfileAt,
+  mutateKwArgOnly,
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
+import {
+  getNodeFromPath,
+  getPathNormalisedForTruncatedAst,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
@@ -134,10 +141,11 @@ import {
   updateStartProfileAtArgs,
 } from '@src/lang/std/sketch'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
-import { topLevelRange } from '@src/lang/util'
+import { crossProduct, topLevelRange } from '@src/lang/util'
 import type { PathToNode, VariableMap } from '@src/lang/wasm'
 import {
   defaultSourceRange,
+  getTangentialArcToInfo,
   parse,
   recast,
   resultIsOk,
@@ -157,12 +165,14 @@ import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { isArray, isOverlap, roundOff } from '@src/lib/utils'
+import { closestPointOnRay, deg2Rad } from '@src/lib/utils2d'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
   SketchDetailsUpdate,
   SketchTool,
 } from '@src/machines/modelingMachine'
+import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -183,6 +193,7 @@ export class SceneEntities {
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
+
   constructor(
     engineCommandManager: EngineCommandManager,
     sceneInfra: SceneInfra,
@@ -210,7 +221,7 @@ export class SceneEntities {
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    Object.values(this.activeSegments).forEach((segment, index) => {
+    Object.values(this.activeSegments).forEach((segment, _index) => {
       const factor =
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
@@ -313,6 +324,18 @@ export class SceneEntities {
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: segment,
+            group: segment,
+            isHandlesVisible: true,
+            from: segment.userData.from,
+            to: segment.userData.to,
+            hasThreeDotMenu: false,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
     })
     if (this.axisGroup) {
@@ -344,8 +367,8 @@ export class SceneEntities {
     sceneInfra.scene.add(intersectionPlane)
     return intersectionPlane
   }
+
   createSketchAxis(
-    sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchPosition?: [number, number, number]
@@ -423,9 +446,11 @@ export class SceneEntities {
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
     this.sceneInfra.scene.add(this.axisGroup)
   }
+
   getDraftPoint() {
     return this.sceneInfra.scene.getObjectByName(DRAFT_POINT)
   }
+
   createDraftPoint({
     point,
     origin,
@@ -461,7 +486,7 @@ export class SceneEntities {
       scale,
       theme: this.sceneInfra._theme,
       // default is 12, this makes the draft point pop a bit more,
-      // especially when snapping to the startProfileAt handle as it's it was the exact same size
+      // especially when snapping to the startProfile handle as it's it was the exact same size
       size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)
@@ -612,7 +637,6 @@ export class SceneEntities {
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
-          sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           [snappedClickPoint.x, snappedClickPoint.y],
@@ -656,7 +680,10 @@ export class SceneEntities {
     variableDeclarationName: string
   }> {
     const prepared = this.prepareTruncatedAst(sketchNodePaths, maybeModdedAst)
-    if (err(prepared)) return Promise.reject(prepared)
+    if (err(prepared)) {
+      this.tearDownSketch({ removeAxis: false })
+      return Promise.reject(prepared)
+    }
     const { truncatedAst, variableDeclarationName } = prepared
 
     const { execState } = await executeAstMock({
@@ -665,7 +692,6 @@ export class SceneEntities {
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
-      ast: maybeModdedAst,
       variables: execState.variables,
       kclManager: this.kclManager,
     })
@@ -682,6 +708,8 @@ export class SceneEntities {
     const scale = this.sceneInfra.getClientSceneScaleFactor(dummy)
 
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
+    this.sceneInfra.pauseRendering()
+    this.tearDownSketch({ removeAxis: false })
 
     for (const sketchInfo of sketchesInfo) {
       const { sketch } = sketchInfo
@@ -689,10 +717,7 @@ export class SceneEntities {
         maybeModdedAst,
         sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
       )
-      if (
-        ['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) ===
-        false
-      ) {
+      if (!['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type)) {
         const _profileStart = createProfileStartHandle({
           from: sketch.start.from,
           id: sketch.start.__geoMeta.id,
@@ -710,6 +735,18 @@ export class SceneEntities {
         }
         group.add(_profileStart)
         this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: _profileStart,
+            group: _profileStart,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
@@ -748,12 +785,16 @@ export class SceneEntities {
         )
 
         let seg: Group
-        const _node1 = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+        const _node1 = getNodeFromPath<Node<CallExpressionKw>>(
           maybeModdedAst,
           segPathToNode,
-          ['CallExpression', 'CallExpressionKw']
+          ['CallExpressionKw']
         )
-        if (err(_node1)) return
+        if (err(_node1)) {
+          this.tearDownSketch({ removeAxis: false })
+          this.sceneInfra.resumeRendering()
+          return
+        }
         const callExpName = _node1.node?.callee?.name.name
 
         const initSegment =
@@ -849,6 +890,9 @@ export class SceneEntities {
     )
     position && this.intersectionPlane.position.set(...position)
     this.sceneInfra.scene.add(group)
+
+    this.sceneInfra.resumeRendering()
+
     this.sceneInfra.camControls.enableRotate = false
     this.sceneInfra.overlayCallbacks(callbacks)
 
@@ -857,6 +901,7 @@ export class SceneEntities {
       variableDeclarationName,
     }
   }
+
   updateAstAndRejigSketch = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -868,7 +913,6 @@ export class SceneEntities {
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
       sketchEntryNodePath,
@@ -903,8 +947,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArc' = 'line',
-    shouldTearDown = true
+    segmentName: 'line' | 'tangentialArc' = 'line'
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
 
@@ -942,7 +985,6 @@ export class SceneEntities {
 
     const draftExpressionsIndices = { start: index, end: index }
 
-    if (shouldTearDown) this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -953,6 +995,8 @@ export class SceneEntities {
       position: origin,
       maybeModdedAst: modifiedAst,
       draftExpressionsIndices,
+    }).catch(() => {
+      return { truncatedAst: modifiedAst }
     })
     this.sceneInfra.setCallbacks({
       onClick: async (args) => {
@@ -977,7 +1021,6 @@ export class SceneEntities {
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
-          ast: this.kclManager.ast,
           variables: this.kclManager.variables,
           kclManager: this.kclManager,
         })
@@ -987,13 +1030,18 @@ export class SceneEntities {
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
           const originCoords = createArrayExpression([
-            createCallExpressionStdLib('profileStartX', [
+            createCallExpressionStdLibKw(
+              'profileStartX',
               createPipeSubstitution(),
-            ]),
-            createCallExpressionStdLib('profileStartY', [
+              []
+            ),
+            createCallExpressionStdLibKw(
+              'profileStartY',
               createPipeSubstitution(),
-            ]),
+              []
+            ),
           ])
+
           modifiedAst = addCallExpressionsToPipe({
             node: this.kclManager.ast,
             variables: this.kclManager.variables,
@@ -1016,22 +1064,25 @@ export class SceneEntities {
           })
           if (trap(modifiedAst)) return Promise.reject(modifiedAst)
         } else if (intersection2d) {
-          const intersectsYAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === Y_AXIS
-          )
-          const intersectsXAxis = args.intersects.find(
-            (sceneObject) => sceneObject.object.name === X_AXIS
+          const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
+
+          let {
+            snappedPoint,
+            snappedToTangent,
+            intersectsXAxis,
+            intersectsYAxis,
+            negativeTangentDirection,
+          } = this.getSnappedDragPoint(
+            intersection2d,
+            args.intersects,
+            args.mouseEvent,
+            Object.values(this.activeSegments).at(-1)
           )
 
-          const lastSegment = sketch.paths.slice(-1)[0] || sketch.start
-          const snappedPoint = {
-            x: intersectsYAxis ? 0 : intersection2d.x,
-            y: intersectsXAxis ? 0 : intersection2d.y,
-          }
           // Get the angle between the previous segment (or sketch start)'s end and this one's
           const angle = Math.atan2(
-            snappedPoint.y - lastSegment.to[1],
-            snappedPoint.x - lastSegment.to[0]
+            snappedPoint[1] - lastSegment.to[1],
+            snappedPoint[0] - lastSegment.to[0]
           )
 
           const isHorizontal =
@@ -1043,6 +1094,12 @@ export class SceneEntities {
             ANGLE_SNAP_THRESHOLD_DEGREES
 
           let resolvedFunctionName: ToolTip = 'line'
+          const snaps = {
+            previousArcTag: '',
+            negativeTangentDirection,
+            xAxis: !!intersectsXAxis,
+            yAxis: !!intersectsYAxis,
+          }
 
           // This might need to become its own function if we want more
           // case-based logic for different segment types
@@ -1051,27 +1108,46 @@ export class SceneEntities {
             segmentName === 'tangentialArc'
           ) {
             resolvedFunctionName = 'tangentialArc'
+          } else if (snappedToTangent) {
+            // Generate tag for previous arc segment and use it for the angle of angledLine:
+            //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
+            //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
+
+            const previousSegmentPathToNode = getNodePathFromSourceRange(
+              modifiedAst,
+              sourceRangeFromRust(lastSegment.__geoMeta.sourceRange)
+            )
+            const taggedAstResult = mutateAstWithTagForSketchSegment(
+              modifiedAst,
+              previousSegmentPathToNode
+            )
+            if (trap(taggedAstResult)) return Promise.reject(taggedAstResult)
+
+            modifiedAst = taggedAstResult.modifiedAst
+            snaps.previousArcTag = taggedAstResult.tag
+            resolvedFunctionName = 'angledLine'
           } else if (isHorizontal) {
             // If the angle between is 0 or 180 degrees (+/- the snapping angle), make the line an xLine
             resolvedFunctionName = 'xLine'
           } else if (isVertical) {
             // If the angle between is 90 or 270 degrees (+/- the snapping angle), make the line a yLine
             resolvedFunctionName = 'yLine'
-          } else if (snappedPoint.x === 0 || snappedPoint.y === 0) {
+          } else if (snappedPoint[0] === 0 || snappedPoint[1] === 0) {
             // We consider a point placed on axes or origin to be absolute
             resolvedFunctionName = 'lineTo'
           }
 
           const tmp = addNewSketchLn({
-            node: this.kclManager.ast,
+            node: modifiedAst,
             variables: this.kclManager.variables,
             input: {
               type: 'straight-segment',
               from: [lastSegment.to[0], lastSegment.to[1]],
-              to: [snappedPoint.x, snappedPoint.y],
+              to: [snappedPoint[0], snappedPoint[1]],
             },
             fnName: resolvedFunctionName,
             pathToNode: sketchEntryNodePath,
+            snaps,
           })
           if (trap(tmp)) return Promise.reject(tmp)
           modifiedAst = tmp.modifiedAst
@@ -1118,17 +1194,16 @@ export class SceneEntities {
           intersects: args.intersects,
           sketchNodePaths,
           sketchEntryNodePath,
-          planeNodePath,
           draftInfo: {
             truncatedAst,
             variableDeclarationName,
           },
+          mouseEvent: args.mouseEvent,
         })
       },
     })
   }
   setupDraftRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1154,13 +1229,19 @@ export class SceneEntities {
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
 
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
@@ -1193,7 +1274,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
 
     const code = recast(_ast)
@@ -1217,11 +1298,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1263,10 +1343,11 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         if (!intersectionPoint?.twoD) return
-        const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
-          intersection2d: intersectionPoint.twoD,
-          intersects: args.intersects,
-        })
+        const { snappedPoint, isSnapped } = this.getSnappedDragPoint(
+          intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        )
         if (isSnapped) {
           this.positionDraftPoint({
             snappedPoint: new Vector2(...snappedPoint),
@@ -1331,7 +1412,6 @@ export class SceneEntities {
     }
   }
   setupDraftCenterRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1354,15 +1434,22 @@ export class SceneEntities {
     // first create just the variable declaration, as that's
     // all we want the user to see in the editor
     const tag = findUniqueName(_ast, 'rectangleSegmentA')
+
     const newDeclaration = createVariableDeclaration(
       varName,
-      createCallExpressionStdLib('startProfileAt', [
-        createArrayExpression([
-          createLiteral(roundOff(rectangleOrigin[0])),
-          createLiteral(roundOff(rectangleOrigin[1])),
-        ]),
+      createCallExpressionStdLibKw(
+        'startProfile',
         createLocalName(varDec.node.id.name),
-      ])
+        [
+          createLabeledArg(
+            ARG_AT,
+            createArrayExpression([
+              createLiteral(roundOff(rectangleOrigin[0])),
+              createLiteral(roundOff(rectangleOrigin[1])),
+            ])
+          ),
+        ]
+      )
     )
     const insertIndex = getInsertIndex(sketchNodePaths, planeNodePath, 'end')
 
@@ -1394,7 +1481,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
     __recastAst = parse(code)
@@ -1417,11 +1504,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1531,7 +1617,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircleThreePoint = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1594,13 +1679,11 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1718,7 +1801,6 @@ export class SceneEntities {
   setupDraftArc = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -1781,7 +1863,6 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -1796,14 +1877,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1872,14 +1947,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -1956,7 +2023,6 @@ export class SceneEntities {
   setupDraftArcThreePoint = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -2012,7 +2078,6 @@ export class SceneEntities {
     // Get the insertion index from the modified path
     const insertIndex = Number(mod.pathToNode[1][0])
 
-    this.tearDownSketch({ removeAxis: false })
     this.sceneInfra.resetMouseListeners()
 
     const { truncatedAst } = await this.setupSketch({
@@ -2029,14 +2094,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2046,10 +2105,11 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
-        const maybeSnapToAxis = this.getSnappedDragPoint({
-          intersection2d: args.intersectionPoint.twoD,
-          intersects: args.intersects,
-        }).snappedPoint
+        const maybeSnapToAxis = this.getSnappedDragPoint(
+          args.intersectionPoint.twoD,
+          args.intersects,
+          args.mouseEvent
+        ).snappedPoint
 
         const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
           ? new Vector2(...maybeSnapToAxis)
@@ -2104,14 +2164,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2148,36 +2200,36 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: this.getSnappedDragPoint({
-                intersection2d: args.intersectionPoint.twoD,
-                intersects: args.intersects,
-              }).snappedPoint,
+              p3: this.getSnappedDragPoint(
+                args.intersectionPoint.twoD,
+                args.intersects,
+                args.mouseEvent
+              ).snappedPoint,
             }
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
           if (intersectsProfileStart) {
             const originCoords = createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
+                []
+              ),
             ])
-            const arcToCallExp = getNodeFromPath<CallExpression>(
+
+            const arcToCallExp = getNodeFromPath<CallExpressionKw>(
               modded,
               mod.pathToNode,
-              'CallExpression'
+              'CallExpressionKw'
             )
             if (err(arcToCallExp)) return
-            const firstArg = arcToCallExp.node.arguments[0]
-            if (firstArg.type !== 'ObjectExpression') return
-            for (const prop of firstArg.properties) {
-              if (prop.key.type === 'Identifier' && prop.key.name === 'end') {
-                prop.value = originCoords
-              }
-            }
+            mutateKwArgOnly(ARG_END_ABSOLUTE, arcToCallExp.node, originCoords)
 
             const moddedResult = addCloseToPipe({
               node: modded,
@@ -2216,7 +2268,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -2285,11 +2336,10 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2432,7 +2482,6 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onDragEnd: async () => {
         if (addingNewSegmentStatus !== 'nothing') {
-          this.tearDownSketch({ removeAxis: false })
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           this.setupSketch({
             sketchEntryNodePath,
@@ -2472,7 +2521,6 @@ export class SceneEntities {
 
           const sketch = sketchFromPathToNode({
             pathToNode,
-            ast: this.kclManager.ast,
             variables: this.kclManager.variables,
             kclManager: this.kclManager,
           })
@@ -2507,7 +2555,6 @@ export class SceneEntities {
               mod.modifiedAst
             )
             if (err(didReParse)) return
-            this.tearDownSketch({ removeAxis: false })
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.setupSketch({
               sketchEntryNodePath: pathToNode,
@@ -2524,10 +2571,10 @@ export class SceneEntities {
             this.onDragSegment({
               sketchNodePaths,
               sketchEntryNodePath: pathToNodeForNewSegment,
-              planeNodePath,
               object: selected,
               intersection2d: intersectionPoint.twoD,
               intersects,
+              mouseEvent: mouseEvent,
             })
           }
           return
@@ -2536,10 +2583,10 @@ export class SceneEntities {
         this.onDragSegment({
           object: selected,
           intersection2d: intersectionPoint.twoD,
-          planeNodePath,
           intersects,
           sketchNodePaths,
           sketchEntryNodePath,
+          mouseEvent: mouseEvent,
         })
       },
       onMove: () => {},
@@ -2578,13 +2625,19 @@ export class SceneEntities {
       this.kclManager.lastSuccessfulVariables,
       draftSegment
     )
-  getSnappedDragPoint({
-    intersects,
-    intersection2d,
-  }: {
-    intersects: Intersection<Object3D<Object3DEventMap>>[]
-    intersection2d: Vector2
-  }): { snappedPoint: [number, number]; isSnapped: boolean } {
+
+  getSnappedDragPoint(
+    pos: Vector2,
+    intersects: Intersection<Object3D<Object3DEventMap>>[],
+    mouseEvent: MouseEvent,
+    // During draft segment mouse move:
+    //  - the  three.js object currently being dragged: the new draft segment or existing segment (may not be the last in activeSegments)
+    // When placing the draft segment::
+    // - the last segment in activeSegments
+    currentObject?: Object3D | Group
+  ) {
+    let snappedPoint: Coords2d = [pos.x, pos.y]
+
     const intersectsYAxis = intersects.find(
       (sceneObject) => sceneObject.object.name === Y_AXIS
     )
@@ -2592,16 +2645,116 @@ export class SceneEntities {
       (sceneObject) => sceneObject.object.name === X_AXIS
     )
 
-    const snappedPoint = new Vector2(
-      intersectsYAxis ? 0 : intersection2d.x,
-      intersectsXAxis ? 0 : intersection2d.y
-    )
+    // Snap to previous segment's tangent direction when drawing a straight segment
+    let snappedToTangent = false
+    let negativeTangentDirection = false
+
+    const disableTangentSnapping = mouseEvent.ctrlKey || mouseEvent.altKey
+    const forceDirectionSnapping = mouseEvent.shiftKey
+    if (!disableTangentSnapping) {
+      const segments: SafeArray<Group> = Object.values(this.activeSegments) // Using the order in the object feels wrong
+      const currentIndex =
+        currentObject instanceof Group ? segments.indexOf(currentObject) : -1
+      const current = segments[currentIndex]
+      if (
+        current?.userData.type === STRAIGHT_SEGMENT &&
+        // This draft check is not strictly necessary currently, but we only want
+        // to snap when drawing a new segment, this makes that more robust.
+        current?.userData.draft
+      ) {
+        const prev = segments[currentIndex - 1]
+        if (prev && ARC_SEGMENT_TYPES.includes(prev.userData.type)) {
+          const snapDirection = findTangentDirection(prev)
+          if (snapDirection) {
+            const SNAP_TOLERANCE_PIXELS = 8 * window.devicePixelRatio
+            const SNAP_MIN_DISTANCE_PIXELS = 10 * window.devicePixelRatio
+            const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
+
+            // See if snapDirection intersects with any of the axes
+            if (intersectsXAxis || intersectsYAxis) {
+              let intersectionPoint: Coords2d | undefined
+              if (intersectsXAxis && intersectsYAxis) {
+                // Current mouse position intersects with both axes (origin) -> that has precedence over tangent so we snap to the origin.
+                intersectionPoint = [0, 0]
+              } else {
+                // Intersects only one axis
+                const axisLine: [Coords2d, Coords2d] = intersectsXAxis
+                  ? [
+                      [0, 0],
+                      [1, 0],
+                    ]
+                  : [
+                      [0, 0],
+                      [0, 1],
+                    ]
+                // See if that axis line intersects with the tangent direction
+                // Note: this includes both positive and negative tangent directions as it just checks 2 lines.
+                intersectionPoint = calculateIntersectionOfTwoLines({
+                  line1: axisLine,
+                  line2Angle: getAngle([0, 0], snapDirection),
+                  line2Point: current.userData.from,
+                })
+              }
+
+              // If yes, see if that intersection point is within tolerance and if yes snap to it.
+              if (
+                intersectionPoint &&
+                getLength(intersectionPoint, snappedPoint) / orthoFactor <
+                  SNAP_TOLERANCE_PIXELS
+              ) {
+                snappedPoint = intersectionPoint
+                snappedToTangent = true
+              }
+            }
+            if (!snappedToTangent) {
+              // Otherwise, try to snap to the tangent direction, in both positive and negative directions
+              const { closestPoint, t } = closestPointOnRay(
+                prev.userData.to,
+                snapDirection,
+                snappedPoint,
+                true
+              )
+              if (
+                forceDirectionSnapping ||
+                (this.sceneInfra.screenSpaceDistance(
+                  closestPoint,
+                  snappedPoint
+                ) < SNAP_TOLERANCE_PIXELS &&
+                  // We only want to snap to the tangent direction if the mouse has moved enough to avoid quick jumps
+                  // at the beginning of the drag
+                  this.sceneInfra.screenSpaceDistance(
+                    current.userData.from,
+                    current.userData.to
+                  ) > SNAP_MIN_DISTANCE_PIXELS)
+              ) {
+                snappedPoint = closestPoint
+                snappedToTangent = true
+                negativeTangentDirection = t < 0
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Snap to the main axes if there was no snapping to tangent direction
+    if (!snappedToTangent) {
+      snappedPoint = [
+        intersectsYAxis ? 0 : snappedPoint[0],
+        intersectsXAxis ? 0 : snappedPoint[1],
+      ]
+    }
 
     return {
-      snappedPoint: [snappedPoint.x, snappedPoint.y],
-      isSnapped: !!(intersectsYAxis || intersectsXAxis),
+      isSnapped: !!(intersectsYAxis || intersectsXAxis || snappedToTangent),
+      snappedToTangent,
+      negativeTangentDirection,
+      snappedPoint,
+      intersectsXAxis,
+      intersectsYAxis,
     }
   }
+
   positionDraftPoint({
     origin,
     yAxis,
@@ -2634,6 +2787,7 @@ export class SceneEntities {
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }
+
   maybeSnapProfileStartIntersect2d({
     sketchEntryNodePath,
     intersects,
@@ -2654,25 +2808,26 @@ export class SceneEntities {
       : _intersection2d
     return intersection2d
   }
+
   onDragSegment({
     object,
     intersection2d: _intersection2d,
     sketchEntryNodePath,
     sketchNodePaths,
-    planeNodePath,
     draftInfo,
     intersects,
+    mouseEvent,
   }: {
     object: Object3D<Object3DEventMap>
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
-    planeNodePath: PathToNode
     intersects: Intersection<Object3D<Object3DEventMap>>[]
     draftInfo?: {
       truncatedAst: Node<Program>
       variableDeclarationName: string
     }
+    mouseEvent: MouseEvent
   }) {
     const intersection2d = this.maybeSnapProfileStartIntersect2d({
       sketchEntryNodePath,
@@ -2705,30 +2860,28 @@ export class SceneEntities {
       group.userData?.from?.[0],
       group.userData?.from?.[1],
     ]
-    const dragTo = this.getSnappedDragPoint({
-      intersects,
+    const { snappedPoint: dragTo, snappedToTangent } = this.getSnappedDragPoint(
       intersection2d,
-    }).snappedPoint
+      intersects,
+      mouseEvent,
+      object
+    )
     let modifiedAst = draftInfo
       ? draftInfo.truncatedAst
       : { ...this.kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
-      structuredClone(pathToNode)
-    nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-      Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-      Number(sketchNodePaths[0][1][0])
+      getPathNormalisedForTruncatedAst(pathToNode, sketchNodePaths)
 
-    const _node = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
       draftInfo ? nodePathWithCorrectedIndexForTruncatedAst : pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (trap(_node)) return
     const node = _node.node
 
-    if (node.type !== 'CallExpression' && node.type !== 'CallExpressionKw')
-      return
+    if (node.type !== 'CallExpressionKw') return
 
     let modded:
       | {
@@ -2918,11 +3071,10 @@ export class SceneEntities {
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
-        ast: truncatedAst,
         variables,
         kclManager: this.kclManager,
       })
-      const callBacks: (() => SegmentOverlayPayload | null)[] = []
+      const callbacks: (() => SegmentOverlayPayload | null)[] = []
       for (const sketchInfo of sketchesInfo) {
         const { sketch, pathToNode: _pathToNode } = sketchInfo
         const varDecIndex = Number(_pathToNode[1][0])
@@ -2938,10 +3090,23 @@ export class SceneEntities {
           varDecIndex,
           modifiedAst,
           orthoFactor,
-          sketch
+          sketch,
+          snappedToTangent
         )
 
-        callBacks.push(
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: group,
+            group: group,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+        callbacks.push(startProfileCallBack)
+
+        callbacks.push(
           ...sgPaths.map((group, index) =>
             this.updateSegment(
               group,
@@ -2949,12 +3114,13 @@ export class SceneEntities {
               varDecIndex,
               modifiedAst,
               orthoFactor,
-              sketch
+              sketch,
+              snappedToTangent
             )
           )
         )
       }
-      this.sceneInfra.overlayCallbacks(callBacks)
+      this.sceneInfra.overlayCallbacks(callbacks)
     })().catch(reportRejection)
   }
 
@@ -2967,6 +3133,7 @@ export class SceneEntities {
    * @param modifiedAst
    * @param orthoFactor
    * @param sketch
+   * @param snappedToTangent if currently drawn draft segment is snapping to previous arc tangent
    */
   updateSegment = (
     segment: Path | Sketch['start'],
@@ -2974,7 +3141,8 @@ export class SceneEntities {
     varDecIndex: number,
     modifiedAst: Program,
     orthoFactor: number,
-    sketch: Sketch
+    sketch: Sketch,
+    snappedToTangent: boolean = false
   ): (() => SegmentOverlayPayload | null) => {
     const segPathToNode = getNodePathFromSourceRange(
       modifiedAst,
@@ -2998,6 +3166,7 @@ export class SceneEntities {
       type: 'straight-segment',
       from: segment.from,
       to: segment.to,
+      snap: snappedToTangent,
     }
     let update: SegmentUtils['update'] | null = null
     if (type === TANGENTIAL_ARC_TO_SEGMENT) {
@@ -3095,9 +3264,11 @@ export class SceneEntities {
       })
     })
   }
+
   removeSketchGrid() {
     if (this.axisGroup) this.sceneInfra.scene.remove(this.axisGroup)
   }
+
   tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
@@ -3125,6 +3296,7 @@ export class SceneEntities {
     this.sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
   }
+
   mouseEnterLeaveCallbacks() {
     return {
       onMouseEnter: ({ selected, dragSelected }: OnMouseEnterLeaveArgs) => {
@@ -3143,12 +3315,11 @@ export class SceneEntities {
           if (trap(pResult) || !resultIsOk(pResult))
             return Promise.reject(pResult)
           const updatedAst = pResult.program
-          const _node = getNodeFromPath<
-            Node<CallExpression | CallExpressionKw>
-          >(updatedAst, parent.userData.pathToNode, [
-            'CallExpressionKw',
-            'CallExpression',
-          ])
+          const _node = getNodeFromPath<Node<CallExpressionKw>>(
+            updatedAst,
+            parent.userData.pathToNode,
+            ['CallExpressionKw']
+          )
           if (trap(_node, { suppress: true })) return
           const node = _node.node
           this.editorManager.setHighlightRange([
@@ -3234,7 +3405,7 @@ export class SceneEntities {
         }
         this.editorManager.setHighlightRange([defaultSourceRange()])
       },
-      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+      onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
         this.editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
@@ -3333,6 +3504,7 @@ export class SceneEntities {
       },
     }
   }
+
   resetOverlays() {
     this.sceneInfra.modelingSend({
       type: 'Set Segment Overlays',
@@ -3350,7 +3522,7 @@ export class SceneEntities {
     >
   }> {
     if (sketch.on.type === 'plane') {
-      const zAxis = sketch?.on.zAxis
+      const zAxis = crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
       return {
         quat: getQuaternionFromZAxis(massageFormats(zAxis)),
         sketchDetails: {
@@ -3405,11 +3577,20 @@ export class SceneEntities {
         entity_id: entityId,
       },
     })
-    const resp = await this.engineCommandManager.sendSceneCommand({
+    let resp = await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: { type: 'get_sketch_mode_plane' },
     })
+
+    if (!resp) {
+      return Promise.reject('no response')
+    }
+
+    if (isArray(resp)) {
+      resp = resp[0]
+    }
+
     const faceInfo =
       resp?.success &&
       resp?.resp.type === 'modeling' &&
@@ -3561,7 +3742,6 @@ function prepareTruncatedAst(
       (updatedSrcRangeAst.body[bodyStartIndex] as VariableDeclaration)
         .declaration.init as PipeExpression
     ).body.slice(-1)[0]
-
     ;(
       (_ast.body[bodyStartIndex] as VariableDeclaration).declaration
         .init as PipeExpression
@@ -3589,12 +3769,10 @@ function prepareTruncatedAst(
 
 function sketchFromPathToNode({
   pathToNode,
-  ast,
   variables,
   kclManager,
 }: {
   pathToNode: PathToNode
-  ast: Program
   variables: VariableMap
   kclManager: KclManager
 }): Sketch | null | Error {
@@ -3644,12 +3822,14 @@ export function getSketchQuaternion(
 ): Quaternion | Error {
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
-    ast: kclManager.ast,
     variables: kclManager.variables,
     kclManager,
   })
   if (err(sketch)) return sketch
-  const zAxis = sketch?.on.zAxis || sketchNormalBackUp
+  const zAxis =
+    sketch?.on.xAxis && sketch?.on.yAxis
+      ? crossProduct(sketch?.on.xAxis, sketch?.on.yAxis)
+      : sketchNormalBackUp
   if (!zAxis) return Error('Sketch zAxis not found')
 
   return getQuaternionFromZAxis(massageFormats(zAxis))
@@ -3675,18 +3855,18 @@ export function getQuaternionFromZAxis(zAxis: Vector3): Quaternion {
   return quaternion
 }
 
-function massageFormats(a: Vec3Array | Point3d): Vector3 {
+function massageFormats(
+  a: Vec3Array | { x: number; y: number; z: number }
+): Vector3 {
   return isArray(a) ? new Vector3(a[0], a[1], a[2]) : new Vector3(a.x, a.y, a.z)
 }
 
 function getSketchesInfo({
   sketchNodePaths,
-  ast,
   variables,
   kclManager,
 }: {
   sketchNodePaths: PathToNode[]
-  ast: Node<Program>
   variables: VariableMap
   kclManager: KclManager
 }): {
@@ -3700,7 +3880,6 @@ function getSketchesInfo({
   for (const path of sketchNodePaths) {
     const sketch = sketchFromPathToNode({
       pathToNode: path,
-      ast,
       variables,
       kclManager,
     })
@@ -3713,6 +3892,7 @@ function getSketchesInfo({
   }
   return sketchesInfo
 }
+
 /**
  * Given a SourceRange [x,y,boolean] create a Selections object which contains
  * graphSelections with the artifact and codeRef.
@@ -3746,4 +3926,37 @@ function isGroupStartProfileForCurrentProfile(sketchEntryNodePath: PathToNode) {
       groupExpressionIndex === sketchEntryNodePath[1][0]
     return isProfileStartOfCurrentExpr
   }
+}
+
+// Returns the 2D tangent direction vector at the end of the segmentGroup if it's an arc.
+function findTangentDirection(segmentGroup: Group) {
+  let tangentDirection: Coords2d | undefined
+  if (segmentGroup.userData.type === TANGENTIAL_ARC_TO_SEGMENT) {
+    const prevSegment = segmentGroup.userData.prevSegment
+    const arcInfo = getTangentialArcToInfo({
+      arcStartPoint: segmentGroup.userData.from,
+      arcEndPoint: segmentGroup.userData.to,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
+      obtuse: true,
+    })
+    const tangentAngle =
+      arcInfo.endAngle + (Math.PI / 2) * (arcInfo.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else if (
+    segmentGroup.userData.type === ARC_SEGMENT ||
+    segmentGroup.userData.type === THREE_POINT_ARC_SEGMENT
+  ) {
+    const tangentAngle =
+      deg2Rad(
+        getAngle(segmentGroup.userData.center, segmentGroup.userData.to)
+      ) +
+      (Math.PI / 2) * (segmentGroup.userData.ccw ? 1 : -1)
+    tangentDirection = [Math.cos(tangentAngle), Math.sin(tangentAngle)]
+  } else {
+    console.warn(
+      'Unsupported segment type for tangent direction calculation: ',
+      segmentGroup.userData.type
+    )
+  }
+  return tangentDirection
 }

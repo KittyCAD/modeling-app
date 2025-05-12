@@ -4,7 +4,7 @@ description: Variables in memory after executing computed_var.kcl
 ---
 {
   "arr": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -116,10 +116,6 @@ description: Variables in memory after executing computed_var.kcl
         "type": "Degrees"
       }
     }
-  },
-  "p": {
-    "type": "String",
-    "value": "foo"
   },
   "ten": {
     "type": "Number",

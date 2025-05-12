@@ -9,7 +9,7 @@ import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor, settingsActor } from '@src/lib/singletons'
 
 import styles from './KclEditorMenu.module.css'
 
@@ -86,17 +86,23 @@ export const KclEditorMenu = ({ children }: PropsWithChildren) => {
           <Menu.Item>
             <button
               onClick={() => {
+                const currentProject =
+                  settingsActor.getSnapshot().context.currentProject
                 commandBarActor.send({
                   type: 'Find and select command',
                   data: {
-                    groupId: 'code',
-                    name: 'open-kcl-example',
+                    name: 'add-kcl-file-to-project',
+                    groupId: 'application',
+                    argDefaultValues: {
+                      method: 'existingProject',
+                      projectName: currentProject?.name,
+                    },
                   },
                 })
               }}
               className={styles.button}
             >
-              <span>Load a sample model</span>
+              <span>Add file to project</span>
             </button>
           </Menu.Item>
           <Menu.Item>

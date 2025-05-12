@@ -1,5 +1,5 @@
-import type { BrowserWindow } from 'electron'
 import os from 'node:os'
+import type { BrowserWindow } from 'electron'
 
 import { typeSafeWebContentsSend } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
@@ -13,12 +13,12 @@ export const projectFileRole = (
     label: 'File',
     submenu: [
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
@@ -34,6 +34,25 @@ export const projectFileRole = (
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
       // Appears to be only Windows and Mac OS specific. Linux does not have support
+      { type: 'separator' },
+      {
+        label: 'Add file to project',
+        id: 'File.Add file to project',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Add file to project',
+          })
+        },
+      },
+      {
+        label: 'Create with Zoo Text-To-CAD',
+        id: 'Design.Create with Zoo Text-To-CAD',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Design.Create with Zoo Text-To-CAD',
+          })
+        },
+      },
       { type: 'separator' },
       {
         label: 'Preferences',
@@ -125,12 +144,12 @@ export const modelingFileRole = (
       //   },
       // },
       {
-        label: 'New project',
-        id: 'File.New project',
+        label: 'Create project',
+        id: 'File.Create project',
         accelerator: 'CommandOrControl+N',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.New project',
+            menuLabel: 'File.Create project',
           })
         },
       },
@@ -148,21 +167,11 @@ export const modelingFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
-        label: 'Load a sample model',
-        id: 'File.Load a sample model',
+        label: 'Add file to project',
+        id: 'File.Add file to project',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Load a sample model',
-          })
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Insert from project file',
-        id: 'File.Insert from project file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Insert from project file',
+            menuLabel: 'File.Add file to project',
           })
         },
       },
@@ -176,11 +185,11 @@ export const modelingFileRole = (
         },
       },
       {
-        label: 'Share current part (via Zoo link)',
-        id: 'File.Share current part (via Zoo link)',
+        label: 'Share part via Zoo link',
+        id: 'File.Share part via Zoo link',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'File.Share current part (via Zoo link)',
+            menuLabel: 'File.Share part via Zoo link',
           })
         },
       },

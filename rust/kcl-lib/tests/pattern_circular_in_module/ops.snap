@@ -6,32 +6,35 @@ description: Operations executed pattern_circular_in_module.kcl
   {
     "type": "GroupBegin",
     "group": {
+      "type": "ModuleInstance",
+      "name": "thing.kcl",
+      "moduleId": 0
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
       "type": "FunctionCall",
       "name": "thing",
-      "functionSourceRange": [
-        15,
-        378,
-        5
-      ],
+      "functionSourceRange": [],
       "unlabeledArg": null,
       "labeledArgs": {}
     },
     "sourceRange": []
   },
   {
-    "labeledArgs": {
-      "planeOrSolid": {
-        "value": {
-          "type": "Plane",
-          "artifact_id": "[uuid]"
-        },
-        "sourceRange": []
-      }
-    },
+    "labeledArgs": {},
     "name": "startSketchOn",
     "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -87,6 +90,9 @@ description: Operations executed pattern_circular_in_module.kcl
       },
       "sourceRange": []
     }
+  },
+  {
+    "type": "GroupEnd"
   },
   {
     "type": "GroupEnd"

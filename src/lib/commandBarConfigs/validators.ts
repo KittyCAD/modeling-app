@@ -1,9 +1,8 @@
 import type { Models } from '@kittycad/lib'
-import type { ApiError_type } from '@kittycad/lib/dist/types/src/models'
 
 import type { Selections } from '@src/lib/selections'
 import { engineCommandManager, kclManager } from '@src/lib/singletons'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
 export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
@@ -24,7 +23,14 @@ export const disableDryRunWithRetry = async (numberOfRetries = 3) => {
 }
 
 // Takes a callback function and wraps it around enable_dry_run and disable_dry_run
-export const dryRunWrapper = async (callback: () => Promise<any>) => {
+export const dryRunWrapper = async (
+  callback: () => Promise<
+    | Models['WebSocketResponse_type']
+    | [Models['WebSocketResponse_type']]
+    | undefined
+    | null
+  >
+): Promise<[Models['WebSocketResponse_type']] | undefined> => {
   // Gotcha: What about race conditions?
   try {
     await engineCommandManager.sendSceneCommand({
@@ -33,7 +39,15 @@ export const dryRunWrapper = async (callback: () => Promise<any>) => {
       cmd: { type: 'enable_dry_run' },
     })
     const result = await callback()
-    return result
+    if (!result) {
+      return undefined
+    }
+
+    if (isArray(result)) {
+      return result
+    }
+
+    return [result]
   } catch (e) {
     console.error(e)
   } finally {
@@ -48,13 +62,24 @@ function isSelections(selections: unknown): selections is Selections {
   )
 }
 
-export function parseEngineErrorMessage(engineError: string) {
-  const parts = engineError.split('engine error: ')
-  if (parts.length < 2) {
+export function parseEngineErrorMessage(
+  engineErrors?: [Models['WebSocketResponse_type']]
+): string | undefined {
+  if (!engineErrors) {
     return undefined
   }
 
-  const errors = JSON.parse(parts[1]) as ApiError_type[]
+  if (!engineErrors[0]) {
+    return undefined
+  }
+
+  const engineError = engineErrors[0]
+
+  if (engineError.success) {
+    return undefined
+  }
+
+  const errors = engineError.errors
   if (!errors[0]) {
     return undefined
   }
@@ -69,11 +94,12 @@ export const revolveAxisValidator = async ({
   data: { [key: string]: Selections }
   context: CommandBarContext
 }): Promise<boolean | string> => {
-  if (!isSelections(context.argumentsToSubmit.selection)) {
+  if (!isSelections(context.argumentsToSubmit.sketches)) {
     return 'Unable to revolve, selections are missing'
   }
+  // Gotcha: this validation only works for the first sketch
   const artifact =
-    context.argumentsToSubmit.selection.graphSelections[0].artifact
+    context.argumentsToSubmit.sketches.graphSelections[0].artifact
 
   if (!artifact) {
     return 'Unable to revolve, sketch not found'
@@ -110,11 +136,13 @@ export const revolveAxisValidator = async ({
         target: sketchSelection,
         // Gotcha: Playwright will fail with larger tolerances, need to use a smaller one.
         tolerance: 1e-7,
+        // WARNING: I'm not sure this is what it should be.
+        opposite: 'None',
       },
     })
   }
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -128,16 +156,16 @@ export const loftValidator = async ({
   data: { [key: string]: Selections }
   context: CommandBarContext
 }): Promise<boolean | string> => {
-  if (!isSelections(data.selection)) {
+  if (!isSelections(data.sketches)) {
     return 'Unable to loft, selections are missing'
   }
-  const { selection } = data
+  const { sketches } = data
 
-  if (selection.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
+  if (sketches.graphSelections.some((s) => s.artifact?.type !== 'solid2d')) {
     return 'Unable to loft, some selection are not solid2ds'
   }
 
-  const sectionIds = data.selection.graphSelections.flatMap((s) =>
+  const sectionIds = sketches.graphSelections.flatMap((s) =>
     s.artifact?.type === 'solid2d' ? s.artifact.pathId : []
   )
 
@@ -163,7 +191,7 @@ export const loftValidator = async ({
     })
   }
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -218,7 +246,7 @@ export const shellValidator = async ({
   }
 
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 
@@ -231,15 +259,15 @@ export const sweepValidator = async ({
   data,
 }: {
   context: CommandBarContext
-  data: { trajectory: Selections }
+  data: { path: Selections }
 }): Promise<boolean | string> => {
-  if (!isSelections(data.trajectory)) {
+  if (!isSelections(data.path)) {
     console.log('Unable to sweep, selections are missing')
     return 'Unable to sweep, selections are missing'
   }
 
   // Retrieve the parent path from the segment selection directly
-  const trajectoryArtifact = data.trajectory.graphSelections[0].artifact
+  const trajectoryArtifact = data.path.graphSelections[0].artifact
   if (!trajectoryArtifact) {
     return "Unable to sweep, couldn't find the trajectory artifact"
   }
@@ -249,7 +277,7 @@ export const sweepValidator = async ({
   const trajectory = trajectoryArtifact.pathId
 
   // Get the former arg in the command bar flow, and retrieve the path from the solid2d directly
-  const targetArg = context.argumentsToSubmit['target'] as Selections
+  const targetArg = context.argumentsToSubmit['sketches'] as Selections
   const targetArtifact = targetArg.graphSelections[0].artifact
   if (!targetArtifact) {
     return "Unable to sweep, couldn't find the profile artifact"
@@ -280,7 +308,7 @@ export const sweepValidator = async ({
   }
 
   const result = await dryRunWrapper(command)
-  if (result?.success) {
+  if (result && result[0] && result[0].success) {
     return true
   }
 

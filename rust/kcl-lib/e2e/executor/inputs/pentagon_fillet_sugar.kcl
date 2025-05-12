@@ -1,38 +1,42 @@
-let triangleHeight = 200
-let plumbusLen = 100
-let radius = 80
-let circ = {angle_start: 0, angle_end: 360, radius: radius}
+triangleHeight = 200
+plumbusLen = 100
+radius = 80
 
-let triangleLen = 500
-const p = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+triangleLen = 500
+p = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> angledLine(angle = 60, length = triangleLen, tag = $a)
   |> angledLine(angle = 180, length = triangleLen, tag = $b)
   |> angledLine(angle = 300, length = triangleLen, tag = $c)
   |> extrude(length = triangleHeight)
 
-fn circl = (x, face) => {
+fn circl(@x, face) {
 return startSketchOn(p, face = face)
-  |> startProfileAt([x + radius, triangleHeight/2], %)
-  |> arc(circ, %,  $arc_tag)
+  |> startProfile(at = [x + radius, triangleHeight/2])
+    |> arc(
+         angleStart = 0,
+         angleEnd = 360,
+         radius = radius,
+         tag = $arc_tag,
+       )
   |> close()
 }
 
-const c1 = circl(-200,c)
-const plumbus1 =
+c1 = circl(-200, face = c)
+plumbus1 =
   c1
   |> extrude(length = plumbusLen)
   |> fillet(
        radius = 5,
        tags = [c1.tags.arc_tag, getOppositeEdge(c1.tags.arc_tag)]
      )
-const c2 = circl(200, a)
-const plumbus0 =
+c2 = circl(200, face = a)
+plumbus0 =
  c2
   |> extrude(length = plumbusLen)
   |> fillet(
        radius = 5,
        tags = [c2.tags.arc_tag, getOppositeEdge(c2.tags.arc_tag)]
-     , %)
+     )
 
 

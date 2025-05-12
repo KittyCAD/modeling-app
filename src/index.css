@@ -1,4 +1,4 @@
-@import './colors.css';
+@import "./colors.css";
 
 @tailwind base;
 @tailwind components;
@@ -131,13 +131,13 @@ input {
 }
 
 .mono {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 code {
-  font-family:
-    source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
 }
 
 /*
@@ -198,6 +198,7 @@ code {
 #code-mirror-override .cm-content {
   @apply caret-primary;
 }
+
 .dark #code-mirror-override .cm-content {
   @apply caret-chalkboard-10;
 }
@@ -206,11 +207,17 @@ code {
   outline: none;
 }
 
+.cm-rename-popup {
+  /* we want to overpower anything else */
+  z-index: 99999999999 !important;
+}
+
 @keyframes blink {
   0%,
   100% {
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
@@ -220,18 +227,22 @@ code {
   @apply bg-transparent !important;
 }
 
-#code-mirror-override .cm-tooltip {
+#code-mirror-override .cm-tooltip,
+.cm-tooltip {
   @apply text-xs shadow-md;
   @apply bg-chalkboard-10 text-chalkboard-80;
   @apply rounded-sm border-solid border border-chalkboard-40/30 border-l-liquid-10;
 }
 
-.dark #code-mirror-override .cm-tooltip {
+.dark #code-mirror-override .cm-tooltip,
+.cm-tooltip {
   @apply bg-chalkboard-110 text-chalkboard-40;
   @apply border-chalkboard-70/20 border-l-liquid-70;
 }
 
-#code-mirror-override .cm-tooltip-hover {
+#code-mirror-override .cm-tooltip-hover,
+#code-mirror-override .cm-signature-tooltip,
+.cm-signature-tooltip {
   @apply py-1 px-2 w-max max-w-md;
 }
 
@@ -249,10 +260,12 @@ code {
 #code-mirror-override .cm-tooltip-autocomplete li {
   @apply px-2 py-1;
 }
-#code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+
+#code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-10 text-liquid-110;
 }
-.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected='true'] {
+
+.dark #code-mirror-override .cm-tooltip-autocomplete li[aria-selected="true"] {
   @apply bg-liquid-100 text-liquid-20;
 }
 
@@ -286,12 +299,17 @@ code {
     @apply bg-chalkboard-20 dark:bg-chalkboard-90;
     @apply border border-t-0 border-b-2 border-chalkboard-30 dark:border-chalkboard-80;
   }
+
+  .home-layout {
+    @apply grid lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-x-16;
+    grid-template-rows: auto 1fr;
+  }
 }
 
 @layer utilities {
-  /* 
+  /*
     This is where your own custom Tailwind utility classes can go,
-    which lets you use them with @apply in your CSS, and get 
+    which lets you use them with @apply in your CSS, and get
     autocomplete in classNames in your JSX.
   */
   .parsed-markdown ul,
@@ -324,6 +342,22 @@ code {
   /* Add an outline that matches the app foreground (or text) color */
   .outline-appForeground {
     @apply outline-chalkboard-100 dark:outline-chalkboard-10;
+  }
+
+  /* highlight an object with a moving dashed outline */
+  .onboarding-highlight {
+    @apply outline outline-2;
+    animation: onboarding-highlight 0.7s ease-in-out infinite alternate-reverse;
+  }
+
+  @keyframes onboarding-highlight {
+    0% {
+      outline-offset: 0px;
+    }
+
+    100% {
+      outline-offset: 4px;
+    }
   }
 }
 

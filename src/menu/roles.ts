@@ -13,7 +13,7 @@ type HeaderLabel =
 
 type FileRoleLabel =
   | 'Open project'
-  | 'New project'
+  | 'Create project'
   | 'Import file from URL'
   | 'Preferences'
   | 'User settings'
@@ -21,13 +21,12 @@ type FileRoleLabel =
   | 'Sign out'
   | 'Theme'
   | 'Theme color'
-  | 'Insert from project file'
   | 'Export current part'
   | 'Create new file'
   | 'Create new folder'
-  | 'Share current part (via Zoo link)'
+  | 'Share part via Zoo link'
   | 'Project settings'
-  | 'Load a sample model'
+  | 'Add file to project'
   | 'User default units'
 
 type EditRoleLabel =
@@ -40,13 +39,13 @@ type EditRoleLabel =
   | 'Format code'
 
 type HelpRoleLabel =
-  | 'Refresh and report a bug'
+  | 'Report a bug'
   | 'Request a feature'
   | 'Ask the community discord'
   | 'Ask the community discourse'
   | 'KCL code samples'
   | 'KCL docs'
-  | 'Reset onboarding'
+  | 'Replay onboarding tutorial'
   | 'Show release notes'
   | 'Manage account'
   | 'Get started with Text-to-CAD'
@@ -82,6 +81,7 @@ type ViewRoleLabel =
 type DesignRoleLabel =
   | 'Design'
   | 'Create a parameter'
+  | 'Insert from project file'
   | 'Create with Zoo Text-To-CAD'
   | 'Start sketch'
   | 'Create an offset plane'

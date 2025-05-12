@@ -1,34 +1,15 @@
 import type { PlatformPath } from 'path'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-
-import { IS_PLAYWRIGHT_KEY } from '@e2e/playwright/storageStates'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 
 import {
   BROWSER_FILE_NAME,
   BROWSER_PROJECT_NAME,
   FILE_EXT,
 } from '@src/lib/constants'
-import { readAppSettingsFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
-import { readLocalStorageAppSettingsFile } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-type OnboardingPaths = {
-  [K in keyof typeof onboardingPaths]: `/onboarding${(typeof onboardingPaths)[K]}`
-}
 
 const SETTINGS = '/settings'
 
@@ -48,12 +29,14 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(onboardingPaths)('/onboarding') as OnboardingPaths,
+  ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
 
 export async function getProjectMetaByRouteId(
+  readAppSettingsFile: () => Promise<DeepPartial<Configuration>>,
+  readLocalStorageAppSettingsFile: () => DeepPartial<Configuration> | Error,
   id?: string,
   configuration?: DeepPartial<Configuration> | Error
 ): Promise<ProjectRoute | undefined> {
@@ -135,4 +118,83 @@ export function parseProjectRoute(
     currentFileName: currentFileName,
     currentFilePath: currentFilePath,
   }
+}
+
+/**
+ * Joins any number of arguments of strings to create a Router level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * Filters out '/', ''
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ */
+export function joinRouterPaths(...parts: string[]): string {
+  const cleanedUpPath = webSafeJoin(
+    parts
+      .map((part) => part.replace(/^\/+|\/+$/g, '')) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0)
+  ) // Remove empty segments
+  return `/${cleanedUpPath}`
+}
+
+/**
+ * Joins any number of arguments of strings to create a OS level path that is safe
+ * A path will be created of the format /value/value1/value2
+ * or \value\value1\value2 for POSIX OSes like Windows
+ * Filters out the separator slashes
+ * Removes all leading and ending slashes, this allows you to pass '//dog//','//cat//' it will resolve to
+ * /dog/cat
+ * or \dog\cat on POSIX
+ */
+export function joinOSPaths(...parts: string[]): string {
+  const sep = window.electron?.sep || '/'
+  const regexSep = sep === '/' ? '/' : '\\'
+  return (
+    (sep === '\\' ? '' : sep) + // Windows absolute paths should not be prepended with a separator, they start with the drive name
+    parts
+      .map((part) =>
+        part.replace(new RegExp(`^${regexSep}+|${regexSep}+$`, 'g'), '')
+      ) // Remove leading/trailing slashes
+      .filter((part) => part.length > 0) // Remove empty segments
+      .join(sep)
+  )
+}
+
+export function safeEncodeForRouterPaths(dynamicValue: string): string {
+  return `${encodeURIComponent(dynamicValue)}`
+}
+
+/**
+ * /dog/cat/house.kcl gives you house.kcl
+ * \dog\cat\house.kcl gives you house.kcl
+ * Works on all OS!
+ */
+export function getStringAfterLastSeparator(path: string): string {
+  return path.split(window.electron.sep).pop() || ''
+}
+
+/**
+ * Use this for only web related paths not paths in OS or on disk
+ * e.g. document.location.pathname
+ */
+export function webSafePathSplit(path: string): string[] {
+  const webSafeSep = '/'
+  return path.split(webSafeSep)
+}
+
+export function webSafeJoin(paths: string[]): string {
+  const webSafeSep = '/'
+  return paths.join(webSafeSep)
+}
+
+/**
+ * Splits any paths safely based on the runtime
+ */
+export function desktopSafePathSplit(path: string): string[] {
+  return isDesktop()
+    ? path.split(window?.electron?.sep)
+    : webSafePathSplit(path)
+}
+
+export function desktopSafePathJoin(paths: string[]): string {
+  return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
 }

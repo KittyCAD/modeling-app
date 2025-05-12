@@ -2,14 +2,14 @@
 // A tire is a critical component of a vehicle that provides the necessary traction and grip between the car and the road. It supports the vehicle's weight and absorbs shocks from road irregularities.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import tireInnerDiameter, tireOuterDiameter, tireDepth, bendRadius, tireTreadWidth, tireTreadDepth, tireTreadOffset from "parameters.kcl"
 
 // Create the sketch of the tire
 tireSketch = startSketchOn(XY)
-  |> startProfileAt([tireInnerDiameter / 2, tireDepth / 2], %)
+  |> startProfile(at = [tireInnerDiameter / 2, tireDepth / 2])
   |> line(
        endAbsolute = [
          tireOuterDiameter / 2 - bendRadius,
@@ -41,5 +41,5 @@ tireSketch = startSketchOn(XY)
   |> close()
 
 // Revolve the sketch to create the tire
-revolve(tireSketch, axis = Y)
+carTire = revolve(tireSketch, axis = Y)
   |> appearance(color = "#0f0f0f", roughness = 80)

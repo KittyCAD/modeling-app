@@ -1,113 +1,52 @@
-use std::{
-    collections::{BTreeMap, HashMap},
-    fs::File,
-    io::Read as _,
-};
+use std::{collections::HashMap, fs, path::Path};
 
 use anyhow::Result;
 use base64::Engine;
 use convert_case::Casing;
-use handlebars::Renderable;
 use indexmap::IndexMap;
 use itertools::Itertools;
-use schemars::schema::SingleOrVec;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, TyData};
+use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
 use crate::{
-    docs::{is_primitive, StdLibFn},
+    docs::{StdLibFn, DECLARED_TYPES},
     std::StdLib,
     ExecutorContext,
 };
 
-const TYPES_DIR: &str = "../../docs/kcl/types";
-const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
-// These types are declared in std.
-const DECLARED_TYPES: [&str; 14] = [
-    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d", "Point3d",
-    "Axis2d", "Axis3d",
+// Types with special handling.
+const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
+
+const TYPE_REWRITES: [(&str, &str); 11] = [
+    ("TagNode", "TagDeclarator"),
+    ("SketchData", "Plane | Solid"),
+    ("SketchOrSurface", "Sketch | Plane | Face"),
+    ("SketchSurface", "Plane | Face"),
+    ("SolidOrImportedGeometry", "[Solid] | ImportedGeometry"),
+    (
+        "SolidOrSketchOrImportedGeometry",
+        "[Solid] | [Sketch] | ImportedGeometry",
+    ),
+    ("KclValue", "any"),
+    ("[KclValue]", "[any]"),
+    ("FaceTag", "TagIdentifier | Start | End"),
+    ("GeometryWithImportedGeometry", "Solid | Sketch | ImportedGeometry"),
+    ("SweepPath", "Sketch | Helix"),
 ];
+
+fn rename_type(input: &str) -> &str {
+    for (i, o) in TYPE_REWRITES {
+        if input == i {
+            return o;
+        }
+    }
+
+    input
+}
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();
-    // Register the 'json' helper
-    hbs.register_helper(
-        "json",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                out.write(&serde_json::to_string(&param).unwrap())?;
-                Ok(())
-            },
-        ),
-    );
-
-    // Register the 'basename' helper
-    hbs.register_helper(
-        "times",
-        Box::new(
-            |h: &handlebars::Helper,
-             hb: &handlebars::Handlebars,
-             ctx: &handlebars::Context,
-             rc: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let n = h.param(0).and_then(|v| v.value().as_u64()).ok_or_else(|| {
-                    handlebars::RenderErrorReason::Other(
-                        "times helper expects an integer as first parameter".to_string(),
-                    )
-                })?;
-
-                let template = h
-                    .template()
-                    .ok_or_else(|| handlebars::RenderErrorReason::Other("times helper expects a block".to_string()))?;
-
-                for i in 0..n {
-                    let mut local_ctx = ctx.clone();
-                    let mut rc = rc.clone();
-                    let m = local_ctx.data_mut().as_object_mut().unwrap();
-                    m.insert("@index".to_string(), handlebars::JsonValue::Number(i.into()));
-                    if i == 0 {
-                        m.insert("@first".to_string(), handlebars::JsonValue::Bool(true));
-                    }
-                    template.render(hb, &local_ctx, &mut rc, out)?;
-                }
-
-                Ok(())
-            },
-        ),
-    );
-
-    hbs.register_helper(
-        "lte",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let a = h.param(0).and_then(|v| v.value().as_f64()).ok_or_else(|| {
-                    handlebars::RenderErrorReason::Other("lte helper expects a number as first parameter".to_string())
-                })?;
-
-                let b = h.param(1).and_then(|v| v.value().as_f64()).ok_or_else(|| {
-                    handlebars::RenderErrorReason::Other("lte helper expects a number as second parameter".to_string())
-                })?;
-
-                let result = a <= b;
-                out.write(if result { "true" } else { "false" })?;
-
-                Ok(())
-            },
-        ),
-    );
 
     hbs.register_helper(
         "firstLine",
@@ -126,146 +65,6 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
 
                 // Write the result
                 out.write(first)?;
-                Ok(())
-            },
-        ),
-    );
-
-    hbs.register_helper(
-        "neq",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let param1 = h
-                    .param(0)
-                    .ok_or_else(|| {
-                        handlebars::RenderErrorReason::Other("neq helper expects two parameters".to_string())
-                    })?
-                    .value();
-                let param2 = h
-                    .param(1)
-                    .ok_or_else(|| {
-                        handlebars::RenderErrorReason::Other("neq helper expects two parameters".to_string())
-                    })?
-                    .value();
-
-                let result = param1 != param2;
-                out.write(if result { "true" } else { "false" })?;
-
-                Ok(())
-            },
-        ),
-    );
-
-    // Register the 'lowercase' helper
-    hbs.register_helper(
-        "lowercase",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                out.write(&param.to_lowercase())?;
-                Ok(())
-            },
-        ),
-    );
-
-    hbs.register_helper(
-        "pretty_enum",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                if let Some(enum_value) = h.param(0) {
-                    if let Some(array) = enum_value.value().as_array() {
-                        let pretty_options = array
-                            .iter()
-                            .filter_map(|v| v.as_str())
-                            .map(|s| format!("`{}`", s))
-                            .collect::<Vec<_>>()
-                            .join(", ");
-                        out.write(&pretty_options)?;
-                        return Ok(());
-                    }
-                }
-                out.write("Invalid enum")?;
-                Ok(())
-            },
-        ),
-    );
-
-    hbs.register_helper(
-        "pretty_enum",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                if let Some(enum_value) = h.param(0) {
-                    if let Some(array) = enum_value.value().as_array() {
-                        let pretty_options = array
-                            .iter()
-                            .filter_map(|v| v.as_str())
-                            .map(|s| format!("`{}`", s))
-                            .collect::<Vec<_>>()
-                            .join(", ");
-                        out.write(&pretty_options)?;
-                        return Ok(());
-                    }
-                }
-                out.write("Invalid enum")?;
-                Ok(())
-            },
-        ),
-    );
-
-    hbs.register_helper(
-        "pretty_ref",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                let param = h.param(0).and_then(|v| v.value().as_str()).unwrap_or("");
-                let basename = param.split('/').next_back().unwrap_or("");
-                out.write(&format!("`{}`", basename))?;
-                Ok(())
-            },
-        ),
-    );
-
-    // Register helper to remove newlines from a string.
-    hbs.register_helper(
-        "remove_newlines",
-        Box::new(
-            |h: &handlebars::Helper,
-             _: &handlebars::Handlebars,
-             _: &handlebars::Context,
-             _: &mut handlebars::RenderContext,
-             out: &mut dyn handlebars::Output|
-             -> handlebars::HelperResult {
-                if let Some(param) = h.param(0) {
-                    if let Some(string) = param.value().as_str() {
-                        out.write(&string.replace("\n", ""))?;
-                        return Ok(());
-                    }
-                }
-                out.write("")?;
                 Ok(())
             },
         ),
@@ -296,29 +95,25 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
         ),
     );
 
-    hbs.register_template_string("schemaType", include_str!("templates/schemaType.hbs"))?;
-    hbs.register_template_string("properties", include_str!("templates/properties.hbs"))?;
-    hbs.register_template_string("array", include_str!("templates/array.hbs"))?;
-    hbs.register_template_string("propertyType", include_str!("templates/propertyType.hbs"))?;
-    hbs.register_template_string("schema", include_str!("templates/schema.hbs"))?;
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
-    hbs.register_template_string("consts-index", include_str!("templates/consts-index.hbs"))?;
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
     hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
-    hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
+    hbs.register_template_string("module", include_str!("templates/module.hbs"))?;
     hbs.register_template_string("kclType", include_str!("templates/kclType.hbs"))?;
 
     Ok(hbs)
 }
 
-fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[DocData]) -> Result<()> {
+fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     let mut functions = HashMap::new();
     functions.insert("std".to_owned(), Vec::new());
 
     let mut constants = HashMap::new();
-    constants.insert("std".to_owned(), Vec::new());
+
+    let mut types = HashMap::new();
+    types.insert("Primitive types".to_owned(), Vec::new());
 
     for key in combined.keys() {
         let internal_fn = combined
@@ -329,39 +124,48 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             continue;
         }
 
+        let tags = internal_fn.tags();
+        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
         functions
-            .get_mut("std")
-            .unwrap()
-            .push((internal_fn.name(), internal_fn.name()));
+            .entry(module.to_owned())
+            .or_default()
+            .push((internal_fn.name(), format!("/docs/kcl-std/{}", internal_fn.name())));
     }
 
-    for d in kcl_lib {
+    for name in SPECIAL_TYPES {
+        types
+            .get_mut("Primitive types")
+            .unwrap()
+            .push((name.to_owned(), format!("/docs/kcl-lang/types#{name}")));
+    }
+
+    for d in kcl_lib.all_docs() {
         if d.hide() {
             continue;
         }
 
-        functions.entry(d.mod_name()).or_default().push(match d {
-            DocData::Fn(f) => (f.preferred_name.clone(), d.file_name()),
-            DocData::Const(c) => (c.preferred_name.clone(), d.file_name()),
-            DocData::Ty(t) => (t.preferred_name.clone(), d.file_name()),
-        });
+        let group = match d {
+            DocData::Fn(_) => functions.entry(d.mod_name()).or_default(),
+            DocData::Ty(_) => types.entry(d.mod_name()).or_default(),
+            DocData::Const(_) => constants.entry(d.mod_name()).or_default(),
+            DocData::Mod(_) => continue,
+        };
 
-        if let DocData::Const(c) = d {
-            constants
-                .entry(d.mod_name())
-                .or_default()
-                .push((c.name.clone(), d.file_name()));
-        }
+        group.push((
+            d.preferred_name().to_owned(),
+            format!("/docs/kcl-std/{}", d.file_name()),
+        ));
     }
 
-    // TODO we should sub-divide into types, constants, and functions.
-    let mut sorted: Vec<_> = functions
+    let mut sorted_fns: Vec<_> = functions
         .into_iter()
         .map(|(m, mut fns)| {
             fns.sort();
             let val = json!({
                 "name": m,
-                "functions": fns.into_iter().map(|(n, f)| json!({
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
+                "items": fns.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
                 })).collect::<Vec<_>>(),
@@ -369,35 +173,17 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             (m, val)
         })
         .collect();
-    sorted.sort_by(|t1, t2| t1.0.cmp(&t2.0));
-    let data: Vec<_> = sorted.into_iter().map(|(_, val)| val).collect();
+    sorted_fns.sort_by(|t1, t2| t1.0.cmp(&t2.0));
+    let functions_data: Vec<_> = sorted_fns.into_iter().map(|(_, val)| val).collect();
 
-    let topics: Vec<_> = LANG_TOPICS
-        .iter()
-        .map(|name| {
-            json!({
-                "name": name,
-                "file_name": name.to_lowercase().replace(' ', "-").replace("constants", "consts"),
-            })
-        })
-        .collect();
-    let data = json!({
-        "lang_topics": topics,
-        "modules": data,
-    });
-
-    let output = hbs.render("index", &data)?;
-
-    expectorate::assert_contents("../../docs/kcl/index.md", &output);
-
-    // Generate the index for the constants.
     let mut sorted_consts: Vec<_> = constants
         .into_iter()
         .map(|(m, mut consts)| {
             consts.sort();
             let val = json!({
                 "name": m,
-                "consts": consts.into_iter().map(|(n, f)| json!({
+                "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
+                "items": consts.into_iter().map(|(n, f)| json!({
                     "name": n,
                     "file_name": f,
                 })).collect::<Vec<_>>(),
@@ -406,14 +192,40 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         })
         .collect();
     sorted_consts.sort_by(|t1, t2| t1.0.cmp(&t2.0));
-    let data: Vec<_> = sorted_consts.into_iter().map(|(_, val)| val).collect();
+    let consts_data: Vec<_> = sorted_consts.into_iter().map(|(_, val)| val).collect();
+
+    let mut sorted_types: Vec<_> = types
+        .into_iter()
+        .map(|(m, mut tys)| {
+            let file_name = if m == "Primitive types" {
+                "/docs/kcl-lang/types".to_owned()
+            } else {
+                format!("/docs/kcl-std/modules/{}", m.replace("::", "-"))
+            };
+            tys.sort();
+            let val = json!({
+                "name": m,
+                "file_name": file_name,
+                "items": tys.into_iter().map(|(n, f)| json!({
+                    "name": n,
+                    "file_name": f,
+                })).collect::<Vec<_>>(),
+            });
+            (m, val)
+        })
+        .collect();
+    sorted_types.sort_by(|t1, t2| t1.0.cmp(&t2.0));
+    let types_data: Vec<_> = sorted_types.into_iter().map(|(_, val)| val).collect();
+
     let data = json!({
-        "consts": data,
+        "functions": functions_data,
+        "consts": consts_data,
+        "types": types_data,
     });
 
-    let output = hbs.render("consts-index", &data)?;
+    let output = hbs.render("index", &data)?;
 
-    expectorate::assert_contents("../../docs/kcl/consts.md", &output);
+    expectorate::assert_contents("../../docs/kcl-std/index.md", &output);
 
     Ok(())
 }
@@ -446,7 +258,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
 }
 
 fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) -> Result<()> {
-    if ty.properties.doc_hidden {
+    if ty.properties.doc_hidden || !DECLARED_TYPES.contains(&&*ty.name) {
         return Ok(());
     }
 
@@ -460,8 +272,9 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
         .collect();
 
     let data = json!({
-        "name": ty.qual_name(),
-        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.name)),
+        "name": ty.preferred_name,
+        "module": mod_name_std(&ty.module_name),
+        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
@@ -469,65 +282,140 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
     });
 
     let output = hbs.render("kclType", &data)?;
-    let output = cleanup_type_links(
-        &output,
-        ty.referenced_types.iter().filter(|t| !DECLARED_TYPES.contains(&&***t)),
-    );
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    let output = cleanup_types(&output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
 
-fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()> {
+fn generate_mod_from_kcl(m: &ModData, file_name: String, combined: &IndexMap<String, Box<dyn StdLibFn>>) -> Result<()> {
+    fn list_items(
+        m: &ModData,
+        namespace: &str,
+        combined: &IndexMap<String, Box<dyn StdLibFn>>,
+    ) -> Vec<gltf_json::Value> {
+        let mut items: Vec<_> = m
+            .children
+            .iter()
+            .filter(|(k, _)| k.starts_with(namespace))
+            .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
+            .collect();
+
+        if namespace == "I:" {
+            // Add in functions declared in Rust
+            items.extend(
+                combined
+                    .values()
+                    .filter(|f| {
+                        if f.unpublished() || f.deprecated() {
+                            return false;
+                        }
+
+                        let tags = f.tags();
+                        let module = tags.first().map(|s| format!("std::{s}")).unwrap_or("std".to_owned());
+
+                        module == m.qual_name
+                    })
+                    .map(|f| (f.name(), f.name())),
+            )
+        }
+
+        items.sort();
+        items
+            .into_iter()
+            .map(|(n, f)| {
+                json!({
+                    "name": n,
+                    "file_name": f,
+                })
+            })
+            .collect()
+    }
+    let hbs = init_handlebars()?;
+
+    let functions = list_items(m, "I:", combined);
+    let modules = list_items(m, "M:", combined);
+    let types = list_items(m, "T:", combined);
+
+    let data = json!({
+        "name": m.name,
+        "module": mod_name_std(&m.module_name),
+        "summary": m.summary,
+        "description": m.description,
+        "modules": modules,
+        "functions": functions,
+        "types": types,
+    });
+
+    let output = hbs.render("module", &data)?;
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
+
+    Ok(())
+}
+
+fn mod_name_std(name: &str) -> String {
+    assert_ne!(name, "prelude");
+    if name == "std" {
+        name.to_owned()
+    } else {
+        format!("std::{name}")
+    }
+}
+
+fn generate_function_from_kcl(
+    function: &FnData,
+    file_name: String,
+    example_name: String,
+    kcl_std: &ModData,
+) -> Result<()> {
     if function.properties.doc_hidden {
         return Ok(());
     }
 
     let hbs = init_handlebars()?;
 
-    let name = function.name.clone();
-
     let examples: Vec<serde_json::Value> = function
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
+    let args = function.args.iter().map(|arg| {
+        let docs = arg.docs.clone();
+        if let Some(docs) = &docs {
+            // We deliberately truncate to one line in the template so that if we are using the docs
+            // from the type, then we only take the summary. However, if there's a newline in the 
+            // arg docs, then they would get truncated unintentionally.
+            assert!(!docs.contains('\n'), "Arg docs will get truncated");
+        };
+        json!({
+            "name": arg.name,
+            "type_": arg.ty,
+            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| super::docs_for_type(t, kcl_std))).unwrap_or_default(),
+            "required": arg.kind.required(),
+        })
+    }).collect::<Vec<_>>();
 
     let data = json!({
-        "name": function.qual_name,
+        "name": function.preferred_name,
+        "module": mod_name_std(&function.module_name),
         "summary": function.summary,
         "description": function.description,
         "deprecated": function.properties.deprecated,
-        "fn_signature": name.clone() + &function.fn_signature(),
-        "tags": [],
+        "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
-        "is_utilities": false,
-        "args": function.args.iter().map(|arg| {
-            json!({
-                "name": arg.name,
-                "type_": arg.ty,
-                "description": arg.docs.as_deref().unwrap_or(""),
-                "required": arg.kind.required(),
-            })
-        }).collect::<Vec<_>>(),
+        "args": args,
         "return_value": function.return_type.as_ref().map(|t| {
             json!({
                 "type_": t,
-                "description": "",
+                "description": super::docs_for_type(t, kcl_std).unwrap_or_default(),
             })
         }),
     });
 
     let output = hbs.render("function", &data)?;
-    let output = cleanup_type_links(
-        &output,
-        function
-            .referenced_types
-            .iter()
-            .filter(|t| !DECLARED_TYPES.contains(&&***t)),
-    );
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    let output = &cleanup_types(&output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), output);
 
     Ok(())
 }
@@ -546,7 +434,8 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
         .collect();
 
     let data = json!({
-        "name": cnst.qual_name,
+        "name": cnst.preferred_name,
+        "module": mod_name_std(&cnst.module_name),
         "summary": cnst.summary,
         "description": cnst.description,
         "deprecated": cnst.properties.deprecated,
@@ -556,16 +445,16 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     });
 
     let output = hbs.render("const", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", file_name), &output);
 
     Ok(())
 }
 
-fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, schemars::schema::Schema>> {
+fn generate_function(internal_fn: Box<dyn StdLibFn>, kcl_std: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
     if internal_fn.unpublished() {
-        return Ok(BTreeMap::new());
+        return Ok(());
     }
 
     let fn_name = internal_fn.name();
@@ -575,8 +464,8 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         .examples()
         .iter()
         .enumerate()
-        .map(|(index, example)| {
-            let image_base64 = if !internal_fn.tags().contains(&"utilities".to_string()) {
+        .map(|(index, (example, norun))| {
+            let image_base64 = if !norun {
                 let image_path = format!(
                     "{}/tests/outputs/serial_test_example_{}{}.png",
                     env!("CARGO_MANIFEST_DIR"),
@@ -597,298 +486,205 @@ fn generate_function(internal_fn: Box<dyn StdLibFn>) -> Result<BTreeMap<String, 
         })
         .collect();
 
-    // Generate the type markdown files for each argument.
-    let mut types = BTreeMap::new();
-    for arg in internal_fn.args(false) {
-        if !arg.is_primitive()? {
-            add_to_types(&arg.type_, &arg.schema.schema.into(), &mut types)?;
-        }
-        // Add each definition as well.
-        for (name, definition) in &arg.schema.definitions {
-            add_to_types(name, definition, &mut types)?;
-        }
-    }
-
-    // Generate the type markdown for the return value.
-    if let Some(ret) = internal_fn.return_value(false) {
-        if !ret.is_primitive()? {
-            add_to_types(&ret.type_, &ret.schema.schema.into(), &mut types)?;
-        }
-        for (name, definition) in &ret.schema.definitions {
-            add_to_types(name, definition, &mut types)?;
-        }
-    }
+    let tags = internal_fn.tags();
+    let module = tags
+        .first()
+        .map(|s| &**s)
+        .map(|m| format!("std::{m}"))
+        .unwrap_or("std".to_owned());
 
     let data = json!({
         "name": fn_name,
+        "module": module,
         "summary": internal_fn.summary(),
         "description": internal_fn.description(),
         "deprecated": internal_fn.deprecated(),
         "fn_signature": internal_fn.fn_signature(true),
-        "tags": internal_fn.tags(),
         "examples": examples,
-        "is_utilities": internal_fn.tags().contains(&"utilities".to_string()),
         "args": internal_fn.args(false).iter().map(|arg| {
             json!({
                 "name": arg.name,
-                "type_": arg.type_,
-                "description": arg.description(),
+                "type_": rename_type(&arg.type_),
+                "description": arg.description(Some(kcl_std)),
                 "required": arg.required,
             })
         }).collect::<Vec<_>>(),
         "return_value": internal_fn.return_value(false).map(|ret| {
             json!({
-                "type_": ret.type_,
-                "description": ret.description(),
+                "type_": rename_type(&ret.type_),
+                "description": ret.description(Some(kcl_std)),
             })
         }),
     });
 
     let mut output = hbs.render("function", &data)?;
     // Fix the links to the types.
-    output = cleanup_type_links(&output, types.keys());
+    output = cleanup_types(&output);
 
-    expectorate::assert_contents(format!("../../docs/kcl/{}.md", fn_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl-std/{}.md", fn_name), &output);
 
-    Ok(types)
+    Ok(())
 }
 
-fn cleanup_static_links(output: &str) -> String {
-    let mut cleaned_output = output.to_string();
-    // Fix the links to the types.
-    // Gross hack for the stupid alias types.
-    cleaned_output = cleaned_output.replace("TagNode", "TagDeclarator");
+fn cleanup_types(input: &str) -> String {
+    #[derive(Copy, Clone, Eq, PartialEq, Debug)]
+    enum State {
+        Text,
+        PreCodeBlock,
+        CodeBlock,
+        CodeBlockType,
+        Slash,
+        Comment,
+    }
 
-    let link = format!("[`{}`](/docs/kcl/types#tag-declaration)", "TagDeclarator");
-    cleaned_output = cleaned_output.replace("`TagDeclarator`", &link);
-    let link = format!("[`{}`](/docs/kcl/types#tag-identifier)", "TagIdentifier");
-    cleaned_output = cleaned_output.replace("`TagIdentifier`", &link);
+    let mut output = String::new();
+    let mut code_annot = String::new();
+    let mut code = String::new();
+    let mut code_type = String::new();
+    let mut state = State::Text;
+    let mut ticks = 0;
 
-    cleaned_output
-}
+    for c in input.chars() {
+        if state == State::CodeBlockType {
+            if ['`', ',', '\n', ')', '/'].contains(&c) {
+                if code_type.starts_with(' ') {
+                    code.push(' ');
+                }
+                code.push_str(&cleanup_type_string(code_type.trim(), false));
+                if code_type.ends_with(' ') {
+                    code.push(' ');
+                }
 
-// Fix the links to the types.
-fn cleanup_type_links<'a>(output: &str, types: impl Iterator<Item = &'a String>) -> String {
-    let mut cleaned_output = output.to_string();
+                code_type = String::new();
+                state = State::CodeBlock;
+            } else {
+                code_type.push(c);
+                continue;
+            }
+        }
+        if c == '`' {
+            if state == State::Comment {
+                code.push(c);
+            } else {
+                if state == State::Slash {
+                    state = State::CodeBlock;
+                }
 
-    // Cleanup our weird number arrays.
-    // TODO: This is a hack for the handlebars template being too complex.
-    cleaned_output = cleaned_output.replace("`[, `number`, `number`]`", "`[number, number]`");
-    cleaned_output = cleaned_output.replace("`[, `number`, `number`, `number`]`", "`[number, number, number]`");
-    cleaned_output = cleaned_output.replace("`[, `integer`, `integer`, `integer`]`", "`[integer, integer, integer]`");
-
-    // Fix the links to the types.
-    for type_name in types.map(|s| &**s).chain(DECLARED_TYPES) {
-        if type_name == "TagDeclarator" || type_name == "TagIdentifier" || type_name == "TagNode" {
-            continue;
+                ticks += 1;
+                if ticks == 3 {
+                    if state == State::Text {
+                        state = State::PreCodeBlock;
+                    } else {
+                        output.push_str("```");
+                        output.push_str(&code_annot);
+                        output.push_str(&code);
+                        // `code` includes the first two of three backticks
+                        output.push('`');
+                        state = State::Text;
+                        code_annot = String::new();
+                        code = String::new();
+                    }
+                    ticks = 0;
+                } else if state == State::Text && ticks == 2 && !code.is_empty() {
+                    output.push_str(&cleanup_type_string(&code, true));
+                    code = String::new();
+                    ticks = 0;
+                } else if state == State::CodeBlock {
+                    code.push(c);
+                }
+            }
         } else {
-            let link = format!("(/docs/kcl/types/{})", type_name);
-            cleaned_output =
-                cleaned_output.replace(&format!("`{}`", type_name), &format!("[`{}`]{}", type_name, &link));
-            // Do the same for the type with brackets.
-            cleaned_output =
-                cleaned_output.replace(&format!("`[{}]`", type_name), &format!("[`[{}]`]{}", type_name, link));
+            if ticks == 2 {
+                // Empty code block
+                ticks = 0;
+            }
+
+            if c == '\n' && (state == State::PreCodeBlock || state == State::Comment) {
+                state = State::CodeBlock;
+            }
+
+            if c == '/' {
+                match state {
+                    State::CodeBlock => state = State::Slash,
+                    State::Slash => state = State::Comment,
+                    _ => {}
+                }
+            } else if state == State::Slash {
+                state = State::CodeBlock;
+            }
+
+            match state {
+                State::Text if ticks == 0 => output.push(c),
+                State::Text if ticks == 1 => code.push(c),
+                State::Text => unreachable!(),
+                State::PreCodeBlock => code_annot.push(c),
+                State::CodeBlock | State::Slash | State::Comment => code.push(c),
+                State::CodeBlockType => unreachable!(),
+            }
+
+            if c == ':' && state == State::CodeBlock {
+                state = State::CodeBlockType;
+            }
         }
     }
 
-    // TODO handle union types generically rather than special casing them.
-    cleaned_output = cleaned_output.replace(
-        "`Sketch | Plane | Face`",
-        "[`Sketch`](/docs/kcl/types/Sketch) OR [`Plane`](/docs/kcl/types/Plane) OR [`Face`](/docs/kcl/types/Face)",
+    output
+}
+
+fn cleanup_type_string(input: &str, fmt_for_text: bool) -> String {
+    assert!(
+        !(input.starts_with('[') && input.ends_with(']') && input.contains('|')),
+        "Arrays of unions are not supported"
     );
 
-    cleanup_static_links(&cleaned_output)
-}
+    let input = rename_type(input);
 
-fn add_to_types(
-    name: &str,
-    schema: &schemars::schema::Schema,
-    types: &mut BTreeMap<String, schemars::schema::Schema>,
-) -> Result<()> {
-    if name.is_empty() {
-        return Err(anyhow::anyhow!("Empty type name"));
-    }
+    let tys: Vec<_> = input
+        .split('|')
+        .map(|ty| {
+            let ty = ty.trim();
 
-    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
-        return Ok(());
-    }
+            let mut prefix = String::new();
+            let mut suffix = String::new();
 
-    if name.starts_with("number(") {
-        panic!("uom number");
-    }
-
-    let schemars::schema::Schema::Object(o) = schema else {
-        return Err(anyhow::anyhow!(
-            "Failed to get object schema, should have not been a primitive"
-        ));
-    };
-
-    if name == "SourceRange" {
-        types.insert(name.to_string(), schema.clone());
-        return Ok(());
-    }
-
-    // If we have an array we want to generate the type markdown files for each item in the
-    // array.
-    if let Some(array) = &o.array {
-        // Recursively generate the type markdown files for each item in the array.
-        if let Some(items) = &array.items {
-            match items {
-                schemars::schema::SingleOrVec::Single(item) => {
-                    if is_primitive(item)?.is_some() {
-                        return Ok(());
-                    }
-                    return add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types);
-                }
-                schemars::schema::SingleOrVec::Vec(items) => {
-                    for item in items {
-                        if is_primitive(item)?.is_some() {
-                            continue;
-                        }
-                        add_to_types(name.trim_start_matches('[').trim_end_matches(']'), item, types)?;
-                    }
-                }
-            }
-        } else {
-            return Err(anyhow::anyhow!("Failed to get array items"));
-        }
-    }
-
-    types.insert(name.to_string(), schema.clone());
-
-    Ok(())
-}
-
-fn generate_type(
-    name: &str,
-    schema: &schemars::schema::Schema,
-    types: &BTreeMap<String, schemars::schema::Schema>,
-) -> Result<()> {
-    if name.is_empty() {
-        return Err(anyhow::anyhow!("Empty type name"));
-    }
-
-    // Skip over TagDeclarator and TagIdentifier since they have custom docs.
-    if name == "TagDeclarator" || name == "TagIdentifier" || name == "TagNode" || name == "TyF64" {
-        return Ok(());
-    }
-
-    let schemars::schema::Schema::Object(o) = schema else {
-        return Err(anyhow::anyhow!(
-            "Failed to get object schema, should have not been a primitive"
-        ));
-    };
-
-    // If we have an array we want to generate the type markdown files for each item in the
-    // array.
-    if let Some(array) = &o.array {
-        // Recursively generate the type markdown files for each item in the array.
-        if let Some(items) = &array.items {
-            match items {
-                schemars::schema::SingleOrVec::Single(item) => {
-                    if is_primitive(item)?.is_some() {
-                        return Ok(());
-                    }
-                    return generate_type(name.trim_start_matches('[').trim_end_matches(']'), item, types);
-                }
-                schemars::schema::SingleOrVec::Vec(items) => {
-                    for item in items {
-                        if is_primitive(item)?.is_some() {
-                            continue;
-                        }
-                        generate_type(name.trim_start_matches('[').trim_end_matches(']'), item, types)?;
-                    }
-                    return Ok(());
-                }
-            }
-        } else {
-            return Err(anyhow::anyhow!("Failed to get array items"));
-        }
-    }
-
-    // Make sure the name is pascal cased.
-    if !(name.is_case(convert_case::Case::Pascal)
-        || name == "Point3d"
-        || name == "Point2d"
-        || name == "CircularPattern2dData"
-        || name == "CircularPattern3dData"
-        || name == "LinearPattern2dData"
-        || name == "LinearPattern3dData"
-        || name == "Mirror2dData"
-        || name == "Axis2dOrEdgeReference"
-        || name == "Axis3dOrEdgeReference"
-        || name == "AxisAndOrigin2d"
-        || name == "AxisAndOrigin3d")
-    {
-        return Err(anyhow::anyhow!("Type name is not pascal cased: {}", name));
-    }
-
-    let cleaned_schema = recurse_and_create_references(name, schema, types)?;
-
-    let schemars::schema::Schema::Object(o) = cleaned_schema else {
-        return Err(anyhow::anyhow!(
-            "Failed to get object schema, should have not been a primitive"
-        ));
-    };
-
-    let hbs = init_handlebars()?;
-
-    // Add the name as the title.
-    let mut object = o.clone();
-    if let Some(metadata) = object.metadata.as_mut() {
-        metadata.title = Some(name.to_string());
-    } else {
-        object.metadata = Some(Box::new(schemars::schema::Metadata {
-            title: Some(name.to_string()),
-            ..Default::default()
-        }));
-    }
-
-    // Cleanup the description.
-    let object = cleanup_type_description(&object)
-        .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
-
-    let data = json!(schemars::schema::Schema::Object(object));
-
-    let mut output = hbs.render("type", &data)?;
-    // Fix the links to the types.
-    output = cleanup_type_links(&output, types.keys());
-    expectorate::assert_contents(format!("{}/{}.md", TYPES_DIR, name), &output);
-
-    Ok(())
-}
-
-fn cleanup_type_description(object: &schemars::schema::SchemaObject) -> Result<schemars::schema::SchemaObject> {
-    let mut object = object.clone();
-    if let Some(metadata) = object.metadata.as_mut() {
-        if let Some(description) = metadata.description.as_mut() {
-            // Find any ```kcl code blocks and format the code.
-            // Parse any code blocks from the doc string.
-            let mut code_blocks = Vec::new();
-            let d = description.clone();
-            for line in d.lines() {
-                if line.starts_with("```kcl") && line.ends_with("```") {
-                    code_blocks.push(line);
-                }
+            if fmt_for_text {
+                prefix.push('`');
+                suffix.push('`');
             }
 
-            // Parse the kcl and recast it.
-            for code_block in &code_blocks {
-                let trimmed = code_block.trim_start_matches("```kcl").trim_end_matches("```");
-                let program = crate::Program::parse_no_errs(trimmed)?;
+            let ty = if ty.starts_with('[') {
+                if ty.ends_with("; 1+]") {
+                    prefix = format!("{prefix}[");
+                    suffix = format!("; 1+]{suffix}");
+                    &ty[1..ty.len() - 5]
+                } else if ty.ends_with(']') {
+                    prefix = format!("{prefix}[");
+                    suffix = format!("]{suffix}");
+                    &ty[1..ty.len() - 1]
+                } else {
+                    ty
+                }
+            } else {
+                ty
+            };
 
-                let options = crate::parsing::ast::types::FormatOptions {
-                    insert_final_newline: false,
-                    ..Default::default()
-                };
-                let cleaned = program.ast.recast(&options, 0);
+            // TODO markdown links in code blocks are not turned into links by our website stack.
+            // If we can handle signatures more manually we could get highlighting and links and
+            // we might want to restore the links by not checking `fmt_for_text` here.
 
-                *description = description.replace(code_block, &format!("```kcl\n{}\n```", cleaned));
+            if fmt_for_text && ty.starts_with("number") {
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-number)")
+            } else if fmt_for_text && SPECIAL_TYPES.contains(&ty) {
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-lang/types#{ty})")
+            } else if fmt_for_text && DECLARED_TYPES.contains(&ty) {
+                format!("[{prefix}{ty}{suffix}](/docs/kcl-std/types/std-types-{ty})")
+            } else {
+                format!("{prefix}{ty}{suffix}")
             }
-        }
-    }
+        })
+        .collect();
 
-    Ok(object)
+    tys.join(if fmt_for_text { " or " } else { " | " })
 }
 
 fn clean_function_name(name: &str) -> String {
@@ -899,14 +695,6 @@ fn clean_function_name(name: &str) -> String {
         fn_name = fn_name.replace("last_seg_", "last_segment_");
     } else if fn_name.contains("_2_d") {
         fn_name = fn_name.replace("_2_d", "_2d");
-    } else if fn_name.contains("_greater_than_or_eq") {
-        fn_name = fn_name.replace("_greater_than_or_eq", "_gte");
-    } else if fn_name.contains("_less_than_or_eq") {
-        fn_name = fn_name.replace("_less_than_or_eq", "_lte");
-    } else if fn_name.contains("_greater_than") {
-        fn_name = fn_name.replace("_greater_than", "_gt");
-    } else if fn_name.contains("_less_than") {
-        fn_name = fn_name.replace("_less_than", "_lt");
     } else if fn_name.contains("_3_d") {
         fn_name = fn_name.replace("_3_d", "_3d");
     } else if fn_name == "seg_ang" {
@@ -915,170 +703,9 @@ fn clean_function_name(name: &str) -> String {
         fn_name = "segment_length".to_string();
     } else if fn_name.starts_with("seg_") {
         fn_name = fn_name.replace("seg_", "segment_");
-    } else if fn_name.starts_with("log_") {
-        fn_name = fn_name.replace("log_", "log");
-    } else if fn_name.ends_with("tan_2") {
-        fn_name = fn_name.replace("tan_2", "tan2");
     }
 
     fn_name
-}
-
-/// Recursively create references for types we already know about.
-fn recurse_and_create_references(
-    name: &str,
-    schema: &schemars::schema::Schema,
-    types: &BTreeMap<String, schemars::schema::Schema>,
-) -> Result<schemars::schema::Schema> {
-    if DECLARED_TYPES.contains(&name) || name == "TyF64" {
-        return Ok(schema.clone());
-    }
-
-    let schemars::schema::Schema::Object(o) = schema else {
-        return Err(anyhow::anyhow!(
-            "Failed to get object schema, should have not been a primitive"
-        ));
-    };
-
-    // If we already have a reference add the metadata to the reference if it has none.
-    if let Some(reference) = &o.reference {
-        let mut obj = o.clone();
-        let reference = reference.trim_start_matches("#/components/schemas/");
-        if DECLARED_TYPES.contains(&reference) || reference == "TyF64" {
-            return Ok(schema.clone());
-        }
-
-        let t = types
-            .get(reference)
-            .ok_or_else(|| anyhow::anyhow!("Failed to get type: {} {:?}", reference, types.keys()))?;
-
-        let schemars::schema::Schema::Object(to) = t else {
-            return Err(anyhow::anyhow!(
-                "Failed to get object schema, should have not been a primitive"
-            ));
-        };
-
-        // If this is a primitive just use the primitive.
-        if to.subschemas.is_none() && to.object.is_none() && to.reference.is_none() {
-            return Ok(t.clone());
-        }
-
-        // Otherwise append the metadata to our reference.
-        if let Some(metadata) = obj.metadata.as_mut() {
-            if metadata.description.is_none() {
-                metadata.description = to.metadata.as_ref().and_then(|m| m.description.clone());
-            }
-        } else {
-            obj.metadata = to.metadata.clone();
-        }
-
-        let obj = cleanup_type_description(&obj)
-            .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
-        return Ok(schemars::schema::Schema::Object(obj));
-    }
-
-    let mut obj = o.clone();
-
-    // If we have an object iterate over the properties and recursively create references.
-    if let Some(object) = &mut obj.object {
-        for (_, value) in object.properties.iter_mut() {
-            let new_value = recurse_and_create_references(name, value, types)?;
-            *value = new_value;
-        }
-    }
-
-    // If we have an array iterate over the items and recursively create references.
-    if let Some(array) = &mut obj.array {
-        if let Some(items) = &mut array.items {
-            match items {
-                schemars::schema::SingleOrVec::Single(item) => {
-                    let new_item = recurse_and_create_references(name, item, types)?;
-                    *item = Box::new(new_item);
-                }
-                schemars::schema::SingleOrVec::Vec(items) => {
-                    for item in items {
-                        let new_item = recurse_and_create_references(name, item, types)?;
-                        *item = new_item;
-                    }
-                }
-            }
-        }
-    }
-
-    // If we have subschemas iterate over them and recursively create references.
-    if let Some(subschema) = &mut obj.subschemas {
-        // Do anyOf.
-        if let Some(any_of) = &mut subschema.any_of {
-            // If we only have one item in anyOf we can just return that item.
-            if any_of.len() == 1 {
-                let mut new_item = recurse_and_create_references(name, &any_of[0], types)?;
-                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
-                    if let Some(metadata) = new_obj.metadata.as_mut() {
-                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
-                    } else {
-                        new_obj.metadata = obj.metadata.clone();
-                    }
-                }
-                return Ok(new_item);
-            }
-            for item in any_of {
-                let new_item = recurse_and_create_references(name, item, types)?;
-                *item = new_item;
-            }
-        }
-
-        // Do allOf.
-        if let Some(all_of) = &mut subschema.all_of {
-            // If we only have one item in allOf we can just return that item.
-            if all_of.len() == 1 {
-                let mut new_item = recurse_and_create_references(name, &all_of[0], types)?;
-                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
-                    if let Some(metadata) = new_obj.metadata.as_mut() {
-                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
-                    } else {
-                        new_obj.metadata = obj.metadata.clone();
-                    }
-                }
-                return Ok(new_item);
-            }
-            for item in all_of {
-                let new_item = recurse_and_create_references(name, item, types)?;
-                *item = new_item;
-            }
-        }
-
-        // Do oneOf.
-        if let Some(one_of) = &mut subschema.one_of {
-            // If we only have one item in oneOf we can just return that item.
-            if one_of.len() == 1 {
-                let mut new_item = recurse_and_create_references(name, &one_of[0], types)?;
-                if let schemars::schema::Schema::Object(new_obj) = &mut new_item {
-                    if let Some(metadata) = new_obj.metadata.as_mut() {
-                        metadata.description = obj.metadata.as_ref().and_then(|m| m.description.clone());
-                    } else {
-                        new_obj.metadata = obj.metadata.clone();
-                    }
-                }
-                return Ok(new_item);
-            }
-            for item in one_of {
-                let new_item = recurse_and_create_references(name, item, types)?;
-                *item = new_item;
-            }
-        }
-
-        if subschema.one_of.is_none() && subschema.all_of.is_none() && subschema.any_of.is_none() && obj.array.is_none()
-        {
-            if let Some(SingleOrVec::Single(_)) = &o.instance_type {
-                return Ok(schema.clone());
-            }
-        }
-    }
-
-    let obj = cleanup_type_description(&obj)
-        .map_err(|e| anyhow::anyhow!("Failed to cleanup type description for type `{}`: {}", name, e))?;
-
-    Ok(schemars::schema::Schema::Object(obj.clone()))
 }
 
 #[test]
@@ -1090,32 +717,27 @@ fn test_generate_stdlib_markdown_docs() {
     // Generate the index which is the table of contents.
     generate_index(&combined, &kcl_std).unwrap();
 
-    let mut types = BTreeMap::new();
     for key in combined.keys().sorted() {
         let internal_fn = combined.get(key).unwrap();
-        let fn_types = generate_function(internal_fn.clone()).unwrap();
-        types.extend(fn_types);
+        generate_function(internal_fn.clone(), &kcl_std).unwrap();
     }
 
-    // Generate the type markdown files.
-    for (name, schema) in &types {
-        generate_type(name, schema, &types).unwrap();
-    }
-
-    for d in &kcl_std {
+    for d in kcl_std.all_docs() {
         match d {
-            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name()).unwrap(),
+            DocData::Fn(f) => generate_function_from_kcl(f, d.file_name(), d.example_name(), &kcl_std).unwrap(),
             DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
             DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
+            DocData::Mod(m) => generate_mod_from_kcl(m, d.file_name(), &combined).unwrap(),
         }
     }
+    generate_mod_from_kcl(&kcl_std, "modules/std".to_owned(), &combined).unwrap();
 }
 
 #[test]
 fn test_generate_stdlib_json_schema() {
     // If this test fails and you've modified the AST or something else which affects the json repr
     // of stdlib functions, you should rerun the test with `EXPECTORATE=overwrite` to create new
-    // test data, then check `/docs/kcl/std.json` to ensure the changes are expected.
+    // test data, then check `/docs/kcl-std/std.json` to ensure the changes are expected.
     // Alternatively, run `just redo-kcl-stdlib-docs` (make sure to have just installed).
     let stdlib = StdLib::new();
     let combined = stdlib.combined();
@@ -1129,7 +751,7 @@ fn test_generate_stdlib_json_schema() {
         })
         .collect();
     expectorate::assert_contents(
-        "../../docs/kcl/std.json",
+        "../../docs/kcl-std/std.json",
         &serde_json::to_string_pretty(&json_data).unwrap(),
     );
 }
@@ -1137,19 +759,20 @@ fn test_generate_stdlib_json_schema() {
 #[tokio::test(flavor = "multi_thread")]
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
-    for name in LANG_TOPICS {
-        let filename =
-            format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-")).replace("constants", "consts");
-        let mut file = File::open(&filename).unwrap();
-        let mut text = String::new();
-        file.read_to_string(&mut text).unwrap();
+    for entry in fs::read_dir("../../docs/kcl-lang").unwrap() {
+        let entry = entry.unwrap();
+        if entry.file_type().unwrap().is_dir() {
+            continue;
+        }
+        let path = entry.path();
+        let text = std::fs::read_to_string(&path).unwrap();
 
-        for (i, (eg, attr)) in find_examples(&text, &filename).into_iter().enumerate() {
-            if attr == "norun" {
+        for (i, (eg, attr)) in find_examples(&text, &path).into_iter().enumerate() {
+            if attr.contains("norun") || attr == "no_run" || !attr.contains("kcl") {
                 continue;
             }
 
-            let f = filename.clone();
+            let f = path.display().to_string();
             join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
         }
     }
@@ -1162,7 +785,7 @@ async fn test_code_in_topics() {
     assert!(results.is_empty(), "Failures: {}", results.join(", "))
 }
 
-fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
+fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     let mut buf = String::new();
     let mut attr = String::new();
     let mut in_eg = false;
@@ -1186,7 +809,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
         }
     }
 
-    assert!(!in_eg, "Unclosed code tags in {}", filename);
+    assert!(!in_eg, "Unclosed code tags in {}", filename.display());
 
     result
 }

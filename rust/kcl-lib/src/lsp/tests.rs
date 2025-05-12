@@ -1,14 +1,19 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use pretty_assertions::assert_eq;
 use tower_lsp::{
-    lsp_types::{Diagnostic, SemanticTokenModifier, SemanticTokenType},
+    lsp_types::{
+        CodeActionKind, CodeActionOrCommand, Diagnostic, PrepareRenameResponse, SemanticTokenModifier,
+        SemanticTokenType, TextEdit, WorkspaceEdit,
+    },
     LanguageServer,
 };
 
 use crate::{
+    errors::{LspSuggestion, Suggestion},
     lsp::test_util::{copilot_lsp_server, kcl_lsp_server},
     parsing::ast::types::{Node, Program},
+    SourceRange,
 };
 
 #[track_caller]
@@ -727,7 +732,7 @@ async fn test_kcl_lsp_completions_tags() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([11.19, 28.35], %)
+  |> startProfile(at = [11.19, 28.35])
   |> line(end = [28.67, -13.25], tag = $here)
   |> line(end = [-4.12, -22.81])
   |> line(end = [-33.24, 14.55])
@@ -890,14 +895,14 @@ async fn test_kcl_lsp_on_hover() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
 bar("an arg")
 
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
 "#
@@ -945,7 +950,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -966,7 +971,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -1011,7 +1016,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
@@ -1108,7 +1113,395 @@ async fn test_kcl_lsp_signature_help() {
             "Expected one signature, got {:?}",
             signature_help.signatures
         );
-        assert_eq!(signature_help.signatures[0].label, "startSketchOn");
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"startSketchOn(
+  @planeOrSolid: SketchData,
+  face?: FaceTag,
+): SketchSurface"#
+        );
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_parens_trigger() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send open file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude("
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 14 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  @sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_parens_trigger_on_before() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send open file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude("
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 10 },
+            },
+            context: Some(tower_lsp::lsp_types::SignatureHelpContext {
+                trigger_kind: tower_lsp::lsp_types::SignatureHelpTriggerKind::INVOKED,
+                trigger_character: Some("(".to_string()),
+                is_retrigger: false,
+                active_signature_help: None,
+            }),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  @sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_comma_trigger() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send update file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 10,"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 25 },
+            },
+            context: None,
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  @sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
+    } else {
+        panic!("Expected signature help");
+    }
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_signature_help_on_comma_trigger_on_before() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    // We do this to trigger a valid ast.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send update file.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                version: 1,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 10,"
+                    .to_string(),
+            }],
+        })
+        .await;
+
+    // Send signature help request.
+    let signature_help = server
+        .signature_help(tower_lsp::lsp_types::SignatureHelpParams {
+            text_document_position_params: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 9, character: 22 },
+            },
+            context: Some(tower_lsp::lsp_types::SignatureHelpContext {
+                trigger_kind: tower_lsp::lsp_types::SignatureHelpTriggerKind::INVOKED,
+                trigger_character: Some(",".to_string()),
+                is_retrigger: false,
+                active_signature_help: None,
+            }),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the signature help.
+    if let Some(signature_help) = signature_help {
+        assert_eq!(
+            signature_help.signatures.len(),
+            1,
+            "Expected one signature, got {:?}",
+            signature_help.signatures
+        );
+        assert_eq!(
+            signature_help.signatures[0].label,
+            r#"extrude(
+  @sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     } else {
         panic!("Expected signature help");
     }
@@ -1219,17 +1612,17 @@ async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0])
   |> close()
   |> extrude(length = 3.14)
 
-thing = {blah: "foo"}
+thing = {blah = "foo"}
 bar = thing.blah
 
-fn myFn = (param1) => {
+fn myFn(param1) {
     return param1
 }"#
                 .to_string(),
@@ -1521,7 +1914,7 @@ async fn test_kcl_lsp_document_symbol_tag() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([11.19, 28.35], %)
+  |> startProfile(at = [11.19, 28.35])
   |> line(end = [28.67, -13.25], tag = $here)
   |> line(end = [-4.12, -22.81])
   |> line(end = [-33.24, 14.55])
@@ -1567,7 +1960,7 @@ async fn test_kcl_lsp_formatting() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"startSketchOn(XY)
-                    |> startProfileAt([0,0], %)"#
+                    |> startProfile(at = [0,0])"#
                     .to_string(),
             },
         })
@@ -1598,7 +1991,7 @@ async fn test_kcl_lsp_formatting() {
     assert_eq!(
         formatting[0].new_text,
         r#"startSketchOn(XY)
-    |> startProfileAt([0, 0], %)"#
+    |> startProfile(at = [0, 0])"#
     );
 }
 
@@ -1624,7 +2017,7 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
   |> line(end = [0, thickness + sphereDia / 2])
   |> line(end = [overHangLength, 0])
   |> line(end = [0, -thickness])
@@ -1634,22 +2027,15 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
-       0.05 + insideDia / 2 + thickness,
-       0 - 0.05
-     ], %)
+  |> startProfile(at = [0.05 + insideDia / 2 + thickness, 0 - 0.05])
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start: 0,
-       angle_end: -180,
-       radius: sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1660,10 +2046,7 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
-       insideDia / 2 + thickness + sphereDia,
-       0
-     ], %)
+  |> startProfile(at = [insideDia / 2 + thickness + sphereDia, 0])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
   |> line(end = [0, thickness])
@@ -1673,7 +2056,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
                     .to_string(),
             },
         })
@@ -1706,8 +2089,8 @@ outsideRevolve = startSketchOn(XZ)
         tower_lsp::lsp_types::Range {
             start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
             end: tower_lsp::lsp_types::Position {
-                line: 60,
-                character: 29
+                line: 50,
+                character: 22
             }
         }
     );
@@ -1724,7 +2107,7 @@ overHangLength = .4
 
 // Sketch and revolve the inside bearing piece
 insideRevolve = startSketchOn(XZ)
-  |> startProfileAt([insideDia / 2, 0], %)
+  |> startProfile(at = [insideDia / 2, 0])
   |> line(end = [0, thickness + sphereDia / 2])
   |> line(end = [overHangLength, 0])
   |> line(end = [0, -thickness])
@@ -1734,22 +2117,18 @@ insideRevolve = startSketchOn(XZ)
   |> line(end = [0, -thickness])
   |> line(end = [-overHangLength, 0])
   |> close()
-  |> revolve({ axis = Y }, %)
+  |> revolve(axis = Y)
 
 // Sketch and revolve one of the balls and duplicate it using a circular pattern. (This is currently a workaround, we have a bug with rotating on a sketch that touches the rotation axis)
 sphere = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        0.05 + insideDia / 2 + thickness,
        0 - 0.05
-     ], %)
+     ])
   |> line(end = [sphereDia - 0.1, 0])
-  |> arc({
-       angle_start = 0,
-       angle_end = -180,
-       radius = sphereDia / 2 - 0.05
-     }, %)
+  |> arc(angle_start = 0, angle_end = -180, radius = sphereDia / 2 - 0.05)
   |> close()
-  |> revolve({ axis = X }, %)
+  |> revolve(axis = X)
   |> patternCircular3d(
        axis = [0, 0, 1],
        center = [0, 0, 0],
@@ -1760,10 +2139,10 @@ sphere = startSketchOn(XZ)
 
 // Sketch and revolve the outside bearing
 outsideRevolve = startSketchOn(XZ)
-  |> startProfileAt([
+  |> startProfile(at = [
        insideDia / 2 + thickness + sphereDia,
        0
-     ], %)
+     ])
   |> line(end = [0, sphereDia / 2])
   |> line(end = [-overHangLength + thickness, 0])
   |> line(end = [0, thickness])
@@ -1773,7 +2152,7 @@ outsideRevolve = startSketchOn(XZ)
   |> line(end = [0, thickness])
   |> line(end = [overHangLength - thickness, 0])
   |> close()
-  |> revolve({ axis = Y }, %)"#
+  |> revolve(axis = Y)"#
     );
 }
 
@@ -1817,9 +2196,87 @@ async fn test_kcl_lsp_rename() {
         vec![tower_lsp::lsp_types::TextEdit {
             range: tower_lsp::lsp_types::Range {
                 start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
-                end: tower_lsp::lsp_types::Position { line: 0, character: 7 }
+                end: tower_lsp::lsp_types::Position { line: 0, character: 8 }
             },
             new_text: "newName = 1\n".to_string()
+        }]
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_rename_no_hanging_parens() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let code = r#"myVARName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVARName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: code.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let rename = server
+        .rename(tower_lsp::lsp_types::RenameParams {
+            text_document_position: tower_lsp::lsp_types::TextDocumentPositionParams {
+                text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                    uri: "file:///test.kcl".try_into().unwrap(),
+                },
+                position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+            },
+            new_name: "myVarName".to_string(),
+            work_done_progress_params: Default::default(),
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the rename.
+    let changes = rename.changes.unwrap();
+
+    let last_character = 27;
+
+    // Get the last character of the last line of the original code.
+    assert_eq!(code.lines().last().unwrap().chars().count(), last_character);
+
+    let u: tower_lsp::lsp_types::Url = "file:///test.kcl".try_into().unwrap();
+    assert_eq!(
+        changes.get(&u).unwrap().clone(),
+        vec![tower_lsp::lsp_types::TextEdit {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 0 },
+                // Its important we get back the right number here so that we actually replace the whole text!!
+                end: tower_lsp::lsp_types::Position {
+                    line: 9,
+                    character: last_character as u32
+                }
+            },
+            new_text: "myVarName = 100
+
+a1 = startSketchOn(offsetPlane(XY, offset = 10))
+  |> startProfile(at = [0, 0])
+  |> line(end = [myVarName, 0])
+  |> yLine(length = -100.0)
+  |> xLine(length = -100.0)
+  |> yLine(length = 100.0)
+  |> close()
+  |> extrude(length = 3.14)\n"
+                .to_string()
         }]
     );
 }
@@ -2010,7 +2467,7 @@ async fn test_copilot_lsp_completions_raw() {
         .get_completions(
             "kcl".to_string(),
             r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   "#
             .to_string(),
             r#"  |> close()
@@ -2029,7 +2486,7 @@ async fn test_copilot_lsp_completions_raw() {
         .get_completions(
             "kcl".to_string(),
             r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   "#
             .to_string(),
             r#"  |> close()
@@ -2069,7 +2526,7 @@ async fn test_copilot_lsp_completions() {
             position: crate::lsp::copilot::types::CopilotPosition { line: 3, character: 3 },
             relative_path: "test.copilot".to_string(),
             source: r#"bracket = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   
   |> close()
   |> extrude(length = 10)
@@ -2393,7 +2850,7 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2410,11 +2867,11 @@ async fn kcl_test_kcl_lsp_diagnostics_on_execution_error() {
 
     // Get the diagnostics.
     // TODO warnings being stomped by execution errors?
-    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 1);
+    assert_diagnostic_count(server.diagnostics_map.get("file:///test.kcl").as_deref(), 2);
 
     // Update the text.
     let new_text = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2454,7 +2911,7 @@ async fn kcl_test_kcl_lsp_full_to_empty_file_updates_ast_and_memory() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2499,7 +2956,7 @@ async fn kcl_test_kcl_lsp_code_unchanged_but_has_diagnostics_reexecute() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2587,7 +3044,7 @@ async fn kcl_test_kcl_lsp_code_and_ast_unchanged_but_has_diagnostics_reexecute()
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2664,7 +3121,7 @@ async fn kcl_test_kcl_lsp_cant_execute_set() {
     let server = kcl_lsp_server(true).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2745,7 +3202,7 @@ async fn test_kcl_lsp_folding() {
                 language_id: "kcl".to_string(),
                 version: 1,
                 text: r#"startSketchOn(XY)
-                    |> startProfileAt([0,0], %)"#
+                    |> startProfile(at = [0,0])"#
                     .to_string(),
             },
         })
@@ -2784,7 +3241,7 @@ async fn kcl_test_kcl_lsp_code_with_parse_error_and_ast_unchanged_but_has_diagno
     let server = kcl_lsp_server(false).await.unwrap();
 
     let code = r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2839,7 +3296,7 @@ async fn kcl_test_kcl_lsp_code_with_lint_and_ast_unchanged_but_has_diagnostics_r
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2893,7 +3350,7 @@ async fn kcl_test_kcl_lsp_code_with_lint_and_parse_error_and_ast_unchanged_but_h
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -2948,7 +3405,7 @@ async fn kcl_test_kcl_lsp_code_lint_and_ast_unchanged_but_has_diagnostics_reexec
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3009,7 +3466,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_new_lint() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3048,7 +3505,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3078,7 +3535,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_new_ast_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3117,7 +3574,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> ^^^^startProfileAt([-10, -10], %)
+  |> ^^^^startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0], tag = $seg01)
@@ -3147,7 +3604,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_parse_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3194,7 +3651,7 @@ part001 = startSketchOn(XY)
                 range: None,
                 range_length: None,
                 text: r#"part001 = startSketchOn(XY)
-  |> ^^^^startProfileAt([-10, -10], %)
+  |> ^^^^startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3232,7 +3689,7 @@ async fn kcl_test_kcl_lsp_code_lint_reexecute_had_lint_new_execution_error() {
 
     let code = r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
@@ -3284,7 +3741,7 @@ part001 = startSketchOn(XY)
                 range_length: None,
                 text: r#"LINT = 1
 part001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0], tag = $seg01)
   |> line(end = [0, 20], tag = $seg01)
   |> line(end = [-20, 0])
@@ -3434,14 +3891,14 @@ async fn test_kcl_lsp_on_hover_untitled_file_scheme() {
 foo = 42
 foo
 
-fn bar(x: string): string {
+fn bar(@x: string): string {
   return x
 }
 
 bar("an arg")
 
 startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [0, 10])
 "#
@@ -3489,7 +3946,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("foo: number = 42"));
+            assert!(value.contains("foo: number(default units) = 42"));
         }
         _ => unreachable!(),
     }
@@ -3510,7 +3967,7 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("bar(x: string): string"));
+            assert!(value.contains("bar(@x: string): string"));
         }
         _ => unreachable!(),
     }
@@ -3555,11 +4012,307 @@ startSketchOn(XY)
 
     match hover.unwrap().contents {
         tower_lsp::lsp_types::HoverContents::Markup(tower_lsp::lsp_types::MarkupContent { value, .. }) => {
-            assert!(value.contains("end?: [number]"));
+            assert!(value.contains("end?: Point2d"));
             assert!(value.contains("How far away (along the X and Y axes) should this line go?"));
         }
         _ => unreachable!(),
     }
 
     server.executor_ctx().await.clone().unwrap().close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_kcl_lsp_code_actions_lint_offset_planes() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"startSketchOn({
+    origin = { x = 0, y = -14.3, z = 0 },
+    xAxis = { x = 1, y = 0, z = 0 },
+    yAxis = { x = 0, y = 0, z = 1 },
+})
+|> startProfile(at = [0, 0])"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send diagnostics request.
+    let diagnostics = server
+        .diagnostic(tower_lsp::lsp_types::DocumentDiagnosticParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            partial_result_params: Default::default(),
+            work_done_progress_params: Default::default(),
+            identifier: None,
+            previous_result_id: None,
+        })
+        .await
+        .unwrap();
+
+    // Check the diagnostics.
+    let tower_lsp::lsp_types::DocumentDiagnosticReportResult::Report(diagnostics) = diagnostics else {
+        panic!("Expected diagnostics");
+    };
+
+    let tower_lsp::lsp_types::DocumentDiagnosticReport::Full(diagnostics) = diagnostics else {
+        panic!("Expected full diagnostics");
+    };
+    assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0].message,
+        "offsetPlane should be used to define a new plane offset from the origin"
+    );
+
+    // Make sure we get the suggestion data.
+    assert_eq!(
+        diagnostics.full_document_diagnostic_report.items[0]
+            .data
+            .clone()
+            .map(|d| serde_json::from_value::<LspSuggestion>(d).unwrap()),
+        Some((
+            Suggestion {
+                insert: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                source_range: SourceRange::new(14, 133, Default::default()),
+                title: "use offsetPlane instead".to_string(),
+            },
+            tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            }
+        ))
+    );
+
+    let diagnostic = diagnostics.full_document_diagnostic_report.items[0].clone();
+
+    // Run a code action.
+    let code_action = server
+        .code_action(tower_lsp::lsp_types::CodeActionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///testlint.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+            },
+            context: tower_lsp::lsp_types::CodeActionContext {
+                diagnostics: vec![diagnostic.clone()],
+                only: None,
+                trigger_kind: Default::default(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    assert!(code_action.is_some());
+
+    let code_action = code_action.unwrap();
+
+    assert_eq!(code_action.len(), 1);
+
+    assert_eq!(
+        code_action[0],
+        CodeActionOrCommand::CodeAction(tower_lsp::lsp_types::CodeAction {
+            title: "use offsetPlane instead".to_string(),
+            kind: Some(CodeActionKind::QUICKFIX),
+            diagnostics: Some(vec![diagnostic]),
+            edit: Some(WorkspaceEdit {
+                changes: Some(HashMap::from_iter(vec![(
+                    "file:///testlint.kcl".try_into().unwrap(),
+                    vec![TextEdit {
+                        range: tower_lsp::lsp_types::Range {
+                            start: tower_lsp::lsp_types::Position { line: 0, character: 14 },
+                            end: tower_lsp::lsp_types::Position { line: 4, character: 1 },
+                        },
+                        new_text: "offsetPlane(XZ, offset = -14.3)".to_string(),
+                    }],
+                )])),
+                document_changes: None,
+                change_annotations: None,
+            }),
+            command: None,
+            is_preferred: Some(true),
+            disabled: None,
+            data: None,
+        })
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_prepare_rename() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"thing= 1"#.to_string(),
+            },
+        })
+        .await;
+
+    // Send rename request.
+    let result = server
+        .prepare_rename(tower_lsp::lsp_types::TextDocumentPositionParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            position: tower_lsp::lsp_types::Position { line: 0, character: 2 },
+        })
+        .await
+        .unwrap()
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        PrepareRenameResponse::DefaultBehavior { default_behavior: true }
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_document_color() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#
+                    .to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_color_presentation() {
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    let text = r#"// Add color to a revolved solid.
+sketch001 = startSketchOn(XY)
+  |> circle(center = [15, 0], radius = 5)
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(color = '#ff0000', metalness = 90, roughness = 90)"#;
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: text.to_string(),
+            },
+        })
+        .await;
+
+    // Send document color request.
+    let result = server
+        .document_color(tower_lsp::lsp_types::DocumentColorParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorInformation {
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 0.0,
+                alpha: 1.0,
+            },
+        }]
+    );
+
+    // Send color presentation request.
+    let result = server
+        .color_presentation(tower_lsp::lsp_types::ColorPresentationParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+            range: tower_lsp::lsp_types::Range {
+                start: tower_lsp::lsp_types::Position { line: 4, character: 24 },
+                end: tower_lsp::lsp_types::Position { line: 4, character: 33 },
+            },
+            color: tower_lsp::lsp_types::Color {
+                red: 1.0,
+                green: 0.0,
+                blue: 1.0,
+                alpha: 1.0,
+            },
+            work_done_progress_params: Default::default(),
+            partial_result_params: Default::default(),
+        })
+        .await
+        .unwrap();
+
+    // Check the result.
+    assert_eq!(
+        result,
+        vec![tower_lsp::lsp_types::ColorPresentation {
+            label: "#ff00ff".to_string(),
+            text_edit: None,
+            additional_text_edits: None,
+        }]
+    );
 }

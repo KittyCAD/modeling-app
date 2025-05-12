@@ -7,7 +7,7 @@ import {
   createPipeExpression,
   createPipeSubstitution,
 } from '@src/lang/create'
-import { locateExtrudeDeclarator } from '@src/lang/modifyAst/addEdgeTreatment'
+import { locateVariableWithCallOrPipe } from '@src/lang/queryAst'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import { COMMAND_APPEARANCE_COLOR_DEFAULT } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { err } from '@src/lib/trap'
@@ -23,23 +23,20 @@ export function setAppearance({
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   const modifiedAst = structuredClone(ast)
 
-  // Locate the call (not necessarily an extrude here)
-  const result = locateExtrudeDeclarator(modifiedAst, nodeToEdit)
+  // Locate the call
+  const result = locateVariableWithCallOrPipe(modifiedAst, nodeToEdit)
   if (err(result)) {
     return result
   }
 
-  const declarator = result.extrudeDeclarator
+  const declarator = result.variableDeclarator
   const call = createCallExpressionStdLibKw(
     'appearance',
     createPipeSubstitution(),
     [createLabeledArg('color', createLiteral(color))]
   )
   // Modify the expression
-  if (
-    declarator.init.type === 'CallExpression' ||
-    declarator.init.type === 'CallExpressionKw'
-  ) {
+  if (declarator.init.type === 'CallExpressionKw') {
     // 1. case when no appearance exists, mutate in place
     declarator.init = createPipeExpression([declarator.init, call])
   } else if (declarator.init.type === 'PipeExpression') {

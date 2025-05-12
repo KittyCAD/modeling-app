@@ -12,7 +12,7 @@ fn cube(length, center) {
   p3 = [l + x, -l + y]
 
   return startSketchOn(XY)
-    |> startProfileAt(p0, %)
+    |> startProfile(at = p0)
     |> line(endAbsolute = p1)
     |> line(endAbsolute = p2)
     |> line(endAbsolute = p3)
@@ -21,7 +21,7 @@ fn cube(length, center) {
     |> extrude(length = length)
 }
 
-myCube = cube(40, [0, 0])
+myCube = cube(length = 40, center = [0, 0])
 
 // Error, after creating meaningful output.
 foo

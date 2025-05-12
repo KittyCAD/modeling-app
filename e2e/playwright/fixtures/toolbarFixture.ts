@@ -17,6 +17,8 @@ type LengthUnitLabel = (typeof baseUnitLabels)[keyof typeof baseUnitLabels]
 export class ToolbarFixture {
   public page: Page
 
+  projectName!: Locator
+  fileName!: Locator
   extrudeButton!: Locator
   loftButton!: Locator
   sweepButton!: Locator
@@ -27,6 +29,7 @@ export class ToolbarFixture {
   offsetPlaneButton!: Locator
   helixButton!: Locator
   startSketchBtn!: Locator
+  insertButton!: Locator
   lineBtn!: Locator
   tangentialArcBtn!: Locator
   circleBtn!: Locator
@@ -44,11 +47,16 @@ export class ToolbarFixture {
   featureTreePane!: Locator
   gizmo!: Locator
   gizmoDisabled!: Locator
-  insertButton!: Locator
+  loadButton!: Locator
+  /** User button for the user sidebar menu */
+  userSidebarButton!: Locator
+  signOutButton!: Locator
 
   constructor(page: Page) {
     this.page = page
 
+    this.projectName = page.getByTestId('app-header-project-name')
+    this.fileName = page.getByTestId('app-header-file-name')
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
     this.sweepButton = page.getByTestId('sweep')
@@ -59,6 +67,7 @@ export class ToolbarFixture {
     this.offsetPlaneButton = page.getByTestId('plane-offset')
     this.helixButton = page.getByTestId('helix')
     this.startSketchBtn = page.getByTestId('sketch')
+    this.insertButton = page.getByTestId('insert')
     this.lineBtn = page.getByTestId('line')
     this.tangentialArcBtn = page.getByTestId('tangential-arc')
     this.circleBtn = page.getByTestId('circle-center')
@@ -68,6 +77,7 @@ export class ToolbarFixture {
     this.fileTreeBtn = page.locator('[id="files-button-holder"]')
     this.createFileBtn = page.getByTestId('create-file-button')
     this.treeInputField = page.getByTestId('tree-input-field')
+    this.loadButton = page.getByTestId('add-file-to-project-pane-button')
 
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
@@ -80,7 +90,8 @@ export class ToolbarFixture {
     this.gizmo = page.getByTestId('gizmo')
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
 
-    this.insertButton = page.getByTestId('insert-pane-button')
+    this.userSidebarButton = page.getByTestId('user-sidebar-toggle')
+    this.signOutButton = page.getByTestId('user-sidebar-sign-out')
   }
 
   get logoLink() {
@@ -167,6 +178,13 @@ export class ToolbarFixture {
   openFile = async (fileName: string) => {
     await this.filePane.getByText(fileName).click()
   }
+  selectTangentialArc = async () => {
+    await this.page.getByRole('button', { name: 'caret down arcs:' }).click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-tangential-arc').click()
+  }
   selectCenterRectangle = async () => {
     await this.page
       .getByRole('button', { name: 'caret down rectangles:' })
@@ -204,6 +222,11 @@ export class ToolbarFixture {
     ).toBeVisible()
     await this.page.getByTestId('dropdown-three-point-arc').click()
   }
+  selectLine = async () => {
+    await this.page
+      .getByRole('button', { name: 'line Line', exact: true })
+      .click()
+  }
 
   async closePane(paneId: SidebarType) {
     return closePane(this.page, paneId + SIDEBAR_BUTTON_SUFFIX)
@@ -217,6 +240,12 @@ export class ToolbarFixture {
 
   async openFeatureTreePane() {
     return this.openPane(this.featureTreeId)
+  }
+
+  async waitForFeatureTreeToBeBuilt() {
+    await this.openFeatureTreePane()
+    await expect(this.page.getByText('Building feature tree')).not.toBeVisible()
+    await this.closeFeatureTreePane()
   }
   async closeFeatureTreePane() {
     await this.closePane(this.featureTreeId)

@@ -1016,7 +1016,6 @@ description: Result of parsing walkie-talkie.kcl
         "expression": {
           "body": [
             {
-              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1035,8 +1034,9 @@ description: Result of parsing walkie-talkie.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -1214,7 +1214,6 @@ description: Result of parsing walkie-talkie.kcl
         "expression": {
           "body": [
             {
-              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1233,8 +1232,9 @@ description: Result of parsing walkie-talkie.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -1480,7 +1480,6 @@ description: Result of parsing walkie-talkie.kcl
         "expression": {
           "body": [
             {
-              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1499,8 +1498,9 @@ description: Result of parsing walkie-talkie.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -1810,7 +1810,6 @@ description: Result of parsing walkie-talkie.kcl
         "expression": {
           "body": [
             {
-              "arguments": [],
               "callee": {
                 "abs_path": false,
                 "commentStart": 0,
@@ -1829,8 +1828,9 @@ description: Result of parsing walkie-talkie.kcl
               "commentStart": 0,
               "end": 0,
               "start": 0,
-              "type": "CallExpression",
-              "type": "CallExpression"
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
             },
             {
               "arguments": [
@@ -2247,6 +2247,31 @@ description: Result of parsing walkie-talkie.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             }
           }
         ],

@@ -1,6 +1,6 @@
+import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
-import { join } from 'path'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
@@ -62,7 +62,7 @@ function tomlStringOverWriteNamedViewUuids(toml: string): string {
 }
 
 test.describe('Named view tests', () => {
-  test.skip(runningOnWindows(), 'Windows line endings break snapshot matching')
+  test.fail(runningOnWindows(), 'Windows line endings break snapshot matching')
   test('Verify project.toml is not created', async ({ page }, testInfo) => {
     // Create project and load it
     const projectName = 'named-views'

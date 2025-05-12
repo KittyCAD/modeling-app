@@ -468,6 +468,19 @@ export function getSweepFromSuspectedPath(
   )
 }
 
+export function getCommonFacesForEdge(
+  artifact: SweepEdge | SegmentArtifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
+  const faces = getArtifactsOfTypes(
+    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
+    artifactGraph
+  )
+  if (err(faces)) return faces
+  if (faces.size === 0) return new Error('No common face found')
+  return [...faces.values()]
+}
+
 export function getSweepArtifactFromSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph
@@ -691,7 +704,7 @@ const onlyConsecutivePaths = (
     if (expr.type === 'VariableDeclaration') {
       const init = expr.declaration?.init
       if (!init) return false
-      if (init.type === 'CallExpression') {
+      if (init.type === 'CallExpressionKw') {
         return false
       }
       if (init.type === 'BinaryExpression' && isNodeSafe(init)) {
@@ -738,7 +751,7 @@ const onlyConsecutivePaths = (
 }
 
 export function getPathsFromPlaneArtifact(
-  planeArtifact: PlaneArtifact,
+  planeArtifact: PlaneArtifact | WallArtifact | CapArtifact,
   artifactGraph: ArtifactGraph,
   ast: Program
 ): PathToNode[] {

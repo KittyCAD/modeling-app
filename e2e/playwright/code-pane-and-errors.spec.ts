@@ -1,16 +1,12 @@
+import { join } from 'path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import fsp from 'fs/promises'
-import { join } from 'path'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import {
-  executorInputPath,
-  getUtils,
-  orRunWhenFullSuiteEnabled,
-} from '@e2e/playwright/test-utils'
+import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
+test.describe('Code pane and errors', () => {
   test('Typing KCL errors induces a badge on the code pane button', async ({
     page,
     homePage,
@@ -26,7 +22,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
         `@settings(defaultLengthUnit = in)
 // Extruded Triangle
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> line(end = [-5, 10])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -57,7 +53,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     editor,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -131,7 +126,6 @@ extrude001 = extrude(sketch001, length = 5)`
     homePage,
     context,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
@@ -144,7 +138,9 @@ extrude001 = extrude(sketch001, length = 5)`
 
     // Ensure badge is present
     const codePaneButtonHolder = page.locator('#code-button-holder')
-    await expect(codePaneButtonHolder).toContainText('notification')
+    await expect(codePaneButtonHolder).toContainText('notification', {
+      timeout: 20_000,
+    })
 
     // Ensure we have no errors in the gutter, since error out of view.
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()

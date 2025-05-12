@@ -3,7 +3,13 @@ use schemars::JsonSchema;
 use serde::Serialize;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
-use crate::{lsp::IntoDiagnostic, walk::Node, SourceRange};
+use crate::{
+    errors::Suggestion,
+    lsp::IntoDiagnostic,
+    parsing::ast::types::{Node as AstNode, Program},
+    walk::Node,
+    SourceRange,
+};
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -11,15 +17,15 @@ use crate::{lsp::IntoDiagnostic, walk::Node, SourceRange};
 /// but it can also be manually implemented as required.
 pub trait Rule<'a> {
     /// Check the AST at this specific node for any Finding(s).
-    fn check(&self, node: Node<'a>) -> Result<Vec<Discovered>>;
+    fn check(&self, node: Node<'a>, prog: &AstNode<Program>) -> Result<Vec<Discovered>>;
 }
 
 impl<'a, FnT> Rule<'a> for FnT
 where
-    FnT: Fn(Node<'a>) -> Result<Vec<Discovered>>,
+    FnT: Fn(Node<'a>, &AstNode<Program>) -> Result<Vec<Discovered>>,
 {
-    fn check(&self, n: Node<'a>) -> Result<Vec<Discovered>> {
-        self(n)
+    fn check(&self, n: Node<'a>, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+        self(n, prog)
     }
 }
 
@@ -40,6 +46,22 @@ pub struct Discovered {
 
     /// Is this discovered issue overridden by the programmer?
     pub overridden: bool,
+
+    /// Suggestion to fix the issue.
+    pub suggestion: Option<Suggestion>,
+}
+
+impl Discovered {
+    #[cfg(test)]
+    pub fn apply_suggestion(&self, src: &str) -> Option<String> {
+        let suggestion = self.suggestion.as_ref()?;
+        Some(format!(
+            "{}{}{}",
+            &src[0..suggestion.source_range.start()],
+            suggestion.insert,
+            &src[suggestion.source_range.end()..]
+        ))
+    }
 }
 
 #[cfg(feature = "pyo3")]
@@ -80,6 +102,7 @@ impl IntoDiagnostic for &Discovered {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let message = self.finding.title.to_owned();
         let source_range = self.pos;
+        let edit = self.suggestion.as_ref().map(|s| s.to_lsp_edit(code));
 
         vec![Diagnostic {
             range: source_range.to_lsp_range(code),
@@ -91,7 +114,7 @@ impl IntoDiagnostic for &Discovered {
             message,
             related_information: None,
             tags: None,
-            data: None,
+            data: edit.map(|e| serde_json::to_value(e).unwrap()),
         }]
     }
 
@@ -121,12 +144,13 @@ pub struct Finding {
 
 impl Finding {
     /// Create a new Discovered finding at the specific Position.
-    pub fn at(&self, description: String, pos: SourceRange) -> Discovered {
+    pub fn at(&self, description: String, pos: SourceRange, suggestion: Option<Suggestion>) -> Discovered {
         Discovered {
             description,
             finding: self.clone(),
             pos,
             overridden: false,
+            suggestion,
         }
     }
 }
@@ -182,7 +206,11 @@ mod test {
 
     macro_rules! assert_no_finding {
         ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
+            let prog = $crate::Program::parse_no_errs($kcl).unwrap();
+
+            // Ensure the code still works.
+            $crate::execution::parse_execute($kcl).await.unwrap();
+
             for discovered_finding in prog.lint($check).unwrap() {
                 if discovered_finding.finding == $finding {
                     assert!(false, "Finding {:?} was emitted", $finding.code);
@@ -192,11 +220,28 @@ mod test {
     }
 
     macro_rules! assert_finding {
-        ( $check:expr, $finding:expr, $kcl:expr ) => {
-            let prog = $crate::parsing::top_level_parse($kcl).unwrap();
+        ( $check:expr, $finding:expr, $kcl:expr, $output:expr, $suggestion:expr ) => {
+            let prog = $crate::Program::parse_no_errs($kcl).unwrap();
+
+            // Ensure the code still works.
+            $crate::execution::parse_execute($kcl).await.unwrap();
 
             for discovered_finding in prog.lint($check).unwrap() {
+                pretty_assertions::assert_eq!(discovered_finding.description, $output,);
+
                 if discovered_finding.finding == $finding {
+                    pretty_assertions::assert_eq!(
+                        discovered_finding.suggestion.clone().map(|s| s.insert),
+                        $suggestion,
+                    );
+
+                    if discovered_finding.suggestion.is_some() {
+                        // Apply the suggestion to the source code.
+                        let code = discovered_finding.apply_suggestion($kcl).unwrap();
+
+                        // Ensure the code still works.
+                        $crate::execution::parse_execute(&code).await.unwrap();
+                    }
                     return;
                 }
             }
@@ -205,18 +250,18 @@ mod test {
     }
 
     macro_rules! test_finding {
-        ( $name:ident, $check:expr, $finding:expr, $kcl:expr ) => {
-            #[test]
-            fn $name() {
-                $crate::lint::rule::assert_finding!($check, $finding, $kcl);
+        ( $name:ident, $check:expr, $finding:expr, $kcl:expr, $output:expr, $suggestion:expr ) => {
+            #[tokio::test]
+            async fn $name() {
+                $crate::lint::rule::assert_finding!($check, $finding, $kcl, $output, $suggestion);
             }
         };
     }
 
     macro_rules! test_no_finding {
         ( $name:ident, $check:expr, $finding:expr, $kcl:expr ) => {
-            #[test]
-            fn $name() {
+            #[tokio::test]
+            async fn $name() {
                 $crate::lint::rule::assert_no_finding!($check, $finding, $kcl);
             }
         };

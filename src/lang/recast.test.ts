@@ -57,7 +57,7 @@ newVar = myVar + 1
   })
   it('test with function call', () => {
     const code = `myVar = "hello"
-log(5, myVar)
+log(5, exp = myVar)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -70,7 +70,7 @@ log(5, myVar)
       '  return a + b',
       '}',
       'theVar = 60',
-      'magicNum = funcN(9, theVar)',
+      'magicNum = funcN(a = 9, b = theVar)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -79,7 +79,7 @@ log(5, myVar)
   })
   it('recast sketch declaration', () => {
     let code = `mySketch = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [0, 1], tag = $myPath)
   |> line(endAbsolute = [1, 1])
   |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -93,11 +93,11 @@ log(5, myVar)
   it('sketch piped into callExpression', () => {
     const code = [
       'mySk1 = startSketchOn(XY)',
-      '  |> startProfileAt([0, 0], %)',
+      '  |> startProfile(at = [0, 0])',
       '  |> line(endAbsolute = [1, 1])',
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
       '  |> line(endAbsolute = [1, 1])',
-      '  |> rx(90, %)',
+      '  |> rx(90)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -106,7 +106,7 @@ log(5, myVar)
   })
   it('recast BinaryExpression piped into CallExpression', () => {
     const code = [
-      'fn myFn(a) {',
+      'fn myFn(@a) {',
       '  return a + 1',
       '}',
       'myVar = 5 + 1',
@@ -239,12 +239,12 @@ key = 'c'
   it('comments in a pipe expression', () => {
     const code = [
       'mySk1 = startSketchOn(XY)',
-      '  |> startProfileAt([0, 0], %)',
+      '  |> startProfile(at = [0, 0])',
       '  |> line(endAbsolute = [1, 1])',
       '  |> line(endAbsolute = [0, 1], tag = $myTag)',
       '  |> line(endAbsolute = [1, 1])',
       '  // a comment',
-      '  |> rx(90, %)',
+      '  |> rx(90)',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -256,7 +256,7 @@ key = 'c'
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   // comment here
   |> line(endAbsolute = [0, 1], tag = $myTag)
@@ -264,12 +264,12 @@ mySk1 = startSketchOn(XY)
   here
   */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
+  |> ry(45)
 
 
-  |> rx(45, %)
+  |> rx(45)
 /*
 one more for good measure
 */
@@ -280,17 +280,17 @@ one more for good measure
     expect(recasted).toBe(`/* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 1])
   // comment here
   |> line(endAbsolute = [0, 1], tag = $myTag)
   |> line(endAbsolute = [1, 1]) /* and
   here */
   // a comment between pipe expression statements
-  |> rx(90, %)
+  |> rx(90)
   // and another with just white space between others below
-  |> ry(45, %)
-  |> rx(45, %)
+  |> ry(45)
+  |> rx(45)
 /* one more for good measure */
 `)
   })
@@ -298,21 +298,21 @@ mySk1 = startSketchOn(XY)
 
 describe('testing call Expressions in BinaryExpressions and UnaryExpressions', () => {
   it('nested callExpression in binaryExpression', () => {
-    const code = 'myVar = 2 + min(100, legLen(5, 3))'
+    const code = 'myVar = 2 + min([100, legLen(hypotenuse = 5, leg = 3)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('nested callExpression in unaryExpression', () => {
-    const code = 'myVar = -min(100, legLen(5, 3))'
+    const code = 'myVar = -min([100, legLen(hypotenuse = 5, leg = 3)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
     expect(recasted.trim()).toBe(code)
   })
   it('with unaryExpression in callExpression', () => {
-    const code = 'myVar = min(5, -legLen(5, 4))'
+    const code = 'myVar = min([5, -legLen(hypotenuse = 5, leg = 4)])'
     const { ast } = code2ast(code)
     const recasted = recast(ast)
     if (err(recasted)) throw recasted
@@ -321,8 +321,8 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
   it('with unaryExpression in sketch situation', () => {
     const code = [
       'part001 = startSketchOn(XY)',
-      '  |> startProfileAt([0, 0])',
-      '  |> line(end = [-2.21, -legLen(5, min(3, 999))])',
+      '  |> startProfile(at = [0, 0])',
+      '  |> line(end = [\n       -2.21,\n       -legLen(hypotenuse = 5, leg = min([3, 999]))\n     ])',
     ].join('\n')
     const { ast } = code2ast(code)
     const recasted = recast(ast)
@@ -334,14 +334,10 @@ describe('testing call Expressions in BinaryExpressions and UnaryExpressions', (
 describe('it recasts wrapped object expressions in pipe bodies with correct indentation', () => {
   it('with a single line', () => {
     const code = `part001 = startSketchOn(XY)
-  |> startProfileAt([-0.01, -0.08], %)
+  |> startProfile(at = [-0.01, -0.08])
   |> line(end = [0.62, 4.15], tag = $seg01)
   |> line(end = [2.77, -1.24])
-  |> angledLineThatIntersects({
-       angle = 201,
-       offset = -1.35,
-       intersectTag = $seg01
-     }, %)
+  |> angledLineThatIntersects(angle = 201, offset = -1.35, intersectTag = $seg01)
   |> line(end = [-0.42, -1.72])
 `
     const { ast } = code2ast(code)
@@ -350,11 +346,7 @@ describe('it recasts wrapped object expressions in pipe bodies with correct inde
     expect(recasted).toBe(code)
   })
   it('recasts wrapped object expressions NOT in pipe body correctly', () => {
-    const code = `angledLineThatIntersects({
-  angle = 201,
-  offset = -1.35,
-  intersectTag = $seg01
-}, %)
+    const code = `angledLineThatIntersects(angle = 201, offset = -1.35, intersectTag = $seg01)
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)

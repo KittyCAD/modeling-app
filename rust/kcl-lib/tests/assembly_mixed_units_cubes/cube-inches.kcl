@@ -1,7 +1,7 @@
 @settings(defaultLengthUnit = in)
 
-sketch001 = startSketchOn('XY')
-cubeIn = startProfileAt([-10, -10], sketch001)
+sketch001 = startSketchOn(XY)
+cubeIn = startProfile(sketch001, at = [-10, -10])
   |> xLine(length = 5)
   |> yLine(length = -5)
   |> xLine(length = -5)

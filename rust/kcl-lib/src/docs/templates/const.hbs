@@ -1,33 +1,32 @@
 ---
 title: "{{name}}"
+subtitle: "Constant in {{module}}"
 excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
 
 {{#if deprecated}}
-**WARNING:** This function is deprecated.
+**WARNING:** This constant is deprecated.
 
 {{/if}}
 {{{summary}}}
 
-{{{description}}}
-
-```js
+```kcl
 {{{name}}}{{#if type_}}: {{{type_}}}{{/if}}{{#if value}} = {{{value}}}{{/if}}
 ```
+
+{{{description}}}
 
 {{#if examples}}
 ### Examples
 
 {{#each examples}}
-```js
+```kcl
 {{{this.content}}}
 ```
 
-{{#unless @root.is_utilities}}
 ![Rendered example of {{@root.name}} {{@index}}](data:image/png;base64,{{{this.image_base64}}})
 
-{{/unless}}
 {{/each}}
 {{/if}}
 

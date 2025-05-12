@@ -153,24 +153,6 @@ description: Result of parsing pipe-with-bend.kcl
             "type": "Identifier"
           },
           "init": {
-            "arguments": [
-              {
-                "abs_path": false,
-                "commentStart": 0,
-                "end": 0,
-                "name": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "name": "XZ",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "path": [],
-                "start": 0,
-                "type": "Name",
-                "type": "Name"
-              }
-            ],
             "callee": {
               "abs_path": false,
               "commentStart": 0,
@@ -189,8 +171,24 @@ description: Result of parsing pipe-with-bend.kcl
             "commentStart": 0,
             "end": 0,
             "start": 0,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "abs_path": false,
+              "commentStart": 0,
+              "end": 0,
+              "name": {
+                "commentStart": 0,
+                "end": 0,
+                "name": "XZ",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
+              "start": 0,
+              "type": "Name",
+              "type": "Name"
+            }
           },
           "start": 0,
           "type": "VariableDeclarator"
@@ -200,7 +198,7 @@ description: Result of parsing pipe-with-bend.kcl
         "preComments": [
           "",
           "",
-          "// Create a sketch in the 'XZ' plane"
+          "// Create a sketch in the XZ plane"
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -557,27 +555,30 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "arguments": [
                   {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "name": {
+                    "type": "LabeledArg",
+                    "label": {
                       "commentStart": 0,
                       "end": 0,
-                      "name": "innerProfile",
+                      "name": "tool",
                       "start": 0,
                       "type": "Identifier"
                     },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  {
-                    "commentStart": 0,
-                    "end": 0,
-                    "start": 0,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "arg": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "name": "innerProfile",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
                   }
                 ],
                 "callee": {
@@ -587,7 +588,7 @@ description: Result of parsing pipe-with-bend.kcl
                   "name": {
                     "commentStart": 0,
                     "end": 0,
-                    "name": "hole",
+                    "name": "subtract2d",
                     "start": 0,
                     "type": "Identifier"
                   },
@@ -598,8 +599,9 @@ description: Result of parsing pipe-with-bend.kcl
                 "commentStart": 0,
                 "end": 0,
                 "start": 0,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               }
             ],
             "commentStart": 0,
@@ -802,6 +804,31 @@ description: Result of parsing pipe-with-bend.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             }
           }
         ],

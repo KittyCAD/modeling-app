@@ -22,9 +22,9 @@ description: Variables in memory after executing angled_line.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 135,
-            "end": 141,
-            "start": 135,
+            "commentStart": 133,
+            "end": 139,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -92,9 +92,9 @@ description: Variables in memory after executing angled_line.kcl
               15.04
             ],
             "tag": {
-              "commentStart": 135,
-              "end": 141,
-              "start": 135,
+              "commentStart": 133,
+              "end": 139,
+              "start": 133,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -185,10 +185,8 @@ description: Variables in memory after executing angled_line.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -197,12 +195,14 @@ description: Variables in memory after executing angled_line.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -210,19 +210,8 @@ description: Variables in memory after executing angled_line.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -260,7 +249,8 @@ description: Variables in memory after executing angled_line.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {

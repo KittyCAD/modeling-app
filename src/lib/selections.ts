@@ -19,7 +19,6 @@ import type { PathToNodeMap } from '@src/lang/std/sketchcombos'
 import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
 import type {
   ArtifactGraph,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Program,
@@ -39,12 +38,14 @@ import {
 import { err } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
+  isArray,
   isNonNullable,
   isOverlap,
   uuidv4,
 } from '@src/lib/utils'
-import { engineStreamActor } from '@src/machines/appMachine'
+import { engineStreamActor } from '@src/lib/singletons'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
+import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -107,6 +108,18 @@ export async function getEventForSelectWithPoint({
   }
 
   let _artifact = kclManager.artifactGraph.get(data.entity_id)
+  if (!_artifact) {
+    // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
+    // we should still return an empty singleCodeCursor to plug into the selection logic
+    // (i.e. if the user is holding shift they can keep selecting)
+    // but we should also put up a toast
+    // toast.error('some edges or faces are not currently selectable')
+    showUnsupportedSelectionToast()
+    return {
+      type: 'Set selection',
+      data: { selectionType: 'singleCodeCursor' },
+    }
+  }
   const codeRefs = getCodeRefsByArtifactId(
     data.entity_id,
     kclManager.artifactGraph
@@ -340,10 +353,10 @@ function updateSceneObjectColors(codeBasedSelections: Selection[]) {
 
   Object.values(sceneEntitiesManager.activeSegments).forEach((segmentGroup) => {
     if (!SEGMENT_BODIES_PLUS_PROFILE_START.includes(segmentGroup?.name)) return
-    const nodeMeta = getNodeFromPath<Node<CallExpression | CallExpressionKw>>(
+    const nodeMeta = getNodeFromPath<Node<CallExpressionKw>>(
       updated,
       segmentGroup.userData.pathToNode,
-      ['CallExpression', 'CallExpressionKw']
+      ['CallExpressionKw']
     )
     if (err(nodeMeta)) return
     const node = nodeMeta.node
@@ -499,8 +512,11 @@ export function canSubmitSelectionArg(
 }
 
 /**
- * Find the index of the last range where range[0] < targetStart
- * This is used as a starting point for linear search of overlapping ranges
+ * Find the index of the last range where range.start < targetStart. When there
+ * are ranges with equal start positions just before the targetStart, the first
+ * one is returned. The returned index can be used as a starting point for
+ * linear search of overlapping ranges.
+ *
  * @param index The sorted array of ranges to search through
  * @param targetStart The start position to compare against
  * @returns The index of the last range where range[0] < targetStart
@@ -509,6 +525,10 @@ export function findLastRangeStartingBefore(
   index: ArtifactIndex,
   targetStart: number
 ): number {
+  if (index.length === 0) {
+    return 0
+  }
+
   let left = 0
   let right = index.length - 1
   let lastValidIndex = 0
@@ -527,7 +547,21 @@ export function findLastRangeStartingBefore(
     }
   }
 
-  return lastValidIndex
+  // We may have passed the correct index. Consider what happens when there are
+  // duplicates. We found the last one, but earlier ones need to be checked too.
+  let resultIndex = lastValidIndex
+  let resultRange = index[resultIndex].range
+  for (let i = lastValidIndex - 1; i >= 0; i--) {
+    const range = index[i].range
+    if (range[0] === resultRange[0]) {
+      resultIndex = i
+      resultRange = range
+    } else {
+      break
+    }
+  }
+
+  return resultIndex
 }
 
 function findOverlappingArtifactsFromIndex(
@@ -659,7 +693,7 @@ export async function sendSelectEventToEngine(
     engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
-  const res = await engineCommandManager.sendSceneCommand({
+  let res = await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_with_point',
@@ -668,6 +702,13 @@ export async function sendSelectEventToEngine(
     },
     cmd_id: uuidv4(),
   })
+  if (!res) {
+    return Promise.reject('no response')
+  }
+
+  if (isArray(res)) {
+    res = res[0]
+  }
   if (
     res?.success &&
     res?.resp?.type === 'modeling' &&

@@ -1,4 +1,6 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import path from 'path'
+import fsp from 'fs/promises'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -22,8 +24,9 @@ import { expect, test } from '@e2e/playwright/zoo-test'
  *
  */
 
-const file = `sketch001 = startSketchOn(XZ)
-profile001 = startProfileAt([57.81, 250.51], sketch001)
+const fileWithImport = `import "b.kcl" as b
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [57.81, 250.51])
   |> line(end = [121.13, 56.63], tag = $seg02)
   |> line(end = [83.37, -34.61], tag = $seg01)
   |> line(end = [19.66, -116.4])
@@ -32,15 +35,18 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
   |> close()
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn(XZ)
-  |> startProfileAt([-73.64, -42.89], %)
+  |> startProfile(at = [-73.64, -42.89])
   |> xLine(length = 173.71)
   |> line(end = [-22.12, -94.4])
   |> xLine(length = -156.98)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
-sketch003 = startSketchOn(XY)
-  |> startProfileAt([52.92, 157.81], %)
+b
+`
+
+const importedFile = `sketch003 = startSketchOn(XY)
+  |> startProfile(at = [52.92, 157.81])
   |> angledLine(angle = 0, length = 176.4, tag = $rectangleSegmentA001)
   |> angledLine(
        angle = segAng(rectangleSegmentA001) - 90,
@@ -50,17 +56,28 @@ sketch003 = startSketchOn(XY)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude003 = extrude(sketch003, length = 20)
+extrude(sketch003, length = 20)
 `
+
 test.describe('edit with AI example snapshots', () => {
   test(
     `change colour`,
-    { tag: '@snapshot' },
+    // TODO this is more of a snapshot, but atm it needs to be manually run locally to update the files
+    { tag: ['@electron'] },
     async ({ context, homePage, cmdBar, editor, page, scene }) => {
-      await context.addInitScript((file) => {
-        localStorage.setItem('persistCode', file)
-      }, file)
-      await homePage.goToModelingScene()
+      const project = 'test-dir'
+      await context.folderSetupFn(async (dir) => {
+        const projectDir = path.join(dir, project)
+        await fsp.mkdir(projectDir, { recursive: true })
+
+        // Create the imported file
+        await fsp.writeFile(path.join(projectDir, 'b.kcl'), importedFile)
+
+        // Create the main file that imports
+        await fsp.writeFile(path.join(projectDir, 'main.kcl'), fileWithImport)
+      })
+
+      await homePage.openProject(project)
       await scene.settled(cmdBar)
 
       const body1CapCoords = { x: 571, y: 351 }
@@ -74,7 +91,7 @@ test.describe('edit with AI example snapshots', () => {
         await clickBody1Cap()
         await editor.expectState({
           highlightedCode: '',
-          activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+          activeLines: ['|>startProfile(at=[-73.64,-42.89])'],
           diagnostics: [],
         })
       })

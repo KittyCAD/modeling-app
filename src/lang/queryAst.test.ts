@@ -1,10 +1,12 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 
+import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
-  createCallExpression,
-  createCallExpressionStdLib,
-  createLiteral,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
   createPipeSubstitution,
 } from '@src/lang/create'
 import {
@@ -15,8 +17,8 @@ import {
   getNodeFromPath,
   hasExtrudeSketch,
   hasSketchPipeBeenExtruded,
+  isCursorInFunctionDefinition,
   isNodeSafeToReplace,
-  isTypeInValue,
   traverse,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -26,6 +28,7 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
+import { type Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 
@@ -42,16 +45,17 @@ baseThickHalf = baseThick / 2
 halfArmAngle = armAngle / 2
 
 arrExpShouldNotBeIncluded = [1, 2, 3]
-objExpShouldNotBeIncluded = { a: 1, b: 2, c: 3 }
+objExpShouldNotBeIncluded = { a = 1, b = 2, c = 3 }
 
 part001 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> yLine(endAbsolute = 1)
   |> xLine(length = 3.84) // selection-range-7ish-before-this
 
 variableBelowShouldNotBeIncluded = 3
 `
     const rangeStart = code.indexOf('// selection-range-7ish-before-this') - 7
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const ast = assertParse(code)
     const execState = await enginelessExecutor(ast)
 
@@ -76,8 +80,8 @@ variableBelowShouldNotBeIncluded = 3
 
 describe('testing argIsNotIdentifier', () => {
   const code = `part001 = startSketchOn(XY)
-|> startProfileAt([-1.2, 4.83], %)
-|> line(end = [2.8, 0])
+|> startProfile(at = [-1.2, 4.83])
+|> line(%, end = [2.8, 0])
 |> angledLine(angle = 100 + 100, length = 3.09)
 |> angledLine(angle = abc, length = 3.09)
 |> angledLine(angle = def('yo'), length = 3.09)
@@ -88,6 +92,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe binaryExpression', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('100 + 100') + 2
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -104,6 +109,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe Identifier', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('abc')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -113,35 +119,43 @@ yo2 = hmm([identifierGuy + 5])`
     expect(result.value?.type).toBe('Name')
     expect(code.slice(result.value.start, result.value.end)).toBe('abc')
   })
-  it('find a safe CallExpression', () => {
+  it('find a safe CallExpressionKw', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('def')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
     )
     if (err(result)) throw result
     expect(result.isSafe).toBe(true)
-    expect(result.value?.type).toBe('CallExpression')
+    expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe("def('yo')")
     const replaced = result.replacer(structuredClone(ast), 'replaceName')
     if (err(replaced)) throw replaced
     const outCode = recast(replaced.modifiedAst)
     expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
-  it('find an UNsafe CallExpression, as it has a PipeSubstitution', () => {
+  it('find an UNsafe CallExpressionKw, as it has a PipeSubstitution', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('ghi')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const range = topLevelRange(rangeStart, rangeStart)
     const result = isNodeSafeToReplace(ast, range)
     if (err(result)) throw result
     expect(result.isSafe).toBe(false)
-    expect(result.value?.type).toBe('CallExpression')
+    expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe('ghi(%)')
   })
   it('find an UNsafe Identifier, as it is a callee', () => {
     const ast = assertParse(code)
-    const rangeStart = code.indexOf('ine(end = [2.8,')
+    // TODO:
+    // This should really work even without the % being explicitly set here,
+    // because the unlabeled arg will default to %. However, the `isNodeSafeToReplacePath`
+    // function doesn't yet check for this (because it cannot differentiate between
+    // a function that relies on this default unlabeled arg, and a function with no unlabeled arg)
+    const rangeStart = code.indexOf('line(%, end = [2.8,')
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -150,12 +164,13 @@ yo2 = hmm([identifierGuy + 5])`
     expect(result.isSafe).toBe(false)
     expect(result.value?.type).toBe('CallExpressionKw')
     expect(code.slice(result.value.start, result.value.end)).toBe(
-      'line(end = [2.8, 0])'
+      'line(%, end = [2.8, 0])'
     )
   })
   it("find a safe BinaryExpression that's assigned to a variable", () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('5 + 6') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -172,6 +187,7 @@ yo2 = hmm([identifierGuy + 5])`
   it('find a safe BinaryExpression that has a CallExpression within', () => {
     const ast = assertParse(code)
     const rangeStart = code.indexOf('jkl') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -188,10 +204,10 @@ yo2 = hmm([identifierGuy + 5])`
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`angledLine(angle = replaceName, length = 3.09)`)
   })
-  it('find a safe BinaryExpression within a CallExpression', () => {
+  it('find a safe BinaryExpression within a CallExpressionKw', () => {
     const ast = assertParse(code)
-
     const rangeStart = code.indexOf('identifierGuy') + 1
+    expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
       topLevelRange(rangeStart, rangeStart)
@@ -209,34 +225,11 @@ yo2 = hmm([identifierGuy + 5])`
     const outCode = recast(modifiedAst)
     expect(outCode).toContain(`yo2 = hmm([replaceName])`)
   })
-
-  describe('testing isTypeInValue', () => {
-    it('finds the pipeSubstituion', () => {
-      const val = createCallExpression('yoyo', [
-        createArrayExpression([
-          createLiteral(1),
-          createCallExpression('yoyo2', [createPipeSubstitution()]),
-          createLiteral('hey'),
-        ]),
-      ])
-      expect(isTypeInValue(val, 'PipeSubstitution')).toBe(true)
-    })
-    it('There is no pipeSubstituion', () => {
-      const val = createCallExpression('yoyo', [
-        createArrayExpression([
-          createLiteral(1),
-          createCallExpression('yoyo2', [createLiteral(5)]),
-          createLiteral('hey'),
-        ]),
-      ])
-      expect(isTypeInValue(val, 'PipeSubstitution')).toBe(false)
-    })
-  })
 })
 
 describe('testing getNodePathFromSourceRange', () => {
   const code = `part001 = startSketchOn(XY)
-  |> startProfileAt([0.39, -0.05], %)
+  |> startProfile(at = [0.39, -0.05])
   |> line(end = [0.94, 2.61])
   |> line(end = [-0.21, -1.4])`
   it('finds the second line when cursor is put at the end', () => {
@@ -380,7 +373,7 @@ describe('testing hasExtrudeSketch', () => {
   it('find sketch', async () => {
     const exampleCode = `length001 = 2
 part001 = startSketchOn(XY)
-  |> startProfileAt([-1.41, 3.46], %)
+  |> startProfile(at = [-1.41, 3.46])
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine(angle = -35, length = length001)
   |> line(end = [-3.22, -7.36])
@@ -400,7 +393,7 @@ part001 = startSketchOn(XY)
   it('find solid', async () => {
     const exampleCode = `length001 = 2
 part001 = startSketchOn(XY)
-  |> startProfileAt([-1.41, 3.46], %)
+  |> startProfile(at = [-1.41, 3.46])
   |> line(end = [19.49, 1.16], tag = $seg01)
   |> angledLine(angle = -35, length = length001)
   |> line(end = [-3.22, -7.36])
@@ -436,7 +429,7 @@ part001 = startSketchOn(XY)
 
 describe('Testing findUsesOfTagInPipe', () => {
   const exampleCode = `part001 = startSketchOn(-XZ)
-|> startProfileAt([68.12, 156.65], %)
+|> startProfile(at = [68.12, 156.65])
 |> line(end = [306.21, 198.82])
 |> line(end = [306.21, 198.85], tag = $seg01)
 |> angledLine(angle = -65, length = segLen(seg01))
@@ -448,6 +441,7 @@ describe('Testing findUsesOfTagInPipe', () => {
     const lineOfInterest = `198.85], tag = $seg01`
     const characterIndex =
       exampleCode.indexOf(lineOfInterest) + lineOfInterest.length
+    expect(characterIndex).toBeGreaterThanOrEqual(0)
     const pathToNode = getNodePathFromSourceRange(
       ast,
       topLevelRange(characterIndex, characterIndex)
@@ -475,7 +469,7 @@ describe('Testing findUsesOfTagInPipe', () => {
 
 describe('Testing hasSketchPipeBeenExtruded', () => {
   const exampleCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([3.29, 7.86], %)
+  |> startProfile(at = [3.29, 7.86])
   |> line(end = [2.48, 2.44])
   |> line(end = [2.66, 1.17])
   |> line(end = [3.75, 0.46])
@@ -489,13 +483,13 @@ describe('Testing hasSketchPipeBeenExtruded', () => {
   |> close()
 extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, face = seg01)
-  |> startProfileAt([-12.94, 6.6], %)
+  |> startProfile(at = [-12.94, 6.6])
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 sketch003 = startSketchOn(extrude001, face = 'END')
-  |> startProfileAt([8.14, 2.8], %)
+  |> startProfile(at = [8.14, 2.8])
   |> line(end = [-1.24, 4.39])
   |> line(end = [3.79, 1.91])
   |> line(end = [1.77, -2.95])
@@ -559,14 +553,14 @@ sketch003 = startSketchOn(extrude001, face = 'END')
 describe('Testing doesSceneHaveSweepableSketch', () => {
   it('finds sketch001 pipe to be extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([3.29, 7.86], %)
+  |> startProfile(at = [3.29, 7.86])
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
   |> line(end = [-17.67, 0.85])
   |> close()
 extrude001 = extrude(sketch001, length = 10)
 sketch002 = startSketchOn(extrude001, face = $seg01)
-  |> startProfileAt([-12.94, 6.6], %)
+  |> startProfile(at = [-12.94, 6.6])
   |> line(end = [2.45, -0.2])
   |> line(end = [-2, -1.25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -589,7 +583,7 @@ sketch002 = startSketchOn(plane001)
   })
   it('should recognize that sketch001 has been extruded', async () => {
     const exampleCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([3.29, 7.86], %)
+  |> startProfile(at = [3.29, 7.86])
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
   |> line(end = [-17.67, 0.85])
@@ -641,18 +635,18 @@ describe('Testing traverse and pathToNode', () => {
       'very nested, array, object, callExpression, array, memberExpression',
       '.yo',
     ],
-  ])('testing %s', async (testName, literalOfInterest) => {
+  ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
 sketch001 = startSketchOn(XZ)
-  |> startProfileAt([3.29, 7.86], %)
+  |> startProfile(at = [3.29, 7.86])
   |> line(end = [2.48, 2.44])
   |> line(end = [-3.86, -2.73])
   |> line(end = [-17.67, 0.85])
   |> close()
-bing = { yo: 55 }
+bing = { yo = 55 }
 myNestedVar = [
   {
-  prop:   line(end = [bing.yo, 21], tag = sketch001)
+  prop =   line(end = [bing.yo, 21], tag = sketch001)
 }
 ]
   `
@@ -686,31 +680,31 @@ myNestedVar = [
 describe('Testing specific sketch getNodeFromPath workflow', () => {
   it('should parse the code', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
-|> startProfileAt([0.02, 0.22], %)
+|> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)`
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])`
     const ast = assertParse(openSketch)
     expect(ast.start).toEqual(0)
-    expect(ast.end).toEqual(243)
+    expect(ast.end).toEqual(231)
   })
   it('should find the location to add new lineTo', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
-|> startProfileAt([0.02, 0.22], %)
+|> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)`
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])`
     const ast = assertParse(openSketch)
 
-    const sketchSnippet = `startProfileAt([0.02, 0.22], %)`
+    const sketchSnippet = `startProfile(at = [0.02, 0.22])`
     const sketchRange = topLevelRange(
       openSketch.indexOf(sketchSnippet),
       openSketch.indexOf(sketchSnippet) + sketchSnippet.length
@@ -721,51 +715,54 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
       variables: {},
       pathToNode: sketchPathToNode,
       expressions: [
-        createCallExpressionStdLib(
-          'lineTo', // We are forcing lineTo!
-          [
+        createCallExpressionStdLibKw('line', null, [
+          createLabeledArg(
+            ARG_END_ABSOLUTE,
             createArrayExpression([
-              createCallExpressionStdLib('profileStartX', [
+              createCallExpressionStdLibKw(
+                'profileStartX',
                 createPipeSubstitution(),
-              ]),
-              createCallExpressionStdLib('profileStartY', [
+                []
+              ),
+              createCallExpressionStdLibKw(
+                'profileStartY',
                 createPipeSubstitution(),
-              ]),
-            ]),
-            createPipeSubstitution(),
-          ]
-        ),
+                []
+              ),
+            ])
+          ),
+        ]),
       ],
     })
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst)
     const expectedCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0.02, 0.22], %)
+  |> startProfile(at = [0.02, 0.22])
   |> xLine(length = 0.39)
-  |> line([0.02, -0.17], %)
+  |> line([0.02, -0.17])
   |> yLine(length = -0.15)
-  |> line([-0.21, -0.02], %)
+  |> line([-0.21, -0.02])
   |> xLine(length = -0.15)
-  |> line([-0.02, 0.21], %)
-  |> line([-0.08, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line([-0.02, 0.21])
+  |> line([-0.08, 0.05])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
 `
     expect(recasted).toEqual(expectedCode)
   })
   it('it should find the location to add close', () => {
     const openSketch = `sketch001 = startSketchOn(XZ)
-|> startProfileAt([0.02, 0.22], %)
+|> startProfile(at = [0.02, 0.22])
 |> xLine(length = 0.39)
-|> line([0.02, -0.17], %)
+|> line([0.02, -0.17])
 |> yLine(length = -0.15)
-|> line([-0.21, -0.02], %)
+|> line([-0.21, -0.02])
 |> xLine(length = -0.15)
-|> line([-0.02, 0.21], %)
-|> line([-0.08, 0.05], %)
-|> lineTo([profileStartX(%), profileStartY(%)], %)
+|> line([-0.02, 0.21])
+|> line([-0.08, 0.05])
+|> lineTo([profileStartX(%), profileStartY(%)])
 `
     const ast = assertParse(openSketch)
-    const sketchSnippet = `startProfileAt([0.02, 0.22], %)`
+    const sketchSnippet = `startProfile(at = [0.02, 0.22])`
     const sketchRange = topLevelRange(
       openSketch.indexOf(sketchSnippet),
       openSketch.indexOf(sketchSnippet) + sketchSnippet.length
@@ -780,17 +777,38 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
     if (err(modifiedAst)) throw modifiedAst
     const recasted = recast(modifiedAst)
     const expectedCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([0.02, 0.22], %)
+  |> startProfile(at = [0.02, 0.22])
   |> xLine(length = 0.39)
-  |> line([0.02, -0.17], %)
+  |> line([0.02, -0.17])
   |> yLine(length = -0.15)
-  |> line([-0.21, -0.02], %)
+  |> line([-0.21, -0.02])
   |> xLine(length = -0.15)
-  |> line([-0.02, 0.21], %)
-  |> line([-0.08, 0.05], %)
-  |> lineTo([profileStartX(%), profileStartY(%)], %)
+  |> line([-0.02, 0.21])
+  |> line([-0.08, 0.05])
+  |> lineTo([profileStartX(%), profileStartY(%)])
   |> close()
 `
     expect(recasted).toEqual(expectedCode)
+  })
+  it('regression: it not freak out while getting a node, but the nodeToPath is wrong/stale', () => {
+    const ast: Node<Program> = JSON.parse(
+      `{"body":[{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"gear","start":52,"end":56,"commentStart":52},"init":{"type":"FunctionExpression","params":[{"type":"Parameter","identifier":{"type":"Identifier","name":"nTeeth","start":57,"end":63,"commentStart":57}},{"type":"Parameter","identifier":{"type":"Identifier","name":"module","start":65,"end":71,"commentStart":65}},{"type":"Parameter","identifier":{"type":"Identifier","name":"pressureAngle","start":73,"end":86,"commentStart":73}},{"type":"Parameter","identifier":{"type":"Identifier","name":"profileShift","start":88,"end":100,"commentStart":88}}],"body":{"body":[],"start":103,"end":103,"commentStart":103},"start":56,"end":105,"commentStart":56},"start":52,"end":105,"commentStart":52},"kind":"fn","start":49,"end":105,"commentStart":46},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"nTeeth","start":107,"end":113,"commentStart":107},"init":{"type":"Literal","value":{"value":1,"suffix":"None"},"raw":"1","start":114,"end":115,"commentStart":114},"start":107,"end":115,"commentStart":107},"kind":"const","start":107,"end":115,"commentStart":105},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"module","start":116,"end":122,"commentStart":116},"init":{"type":"Literal","value":{"value":32,"suffix":"None"},"raw":"32","start":125,"end":127,"commentStart":125},"start":116,"end":127,"commentStart":116},"kind":"const","start":116,"end":127,"commentStart":116},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"pressureAngle","start":128,"end":141,"commentStart":128},"init":{"type":"Literal","value":{"value":17,"suffix":"None"},"raw":"17","start":142,"end":144,"commentStart":142},"start":128,"end":144,"commentStart":128},"kind":"const","start":128,"end":144,"commentStart":128},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"profileShift","start":145,"end":157,"commentStart":145},"init":{"type":"Literal","value":{"value":12,"suffix":"None"},"raw":"12","start":158,"end":160,"commentStart":158},"start":145,"end":160,"commentStart":145},"kind":"const","start":145,"end":160,"commentStart":145},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"g","start":161,"end":162,"commentStart":161},"init":{"type":"CallExpressionKw","callee":{"type":"Name","name":{"type":"Identifier","name":"gear","start":165,"end":169,"commentStart":165},"path":[],"abs_path":false,"start":165,"end":169,"commentStart":165},"unlabeled":null,"arguments":[{"type":"LabeledArg","label":{"type":"Identifier","name":"nTeeth","start":170,"end":176,"commentStart":170},"arg":{"type":"Name","name":{"type":"Identifier","name":"nTeeth","start":177,"end":183,"commentStart":177},"path":[],"abs_path":false,"start":177,"end":183,"commentStart":177}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"module","start":185,"end":191,"commentStart":185},"path":[],"abs_path":false,"start":185,"end":191,"commentStart":185}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"pressureAngle","start":193,"end":206,"commentStart":193},"path":[],"abs_path":false,"start":193,"end":206,"commentStart":193}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"profileShift","start":208,"end":220,"commentStart":208},"path":[],"abs_path":false,"start":208,"end":220,"commentStart":208}}],"start":165,"end":221,"commentStart":165},"start":161,"end":221,"commentStart":161},"kind":"const","start":161,"end":221,"commentStart":161}],"nonCodeMeta":{"nonCodeNodes":{"0":[{"type":"NonCodeNode","value":{"type":"newLine"},"start":105,"end":107,"commentStart":105}]},"startNodes":[{"type":"NonCodeNode","value":{"type":"newLine"},"start":46,"end":49,"commentStart":46}]},"innerAttrs":[{"type":"Annotation","name":{"type":"Identifier","name":"settings","start":14,"end":22,"commentStart":14},"properties":[{"type":"ObjectProperty","key":{"type":"Identifier","name":"defaultLengthUnit","start":23,"end":40,"commentStart":23},"value":{"type":"Name","name":{"type":"Identifier","name":"mm","start":43,"end":45,"commentStart":43},"path":[],"abs_path":false,"start":43,"end":45,"commentStart":43},"start":23,"end":45,"commentStart":23}],"start":13,"end":46,"preComments":["// Set Units"],"commentStart":0}],"start":0,"end":222,"commentStart":0}`
+    )
+
+    const selectionRange: Selection = {
+      codeRef: {
+        range: [176, 176, 0],
+        pathToNode: [
+          ['body', ''],
+          [5, 'index'],
+          ['declaration', 'VariableDeclaration'],
+          ['init', ''],
+          // this doesn't exist as the first argument is a labeled one
+          ['unlabeled', 'unlabeled first arg'],
+        ],
+      },
+    }
+    const result = isCursorInFunctionDefinition(ast, selectionRange)
+    expect(result).toEqual(false)
   })
 })

@@ -5,8 +5,6 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import { useSettings } from '@src/machines/appMachine'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
 
 import styles from './ModelingPane.module.css'
 
@@ -68,12 +66,6 @@ export const ModelingPane = ({
   title,
   ...props
 }: ModelingPaneProps) => {
-  const settings = useSettings()
-  const onboardingStatus = settings.app.onboardingStatus
-  const pointerEventsCssClass =
-    onboardingStatus.current === onboardingPaths.CAMERA
-      ? 'pointer-events-none '
-      : 'pointer-events-auto '
   return (
     <section
       {...props}
@@ -82,7 +74,6 @@ export const ModelingPane = ({
       id={id}
       className={
         'focus-within:border-primary dark:focus-within:border-chalkboard-50 ' +
-        pointerEventsCssClass +
         styles.panel +
         ' group ' +
         (className || '')

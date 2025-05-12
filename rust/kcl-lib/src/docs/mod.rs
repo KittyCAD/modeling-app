@@ -10,6 +10,7 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_doc::ModData;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -21,6 +22,12 @@ use crate::{
     execution::{types::NumericType, Sketch},
     std::Primitive,
 };
+
+// These types are declared in (KCL) std.
+const DECLARED_TYPES: [&str; 15] = [
+    "any", "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Edge", "Point2d",
+    "Point3d", "Axis2d", "Axis3d",
+];
 
 lazy_static::lazy_static! {
     static ref NUMERIC_TYPE_SCHEMA: schemars::schema::SchemaObject = {
@@ -53,9 +60,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
-    /// Code examples.
+    /// Code examples. The bool is whether the example is `norun``
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, bool)>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -94,6 +101,9 @@ pub struct StdLibFnArg {
 
 impl fmt::Display for StdLibFnArg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if !self.label_required {
+            f.write_char('@')?;
+        }
         f.write_str(&self.name)?;
         if !self.required {
             f.write_char('?')?;
@@ -129,10 +139,13 @@ impl StdLibFnArg {
         };
         if (self.type_ == "Sketch"
             || self.type_ == "[Sketch]"
+            || self.type_ == "Geometry"
+            || self.type_ == "GeometryWithImportedGeometry"
             || self.type_ == "Solid"
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
+            || self.type_ == "SolidOrImportedGeometry"
             || self.type_ == "SolidOrSketchOrImportedGeometry")
             && (self.required || self.include_in_snippet)
         {
@@ -151,11 +164,19 @@ impl StdLibFnArg {
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
-    pub fn description(&self) -> Option<String> {
+    pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
+            assert!(!self.description.contains('\n'), "Arg docs will get truncated");
             return Some(self.description.clone());
         }
+
+        if let Some(kcl_std) = kcl_std {
+            if let Some(t) = docs_for_type(&self.type_, kcl_std) {
+                return Some(t);
+            }
+        }
+
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
@@ -367,7 +388,7 @@ impl From<StdLibFnArg> for ParameterInformation {
     fn from(arg: StdLibFnArg) -> Self {
         ParameterInformation {
             label: ParameterLabel::Simple(arg.name.to_string()),
-            documentation: arg.description().map(|description| {
+            documentation: arg.description(None).map(|description| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: description,
@@ -375,6 +396,18 @@ impl From<StdLibFnArg> for ParameterInformation {
             }),
         }
     }
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    let key = if ty.starts_with("number") { "number" } else { ty };
+
+    if DECLARED_TYPES.contains(&key) {
+        if let Some(data) = kcl_std.find_by_name(key) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 /// This trait defines functions called upon stdlib functions to generate
@@ -411,7 +444,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
-    fn examples(&self) -> Vec<String>;
+    fn examples(&self) -> Vec<(String, bool)>;
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;
@@ -501,14 +534,16 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
+        } else if self.name() == "clone" {
+            return Ok("clone(${0:part001})".to_string());
         } else if self.name() == "union" {
             return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract" {
             return Ok("subtract([${0:extrude001}], tools = [${1:extrude002}])".to_string());
         } else if self.name() == "intersect" {
             return Ok("intersect([${0:extrude001}, ${1:extrude002}])".to_string());
-        } else if self.name() == "hole" {
-            return Ok("hole(${0:holeSketch}, ${1:%})".to_string());
+        } else if self.name() == "subtract2D" {
+            return Ok("subtract2d(${0:%}, tool = ${1:%})".to_string());
         }
         let in_keyword_fn = self.keyword_arguments();
         let mut args = Vec::new();
@@ -528,14 +563,18 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
 
         SignatureHelp {
             signatures: vec![SignatureInformation {
-                label: self.name(),
+                label: self.fn_signature(true),
                 documentation: Some(Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: if !self.description().is_empty() {
-                        format!("{}\n\n{}", self.summary(), self.description())
-                    } else {
-                        self.summary()
-                    },
+                    value: format!(
+                        r#"{}
+
+{}"#,
+                        self.summary(),
+                        self.description()
+                    )
+                    .trim()
+                    .to_string(),
                 })),
                 parameters: Some(self.args(true).into_iter().map(|arg| arg.into()).collect()),
                 active_parameter,
@@ -731,7 +770,7 @@ fn get_autocomplete_string_from_schema(schema: &schemars::schema::Schema) -> Res
                 for enum_value in enum_values {
                     if let serde_json::value::Value::String(enum_value) = enum_value {
                         had_enum_string = true;
-                        parsed_enum_values.push(format!("\"{}\"", enum_value));
+                        parsed_enum_values.push(enum_value.to_owned());
                     } else {
                         had_enum_string = false;
                         break;
@@ -908,19 +947,19 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_fillet() {
-        let fillet_fn: Box<dyn StdLibFn> = Box::new(crate::std::fillet::Fillet);
-        let snippet = fillet_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"fillet(${0:%}, radius = ${1:3.14}, tags = [${2:"tag_or_edge_fn"}])"#
-        );
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(fillet_fn) = data.find_by_name("fillet").unwrap() else {
+            panic!();
+        };
+        let snippet = fillet_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"fillet(radius = ${0:3.14}, tags = [${1:tag_or_edge_fn}])"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_start_sketch_on() {
         let start_sketch_on_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::StartSketchOn);
         let snippet = start_sketch_on_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"startSketchOn(${0:"XY"})"#);
+        assert_eq!(snippet, r#"startSketchOn(${0:XY})"#);
     }
 
     #[test]
@@ -937,7 +976,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_revolve() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+        let DocData::Fn(revolve_fn) = data.find_by_name("revolve").unwrap() else {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
@@ -947,7 +986,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_circle() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(circle_fn) = data.into_iter().find(|d| d.name() == "circle").unwrap() else {
+        let DocData::Fn(circle_fn) = data.find_by_name("circle").unwrap() else {
             panic!();
         };
         let snippet = circle_fn.to_autocomplete_snippet();
@@ -963,11 +1002,7 @@ mod tests {
         let snippet = arc_fn.to_autocomplete_snippet().unwrap();
         assert_eq!(
             snippet,
-            r#"arc({
-	angleStart = ${0:3.14},
-	angleEnd = ${1:3.14},
-	radius = ${2:3.14},
-}, ${3:%})"#
+            r#"arc(${0:%}, angleStart = ${1:3.14}, angleEnd = ${2:3.14}, radius = ${3:3.14})"#
         );
     }
 
@@ -1014,15 +1049,15 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_hole() {
-        let hole_fn: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Hole);
-        let snippet = hole_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"hole(${0:holeSketch}, ${1:%})"#);
+        let f: Box<dyn StdLibFn> = Box::new(crate::std::sketch::Subtract2D);
+        let snippet = f.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"subtract2d(${0:%}, tool = ${1:%})"#);
     }
 
     #[test]
     fn get_autocomplete_snippet_helix() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+        let DocData::Fn(helix_fn) = data.find_by_name("helix").unwrap() else {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
@@ -1092,6 +1127,14 @@ mod tests {
         );
     }
 
+    #[test]
+    #[allow(clippy::literal_string_with_formatting_args)]
+    fn get_autocomplete_snippet_clone() {
+        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
+        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        assert_eq!(snippet, r#"clone(${0:part001})"#);
+    }
+
     // We want to test the snippets we compile at lsp start.
     #[test]
     fn get_all_stdlib_autocomplete_snippets() {
@@ -1106,5 +1149,22 @@ mod tests {
         let stdlib = crate::std::StdLib::new();
         let kcl_std = crate::docs::kcl_doc::walk_prelude();
         crate::lsp::kcl::get_signatures_from_stdlib(&stdlib, &kcl_std);
+    }
+
+    #[test]
+    fn get_extrude_signature_help() {
+        let extrude_fn: Box<dyn StdLibFn> = Box::new(crate::std::extrude::Extrude);
+        let sh = extrude_fn.to_signature_help();
+        assert_eq!(
+            sh.signatures[0].label,
+            r#"extrude(
+  @sketches: [Sketch],
+  length: number,
+  symmetric?: bool,
+  bidirectionalLength?: number,
+  tagStart?: TagNode,
+  tagEnd?: TagNode,
+): [Solid]"#
+        );
     }
 }

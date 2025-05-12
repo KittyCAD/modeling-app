@@ -24,8 +24,6 @@ import {
 } from '@src/lib/constants'
 import { getProjectInfo } from '@src/lib/desktop'
 import { getNextDirName, getNextFileName } from '@src/lib/desktopFS'
-import type { KclSamplesManifestItem } from '@src/lib/getKclSamplesManifest'
-import { getKclSamplesManifest } from '@src/lib/getKclSamplesManifest'
 import { isDesktop } from '@src/lib/isDesktop'
 import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
@@ -33,8 +31,8 @@ import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
-import { useSettings, useToken } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { useSettings, useToken } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
 import { fileMachine } from '@src/machines/fileMachine'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 
@@ -59,9 +57,6 @@ export const FileMachineProvider = ({
   const settings = useSettings()
   const projectData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const { project, file } = projectData
-  const [kclSamples, setKclSamples] = React.useState<KclSamplesManifestItem[]>(
-    []
-  )
 
   const filePath = useAbsoluteFilePath()
 
@@ -94,50 +89,8 @@ export const FileMachineProvider = ({
     }
   }, [])
 
-  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
-  // This will register the commands to route to Telemetry, Home, and Settings.
-  useEffect(() => {
-    const filePath =
-      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
-    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
-      createRouteCommands(navigate, location, filePath)
-    commandBarActor.send({
-      type: 'Remove commands',
-      data: {
-        commands: [
-          RouteTelemetryCommand,
-          RouteHomeCommand,
-          RouteSettingsCommand,
-        ],
-      },
-    })
-    if (location.pathname === PATHS.HOME) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commandBarActor.send({
-        type: 'Add commands',
-        data: {
-          commands: [
-            RouteTelemetryCommand,
-            RouteSettingsCommand,
-            RouteHomeCommand,
-          ],
-        },
-      })
-    }
-  }, [location])
-
   useEffect(() => {
     markOnce('code/didLoadFile')
-    async function fetchKclSamples() {
-      const manifest = await getKclSamplesManifest()
-      const filteredFiles = manifest.filter((file) => !file.multipleFiles)
-      setKclSamples(filteredFiles)
-    }
-    fetchKclSamples().catch(reportError)
   }, [])
 
   const [state, send] = useMachine(
@@ -188,6 +141,14 @@ export const FileMachineProvider = ({
             navigate(`..${PATHS.FILE}/${encodeURIComponent(event.output.path)}`)
           }
         },
+        openFileInNewWindow: ({ event }) => {
+          if (event.type !== 'Open file in new window') {
+            return
+          }
+
+          commandBarActor.send({ type: 'Close' })
+          window.electron.openInNewWindow(event.data.name)
+        },
       },
       actors: {
         readFiles: fromPromise(async ({ input }) => {
@@ -222,16 +183,30 @@ export const FileMachineProvider = ({
             createdPath = path
             await window.electron.mkdir(createdPath)
           } else {
-            const { name, path } = getNextFileName({
-              entryName: input.targetPathToClone
-                ? window.electron.path.basename(input.targetPathToClone)
-                : createdName,
-              baseDir: input.targetPathToClone
-                ? window.electron.path.dirname(input.targetPathToClone)
-                : input.selectedDirectory.path,
-            })
-            createdName = name
-            createdPath = path
+            const isTargetPathToCloneASubPath =
+              input.targetPathToClone &&
+              input.selectedDirectory.path.indexOf(input.targetPathToClone) > -1
+            if (isTargetPathToCloneASubPath) {
+              const { name, path } = getNextFileName({
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.targetPathToClone
+                  ? window.electron.path.dirname(input.targetPathToClone)
+                  : input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            } else {
+              const { name, path } = getNextFileName({
+                entryName: input.targetPathToClone
+                  ? window.electron.path.basename(input.targetPathToClone)
+                  : createdName,
+                baseDir: input.selectedDirectory.path,
+              })
+              createdName = name
+              createdPath = path
+            }
             if (input.targetPathToClone) {
               await window.electron.copyFile(
                 input.targetPathToClone,
@@ -412,6 +387,51 @@ export const FileMachineProvider = ({
     }
   )
 
+  // Due to the route provider, i've moved this to the FileMachineProvider instead of CommandBarProvider
+  // This will register the commands to route to Telemetry, Home, and Settings.
+  useEffect(() => {
+    const filePath =
+      PATHS.FILE + '/' + encodeURIComponent(file?.path || BROWSER_PATH)
+    const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
+      createRouteCommands(navigate, location, filePath)
+    commandBarActor.send({
+      type: 'Remove commands',
+      data: {
+        commands: [
+          RouteTelemetryCommand,
+          RouteHomeCommand,
+          RouteSettingsCommand,
+        ],
+      },
+    })
+    if (location.pathname === PATHS.HOME) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: { commands: [RouteTelemetryCommand, RouteSettingsCommand] },
+      })
+    } else if (location.pathname.includes(PATHS.FILE)) {
+      commandBarActor.send({
+        type: 'Add commands',
+        data: {
+          commands: [
+            RouteTelemetryCommand,
+            RouteSettingsCommand,
+            RouteHomeCommand,
+          ],
+        },
+      })
+    }
+
+    // GOTCHA: If we call navigate() while in the /file route the fileMachineProvider
+    // has a context.project of the original one that was loaded. It does not update
+    // Watch when the navigation changes, if it changes set a new Project within the fileMachine
+    // to load the latest state of the project you are in.
+    if (project) {
+      // TODO: Clean this up with global application state when fileMachine gets merged into SystemIOMachine
+      send({ type: 'Refresh with new project', data: { project } })
+    }
+  }, [location])
+
   const cb = modelingMenuCallbackMostActions(
     settings,
     navigate,
@@ -430,28 +450,6 @@ export const FileMachineProvider = ({
           defaultUnit:
             settings.modeling.defaultUnit.current ??
             DEFAULT_DEFAULT_LENGTH_UNIT,
-        },
-        specialPropsForSampleCommand: {
-          onSubmit: async (data) => {
-            if (data.method === 'overwrite') {
-              codeManager.updateCodeStateEditor(data.code)
-              await kclManager.executeCode()
-              await codeManager.writeToFile()
-            } else if (data.method === 'newFile' && isDesktop()) {
-              send({
-                type: 'Create file',
-                data: {
-                  name: data.sampleName,
-                  content: data.code,
-                  makeDir: false,
-                },
-              })
-            }
-          },
-          providedOptions: kclSamples.map((sample) => ({
-            value: sample.pathFromProjectDirectoryToFirstFile,
-            name: sample.title,
-          })),
         },
         specialPropsForInsertCommand: {
           providedOptions: (isDesktop() && project?.children
@@ -473,10 +471,8 @@ export const FileMachineProvider = ({
                 }
           }),
         },
-      }).filter(
-        (command) => kclSamples.length || command.name !== 'open-kcl-example'
-      ),
-    [codeManager, kclManager, send, kclSamples, project, file]
+      }),
+    [codeManager, kclManager, send, project, file]
   )
 
   useEffect(() => {

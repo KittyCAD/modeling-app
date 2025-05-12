@@ -13,7 +13,7 @@ import {
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CallExpression, CallExpressionKw } from '@src/lang/wasm'
+import type { CallExpressionKw } from '@src/lang/wasm'
 import { defaultSourceRange } from '@src/lang/wasm'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { getEventForSelectWithPoint } from '@src/lib/selections'
@@ -27,19 +27,26 @@ import {
 } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
 import { getModuleId } from '@src/lib/utils'
+import { engineStreamActor } from '@src/lib/singletons'
+import { EngineStreamState } from '@src/machines/engineStreamMachine'
 import type {
   EdgeCutInfo,
   ExtrudeFacePlane,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { findAllChildrenAndOrderByPlaceInCode } from '@src/lang/modifyAst/boolean'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
   const stateRef = useRef(state)
   stateRef.current = state
 
+  const engineStreamState = engineStreamActor.getSnapshot()
+
   useEffect(() => {
     if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
@@ -55,7 +62,8 @@ export function useEngineConnectionSubscriptions() {
           }
         } else if (
           !editorManager.highlightRange ||
-          (editorManager.highlightRange[0][0] !== 0 &&
+          (editorManager.highlightRange[0] &&
+            editorManager.highlightRange[0][0] !== 0 &&
             editorManager.highlightRange[0][1] !== 0)
         ) {
           editorManager.setHighlightRange([defaultSourceRange()])
@@ -76,9 +84,12 @@ export function useEngineConnectionSubscriptions() {
       unSubHover()
       unSubClick()
     }
-  }, [engineCommandManager, context?.sketchEnginePathId])
+  }, [engineCommandManager, engineStreamState, context?.sketchEnginePathId])
 
   useEffect(() => {
+    if (!engineCommandManager) return
+    if (engineStreamState.value !== EngineStreamState.Playing) return
+
     const unSub = engineCommandManager.subscribeTo({
       event: 'select_with_point',
       callback: state.matches('Sketch no face')
@@ -138,7 +149,7 @@ export function useEngineConnectionSubscriptions() {
                 }
 
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'defaultPlane',
                     planeId: planeId,
@@ -155,7 +166,7 @@ export function useEngineConnectionSubscriptions() {
                 const planeInfo =
                   await sceneEntitiesManager.getFaceDetails(planeOrFaceId)
                 sceneInfra.modelingSend({
-                  type: 'Select default plane',
+                  type: 'Select sketch plane',
                   data: {
                     type: 'offsetPlane',
                     zAxis: [
@@ -184,7 +195,7 @@ export function useEngineConnectionSubscriptions() {
                 return
               }
 
-              // Artifact is likely an extrusion face
+              // Artifact is likely an sweep face
               const faceId = planeOrFaceId
               const extrusion = getSweepFromSuspectedSweepSurface(
                 faceId,
@@ -192,23 +203,25 @@ export function useEngineConnectionSubscriptions() {
               )
               if (!err(extrusion)) {
                 if (!isTopLevelModule(extrusion.codeRef.range)) {
-                  const fileIndex = getModuleId(extrusion.codeRef.range)
-                  const importDetails =
-                    kclManager.execState.filenames[fileIndex]
+                  const moduleId = getModuleId(extrusion.codeRef.range)
+                  const importDetails = kclManager.execState.filenames[moduleId]
                   if (!importDetails) {
                     toast.error("can't sketch on this face")
                     return
                   }
                   if (importDetails?.type === 'Local') {
-                    const paths = importDetails.value.split('/')
-                    const fileName = paths[paths.length - 1]
-                    showSketchOnImportToast(fileName)
+                    // importDetails has OS specific separators from the rust side!
+                    const fileNameWithExtension = getStringAfterLastSeparator(
+                      importDetails.value
+                    )
+                    showSketchOnImportToast(fileNameWithExtension)
                   } else if (
                     importDetails?.type === 'Main' ||
                     importDetails?.type === 'Std'
                   ) {
                     toast.error("can't sketch on this face")
                   } else {
+                    // force tsc error if more cases are added
                     const _exhaustiveCheck: never = importDetails
                   }
                 }
@@ -274,23 +287,17 @@ export function useEngineConnectionSubscriptions() {
                   }
                 }
                 if (!chamferInfo) return null
-                const segmentCallExpr = getNodeFromPath<
-                  CallExpression | CallExpressionKw
-                >(
+                const segmentCallExpr = getNodeFromPath<CallExpressionKw>(
                   kclManager.ast,
                   chamferInfo?.segment.codeRef.pathToNode || [],
-                  ['CallExpression', 'CallExpressionKw']
+                  ['CallExpressionKw']
                 )
                 if (err(segmentCallExpr)) return null
-                if (
-                  segmentCallExpr.node.type !== 'CallExpression' &&
-                  segmentCallExpr.node.type !== 'CallExpressionKw'
-                )
+                if (segmentCallExpr.node.type !== 'CallExpressionKw')
                   return null
-                const sketchNodeArgs =
-                  segmentCallExpr.node.type == 'CallExpression'
-                    ? segmentCallExpr.node.arguments
-                    : segmentCallExpr.node.arguments.map((la) => la.arg)
+                const sketchNodeArgs = segmentCallExpr.node.arguments.map(
+                  (la) => la.arg
+                )
                 const tagDeclarator = sketchNodeArgs.find(
                   ({ type }) => type === 'TagDeclarator'
                 )
@@ -314,15 +321,31 @@ export function useEngineConnectionSubscriptions() {
                     }
                   : { type: 'wall' }
 
+              if (err(extrusion)) {
+                return Promise.reject(
+                  new Error(`Extrusion is not a valid artifact: ${extrusion}`)
+                )
+              }
+
+              const lastChild =
+                findAllChildrenAndOrderByPlaceInCode(
+                  { type: 'sweep', ...extrusion },
+                  kclManager.artifactGraph
+                )[0] || null
+              const lastChildCodeRef =
+                lastChild?.type === 'compositeSolid'
+                  ? lastChild.codeRef.range
+                  : null
+
               const extrudePathToNode = !err(extrusion)
                 ? getNodePathFromSourceRange(
                     kclManager.ast,
-                    extrusion.codeRef.range
+                    lastChildCodeRef || extrusion.codeRef.range
                   )
                 : []
 
               sceneInfra.modelingSend({
-                type: 'Select default plane',
+                type: 'Select sketch plane',
                 data: {
                   type: 'extrudeFace',
                   zAxis: [z_axis.x, z_axis.y, z_axis.z],
@@ -342,5 +365,5 @@ export function useEngineConnectionSubscriptions() {
         : () => {},
     })
     return unSub
-  }, [state])
+  }, [engineCommandManager, engineStreamState, state])
 }

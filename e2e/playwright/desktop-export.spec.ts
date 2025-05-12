@@ -1,5 +1,5 @@
-import fsp from 'fs/promises'
 import path from 'path'
+import fsp from 'fs/promises'
 
 import {
   executorInputPath,
@@ -10,7 +10,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 
 test(
   'export works on the first try',
-  { tag: ['@electron', '@skipLocalEngine'] },
+  { tag: ['@electron', '@macos', '@windows', '@skipLocalEngine'] },
   async ({ page, context, scene, tronApp, cmdBar }, testInfo) => {
     if (!tronApp) {
       fail()

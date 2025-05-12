@@ -3,7 +3,6 @@ import type {
   ArrayExpression,
   ArtifactGraph,
   BinaryExpression,
-  CallExpression,
   CallExpressionKw,
   Expr,
   Literal,
@@ -15,6 +14,7 @@ import type { Selections } from '@src/lib/selections'
 import { isArray, isOverlap } from '@src/lib/utils'
 
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
+import type { Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 
 /**
  * Create a SourceRange for the top-level module.
@@ -112,10 +112,6 @@ export function isCursorInSketchCommandRange(
       )?.[0] || false
 }
 
-export function isCallExpression(e: any): e is CallExpression {
-  return e && e.type === 'CallExpression'
-}
-
 export function isCallExpressionKw(e: any): e is CallExpressionKw {
   return e && e.type === 'CallExpressionKw'
 }
@@ -140,7 +136,7 @@ export function findKwArg(
   call: CallExpressionKw
 ): Expr | undefined {
   return call?.arguments?.find((arg) => {
-    return arg.label.name === label
+    return arg.label?.name === label
   })?.arg
 }
 
@@ -153,7 +149,7 @@ export function findKwArgWithIndex(
   call: CallExpressionKw
 ): { expr: Expr; argIndex: number } | undefined {
   const index = call.arguments.findIndex((arg) => {
-    return arg.label.name === label
+    return arg.label?.name === label
   })
   return index >= 0
     ? { expr: call.arguments[index].arg, argIndex: index }
@@ -168,7 +164,7 @@ export function findKwArgAny(
   call: CallExpressionKw
 ): Expr | undefined {
   return call.arguments.find((arg) => {
-    return labels.includes(arg.label.name)
+    return labels.includes(arg.label?.name || '')
   })?.arg
 }
 
@@ -180,7 +176,7 @@ export function findKwArgAnyIndex(
   call: CallExpressionKw
 ): number | undefined {
   const index = call.arguments.findIndex((arg) => {
-    return labels.includes(arg.label.name)
+    return labels.includes(arg.label?.name || '')
   })
   if (index == -1) {
     return undefined
@@ -203,4 +199,12 @@ export function isLiteralValueNumber(
     'suffix' in e &&
     typeof e.suffix === 'string'
   )
+}
+
+export function crossProduct(a: Point3d, b: Point3d): Point3d {
+  return {
+    x: a.y * b.z - a.z * b.y,
+    y: a.z * b.x - a.x * b.z,
+    z: a.x * b.y - a.y * b.x,
+  }
 }

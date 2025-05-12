@@ -15,7 +15,6 @@ import type {
 } from '@src/components/ModelingSidebar/ModelingPanes'
 import { sidebarPanes } from '@src/components/ModelingSidebar/ModelingPanes'
 import Tooltip from '@src/components/Tooltip'
-import { DEV } from '@src/env'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
@@ -23,14 +22,13 @@ import { useKclContext } from '@src/lang/KclProvider'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSettings } from '@src/machines/appMachine'
-import { commandBarActor } from '@src/machines/commandBarMachine'
-import { onboardingPaths } from '@src/routes/Onboarding/paths'
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
-
-interface ModelingSidebarProps {
-  paneOpacity: '' | 'opacity-20' | 'opacity-40'
-}
+import { useSettings } from '@src/lib/singletons'
+import { commandBarActor } from '@src/lib/singletons'
+import { reportRejection } from '@src/lib/trap'
+import { refreshPage } from '@src/lib/utils'
+import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
+import usePlatform from '@src/hooks/usePlatform'
+import { settingsActor } from '@src/lib/singletons'
 
 interface BadgeInfoComputed {
   value: number | boolean | string
@@ -43,14 +41,12 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+export function ModelingSidebar() {
   const machineManager = useContext(MachineManagerContext)
   const kclContext = useKclContext()
   const settings = useSettings()
-  const onboardingStatus = settings.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    onboardingStatus.current === onboardingPaths.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
@@ -77,29 +73,27 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   const sidebarActions: SidebarAction[] = [
     {
-      id: 'insert',
-      title: 'Insert from project file',
-      sidebarName: 'Insert from project file',
-      icon: 'import',
-      keybinding: 'Ctrl + Shift + I',
-      hide: (a) => a.platform === 'web' || !(DEV || IS_NIGHTLY_OR_DEBUG),
-      action: () =>
+      id: 'add-file-to-project',
+      title: 'Add file to project',
+      sidebarName: 'Add file to project',
+      icon: 'importFile',
+      keybinding: 'Mod + Alt + L',
+      action: () => {
+        const currentProject =
+          settingsActor.getSnapshot().context.currentProject
         commandBarActor.send({
           type: 'Find and select command',
-          data: { name: 'Insert', groupId: 'code' },
-        }),
-    },
-    {
-      id: 'share-link',
-      title: 'Create share link',
-      sidebarName: 'Create share link',
-      icon: 'link',
-      keybinding: 'Mod + Alt + S',
-      action: () =>
-        commandBarActor.send({
-          type: 'Find and select command',
-          data: { name: 'share-file-link', groupId: 'code' },
-        }),
+          data: {
+            name: 'add-kcl-file-to-project',
+            groupId: 'application',
+            argDefaultValues: {
+              method: 'existingProject',
+              projectName: currentProject?.name,
+              ...(!isDesktop() ? { source: 'kcl-samples' } : {}),
+            },
+          },
+        })
+      },
     },
     {
       id: 'export',
@@ -131,6 +125,17 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
       hide: () => !isDesktop(),
       disable: () => {
         return machineManager.noMachinesReason()
+      },
+    },
+    {
+      id: 'refresh',
+      title: 'Refresh app',
+      sidebarName: 'Refresh app',
+      icon: 'arrowRotateRight',
+      keybinding: 'Mod + R',
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
+      action: async () => {
+        refreshPage('Sidebar button').catch(reportRejection)
       },
     },
   ]
@@ -213,7 +218,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   return (
     <Resizable
-      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
+      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
@@ -343,12 +348,17 @@ function ModelingPaneButton({
   disabledText,
   ...props
 }: ModelingPaneButtonProps) {
+  const platform = usePlatform()
   useHotkeys(paneConfig.keybinding, onClick, {
     scopes: ['modeling'],
   })
 
   return (
-    <div id={paneConfig.id + '-button-holder'} className="relative">
+    <div
+      id={paneConfig.id + '-button-holder'}
+      className="relative"
+      data-onboarding-id={`${paneConfig.id}-pane-button`}
+    >
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
@@ -382,7 +392,7 @@ function ModelingPaneButton({
             {paneIsOpen !== undefined ? ` pane` : ''}
           </span>
           <kbd className="hotkey text-xs capitalize">
-            {paneConfig.keybinding}
+            {hotkeyDisplay(paneConfig.keybinding, platform)}
           </kbd>
         </Tooltip>
       </button>
@@ -392,7 +402,7 @@ function ModelingPaneButton({
           className={
             showBadge.className
               ? showBadge.className
-              : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+              : 'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
           title={

@@ -16,9 +16,9 @@ beforeAll(async () => {
 describe('testing getNodePathFromSourceRange', () => {
   it('test it gets the right path for a `lineTo` CallExpression within a SketchExpression', () => {
     const code = `
-const myVar = 5
-const sk3 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)
+myVar = 5
+sk3 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
   |> line(endAbsolute = [1, 2])
   |> line(endAbsolute = [3, 4], tag = $yo)
   |> close()
@@ -40,9 +40,9 @@ const sk3 = startSketchOn(XY)
     expect(node.type).toBe('CallExpressionKw')
   })
   it('gets path right for function definition params', () => {
-    const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    const code = `fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -50,7 +50,7 @@ const sk3 = startSketchOn(XY)
   return sg
 }
 
-const b1 = cube([0,0], 10)`
+b1 = cube(pos = [0,0], scale = 10)`
     const subStr = 'pos, scale'
     const subStrIndex = code.indexOf(subStr)
     const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'pos'.length)
@@ -73,9 +73,9 @@ const b1 = cube([0,0], 10)`
     expect(node.identifier.name).toBe('pos')
   })
   it('gets path right for deep within function definition body', () => {
-    const code = `fn cube = (pos, scale) => {
-  const sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+    const code = `fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
@@ -83,7 +83,7 @@ const b1 = cube([0,0], 10)`
   return sg
 }
 
-const b1 = cube([0,0], 10)`
+b1 = cube(pos = [0,0], scale = 10)`
     const subStr = 'scale, 0'
     const subStrIndex = code.indexOf(subStr)
     const sourceRange = topLevelRange(subStrIndex, subStrIndex + 'scale'.length)

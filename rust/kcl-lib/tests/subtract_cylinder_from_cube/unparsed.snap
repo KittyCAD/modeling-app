@@ -4,7 +4,7 @@ description: Result of unparsing subtract_cylinder_from_cube.kcl
 ---
 fn cube(center) {
   return startSketchOn(XY)
-    |> startProfileAt([center[0] - 10, center[1] - 10], %)
+    |> startProfile(at = [center[0] - 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
     |> line(endAbsolute = [center[0] - 10, center[1] + 10])
@@ -12,9 +12,10 @@ fn cube(center) {
     |> extrude(length = 10)
 }
 
-part001 = cube([0, 0])
-part002 = startSketchOn(XY)
-  |> circle(center = [2, 2], radius = 2)
-  |> extrude(length = 5)
+part001 = cube(center = [2, 2])
+part002 = startSketchOn(XZ)
+  |> circle(center = [5, 5], radius = 2)
+  |> extrude(length = 34)
+  |> translate(z = 3.14)
 
 fullPart = subtract([part001], tools = [part002])

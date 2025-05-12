@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   ARG_ANGLE,
+  ARG_AT,
   ARG_END_ABSOLUTE,
   ARG_LENGTH,
   ARG_TAG,
@@ -8,7 +9,6 @@ import {
 import {
   createArrayExpression,
   createBinaryExpression,
-  createCallExpressionStdLib,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
@@ -21,7 +21,6 @@ import { mutateKwArgOnly } from '@src/lang/modifyAst'
 import {
   findKwArg,
   isArrayExpression,
-  isCallExpression,
   isCallExpressionKw,
 } from '@src/lang/util'
 import type { CallExpressionKw, Expr, PipeExpression } from '@src/lang/wasm'
@@ -43,19 +42,16 @@ function angledLine(
 }
 
 /**
- * It does not create the startSketchOn and it does not create the startProfileAt.
+ * It does not create the startSketchOn and it does not create the startProfile.
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn(XY)
- *  |> startProfileAt([0, 0], %)
+ *  |> startProfile(at = [0, 0])
  *  |> angledLine(angle = 0, length = 0, tag = $a)
  *  |> angledLine(angle = segAng(a) - 90, length = 0, tag = $b)
  *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
  *  |> close()
  */
-export const getRectangleCallExpressions = (
-  rectangleOrigin: [number, number],
-  tag: string
-) => {
+export const getRectangleCallExpressions = (tag: string) => {
   return [
     angledLine(
       createLiteral(0), // 0 deg
@@ -64,16 +60,16 @@ export const getRectangleCallExpressions = (
     ),
     angledLine(
       createBinaryExpression([
-        createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+        createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
         '+',
         createLiteral(90),
       ]), // 90 offset from the previous line
       createLiteral(0) // This will be the height of the rectangle
     ),
     angledLine(
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]), // same angle as the first line
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []), // same angle as the first line
       createUnaryExpression(
-        createCallExpressionStdLib('segLen', [createLocalName(tag)]),
+        createCallExpressionStdLibKw('segLen', createLocalName(tag), []),
         '-'
       ) // negative height
     ),
@@ -81,12 +77,16 @@ export const getRectangleCallExpressions = (
       createLabeledArg(
         ARG_END_ABSOLUTE,
         createArrayExpression([
-          createCallExpressionStdLib('profileStartX', [
+          createCallExpressionStdLibKw(
+            'profileStartX',
             createPipeSubstitution(),
-          ]),
-          createCallExpressionStdLib('profileStartY', [
+            []
+          ),
+          createCallExpressionStdLibKw(
+            'profileStartY',
             createPipeSubstitution(),
-          ]),
+            []
+          ),
         ])
       ),
     ]), // close the rectangle
@@ -116,7 +116,7 @@ export function updateRectangleSketch(
     'angle',
     secondEdge,
     createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       Math.sign(y) === Math.sign(x) ? '+' : '-',
       createLiteral(90),
     ])
@@ -145,17 +145,20 @@ export function updateCenterRectangleSketch(
 
   {
     let callExpression = pipeExpression.body[0]
-    if (!isCallExpression(callExpression)) {
+    if (!isCallExpressionKw(callExpression)) {
       return new Error(`Expected call expression, got ${callExpression.type}`)
     }
-    const arrayExpression = callExpression.arguments[0]
+    const arrayExpression = findKwArg(ARG_AT, callExpression)
     if (!isArrayExpression(arrayExpression)) {
-      return new Error(`Expected array expression, got ${arrayExpression.type}`)
+      return new Error(
+        `Expected array expression, got ${arrayExpression?.type}`
+      )
     }
-    callExpression.arguments[0] = createArrayExpression([
+    const at = createArrayExpression([
       createLiteral(roundOff(startX)),
       createLiteral(roundOff(startY)),
     ])
+    mutateKwArgOnly(ARG_AT, callExpression, at)
   }
 
   const twoX = deltaX * 2
@@ -191,7 +194,7 @@ export function updateCenterRectangleSketch(
     }
     oldAngleOperator = oldAngle.operator
     const newAngle = createBinaryExpression([
-      createCallExpressionStdLib('segAng', [createLocalName(tag)]),
+      createCallExpressionStdLibKw('segAng', createLocalName(tag), []),
       oldAngleOperator,
       createLiteral(90),
     ])

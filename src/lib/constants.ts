@@ -36,7 +36,7 @@ export const FILE_PERSIST_KEY = `${PROJECT_FOLDER}-last-opened` as const
 /** The default name given to new kcl files in a project */
 export const DEFAULT_FILE_NAME = 'Untitled'
 /** The default name for a tutorial project */
-export const ONBOARDING_PROJECT_NAME = 'Tutorial Project $nn'
+export const ONBOARDING_PROJECT_NAME = 'tutorial-project'
 /**
  * The default starting constant name for various modeling operations.
  * These are used to generate unique names for new objects.
@@ -51,9 +51,13 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  CLONE: 'clone',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
+
+/** The default KCL transform arg value that means no transform */
+export const KCL_DEFAULT_TRANSFORM = `0`
 
 /** The default KCL degree expression */
 export const KCL_DEFAULT_DEGREE = `360`
@@ -183,3 +187,15 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_REAL
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
+
+/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+export const IS_PLAYWRIGHT_KEY = 'playwright'
+
+/** Should we mark all the ML features as "beta"? */
+export const IS_ML_EXPERIMENTAL = true
+export const ML_EXPERIMENTAL_MESSAGE = 'This feature is experimental.'
+/**
+ * HTML data-* attribute for tagging elements for highlighting
+ * while in the onboarding flow.
+ */
+export const ONBOARDING_DATA_ATTRIBUTE = 'onboarding-id'

@@ -66,7 +66,14 @@ function ProjectCard({
         const imageData = await window.electron.readFile(projectImagePath)
         const blob = new Blob([imageData], { type: 'image/png' })
         const imageUrl = URL.createObjectURL(blob)
-        setImageUrl(imageUrl)
+
+        if (blob.size > 0) {
+          /**
+           * Off chance that a thumbnail.png is cancelled writing and ends up writing 0 bytes
+           * We do not want to load a 0 byte image
+           */
+          setImageUrl(imageUrl)
+        }
       }
     }
 
@@ -84,7 +91,7 @@ function ProjectCard({
   return (
     <li
       {...props}
-      className="group relative flex flex-col rounded-sm border border-primary/40 dark:border-chalkboard-80 hover:!border-primary"
+      className="group relative flex flex-col rounded-sm border border-chalkboard-50 dark:border-chalkboard-80 hover:!border-primary"
     >
       <Link
         data-testid="project-link"
@@ -93,7 +100,7 @@ function ProjectCard({
             ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
             : ''
         }
-        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-primary/40 dark:divide-chalkboard-80  ${
+        className={`flex flex-col flex-1 !no-underline !text-chalkboard-110 dark:!text-chalkboard-10 min-h-[5em] divide-y divide-chalkboard-50 dark:divide-chalkboard-80  ${
           project.readWriteAccess
             ? 'group-hover:!divide-primary group-hover:!hue-rotate-0'
             : 'cursor-not-allowed'

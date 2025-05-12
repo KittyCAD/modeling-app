@@ -15,9 +15,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 150,
-            "end": 171,
-            "start": 150,
+            "commentStart": 148,
+            "end": 169,
+            "start": 148,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 255,
-            "end": 261,
-            "start": 255,
+            "commentStart": 253,
+            "end": 259,
+            "start": 253,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -48,9 +48,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 425,
-            "end": 431,
-            "start": 425,
+            "commentStart": 423,
+            "end": 429,
+            "start": 423,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -61,9 +61,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 582,
-            "end": 588,
-            "start": 582,
+            "commentStart": 580,
+            "end": 586,
+            "start": 580,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -74,9 +74,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 655,
-            "end": 661,
-            "start": 655,
+            "commentStart": 653,
+            "end": 659,
+            "start": 653,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -97,9 +97,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               317.2
             ],
             "tag": {
-              "commentStart": 150,
-              "end": 171,
-              "start": 150,
+              "commentStart": 148,
+              "end": 169,
+              "start": 148,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -122,9 +122,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               317.2
             ],
             "tag": {
-              "commentStart": 255,
-              "end": 261,
-              "start": 255,
+              "commentStart": 253,
+              "end": 259,
+              "start": 253,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -166,9 +166,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               99.94
             ],
             "tag": {
-              "commentStart": 425,
-              "end": 431,
-              "start": 425,
+              "commentStart": 423,
+              "end": 429,
+              "start": 423,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -202,10 +202,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -214,12 +212,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -227,19 +227,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -327,9 +316,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 582,
-            "end": 588,
-            "start": 582,
+            "commentStart": 580,
+            "end": 586,
+            "start": 580,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -351,9 +340,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           },
           "edgeId": "[uuid]",
           "tag": {
-            "commentStart": 655,
-            "end": 661,
-            "start": 655,
+            "commentStart": 653,
+            "end": 659,
+            "start": 653,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -361,7 +350,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "extrude002": {
@@ -376,9 +366,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1273,
-            "end": 1294,
-            "start": 1273,
+            "commentStart": 1271,
+            "end": 1292,
+            "start": 1271,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -389,9 +379,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1378,
-            "end": 1399,
-            "start": 1378,
+            "commentStart": 1376,
+            "end": 1397,
+            "start": 1376,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -402,9 +392,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1501,
-            "end": 1522,
-            "start": 1501,
+            "commentStart": 1499,
+            "end": 1520,
+            "start": 1499,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -432,9 +422,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1273,
-              "end": 1294,
-              "start": 1273,
+              "commentStart": 1271,
+              "end": 1292,
+              "start": 1271,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -457,9 +447,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "commentStart": 1378,
-              "end": 1399,
-              "start": 1378,
+              "commentStart": 1376,
+              "end": 1397,
+              "start": 1376,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -482,9 +472,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               146.08
             ],
             "tag": {
-              "commentStart": 1501,
-              "end": 1522,
-              "start": 1501,
+              "commentStart": 1499,
+              "end": 1520,
+              "start": 1499,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -546,7 +536,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -554,15 +544,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
-            }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "solid": {
@@ -575,9 +557,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 150,
-                  "end": 171,
-                  "start": 150,
+                  "commentStart": 148,
+                  "end": 169,
+                  "start": 148,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -588,9 +570,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 255,
-                  "end": 261,
-                  "start": 255,
+                  "commentStart": 253,
+                  "end": 259,
+                  "start": 253,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -608,9 +590,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 425,
-                  "end": 431,
-                  "start": 425,
+                  "commentStart": 423,
+                  "end": 429,
+                  "start": 423,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -621,9 +603,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 582,
-                  "end": 588,
-                  "start": 582,
+                  "commentStart": 580,
+                  "end": 586,
+                  "start": 580,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -634,9 +616,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "commentStart": 655,
-                  "end": 661,
-                  "start": 655,
+                  "commentStart": 653,
+                  "end": 659,
+                  "start": 653,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -657,9 +639,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     317.2
                   ],
                   "tag": {
-                    "commentStart": 150,
-                    "end": 171,
-                    "start": 150,
+                    "commentStart": 148,
+                    "end": 169,
+                    "start": 148,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -682,9 +664,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     317.2
                   ],
                   "tag": {
-                    "commentStart": 255,
-                    "end": 261,
-                    "start": 255,
+                    "commentStart": 253,
+                    "end": 259,
+                    "start": 253,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -726,9 +708,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     99.94
                   ],
                   "tag": {
-                    "commentStart": 425,
-                    "end": 431,
-                    "start": 425,
+                    "commentStart": 423,
+                    "end": 429,
+                    "start": 423,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -762,10 +744,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 }
               ],
               "on": {
-                "type": "plane",
-                "id": "[uuid]",
                 "artifactId": "[uuid]",
-                "value": "XZ",
+                "id": "[uuid]",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
@@ -774,12 +754,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "type": "Mm"
                   }
                 },
+                "type": "plane",
+                "value": "XZ",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
                 },
                 "yAxis": {
@@ -787,19 +769,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "y": 0.0,
                   "z": 1.0,
                   "units": {
-                    "type": "Mm"
+                    "type": "Unknown"
                   }
-                },
-                "zAxis": {
-                  "x": 0.0,
-                  "y": -1.0,
-                  "z": 0.0,
-                  "units": {
-                    "type": "Mm"
-                  }
-                },
-                "units": {
-                  "type": "Mm"
                 }
               },
               "start": {
@@ -887,9 +858,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "edgeId": "[uuid]",
                 "tag": {
-                  "commentStart": 582,
-                  "end": 588,
-                  "start": 582,
+                  "commentStart": 580,
+                  "end": 586,
+                  "start": 580,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 }
@@ -911,9 +882,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "edgeId": "[uuid]",
                 "tag": {
-                  "commentStart": 655,
-                  "end": 661,
-                  "start": 655,
+                  "commentStart": 653,
+                  "end": 659,
+                  "start": 653,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 }
@@ -921,7 +892,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             ],
             "units": {
               "type": "Mm"
-            }
+            },
+            "sectional": false
           },
           "units": {
             "type": "Mm"
@@ -970,7 +942,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "rectangleSegmentA001": {
@@ -1044,9 +1017,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             317.2
           ],
           "tag": {
-            "commentStart": 150,
-            "end": 171,
-            "start": 150,
+            "commentStart": 148,
+            "end": 169,
+            "start": 148,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -1069,9 +1042,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             317.2
           ],
           "tag": {
-            "commentStart": 255,
-            "end": 261,
-            "start": 255,
+            "commentStart": 253,
+            "end": 259,
+            "start": 253,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1113,9 +1086,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             99.94
           ],
           "tag": {
-            "commentStart": 425,
-            "end": 431,
-            "start": 425,
+            "commentStart": 423,
+            "end": 429,
+            "start": 423,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1149,10 +1122,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -1161,12 +1132,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1174,19 +1147,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -1252,9 +1214,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1273,
-            "end": 1294,
-            "start": 1273,
+            "commentStart": 1271,
+            "end": 1292,
+            "start": 1271,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -1277,9 +1239,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "commentStart": 1378,
-            "end": 1399,
-            "start": 1378,
+            "commentStart": 1376,
+            "end": 1397,
+            "start": 1376,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -1302,9 +1264,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             146.08
           ],
           "tag": {
-            "commentStart": 1501,
-            "end": 1522,
-            "start": 1501,
+            "commentStart": 1499,
+            "end": 1520,
+            "start": 1499,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1366,7 +1328,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1374,15 +1336,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -1395,9 +1349,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 150,
-                "end": 171,
-                "start": 150,
+                "commentStart": 148,
+                "end": 169,
+                "start": 148,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -1408,9 +1362,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 255,
-                "end": 261,
-                "start": 255,
+                "commentStart": 253,
+                "end": 259,
+                "start": 253,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1428,9 +1382,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 425,
-                "end": 431,
-                "start": 425,
+                "commentStart": 423,
+                "end": 429,
+                "start": 423,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1441,9 +1395,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 582,
-                "end": 588,
-                "start": 582,
+                "commentStart": 580,
+                "end": 586,
+                "start": 580,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -1454,9 +1408,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 655,
-                "end": 661,
-                "start": 655,
+                "commentStart": 653,
+                "end": 659,
+                "start": 653,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -1477,9 +1431,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 150,
-                  "end": 171,
-                  "start": 150,
+                  "commentStart": 148,
+                  "end": 169,
+                  "start": 148,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -1502,9 +1456,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 255,
-                  "end": 261,
-                  "start": 255,
+                  "commentStart": 253,
+                  "end": 259,
+                  "start": 253,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -1546,9 +1500,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   99.94
                 ],
                 "tag": {
-                  "commentStart": 425,
-                  "end": 431,
-                  "start": 425,
+                  "commentStart": 423,
+                  "end": 429,
+                  "start": 423,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -1582,10 +1536,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -1594,12 +1546,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1607,19 +1561,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1707,9 +1650,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 582,
-                "end": 588,
-                "start": 582,
+                "commentStart": 580,
+                "end": 586,
+                "start": 580,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -1731,9 +1674,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 655,
-                "end": 661,
-                "start": 655,
+                "commentStart": 653,
+                "end": 659,
+                "start": 653,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -1741,7 +1684,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"
@@ -1802,9 +1746,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 805,
-            "end": 826,
-            "start": 805,
+            "commentStart": 803,
+            "end": 824,
+            "start": 803,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -1827,9 +1771,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "commentStart": 909,
-            "end": 930,
-            "start": 909,
+            "commentStart": 907,
+            "end": 928,
+            "start": 907,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -1852,9 +1796,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             172.54
           ],
           "tag": {
-            "commentStart": 1032,
-            "end": 1053,
-            "start": 1032,
+            "commentStart": 1030,
+            "end": 1051,
+            "start": 1030,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -1916,7 +1860,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -1924,15 +1868,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
-          }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "solid": {
@@ -1945,9 +1881,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 150,
-                "end": 171,
-                "start": 150,
+                "commentStart": 148,
+                "end": 169,
+                "start": 148,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -1958,9 +1894,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 255,
-                "end": 261,
-                "start": 255,
+                "commentStart": 253,
+                "end": 259,
+                "start": 253,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -1978,9 +1914,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 425,
-                "end": 431,
-                "start": 425,
+                "commentStart": 423,
+                "end": 429,
+                "start": 423,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -1991,9 +1927,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 582,
-                "end": 588,
-                "start": 582,
+                "commentStart": 580,
+                "end": 586,
+                "start": 580,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2004,9 +1940,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 655,
-                "end": 661,
-                "start": 655,
+                "commentStart": 653,
+                "end": 659,
+                "start": 653,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2027,9 +1963,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 150,
-                  "end": 171,
-                  "start": 150,
+                  "commentStart": 148,
+                  "end": 169,
+                  "start": 148,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -2052,9 +1988,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "commentStart": 255,
-                  "end": 261,
-                  "start": 255,
+                  "commentStart": 253,
+                  "end": 259,
+                  "start": 253,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2096,9 +2032,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   99.94
                 ],
                 "tag": {
-                  "commentStart": 425,
-                  "end": 431,
-                  "start": 425,
+                  "commentStart": 423,
+                  "end": 429,
+                  "start": 423,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2132,10 +2068,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "XZ",
+              "id": "[uuid]",
               "origin": {
                 "x": 0.0,
                 "y": 0.0,
@@ -2144,12 +2078,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "XZ",
               "xAxis": {
                 "x": 1.0,
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2157,19 +2093,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2257,9 +2182,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 582,
-                "end": 588,
-                "start": 582,
+                "commentStart": 580,
+                "end": 586,
+                "start": 580,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -2281,9 +2206,9 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "edgeId": "[uuid]",
               "tag": {
-                "commentStart": 655,
-                "end": 661,
-                "start": 655,
+                "commentStart": 653,
+                "end": 659,
+                "start": 653,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -2291,7 +2216,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         },
         "units": {
           "type": "Mm"

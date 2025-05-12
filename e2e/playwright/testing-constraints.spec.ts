@@ -1,22 +1,21 @@
+import path from 'node:path'
 import { XOR } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
-import path from 'node:path'
 
 import {
   TEST_COLORS,
   getUtils,
-  orRunWhenFullSuiteEnabled,
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
+test.describe('Testing constraints', () => {
   test('Can constrain line length', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-  |> startProfileAt([-10, -10], %)
+  |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> xLine(length = -20)
@@ -58,7 +57,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
       .click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfileAt([-10, -10], %)  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
+      `length001 = 20sketch001 = startSketchOn(XY)  |> startProfile(at = [-10, -10])  |> line(end = [20, 0])  |> angledLine(angle = 90, length = length001)  |> xLine(length = -20)`
     )
 
     // Make sure we didn't pop out of sketch mode.
@@ -84,13 +83,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
-    |> startProfileAt([-7.54, -26.74], %)
+    |> startProfile(at = [-7.54, -26.74])
     |> line(end = [74.36, 130.4], tag = $seg01)
     |> line(end = [78.92, -120.11])
     |> angledLine(angle = segAng(seg01), length = yo)
     |> line(end = [41.19, 58.97 + 5])
   part002 = startSketchOn(XZ)
-    |> startProfileAt([299.05, 120], %)
+    |> startProfile(at = [299.05, 120])
     |> xLine(length = -385.34, tag = $seg_what)
     |> yLine(length = -170.06)
     |> xLine(length = segLen(seg_what))
@@ -109,7 +108,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     // Wait for overlays to populate
     await page.waitForTimeout(1000)
 
-    const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`)
+    const line3 = await u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`)
 
     await page.mouse.click(line3.x, line3.y)
     await page.waitForTimeout(100) // this wait is needed for webkit - not sure why
@@ -128,7 +127,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
     )
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
   })
   test.describe('Test perpendicular distance constraint', () => {
     const cases = [
@@ -149,13 +148,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4], tag = $seg01)
         |> line(end = [78.92, -120.11])
         |> angledLine(angle = segAng(seg01), length = 78.33)
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -175,8 +174,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         await page.mouse.click(line1.x, line1.y)
@@ -219,10 +218,12 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await expect(activeLinesContent[0]).toHaveText(
           `|> line(end = [74.36, 130.4], tag = $seg01)`
         )
-        await expect(activeLinesContent[1]).toHaveText(`}, %)`)
+        await expect(activeLinesContent[1]).toHaveText(
+          `  |> angledLineThatIntersects(angle = -57, offset = ${offset}, intersectTag = seg01)`
+        )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -262,13 +263,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -288,8 +289,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         await page.mouse.click(line1.x, line1.y)
@@ -334,7 +335,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -378,13 +379,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -404,7 +405,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(1000)
 
         const [line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         if (constraint === 'Absolute X') {
@@ -453,7 +454,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -492,13 +493,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -518,8 +519,8 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(1000)
 
         const [line1, line3] = await Promise.all([
-          u.getSegmentBodyCoords(`[data-overlay-index="${0}"]`),
-          u.getSegmentBodyCoords(`[data-overlay-index="${2}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${1}"]`),
+          u.getSegmentBodyCoords(`[data-overlay-index="${3}"]`),
         ])
 
         if (axisSelect) {
@@ -568,7 +569,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         )
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -595,13 +596,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -621,7 +622,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await page.waitForTimeout(1000)
 
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
 
         await page.mouse.click(line3.x, line3.y)
@@ -646,7 +647,7 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -690,13 +691,13 @@ test.describe('Testing constraints', { tag: ['@skipWin'] }, () => {
             `@settings(defaultLengthUnit = in)
 yo = 5
 part001 = startSketchOn(XZ)
-  |> startProfileAt([-7.54, -26.74], %)
+  |> startProfile(at = [-7.54, -26.74])
   |> line(end = [74.36, 130.4])
   |> line(end = [78.92, -120.11])
   |> line(end = [9.16, 77.79])
   |> line(end = [51.19, 48.97])
 part002 = startSketchOn(XZ)
-  |> startProfileAt([299.05, 231.45], %)
+  |> startProfile(at = [299.05, 231.45])
   |> xLine(length = -425.34, tag = $seg_what)
   |> yLine(length = -264.06)
   |> xLine(length = segLen(seg_what))
@@ -714,7 +715,7 @@ part002 = startSketchOn(XZ)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
 
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
 
         await page.mouse.click(line3.x, line3.y)
@@ -732,16 +733,17 @@ part002 = startSketchOn(XZ)
           })
         }
         await expect(cmdBarKclInput).toHaveText('78.33')
-        await cmdBarSubmitButton.click()
-
+        await page.waitForTimeout(500)
         const [ang, len] = value.split(', ')
         const changedCode = `|> angledLine(angle = ${ang}, length = ${len})`
+        await cmdBarSubmitButton.click()
         await expect(page.locator('.cm-content')).toContainText(changedCode)
+
         // checking active assures the cursor is where it should be
         await expect(page.locator('.cm-activeLine')).toHaveText(changedCode)
 
         // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-        await expect(page.getByTestId('segment-overlay')).toHaveCount(4)
+        await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
       })
     }
   })
@@ -772,13 +774,13 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
         |> line(end = [51.19, 48.97])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -798,13 +800,13 @@ part002 = startSketchOn(XZ)
         await page.waitForTimeout(1000)
 
         const line1 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${0}"]`
+          `[data-overlay-index="${1}"]`
         )
         const line3 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${2}"]`
+          `[data-overlay-index="${3}"]`
         )
         const line4 = await u.getSegmentBodyCoords(
-          `[data-overlay-index="${3}"]`
+          `[data-overlay-index="${4}"]`
         )
 
         // select two segments by holding down shift
@@ -874,12 +876,12 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -898,8 +900,8 @@ part002 = startSketchOn(XZ)
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
 
-        const line1 = await u.getBoundingBox(`[data-overlay-index="${0}"]`)
-        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line1 = await u.getBoundingBox(`[data-overlay-index="${1}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select two segments by holding down shift
         await page.mouse.click(line1.x - 20, line1.y + 20)
@@ -956,12 +958,12 @@ part002 = startSketchOn(XZ)
             `@settings(defaultLengthUnit = in)
       yo = 5
       part001 = startSketchOn(XZ)
-        |> startProfileAt([-7.54, -26.74], %)
+        |> startProfile(at = [-7.54, -26.74])
         |> line(end = [74.36, 130.4])
         |> line(end = [78.92, -120.11])
         |> line(end = [9.16, 77.79])
       part002 = startSketchOn(XZ)
-        |> startProfileAt([299.05, 231.45], %)
+        |> startProfile(at = [299.05, 231.45])
         |> xLine(length = -425.34, tag = $seg_what)
         |> yLine(length = -264.06)
         |> xLine(length = segLen(seg_what))
@@ -980,7 +982,7 @@ part002 = startSketchOn(XZ)
         // Wait for overlays to populate
         await page.waitForTimeout(1000)
 
-        const line3 = await u.getBoundingBox(`[data-overlay-index="${2}"]`)
+        const line3 = await u.getBoundingBox(`[data-overlay-index="${3}"]`)
 
         // select segment and axis by holding down shift
         await page.mouse.click(line3.x - 3, line3.y + 20)
@@ -1016,13 +1018,12 @@ part002 = startSketchOn(XZ)
     scene,
     cmdBar,
   }) => {
-    test.fixme(orRunWhenFullSuiteEnabled())
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
         `sketch001 = startSketchOn(XY)
-    |> startProfileAt([-1.05, -1.07], %)
+    |> startProfile(at = [-1.05, -1.07])
     |> line(end = [3.79, 2.68], tag = $seg01)
     |> line(end = [3.13, -2.4])`
       )
@@ -1044,7 +1045,7 @@ part002 = startSketchOn(XZ)
 
     await page.waitForTimeout(100)
     const lineBefore = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
+      `[data-overlay-index="2"]`,
       0
     )
     expect(
@@ -1075,15 +1076,15 @@ part002 = startSketchOn(XZ)
 
     // If the overlay-angle is updated the THREE.js scene is in a good state
     await expect(
-      await page.locator('[data-overlay-index="1"]')
+      await page.locator('[data-overlay-index="2"]')
     ).toHaveAttribute('data-overlay-angle', '0')
 
     const lineAfter = await u.getSegmentBodyCoords(
-      `[data-overlay-index="1"]`,
+      `[data-overlay-index="2"]`,
       0
     )
 
-    const linebb = await u.getBoundingBox('[data-overlay-index="1"]')
+    const linebb = await u.getBoundingBox('[data-overlay-index="2"]')
     await page.mouse.move(linebb.x, linebb.y, { steps: 25 })
     await page.mouse.click(linebb.x, linebb.y)
 
@@ -1097,6 +1098,7 @@ part002 = startSketchOn(XZ)
     await page.waitForTimeout(200)
     // await page.getByRole('button', { name: 'length', exact: true }).click()
     await page.getByTestId('constraint-length').click()
+    await page.waitForTimeout(500)
 
     await page.getByTestId('cmd-bar-arg-value').getByRole('textbox').fill('10')
     await page
@@ -1112,7 +1114,7 @@ part002 = startSketchOn(XZ)
     )
 
     // checking the count of the overlays is a good proxy check that the client sketch scene is in a good state
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
   })
 })
 test.describe('Electron constraint tests', () => {
@@ -1126,8 +1128,8 @@ test.describe('Electron constraint tests', () => {
         await fsp.writeFile(
           path.join(bracketDir, 'main.kcl'),
           `@settings(defaultLengthUnit = in)
-          const part001 = startSketchOn(XY)
-            |> startProfileAt([4.83, 12.56], %)
+          part001 = startSketchOn(XY)
+            |> startProfile(at = [4.83, 12.56])
             |> line(end = [15.1, 2.48])
             |> line(end = [3.15, -9.85], tag = $seg01)
             |> line(end = [-15.17, -4.1])

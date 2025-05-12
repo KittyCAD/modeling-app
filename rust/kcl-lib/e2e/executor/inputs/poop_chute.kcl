@@ -9,8 +9,8 @@ front_length = 6
 Fx = 0.5
 Fy = 0.5
 
-sketch001 = startSketchOn('-YZ')
-  |> startProfileAt([back_walls_width / 2, 0], %)
+sketch001 = startSketchOn(-YZ)
+  |> startProfile(at = [back_walls_width / 2, 0])
   |> xLine(length = wall_thickness / 2)
   |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg01)
   |> yLine(endAbsolute = height)
@@ -34,8 +34,8 @@ part001 = revolve({
   }
 }, sketch001)
 
-sketch002 = startSketchOn('-YZ')
-  |> startProfileAt([back_walls_width / 2, 0], %)
+sketch002 = startSketchOn(-YZ)
+  |> startProfile(at = [back_walls_width / 2, 0])
   |> xLine(length = wall_thickness / 2)
   |> angledLine(angle = 45, endAbsoluteX = back_walls_width, tag = $seg02)
   |> yLine(endAbsolute = height)

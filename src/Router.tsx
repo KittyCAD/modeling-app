@@ -9,22 +9,15 @@ import {
 } from 'react-router-dom'
 
 import { App } from '@src/App'
-import { AppStateProvider } from '@src/AppState'
 import { Auth } from '@src/Auth'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
 import DownloadAppBanner from '@src/components/DownloadAppBanner'
 import { ErrorPage } from '@src/components/ErrorPage'
 import FileMachineProvider from '@src/components/FileMachineProvider'
-import LspProvider from '@src/components/LspProvider'
-import { MachineManagerProvider } from '@src/components/MachineManagerProvider'
 import ModelingMachineProvider from '@src/components/ModelingMachineProvider'
-import { OpenInDesktopAppHandler } from '@src/components/OpenInDesktopAppHandler'
-import { ProjectsContextProvider } from '@src/components/ProjectsContextProvider'
-import { RouteProvider } from '@src/components/RouteProvider'
 import { WasmErrBanner } from '@src/components/WasmErrBanner'
 import { NetworkContext } from '@src/hooks/useNetworkContext'
 import { useNetworkStatus } from '@src/hooks/useNetworkStatus'
-import { KclContextProvider } from '@src/lang/KclProvider'
 import { coreDump } from '@src/lang/wasm'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -35,16 +28,17 @@ import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { fileLoader, homeLoader, telemetryLoader } from '@src/lib/routeLoaders'
+import { fileLoader, homeLoader } from '@src/lib/routeLoaders'
 import {
   codeManager,
   engineCommandManager,
   rustContext,
 } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
-import { useToken } from '@src/machines/appMachine'
+import { useToken } from '@src/lib/singletons'
+import RootLayout from '@src/Root'
 import Home from '@src/routes/Home'
-import Onboarding, { onboardingRoutes } from '@src/routes/Onboarding'
+import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
 import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
@@ -54,27 +48,13 @@ const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 const router = createRouter([
   {
     id: PATHS.INDEX,
-    element: (
-      <OpenInDesktopAppHandler>
-        <RouteProvider>
-          <LspProvider>
-            <ProjectsContextProvider>
-              <KclContextProvider>
-                <AppStateProvider>
-                  <MachineManagerProvider>
-                    <Outlet />
-                  </MachineManagerProvider>
-                </AppStateProvider>
-              </KclContextProvider>
-            </ProjectsContextProvider>
-          </LspProvider>
-        </RouteProvider>
-      </OpenInDesktopAppHandler>
-    ),
-    errorElement: <ErrorPage />,
+    element: <RootLayout />,
+    // Gotcha: declaring errorElement on the root will unmount the element causing our forever React components to unmount.
+    // Leave errorElement on the child components, this allows for the entire react context on error pages as well.
     children: [
       {
         path: PATHS.INDEX,
+        errorElement: <ErrorPage />,
         loader: async ({ request }) => {
           const onDesktop = isDesktop()
           const url = new URL(request.url)
@@ -95,6 +75,7 @@ const router = createRouter([
         loader: fileLoader,
         id: PATHS.FILE,
         path: PATHS.FILE + '/:id',
+        errorElement: <ErrorPage />,
         element: (
           <Auth>
             <FileMachineProvider>
@@ -121,15 +102,14 @@ const router = createRouter([
                 element: <Settings />,
               },
               {
-                path: makeUrlPathRelative(PATHS.ONBOARDING.INDEX),
-                element: <Onboarding />,
+                path: makeUrlPathRelative(PATHS.ONBOARDING),
+                element: <OnboardingRootRoute />,
                 children: onboardingRoutes,
               },
             ],
           },
           {
             id: PATHS.FILE + 'TELEMETRY',
-            loader: telemetryLoader,
             children: [
               {
                 path: makeUrlPathRelative(PATHS.TELEMETRY),
@@ -141,6 +121,7 @@ const router = createRouter([
       },
       {
         path: PATHS.HOME,
+        errorElement: <ErrorPage />,
         element: (
           <Auth>
             <Outlet />
@@ -162,13 +143,13 @@ const router = createRouter([
           },
           {
             path: makeUrlPathRelative(PATHS.TELEMETRY),
-            loader: telemetryLoader,
             element: <Telemetry />,
           },
         ],
       },
       {
         path: PATHS.SIGN_IN,
+        errorElement: <ErrorPage />,
         element: <SignIn />,
       },
     ],

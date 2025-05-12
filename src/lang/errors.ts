@@ -1,6 +1,9 @@
 import type { Diagnostic as CodeMirrorDiagnostic } from '@codemirror/lint'
 import type { Text } from '@codemirror/state'
-import { posToOffset } from '@kittycad/codemirror-lsp-client'
+import {
+  lspCodeActionEvent,
+  posToOffset,
+} from '@kittycad/codemirror-lsp-client'
 import type { EditorView } from 'codemirror'
 import type { Diagnostic as LspDiagnostic } from 'vscode-languageserver-protocol'
 
@@ -37,7 +40,7 @@ export class KCLError extends Error {
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null
   ) {
-    super()
+    super(`${kind}: ${msg}`)
     this.kind = kind
     this.msg = msg
     this.sourceRange = sourceRange
@@ -343,6 +346,7 @@ export function compilationErrorsToDiagnostics(
                   to: suggestion.source_range[1],
                   insert: suggestion.insert,
                 },
+                annotations: [lspCodeActionEvent],
               })
             },
           },

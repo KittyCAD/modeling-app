@@ -11,10 +11,7 @@ import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { engineCommandManager } from '@src/lib/singletons'
-import {
-  commandBarActor,
-  useCommandBarState,
-} from '@src/machines/commandBarMachine'
+import { commandBarActor, useCommandBarState } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 
 export const COMMAND_PALETTE_HOTKEY = 'mod+k'
@@ -26,10 +23,13 @@ export const CommandBar = () => {
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
-  const isSelectionArgument =
+  const isArgumentThatShouldBeHardToDismiss =
     currentArgument?.inputType === 'selection' ||
-    currentArgument?.inputType === 'selectionMixed'
-  const WrapperComponent = isSelectionArgument ? Popover : Dialog
+    currentArgument?.inputType === 'selectionMixed' ||
+    currentArgument?.inputType === 'text'
+  const WrapperComponent = isArgumentThatShouldBeHardToDismiss
+    ? Popover
+    : Dialog
 
   // Close the command bar when navigating
   useEffect(() => {
@@ -123,13 +123,16 @@ export const CommandBar = () => {
       as={Fragment}
     >
       <WrapperComponent
-        open={!commandBarState.matches('Closed') || isSelectionArgument}
+        open={
+          !commandBarState.matches('Closed') ||
+          isArgumentThatShouldBeHardToDismiss
+        }
         onClose={() => {
           commandBarActor.send({ type: 'Close' })
         }}
         className={
           'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
-          (isSelectionArgument ? 'pointer-events-none' : '')
+          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
         }
         data-testid="command-bar-wrapper"
       >
@@ -147,7 +150,16 @@ export const CommandBar = () => {
             data-testid="command-bar"
           >
             {commandBarState.matches('Selecting command') ? (
-              <CommandComboBox options={commands} />
+              <CommandComboBox
+                options={commands.filter((command) => {
+                  return (
+                    // By default everything is undefined
+                    // If marked explicitly as false hide
+                    command.hideFromSearch === undefined ||
+                    command.hideFromSearch === false
+                  )
+                })}
+              />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (

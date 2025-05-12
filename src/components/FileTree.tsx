@@ -29,7 +29,7 @@ import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
 import { ToastInsert } from '@src/components/ToastInsert'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
 
@@ -163,6 +163,7 @@ const FileTreeItem = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
   level = 0,
   treeSelection,
@@ -183,6 +184,7 @@ const FileTreeItem = ({
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   level?: number
   treeSelection: FileEntry | undefined
@@ -212,10 +214,21 @@ const FileTreeItem = ({
         return
       }
 
+      // TODO: make this not just name based but sub path instead
+      const isImportedInCurrentFile = kclManager.ast.body.some(
+        (n) =>
+          n.type === 'ImportStatement' &&
+          ((n.path.type === 'Kcl' &&
+            n.path.filename.includes(fileOrDir.name)) ||
+            (n.path.type === 'Foreign' && n.path.path.includes(fileOrDir.name)))
+      )
+
       if (isCurrentFile && eventType === 'change') {
         let code = await window.electron.readFile(path, { encoding: 'utf-8' })
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
+      } else if (isImportedInCurrentFile && eventType === 'change') {
+        await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
     },
@@ -439,6 +452,7 @@ const FileTreeItem = ({
                         onCreateFile={onCreateFile}
                         onCreateFolder={onCreateFolder}
                         onCloneFileOrFolder={onCloneFileOrFolder}
+                        onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
                         lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
@@ -479,6 +493,7 @@ const FileTreeItem = ({
         onRename={addCurrentItemToRenaming}
         onDelete={() => setIsConfirmingDelete(true)}
         onClone={() => onCloneFileOrFolder(fileOrDir.path)}
+        onOpenInNewWindow={() => onOpenInNewWindow(fileOrDir.path)}
       />
     </div>
   )
@@ -489,6 +504,7 @@ interface FileTreeContextMenuProps {
   onRename: () => void
   onDelete: () => void
   onClone: () => void
+  onOpenInNewWindow: () => void
 }
 
 function FileTreeContextMenu({
@@ -496,6 +512,7 @@ function FileTreeContextMenu({
   onRename,
   onDelete,
   onClone,
+  onOpenInNewWindow,
 }: FileTreeContextMenuProps) {
   const platform = usePlatform()
   const metaKey = platform === 'macos' ? '⌘' : 'Ctrl'
@@ -525,17 +542,15 @@ function FileTreeContextMenu({
         >
           Clone
         </ContextMenuItem>,
+        <ContextMenuItem
+          data-testid="context-menu-open-in-new-window"
+          onClick={onOpenInNewWindow}
+        >
+          Open in new window
+        </ContextMenuItem>,
       ]}
     />
   )
-}
-
-interface FileTreeProps {
-  className?: string
-  file?: IndexLoaderData['file']
-  onNavigateToFile: (
-    focusableElement?: HTMLElement | React.MutableRefObject<HTMLElement | null>
-  ) => void
 }
 
 export const FileTreeMenu = ({
@@ -636,39 +651,22 @@ export const useFileTreeOperations = () => {
     })
   }
 
+  function openInNewWindow(args: { path: string }) {
+    send({
+      type: 'Open file in new window',
+      data: {
+        name: args.path,
+      },
+    })
+  }
+
   return {
     createFile,
     createFolder,
     cloneFileOrDir,
     newTreeEntry,
+    openInNewWindow,
   }
-}
-
-export const FileTree = ({
-  className = '',
-  onNavigateToFile: closePanel,
-}: FileTreeProps) => {
-  const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
-    useFileTreeOperations()
-
-  return (
-    <div className={className}>
-      <div className="flex items-center gap-1 px-4 py-1 bg-chalkboard-20/40 dark:bg-chalkboard-80/50 border-b border-b-chalkboard-30 dark:border-b-chalkboard-80">
-        <h2 className="flex-1 m-0 p-0 text-sm mono">Files</h2>
-        <FileTreeMenu
-          onCreateFile={() => createFile({ dryRun: true })}
-          onCreateFolder={() => createFolder({ dryRun: true })}
-        />
-      </div>
-      <FileTreeInner
-        onNavigateToFile={closePanel}
-        newTreeEntry={newTreeEntry}
-        onCreateFile={(name: string) => createFile({ dryRun: false, name })}
-        onCreateFolder={(name: string) => createFolder({ dryRun: false, name })}
-        onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
-      />
-    </div>
-  )
 }
 
 export const FileTreeInner = ({
@@ -676,11 +674,13 @@ export const FileTreeInner = ({
   onCreateFile,
   onCreateFolder,
   onCloneFileOrFolder,
+  onOpenInNewWindow,
   newTreeEntry,
 }: {
   onCreateFile: (name: string) => void
   onCreateFolder: (name: string) => void
   onCloneFileOrFolder: (path: string) => void
+  onOpenInNewWindow: (path: string) => void
   newTreeEntry: TreeEntry
   onNavigateToFile?: () => void
 }) => {
@@ -792,6 +792,7 @@ export const FileTreeInner = ({
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}
                 onCloneFileOrFolder={onCloneFileOrFolder}
+                onOpenInNewWindow={onOpenInNewWindow}
                 newTreeEntry={newTreeEntry}
                 onClickDirectory={onClickDirectory}
                 onNavigateToFile={onNavigateToFile_}

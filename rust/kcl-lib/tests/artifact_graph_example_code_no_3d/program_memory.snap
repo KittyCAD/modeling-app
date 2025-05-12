@@ -34,9 +34,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
-            "commentStart": 117,
-            "end": 138,
-            "start": 117,
+            "commentStart": 115,
+            "end": 136,
+            "start": 115,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -59,9 +59,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
-            "commentStart": 220,
-            "end": 241,
-            "start": 220,
+            "commentStart": 218,
+            "end": 239,
+            "start": 218,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -84,9 +84,9 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             8.21
           ],
           "tag": {
-            "commentStart": 343,
-            "end": 364,
-            "start": 343,
+            "commentStart": 341,
+            "end": 362,
+            "start": 341,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -139,10 +139,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "YZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -151,12 +149,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "YZ",
         "xAxis": {
           "x": 0.0,
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -164,19 +164,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -293,10 +282,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -305,12 +292,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": -1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -318,19 +307,8 @@ description: Variables in memory after executing artifact_graph_example_code_no_
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

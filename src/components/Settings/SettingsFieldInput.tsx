@@ -9,7 +9,7 @@ import type {
   WildcardSetEvent,
 } from '@src/lib/settings/settingsTypes'
 import { getSettingInputType } from '@src/lib/settings/settingsUtils'
-import { settingsActor, useSettings } from '@src/machines/appMachine'
+import { settingsActor, useSettings } from '@src/lib/singletons'
 
 interface SettingsFieldInputProps {
   // We don't need the fancy types here,
@@ -101,7 +101,10 @@ export function SettingsFieldInput({
               type: `set.${category}.${settingName}`,
               data: {
                 level: settingsLevel,
-                value: e.target.value,
+                // undefined is the only special string due to no way to
+                // encode it in the string-only options.
+                value:
+                  e.target.value === 'undefined' ? undefined : e.target.value,
               },
             } as unknown as EventFrom<WildcardSetEvent>)
           }

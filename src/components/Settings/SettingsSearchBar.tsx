@@ -8,7 +8,8 @@ import { useNavigate } from 'react-router-dom'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { interactionMap } from '@src/lib/settings/initialKeybindings'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { useSettings } from '@src/machines/appMachine'
+import { useSettings } from '@src/lib/singletons'
+import { isDesktop } from '@src/lib/isDesktop'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
@@ -39,7 +40,12 @@ export function SettingsSearchBar() {
         Object.entries(categorySettings).flatMap(([settingName, setting]) => {
           const s = setting
           return (['project', 'user'] satisfies SettingsLevel[])
-            .filter((l) => s.hideOnLevel !== l)
+            .filter(
+              (l) =>
+                s.hideOnLevel !== l &&
+                s.hideOnPlatform !== 'both' &&
+                s.hideOnPlatform !== (isDesktop() ? 'desktop' : 'web')
+            )
             .map((l) => ({
               category: decamelize(category, { separator: ' ' }),
               name: settingName,
@@ -86,7 +92,7 @@ export function SettingsSearchBar() {
             ref={inputRef}
             onChange={(event) => setQuery(event.target.value)}
             className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-            placeholder="Search settings (^.)"
+            placeholder="Search settings (Ctrl+.)"
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"

@@ -1,10 +1,14 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{pretty::NumericSuffix, CoreDump, Program};
+use kcl_lib::{
+    exec::{NumericType, UnitAngle, UnitLen, UnitType},
+    pretty::NumericSuffix,
+    CoreDump, Program, SourceRange,
+};
 use wasm_bindgen::prelude::*;
 
-// wasm_bindgen wrapper for execute
+// wasm_bindgen wrapper for lint
 #[wasm_bindgen]
 pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
@@ -16,6 +20,17 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     }
 
     Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
+}
+
+#[wasm_bindgen]
+pub async fn node_path_from_range(program_ast_json: &str, range_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
+    let range: SourceRange = serde_json::from_str(range_json).map_err(|e| e.to_string())?;
+    let node_path = program.node_path_from_range(range);
+
+    JsValue::from_serde(&node_path).map_err(|e| e.to_string())
 }
 
 #[wasm_bindgen]
@@ -39,11 +54,34 @@ pub fn recast_wasm(json_str: &str) -> Result<JsValue, JsError> {
 }
 
 #[wasm_bindgen]
-pub fn format_number(value: f64, suffix_json: &str) -> Result<String, JsError> {
+pub fn format_number_literal(value: f64, suffix_json: &str) -> Result<String, JsError> {
     console_error_panic_hook::set_once();
 
     let suffix: NumericSuffix = serde_json::from_str(suffix_json).map_err(JsError::from)?;
-    Ok(kcl_lib::pretty::format_number(value, suffix))
+    kcl_lib::pretty::format_number_literal(value, suffix).map_err(JsError::from)
+}
+
+#[wasm_bindgen]
+pub fn human_display_number(value: f64, ty_json: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    // ts-rs can't handle tuple types, so it mashes all of these types together.
+    if let Ok(ty) = serde_json::from_str::<NumericType>(ty_json) {
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_type) = serde_json::from_str::<UnitType>(ty_json) {
+        let ty = NumericType::Known(unit_type);
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_len) = serde_json::from_str::<UnitLen>(ty_json) {
+        let ty = NumericType::Known(UnitType::Length(unit_len));
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    if let Ok(unit_angle) = serde_json::from_str::<UnitAngle>(ty_json) {
+        let ty = NumericType::Known(UnitType::Angle(unit_angle));
+        return Ok(kcl_lib::pretty::human_display_number(value, ty));
+    }
+    Err(format!("Invalid type: {ty_json}"))
 }
 
 #[wasm_bindgen]
@@ -136,7 +174,7 @@ pub fn default_app_settings() -> Result<JsValue, String> {
 pub fn parse_app_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let settings = kcl_lib::Configuration::backwards_compatible_toml_parse(toml_str).map_err(|e| e.to_string())?;
+    let settings = kcl_lib::Configuration::parse_and_validate(toml_str).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -160,8 +198,7 @@ pub fn default_project_settings() -> Result<JsValue, String> {
 pub fn parse_project_settings(toml_str: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let settings =
-        kcl_lib::ProjectConfiguration::backwards_compatible_toml_parse(toml_str).map_err(|e| e.to_string())?;
+    let settings = kcl_lib::ProjectConfiguration::parse_and_validate(toml_str).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -176,8 +213,6 @@ pub fn serialize_configuration(val: JsValue) -> Result<JsValue, String> {
     let config: kcl_lib::Configuration = val.into_serde().map_err(|e| e.to_string())?;
 
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
-    let settings = kcl_lib::Configuration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
-    let toml_str = toml::to_string_pretty(&settings).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -192,9 +227,6 @@ pub fn serialize_project_configuration(val: JsValue) -> Result<JsValue, String> 
     let config: kcl_lib::ProjectConfiguration = val.into_serde().map_err(|e| e.to_string())?;
 
     let toml_str = toml::to_string_pretty(&config).map_err(|e| e.to_string())?;
-    let settings =
-        kcl_lib::ProjectConfiguration::backwards_compatible_toml_parse(&toml_str).map_err(|e| e.to_string())?;
-    let toml_str = toml::to_string_pretty(&settings).map_err(|e| e.to_string())?;
 
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
@@ -257,13 +289,14 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
-pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, String> {
+pub fn change_default_units(code: &str, len_str: &str, angle_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let settings: kcl_lib::MetaSettings = serde_json::from_str(settings_str).map_err(|e| e.to_string())?;
+    let len: Option<kcl_lib::UnitLen> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
+    let angle: Option<kcl_lib::UnitAngle> = serde_json::from_str(angle_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_meta_settings(settings).map_err(|e| e.to_string())?;
+    let new_program = program.change_default_units(len, angle).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 

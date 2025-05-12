@@ -1,49 +1,46 @@
 import { Popover } from '@headlessui/react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { type NavigateFunction, useLocation } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { useLspContext } from '@src/components/LspProvider'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
-import { createAndOpenNewTutorialProject } from '@src/lib/desktopFS'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
-import { reportRejection } from '@src/lib/trap'
-import { settingsActor } from '@src/machines/appMachine'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import {
+  acceptOnboarding,
+  catchOnboardingWarnError,
+} from '@src/routes/Onboarding/utils'
+import { onboardingStartPath } from '@src/lib/onboardingPaths'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
 )
 
-export function HelpMenu(props: React.PropsWithChildren) {
+export function HelpMenu({
+  navigate = () => {},
+}: {
+  navigate?: NavigateFunction
+}) {
   const location = useLocation()
-  const { onProjectOpen } = useLspContext()
   const filePath = useAbsoluteFilePath()
-  const isInProject = location.pathname.includes(PATHS.FILE)
-  const navigate = useNavigate()
 
   const resetOnboardingWorkflow = () => {
-    settingsActor.send({
-      type: 'set.app.onboardingStatus',
-      data: {
-        value: '',
-        level: 'user',
-      },
-    })
-    if (isInProject) {
-      navigate(filePath + PATHS.ONBOARDING.INDEX)
-    } else {
-      createAndOpenNewTutorialProject({
-        onProjectOpen,
-        navigate,
-      }).catch(reportRejection)
+    const props = {
+      onboardingStatus: onboardingStartPath,
+      navigate,
+      codeManager,
+      kclManager,
     }
+    acceptOnboarding(props).catch((reason) =>
+      catchOnboardingWarnError(reason, props)
+    )
   }
 
   const cb = (data: WebContentSendPayload) => {
-    if (data.menuLabel === 'Help.Reset onboarding') {
+    if (data.menuLabel === 'Help.Replay onboarding tutorial') {
       resetOnboardingWorkflow()
     }
   }
@@ -68,71 +65,81 @@ export function HelpMenu(props: React.PropsWithChildren) {
         as="ul"
         className="absolute right-0 left-auto flex flex-col w-64 gap-1 p-0 py-2 m-0 mb-1 text-sm border border-solid rounded shadow-lg bottom-full align-stretch text-chalkboard-10 dark:text-inherit bg-chalkboard-110 dark:bg-chalkboard-100 border-chalkboard-110 dark:border-chalkboard-80"
       >
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Report a bug
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/discussions"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Request a feature
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://discord.gg/JQEpHR7Nt2"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Ask the community
-        </HelpMenuItem>
-        <HelpMenuDivider />
-        <HelpMenuItem
-          as="a"
-          href="https://zoo.dev/docs/kcl-samples"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          KCL code samples
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="a"
-          href="https://zoo.dev/docs/kcl"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          KCL docs
-        </HelpMenuItem>
-        <HelpMenuDivider />
-        <HelpMenuItem
-          as="a"
-          href="https://github.com/KittyCAD/modeling-app/releases"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Release notes
-        </HelpMenuItem>
-        <HelpMenuItem
-          as="button"
-          onClick={() => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
-            navigate(targetPath)
-          }}
-          data-testid="keybindings-button"
-        >
-          Keyboard shortcuts
-        </HelpMenuItem>
-        <HelpMenuItem as="button" onClick={resetOnboardingWorkflow}>
-          Reset onboarding
-        </HelpMenuItem>
+        {({ close }) => (
+          <>
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/issues/new/choose"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Report a bug
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/discussions"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Request a feature
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href="https://discord.gg/JQEpHR7Nt2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ask the community
+            </HelpMenuItem>
+            <HelpMenuDivider />
+            <HelpMenuItem
+              as="a"
+              href="https://zoo.dev/docs/kcl-samples"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              KCL code samples
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="a"
+              href="https://zoo.dev/docs/kcl"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              KCL docs
+            </HelpMenuItem>
+            <HelpMenuDivider />
+            <HelpMenuItem
+              as="a"
+              href="https://github.com/KittyCAD/modeling-app/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Release notes
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="button"
+              onClick={() => {
+                const targetPath = location.pathname.includes(PATHS.FILE)
+                  ? filePath + PATHS.SETTINGS_KEYBINDINGS
+                  : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+                navigate(targetPath)
+              }}
+              data-testid="keybindings-button"
+            >
+              Keyboard shortcuts
+            </HelpMenuItem>
+            <HelpMenuItem
+              as="button"
+              onClick={() => {
+                close()
+                resetOnboardingWorkflow()
+              }}
+            >
+              Replay onboarding tutorial
+            </HelpMenuItem>
+          </>
+        )}
       </Popover.Panel>
     </Popover>
   )

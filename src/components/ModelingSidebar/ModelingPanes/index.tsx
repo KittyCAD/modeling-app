@@ -132,8 +132,13 @@ export const sidebarPanes: SidebarPane[] = [
     icon: 'folder',
     sidebarName: 'Project Files',
     Content: (props: { id: SidebarType; onClose: () => void }) => {
-      const { createFile, createFolder, cloneFileOrDir, newTreeEntry } =
-        useFileTreeOperations()
+      const {
+        createFile,
+        createFolder,
+        cloneFileOrDir,
+        openInNewWindow,
+        newTreeEntry,
+      } = useFileTreeOperations()
 
       return (
         <>
@@ -155,6 +160,7 @@ export const sidebarPanes: SidebarPane[] = [
               createFolder({ dryRun: false, name })
             }
             onCloneFileOrFolder={(path: string) => cloneFileOrDir({ path })}
+            onOpenInNewWindow={(path: string) => openInNewWindow({ path })}
             newTreeEntry={newTreeEntry}
           />
         </>
@@ -178,7 +184,7 @@ export const sidebarPanes: SidebarPane[] = [
         // editorManager.scrollToFirstErrorDiagnosticIfExists()
       },
       className:
-        'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
+        'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[9px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200',
       title: 'Project files have runtime errors',
     },
   },

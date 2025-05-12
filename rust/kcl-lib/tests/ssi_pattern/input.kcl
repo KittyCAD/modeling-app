@@ -1,5 +1,5 @@
-sketch001 = startSketchOn('XZ')
-  |> startProfileAt([-4.35, -12.26], %)
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at = [-4.35, -12.26])
   |> yLine(length = 10.2)
   |> line(end = [0.54, -0.03])
   |> tangentialArc(endAbsolute = [20.4, 14.61])

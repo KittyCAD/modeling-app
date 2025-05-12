@@ -4,13 +4,14 @@ use anyhow::Result;
 use schemars::JsonSchema;
 use serde::Serialize;
 
-use super::{types::UnitLen, EnvironmentRef, ExecState, MetaSettings};
+use super::types::UnitType;
 use crate::{
     errors::KclErrorDetails,
     execution::{
         annotations::{SETTINGS, SETTINGS_UNIT_LENGTH},
-        types::{NumericType, PrimitiveType, RuntimeType},
-        Face, Helix, ImportedGeometry, Metadata, Plane, Sketch, Solid, TagIdentifier,
+        types::{NumericType, PrimitiveType, RuntimeType, UnitLen},
+        EnvironmentRef, ExecState, Face, Geometry, GeometryWithImportedGeometry, Helix, ImportedGeometry, MetaSettings,
+        Metadata, Plane, Sketch, Solid, TagIdentifier,
     },
     parsing::ast::types::{
         DefaultParamVal, FunctionExpression, KclNone, Literal, LiteralValue, Node, TagDeclarator, TagNode,
@@ -47,7 +48,7 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
-    MixedArray {
+    Tuple {
         value: Vec<KclValue>,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -82,9 +83,9 @@ pub enum KclValue {
         value: Box<Helix>,
     },
     ImportedGeometry(ImportedGeometry),
-    #[ts(skip)]
     Function {
-        #[serde(skip)]
+        #[serde(serialize_with = "function_value_stub")]
+        #[ts(type = "null")]
         value: FunctionSource,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -106,6 +107,13 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
+}
+
+fn function_value_stub<S>(_value: &FunctionSource, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: serde::Serializer,
+{
+    serializer.serialize_unit()
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -189,7 +197,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Bool { meta, .. } => to_vec_sr(&meta),
             KclValue::Number { meta, .. } => to_vec_sr(&meta),
             KclValue::String { meta, .. } => to_vec_sr(&meta),
-            KclValue::MixedArray { meta, .. } => to_vec_sr(&meta),
+            KclValue::Tuple { meta, .. } => to_vec_sr(&meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(&meta),
             KclValue::Module { meta, .. } => to_vec_sr(&meta),
@@ -220,7 +228,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Number { meta, .. } => to_vec_sr(meta),
             KclValue::String { meta, .. } => to_vec_sr(meta),
             KclValue::Uuid { meta, .. } => to_vec_sr(meta),
-            KclValue::MixedArray { meta, .. } => to_vec_sr(meta),
+            KclValue::Tuple { meta, .. } => to_vec_sr(meta),
             KclValue::HomArray { value, .. } => value.iter().flat_map(Into::<Vec<SourceRange>>::into).collect(),
             KclValue::Object { meta, .. } => to_vec_sr(meta),
             KclValue::Module { meta, .. } => to_vec_sr(meta),
@@ -244,7 +252,7 @@ impl KclValue {
             KclValue::Bool { value: _, meta } => meta.clone(),
             KclValue::Number { meta, .. } => meta.clone(),
             KclValue::String { value: _, meta } => meta.clone(),
-            KclValue::MixedArray { value: _, meta } => meta.clone(),
+            KclValue::Tuple { value: _, meta } => meta.clone(),
             KclValue::HomArray { value, .. } => value.iter().flat_map(|v| v.metadata()).collect(),
             KclValue::Object { value: _, meta } => meta.clone(),
             KclValue::TagIdentifier(x) => x.meta.clone(),
@@ -260,19 +268,6 @@ impl KclValue {
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
         }
-    }
-
-    pub(crate) fn function_def_source_range(&self) -> Option<SourceRange> {
-        let KclValue::Function {
-            value: FunctionSource::User { ast, .. },
-            ..
-        } = self
-        else {
-            return None;
-        };
-        // TODO: It would be nice if we could extract the source range starting
-        // at the fn, but that's the variable declaration.
-        Some(ast.as_source_range())
     }
 
     #[allow(unused)]
@@ -298,9 +293,21 @@ impl KclValue {
             KclValue::Plane { .. } => "Plane",
             KclValue::Face { .. } => "Face",
             KclValue::Bool { .. } => "boolean (true/false value)",
+            KclValue::Number {
+                ty: NumericType::Unknown,
+                ..
+            } => "number(unknown units)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Length(_)),
+                ..
+            } => "number(Length)",
+            KclValue::Number {
+                ty: NumericType::Known(UnitType::Angle(_)),
+                ..
+            } => "number(Angle)",
             KclValue::Number { .. } => "number",
             KclValue::String { .. } => "string (text)",
-            KclValue::MixedArray { .. } => "array (list)",
+            KclValue::Tuple { .. } => "tuple (list)",
             KclValue::HomArray { .. } => "array (list)",
             KclValue::Object { .. } => "object",
             KclValue::Module { .. } => "module",
@@ -366,7 +373,7 @@ impl KclValue {
 
     /// Put the point into a KCL value.
     pub fn from_point2d(p: [f64; 2], ty: NumericType, meta: Vec<Metadata>) -> Self {
-        Self::MixedArray {
+        Self::Tuple {
             value: vec![
                 Self::Number {
                     value: p[0],
@@ -397,6 +404,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_int_with_ty(&self) -> Option<(i64, NumericType)> {
+        match self {
+            KclValue::Number { value, ty, .. } => crate::try_f64_to_i64(*value).map(|i| (i, ty.clone())),
+            _ => None,
+        }
+    }
+
     pub fn as_object(&self) -> Option<&KclObjectFields> {
         if let KclValue::Object { value, meta: _ } = &self {
             Some(value)
@@ -423,7 +437,7 @@ impl KclValue {
 
     pub fn as_array(&self) -> Option<&[KclValue]> {
         match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
             _ => None,
         }
     }
@@ -595,7 +609,7 @@ impl KclValue {
             KclValue::TagDeclarator(tag) => Some(format!("${}", tag.name)),
             KclValue::TagIdentifier(tag) => Some(format!("${}", tag.value)),
             // TODO better Array and Object stringification
-            KclValue::MixedArray { .. } => Some("[...]".to_owned()),
+            KclValue::Tuple { .. } => Some("[...]".to_owned()),
             KclValue::HomArray { .. } => Some("[...]".to_owned()),
             KclValue::Object { .. } => Some("{ ... }".to_owned()),
             KclValue::Module { .. }
@@ -608,6 +622,25 @@ impl KclValue {
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
             | KclValue::Type { .. } => None,
+        }
+    }
+}
+
+impl From<Geometry> for KclValue {
+    fn from(value: Geometry) -> Self {
+        match value {
+            Geometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            Geometry::Solid(x) => Self::Solid { value: Box::new(x) },
+        }
+    }
+}
+
+impl From<GeometryWithImportedGeometry> for KclValue {
+    fn from(value: GeometryWithImportedGeometry) -> Self {
+        match value {
+            GeometryWithImportedGeometry::Sketch(x) => Self::Sketch { value: Box::new(x) },
+            GeometryWithImportedGeometry::Solid(x) => Self::Solid { value: Box::new(x) },
+            GeometryWithImportedGeometry::ImportedGeometry(x) => Self::ImportedGeometry(*x),
         }
     }
 }

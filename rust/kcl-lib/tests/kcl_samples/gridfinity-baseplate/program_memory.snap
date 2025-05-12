@@ -7,7 +7,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -38,7 +38,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -217,10 +217,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -229,12 +227,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -242,19 +242,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -286,7 +275,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -433,10 +423,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -445,12 +433,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -458,19 +448,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -502,7 +481,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -649,10 +629,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -661,12 +639,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -674,19 +654,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -718,7 +687,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -865,10 +835,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -877,12 +845,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -890,19 +860,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -934,7 +893,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1081,10 +1041,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1093,12 +1051,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1106,19 +1066,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1150,7 +1099,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1297,10 +1247,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1309,12 +1257,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1322,19 +1272,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1366,7 +1305,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1513,10 +1453,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1525,12 +1463,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1538,19 +1478,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1582,7 +1511,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1729,10 +1659,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1741,12 +1669,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1754,19 +1684,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -1798,7 +1717,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1945,10 +1865,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -1957,12 +1875,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1970,19 +1890,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2014,7 +1923,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2161,10 +2071,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2173,12 +2081,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2186,19 +2096,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2230,7 +2129,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2377,10 +2277,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2389,12 +2287,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2402,19 +2302,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2446,7 +2335,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2593,10 +2483,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2605,12 +2493,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2618,19 +2508,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2662,7 +2541,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2809,10 +2689,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -2821,12 +2699,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2834,19 +2714,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -2878,7 +2747,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3025,10 +2895,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3037,12 +2905,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3050,19 +2920,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3094,7 +2953,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3241,10 +3101,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3253,12 +3111,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3266,19 +3126,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3310,7 +3159,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3457,10 +3307,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3469,12 +3317,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3482,19 +3332,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3526,7 +3365,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3673,10 +3513,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3685,12 +3523,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3698,19 +3538,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3742,7 +3571,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3889,10 +3719,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -3901,12 +3729,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3914,19 +3744,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -3958,7 +3777,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4105,10 +3925,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4117,12 +3935,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4130,19 +3950,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4174,7 +3983,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4321,10 +4131,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4333,12 +4141,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4346,19 +4156,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4390,7 +4189,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4537,10 +4337,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4549,12 +4347,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4562,19 +4362,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4606,7 +4395,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4753,10 +4543,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4765,12 +4553,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4778,19 +4568,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -4822,7 +4601,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4969,10 +4749,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -4981,12 +4759,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4994,19 +4774,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5038,7 +4807,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5185,10 +4955,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5197,12 +4965,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5210,19 +4980,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5254,7 +5013,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -5406,10 +5166,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5418,12 +5176,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5431,19 +5191,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5475,7 +5224,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5622,10 +5372,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5634,12 +5382,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5647,19 +5397,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5691,7 +5430,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5838,10 +5578,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -5850,12 +5588,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5863,19 +5603,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -5907,7 +5636,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6054,10 +5784,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -6066,12 +5794,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6079,19 +5809,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6123,7 +5842,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6270,10 +5990,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -6282,12 +6000,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6295,19 +6015,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6339,7 +6048,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6486,10 +6196,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -6498,12 +6206,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6511,19 +6221,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6555,7 +6254,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6702,10 +6402,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -6714,12 +6412,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6727,19 +6427,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6771,7 +6460,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6918,10 +6608,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -6930,12 +6618,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6943,19 +6633,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -6987,7 +6666,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7134,10 +6814,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7146,12 +6824,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7159,19 +6839,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7203,7 +6872,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7350,10 +7020,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7362,12 +7030,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7375,19 +7045,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7419,7 +7078,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7566,10 +7226,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7578,12 +7236,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7591,19 +7251,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7635,7 +7284,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7782,10 +7432,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -7794,12 +7442,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7807,19 +7457,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -7851,7 +7490,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7998,10 +7638,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8010,12 +7648,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8023,19 +7663,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8067,7 +7696,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8214,10 +7844,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8226,12 +7854,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8239,19 +7869,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8283,7 +7902,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8430,10 +8050,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8442,12 +8060,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8455,19 +8075,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8499,7 +8108,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8646,10 +8256,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8658,12 +8266,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8671,19 +8281,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8715,7 +8314,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8862,10 +8462,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -8874,12 +8472,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8887,19 +8487,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -8931,7 +8520,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9078,10 +8668,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9090,12 +8678,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9103,19 +8693,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9147,7 +8726,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9294,10 +8874,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9306,12 +8884,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9319,19 +8899,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9363,7 +8932,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9510,10 +9080,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9522,12 +9090,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9535,19 +9105,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9579,7 +9138,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9726,10 +9286,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9738,12 +9296,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9751,19 +9311,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -9795,7 +9344,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9942,10 +9492,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -9954,12 +9502,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9967,19 +9517,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10011,7 +9550,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10158,10 +9698,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10170,12 +9708,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10183,19 +9723,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10227,7 +9756,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10374,10 +9904,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10386,12 +9914,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10399,19 +9929,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10443,7 +9962,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -10621,10 +10141,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10633,12 +10151,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10646,19 +10166,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10690,7 +10199,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10837,10 +10347,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -10849,12 +10357,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10862,19 +10372,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -10906,7 +10405,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11053,10 +10553,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11065,12 +10563,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11078,19 +10578,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11122,7 +10611,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11269,10 +10759,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11281,12 +10769,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11294,19 +10784,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11338,7 +10817,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -11370,7 +10850,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",
@@ -11558,10 +11039,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11570,12 +11049,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11583,19 +11064,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11627,7 +11097,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11774,10 +11245,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -11786,12 +11255,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11799,19 +11270,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -11843,7 +11303,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11990,10 +11451,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12002,12 +11461,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -12015,19 +11476,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12059,7 +11509,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -12206,10 +11657,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               }
             ],
             "on": {
-              "type": "plane",
-              "id": "[uuid]",
               "artifactId": "[uuid]",
-              "value": "Custom",
+              "id": "[uuid]",
               "origin": {
                 "x": 4.0,
                 "y": 0.0,
@@ -12218,12 +11667,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "type": "Mm"
                 }
               },
+              "type": "plane",
+              "value": "Custom",
               "xAxis": {
                 "x": 0.0,
                 "y": 1.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -12231,19 +11682,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
-              },
-              "zAxis": {
-                "x": 1.0,
-                "y": 0.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "units": {
-                "type": "Mm"
               }
             },
             "start": {
@@ -12275,7 +11715,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]
@@ -12424,10 +11865,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -12436,12 +11875,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -12449,19 +11890,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -12493,7 +11923,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "singleSide": {
@@ -12640,10 +12071,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "Custom",
+          "id": "[uuid]",
           "origin": {
             "x": 4.0,
             "y": 0.0,
@@ -12652,12 +12081,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "Custom",
           "xAxis": {
             "x": 0.0,
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -12665,19 +12096,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -12709,7 +12129,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "thirdStep": {

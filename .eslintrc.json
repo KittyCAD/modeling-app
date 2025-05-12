@@ -19,6 +19,11 @@
     "plugin:jsx-a11y/recommended",
     "plugin:react-hooks/recommended"
   ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     "no-array-constructor": "off", // This is wrong; use the @typescript-eslint one instead.
     "@typescript-eslint/no-array-constructor": "error",
@@ -61,6 +66,7 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/no-autofocus": "off",
     "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "react/no-unknown-property": "error",
     "no-restricted-globals": [
       "error",
       {
@@ -81,6 +87,14 @@
       {
         "selector": "CallExpression[callee.object.name='TOML'][callee.property.name='parse']",
         "message": "Do not use TOML.parse directly. Use the wrappers in test-utils instead like tomlToSettings."
+      },
+      {
+        "selector": "CallExpression[callee.property.name='split'] > Literal[value='/']",
+        "message": "Avoid using split with '/'."
+      },
+      {
+        "selector": "CallExpression[callee.property.name='join'] > Literal[value='/']",
+        "message": "Avoid using join with '/'."
       }
     ],
     "no-restricted-imports": [

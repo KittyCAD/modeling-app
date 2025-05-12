@@ -28,9 +28,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 901,
-            "end": 907,
-            "start": 901,
+            "commentStart": 878,
+            "end": 884,
+            "start": 878,
             "type": "TagDeclarator",
             "value": "edge1"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 964,
-            "end": 970,
-            "start": 964,
+            "commentStart": 941,
+            "end": 947,
+            "start": 941,
             "type": "TagDeclarator",
             "value": "edge2"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1019,
-            "end": 1025,
-            "start": 1019,
+            "commentStart": 996,
+            "end": 1002,
+            "start": 996,
             "type": "TagDeclarator",
             "value": "edge3"
           },
@@ -67,9 +67,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1044,
-            "end": 1050,
-            "start": 1044,
+            "commentStart": 1021,
+            "end": 1027,
+            "start": 1021,
             "type": "TagDeclarator",
             "value": "edge4"
           },
@@ -90,9 +90,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 901,
-              "end": 907,
-              "start": 901,
+              "commentStart": 878,
+              "end": 884,
+              "start": 878,
               "type": "TagDeclarator",
               "value": "edge1"
             },
@@ -115,9 +115,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 964,
-              "end": 970,
-              "start": 964,
+              "commentStart": 941,
+              "end": 947,
+              "start": 941,
               "type": "TagDeclarator",
               "value": "edge2"
             },
@@ -140,9 +140,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "commentStart": 1019,
-              "end": 1025,
-              "start": 1019,
+              "commentStart": 996,
+              "end": 1002,
+              "start": 996,
               "type": "TagDeclarator",
               "value": "edge3"
             },
@@ -165,9 +165,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
               73.0
             ],
             "tag": {
-              "commentStart": 1044,
-              "end": 1050,
-              "start": 1044,
+              "commentStart": 1021,
+              "end": 1027,
+              "start": 1021,
               "type": "TagDeclarator",
               "value": "edge4"
             },
@@ -182,10 +182,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -194,12 +192,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -207,19 +207,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -343,7 +332,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "caseHeight": {
@@ -445,7 +435,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
     }
   },
   "m25Screw": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "microUsb1Distance": {
     "type": "Number",
@@ -583,10 +574,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XY",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -595,12 +584,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XY",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -608,19 +599,8 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "y": 1.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {

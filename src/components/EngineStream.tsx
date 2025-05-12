@@ -18,17 +18,26 @@ import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from '@src/lib/timings'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import { engineStreamActor, useSettings } from '@src/machines/appMachine'
-import { useCommandBarState } from '@src/machines/commandBarMachine'
+import { engineStreamActor, useSettings } from '@src/lib/singletons'
 import {
   EngineStreamState,
   EngineStreamTransition,
 } from '@src/machines/engineStreamMachine'
 
+import Loading from '@src/components/Loading'
 import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import {
+  engineStreamZoomToFit,
+  engineViewIsometricWithGeometryPresent,
+  engineViewIsometricWithoutGeometryPresent,
+} from '@src/lib/utils'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -42,22 +51,25 @@ export const EngineStream = (props: {
 
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
-  const settingsEngine = {
+  /**
+   * We omit `pool` here because `engineStreamMachine` will override it anyway
+   * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
+   */
+  const settingsEngine: Omit<SettingsViaQueryString, 'pool'> = {
     theme: settings.app.theme.current,
     enableSSAO: settings.modeling.enableSSAO.current,
     highlightEdges: settings.modeling.highlightEdges.current,
     showScaleGrid: settings.modeling.showScaleGrid.current,
     cameraProjection: settings.modeling.cameraProjection.current,
+    cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
-
-  const commandBarState = useCommandBarState()
 
   const streamIdleMode = settings.app.streamIdleMode.current
 
@@ -91,21 +103,39 @@ export const EngineStream = (props: {
     console.log('scene is ready, fire!')
 
     kmp
-      .then(() =>
-        // It makes sense to also call zoom to fit here, when a new file is
-        // loaded for the first time, but not overtaking the work kevin did
-        // so the camera isn't moving all the time.
-        engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.1, // padding around the objects
-            animated: false, // don't animate the zoom for now
-          },
-        })
-      )
+      .then(async () => {
+        // Gotcha: Playwright E2E tests will be zoom_to_fit, when you try to recreate the e2e test manually
+        // your localhost will do view_isometric. Turn this boolean on to have the same experience when manually
+        // debugging e2e tests
+
+        // We need a padding of 0.1 for zoom_to_fit for all E2E tests since they were originally
+        // written with zoom_to_fit with padding 0.1
+        const padding = 0.1
+        if (isPlaywright()) {
+          await engineStreamZoomToFit({ engineCommandManager, padding })
+        } else {
+          // If the scene is empty you cannot use view_isometric, it will not move the camera
+          if (kclManager.isAstBodyEmpty(kclManager.ast)) {
+            await engineViewIsometricWithoutGeometryPresent({
+              engineCommandManager,
+              unit:
+                kclManager.fileSettings.defaultLengthUnit ||
+                DEFAULT_DEFAULT_LENGTH_UNIT,
+            })
+          } else {
+            await engineViewIsometricWithGeometryPresent({
+              engineCommandManager,
+              padding,
+            })
+          }
+        }
+
+        if (project && project.path) {
+          createThumbnailPNGOnDesktop({
+            projectDirectoryWithoutEndingSlash: project.path,
+          })
+        }
+      })
       .catch(trap)
   }
 
@@ -331,15 +361,7 @@ export const EngineStream = (props: {
     if (!engineStreamState.context.videoRef.current) return
     // If we're in sketch mode, don't send a engine-side select event
     if (modelingMachineState.matches('Sketch')) return
-    // Only respect default plane selection if we're on a selection command argument
-    if (
-      modelingMachineState.matches({ idle: 'showPlanes' }) &&
-      !(
-        commandBarState.matches('Gathering arguments') &&
-        commandBarState.context.currentArgument?.inputType === 'selection'
-      )
-    )
-      return
+
     // If we're mousing up from a camera drag, don't send a select event
     if (sceneInfra.camControls.wasDragging === true) return
 
@@ -360,7 +382,6 @@ export const EngineStream = (props: {
       !isNetworkOkay ||
       !engineStreamState.context.videoRef.current ||
       modelingMachineState.matches('Sketch') ||
-      modelingMachineState.matches({ idle: 'showPlanes' }) ||
       sceneInfra.camControls.wasDragging === true ||
       !btnName(e.nativeEvent).left
     ) {
@@ -426,6 +447,13 @@ export const EngineStream = (props: {
         }
         menuTargetElement={videoWrapperRef}
       />
+      {![EngineStreamState.Playing, EngineStreamState.Paused].some(
+        (s) => s === engineStreamState.value
+      ) && (
+        <Loading dataTestId="loading-engine" className="fixed inset-0 h-screen">
+          Connecting to engine
+        </Loading>
+      )}
     </div>
   )
 }

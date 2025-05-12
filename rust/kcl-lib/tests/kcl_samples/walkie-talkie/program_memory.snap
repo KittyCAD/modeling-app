@@ -5,7 +5,7 @@ description: Variables in memory after executing walkie-talkie.kcl
 {
   "antenna": {
     "type": "Module",
-    "value": 8
+    "value": 5
   },
   "antennaBaseHeight": {
     "type": "Number",
@@ -74,10 +74,11 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "body": {
     "type": "Module",
-    "value": 6
+    "value": 2
   },
   "button": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "buttonHeight": {
     "type": "Number",
@@ -120,7 +121,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "case": {
     "type": "Module",
-    "value": 7
+    "value": 3
   },
   "caseTolerance": {
     "type": "Number",
@@ -163,7 +164,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "knob": {
     "type": "Module",
-    "value": 10
+    "value": 7
   },
   "knobDiameter": {
     "type": "Number",
@@ -330,7 +331,7 @@ description: Variables in memory after executing walkie-talkie.kcl
   },
   "talkButton": {
     "type": "Module",
-    "value": 9
+    "value": 6
   },
   "talkButtonHeight": {
     "type": "Number",

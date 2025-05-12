@@ -4,6 +4,7 @@ use anyhow::Result;
 use kcl_derive_docs::stdlib;
 use kittycad_modeling_cmds::shared::Angle;
 
+use super::utils::untype_point;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
@@ -13,22 +14,20 @@ use crate::{
     std::{args::TyF64, utils::between, Args},
 };
 
-use super::utils::untype_point;
-
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_end(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the ending point of the provided line segment.
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+/// cube = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [w, 0], tag = $line1)
 ///   |> line(end = [0, w], tag = $line2)
 ///   |> line(end = [-w, 0], tag = $line3)
@@ -37,16 +36,16 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
 ///   |> extrude(length = 5)
 ///
 /// fn cylinder(radius, tag) {
-///   return startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   return startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
 ///   |> circle(radius = radius, center = segEnd(tag) )
 ///   |> extrude(length = radius)
 /// }
 ///
-/// cylinder(1, line1)
-/// cylinder(2, line2)
-/// cylinder(3, line3)
-/// cylinder(4, line4)
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
 /// ```
 #[stdlib {
     name = "segEnd",
@@ -54,7 +53,8 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -64,8 +64,11 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.end_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_to().clone())
+    Ok(point)
 }
 
 /// Returns the segment end of x.
@@ -79,8 +82,8 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the ending point of the provided line segment along the 'x' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [segEndX(thing), 0])
@@ -95,7 +98,8 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -120,8 +124,8 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the ending point of the provided line segment along the 'y' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> line(end = [0, 3], tag = $thing)
 ///   |> line(end = [-10, 0])
@@ -137,7 +141,8 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -154,17 +159,17 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_start(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the starting point of the provided line segment.
 ///
 /// ```no_run
 /// w = 15
-/// cube = startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+/// cube = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [w, 0], tag = $line1)
 ///   |> line(end = [0, w], tag = $line2)
 ///   |> line(end = [-w, 0], tag = $line3)
@@ -173,16 +178,16 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 ///   |> extrude(length = 5)
 ///
 /// fn cylinder(radius, tag) {
-///   return startSketchOn('XY')
-///   |> startProfileAt([0, 0], %)
+///   return startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
 ///   |> circle( radius = radius, center = segStart(tag) )
 ///   |> extrude(length = radius)
 /// }
 ///
-/// cylinder(1, line1)
-/// cylinder(2, line2)
-/// cylinder(3, line3)
-/// cylinder(4, line4)
+/// cylinder(radius = 1, tag = line1)
+/// cylinder(radius = 2, tag = line2)
+/// cylinder(radius = 3, tag = line3)
+/// cylinder(radius = 4, tag = line4)
 /// ```
 #[stdlib {
     name = "segStart",
@@ -190,7 +195,8 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -200,8 +206,11 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.start_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_from().to_owned())
+    Ok(point)
 }
 
 /// Returns the segment start of x.
@@ -215,8 +224,8 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Compute the starting point of the provided line segment along the 'x' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0], tag = $thing)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [20 - segStartX(thing), 0])
@@ -231,7 +240,8 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -256,8 +266,8 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
 /// Compute the starting point of the provided line segment along the 'y' axis.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> line(end = [0, 3], tag = $thing)
 ///   |> line(end = [-10, 0])
@@ -273,7 +283,8 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -299,8 +310,8 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// sketch.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [20, 5])
 ///   |> line(end = [lastSegX(%), 0])
@@ -315,7 +326,8 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
@@ -345,8 +357,8 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// sketch.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [5, 0])
 ///   |> line(end = [20, 5])
 ///   |> line(end = [0, lastSegY(%)])
@@ -361,7 +373,8 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
@@ -388,8 +401,8 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// Compute the length of the provided line segment.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///     angle = 60,
 ///     length = 10,
@@ -410,7 +423,8 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -435,8 +449,8 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
 /// Compute the angle (in degrees) of the provided line segment.
 ///
 /// ```no_run
-/// exampleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0])
 ///   |> line(end = [5, 10], tag = $seg01)
 ///   |> line(end = [-10, 0])
@@ -453,7 +467,8 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -464,7 +479,7 @@ fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         })
     })?;
 
-    let result = between(path.get_from().into(), path.get_to().into());
+    let result = between(path.get_base().from, path.get_base().to);
 
     Ok(result.to_degrees())
 }
@@ -481,8 +496,8 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// // Horizontal pill.
-/// pillSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// pillSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [20, 0])
 ///   |> tangentialArc(end = [0, 10], tag = $arc1)
 ///   |> angledLine(
@@ -497,8 +512,8 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 ///
 /// ```no_run
 /// // Vertical pill.  Use absolute coordinate for arc.
-/// pillSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// pillSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [0, 20])
 ///   |> tangentialArc(endAbsolute = [10, 20], tag = $arc1)
 ///   |> angledLine(
@@ -512,8 +527,8 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 ///
 /// ```no_run
-/// rectangleSketch = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
+/// rectangleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> line(end = [10, 0], tag = $seg1)
 ///   |> angledLine(
 ///     angle = tangentToEnd(seg1),
@@ -527,22 +542,23 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
 /// ```
 ///
 /// ```no_run
-/// bottom = startSketchOn("XY")
-///   |> startProfileAt([0, 0], %)
-///   |> arcTo({
-///        end: [10, 10],
-///        interior: [5, 1]
-///      }, %, $arc1)
+/// bottom = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> arc(
+///        endAbsolute = [10, 10],
+///        interiorAbsolute = [5, 1],
+///        tag = $arc1,
+///      )
 ///   |> angledLine(angle = tangentToEnd(arc1), length = 20)
 ///   |> close()
 /// ```
 ///
 /// ```no_run
-/// circSketch = startSketchOn("XY")
+/// circSketch = startSketchOn(XY)
 ///   |> circle( center= [0, 0], radius= 3 , tag= $circ)
 ///
-/// triangleSketch = startSketchOn("XY")
-///   |> startProfileAt([-5, 0], %)
+/// triangleSketch = startSketchOn(XY)
+///   |> startProfile(at = [-5, 0])
 ///   |> angledLine(angle = tangentToEnd(circ), length = 10)
 ///   |> line(end = [-15, 0])
 ///   |> close()
@@ -553,7 +569,8 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -578,133 +595,4 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
     ));
 
     Ok(previous_end_tangent.to_degrees())
-}
-
-/// Returns the angle to match the given length for x.
-pub async fn angle_to_match_length_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_x(&tag, to.n, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
-}
-
-/// Returns the angle to match the given length for x.
-///
-/// ```no_run
-/// sketch001 = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> line(end = [2, 5], tag = $seg01)
-///   |> angledLine(
-///        angle = -angleToMatchLengthX(seg01, 7, %),
-///        endAbsoluteX = 10,
-///      )
-///   |> close()
-///
-/// extrusion = extrude(sketch001, length = 5)
-/// ```
-#[stdlib {
-    name = "angleToMatchLengthX",
-}]
-fn inner_angle_to_match_length_x(
-    tag: &TagIdentifier,
-    to: f64,
-    sketch: Sketch,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
-
-    let length = path.length().n;
-
-    let last_line = sketch
-        .paths
-        .last()
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
-
-    // TODO assumption about the units of to
-    let diff = (to - last_line.to[0]).abs();
-
-    let angle_r = (diff / length).acos();
-
-    if diff > length {
-        Ok(0.0)
-    } else {
-        Ok(angle_r.to_degrees())
-    }
-}
-
-/// Returns the angle to match the given length for y.
-pub async fn angle_to_match_length_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (tag, to, sketch) = args.get_tag_to_number_sketch()?;
-    let result = inner_angle_to_match_length_y(&tag, to.n, sketch, exec_state, args.clone())?;
-    Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, NumericType::degrees())))
-}
-
-/// Returns the angle to match the given length for y.
-///
-/// ```no_run
-/// sketch001 = startSketchOn('XZ')
-///   |> startProfileAt([0, 0], %)
-///   |> line(end = [1, 2], tag = $seg01)
-///   |> angledLine(
-///     angle = angleToMatchLengthY(seg01, 15, %),
-///     length = 5,
-///   )
-///   |> yLine(endAbsolute = 0)
-///   |> close()
-///  
-/// extrusion = extrude(sketch001, length = 5)
-/// ```
-#[stdlib {
-    name = "angleToMatchLengthY",
-}]
-fn inner_angle_to_match_length_y(
-    tag: &TagIdentifier,
-    to: f64,
-    sketch: Sketch,
-    exec_state: &mut ExecState,
-    args: Args,
-) -> Result<f64, KclError> {
-    let line = args.get_tag_engine_info(exec_state, tag)?;
-    let path = line.path.clone().ok_or_else(|| {
-        KclError::Type(KclErrorDetails {
-            message: format!("Expected a line segment with a path, found `{:?}`", line),
-            source_ranges: vec![args.source_range],
-        })
-    })?;
-
-    let length = path.length().n;
-
-    let last_line = sketch
-        .paths
-        .last()
-        .ok_or_else(|| {
-            KclError::Type(KclErrorDetails {
-                message: format!("Expected a Sketch with at least one segment, found `{:?}`", sketch),
-                source_ranges: vec![args.source_range],
-            })
-        })?
-        .get_base();
-
-    // TODO assumption about the units of to
-    let diff = (to - last_line.to[1]).abs();
-
-    let angle_r = (diff / length).asin();
-
-    if diff > length {
-        Ok(0.0)
-    } else {
-        Ok(angle_r.to_degrees())
-    }
 }

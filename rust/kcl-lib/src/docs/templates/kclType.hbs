@@ -1,5 +1,6 @@
 ---
 title: "{{name}}"
+subtitle: "Type in {{module}}"
 excerpt: "{{safe_yaml summary}}"
 layout: manual
 ---
@@ -24,7 +25,7 @@ layout: manual
 
 {{#each examples}}
 {{#if this.content}}
-```js
+```kcl
 {{{this.content}}}
 ```
 {{/if}}

@@ -15,9 +15,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 92,
-            "end": 98,
-            "start": 92,
+            "commentStart": 90,
+            "end": 96,
+            "start": 90,
             "type": "TagDeclarator",
             "value": "thing"
           },
@@ -28,9 +28,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 131,
-            "end": 138,
-            "start": 131,
+            "commentStart": 129,
+            "end": 136,
+            "start": 129,
             "type": "TagDeclarator",
             "value": "thing1"
           },
@@ -41,9 +41,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 172,
-            "end": 179,
-            "start": 172,
+            "commentStart": 170,
+            "end": 177,
+            "start": 170,
             "type": "TagDeclarator",
             "value": "thing2"
           },
@@ -54,9 +54,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 198,
-            "end": 205,
-            "start": 198,
+            "commentStart": 196,
+            "end": 203,
+            "start": 196,
             "type": "TagDeclarator",
             "value": "thing3"
           },
@@ -77,9 +77,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               0.0
             ],
             "tag": {
-              "commentStart": 92,
-              "end": 98,
-              "start": 92,
+              "commentStart": 90,
+              "end": 96,
+              "start": 90,
               "type": "TagDeclarator",
               "value": "thing"
             },
@@ -102,9 +102,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               10.0
             ],
             "tag": {
-              "commentStart": 131,
-              "end": 138,
-              "start": 131,
+              "commentStart": 129,
+              "end": 136,
+              "start": 129,
               "type": "TagDeclarator",
               "value": "thing1"
             },
@@ -127,9 +127,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               10.0
             ],
             "tag": {
-              "commentStart": 172,
-              "end": 179,
-              "start": 172,
+              "commentStart": 170,
+              "end": 177,
+              "start": 170,
               "type": "TagDeclarator",
               "value": "thing2"
             },
@@ -152,9 +152,9 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               0.0
             ],
             "tag": {
-              "commentStart": 198,
-              "end": 205,
-              "start": 198,
+              "commentStart": 196,
+              "end": 203,
+              "start": 196,
               "type": "TagDeclarator",
               "value": "thing3"
             },
@@ -169,10 +169,8 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XY",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -181,12 +179,14 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XY",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -194,19 +194,8 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
             "y": 1.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -276,7 +265,8 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
       ],
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "thing": {

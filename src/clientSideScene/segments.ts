@@ -54,6 +54,7 @@ import {
   STRAIGHT_SEGMENT,
   STRAIGHT_SEGMENT_BODY,
   STRAIGHT_SEGMENT_DASH,
+  STRAIGHT_SEGMENT_SNAP_LINE,
   TANGENTIAL_ARC_TO_SEGMENT,
   TANGENTIAL_ARC_TO_SEGMENT_BODY,
   TANGENTIAL_ARC_TO__SEGMENT_DASH,
@@ -83,13 +84,14 @@ import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
-import { commandBarActor } from '@src/machines/commandBarMachine'
+import { commandBarActor } from '@src/lib/singletons'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingMachine'
 import toast from 'react-hot-toast'
+import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {
@@ -216,7 +218,17 @@ class StraightSegment implements SegmentUtils {
       segmentGroup.add(lengthIndicatorGroup)
     }
 
+    if (isDraftSegment) {
+      const snapLine = createLine({
+        from: [0, 0],
+        to: [0, 0],
+        color: 0x555555,
+      })
+      snapLine.name = STRAIGHT_SEGMENT_SNAP_LINE
+      segmentGroup.add(snapLine)
+    }
     segmentGroup.add(mesh, extraSegmentGroup)
+
     let updateOverlaysCallback = this.update({
       prevSegment,
       input,
@@ -265,18 +277,38 @@ class StraightSegment implements SegmentUtils {
       isHandlesVisible = !shouldHideHover
     }
 
+    const dir = new Vector3()
+      .subVectors(
+        new Vector3(to[0], to[1], 0),
+        new Vector3(from[0], from[1], 0)
+      )
+      .normalize()
+
     if (arrowGroup) {
       arrowGroup.position.set(to[0], to[1], 0)
-
-      const dir = new Vector3()
-        .subVectors(
-          new Vector3(to[0], to[1], 0),
-          new Vector3(from[0], from[1], 0)
-        )
-        .normalize()
       arrowGroup.quaternion.setFromUnitVectors(new Vector3(0, 1, 0), dir)
       arrowGroup.scale.set(scale, scale, scale)
       arrowGroup.visible = isHandlesVisible
+    }
+
+    const snapLine = group.getObjectByName(STRAIGHT_SEGMENT_SNAP_LINE) as Line
+    if (snapLine) {
+      snapLine.visible = !!input.snap
+      if (snapLine.visible) {
+        // Without this three.js incorrectly culls the line in some cases when zoomed in too much
+        snapLine.frustumCulled = false
+        const snapLineFrom = to
+        const snapLineTo = new Vector3(to[0], to[1], 0).addScaledVector(
+          dir,
+          // Draw a large enough line that reaches the screen edge
+          // Cleaner way would be to draw in screen space
+          9999999 * scale
+        )
+        updateLine(snapLine, {
+          from: snapLineFrom,
+          to: [snapLineTo.x, snapLineTo.y],
+        })
+      }
     }
 
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
@@ -431,33 +463,10 @@ class TangentialArcToSegment implements SegmentUtils {
     const arrowGroup = group.getObjectByName(ARROWHEAD) as Group
     const extraSegmentGroup = group.getObjectByName(EXTRA_SEGMENT_HANDLE)
 
-    let previousPoint = prevSegment.from
-    if (prevSegment?.type === 'TangentialArcTo') {
-      previousPoint = getTangentPointFromPreviousArc(
-        prevSegment.center,
-        prevSegment.ccw,
-        prevSegment.to
-      )
-    } else if (prevSegment?.type === 'ArcThreePoint') {
-      const arcDetails = calculate_circle_from_3_points(
-        prevSegment.p1[0],
-        prevSegment.p1[1],
-        prevSegment.p2[0],
-        prevSegment.p2[1],
-        prevSegment.p3[0],
-        prevSegment.p3[1]
-      )
-      previousPoint = getTangentPointFromPreviousArc(
-        [arcDetails.center_x, arcDetails.center_y],
-        !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
-        prevSegment.p3
-      )
-    }
-
     const arcInfo = getTangentialArcToInfo({
       arcStartPoint: from,
       arcEndPoint: to,
-      tanPreviousPoint: previousPoint,
+      tanPreviousPoint: getTanPreviousPoint(prevSegment),
       obtuse: true,
     })
 
@@ -537,6 +546,32 @@ class TangentialArcToSegment implements SegmentUtils {
         hasThreeDotMenu: true,
       })
   }
+}
+
+export function getTanPreviousPoint(prevSegment: Sketch['paths'][number]) {
+  let previousPoint = prevSegment.from
+  if (prevSegment.type === 'TangentialArcTo') {
+    previousPoint = getTangentPointFromPreviousArc(
+      prevSegment.center,
+      prevSegment.ccw,
+      prevSegment.to
+    )
+  } else if (prevSegment.type === 'ArcThreePoint') {
+    const arcDetails = calculate_circle_from_3_points(
+      prevSegment.p1[0],
+      prevSegment.p1[1],
+      prevSegment.p2[0],
+      prevSegment.p2[1],
+      prevSegment.p3[0],
+      prevSegment.p3[1]
+    )
+    previousPoint = getTangentPointFromPreviousArc(
+      [arcDetails.center_x, arcDetails.center_y],
+      !isClockwise([prevSegment.p1, prevSegment.p2, prevSegment.p3]),
+      prevSegment.p3
+    )
+  }
+  return previousPoint
 }
 
 class CircleSegment implements SegmentUtils {
@@ -1018,21 +1053,18 @@ class ArcSegment implements SegmentUtils {
     const centerToFromLine = createLine({
       from: center,
       to: from,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToFromLine.name = ARC_CENTER_TO_FROM
     const centerToToLine = createLine({
       from: center,
       to,
-      scale,
       color: grey, // Light gray color for the line
     })
     centerToToLine.name = ARC_CENTER_TO_TO
     const angleReferenceLine = createLine({
       from: [center[0] + (ANGLE_INDICATOR_RADIUS - 2) * scale, center[1]],
       to: [center[0] + (ANGLE_INDICATOR_RADIUS + 2) * scale, center[1]],
-      scale,
       color: grey, // Light gray color for the line
     })
     angleReferenceLine.name = ARC_ANGLE_REFERENCE_LINE
@@ -1043,7 +1075,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle,
-      scale,
       color: grey, // Red color for the angle indicator
     })
     angleIndicator.name = 'angleIndicator'
@@ -1054,7 +1085,6 @@ class ArcSegment implements SegmentUtils {
       radius: ANGLE_INDICATOR_RADIUS, // Half the radius for the indicator
       startAngle: 0,
       endAngle: (endAngle * Math.PI) / 180,
-      scale,
       color: grey, // Green color for the end angle indicator
     })
     endAngleIndicator.name = 'endAngleIndicator'
@@ -1242,12 +1272,12 @@ class ArcSegment implements SegmentUtils {
 
     const centerToFromLine = group.getObjectByName(ARC_CENTER_TO_FROM) as Line
     if (centerToFromLine) {
-      updateLine(centerToFromLine, { from: center, to: from, scale })
+      updateLine(centerToFromLine, { from: center, to: from })
       centerToFromLine.visible = isHandlesVisible
     }
     const centerToToLine = group.getObjectByName(ARC_CENTER_TO_TO) as Line
     if (centerToToLine) {
-      updateLine(centerToToLine, { from: center, to, scale })
+      updateLine(centerToToLine, { from: center, to })
       centerToToLine.visible = isHandlesVisible
     }
     const angleReferenceLine = group.getObjectByName(
@@ -1257,7 +1287,6 @@ class ArcSegment implements SegmentUtils {
       updateLine(angleReferenceLine, {
         from: center,
         to: [center[0] + 34 * scale, center[1]],
-        scale,
       })
       angleReferenceLine.visible = isHandlesVisible
     }
@@ -1398,7 +1427,7 @@ class ThreePointArcSegment implements SegmentUtils {
       p3,
       radius,
       center,
-      ccw: false,
+      ccw: !isClockwise([p1, p2, p3]),
       prevSegment,
       pathToNode,
       isSelected,
@@ -1503,7 +1532,7 @@ class ThreePointArcSegment implements SegmentUtils {
 
     return () => {
       const overlays: SegmentOverlays = {}
-      const overlayDetails = [p2Handle, p3Handle].map((handle, index) =>
+      const overlayDetails = [p2Handle, p3Handle].map((handle, _index) =>
         sceneInfra.updateOverlayDetails({
           handle: handle,
           group,
@@ -1519,10 +1548,10 @@ class ThreePointArcSegment implements SegmentUtils {
       overlayDetails.forEach((payload, index) => {
         if (payload?.type === 'set-one') {
           overlays[payload.pathToNodeString] = payload.seg
-          // Add filterValue: 'interior' for p2 and 'end' for p3
+          // Add filterValue: 'interiorAbsolute' for p2 and 'endAbsolute' for p3
           segmentOverlays.push({
             ...payload.seg[0],
-            filterValue: index === 0 ? 'interior' : 'end',
+            filterValue: index === 0 ? ARG_INTERIOR_ABSOLUTE : 'endAbsolute',
           })
         }
       })
@@ -1992,12 +2021,10 @@ export function dashedStraight(
 function createLine({
   from,
   to,
-  scale,
   color,
 }: {
   from: [number, number]
   to: [number, number]
-  scale: number
   color: number
 }): Line {
   // Implementation for creating a line
@@ -2011,11 +2038,7 @@ function createLine({
 
 function updateLine(
   line: Line,
-  {
-    from,
-    to,
-    scale,
-  }: { from: [number, number]; to: [number, number]; scale: number }
+  { from, to }: { from: [number, number]; to: [number, number] }
 ) {
   // Implementation for updating a line
   const points = [
@@ -2030,14 +2053,12 @@ function createAngleIndicator({
   radius,
   startAngle,
   endAngle,
-  scale,
   color,
 }: {
   center: [number, number]
   radius: number
   startAngle: number
   endAngle: number
-  scale: number
   color: number
 }): Line {
   // Implementation for creating an angle indicator

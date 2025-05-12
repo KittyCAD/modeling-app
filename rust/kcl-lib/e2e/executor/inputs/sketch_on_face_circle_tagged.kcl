@@ -1,16 +1,16 @@
-fn cube = (pos, scale) => {
-  const sg = startSketchOn(XY)
-    |> startProfileAt(pos, %)
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])
     |> line(end = [0, -scale])
 
   return sg
 }
-const part001 = cube([0,0], 20)
+part001 = cube(pos = [0,0], scale = 20)
     |> close()
     |> extrude(length = 20)
 
-const part002 = startSketchOn(part001, face = "end")
-  |> circle(center: [0, 0], radius: 5, tag =$myCircle)
+part002 = startSketchOn(part001, face = "end")
+  |> circle(center = [0, 0], radius = 5, tag = $myCircle)
   |> extrude(length = 5)

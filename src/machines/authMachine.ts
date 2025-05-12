@@ -38,11 +38,12 @@ const LOCAL_USER: Models['User_type'] = {
   last_name: 'User',
   can_train_on_data: false,
   is_service_account: false,
+  deletion_scheduled: false,
 }
 
 export interface UserContext {
   user?: Models['User_type']
-  token?: string
+  token: string
 }
 
 export type Events =
@@ -78,9 +79,7 @@ export const authMachine = setup({
     getUser: fromPromise(({ input }: { input: { token?: string } }) =>
       getUser(input)
     ),
-    logout: fromPromise(async () =>
-      isDesktop() ? writeTokenFile('') : logout()
-    ),
+    logout: fromPromise(logout),
   },
 }).createMachine({
   /** @xstate-layout N4IgpgJg5mDOIC5QEECuAXAFgOgMabFwGsBJAMwBkB7KGCEgOwGIIqGxsBLBgNyqI75CRALQAbGnRHcA2gAYAuolAAHKrE7pObZSAAeiAIwAWQ9gBspuQCYAnAGYAHPYCsx+4ccAaEAE9E1q7YcoZyxrYR1m7mcrYAvnE+aFh4BMTk1LSQjExgAE55VHnYKmIAhuhkRQC2qcLikpDSDPJKSCBqGlo67QYI9gDs5tge5o6h5vau7oY+-v3mA9jWco4u5iu21ua2YcYJSRg4Eln0zJkABFQYrbqdmtoMun2GA7YjxuPmLqvGNh5zRCfJaOcyLUzuAYuFyGcwHEDJY6NCAAeQwTEuskUd3UDx6oD6Im2wUcAzkMJ2cjBxlMgIWLmwZLWljecjJTjh8IYVAgcF0iJxXUez0QIgGxhJZIpu2ptL8AWwtje1nCW2iq1shns8MRdXSlGRjEFeKevUQjkcy3sqwGHimbg83nlCF22GMytVUWMMUc8USCKO2BOdCN7Xu3VNBKMKsVFp2hm2vu+1id83slkVrgTxhcW0pNJ1geDkDR6GNEZFCAT1kZZLk9cMLltb0WdPMjewjjC1mzOZCtk5CSAA */
@@ -205,7 +204,7 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-function getCookie(cname: string): string | null {
+export function getCookie(cname: string): string | null {
   if (isDesktop()) {
     return null
   }
@@ -254,7 +253,11 @@ async function getAndSyncStoredToken(input: {
 
 async function logout() {
   localStorage.removeItem(TOKEN_PERSIST_KEY)
-  if (isDesktop()) return Promise.resolve(null)
+  if (isDesktop()) {
+    await writeTokenFile('')
+    return Promise.resolve(null)
+  }
+
   return fetch(withBaseUrl('/logout'), {
     method: 'POST',
     credentials: 'include',

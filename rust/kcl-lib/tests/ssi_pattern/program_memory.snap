@@ -43,9 +43,9 @@ description: Variables in memory after executing ssi_pattern.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 273,
-            "end": 279,
-            "start": 273,
+            "commentStart": 271,
+            "end": 277,
+            "start": 271,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -147,9 +147,9 @@ description: Variables in memory after executing ssi_pattern.kcl
               -12.15
             ],
             "tag": {
-              "commentStart": 273,
-              "end": 279,
-              "start": 273,
+              "commentStart": 271,
+              "end": 277,
+              "start": 271,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -183,10 +183,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           }
         ],
         "on": {
-          "type": "plane",
-          "id": "[uuid]",
           "artifactId": "[uuid]",
-          "value": "XZ",
+          "id": "[uuid]",
           "origin": {
             "x": 0.0,
             "y": 0.0,
@@ -195,12 +193,14 @@ description: Variables in memory after executing ssi_pattern.kcl
               "type": "Mm"
             }
           },
+          "type": "plane",
+          "value": "XZ",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
             "z": 0.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
           },
           "yAxis": {
@@ -208,19 +208,8 @@ description: Variables in memory after executing ssi_pattern.kcl
             "y": 0.0,
             "z": 1.0,
             "units": {
-              "type": "Mm"
+              "type": "Unknown"
             }
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": -1.0,
-            "z": 0.0,
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "units": {
-            "type": "Mm"
           }
         },
         "start": {
@@ -258,7 +247,8 @@ description: Variables in memory after executing ssi_pattern.kcl
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      }
+      },
+      "sectional": false
     }
   },
   "seg01": {
@@ -363,9 +353,9 @@ description: Variables in memory after executing ssi_pattern.kcl
             -12.15
           ],
           "tag": {
-            "commentStart": 273,
-            "end": 279,
-            "start": 273,
+            "commentStart": 271,
+            "end": 277,
+            "start": 271,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -399,10 +389,8 @@ description: Variables in memory after executing ssi_pattern.kcl
         }
       ],
       "on": {
-        "type": "plane",
-        "id": "[uuid]",
         "artifactId": "[uuid]",
-        "value": "XZ",
+        "id": "[uuid]",
         "origin": {
           "x": 0.0,
           "y": 0.0,
@@ -411,12 +399,14 @@ description: Variables in memory after executing ssi_pattern.kcl
             "type": "Mm"
           }
         },
+        "type": "plane",
+        "value": "XZ",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
           "z": 0.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
         },
         "yAxis": {
@@ -424,19 +414,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "y": 0.0,
           "z": 1.0,
           "units": {
-            "type": "Mm"
+            "type": "Unknown"
           }
-        },
-        "zAxis": {
-          "x": 0.0,
-          "y": -1.0,
-          "z": 0.0,
-          "units": {
-            "type": "Mm"
-          }
-        },
-        "units": {
-          "type": "Mm"
         }
       },
       "start": {
@@ -528,7 +507,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -536,15 +515,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -585,9 +556,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -689,9 +660,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -725,10 +696,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -737,12 +706,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -750,19 +721,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -800,7 +760,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -835,7 +796,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -893,7 +855,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -901,15 +863,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -950,9 +904,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1054,9 +1008,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1090,10 +1044,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1102,12 +1054,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1115,19 +1069,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -1165,7 +1108,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1200,7 +1144,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1258,7 +1203,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1266,15 +1211,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1315,9 +1252,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1419,9 +1356,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1455,10 +1392,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1467,12 +1402,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1480,19 +1417,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -1530,7 +1456,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1565,7 +1492,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1623,7 +1551,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1631,15 +1559,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -1680,9 +1600,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -1784,9 +1704,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1820,10 +1740,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -1832,12 +1750,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -1845,19 +1765,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -1895,7 +1804,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -1930,7 +1840,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -1988,7 +1899,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -1996,15 +1907,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2045,9 +1948,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2149,9 +2052,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2185,10 +2088,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2197,12 +2098,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2210,19 +2113,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -2260,7 +2152,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2295,7 +2188,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2353,7 +2247,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2361,15 +2255,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2410,9 +2296,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2514,9 +2400,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2550,10 +2436,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2562,12 +2446,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2575,19 +2461,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -2625,7 +2500,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -2660,7 +2536,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -2718,7 +2595,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -2726,15 +2603,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -2775,9 +2644,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2879,9 +2748,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -2915,10 +2784,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -2927,12 +2794,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -2940,19 +2809,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -2990,7 +2848,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3025,7 +2884,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3083,7 +2943,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3091,15 +2951,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3140,9 +2992,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3244,9 +3096,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3280,10 +3132,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3292,12 +3142,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3305,19 +3157,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -3355,7 +3196,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3390,7 +3232,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3448,7 +3291,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3456,15 +3299,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3505,9 +3340,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3609,9 +3444,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -3645,10 +3480,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -3657,12 +3490,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -3670,19 +3505,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -3720,7 +3544,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -3755,7 +3580,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -3813,7 +3639,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -3821,15 +3647,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -3870,9 +3688,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3974,9 +3792,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4010,10 +3828,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4022,12 +3838,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -4035,19 +3853,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -4085,7 +3892,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4120,7 +3928,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4178,7 +3987,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4186,15 +3995,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -4235,9 +4036,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4339,9 +4140,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4375,10 +4176,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4387,12 +4186,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -4400,19 +4201,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -4450,7 +4240,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4485,7 +4276,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4543,7 +4335,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4551,15 +4343,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -4600,9 +4384,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -4704,9 +4488,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -4740,10 +4524,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -4752,12 +4534,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -4765,19 +4549,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -4815,7 +4588,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -4850,7 +4624,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -4908,7 +4683,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -4916,15 +4691,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -4965,9 +4732,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5069,9 +4836,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5105,10 +4872,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5117,12 +4882,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -5130,19 +4897,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -5180,7 +4936,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5215,7 +4972,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5273,7 +5031,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5281,15 +5039,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -5330,9 +5080,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5434,9 +5184,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5470,10 +5220,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5482,12 +5230,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -5495,19 +5245,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -5545,7 +5284,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5580,7 +5320,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -5638,7 +5379,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -5646,15 +5387,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -5695,9 +5428,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -5799,9 +5532,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -5835,10 +5568,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -5847,12 +5578,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -5860,19 +5593,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -5910,7 +5632,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -5945,7 +5668,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6003,7 +5727,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6011,15 +5735,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -6060,9 +5776,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6164,9 +5880,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6200,10 +5916,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6212,12 +5926,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -6225,19 +5941,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -6275,7 +5980,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -6310,7 +6016,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6368,7 +6075,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6376,15 +6083,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -6425,9 +6124,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6529,9 +6228,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6565,10 +6264,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6577,12 +6274,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -6590,19 +6289,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -6640,7 +6328,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -6675,7 +6364,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -6733,7 +6423,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -6741,15 +6431,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -6790,9 +6472,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -6894,9 +6576,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -6930,10 +6612,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -6942,12 +6622,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -6955,19 +6637,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -7005,7 +6676,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7040,7 +6712,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7098,7 +6771,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7106,15 +6779,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -7155,9 +6820,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7259,9 +6924,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7295,10 +6960,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7307,12 +6970,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -7320,19 +6985,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -7370,7 +7024,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7405,7 +7060,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7463,7 +7119,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7471,15 +7127,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -7520,9 +7168,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7624,9 +7272,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -7660,10 +7308,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -7672,12 +7318,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -7685,19 +7333,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -7735,7 +7372,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -7770,7 +7408,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -7828,7 +7467,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -7836,15 +7475,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -7885,9 +7516,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -7989,9 +7620,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8025,10 +7656,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8037,12 +7666,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -8050,19 +7681,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -8100,7 +7720,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8135,7 +7756,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8193,7 +7815,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8201,15 +7823,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -8250,9 +7864,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8354,9 +7968,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8390,10 +8004,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8402,12 +8014,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -8415,19 +8029,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -8465,7 +8068,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8500,7 +8104,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8558,7 +8163,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8566,15 +8171,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -8615,9 +8212,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -8719,9 +8316,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -8755,10 +8352,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -8767,12 +8362,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -8780,19 +8377,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -8830,7 +8416,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -8865,7 +8452,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -8923,7 +8511,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -8931,15 +8519,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -8980,9 +8560,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9084,9 +8664,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9120,10 +8700,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9132,12 +8710,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -9145,19 +8725,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -9195,7 +8764,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9230,7 +8800,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9288,7 +8859,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9296,15 +8867,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -9345,9 +8908,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9449,9 +9012,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9485,10 +9048,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9497,12 +9058,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -9510,19 +9073,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -9560,7 +9112,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9595,7 +9148,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -9653,7 +9207,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -9661,15 +9215,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -9710,9 +9256,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -9814,9 +9360,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -9850,10 +9396,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -9862,12 +9406,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -9875,19 +9421,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -9925,7 +9460,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -9960,7 +9496,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10018,7 +9555,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10026,15 +9563,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -10075,9 +9604,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -10179,9 +9708,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10215,10 +9744,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -10227,12 +9754,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -10240,19 +9769,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -10290,7 +9808,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -10325,7 +9844,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10383,7 +9903,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10391,15 +9911,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -10440,9 +9952,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -10544,9 +10056,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10580,10 +10092,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -10592,12 +10102,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -10605,19 +10117,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -10655,7 +10156,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -10690,7 +10192,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -10748,7 +10251,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -10756,15 +10259,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -10805,9 +10300,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -10909,9 +10404,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -10945,10 +10440,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -10957,12 +10450,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -10970,19 +10465,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -11020,7 +10504,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -11055,7 +10540,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       },
       {
@@ -11113,7 +10599,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 0.0,
                 "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "yAxis": {
@@ -11121,15 +10607,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "y": 0.0,
                 "z": 1.0,
                 "units": {
-                  "type": "Mm"
-                }
-              },
-              "zAxis": {
-                "x": 0.0,
-                "y": -1.0,
-                "z": 0.0,
-                "units": {
-                  "type": "Mm"
+                  "type": "Unknown"
                 }
               },
               "solid": {
@@ -11170,9 +10648,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 273,
-                      "end": 279,
-                      "start": 273,
+                      "commentStart": 271,
+                      "end": 277,
+                      "start": 271,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -11274,9 +10752,9 @@ description: Variables in memory after executing ssi_pattern.kcl
                         -12.15
                       ],
                       "tag": {
-                        "commentStart": 273,
-                        "end": 279,
-                        "start": 273,
+                        "commentStart": 271,
+                        "end": 277,
+                        "start": 271,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -11310,10 +10788,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                     }
                   ],
                   "on": {
-                    "type": "plane",
-                    "id": "[uuid]",
                     "artifactId": "[uuid]",
-                    "value": "XZ",
+                    "id": "[uuid]",
                     "origin": {
                       "x": 0.0,
                       "y": 0.0,
@@ -11322,12 +10798,14 @@ description: Variables in memory after executing ssi_pattern.kcl
                         "type": "Mm"
                       }
                     },
+                    "type": "plane",
+                    "value": "XZ",
                     "xAxis": {
                       "x": 1.0,
                       "y": 0.0,
                       "z": 0.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
                     },
                     "yAxis": {
@@ -11335,19 +10813,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                       "y": 0.0,
                       "z": 1.0,
                       "units": {
-                        "type": "Mm"
+                        "type": "Unknown"
                       }
-                    },
-                    "zAxis": {
-                      "x": 0.0,
-                      "y": -1.0,
-                      "z": 0.0,
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "units": {
-                      "type": "Mm"
                     }
                   },
                   "start": {
@@ -11385,7 +10852,8 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                }
+                },
+                "sectional": false
               },
               "units": {
                 "type": "Mm"
@@ -11420,7 +10888,8 @@ description: Variables in memory after executing ssi_pattern.kcl
           "endCapId": null,
           "units": {
             "type": "Mm"
-          }
+          },
+          "sectional": false
         }
       }
     ]

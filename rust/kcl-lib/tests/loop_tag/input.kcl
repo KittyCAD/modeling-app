@@ -1,0 +1,39 @@
+// This is a performance regression test. There was previously some O(2^numSides) nonsense
+// in updating tags. If this test stops terminating in reasonable time, or versions of tags
+// explodes in program memory, then you might want to look at how tag infos are being merged
+// by `update_memory_for_tags_of_geometry`.
+
+@settings(defaultLengthUnit = mm)
+
+// Define constants for the cylinder
+radius = 10
+height = 50
+numSides = 50
+angleIncrement = 360 / numSides
+
+// Function to calculate the coordinates of a point on the circle
+fn calculatePoint(@index) {
+  angle = index * angleIncrement
+  x = radius * cos(angle)
+  y = radius * sin(angle)
+  return [x, y]
+}
+
+// Start sketch on the XY plane
+initialSketch = startSketchOn(XY)
+  |> startProfile(at = calculatePoint(0))
+
+// Draw lines to form the base of the cylinder
+finalSketch = reduce(
+  [1..numSides-1],
+  initial = initialSketch,
+  f = fn(@index, accum) {
+    return line(accum, end = calculatePoint(index), tag = $problematicTag)
+  }
+)
+
+// Close the sketch to complete the base
+closedSketch = close(finalSketch)
+
+// Extrude the base to form the cylinder
+cylinder = extrude(closedSketch, length = height)

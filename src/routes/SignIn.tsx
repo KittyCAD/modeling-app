@@ -14,7 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
-import { authActor, useSettings } from '@src/machines/appMachine'
+import { authActor, useSettings } from '@src/lib/singletons'
 import { APP_VERSION, IS_NIGHTLY } from '@src/routes/utils'
 
 const subtleBorder =
@@ -26,7 +26,9 @@ const SignIn = () => {
   if (isDesktop()) {
     window.electron.createFallbackMenu().catch(reportRejection)
     // Disable these since they cannot be accessed within the sign in page.
-    window.electron.disableMenu('Help.Reset onboarding').catch(reportRejection)
+    window.electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
     window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
   }
 
@@ -76,22 +78,25 @@ const SignIn = () => {
     authActor.send({ type: 'Log in', token })
   }
 
+  const cancelSignIn = async () => {
+    authActor.send({ type: 'Log out' })
+    setUserCode('')
+  }
+
   return (
     <main
       className="bg-primary h-screen grid place-items-stretch m-0 p-2"
       style={
         isDesktop()
           ? ({
-              '-webkit-app-region': 'drag',
+              WebkitAppRegion: 'drag',
             } as CSSProperties)
           : {}
       }
     >
       <div
         style={
-          isDesktop()
-            ? ({ '-webkit-app-region': 'no-drag' } as CSSProperties)
-            : {}
+          isDesktop() ? ({ WebkitAppRegion: 'no-drag' } as CSSProperties) : {}
         }
         className="body-bg py-5 px-12 rounded-lg grid place-items-center overflow-y-auto"
       >
@@ -130,7 +135,10 @@ const SignIn = () => {
                     <p className="text-xs">
                       You should see the following code in your browser
                     </p>
-                    <p className="text-lg font-bold inline-flex gap-1">
+                    <p
+                      className="text-lg font-bold inline-flex gap-1"
+                      data-testid="sign-in-user-code"
+                    >
                       {userCode.split('').map((char, i) => (
                         <span
                           key={i}
@@ -143,6 +151,17 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    <button
+                      onClick={toSync(cancelSignIn, reportRejection)}
+                      className={
+                        'm-0 mt-8 w-fit flex gap-4 items-center px-3 py-1 ' +
+                        '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
+                      }
+                      data-testid="cancel-sign-in-button"
+                    >
+                      <CustomIcon name="arrowLeft" className="w-6 h-6" />
+                      Cancel
+                    </button>
                   </>
                 )}
               </div>
@@ -189,7 +208,7 @@ const SignIn = () => {
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                 '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'
               }
-              data-testid="sign-in-button"
+              data-testid="view-sample-button"
             >
               View this sample
               <CustomIcon name="arrowRight" className="w-6 h-6" />

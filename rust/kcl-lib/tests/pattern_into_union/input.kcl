@@ -12,7 +12,7 @@ depth = nPlates * (buildPlateThickness + thicknessTolerance) + (nPlates + 1) * e
 baseHeight = 0.25
 
 base = startSketchOn(XZ)
-  |> startProfileAt([0, 0], %)
+  |> startProfile(at = [0, 0])
   |> xLine(endAbsolute =  width, tag = $seg01)
   |> yLine(endAbsolute = baseHeight + endTabHeight)
   |> xLine(length = -endWidth)
@@ -24,7 +24,7 @@ base = startSketchOn(XZ)
   |> extrude(length = -depth)
 
 endTabs = startSketchOn(XZ)
-  |> startProfileAt([endWidth, baseHeight], %)
+  |> startProfile(at = [endWidth, baseHeight])
   |> xLine(endAbsolute = endWidth + endTabWidth)
   |> angledLine(
        angle = 135,
@@ -44,7 +44,7 @@ endTabs = startSketchOn(XZ)
      )
 
 endTabs2 = startSketchOn(XZ)
-  |> startProfileAt([width - endWidth, baseHeight], %)
+  |> startProfile(at = [width - endWidth, baseHeight])
   |> xLine(endAbsolute = width - endTabWidth)
   |> angledLine(
        angle = 45,

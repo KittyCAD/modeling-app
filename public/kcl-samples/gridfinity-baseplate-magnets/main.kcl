@@ -2,7 +2,7 @@
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Define parameters
 binLength = 42.0
@@ -22,9 +22,9 @@ countBinLength = 3
 height = firstStep + secondStep + thirdStep
 
 // Define a function which builds the profile of the baseplate bin
-fn face(plane) {
+fn face(@plane) {
   faceSketch = startSketchOn(plane)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> yLine(length = height)
     |> angledLine(angle = -45, lengthY = thirdStep)
     |> yLine(length = -secondStep)
@@ -84,42 +84,26 @@ basePlateCorners = patternLinear3d(
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // Create the center cutout for the magnet profile
-fn magnetCenterCutout(plane) {
+fn magnetCenterCutout(@plane) {
   magnetSketch = startSketchOn(plane)
-    |> startProfileAt([
+    |> startProfile(at = [
          firstStep + thirdStep,
          2 * magOuterDiam
-       ], %)
+       ])
     |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
-    |> arc({
-         angleStart = 90.0,
-         angleEnd = 0.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 90.0, angleEnd = 0.0, radius = magOuterDiam / 2)
     |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> xLine(length = binLength - (4 * magOuterDiam))
     |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
-    |> arc({
-         angleStart = 180.0,
-         angleEnd = 90.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 180.0, angleEnd = 90.0, radius = magOuterDiam / 2)
     |> xLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> yLine(length = binLength - (4 * magOuterDiam))
     |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
-    |> arc({
-         angleStart = 270.0,
-         angleEnd = 180.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 270.0, angleEnd = 180.0, radius = magOuterDiam / 2)
     |> yLine(length = 2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2))
     |> xLine(length = -(binLength - (4 * magOuterDiam)), tag = $line012)
     |> yLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
-    |> arc({
-         angleStart = 360.0,
-         angleEnd = 270.0,
-         radius = magOuterDiam / 2
-       }, %)
+    |> arc(angleStart = 360.0, angleEnd = 270.0, radius = magOuterDiam / 2)
     |> xLine(length = -(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)))
     |> yLine(length = -(binLength - (4 * magOuterDiam)))
     |> close()
@@ -127,14 +111,14 @@ fn magnetCenterCutout(plane) {
 }
 
 // Create the outside profile of the magnets
-fn magnetBase(plane) {
+fn magnetBase(@plane) {
   magnetBaseSketch = startSketchOn(plane)
-    |> startProfileAt([0, 0], %)
+    |> startProfile(at = [0, 0])
     |> xLine(length = binLength, tag = $line001)
     |> yLine(length = binLength, tag = $line002)
     |> xLine(endAbsolute = profileStartX(%), tag = $line003)
     |> close(tag = $line004)
-    |> hole(magnetCenterCutout(plane), %)
+    |> subtract2d(tool = magnetCenterCutout(plane))
   return magnetBaseSketch
 }
 
@@ -150,7 +134,7 @@ magnetsSketch = startSketchOn(XY)
 
 // Create a profile with holes for the magnets
 magnetProfile = magnetBase(XY)
-  |> hole(magnetsSketch, %)
+  |> subtract2d(tool = magnetsSketch)
 
 // Create an extrusion of the magnet cutout with holes
 magnetHolesExtrude = extrude(magnetProfile, length = -magDepth)

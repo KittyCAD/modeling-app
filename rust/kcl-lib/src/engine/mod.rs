@@ -1,5 +1,6 @@
 //! Functions for managing engine communications.
 
+pub mod async_tasks;
 #[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "engine")]
 pub mod conn;
@@ -16,10 +17,12 @@ use std::{
     },
 };
 
+pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
+#[cfg(feature = "artifact-graph")]
+use kcmc::id::ModelingCmdId;
 use kcmc::{
     each_cmd as mcmd,
-    id::ModelingCmdId,
     length_unit::LengthUnit,
     ok_response::OkModelingCmdResponse,
     shared::Color,
@@ -30,14 +33,17 @@ use kcmc::{
     ModelingCmd,
 };
 use kittycad_modeling_cmds as kcmc;
+use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
+#[cfg(feature = "artifact-graph")]
+use crate::execution::ArtifactCommand;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::UnitLen, ArtifactCommand, DefaultPlanes, IdGenerator, Point3d},
+    execution::{types::UnitLen, DefaultPlanes, IdGenerator, PlaneInfo, Point3d},
     SourceRange,
 };
 
@@ -45,23 +51,40 @@ lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
 
     pub static ref GRID_SCALE_TEXT_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("10782f33-f588-4668-8bcd-040502d26590").unwrap();
-}
 
-/// The mode of execution.  When isolated, like during an import, attempting to
-/// send a command results in an error.
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(rename_all = "camelCase")]
-pub enum ExecutionKind {
-    #[default]
-    Normal,
-    Isolated,
-}
-
-impl ExecutionKind {
-    pub fn is_isolated(&self) -> bool {
-        matches!(self, ExecutionKind::Isolated)
-    }
+    pub static ref DEFAULT_PLANE_INFO: IndexMap<PlaneName, PlaneInfo> = IndexMap::from([
+            (PlaneName::Xy,PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegXy,
+           PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+            }),
+            (PlaneName::Xz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegXz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(-1.0, 0.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::Yz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, 1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            (PlaneName::NegYz, PlaneInfo{
+                origin: Point3d::new(0.0, 0.0, 0.0, UnitLen::Mm),
+                x_axis: Point3d::new(0.0, -1.0, 0.0, UnitLen::Unknown),
+                y_axis: Point3d::new(0.0, 0.0, 1.0, UnitLen::Unknown),
+            }),
+            ]);
 }
 
 #[derive(Default, Debug)]
@@ -91,7 +114,14 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>;
 
     /// Get the artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>>;
+
+    /// Get the ids of the async commands we are waiting for.
+    fn ids_of_async_commands(&self) -> Arc<RwLock<IndexMap<Uuid, SourceRange>>>;
+
+    /// Get the async tasks we are waiting for.
+    fn async_tasks(&self) -> AsyncTasks;
 
     /// Take the batch of commands that have accumulated so far and clear them.
     async fn take_batch(&self) -> Vec<(WebSocketRequest, SourceRange)> {
@@ -104,26 +134,26 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     }
 
     /// Clear all artifact commands that have accumulated so far.
+    #[cfg(feature = "artifact-graph")]
     async fn clear_artifact_commands(&self) {
         self.artifact_commands().write().await.clear();
     }
 
     /// Take the artifact commands that have accumulated so far and clear them.
+    #[cfg(feature = "artifact-graph")]
     async fn take_artifact_commands(&self) -> Vec<ArtifactCommand> {
         std::mem::take(&mut *self.artifact_commands().write().await)
+    }
+
+    /// Take the ids of async commands that have accumulated so far and clear them.
+    async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
+        std::mem::take(&mut *self.ids_of_async_commands().write().await)
     }
 
     /// Take the responses that have accumulated so far and clear them.
     async fn take_responses(&self) -> IndexMap<Uuid, WebSocketResponse> {
         std::mem::take(&mut *self.responses().write().await)
     }
-
-    /// Get the current execution kind.
-    async fn execution_kind(&self) -> ExecutionKind;
-
-    /// Replace the current execution kind with a new value and return the
-    /// existing value.
-    async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
@@ -160,7 +190,24 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn clear_queues(&self) {
         self.batch().write().await.clear();
         self.batch_end().write().await.clear();
+        self.ids_of_async_commands().write().await.clear();
+        self.async_tasks().clear().await;
     }
+
+    /// Fetch debug information from the peer.
+    async fn fetch_debug(&self) -> Result<(), crate::errors::KclError>;
+
+    /// Get any debug information (if requested)
+    async fn get_debug(&self) -> Option<OkWebSocketResponseData>;
+
+    /// Send a modeling command and do not wait for the response message.
+    async fn inner_fire_modeling_cmd(
+        &self,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: WebSocketRequest,
+        id_to_source_range: HashMap<Uuid, SourceRange>,
+    ) -> Result<(), crate::errors::KclError>;
 
     /// Send a modeling command and wait for the response message.
     async fn inner_send_modeling_cmd(
@@ -186,20 +233,93 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
-        // Reset to the default units.  Modules assume the engine starts in the
-        // default state.
-        self.set_units(Default::default(), source_range, id_generator).await?;
-
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
 
         // Ensure artifact commands are cleared so that we don't accumulate them
         // across runs.
+        #[cfg(feature = "artifact-graph")]
         self.clear_artifact_commands().await;
 
         // Do the after clear scene hook.
         self.clear_scene_post_hook(id_generator, source_range).await?;
+
+        Ok(())
+    }
+
+    /// Ensure a specific async command has been completed.
+    async fn ensure_async_command_completed(
+        &self,
+        id: uuid::Uuid,
+        source_range: Option<SourceRange>,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        let source_range = if let Some(source_range) = source_range {
+            source_range
+        } else {
+            // Look it up if we don't have it.
+            self.ids_of_async_commands()
+                .read()
+                .await
+                .get(&id)
+                .cloned()
+                .unwrap_or_default()
+        };
+
+        let current_time = instant::Instant::now();
+        while current_time.elapsed().as_secs() < 60 {
+            let responses = self.responses().read().await.clone();
+            let Some(resp) = responses.get(&id) else {
+                // Yield to the event loop so that we don’t block the UI thread.
+                // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
+                #[cfg(target_arch = "wasm32")]
+                {
+                    let duration = instant::Duration::from_millis(1);
+                    wasm_timer::Delay::new(duration).await.map_err(|err| {
+                        KclError::Internal(KclErrorDetails {
+                            message: format!("Failed to sleep: {:?}", err),
+                            source_ranges: vec![source_range],
+                        })
+                    })?;
+                }
+                #[cfg(not(target_arch = "wasm32"))]
+                tokio::task::yield_now().await;
+                continue;
+            };
+
+            // If the response is an error, return it.
+            // Parsing will do that and we can ignore the result, we don't care.
+            let response = self.parse_websocket_response(resp.clone(), source_range)?;
+            return Ok(response);
+        }
+
+        Err(KclError::Engine(KclErrorDetails {
+            message: "async command timed out".to_string(),
+            source_ranges: vec![source_range],
+        }))
+    }
+
+    /// Ensure ALL async commands have been completed.
+    async fn ensure_async_commands_completed(&self) -> Result<(), KclError> {
+        // Check if all async commands have been completed.
+        let ids = self.take_ids_of_async_commands().await;
+
+        // Try to get them from the responses.
+        for (id, source_range) in ids {
+            self.ensure_async_command_completed(id, Some(source_range)).await?;
+        }
+
+        // Make sure we check for all async tasks as well.
+        // The reason why we ignore the error here is that, if a model fillets an edge
+        // we previously called something on, it might no longer exist. In which case,
+        // the artifact graph won't care either if its gone since you can't select it
+        // anymore anyways.
+        if let Err(err) = self.async_tasks().join_all().await {
+            crate::log::logln!("Error waiting for async tasks (this is typically fine and just means that an edge became something else): {:?}", err);
+        }
+
+        // Flush the batch to make sure nothing remains.
+        self.flush_batch(true, SourceRange::default()).await?;
 
         Ok(())
     }
@@ -221,6 +341,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         Ok(())
     }
 
+    #[cfg(feature = "artifact-graph")]
     async fn handle_artifact_command(
         &self,
         cmd: &ModelingCmd,
@@ -239,23 +360,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             range,
             command: cmd.clone(),
         });
-        Ok(())
-    }
-
-    async fn set_units(
-        &self,
-        units: crate::UnitLength,
-        source_range: SourceRange,
-        id_generator: &mut IdGenerator,
-    ) -> Result<(), crate::errors::KclError> {
-        // Before we even start executing the program, set the units.
-        self.batch_modeling_cmd(
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::from(mcmd::SetSceneUnits { unit: units.into() }),
-        )
-        .await?;
-
         Ok(())
     }
 
@@ -289,11 +393,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -315,11 +414,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         // Add cmds to the batch.
         let mut extended_cmds = Vec::with_capacity(cmds.len());
         for cmd in cmds {
@@ -342,11 +436,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
-        // In isolated mode, we don't send the command to the engine.
-        if self.execution_kind().await.is_isolated() {
-            return Ok(());
-        }
-
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
@@ -365,36 +454,67 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        self.batch_modeling_cmd(id, source_range, cmd).await?;
+        let mut requests = self.take_batch().await.clone();
+
+        // Add the command to the batch.
+        requests.push((
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: id.into(),
+            }),
+            source_range,
+        ));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         // Flush the batch queue.
-        self.flush_batch(false, source_range).await
+        self.run_batch(requests, source_range).await
     }
 
-    /// Force flush the batch queue.
-    async fn flush_batch(
+    /// Send the modeling cmd async and don't wait for the response.
+    /// Add it to our list of async commands.
+    async fn async_modeling_cmd(
         &self,
-        // Whether or not to flush the end commands as well.
-        // We only do this at the very end of the file.
-        batch_end: bool,
+        id: uuid::Uuid,
+        source_range: SourceRange,
+        cmd: &ModelingCmd,
+    ) -> Result<(), crate::errors::KclError> {
+        // Add the command ID to the list of async commands.
+        self.ids_of_async_commands().write().await.insert(id, source_range);
+
+        // Add to artifact commands.
+        #[cfg(feature = "artifact-graph")]
+        self.handle_artifact_command(cmd, id.into(), &HashMap::from([(id, source_range)]))
+            .await?;
+
+        // Fire off the command now, but don't wait for the response, we don't care about it.
+        self.inner_fire_modeling_cmd(
+            id,
+            source_range,
+            WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
+                cmd: cmd.clone(),
+                cmd_id: id.into(),
+            }),
+            HashMap::from([(id, source_range)]),
+        )
+        .await?;
+
+        Ok(())
+    }
+
+    /// Run the batch for the specific commands.
+    async fn run_batch(
+        &self,
+        orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
-        let all_requests = if batch_end {
-            let mut requests = self.take_batch().await.clone();
-            requests.extend(self.take_batch_end().await.values().cloned());
-            requests
-        } else {
-            self.take_batch().await.clone()
-        };
-
         // Return early if we have no commands to send.
-        if all_requests.is_empty() {
+        if orig_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
                 modeling_response: OkModelingCmdResponse::Empty {},
             });
         }
 
-        let requests: Vec<ModelingCmdReq> = all_requests
+        let requests: Vec<ModelingCmdReq> = orig_requests
             .iter()
             .filter_map(|(val, _)| match val {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd, cmd_id }) => Some(ModelingCmdReq {
@@ -411,9 +531,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             responses: true,
         });
 
-        let final_req = if all_requests.len() == 1 {
+        let final_req = if orig_requests.len() == 1 {
             // We can unwrap here because we know the batch has only one element.
-            all_requests.first().unwrap().0.clone()
+            orig_requests.first().unwrap().0.clone()
         } else {
             batched_requests
         };
@@ -421,7 +541,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         // Create the map of original command IDs to source range.
         // This is for the wasm side, kurt needs it for selections.
         let mut id_to_source_range = HashMap::new();
-        for (req, range) in all_requests.iter() {
+        for (req, range) in orig_requests.iter() {
             match req {
                 WebSocketRequest::ModelingCmdReq(ModelingCmdReq { cmd: _, cmd_id }) => {
                     id_to_source_range.insert(Uuid::from(*cmd_id), *range);
@@ -436,7 +556,8 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
 
         // Do the artifact commands.
-        for (req, _) in all_requests.iter() {
+        #[cfg(feature = "artifact-graph")]
+        for (req, _) in orig_requests.iter() {
             match &req {
                 WebSocketRequest::ModelingCmdBatchReq(ModelingBatch { requests, .. }) => {
                     for request in requests {
@@ -506,34 +627,45 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         }
     }
 
+    /// Force flush the batch queue.
+    async fn flush_batch(
+        &self,
+        // Whether or not to flush the end commands as well.
+        // We only do this at the very end of the file.
+        batch_end: bool,
+        source_range: SourceRange,
+    ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        let all_requests = if batch_end {
+            let mut requests = self.take_batch().await.clone();
+            requests.extend(self.take_batch_end().await.values().cloned());
+            requests
+        } else {
+            self.take_batch().await.clone()
+        };
+
+        self.run_batch(all_requests, source_range).await
+    }
+
     async fn make_default_plane(
         &self,
         plane_id: uuid::Uuid,
-        x_axis: Point3d,
-        y_axis: Point3d,
+        info: &PlaneInfo,
         color: Option<Color>,
         source_range: SourceRange,
         id_generator: &mut IdGenerator,
     ) -> Result<uuid::Uuid, KclError> {
         // Create new default planes.
         let default_size = 100.0;
-        let default_origin = Point3d {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-            units: UnitLen::Mm,
-        }
-        .into();
 
         self.batch_modeling_cmd(
             plane_id,
             source_range,
             &ModelingCmd::from(mcmd::MakePlane {
                 clobber: false,
-                origin: default_origin,
+                origin: info.origin.into(),
                 size: LengthUnit(default_size),
-                x_axis: x_axis.into(),
-                y_axis: y_axis.into(),
+                x_axis: info.x_axis.into(),
+                y_axis: info.y_axis.into(),
                 hide: Some(true),
             }),
         )
@@ -557,22 +689,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<DefaultPlanes, KclError> {
-        let plane_settings: Vec<(PlaneName, Uuid, Point3d, Point3d, Option<Color>)> = vec![
+        let plane_settings: Vec<(PlaneName, Uuid, Option<Color>)> = vec![
             (
                 PlaneName::Xy,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.7,
                     g: 0.28,
@@ -583,18 +703,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Yz,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.28,
                     g: 0.7,
@@ -605,18 +713,6 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
             (
                 PlaneName::Xz,
                 id_generator.next_uuid(),
-                Point3d {
-                    x: 1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
                 Some(Color {
                     r: 0.28,
                     g: 0.28,
@@ -624,64 +720,23 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                     a: 0.4,
                 }),
             ),
-            (
-                PlaneName::NegXy,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: -1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
-            (
-                PlaneName::NegYz,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: 0.0,
-                    y: -1.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
-            (
-                PlaneName::NegXz,
-                id_generator.next_uuid(),
-                Point3d {
-                    x: -1.0,
-                    y: 0.0,
-                    z: 0.0,
-                    units: UnitLen::Mm,
-                },
-                Point3d {
-                    x: 0.0,
-                    y: 0.0,
-                    z: 1.0,
-                    units: UnitLen::Mm,
-                },
-                None,
-            ),
+            (PlaneName::NegXy, id_generator.next_uuid(), None),
+            (PlaneName::NegYz, id_generator.next_uuid(), None),
+            (PlaneName::NegXz, id_generator.next_uuid(), None),
         ];
 
         let mut planes = HashMap::new();
-        for (name, plane_id, x_axis, y_axis, color) in plane_settings {
+        for (name, plane_id, color) in plane_settings {
+            let info = DEFAULT_PLANE_INFO.get(&name).ok_or_else(|| {
+                // We should never get here.
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to get default plane info for: {:?}", name),
+                    source_ranges: vec![source_range],
+                })
+            })?;
             planes.insert(
                 name,
-                self.make_default_plane(plane_id, x_axis, y_axis, color, source_range, id_generator)
+                self.make_default_plane(plane_id, info, color, source_range, id_generator)
                     .await?,
             );
         }
@@ -808,21 +863,27 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn close(&self);
 }
 
-#[derive(Debug, Hash, Eq, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[derive(Debug, Hash, Eq, Copy, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema, Display, FromStr)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub enum PlaneName {
     /// The XY plane.
+    #[display("XY")]
     Xy,
     /// The opposite side of the XY plane.
+    #[display("-XY")]
     NegXy,
     /// The XZ plane.
+    #[display("XZ")]
     Xz,
     /// The opposite side of the XZ plane.
+    #[display("-XZ")]
     NegXz,
     /// The YZ plane.
+    #[display("YZ")]
     Yz,
     /// The opposite side of the YZ plane.
+    #[display("-YZ")]
     NegYz,
 }
 

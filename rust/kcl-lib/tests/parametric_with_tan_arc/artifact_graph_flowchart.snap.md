@@ -25,20 +25,20 @@ flowchart LR
   21["Cap Start"]
   22["Cap End"]
   23["SweepEdge Opposite"]
-  24["SweepEdge Adjacent"]
+  24["SweepEdge Opposite"]
   25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
+  26["SweepEdge Opposite"]
   27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
   29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Adjacent"]
   32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
+  33["SweepEdge Adjacent"]
   34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
+  35["SweepEdge Adjacent"]
   36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
+  37["SweepEdge Adjacent"]
   38["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
@@ -49,32 +49,40 @@ flowchart LR
   2 --- 8
   2 --- 9
   2 --- 10
-  2 ---- 12
   2 --- 11
-  3 --- 13
-  3 --- 23
-  3 --- 24
-  4 --- 14
-  4 --- 25
-  4 --- 26
+  2 ---- 12
+  3 --- 19
+  3 x--> 21
+  3 --- 28
+  3 --- 31
+  4 --- 16
+  4 x--> 21
+  4 --- 24
+  4 --- 34
   5 --- 15
+  5 x--> 21
   5 --- 27
-  5 --- 28
-  6 --- 16
-  6 --- 29
-  6 --- 30
-  7 --- 17
-  7 --- 31
-  7 --- 32
-  8 --- 18
-  8 --- 33
-  8 --- 34
-  9 --- 19
-  9 --- 35
-  9 --- 36
+  5 --- 32
+  6 --- 17
+  6 x--> 21
+  6 --- 23
+  6 --- 36
+  7 --- 14
+  7 x--> 21
+  7 --- 25
+  7 --- 37
+  8 --- 13
+  8 x--> 21
+  8 --- 30
+  8 --- 38
+  9 --- 18
+  9 x--> 21
+  9 --- 29
+  9 --- 33
   10 --- 20
-  10 --- 37
-  10 --- 38
+  10 x--> 21
+  10 --- 26
+  10 --- 35
   12 --- 13
   12 --- 14
   12 --- 15
@@ -101,4 +109,36 @@ flowchart LR
   12 --- 36
   12 --- 37
   12 --- 38
+  30 <--x 13
+  37 <--x 13
+  38 <--x 13
+  25 <--x 14
+  36 <--x 14
+  37 <--x 14
+  27 <--x 15
+  32 <--x 15
+  34 <--x 15
+  24 <--x 16
+  31 <--x 16
+  34 <--x 16
+  23 <--x 17
+  32 <--x 17
+  36 <--x 17
+  29 <--x 18
+  33 <--x 18
+  38 <--x 18
+  28 <--x 19
+  31 <--x 19
+  35 <--x 19
+  26 <--x 20
+  33 <--x 20
+  35 <--x 20
+  23 <--x 22
+  24 <--x 22
+  25 <--x 22
+  26 <--x 22
+  27 <--x 22
+  28 <--x 22
+  29 <--x 22
+  30 <--x 22
 ```

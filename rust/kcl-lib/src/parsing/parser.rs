@@ -3,6 +3,7 @@
 
 use std::{cell::RefCell, collections::BTreeMap};
 
+use indexmap::IndexMap;
 use winnow::{
     combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
@@ -13,7 +14,7 @@ use winnow::{
 };
 
 use super::{
-    ast::types::{Ascription, ImportPath, LabelledExpression},
+    ast::types::{AscribedExpression, ImportPath, LabelledExpression},
     token::{NumericSuffix, RESERVED_WORDS},
     DeprecationKind,
 };
@@ -23,13 +24,12 @@ use crate::{
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-            BoxNode, CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr,
-            ExpressionStatement, FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector,
-            ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression,
-            MemberObject, Name, Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression,
-            ObjectProperty, Parameter, PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement,
-            Shebang, TagDeclarator, Type, TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration,
-            VariableDeclarator, VariableKind,
+            BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
+            FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility,
+            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeList,
+            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
+            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration,
+            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -529,17 +529,15 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
-                if token.numeric_suffix().is_some() {
-                    ParseContext::warn(CompilationError::err(
-                        (&token).into(),
-                        "Unit of Measure suffixes are experimental and currently do nothing.",
-                    ));
+                let suffix = token.numeric_suffix();
+                if let NumericSuffix::Unknown = suffix {
+                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
                 }
 
                 Ok((
                     LiteralValue::Number {
                         value,
-                        suffix: token.numeric_suffix(),
+                        suffix,
                     },
                     token,
                 ))
@@ -584,6 +582,26 @@ fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
             "<=" => BinaryOperator::Lte,
             "|" => BinaryOperator::Or,
             "&" => BinaryOperator::And,
+            "||" => {
+                ParseContext::err(
+                    CompilationError::err(
+                        token.as_source_range(),
+                        "`||` is not an operator, did you mean to use `|`?",
+                    )
+                    .with_suggestion("Replace `||` with `|`", "|", None, Tag::None),
+                );
+                BinaryOperator::Or
+            }
+            "&&" => {
+                ParseContext::err(
+                    CompilationError::err(
+                        token.as_source_range(),
+                        "`&&` is not an operator, did you mean to use `&`?",
+                    )
+                    .with_suggestion("Replace `&&` with `&`", "&", None, Tag::None),
+                );
+                BinaryOperator::And
+            }
             _ => {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
@@ -613,8 +631,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_)
-                | Expr::LabelledExpression(..)
-                | Expr::AscribedExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,
@@ -637,10 +654,10 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 Expr::Literal(x) => BinaryPart::Literal(x),
                 Expr::Name(x) => BinaryPart::Name(x),
                 Expr::BinaryExpression(x) => BinaryPart::BinaryExpression(x),
-                Expr::CallExpression(x) => BinaryPart::CallExpression(x),
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
+                Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
             };
             Ok(expr)
         })
@@ -942,7 +959,7 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     );
 
     if sep.token_type == TokenType::Colon {
-        ParseContext::warn(
+        ParseContext::err(
             CompilationError::err(
                 sep.into(),
                 "Using `:` to initialize objects is deprecated, prefer using `=`.",
@@ -1227,20 +1244,10 @@ fn if_expr(i: &mut TokenSlice) -> PResult<BoxNode<IfExpression>> {
 fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
     let fn_tok = opt(fun).parse_next(i)?;
     ignore_whitespace(i);
-    let (result, has_arrow) = function_decl.parse_next(i)?;
+    let result = function_decl.parse_next(i)?;
     if fn_tok.is_none() {
-        if has_arrow {
-            ParseContext::warn(
-                CompilationError::err(
-                    result.as_source_range().start_as_range(),
-                    "Missing `fn` in function declaration",
-                )
-                .with_suggestion("Add `fn`", "fn", None, Tag::None),
-            );
-        } else {
-            let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
-            return Err(ErrMode::Cut(err.into()));
-        }
+        let err = CompilationError::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
+        return Err(ErrMode::Cut(err.into()));
     }
     Ok(Expr::FunctionExpression(Box::new(result)))
 }
@@ -1250,7 +1257,7 @@ fn function_expr(i: &mut TokenSlice) -> PResult<Expr> {
 //     const x = arg0 + arg1;
 //     return x
 // }
-fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)> {
+fn function_decl(i: &mut TokenSlice) -> PResult<Node<FunctionExpression>> {
     fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
@@ -1261,8 +1268,6 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
     let start = open.start;
     let params = parameters(i)?;
     close_paren(i)?;
-    ignore_whitespace(i);
-    let arrow = opt(big_arrow).parse_next(i)?;
     ignore_whitespace(i);
     // Optional return type.
     let return_type = opt(return_type).parse_next(i)?;
@@ -1288,18 +1293,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<(Node<FunctionExpression>, bool)
         open.module_id,
     );
 
-    let has_arrow =
-        if let Some(arrow) = arrow {
-            ParseContext::warn(
-                CompilationError::err(arrow.as_source_range(), "Unnecessary `=>` in function declaration")
-                    .with_suggestion("Remove `=>`", "", None, Tag::Unnecessary),
-            );
-            true
-        } else {
-            false
-        };
-
-    Ok((result, has_arrow))
+    Ok(result)
 }
 
 /// E.g. `person.name`
@@ -1316,6 +1310,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usiz
 /// E.g. `people[0]` or `people[i]` or `people['adam']`
 fn member_expression_subscript(i: &mut TokenSlice) -> PResult<(LiteralIdentifier, usize, bool)> {
     let _ = open_bracket.parse_next(i)?;
+    // TODO: This should be an expression, not just a literal or identifier.
     let property = alt((
         literal.map(LiteralIdentifier::Literal),
         nameable_identifier.map(Box::new).map(LiteralIdentifier::Identifier),
@@ -1634,6 +1629,12 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                 }
                 handle_pending_non_code!(attr);
                 if attr.is_inner() {
+                    if !body.is_empty() {
+                        ParseContext::warn(CompilationError::err(
+                            attr.as_source_range(),
+                            "Named attributes should appear before any declarations or expressions.\n\nBecause named attributes apply to the whole function or module, including code written before them, it can be confusing for readers to not have these attributes at the top of code blocks.",
+                        ));
+                    }
                     inner_attrs.push(attr);
                 } else {
                     pending_attrs.push(attr);
@@ -2014,9 +2015,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
 
     let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        ParseContext::warn(CompilationError::err((&ty).into(), "Type ascription is experimental."));
-
-        expr = Expr::AscribedExpression(Box::new(Ascription::new(expr, ty)))
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
@@ -2055,7 +2054,6 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
         bool_value.map(Expr::Literal),
         tag.map(Box::new).map(Expr::TagDeclarator),
         literal.map(Expr::Literal),
-        fn_call.map(Box::new).map(Expr::CallExpression),
         fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         array,
@@ -2070,12 +2068,12 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
+    let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
         literal.map(Expr::Literal),
-        fn_call.map(Box::new).map(Expr::CallExpression),
+        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
         name.map(Box::new).map(Expr::Name),
         binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
         unnecessarily_bracketed,
@@ -2083,7 +2081,14 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
     ))
-    .parse_next(i)
+    .parse_next(i)?;
+
+    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    if let Some((_, _, ty)) = ty {
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+    }
+
+    Ok(expr)
 }
 
 /// Parse an item visibility specifier, e.g. export.
@@ -2140,7 +2145,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
             ignore_whitespace(i);
 
             let val = function_decl
-                .map(|t| Box::new(t.0))
+                .map(Box::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
                 .parse_next(i);
@@ -2174,7 +2179,7 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
 
             if let Some((_, tok)) = decl_token {
                 let range_to_remove = SourceRange::new(tok.start, id.start, id.module_id);
-                ParseContext::warn(
+                ParseContext::err(
                     CompilationError::err(
                         tok.as_source_range(),
                         format!(
@@ -2582,12 +2587,6 @@ fn some_brace(symbol: &'static str, i: &mut TokenSlice) -> PResult<Token> {
         .parse_next(i)
 }
 
-/// Parse a => operator.
-fn big_arrow(i: &mut TokenSlice) -> PResult<Token> {
-    one_of((TokenType::Operator, "=>"))
-        .context(expected("the => symbol, used for declaring functions"))
-        .parse_next(i)
-}
 /// Parse a |> operator.
 fn pipe_operator(i: &mut TokenSlice) -> PResult<Token> {
     one_of((TokenType::Operator, PIPE_OPERATOR))
@@ -2741,28 +2740,26 @@ fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
     Ok(())
 }
 
-/// Arguments are passed into a function.
-fn arguments(i: &mut TokenSlice) -> PResult<Vec<Expr>> {
-    separated(0.., expression, comma_sep)
-        .context(expected("function arguments"))
-        .parse_next(i)
-}
-
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
-    separated_pair(
-        terminated(nameable_identifier, opt(whitespace)),
-        terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+    (
+        opt((
+            terminated(nameable_identifier, opt(whitespace)),
+            terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+        )),
         expression,
     )
-    .map(|(label, arg)| LabeledArg { label, arg })
-    .parse_next(i)
+        .map(|(label, arg)| LabeledArg {
+            label: label.map(|(l, _)| l),
+            arg,
+        })
+        .parse_next(i)
 }
 
 /// A type of a function argument.
 /// This can be:
-/// - a primitive type, e.g. 'number' or 'string' or 'bool'
-/// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
-/// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
+/// - a primitive type, e.g. `number` or `string` or `bool`
+/// - an array type, e.g. `[number]` or `[string]` or `[bool]`
+/// - an object type, e.g. `{x: number, y: number}` or `{name: string, age: number}`
 fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
@@ -2810,13 +2807,6 @@ fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
     result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
 
-    if suffix.is_some() {
-        ParseContext::warn(CompilationError::err(
-            result.as_source_range(),
-            "Unit of Measure types are experimental and currently do nothing.",
-        ));
-    }
-
     Ok(result)
 }
 
@@ -2827,7 +2817,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = primitive_type(i)?;
+    let ty = argument_type(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2866,7 +2856,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         ArrayLen::None
     };
 
-    Ok(ty.map(|ty| Type::Array { ty, len }))
+    Ok(ty.map(|ty| Type::Array { ty: Box::new(ty), len }))
 }
 
 fn uom_for_type(i: &mut TokenSlice) -> PResult<NumericSuffix> {
@@ -3023,11 +3013,7 @@ fn binding_name(i: &mut TokenSlice) -> PResult<Node<Identifier>> {
 
 /// Either a positional or keyword function call.
 fn fn_call_pos_or_kw(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
-        fn_call.map(Box::new).map(Expr::CallExpression),
-        fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),
-    ))
-    .parse_next(i)
+    alt((fn_call_kw.map(Box::new).map(Expr::CallExpressionKw),)).parse_next(i)
 }
 
 fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
@@ -3040,49 +3026,53 @@ fn labelled_fn_call(i: &mut TokenSlice) -> PResult<Expr> {
     }
 }
 
-fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
-    let fn_name = name(i)?;
-    opt(whitespace).parse_next(i)?;
-    let _ = terminated(open_paren, opt(whitespace)).parse_next(i)?;
-    let args = arguments(i)?;
-    let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
-
-    let result = Node::new_node(
-        fn_name.start,
-        end,
-        fn_name.module_id,
-        CallExpression {
-            callee: fn_name,
-            arguments: args,
-            digest: None,
-        },
-    );
-
-    let callee_str = result.callee.name.name.to_string();
-    if let Some(suggestion) = super::deprecation(&callee_str, DeprecationKind::Function) {
-        ParseContext::warn(
-            CompilationError::err(
-                result.as_source_range(),
-                format!("Calling `{}` is deprecated, prefer using `{}`.", callee_str, suggestion),
-            )
-            .with_suggestion(
-                format!("Replace `{}` with `{}`", callee_str, suggestion),
-                suggestion,
-                None,
-                Tag::Deprecated,
-            ),
-        );
-    }
-
-    Ok(result)
-}
-
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     let fn_name = name(i)?;
     opt(whitespace).parse_next(i)?;
     let _ = open_paren.parse_next(i)?;
     ignore_whitespace(i);
 
+    // Special case: no args
+    let early_close = peek(close_paren).parse_next(i);
+    if early_close.is_ok() {
+        let cl = close_paren.parse_next(i)?;
+        let result = Node::new_node(
+            fn_name.start,
+            cl.end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Default::default(),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
+    // Special case: one arg (unlabeled)
+    let early_close = peek((expression, opt(whitespace), close_paren)).parse_next(i);
+    if early_close.is_ok() {
+        let first_expression = expression.parse_next(i)?;
+        ignore_whitespace(i);
+        let end = close_paren.parse_next(i)?.end;
+        let result = Node::new_node(
+            fn_name.start,
+            end,
+            fn_name.module_id,
+            CallExpressionKw {
+                callee: fn_name,
+                unlabeled: Some(first_expression),
+                arguments: Default::default(),
+                digest: None,
+                non_code_meta: Default::default(),
+            },
+        );
+        return Ok(result);
+    }
+
+    #[derive(Debug)]
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -3111,24 +3101,17 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::UnlabeledArg(arg) => {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
-                    let err = if followed_by_equals {
-                        ErrMode::Cut(
+                    if followed_by_equals {
+                        return Err(ErrMode::Cut(
                             CompilationError::fatal(
                                 SourceRange::from(arg),
                                 "This argument has a label, but no value. Put some value after the equals sign",
                             )
                             .into(),
-                        )
+                        ));
                     } else {
-                        ErrMode::Cut(
-                            CompilationError::fatal(
-                                SourceRange::from(arg),
-                                "This argument needs a label, but it doesn't have one",
-                            )
-                            .into(),
-                        )
-                    };
-                    return Err(err);
+                        args.push(LabeledArg { label: None, arg });
+                    }
                 }
             }
             Ok((args, non_code_nodes))
@@ -3137,6 +3120,23 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
     opt(comma_sep).parse_next(i)?;
     let end = close_paren.parse_next(i)?.end;
+
+    // Validate there aren't any duplicate labels.
+    let mut counted_labels = IndexMap::with_capacity(args.len());
+    for arg in &args {
+        if let Some(l) = &arg.label {
+            *counted_labels.entry(&l.inner.name).or_insert(0) += 1;
+        }
+    }
+    if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
+        let msg = format!(
+            "You've used the parameter labelled '{duplicated}' {n} times in a single function call. You can only set each parameter once! Remove all but one use."
+        );
+        ParseContext::err(CompilationError::err(
+            SourceRange::new(fn_name.start, end, fn_name.module_id),
+            msg,
+        ));
+    }
 
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
@@ -3214,18 +3214,6 @@ mod tests {
     }
 
     #[test]
-    fn parse_args() {
-        for (i, (test, expected_len)) in [("someVar", 1), ("5, 3", 2), (r#""a""#, 1)].into_iter().enumerate() {
-            let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
-            let actual = match arguments.parse(tokens.as_slice()) {
-                Ok(x) => x,
-                Err(e) => panic!("Failed test {i}, could not parse function arguments from \"{test}\": {e:?}"),
-            };
-            assert_eq!(actual.len(), expected_len, "failed test {i}");
-        }
-    }
-
-    #[test]
     fn parse_names() {
         for (test, expected_len) in [("someVar", 0), ("::foo", 0), ("foo::bar::baz", 2)] {
             let tokens = crate::parsing::token::lex(test, ModuleId::default()).unwrap();
@@ -3246,6 +3234,14 @@ mod tests {
         // TODO: Better comment. This should explain the compiler expected ) because the user had started declaring the function's parameters.
         // Part of https://github.com/KittyCAD/modeling-app/issues/784
         assert_eq!(err.message, "Unexpected end of file. The compiler expected )");
+    }
+
+    #[test]
+    fn kw_call_as_operand() {
+        let tokens = crate::parsing::token::lex("f(x = 1)", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let op = operand.parse(tokens).unwrap();
+        println!("{op:#?}");
     }
 
     #[test]
@@ -3297,7 +3293,7 @@ mod tests {
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
         let comment_start = expr.body.body[0].get_comments();
         let comment0 = expr.body.body[1].get_comments();
@@ -3314,7 +3310,7 @@ mod tests {
 comment */
 }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
         assert_eq!(comment0.value(), "block\ncomment");
     }
@@ -3325,7 +3321,7 @@ comment */
 /* comment at start */
 
 mySk1 = startSketchOn(XY)
-  |> startProfileAt([0, 0], %)"#;
+  |> startProfile(at = [0, 0])"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let program = program.parse(tokens.as_slice()).unwrap();
         let mut starting_comments = program.inner.non_code_meta.start_nodes;
@@ -3383,7 +3379,7 @@ mySk1 = startSketchOn(XY)
             }";
         let module_id = ModuleId::from_usize(1);
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
+        let expr = function_decl.parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
             expr.body.non_code_meta.start_nodes,
             vec![Node::new(
@@ -3847,7 +3843,7 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn pipes_on_pipes_minimal() {
         let test_program = r#"startSketchOn(XY)
-        |> startProfileAt([0, 0], %)
+        |> startProfile(at = [0, 0])
         |> line(endAbsolute = [0, -0]) // MoveRelative
 
         "#;
@@ -4117,8 +4113,8 @@ mySk1 = startSketchOn(XY)
     #[test]
     fn test_parse_half_pipe_small() {
         assert_err_contains(
-            "secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+            "secondExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
   |",
             "Unexpected token: |",
         );
@@ -4182,7 +4178,7 @@ height = [obj["a"] -1, 0]"#;
 
     #[test]
     fn test_anon_fn() {
-        crate::parsing::top_level_parse("foo(42, fn(x) { return x + 1 })").unwrap();
+        crate::parsing::top_level_parse("foo(num=42, closure=fn(x) { return x + 1 })").unwrap();
     }
 
     #[test]
@@ -4210,16 +4206,16 @@ height = [obj["a"] -1, 0]"#;
     fn test_parse_half_pipe() {
         let code = "height = 10
 
-firstExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
-  |> line([0, 8], %)
-  |> line([20, 0], %)
-  |> line([0, -8], %)
+firstExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
+  |> line(at = [0, 8])
+  |> line(at = [20, 0])
+  |> line(at = [0, -8])
   |> close()
   |> extrude(length=2)
 
-secondExtrude = startSketchOn('XY')
-  |> startProfileAt([0,0], %)
+secondExtrude = startSketchOn(XY)
+  |> startProfile(at = [0,0])
   |";
         assert_err_contains(code, "Unexpected token: |");
     }
@@ -4489,16 +4485,16 @@ e
         let code = r#"/// Compute the cosine of a number (in radians).
 ///
 /// ```
-/// exampleSketch = startSketchOn("XZ")
-///   |> startProfileAt([0, 0], %)
+/// exampleSketch = startSketchOn(XZ)
+///   |> startProfile(at = [0, 0])
 ///   |> angledLine(
 ///        angle = 30,
 ///        length = 3 / cos(toRadians(30)),
 ///      )
 ///   |> yLine(endAbsolute = 0)
 ///   |> close(%)
-///  
-/// example = extrude(5, exampleSketch)
+/// 
+/// example = extrude(exampleSketch, length = 5)
 /// ```
 @(impl = std_rust)
 export fn cos(num: number(rad)): number(_) {}"#;
@@ -4513,28 +4509,52 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn warn_late_settings() {
+        let some_program_string = r#"foo = 42
+@settings(defaultLengthUnit = mm)
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
+    fn warn_unknown_suffix() {
+        let some_program_string = r#"foo = 42_?
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
-        assert_eq!(errs.len(), 2);
+        assert!(errs.is_empty(), "Expected no errors, found: {errs:?}");
     }
 
     #[test]
     fn error_underscore() {
-        let (_, errs) = assert_no_fatal("_foo(_blah, _)");
-        assert_eq!(errs.len(), 3, "found: {:#?}", errs);
+        let (_, errs) = assert_no_fatal("_foo(a=_blah, b=_)");
+        assert_eq!(errs.len(), 3, "found: {errs:#?}");
+    }
+
+    #[test]
+    fn error_double_and() {
+        let (_, errs) = assert_no_fatal("foo = true && false");
+        assert_eq!(errs.len(), 1, "found: {errs:#?}");
+        assert!(errs[0].message.contains("`&&`") && errs[0].message.contains("`&`") && errs[0].suggestion.is_some());
     }
 
     #[test]
     fn error_type_ascription() {
         let (_, errs) = assert_no_fatal("a + b: number");
-        assert_eq!(errs.len(), 1, "found: {:#?}", errs);
+        assert!(errs.is_empty());
     }
 
     #[test]
     fn zero_param_function() {
         let code = r#"
-        fn firstPrimeNumber = () => {
+        fn firstPrimeNumber() {
             return 2
         }
         firstPrimeNumber()
@@ -4623,26 +4643,6 @@ thing(false)
     }
 
     #[test]
-    fn test_error_define_function_as_var() {
-        for name in ["var", "let", "const"] {
-            let some_program_string = format!(
-                r#"{} thing = (param) => {{
-    return true
-}}
-
-thing(false)
-"#,
-                name
-            );
-            assert_err(
-                &some_program_string,
-                "Expected a `fn` variable kind, found: `const`",
-                [0, name.len()],
-            );
-        }
-    }
-
-    #[test]
     fn test_error_define_var_as_function() {
         // TODO: https://github.com/KittyCAD/modeling-app/issues/784
         // Improve this error message.
@@ -4652,12 +4652,12 @@ thing(false)
 
     #[test]
     fn random_words_fail() {
-        let test_program = r#"part001 = startSketchOn('-XZ')
-    |> startProfileAt([8.53, 11.8], %)
+        let test_program = r#"part001 = startSketchOn(-XZ)
+    |> startProfile(at = [8.53, 11.8])
     asdasd asdasd
-    |> line([11.12, -14.82], %)
-    |> line([-13.27, -6.98], %)
-    |> line([-5.09, 12.33], %)
+    |> line(at = [11.12, -14.82])
+    |> line(at = [-13.27, -6.98])
+    |> line(at = [-5.09, 12.33])
     asdasd
 "#;
         let _ = crate::parsing::top_level_parse(test_program).unwrap_errs();
@@ -4665,18 +4665,18 @@ thing(false)
 
     #[test]
     fn test_member_expression_sketch() {
-        let some_program_string = r#"fn cube = (pos, scale) => {
-  sg = startSketchOn('XY')
-  |> startProfileAt(pos, %)
-    |> line([0, scale], %)
-    |> line([scale, 0], %)
-    |> line([0, -scale], %)
+        let some_program_string = r#"fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+  |> startProfile(pos)
+    |> line(at = [0, scale])
+    |> line(at = [scale, 0])
+    |> line(at = [0, -scale])
 
   return sg
 }
 
-b1 = cube([0,0], 10)
-b2 = cube([3,3], 4)
+b1 = cube(pos=[0,0], scale=10)
+b2 = cube(pos=[3,3], scale=4)
 
 pt1 = b1[0]
 pt2 = b2[0]
@@ -4693,18 +4693,18 @@ let other_thing = 2 * cos(3)"#;
 
     #[test]
     fn test_negative_arguments() {
-        let some_program_string = r#"fn box = (p, h, l, w) => {
- myBox = startSketchOn('XY')
-    |> startProfileAt(p, %)
-    |> line([0, l], %)
-    |> line([w, 0], %)
-    |> line([0, -l], %)
+        let some_program_string = r#"fn box(p, h, l, w) {
+ myBox = startSketchOn(XY)
+    |> startProfile(p)
+    |> line(at = [0, l])
+    |> line(at = [w, 0])
+    |> line(at = [0, -l])
     |> close()
     |> extrude(length=h)
 
   return myBox
 }
-let myBox = box([0,0], -3, -16, -10)
+let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
 "#;
         crate::parsing::top_level_parse(some_program_string).unwrap();
     }
@@ -4720,106 +4720,106 @@ let myBox = box([0,0], -3, -16, -10)
 
     #[test]
     fn test_parse_tag_named_std_lib() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $xLine)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(%, end = [5, 5], tag = $xLine)
 "#;
         assert_err(
             some_program_string,
             "Cannot assign a tag to a reserved keyword: xLine",
-            [76, 82],
+            [86, 92],
         );
     }
 
     #[test]
     fn test_parse_empty_tag_brace() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_empty_tag_whitespace() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $ ,01)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
 
     #[test]
     fn test_parse_empty_tag_comma() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $,)
     "#;
-        assert_err(some_program_string, "Tag names must not be empty", [69, 70]);
+        assert_err(some_program_string, "Tag names must not be empty", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $01)"#;
         assert_err(
             some_program_string,
             "Tag names must not start with a number. Tag starts with `01`",
-            [74, 76],
+            [72, 74],
         );
     }
     #[test]
     fn test_parse_tag_including_digit() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line(%, $var01)"#;
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $!var,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a bang", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a bang", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_dollar() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $$,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a dollar", [69, 70]);
+        assert_err(some_program_string, "Tag names must not start with a dollar", [67, 68]);
     }
     #[test]
     fn test_parse_tag_starting_with_fn() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $fn,01)
     "#;
-        assert_err(some_program_string, "Tag names must not start with a keyword", [69, 71]);
+        assert_err(some_program_string, "Tag names must not start with a keyword", [67, 69]);
     }
     #[test]
     fn test_parse_tag_starting_with_a_comment() {
-        let some_program_string = r#"startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
+        let some_program_string = r#"startSketchOn(XY)
+    |> startProfile(at = [0, 0])
     |> line(%, $//
     ,01)
     "#;
         assert_err(
             some_program_string,
             "Tag names must not start with a lineComment",
-            [69, 71],
+            [67, 69],
         );
     }
 
     #[test]
     fn test_parse_tag_with_reserved_in_middle_works() {
         let some_program_string = r#"
-    startSketchOn('XY')
-    |> startProfileAt([0, 0], %)
-    |> line([5, 5], %, $sketching)
+    startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [5, 5], tag = $sketching)
     "#;
         assert_no_err(some_program_string);
     }
@@ -4827,21 +4827,21 @@ let myBox = box([0,0], -3, -16, -10)
     #[test]
     fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45, 119.09)"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 67],
+            [52, 60],
         );
     }
     #[test]
     fn test_parse_array_missing_comma() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 119.09])"#;
         assert_err(
             some_program_string,
             "Unexpected character encountered. You might be missing a comma in between elements.",
-            [52, 65],
+            [53, 66],
         );
     }
     #[test]
@@ -4849,21 +4849,21 @@ sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
         // since there is an early exit if encountering a reserved word, the error should be about
         // that and not the missing comma
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [90.45 $struct])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [52, 53],
         );
     }
     #[test]
     fn test_parse_array_random_brace() {
         let some_program_string = r#"
-sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+sketch001 = startSketchOn(XZ) |> startProfile(at = [}])"#;
         assert_err(
             some_program_string,
             "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
-            [51, 52],
+            [52, 53],
         );
     }
 
@@ -4945,67 +4945,6 @@ bar = 1
     }
 
     #[test]
-    fn warn_object_expr() {
-        let some_program_string = "{ foo: bar }";
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 1);
-        assert_eq!(errs[0].apply_suggestion(some_program_string).unwrap(), "{ foo = bar }")
-    }
-
-    #[test]
-    fn warn_fn_decl() {
-        let some_program_string = r#"fn foo = () => {
-    return 0
-}"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        // Note the whitespace here is bad, but we're just testing the suggestion spans really. In
-        // real life we might reformat after applying suggestions.
-        assert_eq!(
-            replaced,
-            r#"fn foo  ()  {
-    return 0
-}"#
-        );
-
-        let some_program_string = r#"myMap = map([0..5], (n) => {
-    return n * 2
-})"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 2);
-        let replaced = errs[0].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"myMap = map([0..5], fn(n)  {
-    return n * 2
-})"#
-        );
-    }
-
-    #[test]
-    fn warn_const() {
-        let some_program_string = r#"const foo = 0
-let bar = 1
-var baz = 2
-"#;
-        let (_, errs) = assert_no_err(some_program_string);
-        assert_eq!(errs.len(), 3);
-        let replaced = errs[2].apply_suggestion(some_program_string).unwrap();
-        let replaced = errs[1].apply_suggestion(&replaced).unwrap();
-        let replaced = errs[0].apply_suggestion(&replaced).unwrap();
-        assert_eq!(
-            replaced,
-            r#"foo = 0
-bar = 1
-baz = 2
-"#
-        );
-    }
-
-    #[test]
     fn test_unary_not_on_keyword_bool() {
         let some_program_string = r#"!true"#;
         let module_id = ModuleId::default();
@@ -5017,27 +4956,6 @@ baz = 2
         };
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
-    }
-
-    #[test]
-    fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, program) in ["f(x=1,y)", "f(x=1,y,z)", "f(x=1,y,z=1)", "f(x=1, y, z=1)"]
-            .into_iter()
-            .enumerate()
-        {
-            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
-            let cause = err.inner().cause.as_ref().unwrap();
-            assert_eq!(
-                cause.message, "This argument needs a label, but it doesn't have one",
-                "failed test {i}: {program}"
-            );
-            assert_eq!(
-                cause.source_range.start(),
-                program.find("y").unwrap(),
-                "failed test {i}: {program}"
-            );
-        }
     }
 
     #[test]
@@ -5074,6 +4992,18 @@ baz = 2
                 "failed test {i}: {program}"
             );
         }
+    }
+
+    #[test]
+    fn test_sensible_error_duplicated_args() {
+        let program = r#"f(arg = 1, normal = 44, arg = 2)"#;
+        let (_, mut errs) = assert_no_fatal(program);
+        assert_eq!(errs.len(), 1);
+        let err = errs.pop().unwrap();
+        assert_eq!(
+            err.message,
+            "You've used the parameter labelled 'arg' 2 times in a single function call. You can only set each parameter once! Remove all but one use.",
+        );
     }
 }
 
@@ -5148,22 +5078,22 @@ mod snapshot_tests {
     snapshot_test!(
         a,
         r#"boxSketch = startSketchOn(XY)
-    |> startProfileAt([0, 0], %)
-    |> line([0, 10], %)
-    |> tangentialArc([-5, 5], %)
-    |> line([5, -15], %)
+    |> startProfileAt(at = [0, 0])
+    |> line(at = [0, 10])
+    |> tangentialArc(end = [-5, 5])
+    |> line(at = [5, -15])
     |> extrude(length=10)
 "#
     );
-    snapshot_test!(b, "myVar = min(5 , -legLen(5, 4))"); // Space before comma
+    snapshot_test!(b, "myVar = min(x=5 , y=-legLen(5, z=4))"); // Space before comma
 
-    snapshot_test!(c, "myVar = min(-legLen(5, 4), 5)");
-    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45, %)");
-    snapshot_test!(e, "let x = 1 * (3 - 4)");
+    snapshot_test!(c, "myVar = min(x=-legLen(a=5, b=4), y=5)");
+    snapshot_test!(d, "myVar = 5 + 6 |> myFunc(45)");
+    snapshot_test!(e, "x = 1 * (3 - 4)");
     snapshot_test!(f, r#"x = 1 // this is an inline comment"#);
     snapshot_test!(
         g,
-        r#"fn x = () => {
+        r#"fn x() {
         return sg
         return sg
       }"#
@@ -5171,32 +5101,32 @@ mod snapshot_tests {
     snapshot_test!(d2, r#"x = -leg2 + thickness"#);
     snapshot_test!(
         h,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = 1 - obj.a"#
     );
     snapshot_test!(
         i,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
      height = 1 - obj["a"]"#
     );
     snapshot_test!(
         j,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"] - 1"#
     );
     snapshot_test!(
         k,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [1 - obj["a"], 0]"#
     );
     snapshot_test!(
         l,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = [obj["a"] - 1, 0]"#
     );
     snapshot_test!(
         m,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = {a = 1, b = 2 }
     height = [obj["a"] -1, 0]"#
     );
     snapshot_test!(n, "height = 1 - obj.a");
@@ -5205,7 +5135,7 @@ mod snapshot_tests {
     snapshot_test!(q, r#"height = [ obj["a"], 0 ]"#);
     snapshot_test!(
         r,
-        r#"obj = { a: 1, b: 2 }
+        r#"obj = { a = 1, b = 2 }
     height = obj["a"]"#
     );
     snapshot_test!(s, r#"prop = yo["one"][two]"#);
@@ -5214,11 +5144,11 @@ mod snapshot_tests {
     snapshot_test!(v, r#"pt1 = b1[0]"#);
     snapshot_test!(w, r#"pt1 = b1['zero']"#);
     snapshot_test!(x, r#"pt1 = b1.zero"#);
-    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfileAt(pos, %)"#);
+    snapshot_test!(y, r#"sg = startSketchOn(XY) |> startProfile(pos)"#);
     snapshot_test!(
         z,
         "sg = startSketchOn(XY)
-    |> startProfileAt(pos) |> line([0, -scale], %)"
+    |> startProfile(pos) |> line([0, -scale])"
     );
     snapshot_test!(aa, r#"sg = -scale"#);
     snapshot_test!(ab, "line(endAbsolute = [0, -1])");
@@ -5226,14 +5156,14 @@ mod snapshot_tests {
     snapshot_test!(
         ad,
         r#"
-    fn firstPrimeNumber = () => {
+    fn firstPrimeNumber() {
         return 2
     }
     firstPrimeNumber()"#
     );
     snapshot_test!(
         ae,
-        r#"fn thing = (param) => {
+        r#"fn thing(param) {
         return true
     }
     thing(false)"#
@@ -5241,7 +5171,7 @@ mod snapshot_tests {
     snapshot_test!(
         af,
         r#"mySketch = startSketchOn(XY)
-        |> startProfileAt([0,0], %)
+        |> startProfile(at = [0,0])
         |> line(endAbsolute = [0, 1], tag = $myPath)
         |> line(endAbsolute = [1, 1])
         |> line(endAbsolute = [1, 0], tag = $rightPath)
@@ -5249,24 +5179,24 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ag,
-        "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %) |> line(endAbsolute = [1, 1]) |> close()"
+        "mySketch = startSketchOn(XY) |> startProfile(at = [0,0]) |> line(endAbsolute = [1, 1]) |> close()"
     );
-    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfileAt(p, %)");
-    snapshot_test!(ai, r#"myBox = f(1) |> g(2, %)"#);
+    snapshot_test!(ah, "myBox = startSketchOn(XY) |> startProfile(at = p)");
+    snapshot_test!(ai, r#"myBox = f(1) |> g(2)"#);
     snapshot_test!(
         aj,
-        r#"myBox = startSketchOn(XY) |> startProfileAt(p, %) |> line(end = [0, l])"#
+        r#"myBox = startSketchOn(XY) |> startProfile(at = p) |> line(end = [0, l])"#
     );
     snapshot_test!(ak, "line(endAbsolute = [0, 1])");
-    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfileAt([0,0], %)");
-    snapshot_test!(aq, "log(5, \"hello\", aIdentifier)");
+    snapshot_test!(ap, "mySketch = startSketchOn(XY) |> startProfile(at = [0,0])");
+    snapshot_test!(aq, "log(number = 5, msg = \"hello\", id=aIdentifier)");
     snapshot_test!(ar, r#"5 + "a""#);
-    snapshot_test!(at, "line([0, l], %)");
+    snapshot_test!(at, "line([0, l])");
     snapshot_test!(au, include_str!("../../e2e/executor/inputs/cylinder.kcl"));
-    snapshot_test!(av, "fn f = (angle?) => { return default(angle, 360) }");
+    snapshot_test!(av, "fn f(angle?) { return default(maybe=angle, otherwise=360) }");
     snapshot_test!(
         aw,
-        "let numbers = [
+        "numbers = [
             1,
             // A,
             // B,
@@ -5275,7 +5205,7 @@ mod snapshot_tests {
     );
     snapshot_test!(
         ax,
-        "let numbers = [
+        "numbers = [
             1,
             2,
             // A,
@@ -5292,22 +5222,11 @@ mod snapshot_tests {
     );
     snapshot_test!(
         az,
-        "let props = {
+        "props = {
             a: 1,
             // b: 2,
             c: 3
         }"
-    );
-    snapshot_test!(
-        ba,
-        r#"
-sketch001 = startSketchOn('XY')
-  // |> arc({
-  //   angleEnd: 270,
-  //   angleStart: 450,
-  // }, %)
-  |> startProfileAt(%)
-"#
     );
     snapshot_test!(
         bb,
@@ -5333,14 +5252,14 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
             5
         }"#
     );
-    snapshot_test!(be, "let x = 3 == 3");
-    snapshot_test!(bf, "let x = 3 != 3");
+    snapshot_test!(be, "x = 3 == 3");
+    snapshot_test!(bf, "x = 3 != 3");
     snapshot_test!(bg, r#"x = 4"#);
-    snapshot_test!(bh, "obj = {center : [10, 10], radius: 5}");
+    snapshot_test!(bh, "obj = {center = [10, 10], radius =5}");
     snapshot_test!(
         bi,
         r#"x = 3
-        obj = { x, y: 4}"#
+        obj = { x, y = 4}"#
     );
     snapshot_test!(bj, "true");
     snapshot_test!(bk, "truee");
@@ -5373,6 +5292,7 @@ my14 = 4 ^ 2 - 3 ^ 2 * 2
              bar = x,
            )"#
     );
+    snapshot_test!(kw_function_in_binary_op, r#"val = f(x = 1) + 1"#);
 }
 
 #[allow(unused)]

@@ -10,13 +10,12 @@ use kittycad_modeling_cmds::{
     websocket::OkWebSocketResponseData,
 };
 
+use super::{args::TyF64, DEFAULT_TOLERANCE};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
-
-use super::{args::TyF64, DEFAULT_TOLERANCE};
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -41,8 +40,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Union two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -50,8 +49,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// unionedPart = union([part001, part002])
@@ -63,8 +62,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -72,8 +71,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
@@ -86,8 +85,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -95,8 +94,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: union([part001, part002])
@@ -112,7 +111,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     args = {
         solids = {docs = "The solids to union."},
         tolerance = {docs = "The tolerance to use for the union operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
@@ -191,8 +191,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Intersect two cubes using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -200,8 +200,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// intersectedPart = intersect([part001, part002])
@@ -213,8 +213,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -222,8 +222,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: intersect([part001, part002])
@@ -237,7 +237,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     args = {
         solids = {docs = "The solids to intersect."},
         tolerance = {docs = "The tolerance to use for the intersection operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_intersect(
     solids: Vec<Solid>,
@@ -324,8 +325,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// // Subtract a cylinder from a cube using the stdlib functions.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -333,8 +334,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// subtractedPart = subtract([part001], tools=[part002])
@@ -346,8 +347,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 /// // Codemods will generate the stdlib function call instead.
 ///
 /// fn cube(center, size) {
-///     return startSketchOn('XY')
-///         |> startProfileAt([center[0] - size, center[1] - size], %)
+///     return startSketchOn(XY)
+///         |> startProfile(at = [center[0] - size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] - size])
 ///         |> line(endAbsolute = [center[0] + size, center[1] + size])
 ///         |> line(endAbsolute = [center[0] - size, center[1] + size])
@@ -355,8 +356,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
 ///         |> extrude(length = 10)
 /// }
 ///
-/// part001 = cube([0, 0], 10)
-/// part002 = cube([7, 3], 5)
+/// part001 = cube(center = [0, 0], size = 10)
+/// part002 = cube(center = [7, 3], size = 5)
 ///     |> translate(z = 1)
 ///
 /// // This is the equivalent of: subtract([part001], tools=[part002])
@@ -371,7 +372,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         solids = {docs = "The solids to use as the base to subtract from."},
         tools = {docs = "The solids to subtract."},
         tolerance = {docs = "The tolerance to use for the subtraction operation."},
-    }
+    },
+    tags = ["solid"]
 }]
 pub(crate) async fn inner_subtract(
     solids: Vec<Solid>,

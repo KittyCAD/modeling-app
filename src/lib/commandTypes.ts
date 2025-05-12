@@ -40,6 +40,12 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
+type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
+export type FileFilter = {
+  name: string
+  extensions: string[]
+}
+export type FiltersConfig = FileFilter[]
 
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
@@ -96,6 +102,8 @@ export type Command<
   description?: string
   icon?: Icon
   hide?: PLATFORM[number]
+  hideFromSearch?: boolean
+  status?: CommandStatus
 }
 
 export type CommandConfig<
@@ -108,7 +116,7 @@ export type CommandConfig<
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: boolean
-  status?: 'active' | 'development' | 'inactive'
+  status?: CommandStatus
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],
@@ -220,6 +228,13 @@ export type CommandArgumentConfig<
             machineContext?: C
           ) => OutputType)
       defaultValueFromContext?: (context: C) => OutputType
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'text'
@@ -286,6 +301,13 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
     }
   | {
       inputType: 'selection'
@@ -343,6 +365,23 @@ export type CommandArgument<
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>
           ) => OutputType)
+      validation?: ({
+        data,
+        context,
+      }: {
+        data: any
+        context: CommandBarContext
+      }) => Promise<boolean | string>
+    }
+  | {
+      inputType: 'path'
+      defaultValue?:
+        | OutputType
+        | ((
+            commandBarContext: ContextFrom<typeof commandBarMachine>,
+            machineContext?: ContextFrom<T>
+          ) => OutputType)
+      filters: FiltersConfig
     }
   | {
       inputType: 'text'

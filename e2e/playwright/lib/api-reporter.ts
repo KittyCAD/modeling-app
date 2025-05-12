@@ -1,6 +1,58 @@
-import type { Reporter, TestCase, TestResult } from '@playwright/test/reporter'
+import type {
+  Reporter,
+  TestCase,
+  TestResult,
+  FullResult,
+} from '@playwright/test/reporter'
 
 class MyAPIReporter implements Reporter {
+  private pendingRequests: Promise<void>[] = []
+  private allResults: Record<string, any>[] = []
+  private blockingResults: Record<string, any>[] = []
+
+  async onEnd(result: FullResult): Promise<void> {
+    await Promise.all(this.pendingRequests)
+
+    if (this.allResults.length === 0) {
+      return
+    }
+
+    if (this.blockingResults.length === 0) {
+      result.status = 'passed'
+      if (!process.env.CI) {
+        console.log('TAB API - Marked failures as non-blocking')
+      }
+    }
+
+    try {
+      const response = await fetch(`${process.env.TAB_API_URL}/api/share`, {
+        method: 'POST',
+        headers: new Headers({
+          'Content-Type': 'application/json',
+          'X-API-Key': process.env.TAB_API_KEY || '',
+        }),
+        body: JSON.stringify({
+          project: 'https://github.com/KittyCAD/modeling-app',
+          branch:
+            process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME || '',
+          commit: process.env.CI_COMMIT_SHA || process.env.GITHUB_SHA || '',
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        if (!process.env.CI) {
+          console.error('TAB API - Failed to share results:', error)
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      if (!process.env.CI) {
+        console.error('TAB API - Unable to share results:', message)
+      }
+    }
+  }
+
   onTestEnd(test: TestCase, result: TestResult): void {
     if (!process.env.TAB_API_URL || !process.env.TAB_API_KEY) {
       return
@@ -19,8 +71,10 @@ class MyAPIReporter implements Reporter {
       target: process.env.TARGET || null,
       platform: process.env.RUNNER_OS || process.platform,
       // Extra test and result data
+      annotations: test.annotations.map((a) => a.type), // e.g. 'fail' or 'fixme'
+      id: test.id, // computed file/test/project ID used for reruns
       retry: result.retry,
-      tags: test.tags,
+      tags: test.tags, // e.g. '@snapshot' or '@skipLocalEngine'
       // Extra environment variables
       CI_COMMIT_SHA: process.env.CI_COMMIT_SHA || null,
       CI_PR_NUMBER: process.env.CI_PR_NUMBER || null,
@@ -34,7 +88,7 @@ class MyAPIReporter implements Reporter {
       RUNNER_ARCH: process.env.RUNNER_ARCH || null,
     }
 
-    void (async () => {
+    const request = (async () => {
       try {
         const response = await fetch(`${process.env.TAB_API_URL}/api/results`, {
           method: 'POST',
@@ -45,18 +99,27 @@ class MyAPIReporter implements Reporter {
           body: JSON.stringify(payload),
         })
 
-        if (!response.ok && !process.env.CI) {
-          console.error(
-            'TAB API - Failed to send test result:',
-            await response.text()
-          )
+        if (response.ok) {
+          const result = await response.json()
+          this.allResults.push(result)
+          if (result.block) {
+            this.blockingResults.push(result)
+          }
+        } else {
+          const error = await response.json()
+          if (!process.env.CI) {
+            console.error('TAB API - Failed to send test result:', error)
+          }
         }
-      } catch {
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
         if (!process.env.CI) {
-          console.error('TAB API - Unable to send test result')
+          console.error('TAB API - Unable to send test result:', message)
         }
       }
     })()
+
+    this.pendingRequests.push(request)
   }
 }
 
