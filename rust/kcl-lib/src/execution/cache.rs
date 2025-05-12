@@ -118,7 +118,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         // We know they have the same imports because the ast is the same.
         // If we have no imports, we can skip this.
         if !old.ast.has_import_statements() {
-            println!("No imports, no need to check.");
             return CacheResult::NoAction(reapply_settings);
         }
 

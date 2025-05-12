@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type {
+  ARG_AT,
   ARG_END_ABSOLUTE,
   ARG_END_ABSOLUTE_X,
   ARG_END_ABSOLUTE_Y,
@@ -116,6 +117,7 @@ export type InputArgKeys =
   | 'p2'
   | 'p3'
   | 'end'
+  | typeof ARG_AT
   | typeof ARG_INTERIOR_ABSOLUTE
   | typeof ARG_END_ABSOLUTE
   | typeof ARG_END_ABSOLUTE_X

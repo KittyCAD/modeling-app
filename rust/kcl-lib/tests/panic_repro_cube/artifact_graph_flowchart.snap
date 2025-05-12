@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart panic_repro_cube.kcl
+extension: md
+snapshot_kind: binary
+---

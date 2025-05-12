@@ -3,6 +3,7 @@
 use kcl_lib::{bust_cache, ExecError, ExecOutcome};
 use kcmc::{each_cmd as mcmd, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
+use pretty_assertions::assert_eq;
 
 #[derive(Debug)]
 struct Variation<'a> {
@@ -247,8 +248,11 @@ extrude(profile001, length = 100)"#
     )
     .await;
 
-    result.first().unwrap();
-    result.last().unwrap();
+    let first = result.first().unwrap();
+    let last = result.last().unwrap();
+
+    assert!(first.1 == last.1, "The images should be the same");
+    assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
 #[cfg(feature = "artifact-graph")]
@@ -549,4 +553,65 @@ extrude(profile001, length = 100)
         r1.2.artifact_graph != r2.2.artifact_graph,
         "The outcomes artifact graphs should be different"
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_multi_file_same_code_dont_reexecute_settings_only_change() {
+    let code = r#"import "toBeImported.kcl" as importedCube
+
+importedCube
+
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-134.53, -56.17])
+  |> angledLine(angle = 0, length = 79.05, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 76.28)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
+  |> close()
+extrude001 = extrude(profile001, length = 100)
+sketch003 = startSketchOn(extrude001, face = seg02)
+sketch002 = startSketchOn(extrude001, face = seg01)
+"#;
+
+    let other_file = (
+        std::path::PathBuf::from("toBeImported.kcl"),
+        r#"sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [281.54, 305.81])
+  |> angledLine(angle = 0, length = 123.43, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 85.99)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude(profile001, length = 100)"#
+            .to_string(),
+    );
+
+    let result = cache_test(
+        "multi_file_same_code_dont_reexecute_settings_only_change",
+        vec![
+            Variation {
+                code,
+                other_files: vec![other_file.clone()],
+                settings: &kcl_lib::ExecutorSettings {
+                    show_grid: false,
+                    ..Default::default()
+                },
+            },
+            Variation {
+                code,
+                other_files: vec![other_file],
+                settings: &kcl_lib::ExecutorSettings {
+                    show_grid: true,
+                    ..Default::default()
+                },
+            },
+        ],
+    )
+    .await;
+
+    let first = result.first().unwrap();
+    let last = result.last().unwrap();
+
+    assert!(first.1 != last.1, "The images should be different for the grid");
+    assert_eq!(first.2, last.2, "The outcomes should be the same");
 }

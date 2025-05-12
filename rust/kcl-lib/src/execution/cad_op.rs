@@ -278,7 +278,7 @@ impl From<&KclValue> for OpKclValue {
                 ty: ty.clone(),
             },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
             }
