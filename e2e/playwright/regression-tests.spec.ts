@@ -841,6 +841,49 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
     })
   })
+
+  test('Cursor position updates correctly after typing', async ({
+    page,
+    homePage,
+    toolbar,
+    context,
+  }) => {
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await context.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `at = [33.49, 26.29]
+sketch001 = startSketchOn(XZ)
+  |> startProfile(at)
+  |> line(end = [67.38, 84.9])
+  |> line(end = [115.66, -75.17])
+`
+      )
+    })
+
+    await homePage.goToModelingScene()
+    await toolbar.openFeatureTreePane()
+    await expect(page.getByText('Errors found in KCL code.')).toBeVisible({
+      timeout: 15_000,
+    })
+
+    await page
+      .getByText('startProfile', {
+        exact: true,
+      })
+      .click()
+    await page.keyboard.press('End')
+    await page.keyboard.press('ArrowLeft')
+    await page.waitForTimeout(200)
+    await page.keyboard.type(' = at')
+    await page.waitForTimeout(200)
+
+    await toolbar.waitForFeatureTreeToBeBuilt()
+
+    // wait for error (this timeout want finish because it hit the ./lib/console-error-whitelist.ts code if the regression still exists)
+    await page.waitForTimeout(2000)
+  })
 })
 
 async function clickExportButton(page: Page) {
