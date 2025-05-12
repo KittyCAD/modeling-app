@@ -24,16 +24,11 @@ import { SIDEBAR_BUTTON_SUFFIX } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { useSettings } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
 import { hotkeyDisplay } from '@src/lib/hotkeyWrapper'
 import usePlatform from '@src/hooks/usePlatform'
 import { settingsActor } from '@src/lib/singletons'
-
-interface ModelingSidebarProps {
-  paneOpacity: '' | 'opacity-20' | 'opacity-40'
-}
 
 interface BadgeInfoComputed {
   value: number | boolean | string
@@ -46,14 +41,12 @@ function getPlatformString(): 'web' | 'desktop' {
   return isDesktop() ? 'desktop' : 'web'
 }
 
-export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
+export function ModelingSidebar() {
   const machineManager = useContext(MachineManagerContext)
   const kclContext = useKclContext()
   const settings = useSettings()
-  const onboardingStatus = settings.app.onboardingStatus
   const { send, context } = useModelingContext()
   const pointerEventsCssClass =
-    onboardingStatus.current === ONBOARDING_SUBPATHS.CAMERA ||
     context.store?.openPanes.length === 0
       ? 'pointer-events-none '
       : 'pointer-events-auto '
@@ -225,7 +218,7 @@ export function ModelingSidebar({ paneOpacity }: ModelingSidebarProps) {
 
   return (
     <Resizable
-      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${paneOpacity} ${pointerEventsCssClass}`}
+      className={`group flex-1 flex flex-col z-10 my-2 pr-1 ${pointerEventsCssClass}`}
       defaultSize={{
         width: '550px',
         height: 'auto',
@@ -361,7 +354,11 @@ function ModelingPaneButton({
   })
 
   return (
-    <div id={paneConfig.id + '-button-holder'} className="relative">
+    <div
+      id={paneConfig.id + '-button-holder'}
+      className="relative"
+      data-onboarding-id={`${paneConfig.id}-pane-button`}
+    >
       <button
         className="group pointer-events-auto flex items-center justify-center border-transparent dark:border-transparent disabled:!border-transparent p-0 m-0 rounded-sm !outline-0 focus-visible:border-primary"
         onClick={onClick}
@@ -405,7 +402,7 @@ function ModelingPaneButton({
           className={
             showBadge.className
               ? showBadge.className
-              : 'absolute m-0 p-0 bottom-4 left-4 w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
+              : 'absolute m-0 p-0 bottom-4 left-4 min-w-3 h-3 flex items-center justify-center text-[10px] font-semibold text-white bg-primary hue-rotate-90 rounded-full border border-chalkboard-10 dark:border-chalkboard-80 z-50 hover:cursor-pointer hover:scale-[2] transition-transform duration-200'
           }
           onClick={showBadge.onClick}
           title={

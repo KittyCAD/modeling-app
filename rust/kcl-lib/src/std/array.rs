@@ -1,10 +1,15 @@
+use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 
-use super::{args::Arg, Args};
+use super::{
+    args::{Arg, KwArgs},
+    Args,
+};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::{FunctionSource, KclValue},
+        types::RuntimeType,
         ExecState,
     },
     source_range::SourceRange,
@@ -15,9 +20,11 @@ use crate::{
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
     let f: &FunctionSource = args.get_kw_arg("f")?;
-    let meta = vec![args.source_range.into()];
     let new_array = inner_map(array, f, exec_state, &args).await?;
-    Ok(KclValue::MixedArray { value: new_array, meta })
+    Ok(KclValue::HomArray {
+        value: new_array,
+        ty: RuntimeType::any(),
+    })
 }
 
 /// Apply a function to every element of a list.
@@ -44,7 +51,7 @@ pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// // Call `map`, using an anonymous function instead of a named one.
 /// circles = map(
 ///   [1..3],
-///   f = fn(id) {
+///   f = fn(@id) {
 ///     return startSketchOn(XY)
 ///       |> circle( center= [id * 2 * r, 0], radius= r)
 ///   }
@@ -81,9 +88,18 @@ async fn call_map_closure(
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
-    let output = map_fn
-        .call(None, exec_state, ctxt, vec![Arg::synthetic(input)], source_range)
-        .await?;
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(input, source_range)),
+        labeled: Default::default(),
+        errors: Vec::new(),
+    };
+    let args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
+    let output = map_fn.call_kw(None, exec_state, ctxt, args, source_range).await?;
     let source_ranges = vec![source_range];
     let output = output.ok_or_else(|| {
         KclError::Semantic(KclErrorDetails {
@@ -106,7 +122,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// using the previous value and the element.
 /// ```no_run
 /// // This function adds two numbers.
-/// fn add(a, b) { return a + b }
+/// fn add(@a, accum) { return a + accum }
 ///
 /// // This function adds an array of numbers.
 /// // It uses the `reduce` function, to call the `add` function on every
@@ -118,7 +134,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// fn sum(arr):
 ///     sumSoFar = 0
 ///     for i in arr:
-///         sumSoFar = add(sumSoFar, i)
+///         sumSoFar = add(i, sumSoFar)
 ///     return sumSoFar
 /// */
 ///
@@ -131,7 +147,7 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// // an anonymous `add` function as its parameter, instead of declaring a
 /// // named function outside.
 /// arr = [1, 2, 3]
-/// sum = reduce(arr, initial = 0, f = fn (i, result_so_far) { return i + result_so_far })
+/// sum = reduce(arr, initial = 0, f = fn (@i, accum) { return i + accum })
 ///
 /// // We use `assert` to check that our `sum` function gives the
 /// // expected result. It's good to check your work!
@@ -150,11 +166,11 @@ pub async fn reduce(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///   // Use a `reduce` to draw the remaining decagon sides.
 ///   // For each number in the array 1..10, run the given function,
 ///   // which takes a partially-sketched decagon and adds one more edge to it.
-///   fullDecagon = reduce([1..10], initial = startOfDecagonSketch, f = fn(i, partialDecagon) {
+///   fullDecagon = reduce([1..10], initial = startOfDecagonSketch, f = fn(@i, accum) {
 ///       // Draw one edge of the decagon.
 ///       x = cos(stepAngle * i) * radius
 ///       y = sin(stepAngle * i) * radius
-///       return line(partialDecagon, end = [x, y])
+///       return line(accum, end = [x, y])
 ///   })
 ///
 ///   return fullDecagon
@@ -209,16 +225,28 @@ async fn inner_reduce<'a>(
 
 async fn call_reduce_closure(
     elem: KclValue,
-    start: KclValue,
+    accum: KclValue,
     reduce_fn: &FunctionSource,
     source_range: SourceRange,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     // Call the reduce fn for this repetition.
-    let reduce_fn_args = vec![Arg::synthetic(elem), Arg::synthetic(start)];
+    let mut labeled = IndexMap::with_capacity(1);
+    labeled.insert("accum".to_string(), Arg::new(accum, source_range));
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(elem, source_range)),
+        labeled,
+        errors: Vec::new(),
+    };
+    let reduce_fn_args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
     let transform_fn_return = reduce_fn
-        .call(None, exec_state, ctxt, reduce_fn_args, source_range)
+        .call_kw(None, exec_state, ctxt, reduce_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
@@ -230,6 +258,31 @@ async fn call_reduce_closure(
         })
     })?;
     Ok(out)
+}
+
+pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
+    let item: KclValue = args.get_kw_arg("item")?;
+
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push to a value of type {actual_type}, only an array"),
+        }));
+    };
+    let ty = if item.has_type(&ty) {
+        ty
+    } else {
+        // The user pushed an item with a type that differs from the array's
+        // element type.
+        RuntimeType::any()
+    };
+
+    let new_array = inner_push(values, item);
+
+    Ok(KclValue::HomArray { value: new_array, ty })
 }
 
 /// Append an element to the end of an array.
@@ -251,28 +304,26 @@ async fn call_reduce_closure(
     },
     tags = ["array"]
 }]
-async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
+fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array.push(item);
-    Ok(KclValue::MixedArray {
-        value: array,
-        meta: vec![args.source_range.into()],
-    })
+
+    array
 }
 
-pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Extract the array and the element from the arguments
-    let val: KclValue = args.get_unlabeled_kw_arg("array")?;
-    let item = args.get_kw_arg("item")?;
-
-    let meta = vec![args.source_range];
-    let KclValue::MixedArray { value: array, meta: _ } = val else {
-        let actual_type = val.human_friendly_type();
+pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: meta,
-            message: format!("You can't push to a value of type {actual_type}, only an array"),
+            message: format!("You can't pop from a value of type {actual_type}, only an array"),
         }));
     };
-    inner_push(array, item, &args).await
+
+    let new_array = inner_pop(values, &args)?;
+
+    Ok(KclValue::HomArray { value: new_array, ty })
 }
 
 /// Remove the last element from an array.
@@ -295,7 +346,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     },
     tags = ["array"]
 }]
-async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
+fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
     if array.is_empty() {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Cannot pop from an empty array".to_string(),
@@ -306,24 +357,5 @@ async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclErr
     // Create a new array with all elements except the last one
     let new_array = array[..array.len() - 1].to_vec();
 
-    Ok(KclValue::MixedArray {
-        value: new_array,
-        meta: vec![args.source_range.into()],
-    })
-}
-
-pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Extract the array from the arguments
-    let val = args.get_unlabeled_kw_arg("array")?;
-
-    let meta = vec![args.source_range];
-    let KclValue::MixedArray { value: array, meta: _ } = val else {
-        let actual_type = val.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't pop from a value of type {actual_type}, only an array"),
-        }));
-    };
-
-    inner_pop(array, &args).await
+    Ok(new_array)
 }

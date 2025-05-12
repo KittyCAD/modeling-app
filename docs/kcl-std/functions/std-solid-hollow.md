@@ -1,6 +1,6 @@
 ---
 title: "hollow"
-subtitle: "Function in solid"
+subtitle: "Function in std::solid"
 excerpt: "Make the inside of a 3D object hollow."
 layout: manual
 ---
@@ -22,11 +22,11 @@ provided thickness remains around the exterior of the shape.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | Which solid to hollow out | Yes |
-| `thickness` | `number(Length)` | The thickness of the remaining shell | Yes |
+| `thickness` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The thickness of the remaining shell | Yes |
 
 ### Returns
 
-[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extrude surfaces.
+[`Solid`](/docs/kcl-std/types/std-types-Solid) - A solid is a collection of extruded surfaces.
 
 
 ### Examples

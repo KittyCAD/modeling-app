@@ -1,6 +1,6 @@
 ---
 title: "units::toInches"
-subtitle: "Function in units"
+subtitle: "Function in std::units"
 excerpt: "Convert a number to inches from its current units."
 layout: manual
 ---
@@ -8,7 +8,7 @@ layout: manual
 Convert a number to inches from its current units.
 
 ```kcl
-units::toInches(@num: number(in)): number(in)
+units::toInches(@num: number(Length)): number(in)
 ```
 
 
@@ -17,11 +17,11 @@ units::toInches(@num: number(in)): number(in)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(in)` |  | Yes |
+| `num` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-`number(in)`
+[`number(in)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 

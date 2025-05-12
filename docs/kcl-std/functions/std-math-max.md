@@ -1,6 +1,6 @@
 ---
 title: "max"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the maximum of the given arguments."
 layout: manual
 ---
@@ -21,7 +21,7 @@ max(@input: [number; 1+]): number
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

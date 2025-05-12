@@ -1,6 +1,6 @@
 ---
 title: "ceil"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the smallest integer greater than or equal to a number."
 layout: manual
 ---
@@ -17,11 +17,11 @@ ceil(@input: number): number
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `input` | [`number`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `input` | [`number`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

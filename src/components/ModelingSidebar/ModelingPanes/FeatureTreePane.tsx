@@ -55,9 +55,6 @@ export const FeatureTreePane = () => {
             },
           })
         },
-        sendEditFlowStart: () => {
-          modelingSend({ type: 'Enter sketch' })
-        },
         scrollToError: () => {
           editorManager.scrollToFirstErrorDiagnosticIfExists()
         },
@@ -267,8 +264,8 @@ const OperationItemWrapper = ({
         className={`reset flex-1 flex items-center gap-2 text-left text-base ${selectable ? 'border-transparent dark:border-transparent' : 'border-none cursor-default'} ${className}`}
       >
         <CustomIcon name={icon} className="w-5 h-5 block" />
-        <div className="flex items-center">
-          <div className="min-w-24">{name}</div>
+        <div className="flex items-baseline">
+          <div className="mr-2">{name}</div>
           {customSuffix && customSuffix}
         </div>
       </button>
@@ -554,9 +551,7 @@ const DefaultPlanes = () => {
       name: 'Top plane',
       id: defaultPlanes.xy,
       key: 'xy',
-      customSuffix: (
-        <div className="text-red-500/50 font-bold text-xs">XY</div>
-      ),
+      customSuffix: <div className="text-red-500/50 font-bold text-xs">XY</div>,
     },
     {
       name: 'Side plane',

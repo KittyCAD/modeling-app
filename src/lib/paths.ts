@@ -10,21 +10,6 @@ import {
 import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
-
-const prependRoutes =
-  (routesObject: Record<string, string>) => (prepend: string) => {
-    return Object.fromEntries(
-      Object.entries(routesObject).map(([constName, path]) => [
-        constName,
-        prepend + path,
-      ])
-    )
-  }
-
-type OnboardingPaths = {
-  [K in keyof typeof ONBOARDING_SUBPATHS]: `/onboarding${(typeof ONBOARDING_SUBPATHS)[K]}`
-}
 
 const SETTINGS = '/settings'
 
@@ -44,9 +29,7 @@ export const PATHS = {
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,
   SETTINGS_KEYBINDINGS: `${SETTINGS}?tab=keybindings` as const,
   SIGN_IN: '/signin',
-  ONBOARDING: prependRoutes(ONBOARDING_SUBPATHS)(
-    '/onboarding'
-  ) as OnboardingPaths,
+  ONBOARDING: '/onboarding',
   TELEMETRY: '/telemetry',
 } as const
 export const BROWSER_PATH = `%2F${BROWSER_PROJECT_NAME}%2F${BROWSER_FILE_NAME}${FILE_EXT}`
@@ -214,9 +197,4 @@ export function desktopSafePathSplit(path: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return isDesktop() ? paths.join(window?.electron?.sep) : webSafeJoin(paths)
-}
-
-export function localModuleSafePathSplit(path: string) {
-  const modulePathSafeSep = '/'
-  return path.split(modulePathSafeSep)
 }

@@ -167,6 +167,7 @@ impl StdLibFnArg {
     pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
+            assert!(!self.description.contains('\n'), "Arg docs will get truncated");
             return Some(self.description.clone());
         }
 
@@ -398,8 +399,10 @@ impl From<StdLibFnArg> for ParameterInformation {
 }
 
 fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
-    if DECLARED_TYPES.contains(&ty) {
-        if let Some(data) = kcl_std.find_by_name(ty) {
+    let key = if ty.starts_with("number") { "number" } else { ty };
+
+    if DECLARED_TYPES.contains(&key) {
+        if let Some(data) = kcl_std.find_by_name(key) {
             return data.summary().cloned();
         }
     }

@@ -1,0 +1,57 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing array_push_item_wrong_type.kcl
+---
+{
+  "arr": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      }
+    ]
+  },
+  "arrPrime": {
+    "type": "HomArray",
+    "value": [
+      {
+        "type": "Number",
+        "value": 1.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 2.0,
+        "ty": {
+          "type": "Known",
+          "type": "Count"
+        }
+      },
+      {
+        "type": "Number",
+        "value": 4.0,
+        "ty": {
+          "type": "Known",
+          "type": "Length",
+          "type": "Mm"
+        }
+      }
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 ---
 title: "acos"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the arccosine of a number."
 layout: manual
 ---
@@ -17,11 +17,11 @@ acos(@num: number(_)): number(rad)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | `number(_)` |  | Yes |
+| `num` | [`number(_)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-`number(rad)`
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

@@ -36,6 +36,8 @@ import {
   engineViewIsometricWithoutGeometryPresent,
 } from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -49,16 +51,21 @@ export const EngineStream = (props: {
 
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
-  const settingsEngine = {
+  /**
+   * We omit `pool` here because `engineStreamMachine` will override it anyway
+   * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
+   */
+  const settingsEngine: Omit<SettingsViaQueryString, 'pool'> = {
     theme: settings.app.theme.current,
     enableSSAO: settings.modeling.enableSSAO.current,
     highlightEdges: settings.modeling.highlightEdges.current,
     showScaleGrid: settings.modeling.showScaleGrid.current,
     cameraProjection: settings.modeling.cameraProjection.current,
+    cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
@@ -121,6 +128,12 @@ export const EngineStream = (props: {
               padding,
             })
           }
+        }
+
+        if (project && project.path) {
+          createThumbnailPNGOnDesktop({
+            projectDirectoryWithoutEndingSlash: project.path,
+          })
         }
       })
       .catch(trap)

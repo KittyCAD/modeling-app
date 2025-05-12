@@ -1,4 +1,6 @@
 import type { Project } from '@src/lib/project'
+import type { ActorRefFrom } from 'xstate'
+import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 
 export enum SystemIOMachineActors {
   readFoldersFromProjectDirectory = 'read folders from project directory',
@@ -11,6 +13,8 @@ export enum SystemIOMachineActors {
   /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'import file from URL',
   deleteKCLFile = 'delete kcl delete',
+  bulkCreateKCLFiles = 'bulk create kcl files',
+  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
 }
 
 export enum SystemIOMachineStates {
@@ -25,6 +29,8 @@ export enum SystemIOMachineStates {
   /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
   importFileFromURL = 'importFileFromURL',
   deletingKCLFile = 'deletingKCLFile',
+  bulkCreatingKCLFiles = 'bulkCreatingKCLFiles',
+  bulkCreatingKCLFilesAndNavigateToProject = 'bulkCreatingKCLFilesAndNavigateToProject',
 }
 
 const donePrefix = 'xstate.done.actor.'
@@ -48,6 +54,8 @@ export enum SystemIOMachineEvents {
   done_importFileFromURL = donePrefix + 'import file from URL',
   generateTextToCAD = 'generate text to CAD',
   deleteKCLFile = 'delete kcl file',
+  bulkCreateKCLFiles = 'bulk create kcl files',
+  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
 }
 
 export enum SystemIOMachineActions {
@@ -76,7 +84,7 @@ export type SystemIOContext = {
   /** has the application gone through the initialization of systemIOMachine at least once.
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
-  requestedProjectName: { name: string }
+  requestedProjectName: { name: string; subRoute?: string }
   requestedFileName: { project: string; file: string; subRoute?: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
@@ -88,4 +96,31 @@ export type SystemIOContext = {
   lastProjectDeleteRequest: {
     project: string
   }
+}
+
+export type RequestedKCLFile = {
+  requestedProjectName: string
+  requestedFileName: string
+  requestedCode: string
+}
+
+export const waitForIdleState = async ({
+  systemIOActor,
+}: {
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+}) => {
+  // Check if already idle before setting up subscription
+  if (systemIOActor.getSnapshot().matches(SystemIOMachineStates.idle)) {
+    return Promise.resolve()
+  }
+
+  const waitForIdlePromise = new Promise((resolve) => {
+    const subscription = systemIOActor.subscribe((state) => {
+      if (state.matches(SystemIOMachineStates.idle)) {
+        subscription.unsubscribe()
+        resolve(undefined)
+      }
+    })
+  })
+  return waitForIdlePromise
 }

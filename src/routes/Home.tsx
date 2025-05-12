@@ -1,4 +1,3 @@
-import { IS_NIGHTLY_OR_DEBUG } from '@src/routes/utils'
 import type { FormEvent, HTMLProps } from 'react'
 import { useEffect } from 'react'
 import { toast } from 'react-hot-toast'
@@ -332,12 +331,9 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'add-kcl-file-to-project',
+                      name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
                       },
                     },
                   })
@@ -354,13 +350,11 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {IS_NIGHTLY_OR_DEBUG && (
-              <li className="contents">
-                <div className="my-2">
-                  <BillingDialog billingActor={billingActor} />
-                </div>
-              </li>
-            )}
+            <li className="contents">
+              <div className="my-2">
+                <BillingDialog billingActor={billingActor} />
+              </div>
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"

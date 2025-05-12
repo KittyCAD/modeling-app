@@ -371,7 +371,7 @@ const runModifyAstCloneWithEdgeTreatmentAndTag = async (
   }
 
   // apply edge treatment to selection
-  const result = modifyAstWithEdgeTreatmentAndTag(
+  const result = await modifyAstWithEdgeTreatmentAndTag(
     ast,
     selection,
     parameters,
@@ -801,7 +801,7 @@ extrude001 = extrude(sketch001, length = -15)`
           expectedCode
         )
       }, 10_000)
-      it(`should delete a non-piped ${edgeTreatmentType} from a single segment`, async () => {
+      it(`should delete a standalone assigned ${edgeTreatmentType} from a single segment`, async () => {
         const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])
@@ -810,8 +810,34 @@ extrude001 = extrude(sketch001, length = -15)`
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = -15)
-fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
-        const edgeTreatmentSnippet = `fillet001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+${edgeTreatmentType}001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}001 = ${edgeTreatmentType}(extrude001, ${parameterName} = 3, tags = [seg01])`
+        const expectedCode = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)`
+
+        await runDeleteEdgeTreatmentTest(
+          code,
+          edgeTreatmentSnippet,
+          expectedCode
+        )
+      }, 10_000)
+      it(`should delete a standalone ${edgeTreatmentType} without assignment from a single segment`, async () => {
+        const code = `sketch001 = startSketchOn(XY)
+  |> startProfile(at = [-10, 10])
+  |> line(end = [20, 0])
+  |> line(end = [0, -20])
+  |> line(end = [-20, 0], tag = $seg01)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(sketch001, length = -15)
+${edgeTreatmentType}(extrude001, ${parameterName} = 5, tags = [seg01])`
+        const edgeTreatmentSnippet = `${edgeTreatmentType}(extrude001, ${parameterName} = 5, tags = [seg01])`
         const expectedCode = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, 10])
   |> line(end = [20, 0])

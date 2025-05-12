@@ -36,7 +36,7 @@ export function AstExplorer() {
                 type="checkbox"
                 className="form-checkbox"
                 checked={filterKeys.includes(key)}
-                onChange={(e) => {
+                onChange={(_e) => {
                   if (filterKeys.includes(key)) {
                     setFilterKeys(filterKeys.filter((k) => k !== key))
                   } else {
@@ -51,7 +51,7 @@ export function AstExplorer() {
       </div>
       <div
         className="h-full relative"
-        onMouseLeave={(e) => {
+        onMouseLeave={(_e) => {
           editorManager.setHighlightRange([defaultSourceRange()])
         }}
       >

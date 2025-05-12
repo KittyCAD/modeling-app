@@ -21,9 +21,8 @@ test.describe('Onboarding tests', () => {
       },
     })
 
-    const bracketComment = '// Shelf Bracket'
-    const tutorialWelcomHeading = page.getByText(
-      'Welcome to Design Studio! This'
+    const tutorialWelcomeHeading = page.getByText(
+      'Welcome to Zoo Design Studio'
     )
     const nextButton = page.getByTestId('onboarding-next')
     const prevButton = page.getByTestId('onboarding-prev')
@@ -59,12 +58,11 @@ test.describe('Onboarding tests', () => {
     await test.step('Create a blank project and verify no onboarding chrome is shown', async () => {
       await homePage.goToModelingScene()
       await expect(toolbar.projectName).toContainText('testDefault')
-      await expect(tutorialWelcomHeading).not.toBeVisible()
+      await expect(tutorialWelcomeHeading).not.toBeVisible()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in)', {
         shouldNormalise: true,
       })
       await scene.connectionEstablished()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
     })
 
     await test.step('Go home and verify we still see the tutorial button, then begin it.', async () => {
@@ -90,11 +88,8 @@ test.describe('Onboarding tests', () => {
     // })
 
     await test.step('Ensure we see the welcome screen in a new project', async () => {
-      await expect(toolbar.projectName).toContainText('Tutorial Project 00')
-      await expect(tutorialWelcomHeading).toBeVisible()
-      await editor.expectEditor.toContain(bracketComment)
-      await scene.connectionEstablished()
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+      await expect(toolbar.projectName).toContainText('tutorial-project')
+      await expect(tutorialWelcomeHeading).toBeVisible()
     })
 
     await test.step('Test the clicking through the onboarding flow', async () => {
@@ -122,7 +117,7 @@ test.describe('Onboarding tests', () => {
       })
     })
 
-    await test.step('Resetting onboarding from inside project should always make a new one', async () => {
+    await test.step('Resetting onboarding from inside project should always overwrite `tutorial-project`', async () => {
       await test.step('Reset onboarding from settings', async () => {
         await userMenuButton.click()
         await userMenuSettingsButton.click()
@@ -131,44 +126,66 @@ test.describe('Onboarding tests', () => {
         await restartOnboardingSettingsButton.click()
       })
 
-      await test.step('Makes a new project', async () => {
-        await expect(toolbar.projectName).toContainText('Tutorial Project 01')
-        await expect(tutorialWelcomHeading).toBeVisible()
-        await editor.expectEditor.toContain(bracketComment)
-        await scene.connectionEstablished()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+      await test.step('Gets to the onboarding start', async () => {
+        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(tutorialWelcomeHeading).toBeVisible()
       })
 
       await test.step('Dismiss the onboarding', async () => {
-        await postDismissToast.waitFor({ state: 'detached' })
+        await postDismissToast.waitFor({ state: 'hidden' })
         await page.keyboard.press('Escape')
         await expect(postDismissToast).toBeVisible()
         await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
         await expect.poll(() => page.url()).not.toContain('/onboarding')
       })
-    })
 
-    await test.step('Resetting onboarding from home help menu makes a new project', async () => {
-      await test.step('Go home and reset onboarding from lower-right help menu', async () => {
+      await test.step('Verify no new projects were created', async () => {
         await toolbar.logoLink.click()
         await expect(homePage.tutorialBtn).not.toBeVisible()
-        await expect(
-          homePage.projectCard.getByText('Tutorial Project 00')
-        ).toBeVisible()
-        await expect(
-          homePage.projectCard.getByText('Tutorial Project 01')
-        ).toBeVisible()
+        await homePage.expectState({
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 7 },
+            {
+              title: 'testDefault',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
+      })
+    })
 
-        await helpMenuButton.click()
-        await helpMenuRestartOnboardingButton.click()
+    await test.step('Resetting onboarding from home help menu overwrites the `tutorial-project`', async () => {
+      await helpMenuButton.click()
+      await helpMenuRestartOnboardingButton.click()
+
+      await test.step('Gets to the onboarding start', async () => {
+        await expect(toolbar.projectName).toContainText('tutorial-project')
+        await expect(tutorialWelcomeHeading).toBeVisible()
+        await scene.connectionEstablished()
       })
 
-      await test.step('Makes a new project', async () => {
-        await expect(toolbar.projectName).toContainText('Tutorial Project 02')
-        await expect(tutorialWelcomHeading).toBeVisible()
-        await editor.expectEditor.toContain(bracketComment)
-        await scene.connectionEstablished()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
+      await test.step('Dismiss the onboarding', async () => {
+        await postDismissToast.waitFor({ state: 'hidden' })
+        await page.keyboard.press('Escape')
+        await expect(postDismissToast).toBeVisible()
+        await expect(page.getByTestId('onboarding-content')).not.toBeVisible()
+        await expect.poll(() => page.url()).not.toContain('/onboarding')
+      })
+
+      await test.step('Verify no new projects were created', async () => {
+        await toolbar.logoLink.click()
+        await expect(homePage.tutorialBtn).not.toBeVisible()
+        await homePage.expectState({
+          projectCards: [
+            { title: 'tutorial-project', fileCount: 7 },
+            {
+              title: 'testDefault',
+              fileCount: 1,
+            },
+          ],
+          sortBy: 'last-modified-desc',
+        })
       })
     })
   })

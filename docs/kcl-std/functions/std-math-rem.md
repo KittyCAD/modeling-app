@@ -1,6 +1,6 @@
 ---
 title: "rem"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: ""
 layout: manual
 ---
@@ -26,7 +26,7 @@ If `num` is negative, the result will be too.
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

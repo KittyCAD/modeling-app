@@ -16,7 +16,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use super::{
-    args::Arg,
+    args::{Arg, KwArgs},
     utils::{point_3d_to_mm, point_to_mm},
 };
 use crate::{
@@ -387,7 +387,11 @@ async fn send_pattern_transform<T: GeometryTrait>(
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_ids
+        if !pattern_info.entity_ids.is_empty() {
+            &pattern_info.entity_ids
+        } else {
+            &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
+        }
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(extra_instances);
         for _ in 0..extra_instances {
@@ -423,9 +427,19 @@ async fn make_transform<T: GeometryTrait>(
         ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(repetition_num, source_range)),
+        labeled: Default::default(),
+        errors: Vec::new(),
+    };
+    let transform_fn_args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
     let transform_fn_return = transform
-        .call(None, exec_state, ctxt, transform_fn_args, source_range)
+        .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
@@ -438,7 +452,7 @@ async fn make_transform<T: GeometryTrait>(
     })?;
     let transforms = match transform_fn_return {
         KclValue::Object { value, meta: _ } => vec![value],
-        KclValue::MixedArray { value, meta: _ } => {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let transforms: Vec<_> = value
                 .into_iter()
                 .map(|val| {
@@ -657,12 +671,44 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::types::NumericType;
+    use crate::execution::types::{NumericType, PrimitiveType};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
         let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
-        let input = KclValue::MixedArray {
+        let input = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 1.1,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 2.2,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 3.3,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+        };
+        let expected = [
+            TyF64::new(1.1, NumericType::mm()),
+            TyF64::new(2.2, NumericType::mm()),
+            TyF64::new(3.3, NumericType::mm()),
+        ];
+        let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
+        assert_eq!(actual.unwrap(), expected);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tuple_to_point3d() {
+        let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
+        let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 1.1,
@@ -1042,7 +1088,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 2-dimensional sketch some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
@@ -1159,7 +1205,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 3-dimensional solid some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
@@ -1295,7 +1341,11 @@ async fn pattern_circular(
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_ids
+        if !pattern_info.entity_ids.is_empty() {
+            &pattern_info.entity_ids.clone()
+        } else {
+            &pattern_info.entity_face_edge_ids.iter().map(|e| e.object_id).collect()
+        }
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(num_repetitions as usize);
         for _ in 0..num_repetitions {

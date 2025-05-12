@@ -211,8 +211,9 @@ export function createSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        defaultValue: undefined,
+        defaultValue: 5 * MS_IN_MINUTE,
         hideOnLevel: 'project',
+        hideOnPlatform: 'both',
         description: 'Save bandwidth & battery',
         validate: (v) =>
           String(v) == 'undefined' ||
@@ -249,12 +250,11 @@ export function createSettings() {
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
+        /** Unhide this once we make sketch mode unbreakable */
+        hideOnPlatform: 'both',
         defaultValue: false,
         description: 'Toggle free camera while in sketch mode',
         validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
         defaultValue: '',
@@ -322,7 +322,7 @@ export function createSettings() {
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
-        validate: (v) => true,
+        validate: (_v) => true,
         hideOnLevel: 'user',
       }),
     },

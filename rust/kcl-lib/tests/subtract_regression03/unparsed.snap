@@ -1,0 +1,68 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_regression03.kcl
+---
+@settings(defaultLengthUnit = in)
+
+sketch002 = startSketchOn(XY)
+
+sketch002Profile001 = startProfile(sketch002, at = [-0.503704, -0.264924])
+  |> line(end = [-0.191884, 0.172584])
+  |> arc(angleStart = 228.031232, angleEnd = 105, radius = 0.16425)
+  |> line(end = [0.464817, 0.124547])
+  |> arc(angleStart = 105, angleEnd = 75, radius = 0.6315)
+  |> line(end = [0.464817, -0.124547])
+  |> arc(angleStart = 75, angleEnd = -37.055012, radius = 0.16425)
+  |> line(end = [-0.200323, -0.265308])
+  |> scale(x = 0.958, y = 0.958)
+
+plane000 = {
+  origin = [-0.503704, -0.264924, 0],
+  xAxis = [0.191884, 0.172584, 0],
+  yAxis = [0, 0, 1],
+  zAxis = [-0.191884, 0.172584, 0]
+}
+
+sketch001 = startSketchOn(plane000)
+
+sketch001Profile000 = circle(sketch001, center = [0, 0], radius = 0.0495)
+
+sweepExtrude000 = sweep(sketch001Profile000, path = sketch002Profile001)
+
+plane001 = {
+  origin = [-0.503704, -0.28, 0],
+  xAxis = [-0.191884, 0.172584, 0],
+  yAxis = [0, 0, -1],
+  zAxis = [-0.191884, 0.172584, 0]
+}
+
+sketch003 = startSketchOn(plane001)
+
+sketch003Profile000 = startProfile(sketch003, at = [0, -0.06])
+  |> line(end = [0.129019, 0.12])
+  |> xLine(length = -0.129019)
+  |> yLine(length = -0.12)
+  |> close()
+
+cut000Extrude = extrude([sketch003Profile000], length = -0.2)
+
+cut000 = subtract(sweepExtrude000, tools = cut000Extrude)
+
+plane002 = {
+  origin = [0.42, -0.28, 0],
+  xAxis = [-0.200323, -0.265308, 0],
+  yAxis = [0, 0, 1],
+  zAxis = [0.200323, 0.265308, 0]
+}
+
+sketch004 = startSketchOn(plane002)
+
+sketch004Profile000 = startProfile(sketch004, at = [0, -0.06])
+  |> yLine(length = 0.12)
+  |> xLine(length = -0.129019)
+  |> line(end = [0.129019, -0.12])
+  |> close()
+
+cut001Extrude = extrude([sketch004Profile000], length = -0.2)
+
+cut001 = subtract(cut000, tools = cut001Extrude)

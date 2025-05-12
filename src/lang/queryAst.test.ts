@@ -1,5 +1,8 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Program } from '@rust/kcl-lib/bindings/Program'
 
+import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
   createCallExpressionStdLibKw,
@@ -14,6 +17,7 @@ import {
   getNodeFromPath,
   hasExtrudeSketch,
   hasSketchPipeBeenExtruded,
+  isCursorInFunctionDefinition,
   isNodeSafeToReplace,
   traverse,
 } from '@src/lang/queryAst'
@@ -24,9 +28,9 @@ import { topLevelRange } from '@src/lang/util'
 import type { Identifier, PathToNode } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import { initPromise } from '@src/lang/wasmUtils'
+import { type Selection } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
-import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 
 beforeAll(async () => {
   await initPromise
@@ -150,7 +154,7 @@ yo2 = hmm([identifierGuy + 5])`
     // because the unlabeled arg will default to %. However, the `isNodeSafeToReplacePath`
     // function doesn't yet check for this (because it cannot differentiate between
     // a function that relies on this default unlabeled arg, and a function with no unlabeled arg)
-    const rangeStart = code.indexOf('ine(%, end = [2.8,')
+    const rangeStart = code.indexOf('line(%, end = [2.8,')
     expect(rangeStart).toBeGreaterThanOrEqual(0)
     const result = isNodeSafeToReplace(
       ast,
@@ -631,7 +635,7 @@ describe('Testing traverse and pathToNode', () => {
       'very nested, array, object, callExpression, array, memberExpression',
       '.yo',
     ],
-  ])('testing %s', async (testName, literalOfInterest) => {
+  ])('testing %s', async (_testName, literalOfInterest) => {
     const code = `myVar = 5
 sketch001 = startSketchOn(XZ)
   |> startProfile(at = [3.29, 7.86])
@@ -785,5 +789,26 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
   |> close()
 `
     expect(recasted).toEqual(expectedCode)
+  })
+  it('regression: it not freak out while getting a node, but the nodeToPath is wrong/stale', () => {
+    const ast: Node<Program> = JSON.parse(
+      `{"body":[{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"gear","start":52,"end":56,"commentStart":52},"init":{"type":"FunctionExpression","params":[{"type":"Parameter","identifier":{"type":"Identifier","name":"nTeeth","start":57,"end":63,"commentStart":57}},{"type":"Parameter","identifier":{"type":"Identifier","name":"module","start":65,"end":71,"commentStart":65}},{"type":"Parameter","identifier":{"type":"Identifier","name":"pressureAngle","start":73,"end":86,"commentStart":73}},{"type":"Parameter","identifier":{"type":"Identifier","name":"profileShift","start":88,"end":100,"commentStart":88}}],"body":{"body":[],"start":103,"end":103,"commentStart":103},"start":56,"end":105,"commentStart":56},"start":52,"end":105,"commentStart":52},"kind":"fn","start":49,"end":105,"commentStart":46},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"nTeeth","start":107,"end":113,"commentStart":107},"init":{"type":"Literal","value":{"value":1,"suffix":"None"},"raw":"1","start":114,"end":115,"commentStart":114},"start":107,"end":115,"commentStart":107},"kind":"const","start":107,"end":115,"commentStart":105},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"module","start":116,"end":122,"commentStart":116},"init":{"type":"Literal","value":{"value":32,"suffix":"None"},"raw":"32","start":125,"end":127,"commentStart":125},"start":116,"end":127,"commentStart":116},"kind":"const","start":116,"end":127,"commentStart":116},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"pressureAngle","start":128,"end":141,"commentStart":128},"init":{"type":"Literal","value":{"value":17,"suffix":"None"},"raw":"17","start":142,"end":144,"commentStart":142},"start":128,"end":144,"commentStart":128},"kind":"const","start":128,"end":144,"commentStart":128},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"profileShift","start":145,"end":157,"commentStart":145},"init":{"type":"Literal","value":{"value":12,"suffix":"None"},"raw":"12","start":158,"end":160,"commentStart":158},"start":145,"end":160,"commentStart":145},"kind":"const","start":145,"end":160,"commentStart":145},{"type":"VariableDeclaration","declaration":{"type":"VariableDeclarator","id":{"type":"Identifier","name":"g","start":161,"end":162,"commentStart":161},"init":{"type":"CallExpressionKw","callee":{"type":"Name","name":{"type":"Identifier","name":"gear","start":165,"end":169,"commentStart":165},"path":[],"abs_path":false,"start":165,"end":169,"commentStart":165},"unlabeled":null,"arguments":[{"type":"LabeledArg","label":{"type":"Identifier","name":"nTeeth","start":170,"end":176,"commentStart":170},"arg":{"type":"Name","name":{"type":"Identifier","name":"nTeeth","start":177,"end":183,"commentStart":177},"path":[],"abs_path":false,"start":177,"end":183,"commentStart":177}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"module","start":185,"end":191,"commentStart":185},"path":[],"abs_path":false,"start":185,"end":191,"commentStart":185}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"pressureAngle","start":193,"end":206,"commentStart":193},"path":[],"abs_path":false,"start":193,"end":206,"commentStart":193}},{"type":"LabeledArg","label":null,"arg":{"type":"Name","name":{"type":"Identifier","name":"profileShift","start":208,"end":220,"commentStart":208},"path":[],"abs_path":false,"start":208,"end":220,"commentStart":208}}],"start":165,"end":221,"commentStart":165},"start":161,"end":221,"commentStart":161},"kind":"const","start":161,"end":221,"commentStart":161}],"nonCodeMeta":{"nonCodeNodes":{"0":[{"type":"NonCodeNode","value":{"type":"newLine"},"start":105,"end":107,"commentStart":105}]},"startNodes":[{"type":"NonCodeNode","value":{"type":"newLine"},"start":46,"end":49,"commentStart":46}]},"innerAttrs":[{"type":"Annotation","name":{"type":"Identifier","name":"settings","start":14,"end":22,"commentStart":14},"properties":[{"type":"ObjectProperty","key":{"type":"Identifier","name":"defaultLengthUnit","start":23,"end":40,"commentStart":23},"value":{"type":"Name","name":{"type":"Identifier","name":"mm","start":43,"end":45,"commentStart":43},"path":[],"abs_path":false,"start":43,"end":45,"commentStart":43},"start":23,"end":45,"commentStart":23}],"start":13,"end":46,"preComments":["// Set Units"],"commentStart":0}],"start":0,"end":222,"commentStart":0}`
+    )
+
+    const selectionRange: Selection = {
+      codeRef: {
+        range: [176, 176, 0],
+        pathToNode: [
+          ['body', ''],
+          [5, 'index'],
+          ['declaration', 'VariableDeclaration'],
+          ['init', ''],
+          // this doesn't exist as the first argument is a labeled one
+          ['unlabeled', 'unlabeled first arg'],
+        ],
+      },
+    }
+    const result = isCursorInFunctionDefinition(ast, selectionRange)
+    expect(result).toEqual(false)
   })
 })

@@ -107,7 +107,6 @@
     "check": "biome check ./src ./e2e ./packages/codemirror-lsp-client/src ./rust/kcl-language-server/client/src",
     "fetch:wasm": "./scripts/get-latest-wasm-bundle.sh",
     "fetch:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/get-latest-wasm-bundle.ps1",
-    "fetch:samples": "rm -rf public/kcl-samples* && curl -L -o public/kcl-samples.zip https://github.com/KittyCAD/kcl-samples/archive/refs/heads/achalmers/kw-args-xylineto.zip && unzip -o public/kcl-samples.zip -d public && mv public/kcl-samples-* public/kcl-samples",
     "remove-importmeta": "sed -i 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\"; sed -i '' 's/import.meta.url/window.location.origin/g' \"./rust/kcl-wasm-lib/pkg/kcl_wasm_lib.js\" || echo \"sed for both mac and linux\"",
     "lint-fix": "eslint --fix --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
     "lint": "eslint --max-warnings 0 --ext .ts --ext .tsx src e2e packages/codemirror-lsp-client/src rust/kcl-language-server/client/src",
@@ -137,8 +136,8 @@
     "test:unit:components": "jest -c jest-component-unit-tests/jest.config.ts --rootDir jest-component-unit-tests/",
     "test:unit:kcl-samples": "vitest run --mode development ./src/lang/kclSamples.test.ts",
     "test:playwright:electron": "playwright test --config=playwright.electron.config.ts --grep-invert=@snapshot",
-    "test:playwright:electron:local": "npm run tronb:vite:dev && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert=@snapshot --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
-    "test:playwright:electron:local-engine": "npm run tronb:vite:dev && NODE_ENV=development playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot|@skipLocalEngine' --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
+    "test:playwright:electron:local": "npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert=@snapshot --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
+    "test:playwright:electron:local-engine": "npm run tronb:vite:dev && playwright test --config=playwright.electron.config.ts --grep-invert='@snapshot|@skipLocalEngine' --grep-invert=\"$(curl --silent https://test-analysis-bot.hawk-dinosaur.ts.net/projects/KittyCAD/modeling-app/tests/disabled/regex)\"",
     "test:unit:local": "npm run simpleserver:bg && npm run test:unit; kill-port 3000",
     "test:unit:kcl-samples:local": "npm run simpleserver:bg && npm run test:unit:kcl-samples; kill-port 3000"
   },

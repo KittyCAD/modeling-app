@@ -841,6 +841,40 @@ washer = extrude(washerSketch, length = thicknessMax)`
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
     })
   })
+
+  test('Exiting existing sketch without editing should not delete it', async ({
+    page,
+    editor,
+    homePage,
+    context,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
+    await context.folderSetupFn(async (dir) => {
+      const testDir = path.join(dir, 'test')
+      await fsp.mkdir(testDir, { recursive: true })
+      await fsp.writeFile(
+        path.join(testDir, 'main.kcl'),
+        `s1 = startSketchOn(XY)
+  |> startProfile(at = [0, 25])
+  |> xLine(endAbsolute = -15 + 1.5)
+s2 = startSketchOn(XY)
+  |> startProfile(at = [25, 0])
+  |> yLine(endAbsolute = -15 + 1.5)`,
+        'utf-8'
+      )
+    })
+
+    await homePage.openProject('test')
+    await scene.settled(cmdBar)
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await toolbar.editSketch(1)
+    await page.waitForTimeout(1000) // Just hang out for a second
+    await toolbar.exitSketch()
+
+    await editor.expectEditor.toContain('s2 = startSketchOn(XY)')
+  })
 })
 
 async function clickExportButton(page: Page) {

@@ -4,7 +4,7 @@ description: Variables in memory after executing array_elem_push.kcl
 ---
 {
   "arr": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -48,7 +48,7 @@ description: Variables in memory after executing array_elem_push.kcl
     ]
   },
   "new_arr1": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -105,7 +105,7 @@ description: Variables in memory after executing array_elem_push.kcl
     ]
   },
   "new_arr2": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

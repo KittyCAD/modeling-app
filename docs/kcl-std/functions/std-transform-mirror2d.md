@@ -1,6 +1,6 @@
 ---
 title: "mirror2d"
-subtitle: "Function in transform"
+subtitle: "Function in std::transform"
 excerpt: "Mirror a sketch."
 layout: manual
 ---

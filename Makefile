@@ -1,5 +1,5 @@
 .PHONY: all
-all: install build check
+all: install check build
 
 ###############################################################################
 # INSTALL
@@ -23,6 +23,7 @@ endif
 install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
 node_modules/.package-lock.json: package.json package-lock.json
+	npm prune
 	npm install
 
 $(CARGO):
@@ -106,8 +107,11 @@ test: test-unit test-e2e
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
+	npm run test:rust
+	npm run test:unit:components
 	@ curl -fs localhost:3000 >/dev/null || ( echo "Error: localhost:3000 not available, 'make run-web' first" && exit 1 )
 	npm run test:unit
+	npm run test:unit:kcl-samples
 
 .PHONY: test-e2e
 test-e2e: test-e2e-$(TARGET)

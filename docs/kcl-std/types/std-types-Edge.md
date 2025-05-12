@@ -1,11 +1,11 @@
 ---
 title: "Edge"
-subtitle: "Type in types"
-excerpt: "The edge of a solid."
+subtitle: "Type in std::types"
+excerpt: "An edge of a solid."
 layout: manual
 ---
 
-The edge of a solid.
+An edge of a solid.
 
 
 

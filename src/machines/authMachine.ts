@@ -43,7 +43,7 @@ const LOCAL_USER: Models['User_type'] = {
 
 export interface UserContext {
   user?: Models['User_type']
-  token?: string
+  token: string
 }
 
 export type Events =
@@ -204,7 +204,7 @@ async function getUser(input: { token?: string }) {
   }
 }
 
-function getCookie(cname: string): string | null {
+export function getCookie(cname: string): string | null {
   if (isDesktop()) {
     return null
   }

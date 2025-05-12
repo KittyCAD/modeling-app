@@ -3,7 +3,7 @@ import type { Options } from 'react-hotkeys-hook'
 import { useHotkeys } from 'react-hotkeys-hook'
 
 import { codeManager } from '@src/lib/singletons'
-import type { Platform } from '@src/lib/utils'
+import { isArray, type Platform } from '@src/lib/utils'
 
 // Hotkey wrapper wraps hotkeys for the app (outside of the editor)
 // with hotkeys inside the editor.
@@ -85,4 +85,11 @@ export function hotkeyDisplay(hotkey: string, platform: Platform): string {
     .replaceAll('alt', isMac ? '⌥' : 'Alt')
 
   return display
+}
+
+/**
+ * We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
+ */
+export function filterEscHotkey(hotkey: string | string[]) {
+  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }

@@ -64,7 +64,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { err, trap } from '@src/lib/trap'
-import { isOverlap, roundOff } from '@src/lib/utils'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 import { ARG_AT } from '@src/lang/constants'
 
@@ -103,7 +103,6 @@ export function startSketchOnDefault(
 
 export function insertNewStartProfileAt(
   node: Node<Program>,
-  sketchEntryNodePath: PathToNode,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: [number, number],
@@ -224,7 +223,7 @@ export function mutateKwArg(
 ): boolean | 'no-mutate' {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       if (isLiteralArrayOrStatic(val) && isLiteralArrayOrStatic(arg.arg)) {
         node.arguments[i].arg = val
         return true
@@ -260,7 +259,7 @@ export function mutateKwArgOnly(
 ): boolean {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       node.arguments[i].arg = val
       return true
     }
@@ -274,7 +273,7 @@ Mutates the given node by removing the labeled arguments.
 */
 export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   for (const label of labels) {
-    const i = node.arguments.findIndex((la) => la.label.name === label)
+    const i = node.arguments.findIndex((la) => la.label?.name === label)
     if (i == -1) {
       continue
     }
@@ -948,6 +947,27 @@ export function deleteSegmentFromPipeExpression(
   segmentIndexInPipe[0] = Math.max((segmentIndexInPipe[0] as number) - 1, 0)
 
   return _modifiedAst
+}
+
+/**
+ * Deletes a standalone top level statement from the AST
+ * Used for removing both unassigned statements and variable declarations
+ *
+ * @param ast The AST to modify
+ * @param pathToNode The path to the node to delete
+ */
+export function deleteTopLevelStatement(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+): Error | void {
+  const pathStep = pathToNode[1]
+  if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
+    return new Error(
+      'Invalid pathToNode structure: expected a number at path[1][0]'
+    )
+  }
+  const statementIndex: number = pathStep[0]
+  ast.body.splice(statementIndex, 1)
 }
 
 export function removeSingleConstraintInfo(

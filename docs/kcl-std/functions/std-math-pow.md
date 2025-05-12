@@ -1,6 +1,6 @@
 ---
 title: "pow"
-subtitle: "Function in math"
+subtitle: "Function in std::math"
 excerpt: "Compute the number to a power."
 layout: manual
 ---
@@ -21,11 +21,11 @@ pow(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `input` | [`number`](/docs/kcl-std/types/std-types-number) | The number to raise. | Yes |
-| `exp` | `number(_)` | The power to raise to. | Yes |
+| `exp` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The power to raise to. | Yes |
 
 ### Returns
 
-[`number`](/docs/kcl-std/types/std-types-number) - A number
+[`number`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

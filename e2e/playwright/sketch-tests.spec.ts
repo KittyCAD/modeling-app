@@ -543,6 +543,9 @@ sketch001 = startSketchOn(XZ)
     page,
     homePage,
     editor,
+    toolbar,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -559,10 +562,12 @@ sketch001 = startSketchOn(XZ)
     })
 
     await homePage.goToModelingScene()
+    await toolbar.waitForFeatureTreeToBeBuilt()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
-    ).not.toBeDisabled()
+    ).not.toBeDisabled({ timeout: 10_000 })
 
     await page.waitForTimeout(100)
     await u.openAndClearDebugPanel()
@@ -598,9 +603,9 @@ sketch001 = startSketchOn(XZ)
     await page.waitForTimeout(400)
     let prevContent = await page.locator('.cm-content').innerText()
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
 
-    // drag startProfieAt handle
+    // drag startProfileAt handle
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: startPX[0], y: startPX[1] },
       targetPosition: { x: startPX[0] + dragPX, y: startPX[1] + dragPX },
@@ -612,7 +617,7 @@ sketch001 = startSketchOn(XZ)
     // drag line handle
     await page.waitForTimeout(100)
 
-    const lineEnd = await u.getBoundingBox('[data-overlay-index="0"]')
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="1"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: lineEnd.x - 15, y: lineEnd.y },
       targetPosition: { x: lineEnd.x, y: lineEnd.y + 15 },
@@ -622,7 +627,7 @@ sketch001 = startSketchOn(XZ)
     prevContent = await page.locator('.cm-content').innerText()
 
     // drag tangentialArc handle
-    const tangentEnd = await u.getBoundingBox('[data-overlay-index="1"]')
+    const tangentEnd = await u.getBoundingBox('[data-overlay-index="0"]')
     await page.dragAndDrop('#stream', '#stream', {
       sourcePosition: { x: tangentEnd.x + 10, y: tangentEnd.y - 5 },
       targetPosition: {
@@ -638,7 +643,7 @@ sketch001 = startSketchOn(XZ)
       `sketch001 = startSketchOn(XZ)
     |> startProfile(at = [7.12, -12.68])
     |> line(end = [12.68, -1.09])
-    |> tangentialArc(endAbsolute = [24.89, 0.68])
+    |> tangentialArc(endAbsolute = [24.95, -0.38])
     |> close()
     |> extrude(length = 5)`,
       { shouldNormalise: true }
@@ -709,7 +714,7 @@ sketch001 = startSketchOn(XZ)
 
     const step5 = { steps: 5 }
 
-    await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+    await expect(page.getByTestId('segment-overlay')).toHaveCount(3)
 
     // drag startProfileAt handle
     await page.mouse.move(startPX[0], startPX[1])
@@ -744,10 +749,10 @@ sketch001 = startSketchOn(XZ)
     // expect the code to have changed
     await editor.expectEditor.toContain(
       `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [6.44, -12.07])
-  |> line(end = [14.72, 1.97])
+  |> startProfile(at = [8.41, -9.97]) 
+  |> line(end = [12.73, -0.09])
+  |> line(end = [1.99, 2.06])
   |> tangentialArc(endAbsolute = [24.95, -5.38])
-  |> line(end = [1.97, 2.06])
   |> close()
   |> revolve(axis = X)`,
       { shouldNormalise: true }
@@ -3165,7 +3170,7 @@ test.describe('Redirecting to home page and back to the original file should cle
     await click00r(0, 100)
     await click00r(100, 0)
 
-    // draw a line to opposite tangnet direction of previous arc
+    // draw a line to opposite tangent direction of previous arc
     await toolbar.selectLine()
     await click00r(0, 0)
     await click00r(-200, 200)
@@ -3425,6 +3430,72 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
       ).toBeVisible()
     })
   })
+  test('empty draft sketch is cleaned up properly', async ({
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    // This is the sketch used in the original report, but any sketch would work
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `yRel002 = 200
+lStraight = -200
+yRel001 = -lStraight
+length001 = lStraight
+sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-102.72, 237.44])
+  |> yLine(length = lStraight)
+  |> tangentialArc(endAbsolute = [118.9, 23.57])
+  |> line(end = [-17.64, yRel002])
+`
+      )
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    // Ensure start sketch button is enabled
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    // Start a new sketch
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    await page.waitForTimeout(2000) // wait for engine animation
+
+    // Switch to a different tool (circle)
+    await toolbar.circleBtn.click()
+    await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+    // Exit the empty sketch
+    await page.getByRole('button', { name: 'Exit Sketch' }).click()
+
+    // Ensure the feature tree now shows only one sketch
+    await toolbar.openFeatureTreePane()
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(1)
+    await toolbar.closeFeatureTreePane()
+
+    // Open the first sketch from the feature tree (the existing sketch)
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    // timeout is a bit longer because when the bug happened, it did go into sketch mode for a split second, but returned
+    // automatically, we want to make sure it stays there.
+    await page.waitForTimeout(2000)
+
+    // Validate we are in sketch mode (Exit Sketch button visible)
+    await expect(
+      page.getByRole('button', { name: 'Exit Sketch' })
+    ).toBeVisible()
+  })
+
   test('adding a syntax error, recovers after fixing', async ({
     page,
     homePage,
@@ -3457,7 +3528,7 @@ profile003 = startProfile(sketch002, at = [-201.08, 254.17])
     // wait for scene to load
     await scene.settled(cmdBar)
 
-    await test.step('check chamfer selection changes cursor positon', async () => {
+    await test.step('check chamfer selection changes cursor position', async () => {
       await expect(async () => {
         // sometimes initial click doesn't register
         await objClick()

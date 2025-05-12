@@ -514,14 +514,18 @@ test.describe('Command bar tests', () => {
     })
   })
 
-  test(`Zoom to fit to shared model on web`, async ({ page, scene }) => {
-    if (process.env.PLATFORM !== 'web') {
-      // This test is web-only
-      return
-    }
-    await test.step(`Prepare and navigate to home page with query params`, async () => {
-      // a quad in the top left corner of the XZ plane (which is out of the current view)
-      const code = `sketch001 = startSketchOn(XZ)
+  test(
+    `Zoom to fit to shared model on web`,
+    { tag: ['@web'] },
+    async ({ page, scene }) => {
+      if (process.env.PLATFORM !== 'web') {
+        // This test is web-only
+        // TODO: re-enable on CI as part of a new @web test suite
+        return
+      }
+      await test.step(`Prepare and navigate to home page with query params`, async () => {
+        // a quad in the top left corner of the XZ plane (which is out of the current view)
+        const code = `sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [-484.34, 484.95])
   |> yLine(length = -69.1)
   |> xLine(length = 66.84)
@@ -529,26 +533,27 @@ profile001 = startProfile(sketch001, at = [-484.34, 484.95])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `
-      const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
-      await page.goto(page.url() + targetURL)
-      expect(page.url()).toContain(targetURL)
-    })
+        const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
+        await page.goto(page.url() + targetURL)
+        expect(page.url()).toContain(targetURL)
+      })
 
-    await test.step(`Submit the command`, async () => {
-      await page.getByTestId('continue-to-web-app-button').click()
+      await test.step(`Submit the command`, async () => {
+        await page.getByTestId('continue-to-web-app-button').click()
 
-      await scene.connectionEstablished()
+        await scene.connectionEstablished()
 
-      // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
-      await page.waitForTimeout(3000)
+        // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
+        await page.waitForTimeout(3000)
 
-      await page.getByTestId('command-bar-submit').click()
-    })
+        await page.getByTestId('command-bar-submit').click()
+      })
 
-    await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
-      await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
-    })
-  })
+      await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
+        await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
+      })
+    }
+  )
 
   test(`Can add and edit a named parameter or constant`, async ({
     page,

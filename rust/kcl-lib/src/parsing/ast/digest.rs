@@ -162,6 +162,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
+            BinaryPart::AscribedExpression(e) => e.compute_digest(),
         }
     }
 }
@@ -225,6 +226,7 @@ impl PrimitiveType {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
         match self {
+            PrimitiveType::Any => hasher.update(b"any"),
             PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
@@ -488,7 +490,9 @@ impl CallExpressionKw {
         }
         hasher.update(slf.arguments.len().to_ne_bytes());
         for argument in slf.arguments.iter_mut() {
-            hasher.update(argument.label.compute_digest());
+            if let Some(l) = &mut argument.label {
+                hasher.update(l.compute_digest());
+            }
             hasher.update(argument.arg.compute_digest());
         }
     });

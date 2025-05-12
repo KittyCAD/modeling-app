@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_regression00.kcl
+---
+@settings(defaultLengthUnit = mm)
+
+sketch000 = startSketchOn(XY)
+
+sketch000Profile000 = startProfile(sketch000, at = [-25, -25])
+  |> xLine(length = 50)
+  |> yLine(length = 50)
+  |> xLine(length = -50)
+  |> yLine(length = -50)
+  |> close()
+
+extrude000 = extrude(sketch000Profile000, length = 50, bidirectionalLength = 0)
+
+sketch001 = startSketchOn(offsetPlane(XY, offset = 55))
+
+sketch001Profile000 = circle(sketch001, center = [0, 0], radius = 12.5)
+
+cut000Extrude = extrude(sketch001Profile000, length = -60)
+
+cut000 = subtract(extrude000, tools = cut000Extrude)
