@@ -426,7 +426,6 @@ export class KclManager {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
-
       return
     }
 
@@ -438,7 +437,6 @@ export class KclManager {
 
     this.isExecuting = true
     await this.ensureWasmInit()
-
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,

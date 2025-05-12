@@ -42,176 +42,7 @@ export const bracketThicknessCalculationLine = findLineInExampleCode({
   searchText: 'thickness =',
 })
 
-/** The desktop version of the tutorial example code uses imports */
-export const modifiedParametersDesktop = `// Global parameters for the axial fan
-
-// Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
-
-// Define Parameters
-export fanSize = 150
-export fanHeight = 25
-export mountingHoleSpacing = 135
-export mountingHoleSize = 4.5
-`
-
-/** The desktop version of the tutorial example code uses imports */
-export const modifiedFanHousingDesktop = `// Fan Housing
-// The plastic housing that contains the fan and the motor
-
-// Set units
-@settings(defaultLengthUnit = mm, kclVersion = 1.0)
-
-// Import parameters
-import * from "parameters.kcl"
-
-// Model the housing which holds the motor, the fan, and the mounting provisions
-// Bottom mounting face
-bottomFaceSketch = startSketchOn(XY)
-  |> startProfile(at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = fanSize, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = 4))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
-
-// Add large openings to the bottom face to allow airflow through the fan
-airflowPattern = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfile(at = [fanSize * 7 / 25, -fanSize * 9 / 25])
-  |> angledLine(angle = 140, length = fanSize * 12 / 25, tag = $seg01)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = -130, length = fanSize * 8 / 25)
-  |> tangentialArc(radius = fanSize * 1 / 50, angle = 90)
-  |> angledLine(angle = segAng(seg01) + 180, length = fanSize * 2 / 25)
-  |> tangentialArc(radius = fanSize * 8 / 25, angle = 40)
-  |> xLine(length = fanSize * 3 / 25)
-  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> patternCircular2d(
-       instances = 4,
-       center = [0, 0],
-       arcDegrees = 360,
-       rotateDuplicates = true,
-     )
-  |> extrude(length = -4)
-
-// Create the middle segment of the fan housing body
-housingMiddleLength = fanSize / 3
-housingMiddleRadius = fanSize / 3 - 1
-bodyMiddle = startSketchOn(bottomFaceSketch, face = END)
-  |> startProfile(at = [
-       housingMiddleLength / 2,
-       -housingMiddleLength / 2 - housingMiddleRadius
-     ])
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> xLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> yLine(length = -housingMiddleLength)
-  |> tangentialArc(radius = housingMiddleRadius, angle = 90)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> extrude(length = fanHeight - 4 - 4)
-
-// Cut a hole in the body to accommodate the fan
-bodyFanHole = startSketchOn(bodyMiddle, face = END)
-  |> circle(center = [0, 0], radius = fanSize * 23 / 50)
-  |> extrude(length = -(fanHeight - 4 - 4))
-
-// Top mounting face. Cut a hole in the face to accommodate the fan
-topFaceSketch = startSketchOn(bodyMiddle, face = END)
-topHoles = startProfile(topFaceSketch, at = [-fanSize / 2, -fanSize / 2])
-  |> angledLine(angle = 0, length = fanSize, tag = $rectangleSegmentA002)
-  |> angledLine(angle = segAng(rectangleSegmentA002) + 90, length = fanSize, tag = $rectangleSegmentB002)
-  |> angledLine(angle = segAng(rectangleSegmentA002), length = -segLen(rectangleSegmentA002), tag = $rectangleSegmentC002)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD002)
-  |> close()
-  |> subtract2d(tool = circle(center = [0, 0], radius = fanSize * 23 / 50))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> subtract2d(tool = circle(
-       center = [
-         -mountingHoleSpacing / 2,
-         -mountingHoleSpacing / 2
-       ],
-       radius = mountingHoleSize / 2,
-     ))
-  |> extrude(length = 4)
-
-// Create a housing for the electric motor to sit
-motorHousing = startSketchOn(bottomFaceSketch, face = END)
-  |> circle(center = [0, 0], radius = 11.2)
-  |> extrude(length = 16)
-
-startSketchOn(motorHousing, face = END)
-  |> circle(center = [0, 0], radius = 10)
-  |> extrude(length = -16)
-  |> appearance(color = "#800080")
-  |> fillet(
-       radius = abs(fanSize - mountingHoleSpacing) / 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001),
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
-       ],
-     )
-`
-/** The browser version of the fan example onboarding code */
-const fanHousingBrowser = `
+const fanHousing = `
 // Fan Housing
 // The plastic housing that contains the fan and the motor
 
@@ -370,8 +201,7 @@ startSketchOn(motorHousing, face = END)
      )
 `
 
-/** The browser version of the tutorial example code inlines everything */
-export const modifiedFanHousingBrowser = `// Fan Housing
+export const modifiedFanHousing = `// Fan Housing
 // The plastic housing that contains the fan and the motor
 
 // Set units
@@ -534,7 +364,7 @@ startSketchOn(motorHousing, face = END)
  * KCL sample is updated, it can lead to breaking this export.
  */
 export const browserAxialFan = `
-${fanHousingBrowser}
+${fanHousing}
 
 // Fan
 // Spinning axial fan that moves airflow
@@ -641,7 +471,7 @@ startSketchOn(offsetPlane(XY, offset = 21))
  * KCL sample is updated, it can lead to breaking this export.
  */
 export const browserAxialFanAfterTextToCad = `
-${modifiedFanHousingBrowser}
+${modifiedFanHousing}
 
 // Fan
 // Spinning axial fan that moves airflow

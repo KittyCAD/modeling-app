@@ -1,9 +1,8 @@
 import toast from 'react-hot-toast'
 
-import { kclManager, rustContext } from '@src/lib/singletons'
+import { kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { getModule, reloadModule } from '@src/lib/wasm_lib_wrapper'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 let initialized = false
 
@@ -17,11 +16,7 @@ export const initializeWindowExceptionHandler = () => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
-        if (
-          matchImportExportErrorCrash(event.message) ||
-          matchUnreachableErrorCrash(event.message) ||
-          matchGenericWasmRuntimeHeuristicErrorCrash(event)
-        ) {
+        if (matchImportExportErrorCrash(event.message)) {
           // do global singleton cleanup
           kclManager.executeAstCleanUp()
           toast.error(
@@ -30,19 +25,6 @@ export const initializeWindowExceptionHandler = () => {
           try {
             await reloadModule()
             await getModule().default()
-            /**
-             * If I do not cache bust, swapping between files when a rust runtime error happens
-             * it will cache the result of the crashed result and not re executing a new good file
-             * CacheResult::NoAction(false) => {
-             *  let outcome = old_state.to_exec_outcome(result_env).await;
-             *  return Ok(outcome);
-             * }
-             * ^-- this is the block of code that returns which prevents it from running a new execute
-             */
-            await rustContext?.clearSceneAndBustCache(
-              await jsAppSettings(),
-              undefined
-            )
           } catch (e) {
             console.error('Failed to initialize wasm_lib')
             console.error(e)
@@ -67,21 +49,4 @@ const matchImportExportErrorCrash = (message: string): boolean => {
   // called `Result::unwrap_throw()` on an `Err` value
   const substringError = '`Result::unwrap_throw()` on an `Err` value'
   return message.indexOf(substringError) !== -1 ? true : false
-}
-
-const matchUnreachableErrorCrash = (message: string): boolean => {
-  const substringError = `Uncaught RuntimeError: unreachable`
-  return message.indexOf(substringError) !== -1 ? true : false
-}
-
-const matchGenericWasmRuntimeHeuristicErrorCrash = (
-  error: ErrorEvent
-): boolean => {
-  const stack = error?.error?.stack || null
-  if (typeof stack === 'string') {
-    const substringError = `WebAssembly.instantiate:wasm-function`
-    return stack.indexOf(substringError) !== -1 ? true : false
-  }
-
-  return false
 }
