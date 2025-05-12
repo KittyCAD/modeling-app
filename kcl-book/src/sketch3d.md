@@ -1,4 +1,5 @@
 # Modeling 3D shapes
+<!-- toc -->
 
 Previous chapters covered designing 2D shapes. Now it's time to design 3D shapes!
 
@@ -79,6 +80,23 @@ startSketchOn(XZ)
 ```
 
 ![The circle, revolved partway around the axis, to make part of a donut](images/dynamic/donut240.png)
+
+## Spheres
+
+You can make a sphere by revolving a semicircle its full 360 degrees.
+
+```kcl=sphere
+radius = 10
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = radius * 2)
+  |> arc(angleStart = 90, angleEnd = 270, radius = radius)
+  |> close()
+  |> revolve(axis = Y, angle = 360)
+```
+
+![Revolving a semicircle to make a sphere](images/dynamic/sphere.png)
+
 
 [`extrude`]: https://zoo.dev/docs/kcl/extrude
 [`revolve`]: https://zoo.dev/docs/kcl/revolve
