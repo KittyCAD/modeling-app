@@ -232,6 +232,8 @@ impl PrimitiveType {
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
             PrimitiveType::Boolean => hasher.update(b"bool"),
             PrimitiveType::Tag => hasher.update(b"tag"),
+            PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
+            PrimitiveType::Function => hasher.update(b"Fn"),
         }
 
         hasher.finalize().into()
