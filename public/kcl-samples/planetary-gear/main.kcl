@@ -1,0 +1,199 @@
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+fn involute(radius, angle) {
+  return [
+    radius * (cos(angle) + angle * sin(angle)),
+    radius * (sin(angle) - (angle * cos(angle)))
+  ]
+}
+
+fn rot(point, angle) {
+  return [
+    point[0] * cos(angle) - (point[1] * sin(angle)),
+    point[0] * sin(angle) + point[1] * cos(angle)
+  ]
+}
+
+fn cartesian(radius, angle) {
+  return [
+    radius * cos(angle),
+    radius * sin(angle)
+  ]
+}
+
+fn circleInterior(point1, point2, radius, first) {
+  x1 = point1[0]
+  x2 = point2[0]
+  y1 = point1[1]
+  y2 = point2[1]
+  dist = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+  x = 0.5 * (x1 + x2)
+  y = 0.5 * (y1 + y2)
+
+  excessLength = sqrt(radius * radius - (dist / 2 * dist / 2))
+
+  return if first {
+    [
+      x - ((radius - excessLength) * (y1 - y2) / dist),
+      y - ((radius - excessLength) * (x2 - x1) / dist)
+    ]
+  } else {
+    [
+      x + (radius - excessLength) * (y1 - y2) / dist,
+      y + (radius - excessLength) * (x2 - x1) / dist
+    ]
+  }
+}
+
+fn circleInteriorSketch(sketch, point2, radius, first) {
+  x1 = lastSegX(sketch)
+  x2 = point2[0]
+  y1 = lastSegY(sketch)
+  y2 = point2[1]
+  dist = sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1))
+  x = 0.5 * (x1 + x2)
+  y = 0.5 * (y1 + y2)
+
+  excessLength = sqrt(radius * radius - (dist / 2 * dist / 2))
+
+  return if first {
+    [
+      x - ((radius - excessLength) * (y1 - y2) / dist),
+      y - ((radius - excessLength) * (x2 - x1) / dist)
+    ]
+  } else {
+    [
+      x + (radius - excessLength) * (y1 - y2) / dist,
+      y + (radius - excessLength) * (x2 - x1) / dist
+    ]
+  }
+}
+
+fn invPolar(baseRadius, R) {
+  return sqrt(R * R - (baseRadius * baseRadius)) / baseRadius - acos(baseRadius / R)
+}
+
+nTeeth = 52
+module = 5.0
+pressureAngle = 20
+
+gearHeight = 15
+
+fn gearTooth(nTeeth, module, pressureAngle, profileShift) {
+  addendum = 0.6 * module
+  dedendum = 1.25 * module
+  clearance = 0.25 * module
+
+  pitchRadius = 0.5 * module * nTeeth
+  baseRadius = pitchRadius * cos(toRadians(pressureAngle))
+  addendumRadius = pitchRadius - addendum
+  rootRadius = pitchRadius + dedendum
+  fRad = 1.5 * clearance
+  pitchAngle = 2 * PI / nTeeth: number(rad)
+
+  filletRadius = rootRadius - clearance
+  baseToPitchAngle = invPolar(baseRadius, pitchRadius): number(rad)
+  filletAngle = 1.414 * clearance / filletRadius: number(rad)
+
+  tipToPitchAngle = if addendumRadius > baseRadius {
+    baseToPitchAngle - invPolar(baseRadius, addendumRadius)
+  } else {
+    baseToPitchAngle
+  }: number(rad)
+  pitchToFilletAngle = invPolar(baseRadius, filletRadius) - baseToPitchAngle: number(rad)
+
+  leftAngle = toDegrees(-baseToPitchAngle + pitchAngle / 4)
+  Ra = pitchRadius + module
+  invol = rot(  involute(baseRadius, sqrt(Ra * Ra - (baseRadius * baseRadius)) / baseRadius), -baseToPitchAngle + pitchAngle / 4)
+
+  tip = cartesian(addendumRadius, -pitchAngle / 4 + tipToPitchAngle)
+  tipR = [tip[0], -tip[1]]
+  fillet = [invol[0], -invol[1]]
+  involuteStart = cartesian(baseRadius, -baseToPitchAngle + pitchAngle / 4)
+
+  fillet2 = if addendumRadius > baseRadius {
+    [
+      invol[0] - (baseRadius * cos(toRadians(leftAngle))) + tip[0],
+      -invol[1] + baseRadius * sin(toRadians(leftAngle)) + tip[1]
+    ]
+  } else {
+    [
+      invol[0] - (baseRadius * cos(toRadians(leftAngle))) + involuteStart[0],
+      -invol[1] - (baseRadius * sin(toRadians(leftAngle))) + involuteStart[1]
+    ]
+  }
+
+  filletNext = rot(fillet2, pitchAngle)
+
+  rootR = cartesian(rootRadius, pitchAngle / 4 + pitchToFilletAngle + filletAngle)
+  rootNext = cartesian(rootRadius, 3 * pitchAngle / 4 - pitchToFilletAngle - filletAngle)
+
+  tipInterior = circleInterior(tip, tipR, addendumRadius, true)
+  sketch = startSketchOn(XY)
+    |> startProfileAt(fillet2, %)
+    |> involuteCircular(
+         startRadius = baseRadius,
+         endRadius = pitchRadius + module,
+         angle = leftAngle,
+         reverse = true,
+       )
+  // |> line(endAbsolute = tip)
+  newSketch = if addendumRadius < baseRadius {
+      line(sketch, endAbsolute = tip)
+    } else {
+      sketch
+    }
+    // newSketch = sketch
+    |> arc(endAbsolute = tipR, interiorAbsolute = circleInteriorSketch(%, tipR, addendumRadius, true))
+
+  newnewSketch = if addendumRadius < baseRadius {
+      line(newSketch, endAbsolute =       rot([baseRadius, 0], pitchAngle / 4 - baseToPitchAngle))
+    } else {
+      newSketch
+    }
+    |> involuteCircular(
+         %,
+         startRadius = baseRadius,
+         endRadius = pitchRadius + module,
+         angle = leftAngle,
+       )
+
+  newnewnewSketch = if rootR[1] > rootNext[1] {
+    rootInterior = circleInteriorSketch(newnewSketch, rootR, fRad, true)
+    arc(newnewSketch, endAbsolute = rootR, interiorAbsolute = rootInterior)
+      |> arc(endAbsolute = rootNext, interiorAbsolute = circleInteriorSketch(%, rootNext, rootRadius, true))
+  } else {
+    newnewSketch
+  }
+
+  nextP = circleInteriorSketch(newnewnewSketch, filletNext, fRad, true)
+
+  // h = startSketchOn(XY)
+  // |> startProfileAt(tip, %)
+  // |> involuteCircular(
+  // %,
+  // startRadius = baseRadius,
+  // endRadius = pitchRadius + module,
+  // angle = leftAngle,
+  // reverse = false
+  // )
+  // |> line(endAbsolute = fillet2)
+
+
+  return arc(newnewnewSketch, endAbsolute = filletNext, interiorAbsolute = nextP)
+}
+
+g = gearTooth(nTeeth, module, pressureAngle, 0)
+  |> patternCircular2d(
+       instances = nTeeth,
+       center = [0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+
+gg = startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> circle(center = profileStart(%), radius = 0.5 * module * nTeeth + module + 10)
+  |> hole(g, %)
+  |> extrude(length = gearHeight)

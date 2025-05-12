@@ -1,0 +1,129 @@
+// Set Units
+@settings(defaultLengthUnit = mm)
+
+fn inv(angle: number(rad)) {
+  tanResult = tan(angle): number(rad)
+  return tanResult - angle
+}
+nTeeth = 32
+module = 2.0
+pressureAngle = 20deg
+profileShift = 0
+
+gearHeight = 10
+
+shaftHeight = 10
+shaftOuterRadius = 7
+shaftInnerRadius = 4
+
+nCutout = 5
+cutoutAngle = 360 / nCutout
+
+pitchDiameter = module * nTeeth
+baseDiameter = pitchDiameter * cos(pressureAngle)
+
+fn gear(nTeeth, module, pressureAngle, profileShift) {
+  // Define constants
+  pitchAngle = (2 * PI / nTeeth): number(rad)
+  pitchDiameter = module * nTeeth
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  baseToPitchAngle = sqrt(pitchDiameter * pitchDiameter - (baseDiameter * baseDiameter)) / baseDiameter - acos(baseDiameter / pitchDiameter)
+  toothPitch = 360 / nTeeth
+  tipDiameter = module * (nTeeth + 2)
+
+  pitchThickness = module * (0.5 * PI + 2 * profileShift * tan(pressureAngle))
+
+  fn toothThickness(radius) {
+    operatingPressureAngle = acos(pitchDiameter / radius * cos(pressureAngle)): number(deg)
+    return radius * (pitchThickness / pitchDiameter + inv(angle = pressureAngle) - inv(angle = operatingPressureAngle))
+  }
+
+  tipThickness = toothThickness(radius = tipDiameter): number(rad)
+  baseThickness = toothThickness(radius = baseDiameter): number(rad)
+
+  tipAngle = (tipThickness / tipDiameter): number(deg)
+  baseAngle = (2 * baseThickness / baseDiameter): number(deg)
+  toothAngle = 360 / nTeeth / 1.5
+
+  fn tooth(i, sg) {
+    leftAngle = (-baseToPitchAngle - (pitchAngle / 4) + i * toothPitch): number(rad)
+    rightAngle = (-baseToPitchAngle - (pitchAngle / 4) - (i * toothPitch)): number(rad)
+    startProfile = involuteCircular(
+      startRadius = 0.5 * baseDiameter,
+      endRadius = 0.5 * tipDiameter,
+      angle = leftAngle: number(deg),
+      tag = $leftInv,
+    )
+    angleMath = atan2(y =     lastSegY(startProfile), x =     lastSegX(startProfile)): number(rad): number(deg)
+    return arc(startProfile, endAbsolute = polar(angle = -angleMath + i * toothPitch, length = 0.5 * tipDiameter), interiorAbsolute = polar(angle = i * toothPitch, length = 0.5 * tipDiameter))
+      |> involuteCircular(
+           startRadius = 0.5 * baseDiameter,
+           endRadius = 0.5 * pitchDiameter + module,
+           angle = rightAngle: number(deg),
+           reverse = true,
+         )
+      |> arc(endAbsolute = polar(angle = -0.5 * baseAngle + (i + 1) * toothPitch, length = 0.5 * baseDiameter), interiorAbsolute = polar(angle = 0.5 * (i + 1) * toothPitch, length = 0.5 * baseDiameter))
+  }
+
+  return startSketchOn(XY)
+    |> startProfile(at = polar(angle = -0.5 * baseAngle, length = 0.5 * baseDiameter), %)
+    |> tooth(i = 0, sg = 0)
+    |> patternCircular2d(
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = true,
+       )
+}
+
+g = gear(
+       nTeeth = nTeeth,
+       module = module,
+       pressureAngle = pressureAngle,
+       profileShift = profileShift,
+     )
+  |> close()
+g2 = gear(
+       nTeeth = nTeeth,
+       module = module,
+       pressureAngle = pressureAngle,
+       profileShift = profileShift,
+     )
+  |> rotate(angle = -2 * 360 / nTeeth, axis = [0, 0, 1])
+  |> close()
+  |> translate(x = 0, y = 0, z = gearHeight)
+
+  // g3 = gear(nTeeth, module, pressureAngle, profileShift)
+  // |> close()
+// |> translate(translate = [0, 0,  gearHeight])
+
+ll = loft([g, g2], vDegree = 1)
+// ll = extrude(g, length = gearHeight)
+base = startSketchOn(ll, face = END)
+  |> circle(center = [0, 0], radius = 0.5 * baseDiameter - 5)
+  |> extrude(length = -0.3 * gearHeight)
+
+startSketchOn(ll, face = START)
+  |> circle(center = [0, 0], radius = 0.5 * baseDiameter - 5)
+  |> extrude(length = -0.3 * gearHeight)
+
+sketch001 = startSketchOn(base, face = START)
+  |> circle(center = [0, 0], radius = shaftOuterRadius)
+  |> extrude(length = shaftHeight)
+sketch002 = startSketchOn(sketch001, face = END)
+  |> circle(center = [0, 0], radius = shaftInnerRadius)
+  |> extrude(length = -shaftHeight - 4)
+
+sketch003 = startSketchOn(base, face = START)
+profile001 = startProfile(sketch003, at = polar(angle = -0.5 * cutoutAngle + 10, length = 10))
+  |> arc(interiorAbsolute = polar(angle = 0, length = 10), endAbsolute = polar(angle = 0.5 * cutoutAngle - 10, length = 10))
+  |> line(endAbsolute = polar(angle = 0.5 * cutoutAngle - 10, length = 0.5 * baseDiameter - 7), tag = $seg01)
+  |> arc(interiorAbsolute = polar(angle = 0, length = 0.5 * baseDiameter - 7), endAbsolute = polar(angle = -0.5 * cutoutAngle + 10, length = 0.5 * baseDiameter - 7))
+  |> close()
+  |> patternCircular2d(
+       instances = nCutout,
+       center = [0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+  |> extrude(length = -0.4 * gearHeight)

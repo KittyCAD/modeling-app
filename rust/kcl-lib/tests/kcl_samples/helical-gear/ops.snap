@@ -1,0 +1,1691 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed helical-gear.kcl
+---
+[
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.4855538921381879,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.4855538921381879,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "inv",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toothThickness",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 68.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toothThickness",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 68.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toothThickness",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 60.14032773029814,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "toothThickness",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "radius": {
+          "value": {
+            "type": "Number",
+            "value": 60.14032773029814,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -0.0417455891483579,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 34.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -0.0417455891483579,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 34.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 34.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 34.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 11.186008230920322,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 11.186008230920322,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 5.625,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 5.625,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Plane",
+        "artifact_id": "[uuid]"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -0.06399176907967696,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -0.06399176907967696,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 30.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "tooth",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "i": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "sg": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "tooth",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "i": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "sg": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "gear",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "module": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "nTeeth": {
+          "value": {
+            "type": "Number",
+            "value": 32.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "pressureAngle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "profileShift": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "gear",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "module": {
+          "value": {
+            "type": "Number",
+            "value": 2.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "nTeeth": {
+          "value": {
+            "type": "Number",
+            "value": 32.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "pressureAngle": {
+          "value": {
+            "type": "Number",
+            "value": 20.0,
+            "ty": {
+              "type": "Known",
+              "type": "Angle",
+              "type": "Degrees"
+            }
+          },
+          "sourceRange": []
+        },
+        "profileShift": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "vDegree": {
+        "value": {
+          "type": "Number",
+          "value": 1.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "loft",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 10.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -14.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "face": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -26.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 26.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 10.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 26.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 23.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": 0.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 23.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "polar",
+      "functionSourceRange": [],
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "angle": {
+          "value": {
+            "type": "Number",
+            "value": -26.0,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        },
+        "length": {
+          "value": {
+            "type": "Number",
+            "value": 23.07016386514907,
+            "ty": {
+              "type": "Default",
+              "len": {
+                "type": "Mm"
+              },
+              "angle": {
+                "type": "Degrees"
+              }
+            }
+          },
+          "sourceRange": []
+        }
+      }
+    },
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Array",
+        "value": [
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  }
+]
