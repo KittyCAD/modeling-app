@@ -559,7 +559,7 @@ impl From<KclError> for pyo3::PyErr {
 }
 
 /// An error which occurred during parsing, etc.
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
 #[ts(export)]
 pub struct CompilationError {
     #[serde(rename = "sourceRange")]
