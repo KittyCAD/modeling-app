@@ -132,7 +132,7 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         await homePage.isNativeFileMenuCreated()
         await clickElectronNativeMenuById(tronApp, 'Help.KCL code samples')
       })
-      await test.step('Home.Help.Refresh and report a bug', async () => {
+      await test.step('Home.Help.Report a bug', async () => {
         await page.reload()
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
@@ -249,610 +249,280 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
         )
         await openSettingsExpectLocator(page, '#themeColor')
       })
+      await test.step('Modeling.Edit.Modify with Zoo Text-To-CAD', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Edit.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.expectCommandName('Prompt-to-edit')
+      })
+      await test.step('Modeling.Edit.Edit parameter', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Edit.Edit parameter')
+        await cmdBar.expectCommandName('Edit parameter')
+      })
+      await test.step('Modeling.Edit.Format code', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Edit.Format code')
+      })
+      await test.step('Modeling.Edit.Rename project', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Edit.Rename project')
+        await cmdBar.expectCommandName('Rename project')
+      })
+      await test.step('Modeling.Edit.Delete project', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Edit.Delete project')
+        await cmdBar.expectCommandName('Delete project')
+      })
+      await test.step('Modeling.Edit.Change project directory', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Edit.Change project directory'
+        )
+        await openSettingsExpectLocator(page, '#projectDirectory')
+      })
+      await test.step('Modeling.View.Command Palette...', async () => {
+        await cmdBar.closeCmdBar()
+        await clickElectronNativeMenuById(tronApp, 'View.Command Palette...')
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
+      await test.step('Modeling.View.Orthographic view', async () => {
+        // wait for previous toast to disappear
+        await page.waitForTimeout(10000)
+        await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
+        const textToCheck =
+          'Set camera projection to "orthographic" as a user default'
+        const toast = page.locator('#_rht_toaster')
+        // Let the previous toast clear
+        await expect(toast).toHaveText(textToCheck)
+      })
+      await test.step('Modeling.View.Perspective view', async () => {
+        // wait for previous toast to disappear
+        await page.waitForTimeout(10000)
+        await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
+        const textToCheck =
+          'Set camera projection to "perspective" as a user default'
+        const toast = page.locator('#_rht_toaster')
+        await expect(toast).toHaveText(textToCheck)
+      })
+      await test.step('Modeling.View.Standard views.Right view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Right view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Back view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Back view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Top view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Top view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Left view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Left view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Front view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Front view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Bottom view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Bottom view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Reset view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Reset view'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Center view on selection', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Standard views.Center view on selection'
+        )
+      })
+      await test.step('Modeling.View.Standard views.Refresh', async () => {
+        await findElectronNativeMenuById(tronApp, 'View.Standard views.Refresh')
+      })
+      await test.step('Modeling.View.Named views.Create named view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Named views.Create named view'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Create named view')
+      })
+      await test.step('Modeling.View.Named views.Load named view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Named views.Load named view'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Load named view')
+      })
+      await test.step('Modeling.View.Named views.Delete named view', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'View.Named views.Delete named view'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Delete named view')
+      })
+      await test.step('Modeling.View.Panes.Feature tree', async () => {
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Feature tree')
+        const button = page.getByTestId('feature-tree-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      await test.step('Modeling.View.Panes.KCL code', async () => {
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.KCL code')
+        const button = page.getByTestId('code-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      await test.step('Modeling.View.Panes.Project files', async () => {
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Project files')
+        const button = page.getByTestId('files-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      await test.step('Modeling.View.Panes.Variables', async () => {
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Variables')
+        const button = page.getByTestId('variables-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      await test.step('Modeling.View.Panes.Logs', async () => {
+        await clickElectronNativeMenuById(tronApp, 'View.Panes.Logs')
+        const button = page.getByTestId('logs-pane-button')
+        const isPressed = await button.getAttribute('aria-pressed')
+        expect(isPressed).toBe('true')
+      })
+      await test.step('Modeling.Design.Create an offset plane', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an offset plane'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Offset plane')
+      })
+      await test.step('Modeling.Design.Create a helix', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Design.Create a helix')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Helix')
+      })
+      await test.step('Modeling.Design.Create a parameter', async () => {
+        await clickElectronNativeMenuById(tronApp, 'Design.Create a parameter')
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Create parameter')
+      })
 
-      // test.step('Modeling.Edit.Modify with Zoo Text-To-CAD', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Edit.Modify with Zoo Text-To-CAD'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Prompt-to-edit')
-      // })
-      // test.step('Modeling.Edit.Edit parameter', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Edit.Edit parameter')
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Edit parameter')
-      // })
-      // test.step('Modeling.Edit.Format code', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Edit.Format code')
-      // })
-      // test.step('Modeling.Edit.Rename project', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Edit.Rename project')
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Rename project')
-      // })
-      // test.step('Modeling.Edit.Delete project', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Edit.Delete project')
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Delete project')
-      // })
-      // test.step('Modeling.Edit.Change project directory', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Edit.Change project directory'
-      //   )
-      //   await openSettingsExpectLocator(page, '#projectDirectory')
-      // })
-      // test.step('Modeling.View.Command Palette...', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.settled(cmdBar)
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Command Palette...')
-      //   // Check the placeholder project name exists
-      //   const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
-      //   await expect(actual).toBeVisible()
-      // })
-      // test.step('Modeling.View.Orthographic view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
-      //   const textToCheck =
-      //     'Set camera projection to "orthographic" as a user default'
-      //   const toast = page.locator('#_rht_toaster')
-      //   await expect(toast).toHaveText(textToCheck)
-      // })
-      // test.step('Modeling.View.Perspective view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
-      //   const textToCheck =
-      //     'Set camera projection to "perspective" as a user default'
-      //   const toast = page.locator('#_rht_toaster')
-      //   await expect(toast).toHaveText(textToCheck)
-      // })
-      // test.step('Modeling.View.Standard views.Right view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Right view'
-      //   )
-      //   // TODO: Make all of these screenshot E2E tests.
-      //   // Wait for camera to move
-      //   // await page.waitForTimeout(5000)
+      await test.step('Modeling.Design.Create an additive feature.Extrude', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Extrude'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Extrude')
+      })
+      await test.step('Modeling.Design.Create an additive feature.Revolve', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Revolve'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Revolve')
+      })
+      await test.step('Modeling.Design.Create an additive feature.Sweep', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Sweep'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Sweep')
+      })
+      await test.step('Modeling.Design.Create an additive feature.Loft', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create an additive feature.Loft'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Loft')
+      })
+      await test.step('Modeling.Design.Apply modification feature.Fillet', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Fillet'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Fillet')
+      })
+      await test.step('Modeling.Design.Apply modification feature.Chamfer', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Chamfer'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Chamfer')
+      })
 
-      //   // const locator = page.getByTestId('gizmo').locator('canvas')
-      //   // const image = await locator.screenshot({ path: 'Modeling.View.Standard-views.Right-view.png' });
-      //   // expect(image).toMatchSnapshot('Modeling.View.Standard-views.Right-view')
-      // })
-      // test.step('Modeling.View.Standard views.Back view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Back view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Top view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Top view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Left view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Left view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Front view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Front view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Bottom view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Bottom view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Reset view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Reset view'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Center view on selection', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Standard views.Center view on selection'
-      //   )
-      // })
-      // test.step('Modeling.View.Standard views.Refresh', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await findElectronNativeMenuById(tronApp, 'View.Standard views.Refresh')
-      // })
-      // test.step('Modeling.View.Named views.Create named view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Named views.Create named view'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Create named view')
-      // })
-      // test.step('Modeling.View.Named views.Load named view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Named views.Load named view'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Load named view')
-      // })
-      // test.step('Modeling.View.Named views.Delete named view', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'View.Named views.Delete named view'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Delete named view')
-      // })
-      // test.step('Modeling.View.Panes.Feature tree', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Panes.Feature tree')
-      //   const button = page.getByTestId('feature-tree-pane-button')
-      //   const isPressed = await button.getAttribute('aria-pressed')
-      //   expect(isPressed).toBe('true')
-      // })
-      // test.step('Modeling.View.Panes.KCL code', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Panes.KCL code')
-      //   const button = page.getByTestId('code-pane-button')
-      //   const isPressed = await button.getAttribute('aria-pressed')
-      //   expect(isPressed).toBe('true')
-      // })
-      // test.step('Modeling.View.Panes.Project files', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Panes.Project files')
-      //   const button = page.getByTestId('files-pane-button')
-      //   const isPressed = await button.getAttribute('aria-pressed')
-      //   expect(isPressed).toBe('true')
-      // })
-      // test.step('Modeling.View.Panes.Variables', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Panes.Variables')
-      //   const button = page.getByTestId('variables-pane-button')
-      //   const isPressed = await button.getAttribute('aria-pressed')
-      //   expect(isPressed).toBe('true')
-      // })
-      // test.step('Modeling.View.Panes.Logs', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'View.Panes.Logs')
-      //   const button = page.getByTestId('logs-pane-button')
-      //   const isPressed = await button.getAttribute('aria-pressed')
-      //   expect(isPressed).toBe('true')
-      // })
-      // // TODO Start sketch
-      // test.step('Modeling.Design.Create an offset plane', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create an offset plane'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Offset plane')
-      // })
-      // test.step('Modeling.Design.Create a helix', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Design.Create a helix')
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Helix')
-      // })
-      // test.step('Modeling.Design.Create a parameter', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Design.Create a parameter')
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Create parameter')
-      // })
+      await test.step('Modeling.Design.Apply modification feature.Shell', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Apply modification feature.Shell'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Shell')
+      })
 
-      // test.step('Modeling.Design.Create an additive feature.Extrude', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create an additive feature.Extrude'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Extrude')
-      // })
-      // test.step('Modeling.Design.Create an additive feature.Revolve', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create an additive feature.Revolve'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Revolve')
-      // })
-      // test.step('Modeling.Design.Create an additive feature.Sweep', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create an additive feature.Sweep'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Sweep')
-      // })
-      // test.step('Modeling.Design.Create an additive feature.Loft', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create an additive feature.Loft'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Loft')
-      // })
-      // test.step('Modeling.Design.Apply modification feature.Fillet', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Apply modification feature.Fillet'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Fillet')
-      // })
-      // test.step('Modeling.Design.Apply modification feature.Chamfer', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Apply modification feature.Chamfer'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Chamfer')
-      // })
+      await test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Create with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Text to CAD')
+      })
 
-      // test.step('Modeling.Design.Apply modification feature.Shell', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Apply modification feature.Shell'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Shell')
-      // })
+      await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
+        await clickElectronNativeMenuById(
+          tronApp,
+          'Design.Modify with Zoo Text-To-CAD'
+        )
+        await cmdBar.toBeOpened()
+        await cmdBar.expectCommandName('Prompt-to-edit')
+      })
 
-      // test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Create with Zoo Text-To-CAD'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Text-to-CAD')
-      // })
+      await test.step('Modeling.Help.Show all commands', async () => {
+        await cmdBar.closeCmdBar()
+        await clickElectronNativeMenuById(tronApp, 'Help.Show all commands')
+        // Check the placeholder project name exists
+        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
+        await expect(actual).toBeVisible()
+      })
 
-      // test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(
-      //     tronApp,
-      //     'Design.Modify with Zoo Text-To-CAD'
-      //   )
-      //   await cmdBar.toBeOpened()
-      //   await cmdBar.expectCommandName('Prompt-to-edit')
-      // })
+      await test.step('Modeling.Help.KCL code samples', async () => {
+        await findElectronNativeMenuById(tronApp, 'Help.KCL code samples')
+      })
 
-      // test.step('Modeling.Help.Show all commands', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await clickElectronNativeMenuById(tronApp, 'Help.Show all commands')
-      //   // Check the placeholder project name exists
-      //   const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
-      //   await expect(actual).toBeVisible()
-      // })
-      // test.step('Modeling.Help.KCL code samples', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await findElectronNativeMenuById(tronApp, 'Help.KCL code samples')
-      // })
-      // test.step('Modeling.Help.Refresh and report a bug', async ({
-      //   tronApp,
-      //   cmdBar,
-      //   page,
-      //   homePage,
-      //   scene,
-      //   toolbar,
-      // }) => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.settled(cmdBar)
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await findElectronNativeMenuById(
-      //     tronApp,
-      //     'Help.Refresh and report a bug'
-      //   )
-      // })
-      // test.step('Modeling.Help.Reset onboarding', async () => {
-      //   if (!tronApp) {
-      //     throwTronAppMissing()
-      //     return
-      //   }
-      //   await homePage.goToModelingScene()
-      //   await scene.connectionEstablished()
-      //   await scene.isNativeFileMenuCreated()
-      //   await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
-      // })
+      await test.step('Modeling.Help.Report a bug', async () => {
+        await findElectronNativeMenuById(tronApp, 'Help.Report a bug')
+      })
+
+      await test.step('Modeling.Help.Reset onboarding', async () => {
+        await findElectronNativeMenuById(tronApp, 'Help.Reset onboarding')
+      })
 
       await test.step('Modeling.File.Preferences.Sign out', async () => {
         await clickElectronNativeMenuById(tronApp, 'File.Sign out')

@@ -29,11 +29,13 @@ export class CmdBarFixture {
   public page: Page
   public cmdBarOpenBtn!: Locator
   public cmdBarElement!: Locator
+  public cmdBarCloseBtn!: Locator
 
   constructor(page: Page) {
     this.page = page
     this.cmdBarOpenBtn = this.page.getByTestId('command-bar-open-button')
     this.cmdBarElement = this.page.getByTestId('command-bar')
+    this.cmdBarCloseBtn = this.page.getByTestId('command-bar-close-button')
   }
 
   get currentArgumentInput() {
@@ -153,6 +155,11 @@ export class CmdBarFixture {
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
     }
+  }
+
+  closeCmdBar = async () => {
+    await this.cmdBarCloseBtn.click()
+    await expect(this.cmdBarElement).not.toBeVisible()
   }
 
   get cmdSearchInput() {
