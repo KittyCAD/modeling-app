@@ -415,17 +415,6 @@ jobs:
       - name: List artifacts
         run: "ls -R out"
 
-      - name: Set more complete nightly release notes
-        if: ${{ env.IS_NIGHTLY == 'true' }}
-        run: |
-          # Note: preferred going this way instead of a full clone in the checkout step,
-          # see https://github.com/actions/checkout/issues/1471
-          git fetch --prune --unshallow --tags
-          export TAG="nightly-${VERSION}"
-          export PREVIOUS_TAG=$(git tag --list --sort=-committerdate "nightly-v[0-9]*" | head -n2 | tail -n1)
-          export NOTES=$(./scripts/get-nightly-changelog.sh)
-          npm run files:set-notes
-
       - name: Authenticate to Google Cloud
         if: ${{ env.IS_NIGHTLY == 'true' }}
         uses: 'google-github-actions/auth@v2.1.8'
