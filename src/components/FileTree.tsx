@@ -69,26 +69,34 @@ function TreeEntryInput(props: {
 
 function RenameForm({
   fileOrDir,
+  parentDir,
   onSubmit,
   level = 0,
 }: {
   fileOrDir: FileEntry
+  parentDir: FileEntry | undefined
   onSubmit: () => void
   level?: number
 }) {
   const { send } = useFileContext()
   const inputRef = useRef<HTMLInputElement>(null)
+  const fileContext = useFileContext()
 
   function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
     send({
       type: 'Rename file',
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || fileOrDir.name || '',
         isDir: fileOrDir.children !== null,
+        parentDirectory: parentDir ?? fileContext.context.project,
       },
     })
+
+    // To get out of the renaming state, without this the current file is still in renaming mode
+    onSubmit()
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -353,6 +361,7 @@ const FileTreeItem = ({
           ) : (
             <RenameForm
               fileOrDir={fileOrDir}
+              parentDir={parentDir}
               onSubmit={removeCurrentItemFromRenaming}
               level={level}
             />
@@ -399,6 +408,7 @@ const FileTreeItem = ({
                   />
                   <RenameForm
                     fileOrDir={fileOrDir}
+                    parentDir={parentDir}
                     onSubmit={removeCurrentItemFromRenaming}
                     level={-1}
                   />
