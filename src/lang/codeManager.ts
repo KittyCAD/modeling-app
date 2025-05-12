@@ -125,10 +125,7 @@ export default class CodeManager {
   /**
    * Update the code, state, and the code the code mirror editor sees.
    */
-  updateCodeStateEditor(
-    code: string,
-    clearHistory?: boolean,
-  ): void {
+  updateCodeStateEditor(code: string, clearHistory?: boolean): void {
     if (this._code !== code) {
       this.code = code
       this.#updateState(code)
