@@ -72,6 +72,10 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Tag)
     }
 
+    pub fn tag_identifier() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TagId)
+    }
+
     pub fn bool() -> Self {
         RuntimeType::Primitive(PrimitiveType::Boolean)
     }
@@ -337,6 +341,8 @@ pub enum PrimitiveType {
     String,
     Boolean,
     Tag,
+    // Annoyingly some functions only want a TagIdentifier, not any kind of tag.
+    TagId,
     Sketch,
     Solid,
     Plane,
@@ -365,12 +371,14 @@ impl PrimitiveType {
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
+            PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
     }
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
+            (PrimitiveType::TagId, PrimitiveType::Tag) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -386,6 +394,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::TagId => write!(f, "tag identifier"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -1157,6 +1166,10 @@ impl KclValue {
             },
             PrimitiveType::ImportedGeometry => match value {
                 KclValue::ImportedGeometry { .. } => Ok(value.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::TagId => match value {
+                KclValue::TagIdentifier { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
             },
             PrimitiveType::Tag => match value {

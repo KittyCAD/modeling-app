@@ -221,6 +221,7 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
             types::BinaryPart::UnaryExpression(ue) => ue.as_ref().into(),
             types::BinaryPart::MemberExpression(me) => me.as_ref().into(),
             types::BinaryPart::IfExpression(e) => e.as_ref().into(),
+            types::BinaryPart::AscribedExpression(e) => e.as_ref().into(),
         }
     }
 }
