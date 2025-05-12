@@ -96,8 +96,7 @@ jobs:
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
-          OFFSET=$(date +'%H%M')
-          export VERSION=$DATE-staging.$OFFSET+$COMMIT
+          export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-nightly
 
