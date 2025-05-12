@@ -1,7 +1,7 @@
 #!/bin/bash
 base_dir="/releases/modeling-app"
 if [[ $1 = "--nightly" ]]; then
-    base_dir="/releases/modeling-app/nightly"
+    base_dir="/releases/modeling-app/test/nightly"
 fi
 
 echo "Invalidating json and yml files at $base_dir in the download bucket"
