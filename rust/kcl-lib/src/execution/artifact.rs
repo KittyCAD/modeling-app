@@ -756,10 +756,29 @@ pub(super) fn build_artifact_graph(
     }
 
     for exec_artifact in exec_artifacts.values() {
-        merge_artifact_into_map(&mut map, exec_artifact.clone());
+        let mut new_artifact = exec_artifact.clone();
+        // Fill in NodePaths for artifacts that were added directly to the map
+        // during execution.
+        fill_in_node_paths(&mut new_artifact, ast);
+
+        merge_artifact_into_map(&mut map, new_artifact);
     }
 
     Ok(ArtifactGraph { map })
+}
+
+/// These may have been created with placeholder `CodeRef`s because we didn't
+/// have the entire AST available. Now we fill them in.
+fn fill_in_node_paths(artifact: &mut Artifact, program: &Node<Program>) {
+    match artifact {
+        Artifact::StartSketchOnFace(face) => {
+            face.code_ref.node_path = NodePath::from_range(program, face.code_ref.range).unwrap_or_default();
+        }
+        Artifact::StartSketchOnPlane(plane) => {
+            plane.code_ref.node_path = NodePath::from_range(program, plane.code_ref.range).unwrap_or_default();
+        }
+        _ => {}
+    }
 }
 
 /// Flatten the responses into a map of command IDs to modeling command
