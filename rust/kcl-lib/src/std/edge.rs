@@ -14,7 +14,7 @@ use crate::{
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_opposite_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -98,7 +98,7 @@ async fn inner_get_opposite_edge(
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_next_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -191,7 +191,7 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_previous_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {

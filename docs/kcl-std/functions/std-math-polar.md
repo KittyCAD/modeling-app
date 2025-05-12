@@ -21,8 +21,8 @@ cartesian (x/y/z grid) coordinates.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `angle` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
-| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `angle` | [`number(rad)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 

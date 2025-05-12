@@ -150,6 +150,7 @@ impl BinaryPart {
                 unary_expression.get_hover_value_for_position(pos, code, opts)
             }
             BinaryPart::IfExpression(e) => e.get_hover_value_for_position(pos, code, opts),
+            BinaryPart::AscribedExpression(e) => e.expr.get_hover_value_for_position(pos, code, opts),
             BinaryPart::MemberExpression(member_expression) => {
                 member_expression.get_hover_value_for_position(pos, code, opts)
             }

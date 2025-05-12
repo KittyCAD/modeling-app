@@ -17,9 +17,9 @@ use crate::{
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_end(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the ending point of the provided line segment.
@@ -64,8 +64,11 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.end_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_to().clone())
+    Ok(point)
 }
 
 /// Returns the segment end of x.
@@ -156,9 +159,9 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_start(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the starting point of the provided line segment.
@@ -203,8 +206,11 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.start_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_from().to_owned())
+    Ok(point)
 }
 
 /// Returns the segment start of x.

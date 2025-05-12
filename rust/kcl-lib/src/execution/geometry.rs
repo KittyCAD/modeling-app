@@ -1239,6 +1239,20 @@ impl Path {
         [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)]
     }
 
+    /// The path segment start point and its type.
+    pub fn start_point_components(&self) -> ([f64; 2], NumericType) {
+        let p = &self.get_base().from;
+        let ty: NumericType = self.get_base().units.into();
+        (*p, ty)
+    }
+
+    /// The path segment end point and its type.
+    pub fn end_point_components(&self) -> ([f64; 2], NumericType) {
+        let p = &self.get_base().to;
+        let ty: NumericType = self.get_base().units.into();
+        (*p, ty)
+    }
+
     /// Length of this path segment, in cartesian plane.
     pub fn length(&self) -> TyF64 {
         let n = match self {

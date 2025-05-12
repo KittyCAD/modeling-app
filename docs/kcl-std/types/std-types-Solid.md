@@ -1,11 +1,11 @@
 ---
 title: "Solid"
 subtitle: "Type in std::types"
-excerpt: "A solid is a collection of extrude surfaces."
+excerpt: "A solid is a collection of extruded surfaces."
 layout: manual
 ---
 
-A solid is a collection of extrude surfaces.
+A solid is a collection of extruded surfaces.
 
 When you define a solid to a variable like:
 

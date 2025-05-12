@@ -17,7 +17,7 @@ description: Variables in memory after executing import_async.kcl
     }
   },
   "angles": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -1126,7 +1126,7 @@ description: Variables in memory after executing import_async.kcl
     }
   },
   "invas": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -2268,7 +2268,7 @@ description: Variables in memory after executing import_async.kcl
     "value": null
   },
   "rs": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -86833,7 +86833,7 @@ description: Variables in memory after executing import_async.kcl
     }
   },
   "xs": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -88164,7 +88164,7 @@ description: Variables in memory after executing import_async.kcl
     ]
   },
   "ys": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

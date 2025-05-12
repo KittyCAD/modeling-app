@@ -569,7 +569,7 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -613,7 +613,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -657,7 +657,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -701,7 +701,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -750,7 +750,7 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -794,7 +794,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -838,7 +838,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -882,7 +882,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -931,7 +931,7 @@ description: Variables in memory after executing subtract_regression03.kcl
     "type": "Object",
     "value": {
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -975,7 +975,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "xAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -1019,7 +1019,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "yAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -1063,7 +1063,7 @@ description: Variables in memory after executing subtract_regression03.kcl
         ]
       },
       "zAxis": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
