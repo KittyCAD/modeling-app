@@ -26,7 +26,7 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 |----------|------|-------------|----------|
 | `sketches` | [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) | Which sketch or sketches should be extruded | Yes |
 | `length` | [`number`](/docs/kcl-std/types/std-types-number) | How far to extrude the given sketches | Yes |
-| `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the | No |
+| `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
 | `bidirectionalLength` | [`number`](/docs/kcl-std/types/std-types-number) | If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored. | No |
 | `tagStart` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the start of the extrusion, i.e. the original sketch | No |
 | `tagEnd` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch | No |
