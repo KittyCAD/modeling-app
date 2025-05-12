@@ -182,6 +182,8 @@ impl RuntimeType {
             }
             AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            AstPrimitiveType::Function => RuntimeType::Primitive(PrimitiveType::Function),
         })
     }
 
@@ -363,6 +365,7 @@ pub enum PrimitiveType {
     Axis2d,
     Axis3d,
     ImportedGeometry,
+    Function,
 }
 
 impl PrimitiveType {
@@ -382,6 +385,7 @@ impl PrimitiveType {
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Function => "functions".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
             PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
@@ -418,6 +422,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
+            PrimitiveType::Function => write!(f, "function"),
         }
     }
 }
@@ -1184,6 +1189,10 @@ impl KclValue {
                 KclValue::ImportedGeometry { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Function => match value {
+                KclValue::Function { .. } => Ok(value.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::TagId => match value {
                 KclValue::TagIdentifier { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
@@ -1372,12 +1381,10 @@ impl KclValue {
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
-                Some(RuntimeType::Primitive(PrimitiveType::Tag))
-            }
-            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
-                None
-            }
+            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
+            KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
+            KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
     }
 }
