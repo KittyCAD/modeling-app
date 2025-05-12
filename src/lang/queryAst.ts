@@ -52,10 +52,10 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { Reason, err } from '@src/lib/trap'
 import { getAngle, isArray } from '@src/lib/utils'
 
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { UnaryExpression } from 'typescript'
-import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -123,13 +123,23 @@ export function getNodeFromPath<T>(
     }
     parent = currentNode
     parentEdge = pathItem[0]
-    currentNode = currentNode?.[pathItem[0]]
+    const nextNode = currentNode?.[pathItem[0]]
+    if (!nextNode) {
+      // path to node is bad, return nothing, just return the node and path explored so far
+      return {
+        node: currentNode,
+        shallowPath: pathsExplored,
+        deepPath: successfulPaths,
+      }
+    }
+    currentNode = nextNode
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
     }
     if (
       typeof stopAt !== 'undefined' &&
+      currentNode &&
       (isArray(stopAt)
         ? stopAt.includes(currentNode.type)
         : currentNode.type === stopAt)
