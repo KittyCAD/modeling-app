@@ -109,7 +109,7 @@ function RenameForm({
   }
 
   return (
-    <div onKeyUp={handleRenameSubmit}>
+    <div role="button" tabIndex={0} onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
