@@ -238,7 +238,7 @@ newVar = myVar + 1`
       ty: expect.any(Object),
     })
     expect(mem['yo']).toEqual({
-      type: 'MixedArray',
+      type: 'HomArray',
       value: [
         {
           type: 'Number',

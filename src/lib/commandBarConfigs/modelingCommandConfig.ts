@@ -974,6 +974,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           allowCodeSelection: true,
         },
         skip: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
       prompt: {
         inputType: 'text',

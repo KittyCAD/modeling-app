@@ -1,13 +1,13 @@
 ---
 title: "types"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "KCL types. This module contains fundamental types like `number`, `string`, `Solid`, and `Sketch`. "
 layout: manual
 ---
 
+KCL types. This module contains fundamental types like `number`, `string`, `Solid`, and `Sketch`. 
 
-
-
+Types can (optionally) be used to describe a function's arguments and returned value. They are checked when a program runs and can help avoid errors. They are also useful to help document what a function does. 
 
 
 

@@ -1,0 +1,3 @@
+arr = [1, 2]: [number(_)]
+arrPrime = push(arr, item = 4mm)
+assert(arrPrime[2], isEqualTo = 4mm, error = "should have been added to the end of the array")
