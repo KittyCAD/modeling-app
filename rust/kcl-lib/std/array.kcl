@@ -40,7 +40,7 @@ export fn map(
   /// Input array. The output array is this input array, but every element has had the function `f` run on it.
   @array: [any],
   /// A function. The output array is just the input array, but `f` has been run on every item.
-  f: Fn,
+  f: fn,
 ): [any] {}
 
 /// Take a starting value. Then, for each element of an array, calculate the next value,
@@ -132,7 +132,7 @@ export fn reduce(
   /// The first time `f` is run, it will be called with the first item of `array` and this initial starting value.
   initial: any,
   /// Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`.
-  f: Fn,
+  f: fn,
 ): [any] {}
 
 /// Append an element to the end of an array.

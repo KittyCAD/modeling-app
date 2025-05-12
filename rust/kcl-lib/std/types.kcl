@@ -169,7 +169,7 @@ export type ImportedGeometry
 
 /// The type of any function in KCL.
 @(impl = primitive)
-export type Fn
+export type fn
 
 /// An abstract plane.
 ///
