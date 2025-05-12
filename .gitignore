@@ -89,4 +89,5 @@ venv
 
 # KCL book
 kcl-book/book
+kcl-book/src/images/dynamic/foo.png
 

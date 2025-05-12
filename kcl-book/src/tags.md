@@ -145,7 +145,7 @@ cube = startSketchOn(XY)
 Here, we filleted the bottom side `a` just like we did before. But we've also filleted the sides adjacent to it. We can use a similar trick to fillet all four vertical side edges:
 
 
-```kcl=cube_next_prev_fillets
+```kcl=cube_next_prev_fillets_all_sides
 length = 20
 cube = startSketchOn(XY)
   |> startProfile(at = [-length, -length])
@@ -165,6 +165,8 @@ cube = startSketchOn(XY)
        ],
      )
 ```
+
+![A cube with two side fillets and one bottom fillet](images/dynamic/cube_next_prev_fillets_all_sides.png)
 
 ## Chamfers
 
