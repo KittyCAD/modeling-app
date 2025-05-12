@@ -105,10 +105,8 @@ description: Operations executed clone_w_fillets.kcl
     "sourceRange": []
   },
   {
-    "labeledArgs": {},
+    "type": "KclStdLibCall",
     "name": "clone",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Solid",
@@ -117,6 +115,8 @@ description: Operations executed clone_w_fillets.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   }
 ]

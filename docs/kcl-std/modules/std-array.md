@@ -12,8 +12,8 @@ Functions for manipulating arrays of values.
 
 ## Functions and constants
 
-* [`map`](/docs/kcl-std/map)
-* [`pop`](/docs/kcl-std/pop)
-* [`push`](/docs/kcl-std/push)
-* [`reduce`](/docs/kcl-std/reduce)
+* [`map`](/docs/kcl-std/functions/std-array-map)
+* [`pop`](/docs/kcl-std/functions/std-array-pop)
+* [`push`](/docs/kcl-std/functions/std-array-push)
+* [`reduce`](/docs/kcl-std/functions/std-array-reduce)
 

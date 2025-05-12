@@ -1959,6 +1959,7 @@ dependencies = [
  "url",
  "uuid",
  "validator",
+ "walkdir",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
