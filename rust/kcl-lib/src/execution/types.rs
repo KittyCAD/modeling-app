@@ -1263,18 +1263,10 @@ impl KclValue {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
-            _ if len.satisfied(1, false).is_some() => {
-                let singleton_value = if self.has_type(ty) {
-                    self.clone()
-                } else {
-                    // Recurse using the element type.
-                    self.coerce(ty, exec_state)?
-                };
-                Ok(KclValue::HomArray {
-                    value: vec![singleton_value],
-                    ty: ty.clone(),
-                })
-            }
+            _ if len.satisfied(1, false).is_some() => Ok(KclValue::HomArray {
+                value: vec![self.coerce(ty, exec_state)?],
+                ty: ty.clone(),
+            }),
             _ => Err(self.into()),
         }
     }
