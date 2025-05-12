@@ -2222,7 +2222,7 @@ d = cos(30)
     async fn coerce_nested_array() {
         let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
 
-        let mixed1 = KclValue::Tuple {
+        let mixed1 = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -2250,7 +2250,7 @@ d = cos(30)
                     ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
                 },
             ],
-            meta: Vec::new(),
+            ty: RuntimeType::any(),
         };
 
         // Principal types
