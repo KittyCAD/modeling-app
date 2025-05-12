@@ -1190,8 +1190,23 @@ impl KclValue {
         allow_shrink: bool,
     ) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::HomArray { value, .. } => {
+            KclValue::HomArray { value, ty: aty, .. } => {
                 let satisfied_len = len.satisfied(value.len(), allow_shrink);
+
+                if aty.subtype(ty) {
+                    // If the element type is a subtype of the target type and
+                    // the length constraint is satisfied, we can just return
+                    // the values unchanged, only adjusting the length. The new
+                    // array element type should preserve its type because the
+                    // target type oftentimes includes an unknown type as a way
+                    // to say that the caller doesn't care.
+                    return satisfied_len
+                        .map(|len| KclValue::HomArray {
+                            value: value[..len].to_vec(),
+                            ty: aty.clone(),
+                        })
+                        .ok_or(self.into());
+                }
 
                 // Ignore the array type, and coerce the elements of the array.
                 if let Some(satisfied_len) = satisfied_len {
