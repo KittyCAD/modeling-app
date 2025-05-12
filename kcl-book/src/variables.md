@@ -67,6 +67,8 @@ To access the items in an array, you use square brackets and the number item you
 
 If you try to access an item beyond what the array contains -- for example, the fifth element of `[1, 2]` -- you'll get an error and the KCL program will stop.
 
+Arrays can also be defined as a _range_ of values, for example, `[1..5]` is a shorthand for the array `[1, 2, 3, 4, 5]`. Note that the range is _inclusive_ at both ends (it includes both the start and end of the range in the array).
+
 #### Examples
 
  - `colors = ["#ff0000", "#cccc00", "#44ff00"]`
@@ -74,6 +76,7 @@ If you try to access an item beyond what the array contains -- for example, the 
  - `sizes = [33.5, 31.5, 30]`
  - `smallest = sizes[2]`
  - `arrayOfArrays = [[1, 2, 3], [1, 4, 6]]`
+ - `firstFiveNumbers = [1..5]`
 
 ### Points
 
