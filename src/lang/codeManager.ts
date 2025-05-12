@@ -128,13 +128,11 @@ export default class CodeManager {
   updateCodeStateEditor(
     code: string,
     clearHistory?: boolean,
-    forceLoadBecauseItCameFromNavigate?: boolean
   ): void {
-    if (this._code !== code || forceLoadBecauseItCameFromNavigate) {
+    if (this._code !== code) {
       this.code = code
       this.#updateState(code)
       this.updateCodeEditor(code, clearHistory)
-      console.log('[HIYA] I updated :( )')
     }
   }
 

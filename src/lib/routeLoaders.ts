@@ -98,16 +98,13 @@ export const fileLoader: LoaderFunction = async (
         code = codeManager.localStoragePersistCode() || code
       }
 
-      console.log('[HIYA] -0.0 currentFilePath', currentFilePath)
-      console.log('[HIYA] -0.0 code', code)
       // Update both the state and the editor's code.
       // We explicitly do not write to the file here since we are loading from
       // the file system and not the editor.
       codeManager.updateCurrentFilePath(currentFilePath)
       // We pass true on the end here to clear the code editor history.
       // This way undo and redo are not super weird when opening new files.
-      const forceFromNavigateLoader = true
-      codeManager.updateCodeStateEditor(code, true, forceFromNavigateLoader)
+      codeManager.updateCodeStateEditor(code, true)
     }
 
     // Set the file system manager to the project path
