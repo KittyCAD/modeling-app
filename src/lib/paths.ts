@@ -173,9 +173,13 @@ export function getStringAfterLastSeparator(path: string): string {
 }
 
 /**
- * When you have an encodedURIComponent then you decode the URI component this can help split the path safely
- * assumes /file/<encodedURIComponent>
- * e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
+ * When you have '/home/kevin-nadro/Documents/zoo-modeling-app-projects/bracket-1/bracket.kcl'
+ * and you need to get the projectDirectory from this string above.
+ *
+ * We replace the leading prefix which is the application project directory with
+ * the empty string. Then it becomes //bracket-1/bracket.kcl
+ * The first part of the path after the blank / will be the root project directory
+ *
  */
 export function getProjectDirectoryFromKCLFilePath(
   path: string,
