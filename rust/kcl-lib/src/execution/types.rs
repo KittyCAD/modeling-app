@@ -168,9 +168,13 @@ impl RuntimeType {
         Ok(match value {
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
-            AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
-                NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
-            )),
+            AstPrimitiveType::Number(suffix) => {
+                let ty = match suffix {
+                    NumericSuffix::None => NumericType::Any,
+                    _ => NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
+                };
+                RuntimeType::Primitive(PrimitiveType::Number(ty))
+            }
             AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
         })
@@ -672,6 +676,7 @@ impl NumericType {
             // We don't have enough information to coerce.
             (Unknown, _) => Err(CoercionError::from(val).with_explicit(self.example_ty().unwrap_or("mm".to_owned()))),
             (_, Unknown) => Err(val.into()),
+
             (Any, _) => Ok(KclValue::Number {
                 value: *value,
                 ty: self.clone(),
