@@ -14,8 +14,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 0.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -35,8 +40,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 1.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -56,8 +66,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -77,8 +92,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 1.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -98,8 +118,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -119,8 +144,13 @@ description: Operations executed double_map_fn.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

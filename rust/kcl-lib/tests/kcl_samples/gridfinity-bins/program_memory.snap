@@ -7,7 +7,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -38,7 +38,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",

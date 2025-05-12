@@ -53,7 +53,7 @@ redo-sim-tests:
 
 test:
     cargo install cargo-nextest
-    {{cnr}} --workspace --features artifact-graph --no-fail-fast
+    {{cnr}} --workspace --features=artifact-graph --no-fail-fast
 
 bump-kcl-crate-versions bump='patch':
     # First build the kcl-bumper tool.

@@ -4,7 +4,7 @@ description: Variables in memory after executing index_of_array.kcl
 ---
 {
   "arr": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

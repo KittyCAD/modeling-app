@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing array_range_mismatch_units.kcl
+---
+a = [1mm..3cm]
+assertIs(false, error = "shouldn't make it here")

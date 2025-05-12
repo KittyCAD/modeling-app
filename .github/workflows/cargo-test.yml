@@ -175,13 +175,21 @@ jobs:
           cp nextest-archive.tar.zst rust/nextest-archive.tar.zst
           ls -lah
           cd rust
-          cargo nextest run\
-           --retries=10 --no-fail-fast --profile ci --archive-file nextest-archive.tar.zst \
+          cargo nextest run \
+           --retries=10 --no-fail-fast --profile=ci --archive-file nextest-archive.tar.zst \
            --partition count:${{ matrix.partitionIndex}}/${{ matrix.partitionTotal }} \
            2>&1 | tee /tmp/github-actions.log
         env:
           KITTYCAD_API_TOKEN: ${{secrets.KITTYCAD_API_TOKEN_DEV}}
           ZOO_HOST: https://api.dev.zoo.dev
+      - name: Upload results
+        if: always()
+        run: .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ secrets.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
   run-wasm-tests:
     name: Run wasm tests
     strategy:
