@@ -121,7 +121,7 @@ jobs:
             assets/icon.png
 
       - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version' | cut -f1 -d"+"`" >> "$GITHUB_OUTPUT"
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
       - id: export_notes
         run: echo "notes=`cat release-notes.md`" >> "$GITHUB_OUTPUT"
