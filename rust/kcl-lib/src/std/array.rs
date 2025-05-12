@@ -9,6 +9,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         kcl_value::{FunctionSource, KclValue},
+        types::RuntimeType,
         ExecState,
     },
     source_range::SourceRange,
@@ -19,9 +20,11 @@ use crate::{
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let array: Vec<KclValue> = args.get_unlabeled_kw_arg("array")?;
     let f: &FunctionSource = args.get_kw_arg("f")?;
-    let meta = vec![args.source_range.into()];
     let new_array = inner_map(array, f, exec_state, &args).await?;
-    Ok(KclValue::MixedArray { value: new_array, meta })
+    Ok(KclValue::HomArray {
+        value: new_array,
+        ty: RuntimeType::any(),
+    })
 }
 
 /// Apply a function to every element of a list.
@@ -257,6 +260,31 @@ async fn call_reduce_closure(
     Ok(out)
 }
 
+pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
+    let item: KclValue = args.get_kw_arg("item")?;
+
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: meta,
+            message: format!("You can't push to a value of type {actual_type}, only an array"),
+        }));
+    };
+    let ty = if item.has_type(&ty) {
+        ty
+    } else {
+        // The user pushed an item with a type that differs from the array's
+        // element type.
+        RuntimeType::any()
+    };
+
+    let new_array = inner_push(values, item);
+
+    Ok(KclValue::HomArray { value: new_array, ty })
+}
+
 /// Append an element to the end of an array.
 ///
 /// Returns a new array with the element appended.
@@ -276,28 +304,26 @@ async fn call_reduce_closure(
     },
     tags = ["array"]
 }]
-async fn inner_push(mut array: Vec<KclValue>, item: KclValue, args: &Args) -> Result<KclValue, KclError> {
+fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array.push(item);
-    Ok(KclValue::MixedArray {
-        value: array,
-        meta: vec![args.source_range.into()],
-    })
+
+    array
 }
 
-pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Extract the array and the element from the arguments
-    let val: KclValue = args.get_unlabeled_kw_arg("array")?;
-    let item = args.get_kw_arg("item")?;
-
-    let meta = vec![args.source_range];
-    let KclValue::MixedArray { value: array, meta: _ } = val else {
-        let actual_type = val.human_friendly_type();
+pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let array = args.get_unlabeled_kw_arg("array")?;
+    let KclValue::HomArray { value: values, ty } = array else {
+        let meta = vec![args.source_range];
+        let actual_type = array.human_friendly_type();
         return Err(KclError::Semantic(KclErrorDetails {
             source_ranges: meta,
-            message: format!("You can't push to a value of type {actual_type}, only an array"),
+            message: format!("You can't pop from a value of type {actual_type}, only an array"),
         }));
     };
-    inner_push(array, item, &args).await
+
+    let new_array = inner_pop(values, &args)?;
+
+    Ok(KclValue::HomArray { value: new_array, ty })
 }
 
 /// Remove the last element from an array.
@@ -320,7 +346,7 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     },
     tags = ["array"]
 }]
-async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclError> {
+fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
     if array.is_empty() {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Cannot pop from an empty array".to_string(),
@@ -331,24 +357,5 @@ async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<KclValue, KclErr
     // Create a new array with all elements except the last one
     let new_array = array[..array.len() - 1].to_vec();
 
-    Ok(KclValue::MixedArray {
-        value: new_array,
-        meta: vec![args.source_range.into()],
-    })
-}
-
-pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Extract the array from the arguments
-    let val = args.get_unlabeled_kw_arg("array")?;
-
-    let meta = vec![args.source_range];
-    let KclValue::MixedArray { value: array, meta: _ } = val else {
-        let actual_type = val.human_friendly_type();
-        return Err(KclError::Semantic(KclErrorDetails {
-            source_ranges: meta,
-            message: format!("You can't pop from a value of type {actual_type}, only an array"),
-        }));
-    };
-
-    inner_pop(array, &args).await
+    Ok(new_array)
 }

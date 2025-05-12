@@ -1,6 +1,7 @@
+/// This module contains functions for transforming sketches and solids.
+
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
-
 
 /// Mirror a sketch.
 ///
