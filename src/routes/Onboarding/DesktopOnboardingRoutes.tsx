@@ -23,10 +23,7 @@ import {
 import type { IndexLoaderData } from '@src/lib/types'
 import type { Selections } from '@src/lib/selections'
 import { Spinner } from '@src/components/Spinner'
-import {
-  modifiedFanHousingBrowser,
-  modifiedParametersDesktop,
-} from '@src/lib/exampleKcl'
+import { modifiedFanHousing } from '@src/lib/exampleKcl'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -177,7 +174,7 @@ function TextToCad() {
           <strong>One</strong> Text-to-CAD generation costs{' '}
           <strong>one credit per minute</strong>, rounded up to the nearest
           minute. A large majority of Text-to-CAD generations take under a
-          minute. If you are on the free plan, you get 40 free credits per
+          minute. If you are on the free plan, you get 20 free credits per
           month. With any of our paid plans, you get unlimited Text-to-CAD
           generations.
         </p>
@@ -273,9 +270,9 @@ function FeatureTreePane() {
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
-          This is an example of the generated CAD model using Text-to-CAD. We
-          skipped the real generation for this tutorial, but normally you'll be
-          asked to approve the generation first.
+          This is an example of a generated CAD model. We skipped the real
+          generation for this tutorial, but normally you'll be asked to approve
+          the generation first.
         </p>
         <p className="my-4">
           To the left are the panes. We have opened the feature tree pane for
@@ -399,20 +396,8 @@ function PromptToEdit() {
   // Close the panes on mount, close on unmount
   useOnboardingPanes()
 
-  // navigate to the main assembly file
-  useEffect(() => {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.navigateToFile,
-      data: {
-        requestedProjectName: ONBOARDING_PROJECT_NAME,
-        requestedFileName: 'main.kcl',
-        requestedSubRoute: joinRouterPaths(
-          String(PATHS.ONBOARDING),
-          thisOnboardingStatus
-        ),
-      },
-    })
-  }, [])
+  // Make it so pressing Enter advances instead of toggling the dropdown
+  useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
     <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
@@ -424,8 +409,8 @@ function PromptToEdit() {
           “Modify with Zoo Text-to-CAD”. Once clicked, you’ll describe the
           change you want for your part, and our AI will generate the change.
           Once again, this will cost <strong>one credit per minute</strong> it
-          took to generate, but as mentioned before, most calls are typically
-          under one minute.
+          took to generate. Once again, most of the time, this is under a
+          minute.
         </p>
         <OnboardingButtons
           currentSlug={thisOnboardingStatus}
@@ -440,7 +425,7 @@ function PromptToEditPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
-    'Change the fan diameter to be 150 mm and update the housing size and mounting hole placements to accommodate for the change. Change the housing to be purple.'
+    'Change the housing to be for a 150 mm diameter fan, make it 30 mm tall, and change the color to purple.'
 
   // Ensure panes are closed
   useOnboardingPanes()
@@ -481,10 +466,6 @@ function PromptToEditPrompt() {
           </p>
         )}
         <p className="my-4">
-          We are going to use Text-to-CAD to modify multiple files at once!
-          Let’s update the housing and fan together.
-        </p>
-        <p className="my-4">
           To save you a credit, we are using a pre-rolled Text-to-CAD prompt to
           edit your existing fan housing. You can see the prompt in the window
           above. Click next to see an example of what modifying with Text-to-CAD
@@ -514,14 +495,9 @@ function PromptToEditResult() {
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         files: [
           {
-            requestedFileName: 'parameters.kcl',
-            requestedProjectName: ONBOARDING_PROJECT_NAME,
-            requestedCode: modifiedParametersDesktop,
-          },
-          {
             requestedFileName: 'fan-housing.kcl',
             requestedProjectName: ONBOARDING_PROJECT_NAME,
-            requestedCode: modifiedFanHousingBrowser,
+            requestedCode: modifiedFanHousing,
           },
         ],
         override: true,
