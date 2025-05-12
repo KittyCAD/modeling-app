@@ -751,17 +751,22 @@ export const ModelingMachineProvider = ({
               if (err(varDec)) return reject(new Error('No varDec'))
               const variableName = varDec.node.declaration.id.name
               let isIdentifierUsed = false
-              traverse(newAst, {
-                enter: (node) => {
-                  if (
-                    (node.type === 'Name' && node.name.name === variableName) ||
-                    (node.type === 'VariableDeclarator' &&
-                      node.id.name === variableName)
-                  ) {
-                    isIdentifierUsed = true
-                  }
-                },
-              })
+              const isInitAPipe =
+                varDec.node.declaration.init.type === 'PipeExpression'
+              if (isInitAPipe) {
+                isIdentifierUsed = true
+              } else {
+                traverse(newAst, {
+                  enter: (node) => {
+                    if (
+                      node.type === 'Name' &&
+                      node.name.name === variableName
+                    ) {
+                      isIdentifierUsed = true
+                    }
+                  },
+                })
+              }
               if (isIdentifierUsed) return
 
               // remove body item at varDecIndex
