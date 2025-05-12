@@ -16,7 +16,7 @@ use crate::{
 };
 
 // Types with special handling.
-const SPECIAL_TYPES: [&str; 5] = ["TagDeclarator", "TagIdentifier", "Start", "End", "ImportedGeometry"];
+const SPECIAL_TYPES: [&str; 4] = ["TagDeclarator", "TagIdentifier", "Start", "End"];
 
 const TYPE_REWRITES: [(&str, &str); 11] = [
     ("TagNode", "TagDeclarator"),
