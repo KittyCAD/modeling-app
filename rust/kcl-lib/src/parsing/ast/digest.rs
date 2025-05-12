@@ -162,6 +162,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(ue) => ue.compute_digest(),
             BinaryPart::MemberExpression(me) => me.compute_digest(),
             BinaryPart::IfExpression(e) => e.compute_digest(),
+            BinaryPart::AscribedExpression(e) => e.compute_digest(),
         }
     }
 }

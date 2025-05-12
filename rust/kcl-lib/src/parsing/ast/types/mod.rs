@@ -1215,6 +1215,7 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+            BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
         }
     }
 }
@@ -1281,6 +1282,7 @@ pub enum BinaryPart {
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
+    AscribedExpression(BoxNode<AscribedExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1306,6 +1308,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
+            BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
     }
 
@@ -1324,6 +1327,7 @@ impl BinaryPart {
             }
             BinaryPart::MemberExpression(_) => {}
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
     }
 
@@ -1336,6 +1340,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
+            BinaryPart::AscribedExpression(e) => e.start,
         }
     }
 
@@ -1348,6 +1353,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
+            BinaryPart::AscribedExpression(e) => e.end,
         }
     }
 
@@ -1369,6 +1375,7 @@ impl BinaryPart {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(ref mut e) => e.expr.rename_identifiers(old_name, new_name),
         }
     }
 }

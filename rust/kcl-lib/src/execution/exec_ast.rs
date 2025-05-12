@@ -18,10 +18,10 @@ use crate::{
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector, ItemVisibility,
-        LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef, ObjectExpression,
-        PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
+        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+        BinaryPart, BodyItem, CallExpressionKw, Expr, FunctionExpression, IfExpression, ImportPath, ImportSelector,
+        ItemVisibility, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeRef,
+        ObjectExpression, PipeExpression, Program, TagDeclarator, Type, UnaryExpression, UnaryOperator,
     },
     source_range::SourceRange,
     std::{
@@ -707,14 +707,22 @@ impl ExecutorContext {
                 // TODO this lets us use the label as a variable name, but not as a tag in most cases
                 result
             }
-            Expr::AscribedExpression(expr) => {
-                let result = self
-                    .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
-                    .await?;
-                apply_ascription(&result, &expr.ty, exec_state, expr.into())?
-            }
+            Expr::AscribedExpression(expr) => expr.get_result(exec_state, self).await?,
         };
         Ok(item)
+    }
+}
+
+impl Node<AscribedExpression> {
+    #[async_recursion]
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+        let metadata = Metadata {
+            source_range: SourceRange::from(self),
+        };
+        let result = ctx
+            .execute_expr(&self.expr, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?;
+        apply_ascription(&result, &self.ty, exec_state, self.into())
     }
 }
 
@@ -758,6 +766,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
             BinaryPart::MemberExpression(member_expression) => member_expression.get_result(exec_state),
             BinaryPart::IfExpression(e) => e.get_result(exec_state, ctx).await,
+            BinaryPart::AscribedExpression(e) => e.get_result(exec_state, ctx).await,
         }
     }
 }
@@ -2636,6 +2645,12 @@ sketch001 = startSketchOn(XY)
   |> myExtrude(length = 40)
 "#;
 
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn ascription_in_binop() {
+        let ast = r#"foo = tan(0): number(rad) - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
 }
