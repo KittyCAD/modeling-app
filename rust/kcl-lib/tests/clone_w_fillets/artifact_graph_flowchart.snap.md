@@ -1,15 +1,15 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[100, 140, 0]"]
-    3["Segment<br>[146, 200, 0]"]
-    4["Segment<br>[206, 259, 0]"]
-    5["Segment<br>[265, 319, 0]"]
-    6["Segment<br>[325, 344, 0]"]
+    2["Path<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]"]
+    3["Segment<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]"]
+    4["Segment<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]"]
+    5["Segment<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]"]
+    6["Segment<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]"]
     7[Solid2d]
   end
-  1["Plane<br>[77, 94, 0]"]
-  8["Sweep Extrusion<br>[362, 410, 0]"]
+  1["Plane<br>[ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]"]
+  8["Sweep Extrusion<br>[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]"]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -24,10 +24,10 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Adjacent"]
   22["SweepEdge Adjacent"]
-  23["EdgeCut Fillet<br>[416, 609, 0]"]
-  24["EdgeCut Fillet<br>[416, 609, 0]"]
-  25["EdgeCut Fillet<br>[416, 609, 0]"]
-  26["EdgeCut Fillet<br>[416, 609, 0]"]
+  23["EdgeCut Fillet<br>[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]"]
+  24["EdgeCut Fillet<br>[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]"]
+  25["EdgeCut Fillet<br>[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]"]
+  26["EdgeCut Fillet<br>[ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]"]
   1 --- 2
   2 --- 3
   2 --- 4
