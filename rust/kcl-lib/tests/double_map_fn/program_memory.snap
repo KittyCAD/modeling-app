@@ -8,7 +8,7 @@ description: Variables in memory after executing double_map_fn.kcl
     "value": null
   },
   "xs": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",
@@ -37,7 +37,7 @@ description: Variables in memory after executing double_map_fn.kcl
     ]
   },
   "ys": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

@@ -226,6 +226,7 @@ impl PrimitiveType {
     pub fn compute_digest(&mut self) -> Digest {
         let mut hasher = Sha256::new();
         match self {
+            PrimitiveType::Any => hasher.update(b"any"),
             PrimitiveType::Named(id) => hasher.update(id.compute_digest()),
             PrimitiveType::String => hasher.update(b"string"),
             PrimitiveType::Number(suffix) => hasher.update(suffix.digestable_id()),
