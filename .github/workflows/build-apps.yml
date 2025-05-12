@@ -5,14 +5,12 @@ on:
   push:
     branches:
       - main
-      # TODO: remove and add main check on IS_STAGING
-      - pierremtb/issue6749-Change-nightly-builds-to-deploy-from-each-push-to-main-and-change-name
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_STAGING: ${{ github.event_name == 'push' }}
+  IS_STAGING: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -206,11 +204,6 @@ jobs:
           C:\Windows\System32\certutil.exe -csp "DigiCert Signing Manager KSP" -key -user
           smksp_cert_sync.exe
           smctl windows certsync
-        # This last line `smctl windows certsync` was added after windows codesign failures started happening
-        # with staging-v25.4.10. It looks like `smksp_cert_sync.exe` used to do the sync to the local cert store,
-        # but stopped doing it overnight. This extra call that I randomly got from this azure-related doc page
-        # https://docs.digicert.com/en/digicert-keylocker/code-signing/sign-with-third-party-signing-tools/windows-applications/sign-azure-apps-with-signtool-using-ksp-library.html#sync-certificates--windows-only--618365
-        # seems to be doing that extra sync that we need for scripts/sign-win.js to work.
         # TODO: we still need to make sign-win.js errors fail the workflow, see issue #6276
         shell: cmd
 
@@ -311,9 +304,8 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       contents: write
-    # TODO: add push to main for staging
-    # Equivalent to IS_RELEASE || IS_STAGING
-    if: ${{ github.ref_type == 'tag' || github.event_name == 'push' }}
+    # Equivalent to IS_RELEASE || IS_STAGING (but we can't access those env vars here)
+    if: ${{ github.ref_type == 'tag' || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
