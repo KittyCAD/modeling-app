@@ -22,7 +22,7 @@ use tower_lsp::lsp_types::{
 use crate::execution::{types::NumericType, Sketch};
 
 // These types are declared in (KCL) std.
-const DECLARED_TYPES: [&str; 16] = [
+const DECLARED_TYPES: [&str; 17] = [
     "any",
     "number",
     "string",
@@ -39,6 +39,7 @@ const DECLARED_TYPES: [&str; 16] = [
     "Axis2d",
     "Axis3d",
     "ImportedGeometry",
+    "Fn",
 ];
 
 lazy_static::lazy_static! {

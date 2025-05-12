@@ -167,6 +167,10 @@ export type tag
 @(impl = primitive)
 export type ImportedGeometry
 
+/// The type of any function in KCL.
+@(impl = primitive)
+export type Fn
+
 /// An abstract plane.
 ///
 /// A plane has a position and orientation in space defined by its origin and axes. A plane is abstract

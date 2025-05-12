@@ -149,12 +149,12 @@ pub async fn push(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         RuntimeType::any()
     };
 
-    let new_array = inner_push(values, item).await;
+    let new_array = inner_push(values, item);
 
     Ok(KclValue::HomArray { value: new_array, ty })
 }
 
-async fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
+fn inner_push(mut array: Vec<KclValue>, item: KclValue) -> Vec<KclValue> {
     array.push(item);
     array
 }
@@ -170,11 +170,11 @@ pub async fn pop(_exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         }));
     };
 
-    let new_array = inner_pop(values, &args).await?;
+    let new_array = inner_pop(values, &args)?;
     Ok(KclValue::HomArray { value: new_array, ty })
 }
 
-async fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
+fn inner_pop(array: Vec<KclValue>, args: &Args) -> Result<Vec<KclValue>, KclError> {
     if array.is_empty() {
         return Err(KclError::Semantic(KclErrorDetails {
             message: "Cannot pop from an empty array".to_string(),

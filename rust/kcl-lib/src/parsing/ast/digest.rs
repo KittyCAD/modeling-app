@@ -233,6 +233,7 @@ impl PrimitiveType {
             PrimitiveType::Boolean => hasher.update(b"bool"),
             PrimitiveType::Tag => hasher.update(b"tag"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
+            PrimitiveType::Function => hasher.update(b"Fn"),
         }
 
         hasher.finalize().into()

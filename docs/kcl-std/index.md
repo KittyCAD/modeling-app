@@ -140,6 +140,7 @@ See also the [types overview](/docs/kcl-lang/types)
 
 * [**Primitive types**](/docs/kcl-lang/types)
   * [`End`](/docs/kcl-lang/types#End)
+  * [`Fn`](/docs/kcl-std/types/std-types-Fn)
   * [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry)
   * [`Start`](/docs/kcl-lang/types#Start)
   * [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator)

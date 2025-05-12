@@ -3199,6 +3199,8 @@ pub enum PrimitiveType {
     Tag,
     /// Imported from other CAD system.
     ImportedGeometry,
+    /// `Fn`, type of functions.
+    Function,
     /// An identifier used as a type (not really a primitive type, but whatever).
     Named(Node<Identifier>),
 }
@@ -3213,6 +3215,7 @@ impl PrimitiveType {
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
             ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
+            ("Fn", None) => Some(PrimitiveType::Function),
             _ => None,
         }
     }
@@ -3233,6 +3236,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function => write!(f, "Fn"),
             PrimitiveType::Named(n) => write!(f, "{}", n.name),
         }
     }
