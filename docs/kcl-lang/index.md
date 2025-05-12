@@ -5,7 +5,7 @@ layout: manual
 ---
 
 This is a reference for KCL. If you are learning KCL, you may prefer the [guide]() which explains
-things in a more tutorial fashion.
+things in a more tutorial fashion. See also our documentation of the [standard library](/docs/kcl-std).
 
 ## Topics
 
