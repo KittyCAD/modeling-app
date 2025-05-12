@@ -294,17 +294,21 @@ impl ArtifactGraph {
         prefix: &str,
     ) -> std::fmt::Result {
         // For now, only showing the source range.
-        fn code_ref_display(code_ref: &CodeRef) -> [usize; 3] {
-            let range = code_ref.range;
-            [range.start(), range.end(), range.module_id().as_usize()]
+        fn code_ref_display(code_ref: &CodeRef) -> String {
+            if !code_ref.node_path.is_empty() {
+                // Prefer the NodePath if it exists.
+                mermaid_escape(format!("{:?}", code_ref.node_path.steps))
+            } else {
+                let range = code_ref.range;
+                format!("[{}, {}, {}]", range.start(), range.end(), range.module_id().as_usize())
+            }
         }
 
         match artifact {
             Artifact::CompositeSolid(composite_solid) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"CompositeSolid {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"CompositeSolid {:?}<br>{}\"]",
                     composite_solid.sub_type,
                     code_ref_display(&composite_solid.code_ref)
                 )?;
@@ -312,24 +316,17 @@ impl ArtifactGraph {
             Artifact::Plane(plane) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Plane<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Plane<br>{}\"]",
                     code_ref_display(&plane.code_ref)
                 )?;
             }
             Artifact::Path(path) => {
-                writeln!(
-                    output,
-                    "{prefix}{}[\"Path<br>{:?}\"]",
-                    id,
-                    code_ref_display(&path.code_ref)
-                )?;
+                writeln!(output, "{prefix}{id}[\"Path<br>{}\"]", code_ref_display(&path.code_ref))?;
             }
             Artifact::Segment(segment) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Segment<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Segment<br>{}\"]",
                     code_ref_display(&segment.code_ref)
                 )?;
             }
@@ -339,54 +336,49 @@ impl ArtifactGraph {
             Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"StartSketchOnFace<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"StartSketchOnFace<br>{}\"]",
                     code_ref_display(code_ref)
                 )?;
             }
             Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"StartSketchOnPlane<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"StartSketchOnPlane<br>{}\"]",
                     code_ref_display(code_ref)
                 )?;
             }
             Artifact::Sweep(sweep) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Sweep {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Sweep {:?}<br>{}\"]",
                     sweep.sub_type,
                     code_ref_display(&sweep.code_ref)
                 )?;
             }
             Artifact::Wall(_wall) => {
-                writeln!(output, "{prefix}{}[Wall]", id)?;
+                writeln!(output, "{prefix}{id}[Wall]")?;
             }
             Artifact::Cap(cap) => {
-                writeln!(output, "{prefix}{}[\"Cap {:?}\"]", id, cap.sub_type)?;
+                writeln!(output, "{prefix}{id}[\"Cap {:?}\"]", cap.sub_type)?;
             }
             Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{}[\"SweepEdge {:?}\"]", id, sweep_edge.sub_type)?;
+                writeln!(output, "{prefix}{id}[\"SweepEdge {:?}\"]", sweep_edge.sub_type)?;
             }
             Artifact::EdgeCut(edge_cut) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"EdgeCut {:?}<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"EdgeCut {:?}<br>{}\"]",
                     edge_cut.sub_type,
                     code_ref_display(&edge_cut.code_ref)
                 )?;
             }
             Artifact::EdgeCutEdge(_edge_cut_edge) => {
-                writeln!(output, "{prefix}{}[EdgeCutEdge]", id)?;
+                writeln!(output, "{prefix}{id}[EdgeCutEdge]")?;
             }
             Artifact::Helix(helix) => {
                 writeln!(
                     output,
-                    "{prefix}{}[\"Helix<br>{:?}\"]",
-                    id,
+                    "{prefix}{id}[\"Helix<br>{}\"]",
                     code_ref_display(&helix.code_ref)
                 )?;
             }
@@ -498,4 +490,11 @@ impl ArtifactGraph {
 
         Ok(())
     }
+}
+
+fn mermaid_escape(s: String) -> String {
+    s.replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("&", "&amp;")
+        .replace("|", "&#124;")
 }
