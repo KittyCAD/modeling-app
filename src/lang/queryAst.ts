@@ -124,9 +124,15 @@ export function getNodeFromPath<T>(
     parent = currentNode
     parentEdge = pathItem[0]
     const nextNode = currentNode?.[pathItem[0]]
-    if (nextNode) {
-      currentNode = nextNode
+    if (!nextNode) {
+      // path to node is bad, return nothing, just return the node and path explored so far
+      return {
+        node: currentNode,
+        shallowPath: pathsExplored,
+        deepPath: successfulPaths,
+      }
     }
+    currentNode = nextNode
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
