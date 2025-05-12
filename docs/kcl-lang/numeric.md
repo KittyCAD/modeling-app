@@ -28,6 +28,8 @@ Any of the suffixes described above can be used meaning that values with that ty
 
 You can also use `number(Length)`, `number(Angle)`, or `number(Count)`. These types mean a number with any length, angle, or unitless (count) units, respectively (note that `number(_)` and `number(Count)` are equivalent since there is only one kind of unitless-ness).
 
+Using just `number` means accepting any kind of number, even where the units are unknown by KCL.
+
 
 ## Function calls
 

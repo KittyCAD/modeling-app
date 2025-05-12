@@ -2694,4 +2694,13 @@ sketch001 = startSketchOn(XY)
         let ast = r#"foo = tan(0): number(rad) - 4deg"#;
         parse_execute(ast).await.unwrap();
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn neg_sqrt() {
+        let ast = r#"bad = sqrt(-2)"#;
+
+        let e = parse_execute(ast).await.unwrap_err();
+        // Make sure we get a useful error message and not an engine error.
+        assert!(e.message().contains("sqrt"), "Error message: '{}'", e.message());
+    }
 }
