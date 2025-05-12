@@ -1160,12 +1160,9 @@ export async function clickElectronNativeMenuById(
   const clickWasTriggered = await tronApp.electron.evaluate(
     async ({ app }, menuId) => {
       if (!app || !app.applicationMenu) {
-        console.log('failed1')
         return false
       }
       const menu = app.applicationMenu.getMenuItemById(menuId)
-      console.log(menuId)
-      console.log('failed2')
       if (!menu) return false
       menu.click()
       return true
@@ -1204,4 +1201,26 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
   // You are viewing the keybindings tab
   const settingsLocator = settings.locator(selector)
   await expect(settingsLocator).toBeVisible()
+}
+
+/**
+ * What is happening?! I need all the console logs!!
+ */
+export async function enableConsoleLogEverything({
+  page,
+  tronApp,
+}: { page?: Page; tronApp?: ElectronZoo }) {
+  page?.on('console', (msg) => {
+    console.log(`[Page-log]: ${msg.text()}`)
+  })
+
+  tronApp?.electron.on('window', async (electronPage) => {
+    electronPage.on('console', (msg) => {
+      console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+    })
+  })
+
+  tronApp?.electron.on('console', (msg) => {
+    console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+  })
 }

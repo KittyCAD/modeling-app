@@ -16,20 +16,6 @@ test.describe('Native file menu', { tag: ['@electron'] }, () => {
     'Home page all in one test but uses steps',
     { tag: ['@electron'] },
     async ({ tronApp, cmdBar, page, homePage }) => {
-      page.on('console', (msg) => {
-        console.log(`PAGE LOG: ${msg.text()}`)
-      })
-
-      tronApp?.electron.on('window', async (page) => {
-        page.on('console', (msg) => {
-          console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
-        })
-      })
-
-      // Capture Electron main process logs
-      tronApp?.electron.on('console', (msg) => {
-        console.log(`[Main] ${msg.type()}: ${msg.text()}`)
-      })
       await test.step('Home.File.Create project', async () => {
         if (!tronApp) fail()
         await page.reload()
