@@ -9,6 +9,10 @@ The KCL standard library
 
 Contains frequently used constants, functions for interacting with the KittyCAD servers to create sketches and geometry, and utility functions. 
 
+The standard library is organised into modules (listed below), but most things are always available in KCL programs. 
+
+You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide](). 
+
 ## Modules
 
 * [`array`](/docs/kcl-std/modules/std-array)
