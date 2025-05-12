@@ -8,7 +8,7 @@ layout: manual
 Compute the starting point of the provided line segment.
 
 ```kcl
-segStart(@tag: TagIdentifier): [number]
+segStart(@tag: TagIdentifier): Point2d
 ```
 
 
@@ -21,7 +21,7 @@ segStart(@tag: TagIdentifier): [number]
 
 ### Returns
 
-[`[number]`](/docs/kcl-std/types/std-types-number)
+[`Point2d`](/docs/kcl-std/types/std-types-Point2d) - A point in two dimensional space.
 
 
 ### Examples
