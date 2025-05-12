@@ -2,8 +2,8 @@ use sha2::{Digest as DigestTrait, Sha256};
 
 use crate::parsing::ast::types::{
     Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryPart, BodyItem,
-    CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, Identifier, IfExpression,
-    ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
+    CallExpressionKw, DefaultParamVal, ElseIf, Expr, ExpressionStatement, FunctionExpression, FunctionType, Identifier,
+    IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility, KclNone, LabelledExpression, Literal,
     LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, ObjectExpression, ObjectProperty, Parameter,
     PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, TagDeclarator, Type, TypeDeclaration,
     UnaryExpression, VariableDeclaration, VariableDeclarator, VariableKind,
@@ -233,11 +233,26 @@ impl PrimitiveType {
             PrimitiveType::Boolean => hasher.update(b"bool"),
             PrimitiveType::Tag => hasher.update(b"tag"),
             PrimitiveType::ImportedGeometry => hasher.update(b"ImportedGeometry"),
-            PrimitiveType::Function => hasher.update(b"fn"),
+            PrimitiveType::Function(f) => hasher.update(f.compute_digest()),
         }
 
         hasher.finalize().into()
     }
+}
+
+impl FunctionType {
+    compute_digest!(|slf, hasher| {
+        if let Some(u) = &mut slf.unnamed_arg {
+            hasher.update(u.compute_digest());
+        }
+        slf.named_args.iter_mut().for_each(|(a, t)| {
+            a.compute_digest();
+            t.compute_digest();
+        });
+        if let Some(r) = &mut slf.return_type {
+            hasher.update(r.compute_digest());
+        }
+    });
 }
 
 impl Parameter {

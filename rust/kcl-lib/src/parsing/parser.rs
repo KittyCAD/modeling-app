@@ -25,11 +25,11 @@ use crate::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeList,
-            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration,
-            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
+            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name,
+            Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
+            PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
+            TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -2811,7 +2811,60 @@ fn type_(i: &mut TokenSlice) -> PResult<Node<Type>> {
 
 fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
     alt((
-        fun.map(|t| Node::new(PrimitiveType::Function, t.start, t.end, t.module_id)),
+        // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
+        (
+            fun,
+            opt((
+                // `(` type?, (id: type,)* `)`
+                delimited(
+                    open_paren,
+                    opt(alt((
+                        // type, (id: type,)+
+                        (
+                            type_,
+                            comma,
+                            opt(whitespace),
+                            separated(
+                                1..,
+                                (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                                comma_sep,
+                            ),
+                        )
+                            .map(|(t, _, _, args)| (Some(t), args)),
+                        // (id: type,)+
+                        separated(
+                            1..,
+                            (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                            comma_sep,
+                        )
+                        .map(|args| (None, args)),
+                        // type
+                        type_.map(|t| (Some(t), Vec::new())),
+                    ))),
+                    close_paren,
+                ),
+                // `:` type
+                opt((colon, opt(whitespace), type_)),
+            )),
+        )
+            .map(|(t, tys)| {
+                let mut ft = FunctionType::empty_fn_type();
+
+                if let Some((args, ret)) = tys {
+                    if let Some((unnamed, named)) = args {
+                        if let Some(unnamed) = unnamed {
+                            ft.unnamed_arg = Some(Box::new(unnamed));
+                        }
+                        ft.named_args = named;
+                    }
+                    if let Some((_, _, ty)) = ret {
+                        ft.return_type = Some(Box::new(ty));
+                    }
+                }
+
+                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+            }),
+        // A named type, possibly with a numeric suffix.
         (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
             let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
             result.inner =
@@ -4791,9 +4844,14 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
     #[test]
     fn parse_function_types() {
         let code = r#"foo = x: fn
-fn foo(x: fn): fn { return 0 }
+foo = x: fn(number)
+fn foo(x: fn(): number): fn { return 0 }
+fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
 type fn
 type foo = fn
+type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn([fn])
+type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         assert_no_err(code);
     }
