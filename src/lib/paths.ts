@@ -185,7 +185,6 @@ export function getProjectDirectoryFromKCLFilePath(
   path: string,
   applicationProjectDirectory: string
 ): string {
-  // /myCoolProject/subDir/cool.kcl
   const replacedPath = path.replace(applicationProjectDirectory, '')
   const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
   if (iAmABlankString === '') {
