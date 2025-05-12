@@ -23,6 +23,7 @@ endif
 install: node_modules/.package-lock.json $(CARGO) $(WASM_PACK) ## Install dependencies
 
 node_modules/.package-lock.json: package.json package-lock.json
+	npm prune
 	npm install
 
 $(CARGO):
