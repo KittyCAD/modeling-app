@@ -15,9 +15,7 @@ You can do each of these steps in KCL. Let's see how!
 
 ## Your first triangle
 
-Let's sketch a really simple triangle. We'll sketch something like this:
-
-<INSERT PICTURE OF RIGHT-ANGLED TRIANGLE WITH SIDE LENGTH 3 AND 4>
+Let's sketch a really simple triangle. We'll sketch a right-angled triangle, with side lengths 3 and 4.
 
 Just copy this code into the KCL editor:
 
@@ -43,7 +41,7 @@ Let's break this code down line-by-line and see how it corresponds to each step 
 
 In KCL, there's six basic built-in planes you can use: XY, YZ, XZ, and negative versions of each (-XY, -YZ and -XZ). You can use one of these standard planes, or define your own (we'll get to that later). Those six standard planes can be used just like normal variables you define, except they're pre-defined by KCL in its standard library. You can pass them into functions, like the [`startSketchOn`] function. So, line 1, `startSketchOn(XY)` is where you choose a plane, and start sketching on it.
 
-`startSketchOn` takes one argument, the plane to sketch on. It's the special unlabeled first parameter.
+`startSketchOn` takes one argument, the plane to sketch on. It's the special unlabeled first parameter. We'll go over some other planes you can sketch on in the chapter about [sketch on face].
 
 ### 2: Start sketching
 
@@ -151,3 +149,4 @@ We've written our first triangle. We learned:
 [`startSketchOn`]: https://zoo.dev/docs/kcl/startSketchOn
 [`xLine`]: https://zoo.dev/docs/kcl/xLine
 [`yLine`]: https://zoo.dev/docs/kcl/yLine
+[sketch on face]: /sketch_on_face.html

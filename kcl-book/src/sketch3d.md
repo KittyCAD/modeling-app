@@ -5,14 +5,14 @@ Previous chapters covered designing 2D shapes. Now it's time to design 3D shapes
 
 3D shapes are usually made by adding depth to a 2D shape. There are two common ways engineers do this: by extruding or revolving 2D shapes into 3D. Let's examine each of them.
 
-## Extruding
+## Extrude
 
 Extruding basically takes a 2D shape and pulls it up, stretching it upwards into the third dimension. Let's start with our existing 2D pill shape from the previous chapter:
 
 ```kcl
 height = 4
 width = 8
-startSketchOn(XZ)
+pill = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> xLine(length = width)
   |> tangentialArc(end = [0, height])
@@ -29,14 +29,18 @@ Now we're going to extrude it up into the third axis, making a 3D solid.
 ```kcl
 height = 4
 width = 8
-depth = 10 // Add this line 
-startSketchOn(XZ)
+
+// Add this line!
+depth = 10
+
+pill = startSketchOn(XZ)
   |> startProfile(at = [0, 0])
   |> xLine(length = width)
   |> tangentialArc(end = [0, height])
   |> xLine(length = -width)
   |> tangentialArc(endAbsolute = profileStart())
   |> close()
+
   // Add this line!
   // This line transforms the 2D sketch into a 3D solid.
   |> extrude(length = depth)
@@ -48,8 +52,66 @@ You should see something like this:
 
 The [`extrude`] function takes a distance, which is how far along the third axis to extrude. Every plane has a _normal_, or an axis which is _tangent_ to the plane. For the plane XZ, this is the Y axis. This normal, or tangent, or axis perpendicular to the plane, is the direction that extrudes go along.
 
+## Sweep
 
-## Revolving
+An extrude takes some 2D sketch and drags it up in a straight line along the normal axis. A _sweep_ is like an extrude, but the shape isn't just moved along a straight line: it could be moved along any path. Let's reuse our previous pill-shape example, but this time we'll sweep it instead of extruding it. First, we have to define a path that the sweep will take. Let's add one:
+
+```kcl=path_for_sweep
+height = 4
+width = 8
+depth = 10
+pill = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = width)
+  |> tangentialArc(end = [0, height])
+  |> xLine(length = -width)
+  |> tangentialArc(endAbsolute = profileStart())
+  |> close()
+
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90, radius = 5)
+  |> line(end = [0, 7])
+```
+
+![A 2D pill shape, and a path we're going to sweep it along](images/dynamic/path_for_sweep.png)
+
+Now we'll add the sweep call `swept = sweep(pill, path = sweepPath)`, which will drag our 2D pill sketch along the path we defined.
+
+```kcl=swept_along_path
+height = 4
+width = 8
+depth = 10
+pill = startSketchOn(XZ)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = width)
+  |> tangentialArc(end = [0, height])
+  |> xLine(length = -width)
+  |> tangentialArc(endAbsolute = profileStart())
+  |> close()
+
+
+// Create a path for the sweep.
+sweepPath = startSketchOn(XZ)
+  |> startProfile(at = [0.05, 0.05])
+  |> line(end = [0, 7])
+  |> tangentialArc(angle = 90, radius = 5)
+  |> line(end = [-3, 0])
+  |> tangentialArc(angle = -90, radius = 5)
+  |> line(end = [0, 7])
+
+// Sweep the pill along the path
+swept = sweep(pill, path = sweepPath)
+```
+
+![A 2D pill shape, swept along a path to make it 3D](images/dynamic/swept_along_path.png)
+
+## Revolve
 
 Revolves are the other common way to make a 3D shape. Let's start with a 2D shape, like a basic circle.
 
@@ -83,7 +145,20 @@ startSketchOn(XZ)
 
 ## Spheres
 
-You can make a sphere by revolving a semicircle its full 360 degrees.
+You can make a sphere by revolving a semicircle its full 360 degrees. First, let's make a semicircle:
+
+
+```kcl=semicircle
+radius = 10
+startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> yLine(length = radius * 2)
+  |> arc(angleStart = 90, angleEnd = 270, radius = radius)
+```
+
+![Sketching a semicircle](images/dynamic/semicircle.png)
+
+Then we can `close()` it and add a call to `revolve(axis = Y, angle = 360)` to revolve it into a sphere:
 
 ```kcl=sphere
 radius = 10
@@ -96,7 +171,6 @@ startSketchOn(XY)
 ```
 
 ![Revolving a semicircle to make a sphere](images/dynamic/sphere.png)
-
 
 [`extrude`]: https://zoo.dev/docs/kcl/extrude
 [`revolve`]: https://zoo.dev/docs/kcl/revolve
