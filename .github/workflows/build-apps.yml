@@ -96,8 +96,7 @@ jobs:
         run: |
           COMMIT=$(git rev-parse --short HEAD)
           DATE=$(date +'%-y.%-m.%-d')
-          OFFSET=$(date +'%H%M')
-          export VERSION=$DATE-staging.$OFFSET+$COMMIT
+          export VERSION=$DATE-main.$COMMIT
           npm run files:set-version
           npm run files:flip-to-nightly
 
@@ -119,7 +118,7 @@ jobs:
             assets/icon.png
 
       - id: export_version
-        run: echo "version=`cat package.json | jq -r '.version' | cut -f1 -d"+"`" >> "$GITHUB_OUTPUT"
+        run: echo "version=`cat package.json | jq -r '.version'`" >> "$GITHUB_OUTPUT"
 
       - id: export_notes
         run: echo "notes=`cat release-notes.md`" >> "$GITHUB_OUTPUT"
