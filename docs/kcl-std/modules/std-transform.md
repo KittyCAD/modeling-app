@@ -1,11 +1,11 @@
 ---
 title: "transform"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "This module contains functions for transforming sketches and solids. "
 layout: manual
 ---
 
-
+This module contains functions for transforming sketches and solids. 
 
 
 

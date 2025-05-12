@@ -20,7 +20,7 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 ## Snapshot and export
 
-When you submit a PR to add or modify KCL samples, images and STEP files will be generated and added to the repository automatically.
+When you submit a PR to add or modify KCL samples, images will be generated and added to the repository automatically.
 
 ---
 #### [80-20-rail](80-20-rail/main.kcl) ([screenshot](screenshots/80-20-rail.png))
@@ -43,8 +43,6 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![cycloidal-gear](screenshots/cycloidal-gear.png)](cycloidal-gear/main.kcl)
 #### [dodecahedron](dodecahedron/main.kcl) ([screenshot](screenshots/dodecahedron.png))
 [![dodecahedron](screenshots/dodecahedron.png)](dodecahedron/main.kcl)
-#### [dual-basin-utility-sink](dual-basin-utility-sink/main.kcl) ([screenshot](screenshots/dual-basin-utility-sink.png))
-[![dual-basin-utility-sink](screenshots/dual-basin-utility-sink.png)](dual-basin-utility-sink/main.kcl)
 #### [enclosure](enclosure/main.kcl) ([screenshot](screenshots/enclosure.png))
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([screenshot](screenshots/exhaust-manifold.png))
@@ -103,6 +101,8 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![sheet-metal-bracket](screenshots/sheet-metal-bracket.png)](sheet-metal-bracket/main.kcl)
 #### [socket-head-cap-screw](socket-head-cap-screw/main.kcl) ([screenshot](screenshots/socket-head-cap-screw.png))
 [![socket-head-cap-screw](screenshots/socket-head-cap-screw.png)](socket-head-cap-screw/main.kcl)
+#### [utility-sink](utility-sink/main.kcl) ([screenshot](screenshots/utility-sink.png))
+[![utility-sink](screenshots/utility-sink.png)](utility-sink/main.kcl)
 #### [walkie-talkie](walkie-talkie/main.kcl) ([screenshot](screenshots/walkie-talkie.png))
 [![walkie-talkie](screenshots/walkie-talkie.png)](walkie-talkie/main.kcl)
 #### [washer](washer/main.kcl) ([screenshot](screenshots/washer.png))

@@ -79,7 +79,7 @@ function Welcome() {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 grid items-end justify-center p-2">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
@@ -149,7 +149,7 @@ function Toolbar() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-16">
       <OnboardingCard>
         <h1 className="text-xl font-bold">This is the toolbar</h1>
         <p className="my-4">
@@ -170,7 +170,7 @@ function TextToCad() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-50 grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-16">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
@@ -229,7 +229,7 @@ function TextToCadPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD prompt</h1>
         <p className="my-4">
@@ -325,7 +325,7 @@ function PromptToEdit() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
 
   return (
-    <div className="fixed inset-0 z-50 grid items-center justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-center justify-center p-16">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
@@ -381,7 +381,7 @@ function PromptToEditPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus)
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Modify with Text-to-CAD prompt</h1>
         {!isReady && (
@@ -429,7 +429,7 @@ function PromptToEditResult() {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Result</h1>
         <p className="my-4">
@@ -462,7 +462,7 @@ function OnboardingConclusion() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-50 p-16 grid justify-center items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Download the desktop app</h1>
         <p className="my-4">

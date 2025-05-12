@@ -161,7 +161,7 @@ pub struct Args {
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
-    pipe_value: Option<Arg>,
+    pub pipe_value: Option<Arg>,
 }
 
 impl Args {
@@ -407,8 +407,15 @@ impl Args {
             })
         })?;
 
-        // TODO unnecessary cloning
-        Ok(T::from_kcl_val(&arg).unwrap())
+        T::from_kcl_val(&arg).ok_or_else(|| {
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!(
+                    "This function expected the input argument to be {}",
+                    ty.human_friendly_type(),
+                ),
+            })
+        })
     }
 
     // Add a modeling command to the batch but don't fire it right away.

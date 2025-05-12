@@ -81,7 +81,7 @@ function Welcome() {
   }, [loaderData?.project?.name])
 
   return (
-    <div className="fixed inset-0 z-50 grid items-end justify-center p-2">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-end justify-center p-2">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Welcome to Zoo Design Studio</h1>
         <p className="my-4">
@@ -143,7 +143,7 @@ function Toolbar() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-start justify-center p-16">
       <OnboardingCard>
         <h1 className="text-xl font-bold">This is the toolbar</h1>
         <p className="my-4">
@@ -164,7 +164,7 @@ function TextToCad() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-50 grid items-start justify-center p-16">
+    <div className="cursor-not-allowed fixed inset-0 z-50 grid items-start justify-center p-16">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Text-to-CAD</h1>
         <p className="my-4">
@@ -223,7 +223,7 @@ function TextToCadPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Text-to-CAD prompt</h1>
         <p className="my-4">
@@ -269,7 +269,7 @@ function FeatureTreePane() {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">CPU Fan Housing</h1>
         <p className="my-4">
@@ -300,7 +300,7 @@ function CodePane() {
   useOnboardingPanes(['code'])
 
   return (
-    <div className="fixed inset-0 z-50 p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">KCL Code</h1>
         <p className="my-4">
@@ -331,7 +331,7 @@ function ProjectPane() {
   useOnboardingPanes(['files'])
 
   return (
-    <div className="fixed inset-0 z-50 p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Files Pane</h1>
         <p className="my-4">
@@ -358,7 +358,7 @@ function OtherPanes() {
   useOnboardingPanes(['logs', 'variables'])
 
   return (
-    <div className="fixed inset-0 z-50 p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Other panes</h1>
         <p className="my-4">
@@ -415,7 +415,7 @@ function PromptToEdit() {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-50 p-8 grid justify-center items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-8 grid justify-center items-center">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Modify with Zoo Text-to-CAD</h1>
         <p className="my-4">
@@ -471,7 +471,7 @@ function PromptToEditPrompt() {
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
 
   return (
-    <div className="fixed inset-0 z-[99] grid items-center justify-center">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] grid items-center justify-center">
       <OnboardingCard className="pointer-events-auto">
         <h1 className="text-xl font-bold">Modify with Text-to-CAD prompt</h1>
         {!isReady && (
@@ -534,7 +534,7 @@ function PromptToEditResult() {
   }, [])
 
   return (
-    <div className="fixed inset-0 z-[99] p-8 grid justify-center items-end">
+    <div className="cursor-not-allowed fixed inset-0 z-[99] p-8 grid justify-center items-end">
       <OnboardingCard className="col-start-3 col-span-2">
         <h1 className="text-xl font-bold">Result</h1>
         <p className="my-4">
@@ -572,7 +572,7 @@ function Imports() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-50 p-16 flex flex-col gap-8 items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 flex flex-col gap-8 items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Add file(s) to project</h1>
         <p className="my-4">
@@ -603,7 +603,7 @@ function Exports() {
   useOnboardingPanes()
 
   return (
-    <div className="fixed inset-0 z-50 p-16 grid justify-start items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-start items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Exporting</h1>
         <p className="my-4">
@@ -631,7 +631,7 @@ function OnboardingConclusion() {
   )
 
   return (
-    <div className="fixed inset-0 z-50 p-16 grid justify-center items-center">
+    <div className="cursor-not-allowed fixed inset-0 z-50 p-16 grid justify-center items-center">
       <OnboardingCard>
         <h1 className="text-xl font-bold">Time to start building</h1>
         <p className="my-4">

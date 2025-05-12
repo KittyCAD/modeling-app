@@ -1,3 +1,5 @@
+/// Functions for mathematical operations and some useful constants.
+
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 

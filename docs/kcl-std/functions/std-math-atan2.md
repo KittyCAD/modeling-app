@@ -20,12 +20,12 @@ atan2(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
-| `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `y` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
+| `x` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(rad)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 ### Examples

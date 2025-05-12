@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart dual-basin-utility-sink.kcl
+description: Artifact graph flowchart subtract_regression02.kcl
 extension: md
 snapshot_kind: binary
 ---

@@ -17,11 +17,11 @@ units::toFeet(@num: number(ft)): number(ft)
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `num` | [`number(ft)`](/docs/kcl-std/types/std-types-number) | A number | Yes |
+| `num` | [`number(ft)`](/docs/kcl-std/types/std-types-number) | A number. | Yes |
 
 ### Returns
 
-[`number(ft)`](/docs/kcl-std/types/std-types-number) - A number
+[`number(ft)`](/docs/kcl-std/types/std-types-number) - A number.
 
 
 
