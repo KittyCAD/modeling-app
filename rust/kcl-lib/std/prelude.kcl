@@ -5,6 +5,8 @@
 ///
 /// The standard library is organised into modules (listed below), but most things are always available
 /// in KCL programs.
+///
+/// You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide]().
 
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
