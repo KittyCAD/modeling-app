@@ -123,7 +123,10 @@ export function getNodeFromPath<T>(
     }
     parent = currentNode
     parentEdge = pathItem[0]
-    currentNode = currentNode?.[pathItem[0]]
+    const nextNode = currentNode?.[pathItem[0]]
+    if (nextNode) {
+      currentNode = nextNode
+    }
     successfulPaths.push(pathItem)
     if (!stopAtNode) {
       pathsExplored.push(pathItem)
@@ -925,8 +928,6 @@ export function isCursorInFunctionDefinition(
     'FunctionExpression'
   )
   if (err(node)) return false
-  if (!node) return false
-  if (!node.node) return false
   if (node.node.type === 'FunctionExpression') return true
   return false
 }
