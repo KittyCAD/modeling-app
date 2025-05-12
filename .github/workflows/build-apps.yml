@@ -5,15 +5,12 @@ on:
   push:
     branches:
       - main
-      - pierremtb/adhoc/clean-up-nightly-on-merge
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+'
 
 env:
   IS_RELEASE: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') }}
-  IS_NIGHTLY: ${{ github.event_name == 'push' }}
-  # TODO: bring this back
-  # IS_NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+  IS_NIGHTLY: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -311,9 +308,7 @@ jobs:
     permissions:
       contents: write
     # Equivalent to IS_RELEASE || IS_NIGHTLY (but we can't access those env vars here)
-    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || github.event_name == 'push' }}
-    # TODO: bring this back
-    # if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
+    if: ${{ (github.ref_type == 'tag' && startsWith(github.ref_name, 'v')) || (github.event_name == 'push' && github.ref == 'refs/heads/main') }}
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
@@ -370,9 +365,7 @@ jobs:
         env:
           NOTES: ${{ needs.prepare-files.outputs.notes }}
           PUB_DATE: ${{ github.event.repository.updated_at }}
-          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/test/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
-          # TODO: bring this back
-          # WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
+          WEBSITE_DIR: ${{ env.IS_NIGHTLY == 'true' && 'dl.zoo.dev/releases/modeling-app/nightly' || 'dl.zoo.dev/releases/modeling-app' }}
           URL_CODED_NAME: ${{ env.IS_NIGHTLY == 'true' && 'Zoo%20Design%20Studio%20%28Nightly%29' || 'Zoo%20Design%20Studio' }}
         run: |
           RELEASE_DIR=https://${WEBSITE_DIR}
@@ -440,9 +433,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
-          destination: 'dl.kittycad.io/releases/modeling-app/test/nightly'
-          # TODO: bring this back
-          # destination: 'dl.kittycad.io/releases/modeling-app/nightly'
+          destination: 'dl.kittycad.io/releases/modeling-app/nightly'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
         if: ${{ env.IS_NIGHTLY == 'true' }}
