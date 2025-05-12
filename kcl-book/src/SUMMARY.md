@@ -26,7 +26,6 @@
 - [Reduce and geometry](./reduce_geometry.md)
 
 # KCL projects
-- [Settings](./settings.md)
 - [Units of measurement](./units_of_measurement.md)
 - [Modules](./modules.md)
 
