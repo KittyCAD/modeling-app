@@ -1,11 +1,11 @@
 ---
 title: "math"
 subtitle: "Module in std"
-excerpt: ""
+excerpt: "Functions for mathematical operations and some useful constants. "
 layout: manual
 ---
 
-
+Functions for mathematical operations and some useful constants. 
 
 
 

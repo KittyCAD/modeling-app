@@ -1,35 +1,42 @@
 /// Functions for converting numbers to different units.
+///
+/// All numbers in KCL include units, e.g., the number `42` is always '42 mm' or '42 degrees', etc.
+/// it is never just '42'. For more information, see [numeric types](/docs/kcl-lang/numeric).
+///
+/// Note that you only need to explicitly convert the units of a number if you need a specific unit
+/// for your own calculations. When calling a function, KCL will convert a number to the required
+/// units automatically (where possible, and give an error or warning if it's not possible).
 
 @no_std
 @settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// Convert a number to millimeters from its current units.
-export fn toMillimeters(@num: number(mm)): number(mm) {
+export fn toMillimeters(@num: number(Length)): number(mm) {
   return num
 }
 
 /// Convert a number to centimeters from its current units.
-export fn toCentimeters(@num: number(cm)): number(cm) {
+export fn toCentimeters(@num: number(Length)): number(cm) {
   return num
 }
 
 /// Convert a number to meters from its current units.
-export fn toMeters(@num: number(m)): number(m) {
+export fn toMeters(@num: number(Length)): number(m) {
   return num
 }
 
 /// Convert a number to inches from its current units.
-export fn toInches(@num: number(in)): number(in) {
+export fn toInches(@num: number(Length)): number(in) {
   return num
 }
 
 /// Convert a number to feet from its current units.
-export fn toFeet(@num: number(ft)): number(ft) {
+export fn toFeet(@num: number(Length)): number(ft) {
   return num
 }
 
 /// Converts a number to yards from its current units.
-export fn toYards(@num: number(yd)): number(yd) {
+export fn toYards(@num: number(Length)): number(yd) {
   return num
 }
 
@@ -47,7 +54,7 @@ export fn toYards(@num: number(yd)): number(yd) {
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-export fn toRadians(@num: number(rad)): number(rad) {
+export fn toRadians(@num: number(Angle)): number(rad) {
   return num
 }
 
@@ -65,6 +72,6 @@ export fn toRadians(@num: number(rad)): number(rad) {
 ///
 /// example = extrude(exampleSketch, length = 5)
 /// ```
-export fn toDegrees(@num: number(deg)): number(deg) {
+export fn toDegrees(@num: number(Angle)): number(deg) {
   return num
 }

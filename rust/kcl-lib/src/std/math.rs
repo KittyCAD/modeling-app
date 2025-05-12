@@ -3,7 +3,7 @@
 use anyhow::Result;
 
 use crate::{
-    errors::KclError,
+    errors::{KclError, KclErrorDetails},
     execution::{
         types::{ArrayLen, NumericType, RuntimeType},
         ExecState, KclValue,
@@ -54,6 +54,17 @@ pub async fn tan(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
 /// Compute the square root of a number.
 pub async fn sqrt(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let input: TyF64 = args.get_unlabeled_kw_arg_typed("input", &RuntimeType::num_any(), exec_state)?;
+
+    if input.n < 0.0 {
+        return Err(KclError::Semantic(KclErrorDetails {
+            source_ranges: vec![args.source_range],
+            message: format!(
+                "Attempt to take square root (`sqrt`) of a number less than zero ({})",
+                input.n
+            ),
+        }));
+    }
+
     let result = input.n.sqrt();
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))

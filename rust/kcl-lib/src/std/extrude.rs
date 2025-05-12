@@ -152,8 +152,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     args = {
         sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
-        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the
-            extrusion will happen on only one side of the sketch." },
+        symmetric = { docs = "If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch." },
         bidirectional_length = { docs = "If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored."},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
