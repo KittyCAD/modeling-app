@@ -105,11 +105,21 @@ function RenameForm({
     if (e.key === 'Escape') {
       e.stopPropagation()
       onSubmit()
+    } else if (e.key === 'Enter') {
+      // This is needed to prevent events to bubble up and the form to be submitted.
+      // (Alternatively the form could be changed into a div.)
+      // Bug without this:
+      // - open a parent folder (close and open if it's already open)
+      // - right click -> rename one of its children
+      // - give new name and press enter
+      // -> new name is not applied, old name is reverted
+      e.preventDefault()
+      e.stopPropagation()
     }
   }
 
   return (
-    <div role="button" tabIndex={0} onKeyUp={handleRenameSubmit}>
+    <form onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
@@ -129,7 +139,7 @@ function RenameForm({
       <button className="sr-only" type="submit">
         Submit
       </button>
-    </div>
+    </form>
   )
 }
 
