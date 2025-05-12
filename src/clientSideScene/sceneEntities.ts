@@ -122,7 +122,10 @@ import {
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  getPathNormalisedForTruncatedAst,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
@@ -1295,11 +1298,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1502,11 +1504,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1678,13 +1679,11 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1878,14 +1877,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1954,14 +1947,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2109,14 +2094,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2185,14 +2164,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2365,11 +2336,10 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2901,10 +2871,7 @@ export class SceneEntities {
       : { ...this.kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
-      structuredClone(pathToNode)
-    nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-      Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-      Number(sketchNodePaths[0][1][0])
+      getPathNormalisedForTruncatedAst(pathToNode, sketchNodePaths)
 
     const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
