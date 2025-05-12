@@ -64,12 +64,14 @@ export class KclPlugin implements PluginValue {
     editorManager.setEditorView(viewUpdate.view)
 
     let isUserSelect = false
+    let didUserType = false
     let isRelevant = viewUpdate.docChanged
     for (const tr of viewUpdate.transactions) {
       if (tr.isUserEvent('select')) {
         isUserSelect = true
       } else if (tr.isUserEvent('input')) {
         isRelevant = true
+        didUserType
       } else if (tr.isUserEvent('delete')) {
         isRelevant = true
       } else if (tr.isUserEvent('undo')) {
@@ -108,7 +110,7 @@ export class KclPlugin implements PluginValue {
 
     // If we have a user select event, we want to update what parts are
     // highlighted.
-    if (isUserSelect) {
+    if (isUserSelect || didUserType) {
       this._deffererUserSelect(true)
       return
     }

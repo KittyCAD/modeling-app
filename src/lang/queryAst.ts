@@ -131,8 +131,8 @@ export function getNodeFromPath<T>(
     if (
       typeof stopAt !== 'undefined' &&
       (isArray(stopAt)
-        ? stopAt.includes(currentNode.type)
-        : currentNode.type === stopAt)
+        ? stopAt.includes(currentNode?.type)
+        : currentNode?.type === stopAt)
     ) {
       // it will match the deepest node of the type
       // instead of returning at the first match
