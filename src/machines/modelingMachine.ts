@@ -135,6 +135,7 @@ import type { ToolbarModeName } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
+import { isDesktop } from '@src/lib/isDesktop'
 
 export type SetSelections =
   | {
@@ -484,7 +485,9 @@ export const PersistedValues: PersistedKeys[] = ['openPanes']
 export const getPersistedContext = (): Partial<PersistedModelingContext> => {
   const c = (typeof window !== 'undefined' &&
     JSON.parse(localStorage.getItem(PERSIST_MODELING_CONTEXT) || '{}')) || {
-    openPanes: ['code'],
+    openPanes: isDesktop()
+      ? (['feature-tree', 'code', 'files'] satisfies Store['openPanes'])
+      : (['feature-tree', 'code'] satisfies Store['openPanes']),
   }
   return c
 }
