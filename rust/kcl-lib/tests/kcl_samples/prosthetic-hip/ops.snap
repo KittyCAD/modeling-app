@@ -604,10 +604,8 @@ description: Operations executed prosthetic-hip.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "type": "KclStdLibCall",
     "name": "clone",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -616,7 +614,9 @@ description: Operations executed prosthetic-hip.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -721,10 +721,8 @@ description: Operations executed prosthetic-hip.kcl
     }
   },
   {
-    "labeledArgs": {},
+    "type": "KclStdLibCall",
     "name": "clone",
-    "sourceRange": [],
-    "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
@@ -733,7 +731,9 @@ description: Operations executed prosthetic-hip.kcl
         }
       },
       "sourceRange": []
-    }
+    },
+    "labeledArgs": {},
+    "sourceRange": []
   },
   {
     "labeledArgs": {},

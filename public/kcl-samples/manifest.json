@@ -46,6 +46,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bone-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Bone Plate",
+    "description": "A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "bottle/main.kcl",
     "multipleFiles": false,
     "title": "Bottle",
@@ -78,6 +88,16 @@
       "lug-nut.kcl",
       "main.kcl",
       "parameters.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "cold-plate/main.kcl",
+    "multipleFiles": false,
+    "title": "Cold Plate",
+    "description": "A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant",
+    "files": [
+      "main.kcl"
     ]
   },
   {
@@ -242,6 +262,16 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helium-tank/main.kcl",
+    "multipleFiles": false,
+    "title": "Helium Tank",
+    "description": "A helium tank is a portable pressure vessel used to store and dispense helium gas for a variety of commercial and entertainment purposes",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "hex-nut/main.kcl",
     "multipleFiles": false,
     "title": "Hex Nut",
@@ -374,16 +404,6 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "piston/main.kcl",
-    "multipleFiles": false,
-    "title": "Piston",
-    "description": "A piston is the component of an engine that transfers linear motion into circular motion. The piston head is accelerated by exploding fuel, which drives a connecting rod to rotate a crankshaft.",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "poopy-shoe/main.kcl",
     "multipleFiles": false,
     "title": "Poopy Shoe",
@@ -444,6 +464,26 @@
   },
   {
     "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "surgical-drill-guide/main.kcl",
+    "multipleFiles": false,
+    "title": "Surgical Drill Guide",
+    "description": "A surgical drill guide is a tool used in medical procedures to assist in drilling holes to a desired depth, ensuring proper orientation and minimizing intraosseal pressure",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "tooling-nest-block/main.kcl",
+    "multipleFiles": false,
+    "title": "Tooling Nest Block",
+    "description": "A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
     "multipleFiles": false,
     "title": "Utility Sink",
@@ -476,6 +516,16 @@
     "multipleFiles": false,
     "title": "Washer",
     "description": "A small, typically disk-shaped component with a hole in the middle, used in a wide range of applications, primarily in conjunction with fasteners like bolts and screws. Washers distribute the load of a fastener across a broader area. This is especially important when the fastening surface is soft or uneven, as it helps to prevent damage to the surface and ensures the load is evenly distributed, reducing the risk of the fastener becoming loose over time.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "wing-spar/main.kcl",
+    "multipleFiles": false,
+    "title": "Wing Spar",
+    "description": "In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars",
     "files": [
       "main.kcl"
     ]
