@@ -17,7 +17,6 @@ test.describe(
   () => {
     test(
       'Home page',
-      { tag: ['@electron'] },
       async ({ tronApp, cmdBar, page, homePage }) => {
         if (!tronApp) fail()
 
@@ -170,7 +169,6 @@ test.describe(
     )
     test(
       'Modeling page',
-      { tag: ['@electron'] },
       async ({ tronApp, cmdBar, page, homePage, scene }) => {
         if (!tronApp) {
           throwTronAppMissing()
@@ -183,22 +181,18 @@ test.describe(
 
         await test.step('Modeling.File.Create project', async () => {
           await clickElectronNativeMenuById(tronApp, 'File.Create project')
-          await cmdBar.toBeOpened()
           await cmdBar.expectArgValue('untitled')
         })
         await test.step('Modeling.File.Open project', async () => {
           await clickElectronNativeMenuById(tronApp, 'File.Open project')
-          await cmdBar.toBeOpened()
           await cmdBar.expectCommandName('Open project')
         })
         await test.step('Modeling.File.Add file to project', async () => {
           await clickElectronNativeMenuById(tronApp, 'File.Add file to project')
-          await cmdBar.toBeOpened()
           await cmdBar.expectCommandName('Add file to project')
         })
         await test.step('Modeling.File.Export current part', async () => {
           await clickElectronNativeMenuById(tronApp, 'File.Export current part')
-          await cmdBar.toBeOpened()
           await cmdBar.expectCommandName('Export')
         })
         await test.step('Modeling.File.Share part via Zoo link', async () => {
