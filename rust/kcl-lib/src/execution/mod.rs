@@ -51,9 +51,9 @@ pub(crate) mod annotations;
 #[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
-#[cfg(feature = "artifact-graph")]
 mod cad_op;
 mod exec_ast;
+pub mod fn_call;
 mod geometry;
 mod id_generator;
 mod import;
@@ -62,6 +62,11 @@ mod memory;
 mod state;
 pub mod typed_path;
 pub(crate) mod types;
+
+enum StatementKind<'a> {
+    Declaration { name: &'a str },
+    Expression,
+}
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]

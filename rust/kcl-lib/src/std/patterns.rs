@@ -15,18 +15,16 @@ use kittycad_modeling_cmds::{
 use serde::Serialize;
 use uuid::Uuid;
 
-use super::{
-    args::{Arg, KwArgs},
-    utils::{point_3d_to_mm, point_to_mm},
-};
+use super::utils::{point_3d_to_mm, point_to_mm};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
+        fn_call::{Arg, Args, KwArgs},
         kcl_value::FunctionSource,
         types::{NumericType, RuntimeType},
         ExecState, Geometries, Geometry, KclObjectFields, KclValue, Sketch, Solid,
     },
-    std::{args::TyF64, Args},
+    std::args::TyF64,
     ExecutorContext, SourceRange,
 };
 
