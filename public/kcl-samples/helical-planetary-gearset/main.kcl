@@ -162,34 +162,32 @@ fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
 
 // Create the outer ring gear for the planetary gearset
 ringGear(
-       nTeeth = 60,
-       module = 1.5,
-       pressureAngle = 14,
-       helixAngle = -25,
-       gearHeight = 5,
-     )
+  nTeeth = 42,
+  module = 1.5,
+  pressureAngle = 14,
+  helixAngle = -25,
+  gearHeight = 5,
+)
 
 // Create a central sun gear using a small helical gear
 helicalGear(
-       nTeeth = 11,
-       module = 1.5,
-       pressureAngle = 14,
-       helixAngle = 25,
-       gearHeight = 5,
-     )
-  // Rotate the center gear so that the teeth mesh but do not intersect
-  |> rotate(yaw = -4)
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14,
+  helixAngle = 25,
+  gearHeight = 5,
+)
 
 // Create the helical planet gears
 numPlanetGears = 3
 helicalGear(
-       nTeeth = 22,
+       nTeeth = 12,
        module = 1.5,
        pressureAngle = 14,
        helixAngle = -25,
        gearHeight = 5,
      )
-  |> translate(y = (11 + 22) / 2 * 1.5 + 1.95)
+  |> translate(y = (12 + 12) / 2 * 1.5 + 2.7)
   |> patternCircular3d(
        instances = numPlanetGears,
        axis = [0, 0, 1],
