@@ -261,7 +261,14 @@ export const EngineStream = (props: {
         )
         .catch(trap)
     }
-  }, [file?.path])
+    /**
+     * Watch file not file?.path. Watching the object allows us to send the same file.path back to back
+     * and still trigger the executeCode() function. JS should not be doing a cache check on the file path
+     * we should be putting the cache check in Rust.
+     * e.g. We can call `navigate(/file/<>)` or `navigate(/file/<>/settings)` as much as we want and it will
+     * trigger this workflow.
+     */
+  }, [file])
 
   const IDLE_TIME_MS = Number(streamIdleMode)
 
