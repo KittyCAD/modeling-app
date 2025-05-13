@@ -183,7 +183,7 @@ impl RuntimeType {
             AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
-            AstPrimitiveType::Function => RuntimeType::Primitive(PrimitiveType::Function),
+            AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
     }
 

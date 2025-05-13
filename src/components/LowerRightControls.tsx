@@ -56,7 +56,7 @@ export function LowerRightControls({
           Element="externalLink"
           to={getReleaseUrl()}
           className={
-            '!no-underline !border-none font-mono text-xs' +
+            '!no-underline !border-none !bg-transparent font-mono text-xs' +
             linkOverrideClassName
           }
         >
