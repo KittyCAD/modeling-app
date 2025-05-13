@@ -225,7 +225,8 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   path: string,
-  canReadWritePath: boolean
+  canReadWritePath: boolean,
+  shouldRecurse = true
 ) => {
   const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions()
   const isRelevantFile = (filename: string): boolean =>
@@ -283,7 +284,7 @@ const collectAllFilesRecursiveFrom = async (
     const ePath = window.electron.path.join(path, e)
     const isEDir = await window.electron.statIsDirectory(ePath)
 
-    if (isEDir) {
+    if (isEDir && shouldRecurse) {
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
         canReadWritePath
@@ -382,7 +383,7 @@ const directoryCount = (file: FileEntry) => {
   return count
 }
 
-export async function getProjectInfo(projectPath: string): Promise<Project> {
+export async function getProjectInfo(projectPath: string, shouldRecurse = true): Promise<Project> {
   // Check the directory.
   let metadata
   try {
@@ -411,7 +412,8 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
-    canReadWriteProjectPath
+    canReadWriteProjectPath,
+    shouldRecurse
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string

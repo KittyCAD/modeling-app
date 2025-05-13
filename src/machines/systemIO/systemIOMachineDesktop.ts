@@ -125,7 +125,7 @@ export const systemIOMachineDesktop = systemIOMachine.provide({
           if (!isDirectory) {
             continue
           }
-          const project: Project = await getProjectInfo(projectPath)
+          const project: Project = await getProjectInfo(projectPath, false)
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
