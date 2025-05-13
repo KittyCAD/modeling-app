@@ -746,7 +746,7 @@ description: Artifact commands helical-planetary-gearset.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 1.9390985478752734,
+        "x": 1.9390985478752714,
         "y": 8.514650570188689,
         "z": 0.0
       }
@@ -772,7 +772,7 @@ description: Artifact commands helical-planetary-gearset.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.9695492739376349,
+        "x": -0.9695492739376368,
         "y": 8.678672232328719,
         "z": 0.0
       }
@@ -977,7 +977,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "end_radius": 10.5,
         "angle": {
           "unit": "degrees",
-          "value": 77.17045767129221
+          "value": 77.17045767129224
         },
         "reverse": false
       }
@@ -1013,7 +1013,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "end_radius": 10.5,
         "angle": {
           "unit": "degrees",
-          "value": 96.3744421764834
+          "value": 96.37444217648343
         },
         "reverse": false
       }
@@ -1187,7 +1187,7 @@ description: Artifact commands helical-planetary-gearset.kcl
         "end_radius": 10.5,
         "angle": {
           "unit": "degrees",
-          "value": -95.26661676641692
+          "value": -95.26661676641686
         },
         "reverse": true
       }
@@ -6407,7 +6407,7 @@ description: Artifact commands helical-planetary-gearset.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -2.159450655588366,
+        "x": -2.159450655588373,
         "y": 30.487934455669738,
         "z": 0.0
       }
