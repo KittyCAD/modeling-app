@@ -1,0 +1,101 @@
+// Pillow Block Bearing
+// The ball bearing for the pillow block bearing assembly
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Create the sketch of one of the balls. The ball diameter is sized as a fraction of the difference between inner and outer radius of the bearing
+ballsSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [bearingBoreDiameter / 2 + 0.1, 0.001])
+  |> arc(angleEnd = 0, angleStart = 180, radius = sphereDia / 2)
+  |> close()
+
+// Revolve the ball to make a sphere and pattern around the inside wall
+balls = revolve(ballsSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the chain around the balls
+chainSketch = startSketchOn(offsetPlane(XY, offset = stockThickness / 2))
+  |> startProfile(at = [
+       bearingBoreDiameter / 2 + 0.1 + sphereDia / 2 - (chainWidth / 2),
+       0.125 * sin(60deg)
+     ])
+  |> arc(angleEnd = 60, angleStart = 120, radius = sphereDia / 2)
+  |> line(end = [0, chainThickness])
+  |> line(end = [-chainWidth, 0])
+  |> close()
+
+// Revolve the chain sketch
+chainHead = revolve(chainSketch, axis = X)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )
+
+// Create the sketch for the links in between the chains
+linkSketch = startSketchOn(XZ)
+  |> circle(
+       center = [
+         bearingBoreDiameter / 2 + 0.1 + sphereDia / 2,
+         stockThickness / 2
+       ],
+       radius = linkDiameter / 2,
+     )
+
+// Create the walls of the bearing
+bearingBody = startSketchOn(XZ)
+bearingUpper = startProfile(
+       bearingBody,
+       at = [
+         bearingOuterDiameter / 2 - .07,
+         stockThickness
+       ],
+     )
+  |> angledLine(angle = -91, length = 0.05)
+  |> xLine(length = -(bearingOuterDiameter / 2 - (bearingBoreDiameter / 2)) + .145)
+  |> yLine(endAbsolute = 0.105)
+  |> xLine(length = -0.025)
+  |> angledLine(angle = 91, endAbsoluteY = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#121212")
+
+bearingLower = startProfile(bearingBody, at = [bearingBoreDiameter / 2, 0.025])
+  |> xLine(length = 0.05)
+  |> angledLine(angle = 75, length = 0.04, tag = $seg01)
+  |> xLine(length = 0.05)
+  |> angledLine(angle = -75, length = segLen(seg01))
+  |> xLine(endAbsolute = bearingOuterDiameter / 2)
+  |> yLine(length = stockThickness)
+  |> xLine(length = -0.07)
+  |> angledLine(angle = -91, endAbsoluteY = profileStartY(%) + .075)
+  |> xLine(endAbsolute = profileStartX(%) + .05)
+  |> angledLine(angle = 91, endAbsoluteY = stockThickness * 1.25)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(angle = 360, axis = Y)
+  |> appearance(%, color = "#f0f0f0")
+
+// Revolve the link sketch
+revolve(linkSketch, axis = Y, angle = 360 / 16)
+  |> patternCircular3d(
+       arcDegrees = 360,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       instances = 16,
+       rotateDuplicates = true,
+     )

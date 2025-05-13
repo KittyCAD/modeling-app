@@ -1,0 +1,7 @@
+part001 = startSketchOn(XY)
+  |> startProfile(at = [5.5229, 5.25217])
+  |> line(end = [10.50433, -1.19122])
+  |> line(end = [8.01362, -5.48731])
+  |> line(end = [-1.02877, -6.76825])
+  |> line(end = [-11.53311, 2.81559])
+  |> extrude(length = 4)
