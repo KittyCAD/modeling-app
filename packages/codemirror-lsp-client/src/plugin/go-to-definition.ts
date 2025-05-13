@@ -15,10 +15,6 @@ export default function lspGoToDefinitionExt(
         {
           key: 'F12',
           run: (view) => {
-            if (!plugin) {
-              return false
-            }
-
             const value = view.plugin(plugin)
             if (!value) return false
 
