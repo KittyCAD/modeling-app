@@ -1249,7 +1249,7 @@ secondSketch = startSketchOn(part001, face = '')
     let err = err.as_kcl_error().unwrap();
     assert_eq!(
         err.message(),
-        "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string (text)"
+        "The arg face was given, but it was the wrong type. It should be type FaceTag but it was string"
     );
 }
 
@@ -1882,7 +1882,7 @@ someFunction('INVALID')
     assert!(result.is_err());
     assert_eq!(
         result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([46, 55, 0]), SourceRange([60, 83, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
+        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([46, 55, 0]), SourceRange([60, 83, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string" }"#
     );
 }
 
