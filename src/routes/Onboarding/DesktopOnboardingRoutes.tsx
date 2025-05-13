@@ -27,6 +27,8 @@ import {
   modifiedFanHousingBrowser,
   modifiedParametersDesktop,
 } from '@src/lib/exampleKcl'
+import { VITE_KC_SITE_BASE_URL } from '@src/env'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -637,8 +639,17 @@ function OnboardingConclusion() {
         <p className="my-4">
           We appreciate you downloading Zoo Design Studio and taking the time to
           walk through the basics. To navigate back home to create your own
-          project, click the Zoo button in the top left (gesture). To learn more
-          detailed and advanced techniques, go here (TODO tutorials).
+          project, click the Zoo button in the top left. To learn more detailed
+          and advanced techniques,{' '}
+          <a
+            onClick={openExternalBrowserIfDesktop(
+              `${VITE_KC_SITE_BASE_URL}/docs`
+            )}
+            href={`${VITE_KC_SITE_BASE_URL}/docs`}
+          >
+            check out our docs
+          </a>
+          .
         </p>
         <OnboardingButtons
           currentSlug="/desktop/conclusion"
