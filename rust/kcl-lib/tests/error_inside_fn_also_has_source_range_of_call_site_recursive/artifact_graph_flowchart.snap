@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
+extension: md
+snapshot_kind: binary
+---

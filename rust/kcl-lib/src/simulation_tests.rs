@@ -3023,3 +3023,24 @@ mod execute_engine_error_return {
         super::execute(TEST_NAME, true).await
     }
 }
+mod error_inside_fn_also_has_source_range_of_call_site_recursive {
+    const TEST_NAME: &str = "error_inside_fn_also_has_source_range_of_call_site_recursive";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
