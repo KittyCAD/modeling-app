@@ -160,12 +160,12 @@ ringGear(
 
 // Create a central sun gear using a small herringbone gear
 herringboneGear(
-       nTeeth = 18,
-       module = 1.5,
-       pressureAngle = 14,
-       helixAngle = 35,
-       gearHeight = 8,
-     )
+  nTeeth = 18,
+  module = 1.5,
+  pressureAngle = 14,
+  helixAngle = 35,
+  gearHeight = 8,
+)
 
 // Create the herringbone planet gears
 numPlanetGears = 4
