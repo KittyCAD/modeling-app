@@ -2,15 +2,23 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[80, 105, 1]"]
+      %% Missing NodePath
     3["Segment<br>[111, 128, 1]"]
+      %% Missing NodePath
     4["Segment<br>[134, 151, 1]"]
+      %% Missing NodePath
     5["Segment<br>[157, 175, 1]"]
+      %% Missing NodePath
     6["Segment<br>[181, 199, 1]"]
+      %% Missing NodePath
     7["Segment<br>[205, 213, 1]"]
+      %% Missing NodePath
     8[Solid2d]
   end
   1["Plane<br>[57, 74, 1]"]
+    %% Missing NodePath
   9["Sweep Extrusion<br>[219, 238, 1]"]
+    %% Missing NodePath
   10[Wall]
   11[Wall]
   12[Wall]
