@@ -179,7 +179,7 @@ test.describe(
 
       await test.step('Modeling.File.Create project', async () => {
         await clickElectronNativeMenuById(tronApp, 'File.Create project')
-        await cmdBar.expectArgValue('untitled')
+        await cmdBar.expectCommandName('Create project')
       })
       await test.step('Modeling.File.Open project', async () => {
         await clickElectronNativeMenuById(tronApp, 'File.Open project')
