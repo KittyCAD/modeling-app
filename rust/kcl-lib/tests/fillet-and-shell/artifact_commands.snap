@@ -78,7 +78,7 @@ description: Artifact commands fillet-and-shell.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 10.799999999999999,
+        "y": 10.8,
         "z": 0.0
       }
     }

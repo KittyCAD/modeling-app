@@ -66,7 +66,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": 3.8353999999999995
+              "z": 3.8354
             },
             "set": false,
             "is_local": true
@@ -112,9 +112,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 60.324999999999996,
+              "x": 60.325,
               "y": 0.0,
-              "z": 17.525999999999996
+              "z": 17.526
             },
             "set": false,
             "is_local": true
@@ -160,7 +160,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -39.700199999999995
+              "z": -39.7002
             },
             "scale": {
               "x": 1.0,
@@ -200,7 +200,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -39.700199999999995
+              "z": -39.7002
             },
             "scale": {
               "x": 1.0,
@@ -240,7 +240,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -39.700199999999995
+              "z": -39.7002
             },
             "scale": {
               "x": 1.0,
@@ -280,7 +280,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "translate": {
               "x": -0.0,
               "y": -0.0,
-              "z": -39.700199999999995
+              "z": -39.7002
             },
             "scale": {
               "x": 1.0,
@@ -317,7 +317,7 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 60.324999999999996,
+              "x": 60.325,
               "y": 0.0,
               "z": 18.3388
             },
@@ -386,9 +386,9 @@ description: Artifact commands pipe-flange-assembly.kcl
         {
           "translate": {
             "property": {
-              "x": 60.324999999999996,
+              "x": 60.325,
               "y": 0.0,
-              "z": -36.064825
+              "z": -36.0648
             },
             "set": false,
             "is_local": true
@@ -457,7 +457,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": 11.175999999999998
+              "z": 11.176
             },
             "set": false,
             "is_local": false
@@ -505,7 +505,7 @@ description: Artifact commands pipe-flange-assembly.kcl
             "property": {
               "x": 0.0,
               "y": 0.0,
-              "z": -15.011399999999998
+              "z": -15.0114
             },
             "set": false,
             "is_local": false
@@ -598,7 +598,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 52.387499999999996,
+        "x": 52.3875,
         "y": 0.0,
         "z": 0.0
       }
@@ -768,7 +768,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.162499999999998,
+        "x": 30.1625,
         "y": 0.0,
         "z": 0.0
       }
@@ -1054,8 +1054,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.524999999999999,
-        "y": 60.324999999999996,
+        "x": 9.525,
+        "y": 60.325,
         "z": 0.0
       }
     }
@@ -1067,8 +1067,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.524999999999999,
-        "y": 60.324999999999996,
+        "x": 9.525,
+        "y": 60.325,
         "z": 0.0
       }
     }
@@ -1298,7 +1298,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 76.19999999999999,
+        "x": 76.2,
         "y": 0.0,
         "z": 0.0
       }
@@ -1311,7 +1311,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 76.19999999999999,
+        "x": 76.2,
         "y": 0.0,
         "z": 0.0
       }
@@ -2822,7 +2822,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.987999999999996,
+        "x": 30.988,
         "y": 0.0,
         "z": 0.0
       }
@@ -2835,7 +2835,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.987999999999996,
+        "x": 30.988,
         "y": 0.0,
         "z": 0.0
       }
@@ -3172,7 +3172,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.087599999999998,
+        "x": 15.0876,
         "y": 0.0,
         "z": 0.0
       }
@@ -3736,7 +3736,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "path": "[uuid]",
       "to": {
         "x": 6.35,
-        "y": 3.666174209354123,
+        "y": 3.6662,
         "z": 0.0
       }
     }
@@ -4408,8 +4408,8 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 11.90625,
-        "y": 6.874076642538981,
+        "x": 11.9063,
+        "y": 6.8741,
         "z": 0.0
       }
     }
@@ -5192,7 +5192,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.162499999999998,
+        "x": 30.1625,
         "y": 0.0,
         "z": 0.0
       }
@@ -5205,7 +5205,7 @@ description: Artifact commands pipe-flange-assembly.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.162499999999998,
+        "x": 30.1625,
         "y": 0.0,
         "z": 0.0
       }

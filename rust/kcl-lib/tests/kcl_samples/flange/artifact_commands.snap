@@ -110,7 +110,7 @@ description: Artifact commands flange.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 52.387499999999996,
+        "x": 52.3875,
         "y": 0.0,
         "z": 0.0
       }

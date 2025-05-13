@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 296
 description: Artifact commands involute_circular_units.kcl
 ---
 [
@@ -78,7 +77,7 @@ description: Artifact commands involute_circular_units.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 49.333862591260186,
+        "x": 49.3339,
         "y": 0.0,
         "z": 0.0
       }
@@ -148,7 +147,7 @@ description: Artifact commands involute_circular_units.kcl
         "radius": 57.5,
         "start": {
           "unit": "degrees",
-          "value": 3.400173269101186
+          "value": 3.4002
         },
         "end": {
           "unit": "degrees",

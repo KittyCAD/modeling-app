@@ -77,8 +77,8 @@ description: Artifact commands countersunk-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.413037500000007,
-        "y": 39.314119998717935,
+        "x": 15.413,
+        "y": 39.3141,
         "z": 0.0
       }
     }
@@ -125,7 +125,7 @@ description: Artifact commands countersunk-plate.kcl
         "radius": 19.049999999999997,
         "offset": {
           "unit": "degrees",
-          "value": -137.1848345922876
+          "value": -137.1848
         }
       }
     }
@@ -158,7 +158,7 @@ description: Artifact commands countersunk-plate.kcl
         "radius": 42.2275,
         "offset": {
           "unit": "degrees",
-          "value": -42.81516540771243
+          "value": -42.8152
         }
       }
     }
@@ -191,7 +191,7 @@ description: Artifact commands countersunk-plate.kcl
         "radius": 19.049999999999997,
         "offset": {
           "unit": "degrees",
-          "value": -137.1848345922876
+          "value": -137.1848
         }
       }
     }
@@ -903,7 +903,7 @@ description: Artifact commands countersunk-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -60.324999999999996,
+        "x": -60.325,
         "y": 0.0,
         "z": 0.0
       }

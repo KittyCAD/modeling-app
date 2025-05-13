@@ -227,7 +227,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.524999999999999,
+        "x": 9.525,
         "y": 0.0,
         "z": 0.0
       }
@@ -707,8 +707,8 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 13.652499999999998,
-        "y": 2.7496306570155924,
+        "x": 13.6525,
+        "y": 2.7496,
         "z": 0.0
       }
     }
@@ -1126,7 +1126,7 @@ description: Artifact commands ball-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 16.033749999999998,
+        "x": 16.0337,
         "y": 0.0,
         "z": 0.0
       }

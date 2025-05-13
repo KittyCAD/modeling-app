@@ -484,7 +484,7 @@ description: Operations executed dodecahedron.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 2000.1100000000001,
+          "value": 2000.11,
           "ty": {
             "type": "Default",
             "len": {

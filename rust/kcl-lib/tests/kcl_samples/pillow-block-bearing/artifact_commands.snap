@@ -91,7 +91,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 24.764999999999997,
+        "x": 24.765,
         "y": 0.0254,
         "z": 0.0
       }
@@ -372,8 +372,8 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 26.154062500000002,
-        "y": 2.7496306570155924,
+        "x": 26.1541,
+        "y": 2.7496,
         "z": 0.0
       }
     }
@@ -800,7 +800,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 28.23765625,
+        "x": 28.2377,
         "y": 6.35,
         "z": 0.0
       }
@@ -868,7 +868,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 31.559499999999996,
+        "x": 31.5595,
         "y": 12.7,
         "z": 0.0
       }
@@ -1362,7 +1362,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 22.224999999999998,
+        "x": 22.225,
         "y": 0.635,
         "z": 0.0
       }
@@ -2376,7 +2376,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "path": "[uuid]",
       "to": {
         "x": -77.7875,
-        "y": -52.387499999999996,
+        "y": -52.3875,
         "z": 0.0
       }
     }
@@ -3163,8 +3163,8 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -53.974999999999994,
-        "y": -38.099999999999994,
+        "x": -53.975,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -3176,8 +3176,8 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -53.974999999999994,
-        "y": 38.099999999999994,
+        "x": -53.975,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -3189,8 +3189,8 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 73.02499999999999,
-        "y": -38.099999999999994,
+        "x": 73.025,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -3202,8 +3202,8 @@ description: Artifact commands pillow-block-bearing.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 73.02499999999999,
-        "y": 38.099999999999994,
+        "x": 73.025,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -3828,7 +3828,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "path": "[uuid]",
       "to": {
         "x": -58.7375,
-        "y": -38.099999999999994,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -3841,7 +3841,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "path": "[uuid]",
       "to": {
         "x": -58.7375,
-        "y": 38.099999999999994,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -3854,7 +3854,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "path": "[uuid]",
       "to": {
         "x": 68.2625,
-        "y": -38.099999999999994,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -3867,7 +3867,7 @@ description: Artifact commands pillow-block-bearing.kcl
       "path": "[uuid]",
       "to": {
         "x": 68.2625,
-        "y": 38.099999999999994,
+        "y": 38.1,
         "z": 0.0
       }
     }

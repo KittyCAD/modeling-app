@@ -237,7 +237,7 @@ description: Artifact commands subtract_regression05.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 30.162499999999998,
+        "x": 30.1625,
         "y": 0.0,
         "z": 0.0
       }
@@ -484,7 +484,7 @@ description: Artifact commands subtract_regression05.kcl
       "path": "[uuid]",
       "to": {
         "x": 23.7998,
-        "y": -28.587699999999998,
+        "y": -28.5877,
         "z": 0.0
       }
     }

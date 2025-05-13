@@ -6965,8 +6965,8 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.64181414529809,
-        "y": 11.49066664678467,
+        "x": 9.6418,
+        "y": 11.4907,
         "z": 0.0
       }
     }
@@ -6978,8 +6978,8 @@ description: Artifact commands axial-fan.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.99038105676658,
-        "y": 7.499999999999999,
+        "x": 12.9904,
+        "y": 7.5,
         "z": 0.0
       }
     }

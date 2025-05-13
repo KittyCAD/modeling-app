@@ -150,7 +150,7 @@ description: Operations executed helium-tank.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": 2.4583333333333335,
+          "value": 2.4583,
           "ty": {
             "type": "Known",
             "type": "Length",
@@ -648,7 +648,7 @@ description: Operations executed helium-tank.kcl
       "offset": {
         "value": {
           "type": "Number",
-          "value": -4.736842105263158,
+          "value": -4.7368,
           "ty": {
             "type": "Default",
             "len": {
@@ -1002,7 +1002,7 @@ description: Operations executed helium-tank.kcl
       "distance": {
         "value": {
           "type": "Number",
-          "value": 0.8250000000000001,
+          "value": 0.825,
           "ty": {
             "type": "Known",
             "type": "Length",

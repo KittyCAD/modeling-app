@@ -9043,7 +9043,7 @@ description: Artifact commands bench.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -10.614359353944899,
+        "x": -10.6144,
         "y": 8.0,
         "z": 0.0
       }
@@ -9056,7 +9056,7 @@ description: Artifact commands bench.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 17.3856406460551,
+        "x": 17.3856,
         "y": 8.0,
         "z": 0.0
       }
@@ -9947,8 +9947,8 @@ description: Artifact commands bench.kcl
         [
           {
             "translate": {
-              "x": 10.986275727656292,
-              "y": -0.5493137863828146,
+              "x": 10.9863,
+              "y": -0.5493,
               "z": 0.0
             },
             "scale": {
@@ -9976,8 +9976,8 @@ description: Artifact commands bench.kcl
         [
           {
             "translate": {
-              "x": 21.972551455312583,
-              "y": -1.0986275727656292,
+              "x": 21.9726,
+              "y": -1.0986,
               "z": 0.0
             },
             "scale": {
@@ -11177,8 +11177,8 @@ description: Artifact commands bench.kcl
         [
           {
             "translate": {
-              "x": -1.4930535746301998,
-              "y": -10.89820127467299,
+              "x": -1.4931,
+              "y": -10.8982,
               "z": 0.0
             },
             "scale": {

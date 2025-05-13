@@ -77,7 +77,7 @@ description: Artifact commands subtract_regression06.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -12.223749999999999,
+        "x": -12.2237,
         "y": 79.375,
         "z": 0.0
       }
@@ -133,7 +133,7 @@ description: Artifact commands subtract_regression06.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 11.87373
+          "value": 11.8737
         },
         "relative": false
       }
@@ -171,11 +171,11 @@ description: Artifact commands subtract_regression06.kcl
         "radius": 33.3375,
         "start": {
           "unit": "degrees",
-          "value": 11.87373
+          "value": 11.8737
         },
         "end": {
           "unit": "degrees",
-          "value": -192.443844
+          "value": -192.4438
         },
         "relative": false
       }
@@ -213,7 +213,7 @@ description: Artifact commands subtract_regression06.kcl
         "radius": 6.35,
         "start": {
           "unit": "degrees",
-          "value": 167.556156
+          "value": 167.5562
         },
         "end": {
           "unit": "degrees",
@@ -293,7 +293,7 @@ description: Artifact commands subtract_regression06.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 167.556156
+          "value": 167.5562
         },
         "relative": false
       }
@@ -331,11 +331,11 @@ description: Artifact commands subtract_regression06.kcl
         "radius": 30.162499999999998,
         "start": {
           "unit": "degrees",
-          "value": -192.443844
+          "value": -192.4438
         },
         "end": {
           "unit": "degrees",
-          "value": 11.87373
+          "value": 11.8737
         },
         "relative": false
       }
@@ -373,7 +373,7 @@ description: Artifact commands subtract_regression06.kcl
         "radius": 3.175,
         "start": {
           "unit": "degrees",
-          "value": 11.87373
+          "value": 11.8737
         },
         "end": {
           "unit": "degrees",
@@ -1311,7 +1311,7 @@ description: Artifact commands subtract_regression06.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 5.5562499999999995,
+        "x": 5.5562,
         "y": 0.0,
         "z": 0.0
       }

@@ -78,7 +78,7 @@ description: Artifact commands hammer.kcl
       "path": "[uuid]",
       "to": {
         "x": 8.382,
-        "y": 286.00399999999996,
+        "y": 286.004,
         "z": 0.0
       }
     }
@@ -3541,7 +3541,7 @@ description: Artifact commands hammer.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 292.09999999999997
+        "z": 292.1
       },
       "x_axis": {
         "x": 1.0,

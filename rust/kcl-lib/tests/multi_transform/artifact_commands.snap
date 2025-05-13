@@ -196,7 +196,7 @@ description: Artifact commands multi_transform.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 14.14213562373095,
+        "x": 14.1421,
         "y": 0.0,
         "z": 0.0
       }

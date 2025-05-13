@@ -1750,8 +1750,8 @@ description: Artifact commands cold-plate.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -186.68999999999997,
-        "y": -76.19999999999999,
+        "x": -186.69,
+        "y": -76.2,
         "z": 0.0
       }
     }
@@ -1901,7 +1901,7 @@ description: Artifact commands cold-plate.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -186.68999999999997,
+        "x": -186.69,
         "y": 0.0,
         "z": 0.0
       },
@@ -2686,7 +2686,7 @@ description: Artifact commands cold-plate.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -152.39999999999998,
+              "y": -152.4,
               "z": 0.0
             },
             "scale": {

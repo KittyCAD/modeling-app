@@ -1488,7 +1488,7 @@ description: Artifact commands wing-spar.kcl
       "path": "[uuid]",
       "to": {
         "x": 33.0,
-        "y": -15.299999999999999,
+        "y": -15.3,
         "z": 0.0
       }
     }
@@ -5693,7 +5693,7 @@ description: Artifact commands wing-spar.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -5.3999999999999995,
+        "x": -5.4,
         "y": -24.0,
         "z": 0.0
       }

@@ -415,7 +415,7 @@ description: Artifact commands lego.kcl
       "path": "[uuid]",
       "to": {
         "x": -162.56,
-        "y": -264.15999999999997,
+        "y": -264.16,
         "z": 0.0
       }
     }
@@ -1594,7 +1594,7 @@ description: Artifact commands lego.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 60.959999999999994,
+        "x": 60.96,
         "y": -101.6,
         "z": 0.0
       }
