@@ -26,7 +26,7 @@ import {
   applyConstraintLength,
 } from '@src/components/Toolbar/setAngleLength'
 import {
-  SEGMENT_BODIES,
+  SEGMENT_BODIES_PLUS_PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
 import { useFileContext } from '@src/hooks/useFileContext'
@@ -34,7 +34,7 @@ import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
-import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
@@ -222,14 +222,15 @@ export const ModelingMachineProvider = ({
           if (event.type !== 'Set mouse state') return {}
           const nextSegmentHoverMap = () => {
             if (event.data.type === 'isHovering') {
-              const parent = getParentGroup(event.data.on, SEGMENT_BODIES)
+              const parent = getParentGroup(
+                event.data.on,
+                SEGMENT_BODIES_PLUS_PROFILE_START
+              )
               const pathToNode = parent?.userData?.pathToNode
               const pathToNodeString = JSON.stringify(pathToNode)
               if (!parent || !pathToNode) return context.segmentHoverMap
               if (context.segmentHoverMap[pathToNodeString] !== undefined)
-                clearTimeout(
-                  context.segmentHoverMap[JSON.stringify(pathToNode)]
-                )
+                clearTimeout(context.segmentHoverMap[pathToNodeString])
               return {
                 ...context.segmentHoverMap,
                 [pathToNodeString]: 0,
@@ -240,7 +241,7 @@ export const ModelingMachineProvider = ({
             ) {
               const mouseOnParent = getParentGroup(
                 context.mouseState.on,
-                SEGMENT_BODIES
+                SEGMENT_BODIES_PLUS_PROFILE_START
               )
               if (!mouseOnParent || !mouseOnParent?.userData?.pathToNode)
                 return context.segmentHoverMap
@@ -276,10 +277,11 @@ export const ModelingMachineProvider = ({
         'Set Segment Overlays': assign({
           segmentOverlays: ({ context: { segmentOverlays }, event }) => {
             if (event.type !== 'Set Segment Overlays') return {}
-            if (event.data.type === 'set-many')
+            if (event.data.type === 'set-many') {
               return {
                 ...event.data.overlays,
               }
+            }
             if (event.data.type === 'set-one')
               return {
                 ...segmentOverlays,
@@ -749,13 +751,22 @@ export const ModelingMachineProvider = ({
               if (err(varDec)) return reject(new Error('No varDec'))
               const variableName = varDec.node.declaration.id.name
               let isIdentifierUsed = false
-              traverse(newAst, {
-                enter: (node) => {
-                  if (node.type === 'Name' && node.name.name === variableName) {
-                    isIdentifierUsed = true
-                  }
-                },
-              })
+              const isInitAPipe =
+                varDec.node.declaration.init.type === 'PipeExpression'
+              if (isInitAPipe) {
+                isIdentifierUsed = true
+              } else {
+                traverse(newAst, {
+                  enter: (node) => {
+                    if (
+                      node.type === 'Name' &&
+                      node.name.name === variableName
+                    ) {
+                      isIdentifierUsed = true
+                    }
+                  },
+                })
+              }
               if (isIdentifierUsed) return
 
               // remove body item at varDecIndex
@@ -2080,13 +2091,12 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
 
-  useStateMachineCommands({
+  useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
-    allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it

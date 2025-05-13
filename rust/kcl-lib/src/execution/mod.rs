@@ -64,7 +64,7 @@ pub mod typed_path;
 pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -387,6 +387,7 @@ impl ExecutorContext {
             .commands_ws(
                 None,
                 None,
+                None,
                 if settings.enable_ssao {
                     Some(kittycad::types::PostEffectType::Ssao)
                 } else {
@@ -653,12 +654,20 @@ impl ExecutorContext {
                         keys.sort();
                         for key in keys {
                             let (_, id, _, _) = &new_universe[key];
-                            let old_source = old_state.get_source(*id);
-                            let new_source = new_exec_state.get_source(*id);
-                            if old_source != new_source {
-                                clear_scene = true;
-                                break;
+                            if let (Some(source0), Some(source1)) =
+                                (old_state.get_source(*id), new_exec_state.get_source(*id))
+                            {
+                                if source0.source != source1.source {
+                                    clear_scene = true;
+                                    break;
+                                }
                             }
+                        }
+
+                        if !clear_scene {
+                            // Return early we don't need to clear the scene.
+                            let outcome = old_state.to_exec_outcome(result_env).await;
+                            return Ok(outcome);
                         }
 
                         (
@@ -1932,7 +1941,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: mixed array (list)",
+            "Cannot apply unary operator ! to non-boolean value: array (list)",
         );
 
         let code6 = "
@@ -2244,7 +2253,7 @@ w = f() + f()
     |> line(end = [0, 0])
     |> close()
 }
-  
+
 sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])

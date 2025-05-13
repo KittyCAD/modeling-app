@@ -1215,6 +1215,7 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+            BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
         }
     }
 }
@@ -1281,6 +1282,7 @@ pub enum BinaryPart {
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
+    AscribedExpression(BoxNode<AscribedExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1306,6 +1308,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
+            BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
     }
 
@@ -1324,6 +1327,7 @@ impl BinaryPart {
             }
             BinaryPart::MemberExpression(_) => {}
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
     }
 
@@ -1336,6 +1340,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
+            BinaryPart::AscribedExpression(e) => e.start,
         }
     }
 
@@ -1348,6 +1353,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
+            BinaryPart::AscribedExpression(e) => e.end,
         }
     }
 
@@ -1369,6 +1375,7 @@ impl BinaryPart {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(ref mut e) => e.expr.rename_identifiers(old_name, new_name),
         }
     }
 }
@@ -3179,6 +3186,8 @@ impl PipeExpression {
 #[ts(export)]
 #[serde(tag = "p_type")]
 pub enum PrimitiveType {
+    /// The super type of all other types.
+    Any,
     /// A string type.
     String,
     /// A number type.
@@ -3188,6 +3197,10 @@ pub enum PrimitiveType {
     Boolean,
     /// A tag.
     Tag,
+    /// Imported from other CAD system.
+    ImportedGeometry,
+    /// `fn`, type of functions.
+    Function(FunctionType),
     /// An identifier used as a type (not really a primitive type, but whatever).
     Named(Node<Identifier>),
 }
@@ -3195,11 +3208,13 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
+            ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
+            ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
             _ => None,
         }
     }
@@ -3208,6 +3223,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
@@ -3218,7 +3234,54 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function(t) => {
+                write!(f, "fn")?;
+                if t.unnamed_arg.is_some() || !t.named_args.is_empty() || t.return_type.is_some() {
+                    write!(f, "(")?;
+                    if let Some(u) = &t.unnamed_arg {
+                        write!(f, "{u}")?;
+                        if !t.named_args.is_empty() {
+                            write!(f, ", ")?;
+                        }
+                    }
+                    for (i, (a, t)) in t.named_args.iter().enumerate() {
+                        if i != 0 {
+                            write!(f, ", ")?;
+                        }
+                        write!(f, "{}: {t}", a.name)?;
+                    }
+                    write!(f, ")")?;
+                    if let Some(r) = &t.return_type {
+                        write!(f, ": {r}")?;
+                    }
+                }
+                Ok(())
+            }
             PrimitiveType::Named(n) => write!(f, "{}", n.name),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub struct FunctionType {
+    pub unnamed_arg: Option<BoxNode<Type>>,
+    pub named_args: Vec<(Node<Identifier>, Node<Type>)>,
+    pub return_type: Option<BoxNode<Type>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl FunctionType {
+    pub fn empty_fn_type() -> Self {
+        FunctionType {
+            unnamed_arg: None,
+            named_args: Vec::new(),
+            return_type: None,
+            digest: None,
         }
     }
 }
@@ -3274,7 +3337,7 @@ impl fmt::Display for Type {
                     } else {
                         write!(f, ",")?;
                     }
-                    write!(f, "{}: ", p.identifier.name)?;
+                    write!(f, " {}:", p.identifier.name)?;
                     if let Some(ty) = &p.type_ {
                         write!(f, " {}", ty.inner)?;
                     }

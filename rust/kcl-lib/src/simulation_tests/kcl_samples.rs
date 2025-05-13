@@ -8,6 +8,7 @@ use std::{
 use anyhow::Result;
 use fnv::FnvHashSet;
 use serde::{Deserialize, Serialize};
+use walkdir::WalkDir;
 
 use super::Test;
 
@@ -250,19 +251,12 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
     let title = lines[0].trim_start_matches(COMMENT_PREFIX).trim().to_string();
     let description = lines[1].trim_start_matches(COMMENT_PREFIX).trim().to_string();
 
-    // Get the path components
-    let path_components: Vec<String> = full_path_to_primary_kcl
-        .components()
-        .map(|comp| comp.as_os_str().to_string_lossy().to_string())
-        .collect();
-
-    // Get the last two path components
-    let len = path_components.len();
-    let path_from_project_dir = if len >= 2 {
-        format!("{}/{}", path_components[len - 2], path_components[len - 1])
-    } else {
-        primary_kcl_file.clone()
-    };
+    // Get the relative path from the project directory to the primary KCL file
+    let path_from_project_dir = full_path_to_primary_kcl
+        .strip_prefix(INPUTS_DIR.as_path())
+        .unwrap_or(&full_path_to_primary_kcl)
+        .to_string_lossy()
+        .to_string();
 
     let mut files = files.to_vec();
     files.sort();
@@ -281,21 +275,23 @@ fn get_kcl_metadata(project_path: &Path, files: &[String]) -> Option<KclMetadata
 fn generate_kcl_manifest(dir: &Path) -> Result<()> {
     let mut manifest = Vec::new();
 
-    // Collect all directory entries first and sort them by name for consistent ordering
-    let mut entries: Vec<_> = fs::read_dir(dir)?
-        .filter_map(Result::ok)
-        .filter(|e| e.path().is_dir())
+    // Collect all directory entries first
+    let mut entries: Vec<_> = WalkDir::new(dir)
+        .follow_links(true)
+        .into_iter()
+        .filter_map(|e| e.ok())
         .collect();
 
     // Sort directories by name for consistent ordering
-    entries.sort_by_key(|a| a.file_name());
+    entries.sort_by_key(|a| a.file_name().to_string_lossy().to_string());
 
+    // Loop through all directories and add to manifest if KCL sample
     for entry in entries {
-        let project_path = entry.path();
+        let path = entry.path();
 
-        if project_path.is_dir() {
+        if path.is_dir() {
             // Get all .kcl files in the directory
-            let files: Vec<String> = fs::read_dir(&project_path)?
+            let files: Vec<String> = fs::read_dir(path)?
                 .filter_map(Result::ok)
                 .filter(|e| {
                     if let Some(ext) = e.path().extension() {
@@ -311,7 +307,7 @@ fn generate_kcl_manifest(dir: &Path) -> Result<()> {
                 continue;
             }
 
-            if let Some(metadata) = get_kcl_metadata(&project_path, &files) {
+            if let Some(metadata) = get_kcl_metadata(path, &files) {
                 manifest.push(metadata);
             }
         }

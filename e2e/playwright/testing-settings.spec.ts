@@ -797,7 +797,7 @@ test.describe(
 
         // We use the line tool as a proxy for sketch mode
         await expect(lineToolButton).toBeVisible()
-        await expect(segmentOverlays).toHaveCount(4)
+        await expect(segmentOverlays).toHaveCount(5)
         // but we allow more time to pass for animating to the sketch
         await page.waitForTimeout(1000)
       })

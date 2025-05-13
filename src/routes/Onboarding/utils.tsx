@@ -54,7 +54,7 @@ export const OnboardingCard = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={`relative max-w-3xl min-w-80 bg-chalkboard-10 dark:bg-chalkboard-90 py-6 px-8 rounded border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg ${className || ''}`}
+    className={`relative max-w-3xl min-w-80 cursor-auto bg-chalkboard-10 dark:bg-chalkboard-90 py-6 px-8 rounded border border-chalkboard-50 dark:border-chalkboard-80 shadow-lg ${className || ''}`}
     {...props}
   >
     {children}

@@ -53,8 +53,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 1.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -84,8 +89,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -115,8 +125,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -146,8 +161,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -177,8 +197,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 5.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -208,8 +233,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 6.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -239,8 +269,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 7.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -270,8 +305,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 8.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -301,8 +341,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 9.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -332,8 +377,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 10.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -363,8 +413,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 11.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -394,8 +449,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 12.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -425,8 +485,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 13.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -456,8 +521,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 14.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -487,8 +557,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 15.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -518,8 +593,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 16.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -549,8 +629,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 17.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -580,8 +665,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 18.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -611,8 +701,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 19.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -642,8 +737,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 20.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -673,8 +773,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 21.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -704,8 +809,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 22.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -735,8 +845,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 23.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -766,8 +881,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -797,8 +917,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 25.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -828,8 +953,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 26.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -859,8 +989,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 27.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -890,8 +1025,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 28.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -921,8 +1061,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 29.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -952,8 +1097,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 30.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -983,8 +1133,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 31.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1014,8 +1169,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 32.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1045,8 +1205,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 33.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1076,8 +1241,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 34.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1107,8 +1277,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 35.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1138,8 +1313,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 36.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1169,8 +1349,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 37.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1200,8 +1385,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 38.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1231,8 +1421,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 39.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1262,8 +1457,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 40.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1293,8 +1493,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 41.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1324,8 +1529,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1355,8 +1565,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 43.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1386,8 +1601,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 44.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1417,8 +1637,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 45.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1448,8 +1673,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 46.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1479,8 +1709,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 47.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1510,8 +1745,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 48.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1541,8 +1781,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1572,8 +1817,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 1.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1593,8 +1843,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 2.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1614,8 +1869,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 3.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1635,8 +1895,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 4.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1656,8 +1921,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 5.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1677,8 +1947,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 6.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1698,8 +1973,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 7.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1719,8 +1999,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 8.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1740,8 +2025,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 9.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1761,8 +2051,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 10.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1782,8 +2077,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 11.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1803,8 +2103,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 12.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1824,8 +2129,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 13.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1845,8 +2155,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 14.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1866,8 +2181,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 15.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1887,8 +2207,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 16.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1908,8 +2233,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 17.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1929,8 +2259,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 18.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1950,8 +2285,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 19.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1971,8 +2311,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 20.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -1992,8 +2337,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 21.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2013,8 +2363,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 22.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2034,8 +2389,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 23.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2055,8 +2415,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 24.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2076,8 +2441,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 25.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2097,8 +2467,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 26.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2118,8 +2493,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 27.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2139,8 +2519,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 28.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2160,8 +2545,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 29.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2181,8 +2571,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 30.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2202,8 +2597,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 31.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2223,8 +2623,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 32.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2244,8 +2649,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 33.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2265,8 +2675,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 34.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2286,8 +2701,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 35.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2307,8 +2727,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 36.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2328,8 +2753,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 37.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2349,8 +2779,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 38.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2370,8 +2805,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 39.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2391,8 +2831,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 40.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2412,8 +2857,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 41.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2433,8 +2883,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 42.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2454,8 +2909,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 43.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2475,8 +2935,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 44.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2496,8 +2961,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 45.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2517,8 +2987,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 46.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2538,8 +3013,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 47.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2559,8 +3039,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 48.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []
@@ -2580,8 +3065,13 @@ description: Operations executed loop_tag.kcl
           "type": "Number",
           "value": 49.0,
           "ty": {
-            "type": "Known",
-            "type": "Count"
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
           }
         },
         "sourceRange": []

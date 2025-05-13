@@ -112,16 +112,6 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "dual-basin-utility-sink/main.kcl",
-    "multipleFiles": false,
-    "title": "Dual-Basin Utility Sink",
-    "description": "A stainless steel sink unit with dual rectangular basins and six under-counter storage compartments.",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "enclosure/main.kcl",
     "multipleFiles": false,
     "title": "Enclosure",
@@ -418,6 +408,16 @@
     "multipleFiles": false,
     "title": "Socket Head Cap Screw",
     "description": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "utility-sink/main.kcl",
+    "multipleFiles": false,
+    "title": "Utility Sink",
+    "description": "A stainless steel sink unit with a configurable number of rectangular basins and under-counter storage compartments.",
     "files": [
       "main.kcl"
     ]

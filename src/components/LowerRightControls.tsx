@@ -12,11 +12,11 @@ import { NetworkHealthIndicator } from '@src/components/NetworkHealthIndicator'
 import { NetworkMachineIndicator } from '@src/components/NetworkMachineIndicator'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 
 import { billingActor } from '@src/lib/singletons'
+import { ActionButton } from '@src/components/ActionButton'
 
 export function LowerRightControls({
   children,
@@ -52,15 +52,16 @@ export function LowerRightControls({
             <BillingDialog billingActor={billingActor} />
           </Popover.Panel>
         </Popover>
-        <a
-          onClick={openExternalBrowserIfDesktop(getReleaseUrl())}
-          href={getReleaseUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={'!no-underline font-mono text-xs ' + linkOverrideClassName}
+        <ActionButton
+          Element="externalLink"
+          to={getReleaseUrl()}
+          className={
+            '!no-underline !border-none !bg-transparent font-mono text-xs' +
+            linkOverrideClassName
+          }
         >
           v{APP_VERSION}
-        </a>
+        </ActionButton>
         <Link
           to={
             location.pathname.includes(PATHS.FILE)

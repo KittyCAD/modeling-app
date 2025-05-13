@@ -2,11 +2,11 @@ use std::fmt::Write;
 
 use crate::parsing::{
     ast::types::{
-        Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
-        CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression, IfExpression,
-        ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue,
-        MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter, PipeExpression,
-        Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
+        Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, BinaryExpression, BinaryOperator,
+        BinaryPart, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
+        IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
+        LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
+        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
     deprecation, DeprecationKind, PIPE_OPERATOR,
 };
@@ -308,22 +308,26 @@ impl Expr {
                 result += &e.label.name;
                 result
             }
-            Expr::AscribedExpression(e) => {
-                let mut result = e.expr.recast(options, indentation_level, ctxt);
-                if matches!(
-                    e.expr,
-                    Expr::BinaryExpression(..) | Expr::PipeExpression(..) | Expr::UnaryExpression(..)
-                ) {
-                    result = format!("({result})");
-                }
-                result += ": ";
-                result += &e.ty.to_string();
-                result
-            }
+            Expr::AscribedExpression(e) => e.recast(options, indentation_level, ctxt),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
         }
+    }
+}
+
+impl AscribedExpression {
+    fn recast(&self, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) -> String {
+        let mut result = self.expr.recast(options, indentation_level, ctxt);
+        if matches!(
+            self.expr,
+            Expr::BinaryExpression(..) | Expr::PipeExpression(..) | Expr::UnaryExpression(..)
+        ) {
+            result = format!("({result})");
+        }
+        result += ": ";
+        result += &self.ty.to_string();
+        result
     }
 }
 
@@ -345,6 +349,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.recast(options),
             BinaryPart::MemberExpression(member_expression) => member_expression.recast(),
             BinaryPart::IfExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
+            BinaryPart::AscribedExpression(e) => e.recast(options, indentation_level, ExprContext::Other),
         }
     }
 }
@@ -722,6 +727,7 @@ impl UnaryExpression {
             | BinaryPart::Name(_)
             | BinaryPart::MemberExpression(_)
             | BinaryPart::IfExpression(_)
+            | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
                 format!("{}{}", &self.operator, self.argument.recast(options, 0))
             }
@@ -2563,6 +2569,27 @@ sketch002 = startSketchOn({
   toDegrees(atan(0.5), foo = 1)
   return 0
 }
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
+    fn recast_function_types() {
+        let input = r#"foo = x: fn
+foo = x: fn(number)
+fn foo(x: fn(): number): fn {
+  return 0
+}
+fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn {
+  return 0
+}
+type fn
+type foo = fn
+type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn([fn])
+type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
 "#;
         let ast = crate::parsing::top_level_parse(input).unwrap();
         let actual = ast.recast(&FormatOptions::new(), 0);

@@ -28,6 +28,10 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
+    pub fn any() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Any)
+    }
+
     pub fn edge() -> Self {
         RuntimeType::Primitive(PrimitiveType::Edge)
     }
@@ -70,6 +74,10 @@ impl RuntimeType {
 
     pub fn tag() -> Self {
         RuntimeType::Primitive(PrimitiveType::Tag)
+    }
+
+    pub fn tag_identifier() -> Self {
+        RuntimeType::Primitive(PrimitiveType::TagId)
     }
 
     pub fn bool() -> Self {
@@ -162,13 +170,20 @@ impl RuntimeType {
         source_range: SourceRange,
     ) -> Result<Self, CompilationError> {
         Ok(match value {
+            AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
             AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
-            AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
-                NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
-            )),
+            AstPrimitiveType::Number(suffix) => {
+                let ty = match suffix {
+                    NumericSuffix::None => NumericType::Any,
+                    _ => NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
+                };
+                RuntimeType::Primitive(PrimitiveType::Number(ty))
+            }
             AstPrimitiveType::Named(name) => Self::from_alias(&name.name, exec_state, source_range)?,
             AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
+            AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
         })
     }
 
@@ -203,7 +218,7 @@ impl RuntimeType {
                 .collect::<Vec<_>>()
                 .join(" or "),
             RuntimeType::Tuple(tys) => format!(
-                "an array with values of types ({})",
+                "a tuple with values of types ({})",
                 tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Object(_) => format!("an object with fields {}", self),
@@ -215,6 +230,7 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
+            (_, Primitive(PrimitiveType::Any)) => true,
             (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
             (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
@@ -265,7 +281,7 @@ impl RuntimeType {
                 .map(|t| t.display_multiple())
                 .collect::<Vec<_>>()
                 .join(" or "),
-            RuntimeType::Tuple(_) => "arrays".to_owned(),
+            RuntimeType::Tuple(_) => "tuples".to_owned(),
             RuntimeType::Object(_) => format!("objects with fields {self}"),
         }
     }
@@ -282,7 +298,7 @@ impl fmt::Display for RuntimeType {
             },
             RuntimeType::Tuple(ts) => write!(
                 f,
-                "[{}]",
+                "({})",
                 ts.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Union(ts) => write!(
@@ -333,10 +349,13 @@ impl ArrayLen {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveType {
+    Any,
     Number(NumericType),
     String,
     Boolean,
     Tag,
+    // Annoyingly some functions only want a TagIdentifier, not any kind of tag.
+    TagId,
     Sketch,
     Solid,
     Plane,
@@ -346,11 +365,13 @@ pub enum PrimitiveType {
     Axis2d,
     Axis3d,
     ImportedGeometry,
+    Function,
 }
 
 impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
+            PrimitiveType::Any => "any values".to_owned(),
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
@@ -364,13 +385,17 @@ impl PrimitiveType {
             PrimitiveType::Axis2d => "2d axes".to_owned(),
             PrimitiveType::Axis3d => "3d axes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Function => "functions".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
+            PrimitiveType::TagId => "tag identifiers".to_owned(),
         }
     }
 
     fn subtype(&self, other: &PrimitiveType) -> bool {
         match (self, other) {
+            (_, PrimitiveType::Any) => true,
             (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
+            (PrimitiveType::TagId, PrimitiveType::Tag) => true,
             (t1, t2) => t1 == t2,
         }
     }
@@ -379,6 +404,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(NumericType::Known(unit)) => write!(f, "number({unit})"),
             PrimitiveType::Number(NumericType::Unknown) => write!(f, "number(unknown units)"),
             PrimitiveType::Number(NumericType::Default { .. }) => write!(f, "number(default units)"),
@@ -386,6 +412,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::TagId => write!(f, "tag identifier"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
@@ -395,6 +422,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
+            PrimitiveType::Function => write!(f, "function"),
         }
     }
 }
@@ -663,6 +691,7 @@ impl NumericType {
             // We don't have enough information to coerce.
             (Unknown, _) => Err(CoercionError::from(val).with_explicit(self.example_ty().unwrap_or("mm".to_owned()))),
             (_, Unknown) => Err(val.into()),
+
             (Any, _) => Ok(KclValue::Number {
                 value: *value,
                 ty: self.clone(),
@@ -994,9 +1023,9 @@ impl KclValue {
         self_ty.subtype(ty)
     }
 
-    /// Coerce `self` to a new value which has `ty` as it's closest supertype.
+    /// Coerce `self` to a new value which has `ty` as its closest supertype.
     ///
-    /// If the result is Some, then:
+    /// If the result is Ok, then:
     ///   - result.principal_type().unwrap().subtype(ty)
     ///
     /// If self.principal_type() == ty then result == self
@@ -1016,10 +1045,11 @@ impl KclValue {
         exec_state: &mut ExecState,
     ) -> Result<KclValue, CoercionError> {
         let value = match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } if value.len() == 1 => &value[0],
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == 1 => &value[0],
             _ => self,
         };
         match ty {
+            PrimitiveType::Any => Ok(value.clone()),
             PrimitiveType::Number(ty) => ty.coerce(value),
             PrimitiveType::String => match value {
                 KclValue::String { .. } => Ok(value.clone()),
@@ -1159,6 +1189,14 @@ impl KclValue {
                 KclValue::ImportedGeometry { .. } => Ok(value.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Function => match value {
+                KclValue::Function { .. } => Ok(value.clone()),
+                _ => Err(self.into()),
+            },
+            PrimitiveType::TagId => match value {
+                KclValue::TagIdentifier { .. } => Ok(value.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Tag => match value {
                 KclValue::TagDeclarator { .. } | KclValue::TagIdentifier { .. } | KclValue::Uuid { .. } => {
                     Ok(value.clone())
@@ -1178,41 +1216,49 @@ impl KclValue {
         exec_state: &mut ExecState,
         allow_shrink: bool,
     ) -> Result<KclValue, CoercionError> {
-        if len.satisfied(1, false).is_some() && self.has_type(ty) {
-            return Ok(KclValue::HomArray {
-                value: vec![self.clone()],
-                ty: ty.clone(),
-            });
-        }
         match self {
-            KclValue::HomArray { value, ty: aty } => {
+            KclValue::HomArray { value, ty: aty, .. } => {
+                let satisfied_len = len.satisfied(value.len(), allow_shrink);
+
                 if aty.subtype(ty) {
-                    len.satisfied(value.len(), allow_shrink)
+                    // If the element type is a subtype of the target type and
+                    // the length constraint is satisfied, we can just return
+                    // the values unchanged, only adjusting the length. The new
+                    // array element type should preserve its type because the
+                    // target type oftentimes includes an unknown type as a way
+                    // to say that the caller doesn't care.
+                    return satisfied_len
                         .map(|len| KclValue::HomArray {
                             value: value[..len].to_vec(),
                             ty: aty.clone(),
                         })
-                        .ok_or(self.into())
-                } else {
-                    Err(self.into())
+                        .ok_or(self.into());
                 }
-            }
-            KclValue::MixedArray { value, .. } => {
-                // Check if we have a nested homogeneous array that we can flatten.
+
+                // Ignore the array type, and coerce the elements of the array.
+                if let Some(satisfied_len) = satisfied_len {
+                    let value_result = value
+                        .iter()
+                        .take(satisfied_len)
+                        .map(|v| v.coerce(ty, exec_state))
+                        .collect::<Result<Vec<_>, _>>();
+
+                    if let Ok(value) = value_result {
+                        // We were able to coerce all the elements.
+                        return Ok(KclValue::HomArray { value, ty: ty.clone() });
+                    }
+                }
+
+                // As a last resort, try to flatten the array.
                 let mut values = Vec::new();
                 for item in value {
-                    if let KclValue::HomArray {
-                        ty: inner_ty,
-                        value: inner_value,
-                    } = item
-                    {
-                        if inner_ty.subtype(ty) {
-                            values.extend(inner_value.iter().cloned());
-                        } else {
-                            values.push(item.clone());
+                    if let KclValue::HomArray { value: inner_value, .. } = item {
+                        // Flatten elements.
+                        for item in inner_value {
+                            values.push(item.coerce(ty, exec_state)?);
                         }
                     } else {
-                        values.push(item.clone());
+                        values.push(item.coerce(ty, exec_state)?);
                     }
                 }
 
@@ -1220,9 +1266,22 @@ impl KclValue {
                     .satisfied(values.len(), allow_shrink)
                     .ok_or(CoercionError::from(self))?;
 
-                let value = values[..len]
+                assert!(len <= values.len());
+                values.truncate(len);
+
+                Ok(KclValue::HomArray {
+                    value: values,
+                    ty: ty.clone(),
+                })
+            }
+            KclValue::Tuple { value, .. } => {
+                let len = len
+                    .satisfied(value.len(), allow_shrink)
+                    .ok_or(CoercionError::from(self))?;
+                let value = value
                     .iter()
-                    .map(|v| v.coerce(ty, exec_state))
+                    .map(|item| item.coerce(ty, exec_state))
+                    .take(len)
                     .collect::<Result<Vec<_>, _>>()?;
 
                 Ok(KclValue::HomArray { value, ty: ty.clone() })
@@ -1231,28 +1290,32 @@ impl KclValue {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
+            _ if len.satisfied(1, false).is_some() => Ok(KclValue::HomArray {
+                value: vec![self.coerce(ty, exec_state)?],
+                ty: ty.clone(),
+            }),
             _ => Err(self.into()),
         }
     }
 
     fn coerce_to_tuple_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Result<KclValue, CoercionError> {
         match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
                     result.push(value[i].coerce(t, exec_state)?);
                 }
 
-                Ok(KclValue::MixedArray {
+                Ok(KclValue::Tuple {
                     value: result,
                     meta: Vec::new(),
                 })
             }
-            KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::MixedArray {
+            KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Tuple {
                 value: Vec::new(),
                 meta: meta.clone(),
             }),
-            value if tys.len() == 1 && value.has_type(&tys[0]) => Ok(KclValue::MixedArray {
+            value if tys.len() == 1 && value.has_type(&tys[0]) => Ok(KclValue::Tuple {
                 value: vec![value.clone()],
                 meta: Vec::new(),
             }),
@@ -1312,18 +1375,16 @@ impl KclValue {
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
-            KclValue::MixedArray { value, .. } => Some(RuntimeType::Tuple(
+            KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(
                 value.iter().map(|v| v.principal_type()).collect::<Option<Vec<_>>>()?,
             )),
             KclValue::HomArray { ty, value, .. } => {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
-            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => {
-                Some(RuntimeType::Primitive(PrimitiveType::Tag))
-            }
-            KclValue::Function { .. } | KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => {
-                None
-            }
+            KclValue::TagIdentifier(_) => Some(RuntimeType::Primitive(PrimitiveType::TagId)),
+            KclValue::TagDeclarator(_) | KclValue::Uuid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Function { .. } => Some(RuntimeType::Primitive(PrimitiveType::Function)),
+            KclValue::Module { .. } | KclValue::KclNone { .. } | KclValue::Type { .. } => None,
         }
     }
 }
@@ -1348,7 +1409,7 @@ mod test {
                 value: "hello".to_owned(),
                 meta: Vec::new(),
             },
-            KclValue::MixedArray {
+            KclValue::Tuple {
                 value: Vec::new(),
                 meta: Vec::new(),
             },
@@ -1417,45 +1478,67 @@ mod test {
             let aty1 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(1));
             let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::NonEmpty);
 
-            assert_coerce_results(
-                v,
-                &aty,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
-            assert_coerce_results(
-                v,
-                &aty1,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
-            assert_coerce_results(
-                v,
-                &aty0,
-                &KclValue::HomArray {
-                    value: vec![v.clone()],
-                    ty: ty.clone(),
-                },
-                &mut exec_state,
-            );
+            match v {
+                KclValue::Tuple { .. } | KclValue::HomArray { .. } => {
+                    // These will not get wrapped if possible.
+                    assert_coerce_results(
+                        v,
+                        &aty,
+                        &KclValue::HomArray {
+                            value: vec![],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    // Coercing an empty tuple or array to an array of length 1
+                    // should fail.
+                    v.coerce(&aty1, &mut exec_state).unwrap_err();
+                    // Coercing an empty tuple or array to an array that's
+                    // non-empty should fail.
+                    v.coerce(&aty0, &mut exec_state).unwrap_err();
+                }
+                _ => {
+                    assert_coerce_results(
+                        v,
+                        &aty,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    assert_coerce_results(
+                        v,
+                        &aty1,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
+                    assert_coerce_results(
+                        v,
+                        &aty0,
+                        &KclValue::HomArray {
+                            value: vec![v.clone()],
+                            ty: ty.clone(),
+                        },
+                        &mut exec_state,
+                    );
 
-            // Tuple subtype
-            let tty = RuntimeType::Tuple(vec![ty.clone()]);
-            assert_coerce_results(
-                v,
-                &tty,
-                &KclValue::MixedArray {
-                    value: vec![v.clone()],
-                    meta: Vec::new(),
-                },
-                &mut exec_state,
-            );
+                    // Tuple subtype
+                    let tty = RuntimeType::Tuple(vec![ty.clone()]);
+                    assert_coerce_results(
+                        v,
+                        &tty,
+                        &KclValue::Tuple {
+                            value: vec![v.clone()],
+                            meta: Vec::new(),
+                        },
+                        &mut exec_state,
+                    );
+                }
+            }
         }
 
         for v in &values[1..] {
@@ -1503,7 +1586,7 @@ mod test {
         assert_coerce_results(
             &none,
             &tty,
-            &KclValue::MixedArray {
+            &KclValue::Tuple {
                 value: Vec::new(),
                 meta: Vec::new(),
             },
@@ -1634,7 +1717,7 @@ mod test {
             ],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
-        let mixed1 = KclValue::MixedArray {
+        let mixed1 = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -1649,7 +1732,7 @@ mod test {
             ],
             meta: Vec::new(),
         };
-        let mixed2 = KclValue::MixedArray {
+        let mixed2 = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -1739,7 +1822,7 @@ mod test {
             ],
             ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
         };
-        let mixed0 = KclValue::MixedArray {
+        let mixed0 = KclValue::Tuple {
             value: vec![],
             meta: Vec::new(),
         };
@@ -2156,7 +2239,7 @@ d = cos(30)
     async fn coerce_nested_array() {
         let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
 
-        let mixed1 = KclValue::MixedArray {
+        let mixed1 = KclValue::HomArray {
             value: vec![
                 KclValue::Number {
                     value: 0.0,
@@ -2184,7 +2267,7 @@ d = cos(30)
                     ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
                 },
             ],
-            meta: Vec::new(),
+            ty: RuntimeType::any(),
         };
 
         // Principal types
