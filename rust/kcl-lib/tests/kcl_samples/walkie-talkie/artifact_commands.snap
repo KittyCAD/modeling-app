@@ -40559,7 +40559,7 @@ description: Artifact commands walkie-talkie.kcl
       "axis_is_2d": true,
       "angle": {
         "unit": "degrees",
-        "value": 360.0
+        "value": 359.99999
       },
       "tolerance": 0.0000001,
       "opposite": "None"
