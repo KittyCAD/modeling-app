@@ -581,7 +581,9 @@ export const modelingMachine = setup({
     'has valid selection for deletion': () => false,
     'is-error-free': () => false,
     'no kcl errors': () => {
-      return !kclManager.hasErrors()
+      const hasErrors = kclManager.hasErrors()
+      if (hasErrors) toast.error(KCL_ERRORS_MESSAGE)
+      return !hasErrors
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
@@ -1786,10 +1788,6 @@ export const modelingMachine = setup({
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
       }
 
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
-      }
-
       const { nodeToEdit, sketches, length } = input
       const { ast } = kclManager
       const astResult = addExtrude({
@@ -1822,10 +1820,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       const { nodeToEdit, sketches, path, sectional } = input
@@ -1861,10 +1855,6 @@ export const modelingMachine = setup({
           return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
         }
 
-        if (kclManager.hasErrors()) {
-          return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
-        }
-
         const { sketches } = input
         const { ast } = kclManager
         const astResult = addLoft({ ast, sketches })
@@ -1893,10 +1883,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       const { nodeToEdit, sketches, angle, axis, edge, axisOrEdge } = input
@@ -1934,10 +1920,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       // Extract inputs
@@ -2020,10 +2002,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       // Extract inputs
@@ -2167,10 +2145,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       // Extract inputs
@@ -2356,10 +2330,6 @@ export const modelingMachine = setup({
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
       }
 
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
-      }
-
       // Extract inputs
       const ast = kclManager.ast
       let modifiedAst = structuredClone(ast)
@@ -2448,10 +2418,6 @@ export const modelingMachine = setup({
     >(async ({ input }) => {
       if (!input) {
         return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-      }
-
-      if (kclManager.hasErrors()) {
-        return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
       }
 
       // Extract inputs
@@ -3151,36 +3117,55 @@ export const modelingMachine = setup({
         Extrude: {
           target: 'Applying extrude',
           reenter: true,
-        },
-
-        Revolve: {
-          target: 'Applying revolve',
-          reenter: true,
+          guard: 'no kcl errors',
         },
 
         Sweep: {
           target: 'Applying sweep',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Loft: {
           target: 'Applying loft',
           reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Revolve: {
+          target: 'Applying revolve',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        'Offset plane': {
+          target: 'Applying offset plane',
+          reenter: true,
+          guard: 'no kcl errors',
+        },
+
+        Helix: {
+          target: 'Applying helix',
+          reenter: true,
+          guard: 'no kcl errors',
         },
 
         Shell: {
           target: 'Applying shell',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Fillet: {
           target: 'Applying fillet',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
+          guard: 'no kcl errors',
         },
 
         'event.parameter.create': {
@@ -3211,16 +3196,6 @@ export const modelingMachine = setup({
           target: 'idle',
           reenter: false,
           actions: ['Submit to Text-to-CAD API'],
-        },
-
-        'Offset plane': {
-          target: 'Applying offset plane',
-          reenter: true,
-        },
-
-        Helix: {
-          target: 'Applying helix',
-          reenter: true,
         },
 
         'Prompt-to-edit': 'Applying Prompt-to-edit',
