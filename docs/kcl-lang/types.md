@@ -19,18 +19,6 @@ myBool = false
 
 Currently you cannot redeclare a constant.
 
-## Arrays
-
-An array is defined with `[]` braces. What is inside the brackets can
-be of any type. For example, the following is completely valid:
-
-```
-myArray = ["thing", 2, false]
-```
-
-If you want to get a value from an array you can use the index like so:
-`myArray[0]`.
-
 
 ## Objects
 
