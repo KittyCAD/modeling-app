@@ -267,11 +267,11 @@ export const FileMachineProvider = ({
               : newName + FILE_EXT
             : DEFAULT_FILE_NAME
           const oldPath = window.electron.path.join(
-            input.selectedDirectory.path,
+            input.parentDirectory.path,
             oldName
           )
           const newPath = window.electron.path.join(
-            input.selectedDirectory.path,
+            input.parentDirectory.path,
             name
           )
 

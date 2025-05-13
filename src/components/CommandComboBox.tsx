@@ -1,6 +1,6 @@
 import { Combobox } from '@headlessui/react'
 import Fuse from 'fuse.js'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { Command } from '@src/lib/commandTypes'
@@ -21,13 +21,17 @@ function CommandComboBox({
   const defaultOption =
     options.find((o) => 'isCurrent' in o && o.isCurrent) || null
   // sort disabled commands to the bottom
-  const sortedOptions = options
-    .map((command) => ({
-      command,
-      disabled: optionIsDisabled(command),
-    }))
-    .sort(sortCommands)
-    .map(({ command }) => command)
+  const sortedOptions = useMemo(
+    () =>
+      options
+        .map((command) => ({
+          command,
+          disabled: optionIsDisabled(command),
+        }))
+        .sort(sortCommands)
+        .map(({ command }) => command),
+    [options]
+  )
 
   const fuse = new Fuse(sortedOptions, {
     keys: ['displayName', 'name', 'description'],
@@ -38,7 +42,7 @@ function CommandComboBox({
   useEffect(() => {
     const results = fuse.search(query).map((result) => result.item)
     setFilteredOptions(query.length > 0 ? results : sortedOptions)
-  }, [query])
+  }, [query, sortedOptions])
 
   function handleSelection(command: Command) {
     commandBarActor.send({ type: 'Select command', data: { command } })
@@ -122,10 +126,18 @@ function CommandComboBox({
 
 export default CommandComboBox
 
+/**
+ * If the command is configured to be disabled,
+ * or it is powered by a state machine and the event it is
+ * associated with is unavailable, disabled it.
+ */
 function optionIsDisabled(option: Command): boolean {
   return (
-    'machineActor' in option &&
-    option.machineActor !== undefined &&
-    !getActorNextEvents(option.machineActor.getSnapshot()).includes(option.name)
+    option.disabled ||
+    ('machineActor' in option &&
+      option.machineActor !== undefined &&
+      !getActorNextEvents(option.machineActor.getSnapshot()).includes(
+        option.name
+      ))
   )
 }

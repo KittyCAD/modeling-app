@@ -43,7 +43,7 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `objects` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
+| `objects` | [`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
 | `roll` | [`number`](/docs/kcl-std/types/std-types-number) | The roll angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
 | `pitch` | [`number`](/docs/kcl-std/types/std-types-number) | The pitch angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
 | `yaw` | [`number`](/docs/kcl-std/types/std-types-number) | The yaw angle in degrees. Must be between -360 and 360. Default is 0 if not given. | No |
@@ -53,7 +53,7 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ### Returns
 
-[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-lang/types#ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
+[`[Solid]`](/docs/kcl-std/types/std-types-Solid) or [`[Sketch]`](/docs/kcl-std/types/std-types-Sketch) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) - Data for a solid, sketch, or an imported geometry.
 
 
 ### Examples
