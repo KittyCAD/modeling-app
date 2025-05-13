@@ -40,8 +40,8 @@ An object is defined with `{}` braces. Here is an example object:
 myObj = { a = 0, b = "thing" }
 ```
 
-We support two different ways of getting properties from objects, you can call
-`myObj.a` or `myObj["a"]` both work.
+To get the property of an object, you can call `myObj.a`, which in the above
+example returns 0.
 
 ## `ImportedGeometry`
 
