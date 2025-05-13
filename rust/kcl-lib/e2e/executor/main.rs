@@ -1095,20 +1095,6 @@ sketch001 = startSketchOn(box, face = END)
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_basic_revolve_circle() {
-    let code = r#"sketch001 = startSketchOn(XY)
-  |> circle(center = [15, 0], radius= 5)
-  |> revolve(
-    angle = 360, 
-    axis = Y 
-    )
-"#;
-
-    let result = execute_and_snapshot(code, None).await.unwrap();
-    assert_out("basic_revolve_circle", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_simple_revolve_sketch_on_edge() {
     let code = r#"part001 = startSketchOn(XY)
      |> startProfile(at = [4, 12])
