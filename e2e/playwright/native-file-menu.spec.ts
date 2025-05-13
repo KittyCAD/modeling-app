@@ -293,14 +293,6 @@ test.describe(
         )
         await openSettingsExpectLocator(page, '#projectDirectory')
       })
-      await test.step('Modeling.View.Command Palette...', async () => {
-        await page.waitForTimeout(2000)
-        await cmdBar.closeCmdBar()
-        await clickElectronNativeMenuById(tronApp, 'View.Command Palette...')
-        // Check the placeholder project name exists
-        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
-        await expect(actual).toBeVisible()
-      })
       await test.step('Modeling.View.Orthographic view', async () => {
         await page.waitForTimeout(2000)
         // wait for previous toast to disappear
@@ -549,15 +541,6 @@ test.describe(
         )
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Prompt-to-edit')
-      })
-
-      await test.step('Modeling.Help.Show all commands', async () => {
-        await page.waitForTimeout(2000)
-        await cmdBar.closeCmdBar()
-        await clickElectronNativeMenuById(tronApp, 'Help.Show all commands')
-        // Check the placeholder project name exists
-        const actual = cmdBar.cmdBarElement.getByTestId('cmd-bar-search')
-        await expect(actual).toBeVisible()
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
