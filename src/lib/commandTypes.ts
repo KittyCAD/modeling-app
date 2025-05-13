@@ -103,6 +103,7 @@ export type Command<
   icon?: Icon
   hide?: PLATFORM[number]
   hideFromSearch?: boolean
+  disabled?: boolean
   status?: CommandStatus
 }
 
