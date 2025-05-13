@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart gear.kcl
+description: Artifact graph flowchart herringbone-planetary-gearset.kcl
 extension: md
 snapshot_kind: binary
 ---

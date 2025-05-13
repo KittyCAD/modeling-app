@@ -172,16 +172,6 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "gear/main.kcl",
-    "multipleFiles": false,
-    "title": "Spur Gear",
-    "description": "A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear.",
-    "files": [
-      "main.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "gear-rack/main.kcl",
     "multipleFiles": false,
     "title": "100mm Gear Rack",
@@ -226,6 +216,46 @@
     "multipleFiles": false,
     "title": "Gridfinity Bins With A Stacking Lip",
     "description": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helical-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Helical Gear",
+    "description": "A helical gear is a type of cylindrical gear where the teeth are slanted at an angle relative to the axis of rotation. This greatly reduces noise and wear when transmitting torque across meshed spinning gears",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "helical-planetary-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Helical Planetary Gearset",
+    "description": "A helical planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are helical rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "herringbone-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Gear",
+    "description": "A herringbone, or double-helical gear, is a cylindrical gear type with angled teeth in opposing directions. This allows the quietness and smoothness of a helical gear, without applying a directional load while turning",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "herringbone-planetary-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Herringbone Planetary Gearset",
+    "description": "A herringbone planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are herringbone rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.",
     "files": [
       "main.kcl"
     ]
@@ -408,6 +438,26 @@
     "multipleFiles": false,
     "title": "Socket Head Cap Screw",
     "description": "This is for a #10-24 screw that is 1.00 inches long. A socket head cap screw is a type of fastener that is widely used in a variety of applications requiring a high strength fastening solution. It is characterized by its cylindrical head and internal hexagonal drive, which allows for tightening with an Allen wrench or hex key.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spur-gear/main.kcl",
+    "multipleFiles": false,
+    "title": "Spur Gear",
+    "description": "A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear.",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "spur-reduction-gearset/main.kcl",
+    "multipleFiles": false,
+    "title": "Spur Reduction Gearset",
+    "description": "A pair of spur gears meshed together, with an equal module and different number of teeth",
     "files": [
       "main.kcl"
     ]

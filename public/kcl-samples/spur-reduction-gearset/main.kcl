@@ -1,0 +1,70 @@
+// Spur Reduction Gearset
+// A pair of spur gears meshed together, with an equal module and different number of teeth
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define a function to create a spur gear
+fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  gearSketch = startSketchOn(XY)
+    |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = 0,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160 / nTeeth, length = tipDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180 / nTeeth),
+         reverse = true,
+       )
+    // Position the end line of the sketch at the start of the next tooth
+    |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+    |> patternCircular2d(
+         %,
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = true,
+       )
+    |> close()
+    // Subtract a 10mm diameter center hole from the gear
+    |> subtract2d(tool = circle(center = [0, 0], radius = 5))
+    // Extrude the gear to the specified height
+    |> extrude(length = gearHeight)
+
+  return gearSketch
+}
+
+// Model a small gear
+spurGear(
+  nTeeth = 17,
+  module = 1.5,
+  pressureAngle = 14,
+  gearHeight = 9,
+)
+
+// Model a larger gear with the same module
+spurGear(
+       nTeeth = 51,
+       module = 1.5,
+       pressureAngle = 14,
+       gearHeight = 7,
+     )
+  // Translate the larger gear by the combined pitch radius of both gears, plus a small gap
+  |> translate(x = (51 + 17) / 2 * 1.5 + 1.3)
+
+  // Rotate the gear so that the teeth mesh but do not intersect
+  |> rotate(yaw = 3)
