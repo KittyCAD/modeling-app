@@ -459,35 +459,6 @@ export const commandBarMachine = setup({
         Open: {
           target: 'Selecting command',
         },
-
-        'Add commands': {
-          target: 'Closed',
-
-          actions: [
-            assign({
-              commands: ({ context, event }) =>
-                [...context.commands, ...event.data.commands].sort(
-                  sortCommands
-                ),
-            }),
-          ],
-        },
-
-        'Remove commands': {
-          target: 'Closed',
-
-          actions: [
-            assign({
-              commands: ({ context, event }) =>
-                context.commands.filter(
-                  (c) =>
-                    !event.data.commands.some(
-                      (c2) => c2.name === c.name && c2.groupId === c.groupId
-                    )
-                ),
-            }),
-          ],
-        },
       },
 
       always: {
@@ -644,6 +615,29 @@ export const commandBarMachine = setup({
     'Find and select command': {
       target: '.Command selected',
       actions: ['Find and select command', 'Initialize arguments to submit'],
+    },
+
+    'Add commands': {
+      actions: [
+        assign({
+          commands: ({ context, event }) =>
+            [...context.commands, ...event.data.commands].sort(sortCommands),
+        }),
+      ],
+    },
+
+    'Remove commands': {
+      actions: [
+        assign({
+          commands: ({ context, event }) =>
+            context.commands.filter(
+              (c) =>
+                !event.data.commands.some(
+                  (c2) => c2.name === c.name && c2.groupId === c.groupId
+                )
+            ),
+        }),
+      ],
     },
   },
 })
