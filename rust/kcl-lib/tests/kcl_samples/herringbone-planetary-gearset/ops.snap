@@ -1132,7 +1132,7 @@ description: Operations executed herringbone-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.6330772527729873,
+            "value": 1.6330772527729875,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -1212,7 +1212,7 @@ description: Operations executed herringbone-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.6992793968141515,
+            "value": 1.6992793968141517,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -1292,7 +1292,7 @@ description: Operations executed herringbone-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.741408033931256,
+            "value": 1.7414080339312563,
             "ty": {
               "type": "Known",
               "type": "Angle",

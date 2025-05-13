@@ -1,0 +1,123 @@
+// Helium Tank
+// A helium tank is a portable pressure vessel used to store and dispense helium gas for a variety of commercial and entertainment purposes
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+tankHeight = 2.5ft
+tankDiameter = 9
+wallThickness = 0.125
+portDiameter = 1.25
+bracketThickness = 0.090
+boltSize = 1 / 4
+
+// Sketch the perimeter of the gas tank- inside and out, then revolve around the vertical axis.
+tankSketch = startSketchOn(YZ)
+  |> startProfile(at = [portDiameter / 2, tankHeight])
+  |> yLine(length = -0.6)
+  |> xLine(length = 0.1)
+  |> tangentialArc(angle = -110, radius = 0.1)
+  |> tangentialArc(angle = 40, radius = 0.6)
+  |> tangentialArc(angle = -110, radius = 0.1)
+  |> tangentialArc(angle = 180, radius = 0.1)
+  |> tangentialArc(angle = -90, radius = tankDiameter / 2 - lastSegX(%), tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), endAbsoluteY = 1.5, tag = $seg09)
+  |> tangentialArc(angle = -90, radius = 2, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), endAbsoluteX = 0.001, tag = $seg08)
+  |> yLine(length = wallThickness)
+  |> xLine(length = segLen(seg08))
+  |> tangentialArc(angle = 90, radius = 2 - wallThickness)
+  |> yLine(length = segLen(seg09))
+  |> tangentialArc(angle = 90, radius = tankDiameter / 2 - wallThickness - 1.3)
+  |> xLine(endAbsolute = profileStartX(%) - .1)
+  |> yLine(endAbsolute = profileStartY(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+// Only revolving to 220deg so that the interior of the tank is visible. It should ultimately be closed at 360deg
+tankRevolve = revolve(tankSketch, angle = 220, axis = Y)
+
+// Model the brass valve on top of the tank port
+valveBody = startSketchOn(offsetPlane(XY, offset = tankHeight - 0.5))
+  |> circle(center = [0, 0], radius = portDiameter / 1.9, tag = $seg03)
+  |> extrude(length = 1.5, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 0.1,
+       tags = [
+         getCommonEdge(faces = [seg03, capEnd001])
+       ],
+     )
+
+// Model the outlet port of the valve, then union it all together
+valvePort = startSketchOn(YZ)
+  |> circle(center = [0, tankHeight + 0.3], radius = portDiameter / 3)
+  |> subtract2d(tool = circle(center = [0, tankHeight + 0.3], radius = portDiameter / 3.25))
+  |> extrude(length = 1.3)
+valve = union([valveBody, valvePort])
+  |> appearance(color = "#9a4618")
+
+// Sketch the offset profile of the mounting bracket
+bracketOffsetProfile = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
+  |> startProfile(at = [0, tankDiameter / 2 + wallThickness])
+  |> xLine(length = -0.1)
+  |> tangentialArc(angle = 35, radius = tankDiameter / 2 + wallThickness)
+  |> tangentialArc(angle = -135, radius = 0.25 - wallThickness, tag = $seg06)
+  |> angledLine(angle = tangentToEnd(seg06), length = tankDiameter / 7)
+  |> tangentialArc(angle = -80, radius = 0.25 - wallThickness, tag = $seg07)
+  |> angledLine(angle = tangentToEnd(seg07), endAbsoluteX = 0)
+  |> mirror2d(axis = Y)
+  |> close()
+
+// Sketch the outer perimeter of the offset bracket, then subtract the inner offset to create a constant thickness sheet metal hoop
+bracketProfile = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
+  |> startProfile(at = [0, tankDiameter / 2])
+  |> xLine(length = -0.1)
+  |> tangentialArc(angle = 35, radius = tankDiameter / 2)
+  |> tangentialArc(angle = -135, radius = 0.25, tag = $seg04)
+  |> angledLine(angle = tangentToEnd(seg04), length = tankDiameter / 7)
+  |> tangentialArc(angle = -80, radius = 0.25, tag = $seg05)
+  |> angledLine(angle = tangentToEnd(seg05), endAbsoluteX = 0)
+  |> mirror2d(axis = Y)
+  |> close()
+  |> subtract2d(tool = bracketOffsetProfile)
+  |> extrude(length = 1, symmetric = true)
+
+// Cut holes in the bracket for a mounting strap
+strapSleeve = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
+  |> circle(center = [0, .125 / 2], radius = 4.75)
+  |> subtract2d(tool = circle(center = [0, .125 / 2], radius = 4.65))
+  |> extrude(length = .8, symmetric = true)
+bracketSleeve = subtract([bracketProfile], tools = [strapSleeve])
+
+// Create holes in the bracket for anchor mounts to secure the bracket to a wall
+mountingHoles = startSketchOn(offsetPlane(XZ, offset = -tankDiameter / 1.9))
+  |> circle(center = [tankDiameter / 4.5, tankHeight * 0.67], radius = boltSize / 2)
+  |> extrude(length = -5)
+
+bracket = subtract(
+       [bracketSleeve],
+       tools = union(patternLinear3d(
+         mountingHoles,
+         instances = 2,
+         distance = tankDiameter / 2.25,
+         axis = [-1, 0, 0],
+       )),
+     )
+  |> appearance(color = "#cd0404")
+
+// Model a circular strap to secure the tank to the bracket
+mountingStrap = startSketchOn(offsetPlane(XY, offset = tankHeight * 0.67))
+  |> circle(center = [0, .155 / 2], radius = tankDiameter / 1.9)
+  |> subtract2d(tool = circle(center = [0, .155 / 2], radius = tankDiameter / 1.9 - 0.1))
+  |> extrude(length = .75, symmetric = true)
+  |> appearance(color = "#210d03")
+
+// Create a second instance of the bracket and strap at a lower point on the tank
+[bracket, mountingStrap]
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = tankHeight * 0.33,
+       axis = [0, 0, -1],
+     )
