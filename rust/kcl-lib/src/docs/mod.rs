@@ -39,7 +39,7 @@ const DECLARED_TYPES: [&str; 17] = [
     "Axis2d",
     "Axis3d",
     "ImportedGeometry",
-    "Fn",
+    "fn",
 ];
 
 lazy_static::lazy_static! {
