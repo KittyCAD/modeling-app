@@ -1,5 +1,6 @@
-use std::{collections::HashMap, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
+use indexmap::IndexMap;
 use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
@@ -449,7 +450,7 @@ pub struct ModData {
     pub description: Option<String>,
     pub module_name: String,
 
-    pub children: HashMap<String, DocData>,
+    pub children: IndexMap<String, DocData>,
 }
 
 impl ModData {
@@ -465,7 +466,7 @@ impl ModData {
             qual_name,
             summary: None,
             description: None,
-            children: HashMap::new(),
+            children: IndexMap::new(),
             module_name,
         }
     }
@@ -1236,13 +1237,18 @@ mod test {
                 .expect_mod()
         };
 
-        #[allow(clippy::iter_over_hash_type)]
+        let mut count = 0;
         for d in data.children.values() {
             if let DocData::Mod(_) = d {
                 continue;
             }
 
             for (i, eg) in d.examples().enumerate() {
+                count += 1;
+                if count % SHARD_COUNT != SHARD {
+                    continue;
+                }
+
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
                         errs.push(format!("Error testing example {}{i}: {}", d.name(), e.error.message()));
