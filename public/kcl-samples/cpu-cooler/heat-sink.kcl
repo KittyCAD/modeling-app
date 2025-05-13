@@ -1,0 +1,171 @@
+// Heat Sink
+// Conductive metal device made from brazed tubes and fins
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Draw the sweep path for the outermost tubes
+endTubePath = startSketchOn(offsetPlane(YZ, offset = -20))
+  |> startProfile(at = [fanSize / 4, fanSize + 38])
+  |> yLine(endAbsolute = bendRadius + 10, tag = $seg01)
+  |> tangentialArc(radius = bendRadius, angle = -90)
+  |> xLine(endAbsolute = 0, tag = $seg02)
+  |> xLine(length = -segLen(seg02))
+  |> tangentialArc(radius = bendRadius, angle = -90)
+  |> yLine(length = segLen(seg01))
+
+// Sweep and translate the outermost tube on each end
+endTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
+  |> circle(center = [-20, fanSize / 4], radius = 3)
+  |> subtract2d(tool = circle(center = [-20, fanSize / 4], radius = 2.5))
+  |> sweep(path = endTubePath)
+  |> patternCircular3d(
+       %,
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )
+
+// Draw the sweep path for the 4 interior tubes
+centerTubePath = startSketchOn(offsetPlane(YZ, offset = -4))
+  |> startProfile(at = [fanSize / 2.67, fanSize + 38])
+  |> yLine(endAbsolute = bendRadius + 15 + 10)
+  |> tangentialArc(radius = bendRadius, angle = -45)
+  |> angledLine(angle = -135, lengthY = 15)
+  |> tangentialArc(radius = bendRadius, angle = -45)
+  |> xLine(endAbsolute = 0, tag = $seg03)
+  |> xLine(length = -segLen(seg03))
+  |> tangentialArc(radius = bendRadius, angle = -155)
+  |> tangentialArc(radius = bendRadius, angle = 65)
+  |> yLine(endAbsolute = fanSize + 38)
+
+// Draw the profile and sweep the 4 interior tubes
+centerTube = startSketchOn(offsetPlane(XY, offset = fanSize + 38))
+  |> circle(center = [-4, fanSize / 2.67], radius = 3)
+  |> subtract2d(tool = circle(center = [-4, fanSize / 2.67], radius = 2.5))
+  |> sweep(path = centerTubePath)
+  |> patternCircular3d(
+       %,
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [-4 * 2, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )
+  |> patternLinear3d(
+       %,
+       instances = 2,
+       distance = 4 * 4,
+       axis = [1, 0, 0],
+     )
+
+// Draw a heat fin with built-in clips to secure the mounting wire. Pattern the fin upwards by the height of the fan
+heatFins = startSketchOn(offsetPlane(XY, offset = 45))
+  |> startProfile(at = [0, -fanSize / 2])
+  |> xLine(length = 9)
+  |> angledLine(angle = -60, length = 2.5, tag = $seg04)
+  |> xLine(length = 0.75)
+  |> arc(interiorAbsolute = [lastSegX(%) + 1, lastSegY(%) + 1.2], endAbsolute = [lastSegX(%) + 2, lastSegY(%)])
+  |> xLine(length = 0.75)
+  |> angledLine(angle = 60, length = segLen(seg04))
+  |> xLine(endAbsolute = heatSinkDepth / 2 - 3)
+  |> tangentialArc(angle = 90, radius = 3)
+  |> yLine(endAbsolute = 0)
+  |> mirror2d(axis = X)
+  |> mirror2d(axis = Y)
+  |> close()
+  |> extrude(length = 1)
+  |> patternLinear3d(
+       %,
+       instances = 31,
+       distance = (fanSize - 10) / 30,
+       axis = [0, 0, 1],
+     )
+
+// Create the mounting base for the CPU cooler. The base should consist of two pieces that secure around each of the tubes at the bottom
+coolerBase = startSketchOn(-XZ)
+baseLower = startProfile(coolerBase, at = [0, 10])
+  |> xLine(length = -0.9)
+  |> arc(angleStart = 0, angleEnd = -180, radius = 3.1)
+  |> xLine(length = -1.8)
+  |> arc(angleStart = 0, angleEnd = -180, radius = 3)
+  |> xLine(length = -1.8)
+  |> arc(angleStart = 0, angleEnd = -180, radius = 3)
+  |> xLine(length = -1.8)
+  |> xLine(length = -2)
+  |> yLine(length = -10)
+  |> xLine(endAbsolute = 0)
+  |> mirror2d(axis = Y)
+  |> extrude(length = 2 * segLen(seg02), symmetric = true)
+
+baseUpper = startProfile(coolerBase, at = [0, 10])
+  |> xLine(length = -0.9)
+  |> arc(angleStart = 0, angleEnd = 180, radius = 3.1)
+  |> xLine(length = -1.8)
+  |> arc(angleStart = 0, angleEnd = 180, radius = 3)
+  |> xLine(length = -1.8)
+  |> arc(angleStart = 0, angleEnd = 180, radius = 3)
+  |> xLine(length = -1.8)
+  |> xLine(length = -1)
+  |> yLine(length = 4)
+  |> tangentialArc(angle = -90, radius = 2)
+  |> xLine(endAbsolute = 0)
+  |> mirror2d(axis = Y)
+  |> extrude(length = 2 * segLen(seg02) * 3 / 4, symmetric = true)
+
+// Create a flexible mounting bracket to secure the heat sink to the motherboard once adhered
+mountingBracket = startSketchOn(XZ)
+  |> startProfile(at = [-10, 16])
+  |> xLine(length = -20)
+  |> tangentialArc(angle = 20, radius = bendRadius)
+  |> angledLine(angle = -160, length = 14, tag = $seg09)
+  |> tangentialArc(angle = -30, radius = bendRadius + sheetThickness)
+  |> angledLine(angle = 170, length = 21.5, tag = $seg04Q)
+  |> angledLine(angle = 170 - 90, length = sheetThickness, tag = $seg08)
+  |> angledLine(angle = segAng(seg04Q) + 180, length = segLen(seg04Q), tag = $seg05E)
+  |> tangentialArc(angle = 30, radius = bendRadius)
+  |> angledLine(angle = segAng(seg09) + 180, length = segLen(seg09))
+  |> tangentialArc(angle = -20, radius = bendRadius + sheetThickness)
+  |> xLine(endAbsolute = profileStartX(%))
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg07)
+  |> close()
+  |> extrude(
+       length = 16,
+       symmetric = true,
+       tagEnd = $capEnd001,
+       tagStart = $capStart001,
+     )
+  |> fillet(
+       radius = 2,
+       tags = [
+         getCommonEdge(faces = [seg07, capEnd001]),
+         getCommonEdge(faces = [seg08, capEnd001]),
+         getCommonEdge(faces = [seg08, capStart001]),
+         getCommonEdge(faces = [seg07, capStart001])
+       ],
+     )
+
+// Create a clearance hole in the bracket for an M3 screw and countersink the hole
+thruHole = startSketchOn(mountingBracket, face = seg05E)
+  |> circle(center = [70, 0], radius = 3.4 / 2, tag = $seg06E)
+  |> extrude(length = -sheetThickness)
+  |> chamfer(
+       length = sheetThickness * 0.75,
+       tags = [
+         getCommonEdge(faces = [seg05E, seg06E])
+       ],
+     )
+
+  // Duplicate the bracket to the other side of the heat sink base
+  |> patternCircular3d(
+       instances = 2,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = true,
+     )

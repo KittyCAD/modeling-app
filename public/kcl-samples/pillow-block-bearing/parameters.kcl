@@ -1,0 +1,18 @@
+// Global parameters for the pillow block bearing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Export parameters
+export boltSpacingX = 5
+export boltSpacingY = 3
+export boltDiameter = 3 / 8
+export counterboreDiameter = 3 / 4
+export counterboreDepth = 3 / 16
+export stockThickness = .5
+export bearingBoreDiameter = 1 + 3 / 4
+export bearingOuterDiameter = bearingBoreDiameter * 1.5
+export sphereDia = (bearingOuterDiameter - bearingBoreDiameter) / 4
+export chainWidth = sphereDia / 2
+export chainThickness = sphereDia / 8
+export linkDiameter = sphereDia / 4
