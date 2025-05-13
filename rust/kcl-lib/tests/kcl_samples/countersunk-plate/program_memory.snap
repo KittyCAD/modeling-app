@@ -157,7 +157,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               -0.0
             ],
             "from": [
-              2.7738,
+              2.7737,
               0.6983
             ],
             "tag": null,
@@ -176,7 +176,7 @@ description: Variables in memory after executing countersunk-plate.kcl
               "sourceRange": []
             },
             "from": [
-              2.7738,
+              2.7737,
               -0.6983
             ],
             "tag": null,
@@ -196,7 +196,7 @@ description: Variables in memory after executing countersunk-plate.kcl
             },
             "ccw": false,
             "center": [
-              0.0,
+              -0.0,
               -0.0
             ],
             "from": [
