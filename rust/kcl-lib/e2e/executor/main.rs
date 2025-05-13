@@ -23,47 +23,6 @@ pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> Strin
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_fillet_duplicate_tags() {
-    let code = kcl_input!("fillet_duplicate_tags");
-
-    let result = execute_and_snapshot(code, None).await;
-    let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
-
-    let err = err.as_kcl_error().unwrap();
-    assert_eq!(
-        err.message(),
-        "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
-    );
-    assert_eq!(err.source_ranges().len(), 3);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_engine_error_return() {
-    let code = r#"part001 = startSketchOn(XY)
-  |> startProfile(at = [5.5229, 5.25217])
-  |> line(end = [10.50433, -1.19122])
-  |> line(end = [8.01362, -5.48731])
-  |> line(end = [-1.02877, -6.76825])
-  |> line(end = [-11.53311, 2.81559])
-  |> extrude(length = 4)
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-    let expected_msg = "engine: Modeling command failed: [ApiError { error_code: BadRequest, message: \"The path is not closed.  Solid2D construction requires a closed path!\" }]";
-    let err = result.unwrap_err().as_kcl_error().unwrap().get_message();
-    assert_eq!(err, expected_msg);
-}
-
-#[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_execute_i_shape() {
-    // This is some code from lee that starts a pipe expression with a variable.
-    let code = kcl_input!("i_shape");
-
-    let result = execute_and_snapshot(code, None).await.unwrap();
-    assert_out("i_shape", &result);
-}
-
-#[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn kcl_test_execute_pipes_on_pipes() {
     let code = kcl_input!("pipes_on_pipes");
