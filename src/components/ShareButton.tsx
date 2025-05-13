@@ -32,7 +32,7 @@ export const ShareButton = () => {
       data-testid="share-button"
     >
       <CustomIcon name="link" className="w-5 h-5" />
-      <span className="flex-1">Share</span>
+      <span className="max-xl:hidden flex-1">Share</span>
       <Tooltip
         position="bottom-right"
         contentClassName="max-w-none flex items-center gap-4"
