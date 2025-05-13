@@ -387,11 +387,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     {
-        if !pattern_info.entity_ids.is_empty() {
-            &pattern_info.entity_ids
-        } else {
-            &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
-        }
+        &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(extra_instances);
         for _ in 0..extra_instances {
@@ -1341,11 +1337,7 @@ async fn pattern_circular(
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     {
-        if !pattern_info.entity_ids.is_empty() {
-            &pattern_info.entity_ids.clone()
-        } else {
-            &pattern_info.entity_face_edge_ids.iter().map(|e| e.object_id).collect()
-        }
+        &pattern_info.entity_face_edge_ids.iter().map(|e| e.object_id).collect()
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(num_repetitions as usize);
         for _ in 0..num_repetitions {

@@ -84,6 +84,10 @@ export type SystemIOContext = {
   /** has the application gone through the initialization of systemIOMachine at least once.
    * this is required to prevent chokidar from spamming invalid events during initialization. */
   hasListedProjects: boolean
+  /**
+   * We watch objects because we want to be able to navigate to itself
+   * if we used a string the useEffect would not change
+   */
   requestedProjectName: { name: string; subRoute?: string }
   requestedFileName: { project: string; file: string; subRoute?: string }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
