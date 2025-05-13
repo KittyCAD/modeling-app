@@ -11,7 +11,7 @@ layout: manual
 reduce(
   @array: [any],
   initial: any,
-  f: Fn,
+  f: fn(any, accum: any): any,
 ): [any]
 ```
 
@@ -24,7 +24,7 @@ using the previous value and the element.
 |----------|------|-------------|----------|
 | `array` | [`[any]`](/docs/kcl-std/types/std-types-any) | Each element of this array gets run through the function `f`, combined with the previous output from `f`, and then used for the next run. | Yes |
 | `initial` | [`any`](/docs/kcl-std/types/std-types-any) | The first time `f` is run, it will be called with the first item of `array` and this initial starting value. | Yes |
-| `f` | [`Fn`](/docs/kcl-std/types/std-types-Fn) | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
+| `f` | [`fn(any, accum: any): any`](/docs/kcl-std/types/std-types-fn) | Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`. | Yes |
 
 ### Returns
 

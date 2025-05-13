@@ -25,11 +25,11 @@ use crate::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeList,
-            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration,
-            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
+            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name,
+            Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
+            PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
+            TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -1261,7 +1261,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<Node<FunctionExpression>> {
     fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
-        argument_type(i)
+        type_(i)
     }
 
     let open = open_paren(i)?;
@@ -2013,7 +2013,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected("a KCL value"))
     .parse_next(i)?;
 
-    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
         expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
@@ -2083,7 +2083,7 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     ))
     .parse_next(i)?;
 
-    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
         expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
@@ -2233,7 +2233,21 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
     let start = visibility_token.map(|t| t.start).unwrap_or_else(|| decl_token.start);
     whitespace(i)?;
 
-    let name = identifier(i)?;
+    let name = alt((
+        fun.map(|t| {
+            Node::new(
+                Identifier {
+                    name: "fn".to_owned(),
+                    digest: None,
+                },
+                t.start,
+                t.end,
+                t.module_id,
+            )
+        }),
+        identifier,
+    ))
+    .parse_next(i)?;
     let mut end = name.end;
 
     let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
@@ -2253,7 +2267,7 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         ignore_whitespace(i);
         equals(i)?;
         ignore_whitespace(i);
-        let ty = argument_type(i)?;
+        let ty = type_(i)?;
 
         ParseContext::warn(CompilationError::err(
             ty.as_source_range(),
@@ -2755,12 +2769,8 @@ fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
         .parse_next(i)
 }
 
-/// A type of a function argument.
-/// This can be:
-/// - a primitive type, e.g. `number` or `string` or `bool`
-/// - an array type, e.g. `[number]` or `[string]` or `[bool]`
-/// - an object type, e.g. `{x: number, y: number}` or `{name: string, age: number}`
-fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
+/// Parse a type in various positions.
+fn type_(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
@@ -2800,14 +2810,69 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
 }
 
 fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
-    let ident = identifier(i)?;
+    alt((
+        // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
+        (
+            fun,
+            opt((
+                // `(` type?, (id: type,)* `)`
+                delimited(
+                    open_paren,
+                    opt(alt((
+                        // type, (id: type,)+
+                        (
+                            type_,
+                            comma,
+                            opt(whitespace),
+                            separated(
+                                1..,
+                                (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                                comma_sep,
+                            ),
+                        )
+                            .map(|(t, _, _, args)| (Some(t), args)),
+                        // (id: type,)+
+                        separated(
+                            1..,
+                            (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                            comma_sep,
+                        )
+                        .map(|args| (None, args)),
+                        // type
+                        type_.map(|t| (Some(t), Vec::new())),
+                    ))),
+                    close_paren,
+                ),
+                // `:` type
+                opt((colon, opt(whitespace), type_)),
+            )),
+        )
+            .map(|(t, tys)| {
+                let mut ft = FunctionType::empty_fn_type();
 
-    let suffix = opt(delimited(open_paren, uom_for_type, close_paren)).parse_next(i)?;
+                if let Some((args, ret)) = tys {
+                    if let Some((unnamed, named)) = args {
+                        if let Some(unnamed) = unnamed {
+                            ft.unnamed_arg = Some(Box::new(unnamed));
+                        }
+                        ft.named_args = named;
+                    }
+                    if let Some((_, _, ty)) = ret {
+                        ft.return_type = Some(Box::new(ty));
+                    }
+                }
 
-    let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
-    result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
-
-    Ok(result)
+                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+            }),
+        // A named type, possibly with a numeric suffix.
+        (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
+            let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
+            result.inner =
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+            result
+        }),
+    ))
+    .parse_next(i)
 }
 
 fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
@@ -2817,7 +2882,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = argument_type(i)?;
+    let ty = type_(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2905,7 +2970,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
-        opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
+        opt((colon, opt(whitespace), type_).map(|tup| tup.2)),
         opt(whitespace),
         opt((equals, opt(whitespace), literal).map(|(_, _, literal)| literal)),
     )
@@ -4775,6 +4840,20 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
     |> startProfile(at = [0, 0])
     |> line(%, tag = $var01)"#;
         assert_no_err(some_program_string);
+    }
+    #[test]
+    fn parse_function_types() {
+        let code = r#"foo = x: fn
+foo = x: fn(number)
+fn foo(x: fn(): number): fn { return 0 }
+fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
+type fn
+type foo = fn
+type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn([fn])
+type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
+    "#;
+        assert_no_err(code);
     }
     #[test]
     fn test_parse_tag_starting_with_bang() {

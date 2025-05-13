@@ -85,6 +85,7 @@ tynm = "0.1.10"
 url = { version = "2.5.4", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
+walkdir = "2.5.0"
 web-time = "1.1"
 winnow = "=0.6.24"
 zip = { workspace = true }

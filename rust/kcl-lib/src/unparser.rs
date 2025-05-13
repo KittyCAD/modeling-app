@@ -2576,6 +2576,27 @@ sketch002 = startSketchOn({
     }
 
     #[test]
+    fn recast_function_types() {
+        let input = r#"foo = x: fn
+foo = x: fn(number)
+fn foo(x: fn(): number): fn {
+  return 0
+}
+fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn {
+  return 0
+}
+type fn
+type foo = fn
+type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn([fn])
+type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
+"#;
+        let ast = crate::parsing::top_level_parse(input).unwrap();
+        let actual = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(actual, input);
+    }
+
+    #[test]
     fn unparse_call_inside_function_args_multiple_lines() {
         let input = r#"fn foo() {
   toDegrees(
