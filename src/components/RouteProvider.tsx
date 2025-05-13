@@ -17,6 +17,7 @@ import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import { settingsActor } from '@src/lib/singletons'
+import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 
 export const RouteProviderContext = createContext({})
 

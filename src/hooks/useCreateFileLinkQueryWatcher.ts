@@ -1,18 +1,19 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { EngineConnectionStateType } from '@src/lang/std/engineConnection'
 import { base64ToString } from '@src/lib/base64'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
+  CMD_GROUP_QUERY_PARAM,
+  CMD_NAME_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
   DEFAULT_FILE_NAME,
+  POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { FileLinkParams } from '@src/lib/links'
-import { PATHS } from '@src/lib/paths'
+import { commandBarActor } from '@src/lib/singletons'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -24,43 +25,147 @@ export type CreateFileSchemaMethodOptional = Omit<
 }
 
 /**
- * companion to createFileLink. This hook runs an effect on mount that
- * checks the URL for the CREATE_FILE_URL_PARAM and triggers the "Create file"
- * command if it is present, loading the command's default values from the other
- * URL parameters.
+ * A hook that watches for query parameters and dispatches a callback.
+ * Currently watches for:
+ * `?createFile`
+ * "?cmd"
+ * "?pool"
  */
-export function useCreateFileLinkQuery(
-  callback: (args: CreateFileSchemaMethodOptional) => void
-) {
-  const { immediateState } = useNetworkContext()
+export function useCreateFileLinkQuery() {
   const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [onCommandBarIdle, setOnCommandBarIdle] = useState<
+    (() => void) | undefined
+  >()
+
+  /** Subscribe to the command bar being closed once */
+  useEffect(() => {
+    let subscription: ReturnType<typeof commandBarActor.subscribe> | undefined
+    if (onCommandBarIdle) {
+      subscription = commandBarActor.subscribe((snapshot) => {
+        if (snapshot.value === 'Closed') {
+          onCommandBarIdle()
+          setOnCommandBarIdle(undefined)
+        }
+      })
+    }
+
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
+  }, [onCommandBarIdle])
 
   useEffect(() => {
-    const isHome = pathname === PATHS.HOME
-    const createFileParam = searchParams.has(CREATE_FILE_URL_PARAM)
+    const shouldInvokeCreateFile = searchParams.has(CREATE_FILE_URL_PARAM)
+    const shouldInvokeGenericCmd =
+      searchParams.has(CMD_NAME_QUERY_PARAM) &&
+      searchParams.has(CMD_GROUP_QUERY_PARAM)
 
-    if (
-      createFileParam &&
-      (immediateState.type ===
-        EngineConnectionStateType.ConnectionEstablished ||
-        isHome)
-    ) {
-      const params: FileLinkParams = {
-        code: base64ToString(
-          decodeURIComponent(searchParams.get('code') ?? '')
-        ),
-        name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
-        isRestrictedToOrg: false,
+    console.log('FRANK search params', {
+      params: searchParams.entries().toArray(),
+      shouldInvokeCreateFile,
+      shouldInvokeGenericCmd,
+    })
+    if (shouldInvokeCreateFile) {
+      const argDefaultValues = buildCreateFileCommandArgs(searchParams)
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Import file from URL',
+          argDefaultValues,
+        },
+      })
+      setOnCommandBarIdle(() => {
+        searchParams.delete(CREATE_FILE_URL_PARAM)
+        setSearchParams(searchParams)
+      })
+    } else if (shouldInvokeGenericCmd) {
+      const commandData = buildGenericCommandArgs(searchParams)
+      console.log('FRANK command data', commandData)
+      if (!commandData) {
+        return
       }
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: commandData,
+      })
 
-      const argDefaultValues: CreateFileSchemaMethodOptional = {
-        name: PROJECT_ENTRYPOINT,
-        code: params.code || '',
-        method: isDesktop() ? undefined : 'existingProject',
-      }
-
-      callback(argDefaultValues)
+      setOnCommandBarIdle(() => {
+        searchParams.delete(CMD_NAME_QUERY_PARAM)
+        searchParams.delete(CMD_GROUP_QUERY_PARAM)
+        searchParams
+          .entries()
+          // Filter out known keys
+          .filter(
+            ([key]) =>
+              [
+                CMD_NAME_QUERY_PARAM,
+                CMD_GROUP_QUERY_PARAM,
+                CREATE_FILE_URL_PARAM,
+                POOL_QUERY_PARAM,
+              ].indexOf(key) === -1
+          )
+          .forEach(([key]) => {
+            searchParams.delete(key)
+          })
+        setSearchParams(searchParams)
+      })
     }
-  }, [searchParams, immediateState])
+  }, [pathname])
+}
+
+function buildCreateFileCommandArgs(searchParams: URLSearchParams) {
+  const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
+    code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
+    name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
+  }
+
+  const argDefaultValues: CreateFileSchemaMethodOptional = {
+    name: PROJECT_ENTRYPOINT,
+    code: params.code || '',
+    method: isDesktop() ? undefined : 'existingProject',
+  }
+
+  return argDefaultValues
+}
+
+function buildGenericCommandArgs(searchParams: URLSearchParams) {
+  // We have already verified these exist before calling
+  const name = searchParams.get('cmd')
+  const groupId = searchParams.get('groupId')
+
+  if (name === null || groupId === null) {
+    return
+  }
+
+  const filteredParams = searchParams
+    .entries()
+    // Filter out known keys
+    .filter(
+      ([key]) =>
+        [
+          CMD_NAME_QUERY_PARAM,
+          CMD_GROUP_QUERY_PARAM,
+          CREATE_FILE_URL_PARAM,
+          POOL_QUERY_PARAM,
+        ].indexOf(key) === -1
+    )
+  const argDefaultValues = filteredParams.reduce(
+    (acc, [key, value]) => {
+      const decodedKey = decodeURIComponent(key)
+      const decodedValue = decodeURIComponent(value)
+      acc[decodedKey] = decodedValue
+      return acc
+    },
+    {} as Record<string, string>
+  )
+
+  return {
+    name,
+    groupId,
+    argDefaultValues,
+  }
 }

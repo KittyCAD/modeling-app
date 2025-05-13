@@ -118,9 +118,6 @@ export const MAKE_TOAST_MESSAGES = {
 /** The URL for the KCL samples manifest files */
 export const KCL_SAMPLES_MANIFEST_URL = '/kcl-samples/manifest.json'
 
-/** URL parameter to create a file */
-export const CREATE_FILE_URL_PARAM = 'create-file'
-
 /** Toast id for the app auto-updater toast */
 export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
@@ -206,3 +203,14 @@ export const ML_EXPERIMENTAL_MESSAGE = 'This feature is experimental.'
  * while in the onboarding flow.
  */
 export const ONBOARDING_DATA_ATTRIBUTE = 'onboarding-id'
+
+/** A query parameter that invokes a command */
+export const CMD_NAME_QUERY_PARAM = 'cmd'
+/** A query parameter that invokes a command */
+export const CMD_GROUP_QUERY_PARAM = 'groupId'
+/** A query parameter that manually the engine pool the frontend should use. */
+export const POOL_QUERY_PARAM = 'pool'
+/** A query parameter to create a file
+ * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
+ */
+export const CREATE_FILE_URL_PARAM = 'create-file'

@@ -62,20 +62,9 @@ maybeWriteToDisk()
   .catch(() => {})
 
 export function App() {
+  useCreateFileLinkQuery()
   const { project, file } = useLoaderData() as IndexLoaderData
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-
-  // Keep a lookout for a URL query string that invokes the 'import file from URL' command
-  useCreateFileLinkQuery((argDefaultValues) => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-        argDefaultValues,
-      },
-    })
-  })
 
   const location = useLocation()
   const navigate = useNavigate()
