@@ -22,7 +22,6 @@ pub(crate) fn assert_out(test_name: &str, result: &image::DynamicImage) -> Strin
     path
 }
 
-
 #[tokio::test(flavor = "multi_thread")]
 #[ignore] // No longer a stack overflow problem, instead it causes an engine internal error.
 async fn kcl_test_execute_pipes_on_pipes() {
