@@ -1245,14 +1245,7 @@ mod test {
             for (i, eg) in d.examples().enumerate() {
                 let result = match crate::test_server::execute_and_snapshot(eg, None).await {
                     Err(crate::errors::ExecError::Kcl(e)) => {
-                        errs.push(
-                            miette::Report::new(crate::errors::Report {
-                                error: e.error,
-                                filename: format!("{}{i}", d.name()),
-                                kcl_source: eg.to_string(),
-                            })
-                            .to_string(),
-                        );
+                        errs.push(format!("Error testing example {}{i}: {}", d.name(), e.error.message()));
                         continue;
                     }
                     Err(other_err) => panic!("{}", other_err),
