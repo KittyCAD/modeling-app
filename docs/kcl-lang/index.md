@@ -14,6 +14,7 @@ things in a more tutorial fashion. See also our documentation of the [standard l
 * [Values and types](/docs/kcl-lang/types)
 * [Numeric types and units](/docs/kcl-lang/numeric)
 * [Functions](/docs/kcl-lang/functions)
+* [Arrays and ranges](/docs/kcl-lang/arrays)
 * [Projects and modules](/docs/kcl-lang/modules)
 * [Attributes](/docs/kcl-lang/attributes)
 * [Importing geometry from other CAD systems](/docs/kcl-lang/foreign-imports)

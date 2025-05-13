@@ -34,7 +34,7 @@ import {
   useMenuListener,
   useSketchModeMenuEnableDisable,
 } from '@src/hooks/useMenu'
-import useStateMachineCommands from '@src/hooks/useStateMachineCommands'
+import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { useKclContext } from '@src/lang/KclProvider'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
@@ -2091,13 +2091,12 @@ export const ModelingMachineProvider = ({
     modelingSend({ type: 'Center camera on selection' })
   })
 
-  useStateMachineCommands({
+  useModelingMachineCommands({
     machineId: 'modeling',
     state: modelingState,
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig: modelingMachineCommandConfig,
-    allCommandsRequireNetwork: true,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,
     // but we need to support "SketchCancel" and basically
     // make this function take the actor or state so it
