@@ -201,6 +201,13 @@ impl ExecState {
         self.global.artifacts.insert(id, artifact);
     }
 
+    pub(crate) fn push_op(&mut self, op: Operation) {
+        #[cfg(feature = "artifact-graph")]
+        self.global.operations.push(op);
+        #[cfg(not(feature = "artifact-graph"))]
+        drop(op);
+    }
+
     pub(super) fn next_module_id(&self) -> ModuleId {
         ModuleId::from_usize(self.global.path_to_source_id.len())
     }
