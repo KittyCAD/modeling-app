@@ -45,7 +45,7 @@ export function createMachineCommand<
   actor,
   commandBarConfig,
   onCancel,
-  forceDisable: shouldDisable = false,
+  forceDisable = false,
 }: CreateMachineCommandProps<T, S>):
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
@@ -73,7 +73,7 @@ export function createMachineCommand<
           actor,
           commandBarConfig: recursiveCommandBarConfig,
           onCancel,
-          shouldDisable,
+          forceDisable,
         })
       })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
@@ -108,7 +108,7 @@ export function createMachineCommand<
         send({ type })
       }
     },
-    disabled: shouldDisable,
+    disabled: forceDisable,
   }
 
   if (commandConfig.args) {
