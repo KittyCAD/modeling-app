@@ -173,6 +173,27 @@ export function getStringAfterLastSeparator(path: string): string {
 }
 
 /**
+ * When you have '/home/kevin-nadro/Documents/zoo-modeling-app-projects/bracket-1/bracket.kcl'
+ * and you need to get the projectDirectory from this string above.
+ *
+ * We replace the leading prefix which is the application project directory with
+ * the empty string. Then it becomes //bracket-1/bracket.kcl
+ * The first part of the path after the blank / will be the root project directory
+ *
+ */
+export function getProjectDirectoryFromKCLFilePath(
+  path: string,
+  applicationProjectDirectory: string
+): string {
+  const replacedPath = path.replace(applicationProjectDirectory, '')
+  const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
+  if (iAmABlankString === '') {
+    return projectDirectory
+  }
+  return ''
+}
+
+/**
  * Use this for only web related paths not paths in OS or on disk
  * e.g. document.location.pathname
  */
