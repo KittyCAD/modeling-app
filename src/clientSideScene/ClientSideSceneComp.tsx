@@ -615,7 +615,7 @@ const ConstraintSymbol = ({
                   <span className="font-bold">
                     {isConstrained ? 'Constrained' : 'Unconstrained'}
                   </span>
-                  <span className="text-white/80 text-sm pl-2">
+                  <span className="text-chalkboard-90 dark:text-chalkboard-40 text-sm pl-2">
                     {displayName}
                   </span>
                 </span>
