@@ -329,10 +329,10 @@ extrude002 = extrude(profile002, length = 150)
       )
 
       const websocketPromise = page.waitForEvent('websocket')
-      await toolbar.closePane('code')
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await toolbar.closePane('code')
       const websocket = await websocketPromise
 
       await scene.connectionEstablished()
