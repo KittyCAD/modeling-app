@@ -87,7 +87,6 @@ heatFins = startSketchOn(offsetPlane(XY, offset = 45))
        axis = [0, 0, 1],
      )
 
-
 // Create the mounting base for the CPU cooler. The base should consist of two pieces that secure around each of the tubes at the bottom
 coolerBase = startSketchOn(-XZ)
 baseLower = startProfile(coolerBase, at = [0, 10])
@@ -162,7 +161,7 @@ thruHole = startSketchOn(mountingBracket, face = seg05E)
        ],
      )
 
-// Duplicate the bracket to the other side of the heat sink base
+  // Duplicate the bracket to the other side of the heat sink base
   |> patternCircular3d(
        instances = 2,
        axis = [0, 0, 1],

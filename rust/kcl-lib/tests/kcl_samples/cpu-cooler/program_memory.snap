@@ -1,0 +1,125 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing cpu-cooler.kcl
+---
+{
+  "bendRadius": {
+    "type": "Number",
+    "value": 15.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "fan": {
+    "type": "Module",
+    "value": 4
+  },
+  "fanHeight": {
+    "type": "Number",
+    "value": 25.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "fanHousing": {
+    "type": "Module",
+    "value": 2
+  },
+  "fanSize": {
+    "type": "Number",
+    "value": 120.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "heatSink": {
+    "type": "Module",
+    "value": 5
+  },
+  "heatSinkDepth": {
+    "type": "Number",
+    "value": 55.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "motor": {
+    "type": "Module",
+    "value": 3
+  },
+  "mountingHoleSize": {
+    "type": "Number",
+    "value": 4.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "mountingHoleSpacing": {
+    "type": "Number",
+    "value": 105.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "mountingWire": {
+    "type": "Module",
+    "value": 6
+  },
+  "removableSticker": {
+    "type": "Module",
+    "value": 7
+  },
+  "sheetThickness": {
+    "type": "Number",
+    "value": 2.125,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "translatePart": {
+    "type": "Function",
+    "value": null
+  }
+}
