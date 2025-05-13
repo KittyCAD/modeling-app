@@ -1204,7 +1204,9 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
 }
 
 /**
- * What is happening?! I need all the console logs!!
+ * A developer helper function to make playwright send all the console logs to stdout
+ * Call this within your E2E test and pass in the page or the tronApp to get as many
+ * logs piped to stdout for debugging
  */
 export async function enableConsoleLogEverything({
   page,
