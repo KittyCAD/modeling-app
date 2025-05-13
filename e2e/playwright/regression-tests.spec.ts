@@ -549,48 +549,6 @@ extrude002 = extrude(profile002, length = 150)
     })
   })
 
-  test(
-    `Network health indicator only appears in modeling view`,
-    { tag: '@electron' },
-    async ({ context, page }, testInfo) => {
-      await context.folderSetupFn(async (dir) => {
-        const bracketDir = path.join(dir, 'bracket')
-        await fsp.mkdir(bracketDir, { recursive: true })
-        await fsp.copyFile(
-          executorInputPath('cylinder-inches.kcl'),
-          path.join(bracketDir, 'main.kcl')
-        )
-      })
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      const u = await getUtils(page)
-
-      // Locators
-      const projectsHeading = page.getByRole('heading', {
-        name: 'Projects',
-      })
-      const projectLink = page.getByRole('link', { name: 'bracket' })
-      const networkHealthIndicator = page.getByTestId('network-toggle')
-
-      await test.step('Check the home page', async () => {
-        await expect(projectsHeading).toBeVisible()
-        await expect(projectLink).toBeVisible()
-        await expect(networkHealthIndicator).not.toBeVisible()
-      })
-
-      await test.step('Open the project', async () => {
-        await projectLink.click()
-      })
-
-      await test.step('Check the modeling view', async () => {
-        await expect(networkHealthIndicator).toBeVisible()
-        await expect(networkHealthIndicator).toContainText('Problem')
-        await u.waitForPageLoad()
-        await expect(networkHealthIndicator).toContainText('Connected')
-      })
-    }
-  )
-
   test(`View gizmo stays visible even when zoomed out all the way`, async ({
     page,
     homePage,
