@@ -626,6 +626,8 @@ impl FnData {
     pub(super) fn to_autocomplete_snippet(&self) -> String {
         if self.name == "loft" {
             return "loft([${0:sketch000}, ${1:sketch001}])".to_owned();
+        } else if self.name == "clone" {
+            return "clone(${0:part001})".to_owned();
         } else if self.name == "hole" {
             return "hole(${0:holeSketch}, ${1:%})".to_owned();
         }
