@@ -278,6 +278,7 @@ async fn inner_line(
             end_absolute,
             end,
             tag,
+            relative_name: "end",
         },
         exec_state,
         args,
@@ -290,6 +291,7 @@ struct StraightLineParams {
     end_absolute: Option<[TyF64; 2]>,
     end: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
+    relative_name: &'static str,
 }
 
 impl StraightLineParams {
@@ -299,6 +301,7 @@ impl StraightLineParams {
             tag,
             end: Some(p),
             end_absolute: None,
+            relative_name: "end",
         }
     }
     fn absolute(p: [TyF64; 2], sketch: Sketch, tag: Option<TagNode>) -> Self {
@@ -307,6 +310,7 @@ impl StraightLineParams {
             tag,
             end: None,
             end_absolute: Some(p),
+            relative_name: "end",
         }
     }
 }
@@ -317,6 +321,7 @@ async fn straight_line(
         end,
         end_absolute,
         tag,
+        relative_name,
     }: StraightLineParams,
     exec_state: &mut ExecState,
     args: Args,
@@ -335,7 +340,7 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply either `end` or `endAbsolute` arguments".to_owned(),
+                message: format!("You must supply either `{relative_name}` or `endAbsolute` arguments"),
             }));
         }
     };
@@ -447,6 +452,7 @@ async fn inner_x_line(
             end_absolute: end_absolute.map(|x| [x, from.into_y()]),
             end: length.map(|x| [x, TyF64::new(0.0, NumericType::mm())]),
             tag,
+            relative_name: "length",
         },
         exec_state,
         args,
@@ -512,6 +518,7 @@ async fn inner_y_line(
             end_absolute: end_absolute.map(|y| [from.into_x(), y]),
             end: length.map(|y| [TyF64::new(0.0, NumericType::mm()), y]),
             tag,
+            relative_name: "length",
         },
         exec_state,
         args,
