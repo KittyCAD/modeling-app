@@ -810,8 +810,6 @@ export const doExport = async (
 
   await page.getByRole('button', { name: 'Submit command' }).click()
 
-  // This usually happens immediately after. If we're too slow we don't
-  // catch it.
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
