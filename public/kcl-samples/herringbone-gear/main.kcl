@@ -1,0 +1,84 @@
+// Herringbone Gear
+// A herringbone, or double-helical gear, is a cylindrical gear type with angled teeth in opposing directions. This allows the quietness and smoothness of a helical gear, without applying a directional load while turning
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define a function to create a herringbone gear
+fn herringboneGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Define a function to create a rotated gear sketch on an offset plane
+  fn herringboneGearSketch(offsetHeight) {
+    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
+    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+    herringboneGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = helixCalc,
+           tag = $seg01,
+         )
+      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           reverse = true,
+         )
+
+      // Position the end line of the sketch at the start of the next tooth
+      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+
+      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+      |> patternCircular2d(
+           %,
+           instances = nTeeth,
+           center = [0, 0],
+           arcDegrees = 360,
+           rotateDuplicates = true,
+         )
+      |> close()
+      // Create a center hole with an 8mm diameter
+      |> subtract2d(tool = circle(center = [0, 0], radius = 4))
+    return herringboneGearSketch
+  }
+
+  // Draw a gear sketch on the base plane
+  gearSketch001 = herringboneGearSketch(offsetHeight = 0)
+
+  // Draw a gear sketch that has been rotated by the helix angle
+  gearSketch002 = herringboneGearSketch(offsetHeight = gearHeight / 2)
+
+  // Draw a gear sketch at the total gear height that reverses the angle direction
+  gearSketch003 = clone(gearSketch001)
+    |> translate(z = gearHeight)
+
+  // Loft each rotated gear sketch together to form a herringbone gear
+  herringboneGear = loft(
+    [
+      gearSketch001,
+      gearSketch002,
+      gearSketch003
+    ],
+    vDegree = 1,
+  )
+
+  return herringboneGear
+}
+
+herringboneGear(
+  nTeeth = 25,
+  module = 1,
+  pressureAngle = 14,
+  helixAngle = 40,
+  gearHeight = 8,
+)

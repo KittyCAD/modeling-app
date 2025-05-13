@@ -1,0 +1,28 @@
+// Removable Sticker
+// Protective sticker to be removed before adhering the heat sink to the CPU
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Create a simple body to represent the removable warning sticker. Brightly color the sticker so that the user will not forget to remove it before installing the device
+removableSticker = startSketchOn(-XY)
+  |> startProfile(at = [-12, -12])
+  |> angledLine(angle = 0, length = 24, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 24, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> extrude(length = .3)
+  |> appearance(color = "#021b55")
+  |> chamfer(
+       length = 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )

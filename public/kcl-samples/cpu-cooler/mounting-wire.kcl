@@ -1,0 +1,79 @@
+// Mounting Wire
+// The flexible metal wire used to clip the fans onto the heat sink
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Import parameters
+import * from "parameters.kcl"
+
+// Draw the XZ component of the mounting wire path
+upperArm = startSketchOn(offsetPlane(XZ, offset = fanSize / 2 + 2))
+  |> startProfile(at = [-12, 40 + fanSize / 2])
+  |> yLine(length = 7)
+  |> tangentialArc(radius = 2, angle = 90)
+  |> xLine(length = -9)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> yLine(length = 14)
+  |> tangentialArc(radius = 2, angle = 90)
+  |> xLine(length = -9)
+  |> tangentialArc(radius = 2, angle = -80)
+  |> angledLine(angle = 100, endAbsoluteY = 40 + fanSize / 2 + mountingHoleSpacing / 2 - 1.5)
+  |> tangentialArc(radius = 2, angle = 80, tag = $seg07)
+
+// Draw the XZ component of the mounting wire path
+lowerArm = startSketchOn(offsetPlane(XZ, offset = fanSize / 2 + 2))
+  |> startProfile(at = [-12, 40 + fanSize / 2])
+  |> yLine(length = -7)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> xLine(length = -9)
+  |> tangentialArc(radius = 2, angle = 90)
+  |> yLine(length = -14)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> xLine(length = -9)
+  |> tangentialArc(radius = 2, angle = 80)
+  |> angledLine(angle = -100, endAbsoluteY = 40 + fanSize / 2 - (mountingHoleSpacing / 2) + 1.5)
+  |> tangentialArc(radius = 2, angle = -80, tag = $seg08)
+
+// Create the profile of the mounting wire and sweep along the XZ path
+wireProfile = startSketchOn(offsetPlane(XY, offset = 40 + fanSize / 2))
+sweepUpperArm = circle(wireProfile, center = [-12, -fanSize / 2 - 2], radius = 1)
+  |> sweep(%, path = upperArm)
+
+sweepLowerArm = circle(wireProfile, center = [-12, -fanSize / 2 - 2], radius = 1)
+  |> sweep(%, path = lowerArm)
+
+// Draw the XY components of the mounting wire path
+upperHook = startSketchOn(offsetPlane(XY, offset = segEndY(seg07)))
+  |> startProfile(at = [segEndX(seg07), -fanSize / 2 - 2])
+  |> xLine(endAbsolute = -heatSinkDepth / 2 - fanHeight)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> yLine(endAbsolute = -mountingHoleSpacing / 2 - 2)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> xLine(length = fanHeight / 3)
+
+// Draw the XY components of the mounting wire path
+lowerHook = startSketchOn(offsetPlane(XY, offset = segEndY(seg08)))
+  |> startProfile(at = [segEndX(seg07), -fanSize / 2 - 2])
+  |> xLine(endAbsolute = -heatSinkDepth / 2 - fanHeight)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> yLine(endAbsolute = -mountingHoleSpacing / 2 - 2)
+  |> tangentialArc(radius = 2, angle = -90)
+  |> xLine(length = fanHeight / 3)
+
+// Sweep the wire profile around the hook-shaped segments of the mounting wire
+hookProfile = startSketchOn(offsetPlane(YZ, offset = segEndX(seg07)))
+sweepUpperHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg07)], radius = 1)
+  |> sweep(%, path = upperHook)
+
+sweepLowerHook = circle(hookProfile, center = [-fanSize / 2 - 2, segEndY(seg08)], radius = 1)
+  |> sweep(%, path = lowerHook)
+
+// Union each piece of the wire into a single continuous sweep
+[
+       sweepLowerArm,
+       sweepLowerHook,
+       sweepUpperArm,
+       sweepUpperHook
+     ]
+  |> appearance(color = "#0d0d0d")
