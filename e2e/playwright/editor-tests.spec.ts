@@ -603,6 +603,7 @@ sketch_001 = startSketchOn(XY)
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -616,14 +617,14 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
   |> xLine(length = -100.0)
   |> yLine(length = 100.0)
   |> close()
-  |> extrude(length = 12`
+  |> extrude(length = 12)`
       )
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
 
-    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     // Expect the signature help to NOT be visible
     await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible()
@@ -631,8 +632,9 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     // Click in the editor
     await page.locator('.cm-content').click()
 
-    // Go to the end of the code
+    // Go to the end of the code and remove the bracket
     await page.keyboard.press('ControlOrMeta+End')
+    await page.keyboard.press('Backspace')
     // Type a comma
     await page.keyboard.press(',')
 
