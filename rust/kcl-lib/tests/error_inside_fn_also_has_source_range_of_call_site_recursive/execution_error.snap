@@ -1,0 +1,48 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
+---
+KCL Semantic error
+
+  × semantic: This function expected the input argument to be Solid or Plane
+  │ but it's actually of type string (text)
+   ╭─[3:23]
+ 2 │     fn someNestedFunction(@something2) {
+ 3 │         startSketchOn(something2)
+   ·                       ─────┬────
+   ·                            ╰── tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+ 4 │     }
+ 5 │ 
+ 6 │     someNestedFunction(something)
+   ·     ──────────────┬──────────────
+   ·                   ╰── tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+ 7 │ }
+ 8 │ 
+ 9 │ someFunction('INVALID')
+   · ───────────┬───────────
+   ·            ╰── tests/error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+   ╰────
+  ├─▶ KCL Semantic error
+  │   
+  │     × semantic: This function expected the input argument to be Solid or
+  │     │ Plane but it's actually of type string (text)
+  │      ╭─[3:23]
+  │    2 │     fn someNestedFunction(@something2) {
+  │    3 │         startSketchOn(something2)
+  │      ·                       ─────┬────
+  │      ·                            ╰── tests/
+  │   error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+  │    4 │     }
+  │      ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: This function expected the input argument to be Solid or
+        │ Plane but it's actually of type string (text)
+         ╭─[6:5]
+       5 │
+       6 │     someNestedFunction(something)
+         ·     ──────────────┬──────────────
+         ·                   ╰── tests/
+      error_inside_fn_also_has_source_range_of_call_site_recursive/input.kcl
+       7 │ }
+         ╰────

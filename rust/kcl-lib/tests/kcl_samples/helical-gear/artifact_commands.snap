@@ -632,7 +632,7 @@ description: Artifact commands helical-gear.kcl
         "end_radius": 23.0,
         "angle": {
           "unit": "degrees",
-          "value": -91.27233528099597
+          "value": -91.27233528099592
         },
         "reverse": true
       }

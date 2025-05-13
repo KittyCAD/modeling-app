@@ -1,0 +1,60 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed error_inside_fn_also_has_source_range_of_call_site_recursive.kcl
+---
+[
+  {
+    "isError": true,
+    "labeledArgs": {},
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "INVALID"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "someNestedFunction",
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "String",
+          "value": "INVALID"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupBegin",
+    "group": {
+      "type": "FunctionCall",
+      "name": "someFunction",
+      "functionSourceRange": [],
+      "unlabeledArg": {
+        "value": {
+          "type": "String",
+          "value": "INVALID"
+        },
+        "sourceRange": []
+      },
+      "labeledArgs": {}
+    },
+    "sourceRange": []
+  },
+  {
+    "type": "GroupEnd"
+  },
+  {
+    "type": "GroupEnd"
+  }
+]

@@ -1,0 +1,121 @@
+// Wing Spar
+// In a fixed-wing aircraft, the spar is often the main structural member of the wing, running spanwise at right angles (or thereabouts depending on wing sweep) to the fuselage. The spar carries flight loads and the weight of the wings while on the ground. Other structural and forming members such as ribs may be attached to the spars
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+chordLength = 355
+rearSpar = 205
+frontSpar = 33
+upperCamber = 30
+lowerCamber = 18
+foilThickness = 8
+nSections = 5
+sparSpan = 700
+sparStockThicknes = 2.102
+sparBendRadius = 2.102
+
+// Sketch an airfoil using the chord length, spar positions, and camber heights
+ribSketch = startSketchOn(offsetPlane(-XZ, offset = -foilThickness))
+  |> startProfile(at = [chordLength, 0])
+  |> line(endAbsolute = [rearSpar, upperCamber])
+  |> tangentialArc(endAbsolute = [frontSpar, upperCamber * 1.3])
+  |> tangentialArc(endAbsolute = [0, 0])
+  |> tangentialArc(angle = 76, radius = lowerCamber)
+  |> tangentialArc(endAbsolute = [rearSpar, -lowerCamber])
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+  // Cut circular holes along the chord curve of the airfoil to reduce the mass of each part
+  |> subtract2d(tool = circle(center = [62, 9], radius = 17))
+  |> subtract2d(tool = circle(center = [113, 10], radius = 19))
+  |> subtract2d(tool = circle(center = [164, 9], radius = 17))
+  |> subtract2d(tool = circle(center = [228, 5], radius = 11))
+  |> subtract2d(tool = circle(center = [260, 3.5], radius = 6.5))
+
+  // Extrude the airfoil to material thicknes, then pattern along the length of the wing spars
+  |> extrude(length = -foilThickness)
+  |> patternLinear3d(instances = nSections, distance = (sparSpan - (3 * foilThickness)) / (nSections - 1), axis = [0, -1, 0])
+
+// Model a thin sheet spar with a hemmed top edge for structure
+sparSketch = startSketchOn(-XZ)
+// Sketch the sheet metal profile for the front spar, then extrude
+frontSparProfile = startProfile(sparSketch, at = [frontSpar, -lowerCamber * 0.85])
+  |> yLine(endAbsolute = upperCamber, tag = $seg01)
+  |> tangentialArc(angle = -90, radius = sparBendRadius + sparStockThicknes)
+  |> xLine(length = 4, tag = $seg02)
+  |> tangentialArc(angle = -90, radius = sparBendRadius + sparStockThicknes)
+  |> yLine(length = -4, tag = $seg03)
+  |> tangentialArc(angle = -90, radius = sparBendRadius + sparStockThicknes)
+  |> xLine(length = -3, tag = $seg04)
+  |> yLine(length = sparStockThicknes)
+  |> xLine(length = segLen(seg04))
+  |> tangentialArc(angle = 90, radius = sparBendRadius)
+  |> yLine(length = segLen(seg03))
+  |> tangentialArc(angle = 90, radius = sparBendRadius)
+  |> xLine(length = -segLen(seg02))
+  |> tangentialArc(angle = 90, radius = sparBendRadius)
+  |> yLine(length = -segLen(seg01), tag = $seg10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -sparSpan)
+
+// Sketch the sheet metal profile for the rear spar, then extrude
+rearSparProfile = startProfile(sparSketch, at = [rearSpar, -lowerCamber * 0.7])
+  |> yLine(endAbsolute = upperCamber * 0.7, tag = $seg05)
+  |> tangentialArc(angle = 90, radius = sparBendRadius + sparStockThicknes)
+  |> xLine(length = -4, tag = $seg06)
+  |> tangentialArc(angle = 90, radius = sparBendRadius + sparStockThicknes)
+  |> yLine(length = -4, tag = $seg07)
+  |> tangentialArc(angle = 90, radius = sparBendRadius + sparStockThicknes)
+  |> xLine(length = 3, tag = $seg08)
+  |> yLine(length = sparStockThicknes)
+  |> xLine(length = -segLen(seg08))
+  |> tangentialArc(angle = -90, radius = sparBendRadius)
+  |> yLine(length = segLen(seg07))
+  |> tangentialArc(angle = -90, radius = sparBendRadius)
+  |> xLine(length = segLen(seg06))
+  |> tangentialArc(angle = -90, radius = sparBendRadius)
+  |> yLine(length = -segLen(seg05), tag = $seg09)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = -sparSpan)
+
+// Cut rectangular holes along the spar length between each rib
+frontSparHoles = startSketchOn(frontSparProfile, face = seg10)
+  |> startProfile(at = [-lowerCamber * 0.1, -foilThickness * 3])
+  |> xLine(endAbsolute = upperCamber * 0.4, tag = $seg11)
+  |> tangentialArc(angle = -90, radius = 5)
+  |> yLine(endAbsolute = -(sparSpan - (3 * foilThickness)) / (nSections - 1) + 5, tag = $seg12)
+  |> tangentialArc(angle = -90, radius = 5)
+  |> xLine(length = -segLen(seg11))
+  |> tangentialArc(angle = -90, radius = 5)
+  |> yLine(length = segLen(seg12))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = nSections - 1,
+       distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
+       axis = [0, -1],
+     )
+  |> extrude(length = -10)
+rearSparHoles = startSketchOn(rearSparProfile, face = seg09)
+  |> startProfile(at = [-lowerCamber * 0.3, -foilThickness * 3])
+  |> xLine(endAbsolute = -upperCamber * 0.01, tag = $seg14)
+  |> tangentialArc(angle = -90, radius = 5)
+  |> yLine(length = -segLen(seg12))
+  |> tangentialArc(angle = -90, radius = 5)
+  |> xLine(length = -segLen(seg14))
+  |> tangentialArc(angle = -90, radius = 5)
+  |> yLine(length = segLen(seg12))
+  |> tangentialArc(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> patternLinear2d(
+       %,
+       instances = nSections - 1,
+       distance = (sparSpan - (3 * foilThickness)) / (nSections - 1),
+       axis = [0, -1],
+     )
+  |> extrude(length = -10)

@@ -378,7 +378,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.3468785716349652,
+            "value": 1.3468785716349654,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -458,7 +458,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.6820513307525256,
+            "value": 1.6820513307525258,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -618,7 +618,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5795891385675425,
+            "value": 1.5795891385675427,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -698,7 +698,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.9147618976851029,
+            "value": 1.914761897685103,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -1609,7 +1609,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.641507915383644,
+            "value": 1.6415079153836443,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -1849,7 +1849,7 @@ description: Operations executed helical-planetary-gearset.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.7911075655545865,
+            "value": 1.7911075655545867,
             "ty": {
               "type": "Known",
               "type": "Angle",

@@ -1901,27 +1901,6 @@ someFunction('INVALID')
 }
 
 #[tokio::test(flavor = "multi_thread")]
-async fn kcl_test_error_inside_fn_also_has_source_range_of_call_site_recursive() {
-    let code = r#"fn someFunction(@something) {
-    fn someNestedFunction(@something2) {
-        startSketchOn(something2)
-    }
-
-    someNestedFunction(something)
-}
-
-someFunction('INVALID')
-"#;
-
-    let result = execute_and_snapshot(code, None).await;
-    assert!(result.is_err());
-    assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"semantic: KclErrorDetails { source_ranges: [SourceRange([93, 103, 0]), SourceRange([116, 145, 0]), SourceRange([149, 172, 0])], message: "This function expected the input argument to be Solid or Plane but it's actually of type string (text)" }"#
-    );
-}
-
-#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_error_no_auth_websocket() {
     let code = r#"sketch001 = startSketchOn(XZ)
   |> startProfile(at = [61.74, 206.13])
