@@ -39,8 +39,8 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": -20.32,
-              "y": -2.54,
+              "x": -16.509999999999998,
+              "y": -5.08,
               "z": 50.8
             },
             "set": false,
@@ -39423,8 +39423,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.0,
-        "y": 0.0,
+        "x": -6.35,
+        "y": 3.175,
         "z": 0.0
       }
     }
@@ -39510,7 +39510,7 @@ description: Artifact commands walkie-talkie.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 76.19999999999999
+        "z": 50.8
       },
       "x_axis": {
         "x": 1.0,
@@ -39564,8 +39564,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.54,
-        "y": 2.54,
+        "x": -3.175,
+        "y": 1.5875,
         "z": 0.0
       }
     }
@@ -39602,7 +39602,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 7.62,
+          "x": 6.35,
           "y": 0.0,
           "z": 0.0
         },
@@ -39620,7 +39620,7 @@ description: Artifact commands walkie-talkie.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": -1.27,
+          "y": -3.175,
           "z": 0.0
         },
         "relative": true
@@ -39636,7 +39636,7 @@ description: Artifact commands walkie-talkie.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -7.62,
+          "x": -6.35,
           "y": 0.0,
           "z": 0.0
         },
@@ -40397,12 +40397,20 @@ description: Artifact commands walkie-talkie.kcl
       },
       "y_axis": {
         "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
+        "y": 1.0,
+        "z": 0.0
       },
       "size": 60.0,
       "clobber": false,
       "hide": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
     }
   },
   {
@@ -40416,8 +40424,33 @@ description: Artifact commands walkie-talkie.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
+        "y": 0.0,
+        "z": 1.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 6.35,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
       }
     }
   },
@@ -40428,7 +40461,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.00254,
+        "x": 6.35,
         "y": 0.0,
         "z": 0.0
       }
@@ -40452,16 +40485,15 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 6.35,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "relative": true
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0
       }
     }
   },
@@ -40469,67 +40501,11 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0,
-          "y": 5.08,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": 5.0825,
-          "y": 5.08
-        },
-        "radius": 1.27,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 90.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0025,
-          "y": 6.35,
-          "z": 0.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 6.35,
+      "faces": null,
+      "opposite": "None"
     }
   },
   {
@@ -40544,133 +40520,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "revolve",
-      "target": "[uuid]",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "axis_is_2d": true,
-      "angle": {
-        "unit": "degrees",
-        "value": 359.99999
-      },
-      "tolerance": 0.0000001,
-      "opposite": "None"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -40723,46 +40573,6 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
@@ -40773,30 +40583,17 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_opposite_edge",
+      "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
+      "edge_id": null,
+      "edge_ids": [
+        "[uuid]"
+      ],
+      "radius": 1.27,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet",
+      "strategy": "automatic",
+      "extra_face_ids": []
     }
   },
   {
@@ -40816,13 +40613,13 @@ description: Artifact commands walkie-talkie.kcl
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
       "color": {
-        "r": 0.8156863,
-        "g": 1.0,
-        "b": 0.003921569,
+        "r": 0.6862745,
+        "g": 0.7490196,
+        "b": 0.21176471,
         "a": 100.0
       },
-      "metalness": 0.9,
-      "roughness": 0.5,
+      "metalness": 0.0,
+      "roughness": 0.0,
       "ambient_occlusion": 0.0
     }
   },
