@@ -1,5 +1,5 @@
 ---
-title: "Fn"
+title: "fn"
 subtitle: "Type in std::types"
 excerpt: "The type of any function in KCL."
 layout: manual
