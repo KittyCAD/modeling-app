@@ -178,27 +178,27 @@ test.describe(
       await scene.isNativeFileMenuCreated()
 
       await test.step('Modeling.File.Create project', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Create project')
         await cmdBar.expectCommandName('Create project')
       })
       await test.step('Modeling.File.Open project', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Open project')
         await cmdBar.expectCommandName('Open project')
       })
       await test.step('Modeling.File.Add file to project', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Add file to project')
         await cmdBar.expectCommandName('Add file to project')
       })
       await test.step('Modeling.File.Export current part', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Export current part')
         await cmdBar.expectCommandName('Export')
       })
       await test.step('Modeling.File.Share part via Zoo link', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Share part via Zoo link'
@@ -210,7 +210,7 @@ test.describe(
         await expect(isTextVisible).toBeVisible({ timeout: 10000 })
       })
       await test.step('Modeling.File.Preferences.Project settings', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Preferences.Project settings'
@@ -221,7 +221,7 @@ test.describe(
         )
       })
       await test.step('Modeling.File.Preferences.User settings', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Preferences.User settings'
@@ -229,7 +229,7 @@ test.describe(
         await openSettingsExpectText(page, 'The overall appearance of the app')
       })
       await test.step('Modeling.File.Preferences.Keybindings', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Preferences.Keybindings'
@@ -237,7 +237,7 @@ test.describe(
         await openSettingsExpectLocator(page, '#enter-sketch-mode')
       })
       await test.step('Modeling.File.Preferences.User default units', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Preferences.User default units'
@@ -245,13 +245,13 @@ test.describe(
         await openSettingsExpectLocator(page, '#defaultUnit')
       })
       await test.step('Modeling.File.Preferences.Theme', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Preferences.Theme')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Settings · app · theme')
       })
       await test.step('Modeling.File.Preferences.Theme color', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'File.Preferences.Theme color'
@@ -259,7 +259,7 @@ test.describe(
         await openSettingsExpectLocator(page, '#themeColor')
       })
       await test.step('Modeling.Edit.Modify with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Edit.Modify with Zoo Text-To-CAD'
@@ -267,26 +267,26 @@ test.describe(
         await cmdBar.expectCommandName('Prompt-to-edit')
       })
       await test.step('Modeling.Edit.Edit parameter', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Edit parameter')
         await cmdBar.expectCommandName('Edit parameter')
       })
       await test.step('Modeling.Edit.Format code', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Format code')
       })
       await test.step('Modeling.Edit.Rename project', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Rename project')
         await cmdBar.expectCommandName('Rename project')
       })
       await test.step('Modeling.Edit.Delete project', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Edit.Delete project')
         await cmdBar.expectCommandName('Delete project')
       })
       await test.step('Modeling.Edit.Change project directory', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Edit.Change project directory'
@@ -294,7 +294,7 @@ test.describe(
         await openSettingsExpectLocator(page, '#projectDirectory')
       })
       await test.step('Modeling.View.Orthographic view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         // wait for previous toast to disappear
         await page.waitForTimeout(10000)
         await clickElectronNativeMenuById(tronApp, 'View.Orthographic view')
@@ -305,7 +305,7 @@ test.describe(
         await expect(toast).toHaveText(textToCheck)
       })
       await test.step('Modeling.View.Perspective view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         // wait for previous toast to disappear
         await page.waitForTimeout(10000)
         await clickElectronNativeMenuById(tronApp, 'View.Perspective view')
@@ -315,67 +315,67 @@ test.describe(
         await expect(toast).toHaveText(textToCheck)
       })
       await test.step('Modeling.View.Standard views.Right view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Right view'
         )
       })
       await test.step('Modeling.View.Standard views.Back view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Back view'
         )
       })
       await test.step('Modeling.View.Standard views.Top view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Top view'
         )
       })
       await test.step('Modeling.View.Standard views.Left view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Left view'
         )
       })
       await test.step('Modeling.View.Standard views.Front view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Front view'
         )
       })
       await test.step('Modeling.View.Standard views.Bottom view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Bottom view'
         )
       })
       await test.step('Modeling.View.Standard views.Reset view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Reset view'
         )
       })
       await test.step('Modeling.View.Standard views.Center view on selection', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Standard views.Center view on selection'
         )
       })
       await test.step('Modeling.View.Standard views.Refresh', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await findElectronNativeMenuById(tronApp, 'View.Standard views.Refresh')
       })
       await test.step('Modeling.View.Named views.Create named view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Named views.Create named view'
@@ -384,7 +384,7 @@ test.describe(
         await cmdBar.expectCommandName('Create named view')
       })
       await test.step('Modeling.View.Named views.Load named view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Named views.Load named view'
@@ -393,7 +393,7 @@ test.describe(
         await cmdBar.expectCommandName('Load named view')
       })
       await test.step('Modeling.View.Named views.Delete named view', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'View.Named views.Delete named view'
@@ -402,42 +402,42 @@ test.describe(
         await cmdBar.expectCommandName('Delete named view')
       })
       await test.step('Modeling.View.Panes.Feature tree', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Panes.Feature tree')
         const button = page.getByTestId('feature-tree-pane-button')
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
       await test.step('Modeling.View.Panes.KCL code', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Panes.KCL code')
         const button = page.getByTestId('code-pane-button')
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
       await test.step('Modeling.View.Panes.Project files', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Panes.Project files')
         const button = page.getByTestId('files-pane-button')
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
       await test.step('Modeling.View.Panes.Variables', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Panes.Variables')
         const button = page.getByTestId('variables-pane-button')
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
       await test.step('Modeling.View.Panes.Logs', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'View.Panes.Logs')
         const button = page.getByTestId('logs-pane-button')
         const isPressed = await button.getAttribute('aria-pressed')
         expect(isPressed).toBe('true')
       })
       await test.step('Modeling.Design.Create an offset plane', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create an offset plane'
@@ -446,20 +446,20 @@ test.describe(
         await cmdBar.expectCommandName('Offset plane')
       })
       await test.step('Modeling.Design.Create a helix', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Design.Create a helix')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Helix')
       })
       await test.step('Modeling.Design.Create a parameter', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'Design.Create a parameter')
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Create parameter')
       })
 
       await test.step('Modeling.Design.Create an additive feature.Extrude', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create an additive feature.Extrude'
@@ -468,7 +468,7 @@ test.describe(
         await cmdBar.expectCommandName('Extrude')
       })
       await test.step('Modeling.Design.Create an additive feature.Revolve', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create an additive feature.Revolve'
@@ -477,7 +477,7 @@ test.describe(
         await cmdBar.expectCommandName('Revolve')
       })
       await test.step('Modeling.Design.Create an additive feature.Sweep', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create an additive feature.Sweep'
@@ -486,7 +486,7 @@ test.describe(
         await cmdBar.expectCommandName('Sweep')
       })
       await test.step('Modeling.Design.Create an additive feature.Loft', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create an additive feature.Loft'
@@ -495,7 +495,7 @@ test.describe(
         await cmdBar.expectCommandName('Loft')
       })
       await test.step('Modeling.Design.Apply modification feature.Fillet', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Apply modification feature.Fillet'
@@ -504,7 +504,7 @@ test.describe(
         await cmdBar.expectCommandName('Fillet')
       })
       await test.step('Modeling.Design.Apply modification feature.Chamfer', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Apply modification feature.Chamfer'
@@ -514,7 +514,7 @@ test.describe(
       })
 
       await test.step('Modeling.Design.Apply modification feature.Shell', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Apply modification feature.Shell'
@@ -524,7 +524,7 @@ test.describe(
       })
 
       await test.step('Modeling.Design.Create with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Create with Zoo Text-To-CAD'
@@ -534,7 +534,7 @@ test.describe(
       })
 
       await test.step('Modeling.Design.Modify with Zoo Text-To-CAD', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(
           tronApp,
           'Design.Modify with Zoo Text-To-CAD'
@@ -544,17 +544,17 @@ test.describe(
       })
 
       await test.step('Modeling.Help.KCL code samples', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await findElectronNativeMenuById(tronApp, 'Help.KCL code samples')
       })
 
       await test.step('Modeling.Help.Report a bug', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await findElectronNativeMenuById(tronApp, 'Help.Report a bug')
       })
 
       await test.step('Modeling.Help.Replay onboarding tutorial', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await findElectronNativeMenuById(
           tronApp,
           'Help.Replay onboarding tutorial'
@@ -562,7 +562,7 @@ test.describe(
       })
 
       await test.step('Modeling.File.Preferences.Sign out', async () => {
-        await page.waitForTimeout(2000)
+        await page.waitForTimeout(250)
         await clickElectronNativeMenuById(tronApp, 'File.Sign out')
         // FIXME: When signing out during E2E the page is not bound correctly.
         // It cannot find the button
