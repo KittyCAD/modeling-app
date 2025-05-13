@@ -1311,10 +1311,15 @@ impl Node<CallExpressionKw> {
                 Some(l) => {
                     fn_args.insert(l.name.clone(), arg);
                 }
-                None => errors.push(arg),
+                None => {
+                    if let Some(id) = arg_expr.arg.ident_name() {
+                        fn_args.insert(id.to_owned(), arg);
+                    } else {
+                        errors.push(arg);
+                    }
+                }
             }
         }
-        let fn_args = fn_args; // remove mutability
 
         // Evaluate the unlabeled first param, if any exists.
         let unlabeled = if let Some(ref arg_expr) = self.unlabeled {
@@ -1323,12 +1328,15 @@ impl Node<CallExpressionKw> {
             let value = ctx
                 .execute_expr(arg_expr, exec_state, &metadata, &[], StatementKind::Expression)
                 .await?;
-            Some(Arg::new(value, source_range))
+
+            let label = arg_expr.ident_name().map(str::to_owned);
+
+            Some((label, Arg::new(value, source_range)))
         } else {
             None
         };
 
-        let args = Args::new_kw(
+        let mut args = Args::new_kw(
             KwArgs {
                 unlabeled,
                 labeled: fn_args,
@@ -1345,6 +1353,20 @@ impl Node<CallExpressionKw> {
                         self.callee.as_source_range(),
                         format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
                     ));
+                }
+
+                let formals = func.args(false);
+
+                // If it's possible the input arg was meant to be labelled and we probably don't want to use
+                // it as the input arg, then treat it as labelled.
+                if let Some((Some(label), _)) = &args.kw_args.unlabeled {
+                    if (formals.iter().all(|a| a.label_required) || exec_state.pipe_value().is_some())
+                        && formals.iter().any(|a| &a.name == label && a.label_required)
+                        && !args.kw_args.labeled.contains_key(label)
+                    {
+                        let (label, arg) = args.kw_args.unlabeled.take().unwrap();
+                        args.kw_args.labeled.insert(label.unwrap(), arg);
+                    }
                 }
 
                 #[cfg(feature = "artifact-graph")]
@@ -1368,7 +1390,6 @@ impl Node<CallExpressionKw> {
                     None
                 };
 
-                let formals = func.args(false);
                 for (label, arg) in &args.kw_args.labeled {
                     match formals.iter().find(|p| &p.name == label) {
                         Some(p) => {
@@ -1865,6 +1886,21 @@ fn type_check_params_kw(
     args: &mut KwArgs,
     exec_state: &mut ExecState,
 ) -> Result<(), KclError> {
+    // If it's possible the input arg was meant to be labelled and we probably don't want to use
+    // it as the input arg, then treat it as labelled.
+    if let Some((Some(label), _)) = &args.unlabeled {
+        if (function_expression.params.iter().all(|p| p.labeled) || exec_state.pipe_value().is_some())
+            && function_expression
+                .params
+                .iter()
+                .any(|p| &p.identifier.name == label && p.labeled)
+            && !args.labeled.contains_key(label)
+        {
+            let (label, arg) = args.unlabeled.take().unwrap();
+            args.labeled.insert(label.unwrap(), arg);
+        }
+    }
+
     for (label, arg) in &mut args.labeled {
         match function_expression.params.iter().find(|p| &p.identifier.name == label) {
             Some(p) => {
@@ -1959,10 +1995,11 @@ fn type_check_params_kw(
     if let Some(arg) = &mut args.unlabeled {
         if let Some(p) = function_expression.params.iter().find(|p| !p.labeled) {
             if let Some(ty) = &p.type_ {
-                arg.value = arg
+                arg.1.value = arg
+                    .1
                     .value
                     .coerce(
-                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                        &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.1.source_range)
                             .map_err(|e| KclError::Semantic(e.into()))?,
                         exec_state,
                     )
@@ -1974,9 +2011,9 @@ fn type_check_params_kw(
                                     .map(|n| format!("`{}`", n))
                                     .unwrap_or_else(|| "this function".to_owned()),
                                 ty.inner,
-                                arg.value.human_friendly_type()
+                                arg.1.value.human_friendly_type()
                             ),
-                            source_ranges: vec![arg.source_range],
+                            source_ranges: vec![arg.1.source_range],
                         })
                     })?;
             }
@@ -2139,10 +2176,11 @@ impl FunctionSource {
                 if let Some(arg) = &mut args.kw_args.unlabeled {
                     if let Some(p) = ast.params.iter().find(|p| !p.labeled) {
                         if let Some(ty) = &p.type_ {
-                            arg.value = arg
+                            arg.1.value = arg
+                                .1
                                 .value
                                 .coerce(
-                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.source_range)
+                                    &RuntimeType::from_parsed(ty.inner.clone(), exec_state, arg.1.source_range)
                                         .map_err(|e| KclError::Semantic(e.into()))?,
                                     exec_state,
                                 )
@@ -2152,7 +2190,7 @@ impl FunctionSource {
                                             "The input argument of {} requires a value with type `{}`, but found {}",
                                             props.name,
                                             ty.inner,
-                                            arg.value.human_friendly_type(),
+                                            arg.1.value.human_friendly_type(),
                                         ),
                                         source_ranges: vec![callsite],
                                     })
@@ -2224,7 +2262,7 @@ impl FunctionSource {
                                 .kw_args
                                 .unlabeled
                                 .as_ref()
-                                .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                                .map(|arg| OpArg::new(OpKclValue::from(&arg.1.value), arg.1.source_range)),
                             labeled_args: op_labeled_args,
                         },
                         source_range: callsite,
@@ -2665,13 +2703,12 @@ a = foo()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, call) in ["f(x=1,y)", "f(x=1,3,z)", "f(x=1,y,z=1)", "f(x=1, 3 + 4, z=1)"]
+        for (i, call) in ["f(x=1,3,0)", "f(x=1,3,z)", "f(x=1,0,z=1)", "f(x=1, 3 + 4, z)"]
             .into_iter()
             .enumerate()
         {
             let program = format!(
                 "fn foo() {{ return 0 }}
-y = 42
 z = 0
 fn f(x, y, z) {{ return 0 }}
 {call}"
@@ -2691,13 +2728,26 @@ fn f(x, y, z) {{ return 0 }}
 
     #[tokio::test(flavor = "multi_thread")]
     async fn default_param_for_unlabeled() {
-        // Tests that the input param for myExtrude is taken from the pipeline value.
+        // Tests that the input param for myExtrude is taken from the pipeline value and same-name
+        // keyword args.
         let ast = r#"fn myExtrude(@sk, length) {
-  return extrude(sk, length = length)
+  return extrude(sk, length)
 }
 sketch001 = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 93.75)
   |> myExtrude(length = 40)
+"#;
+
+        parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn dont_use_unlabelled_as_input() {
+        // `length` should be used as the `length` argument to extrude, not the unlabelled input
+        let ast = r#"length = 10
+startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 93.75)
+  |> extrude(length)
 "#;
 
         parse_execute(ast).await.unwrap();

@@ -424,7 +424,7 @@ async fn make_transform<T: GeometryTrait>(
         meta: vec![source_range.into()],
     };
     let kw_args = KwArgs {
-        unlabeled: Some(Arg::new(repetition_num, source_range)),
+        unlabeled: Some((None, Arg::new(repetition_num, source_range))),
         labeled: Default::default(),
         errors: Vec::new(),
     };
