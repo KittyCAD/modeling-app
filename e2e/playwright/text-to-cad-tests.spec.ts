@@ -905,7 +905,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.press('Enter')
 
       // Go into the project that was created from Text to CAD
-      await page.getByText(projectName).click()
+      await homePage.openProject(projectName)
 
       await expect(page.getByTestId('app-header-project-name')).toBeVisible()
       await expect(page.getByTestId('app-header-project-name')).toContainText(
@@ -951,7 +951,7 @@ test.describe('Mocked Text-to-CAD API tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.press('Enter')
 
       // Go into the project that was created from Text to CAD
-      await page.getByText(projectName).click()
+      await homePage.openProject(projectName)
 
       await page.getByRole('button', { name: 'Accept' }).click()
 

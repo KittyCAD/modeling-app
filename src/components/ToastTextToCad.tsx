@@ -332,14 +332,16 @@ export function ToastTextToCadSuccess({
       </div>
       <div className="flex flex-col justify-between gap-6">
         <section>
-          <h2>Text-to-CAD successful</h2>
-          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
-            Prompt: "
+          <h2 className="font-sans font-bold">Text-to-CAD successful</h2>
+          <p className="text-sm my-3">
+            File "{fileName}" was successfully added to project "{projectName}"
+            from prompt:
+          </p>
+          <blockquote className="my-3 border-solid border-l-2 pl-4 text-sm text-chalkboard-70 dark:text-chalkboard-30">
             {data.prompt.length > PROMPT_TRUNCATE_LENGTH
               ? data.prompt.slice(0, PROMPT_TRUNCATE_LENGTH) + '...'
               : data.prompt}
-            "
-          </p>
+          </blockquote>
           <TextToCadImprovementMessage
             className="text-sm mt-2"
             label="Not what you expected?"
