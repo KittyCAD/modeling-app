@@ -83,10 +83,27 @@ export function SystemIOMachineLogicListenerDesktop() {
     // Open the requested file in the requested project
     onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
-    kclManager.switchedFiles = true
     engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
     )
+
+    /**
+     * Check that both paths are truthy strings and if they do not match
+     * then mark it is switchedFiles.
+     * If they do not match but the origin is falsey we do not want to mark as
+     * switchedFiles because checkIfSwitchedFilesShouldClear will trigger
+     * clearSceneAndBustCache if there is a parse error!
+     *
+     * i.e. Only do switchedFiles check against two file paths, not null and a file path
+     */
+    if (
+      filePathWithExtension &&
+      requestedFilePathWithExtension &&
+      filePathWithExtension !== requestedFilePathWithExtension
+    ) {
+      kclManager.switchedFiles = true
+    }
+
     kclManager.isExecuting = false
     navigate(requestedPath)
   }
