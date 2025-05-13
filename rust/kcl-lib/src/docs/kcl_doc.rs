@@ -1264,6 +1264,8 @@ mod test {
                 );
                 // yield to allow other tests to run
                 tokio::task::yield_now().await;
+                // when running against a local engine give it time to start again.
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
             }
         }
 
