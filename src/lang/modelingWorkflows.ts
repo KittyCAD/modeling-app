@@ -16,7 +16,6 @@ import {
   EXECUTION_TYPE_MOCK,
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
-  KCL_ERRORS_MESSAGE,
 } from '@src/lib/constants'
 import type { Selections } from '@src/lib/selections'
 import { err, reject } from '@src/lib/trap'
@@ -58,10 +57,6 @@ export async function updateModelingState(
     isDeleting?: boolean
   }
 ): Promise<void> {
-  if (dependencies.kclManager.hasErrors()) {
-    return reject(new Error(KCL_ERRORS_MESSAGE))
-  }
-
   let updatedAst: {
     newAst: Node<Program>
     selections?: Selections

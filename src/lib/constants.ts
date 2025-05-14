@@ -199,6 +199,3 @@ export const ML_EXPERIMENTAL_MESSAGE = 'This feature is experimental.'
  * while in the onboarding flow.
  */
 export const ONBOARDING_DATA_ATTRIBUTE = 'onboarding-id'
-
-export const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
-export const KCL_ERRORS_MESSAGE = 'KCL errors detected, please fix them first'

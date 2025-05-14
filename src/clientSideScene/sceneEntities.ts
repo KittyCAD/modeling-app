@@ -152,7 +152,7 @@ import {
   sketchFromKclValue,
   sourceRangeFromRust,
 } from '@src/lang/wasm'
-import { EXECUTION_TYPE_MOCK, KCL_ERRORS_MESSAGE } from '@src/lib/constants'
+import { EXECUTION_TYPE_MOCK } from '@src/lib/constants'
 import {
   getRectangleCallExpressions,
   updateCenterRectangleSketch,
@@ -912,10 +912,6 @@ export class SceneEntities {
     origin: [number, number, number]
   ) => {
     if (trap(modifiedAst)) return Promise.reject(modifiedAst)
-    if (this.kclManager.hasErrors()) {
-      return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
-    }
-
     const nextAst = await this.kclManager.updateAst(modifiedAst, false)
     this.sceneInfra.resetMouseListeners()
     await this.setupSketch({
