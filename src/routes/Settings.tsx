@@ -1,6 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -10,7 +9,6 @@ import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSec
 import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
 import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
-import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 
@@ -31,7 +29,6 @@ export const Settings = () => {
     (isFileSettings ? 'project' : 'user')
 
   const scrollRef = useRef<HTMLDivElement>(null)
-  const dotDotSlash = useDotDotSlash()
 
   // Scroll to the hash on load if it exists
   useEffect(() => {
