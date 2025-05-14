@@ -59,3 +59,4 @@ legProfile001 = startProfile(leg001Sketch, at = [-60, 0])
   |> close(%)
 
 leg001 = extrude(legProfile001, length = 48)
+  |> rotate(axis = [0, 0, 1.0], angle = -90)
