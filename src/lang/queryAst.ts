@@ -1124,7 +1124,7 @@ export function getSketchSelectionsFromOperation(
   artifactGraph: ArtifactGraph
 ): Error | Selections {
   const error = new Error("Couldn't retrieve sketches from operation")
-  if (operation.type !== 'StdLibCall' && operation.type !== 'KclStdLibCall') {
+  if (operation.type !== 'StdLibCall') {
     return error
   }
 

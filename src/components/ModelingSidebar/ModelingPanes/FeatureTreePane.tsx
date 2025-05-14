@@ -317,10 +317,7 @@ const OperationItem = (props: {
    * TODO: https://github.com/KittyCAD/modeling-app/issues/4442
    */
   function enterEditFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterEditFlow',
         data: {
@@ -332,10 +329,7 @@ const OperationItem = (props: {
   }
 
   function enterAppearanceFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall') {
       props.send({
         type: 'enterAppearanceFlow',
         data: {
@@ -347,11 +341,7 @@ const OperationItem = (props: {
   }
 
   function enterTranslateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterTranslateFlow',
         data: {
@@ -363,11 +353,7 @@ const OperationItem = (props: {
   }
 
   function enterRotateFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterRotateFlow',
         data: {
@@ -379,11 +365,7 @@ const OperationItem = (props: {
   }
 
   function enterCloneFlow() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'enterCloneFlow',
         data: {
@@ -395,11 +377,7 @@ const OperationItem = (props: {
   }
 
   function deleteOperation() {
-    if (
-      props.item.type === 'StdLibCall' ||
-      props.item.type === 'GroupBegin' ||
-      props.item.type === 'KclStdLibCall'
-    ) {
+    if (props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin') {
       props.send({
         type: 'deleteOperation',
         data: {
@@ -454,8 +432,7 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall'
+      ...(props.item.type === 'StdLibCall'
         ? [
             <ContextMenuItem
               disabled={!stdLibMap[props.item.name]?.prepareToEdit}
@@ -473,9 +450,7 @@ const OperationItem = (props: {
             </ContextMenuItem>,
           ]
         : []),
-      ...(props.item.type === 'StdLibCall' ||
-      props.item.type === 'KclStdLibCall' ||
-      props.item.type === 'GroupBegin'
+      ...(props.item.type === 'StdLibCall' || props.item.type === 'GroupBegin'
         ? [
             <ContextMenuItem
               onClick={enterTranslateFlow}
