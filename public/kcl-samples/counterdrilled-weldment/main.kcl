@@ -1,0 +1,120 @@
+// Counterdrilled Weldment
+// A metal weldment consisting of a counterdrilled plate, a centrally mounted housing tube, and four structural support fins.
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+boltSpacingX = 5
+boltSpacingY = 3
+boltDiameter = 1 / 4
+counterdrillDiameter = 7 / 16
+counterdrillDepth = 3 / 16
+tubeInnerDiameter = 1 + 1 / 4
+tubeThickness = 0.115
+tubeHeight = 2
+stockThickness = .5
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterdrill diameter to the bolt spacing
+blockLength = boltSpacingX + boltDiameter * 6
+blockWidth = boltSpacingY + boltDiameter * 6
+
+// Draw the base plate
+plateSketch = startSketchOn(XY)
+  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
+  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
+plateBody = extrude(plateSketch, length = stockThickness)
+  |> chamfer(
+       length = boltDiameter * 2,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Function to create a counterdrilled hole
+fn counterdrill(@holePosition) {
+  cbdrill = startSketchOn(plateBody, face = END)
+    |> circle(center = holePosition, radius = counterdrillDiameter / 2)
+    |> extrude(length = -counterdrillDepth)
+  cbBolt = startSketchOn(cbdrill, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -stockThickness + counterdrillDepth)
+    // Use a chamfer to create a 90-degree counterdrill edge
+    |> chamfer(length = (counterdrillDiameter - boltDiameter) / 2 * sqrt(2), tags = [hole01])
+  return {  }
+}
+
+// Place a counterdrilled hole at each bolt hole position
+map(holePositions, f = counterdrill)
+
+// Drill a small pin hole in the side of the tube
+pinhole = startSketchOn(YZ)
+  |> circle(center = [0, 2.2], radius = 0.125)
+  |> extrude(length = -10)
+
+// Model the central tube and subtract the pin hole
+centralTube = startSketchOn(offsetPlane(XY, offset = stockThickness))
+  |> circle(center = [0, 0], radius = tubeInnerDiameter / 2 + tubeThickness)
+  |> subtract2d(tool = circle(center = [0, 0], radius = tubeInnerDiameter / 2))
+  |> extrude(length = tubeHeight)
+  |> subtract(tools = [pinhole])
+
+// Create a function to create a fin which spans from the central tube to the bolt hole
+fn fin(@i) {
+  diagPlane = {
+    origin = [0.0, 0.0, 0.0],
+    xAxis = [
+      boltSpacingX / 2 * i,
+      boltSpacingY / 2,
+      0.0
+    ],
+    yAxis = [0.0, 0.0, 1.0]
+  }
+
+  finSketch = startSketchOn(diagPlane)
+    |> startProfile(at = [
+         tubeInnerDiameter / 2 + tubeThickness,
+         stockThickness
+       ])
+    |> xLine(endAbsolute = sqrt((boltSpacingX / 2) ^ 2 + (boltSpacingY / 2) ^ 2) - counterdrillDiameter)
+    |> yLine(length = 0.15)
+    |> line(endAbsolute = [
+         profileStartX(%) + 0.15,
+         stockThickness + tubeHeight * .8
+       ])
+    |> xLine(length = -0.15)
+    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+    |> close()
+    |> extrude(length = tubeThickness, symmetric = true)
+
+  // Use a circular pattern to create an identical fin on the opposite side
+  otherFin = patternCircular3d(
+    finSketch,
+    instances = 2,
+    axis = [0, 0, 1],
+    center = [0, 0, 0],
+    arcDegrees = 360,
+    rotateDuplicates = true,
+  )
+  return {  }
+}
+
+// Place a pair of support fins along each diagonal axis of the bolt pattern
+fin(1)
+fin(-1)

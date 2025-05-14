@@ -318,6 +318,10 @@ impl NodePath {
         Some(path)
     }
 
+    pub fn is_empty(&self) -> bool {
+        self.steps.is_empty()
+    }
+
     fn push(&mut self, step: Step) {
         self.steps.push(step);
     }

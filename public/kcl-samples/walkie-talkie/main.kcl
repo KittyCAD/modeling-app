@@ -20,7 +20,7 @@ body
 
 // Import the antenna
 antenna
-  |> translate(x = -width / 2 + .45, y = -0.10, z = height / 2)
+  |> translate(x = -width / 2 + .60, y = -0.20, z = height / 2)
 
 // Import the case
 case

@@ -125,7 +125,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.14250000000000002,
+          "value": -0.1425,
           "ty": {
             "type": "Default",
             "len": {

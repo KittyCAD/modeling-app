@@ -2,9 +2,9 @@
 
 use anyhow::Result;
 
-use crate::execution::typed_path::TypedPath;
 use crate::{
     errors::{KclError, KclErrorDetails},
+    execution::typed_path::TypedPath,
     fs::FileSystem,
     SourceRange,
 };

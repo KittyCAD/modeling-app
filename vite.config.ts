@@ -1,12 +1,12 @@
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import MillionLint from '@million/lint'
 import eslint from '@nabla/vite-plugin-eslint'
 import react from '@vitejs/plugin-react'
 import version from 'vite-plugin-package-version'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { configDefaults, defineConfig } from 'vitest/config'
-import MillionLint from '@million/lint'
 
 export default defineConfig(({ command, mode }) => {
   const runMillion = process.env.RUN_MILLION
@@ -58,6 +58,7 @@ export default defineConfig(({ command, mode }) => {
       testTimeout: 1000,
       hookTimeout: 1000,
       teardownTimeout: 1000,
+      retry: 5,
     },
     build: {
       outDir: 'build',

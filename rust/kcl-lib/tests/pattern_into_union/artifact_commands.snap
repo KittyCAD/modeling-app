@@ -270,214 +270,7 @@ description: Artifact commands pattern_into_union.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_adjacency_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
     }
@@ -489,166 +282,6 @@ description: Artifact commands pattern_into_union.kcl
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
     }
   },
   {
@@ -824,106 +457,7 @@ description: Artifact commands pattern_into_union.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_adjacency_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
     }
@@ -935,86 +469,6 @@ description: Artifact commands pattern_into_union.kcl
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
     }
   },
   {
@@ -1056,7 +510,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.1593700787401575,
+              "y": 0.1594,
               "z": 0.0
             },
             "scale": {
@@ -1085,7 +539,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.318740157480315,
+              "y": 0.3187,
               "z": 0.0
             },
             "scale": {
@@ -1114,7 +568,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.47811023622047244,
+              "y": 0.4781,
               "z": 0.0
             },
             "scale": {
@@ -1143,7 +597,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.63748031496063,
+              "y": 0.6375,
               "z": 0.0
             },
             "scale": {
@@ -1172,7 +626,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.7968503937007875,
+              "y": 0.7969,
               "z": 0.0
             },
             "scale": {
@@ -1201,7 +655,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.9562204724409449,
+              "y": 0.9562,
               "z": 0.0
             },
             "scale": {
@@ -1230,7 +684,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.1155905511811024,
+              "y": 1.1156,
               "z": 0.0
             },
             "scale": {
@@ -1259,7 +713,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.27496062992126,
+              "y": 1.275,
               "z": 0.0
             },
             "scale": {
@@ -1288,7 +742,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.4343307086614174,
+              "y": 1.4343,
               "z": 0.0
             },
             "scale": {
@@ -1317,7 +771,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.593700787401575,
+              "y": 1.5937,
               "z": 0.0
             },
             "scale": {
@@ -1346,7 +800,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.7530708661417325,
+              "y": 1.7531,
               "z": 0.0
             },
             "scale": {
@@ -1375,7 +829,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.9124409448818898,
+              "y": 1.9124,
               "z": 0.0
             },
             "scale": {
@@ -1404,7 +858,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.0718110236220473,
+              "y": 2.0718,
               "z": 0.0
             },
             "scale": {
@@ -1433,7 +887,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.231181102362205,
+              "y": 2.2312,
               "z": 0.0
             },
             "scale": {
@@ -1462,7 +916,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.3905511811023623,
+              "y": 2.3906,
               "z": 0.0
             },
             "scale": {
@@ -1491,7 +945,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.54992125984252,
+              "y": 2.5499,
               "z": 0.0
             },
             "scale": {
@@ -1520,7 +974,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.7092913385826773,
+              "y": 2.7093,
               "z": 0.0
             },
             "scale": {
@@ -1549,7 +1003,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.868661417322835,
+              "y": 2.8687,
               "z": 0.0
             },
             "scale": {
@@ -1578,7 +1032,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.0280314960629924,
+              "y": 3.028,
               "z": 0.0
             },
             "scale": {
@@ -1607,7 +1061,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.18740157480315,
+              "y": 3.1874,
               "z": 0.0
             },
             "scale": {
@@ -1808,106 +1262,7 @@ description: Artifact commands pattern_into_union.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_all_edge_faces",
+      "type": "solid3d_get_adjacency_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
     }
@@ -1919,86 +1274,6 @@ description: Artifact commands pattern_into_union.kcl
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
     }
   },
   {
@@ -2040,7 +1315,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.1593700787401575,
+              "y": 0.1594,
               "z": 0.0
             },
             "scale": {
@@ -2069,7 +1344,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.318740157480315,
+              "y": 0.3187,
               "z": 0.0
             },
             "scale": {
@@ -2098,7 +1373,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.47811023622047244,
+              "y": 0.4781,
               "z": 0.0
             },
             "scale": {
@@ -2127,7 +1402,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.63748031496063,
+              "y": 0.6375,
               "z": 0.0
             },
             "scale": {
@@ -2156,7 +1431,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.7968503937007875,
+              "y": 0.7969,
               "z": 0.0
             },
             "scale": {
@@ -2185,7 +1460,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 0.9562204724409449,
+              "y": 0.9562,
               "z": 0.0
             },
             "scale": {
@@ -2214,7 +1489,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.1155905511811024,
+              "y": 1.1156,
               "z": 0.0
             },
             "scale": {
@@ -2243,7 +1518,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.27496062992126,
+              "y": 1.275,
               "z": 0.0
             },
             "scale": {
@@ -2272,7 +1547,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.4343307086614174,
+              "y": 1.4343,
               "z": 0.0
             },
             "scale": {
@@ -2301,7 +1576,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.593700787401575,
+              "y": 1.5937,
               "z": 0.0
             },
             "scale": {
@@ -2330,7 +1605,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.7530708661417325,
+              "y": 1.7531,
               "z": 0.0
             },
             "scale": {
@@ -2359,7 +1634,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 1.9124409448818898,
+              "y": 1.9124,
               "z": 0.0
             },
             "scale": {
@@ -2388,7 +1663,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.0718110236220473,
+              "y": 2.0718,
               "z": 0.0
             },
             "scale": {
@@ -2417,7 +1692,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.231181102362205,
+              "y": 2.2312,
               "z": 0.0
             },
             "scale": {
@@ -2446,7 +1721,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.3905511811023623,
+              "y": 2.3906,
               "z": 0.0
             },
             "scale": {
@@ -2475,7 +1750,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.54992125984252,
+              "y": 2.5499,
               "z": 0.0
             },
             "scale": {
@@ -2504,7 +1779,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.7092913385826773,
+              "y": 2.7093,
               "z": 0.0
             },
             "scale": {
@@ -2533,7 +1808,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 2.868661417322835,
+              "y": 2.8687,
               "z": 0.0
             },
             "scale": {
@@ -2562,7 +1837,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.0280314960629924,
+              "y": 3.028,
               "z": 0.0
             },
             "scale": {
@@ -2591,7 +1866,7 @@ description: Artifact commands pattern_into_union.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 3.18740157480315,
+              "y": 3.1874,
               "z": 0.0
             },
             "scale": {
