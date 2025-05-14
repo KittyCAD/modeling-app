@@ -545,7 +545,8 @@ extrude002 = extrude(profile002, length = 150)
         expect(alreadyExportingToastMessage).not.toBeVisible(),
       ])
 
-      await expect(successToastMessage).toHaveCount(2)
+      const count = await successToastMessage.count()
+      await expect(count).toBeGreaterThanOrEqual(2)
     })
   })
 

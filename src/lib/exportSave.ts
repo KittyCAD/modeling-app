@@ -31,7 +31,7 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
         )
         toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
           id: toastId,
-          duration: 5_000,
+          duration: 10_000,
         })
         return
       }
