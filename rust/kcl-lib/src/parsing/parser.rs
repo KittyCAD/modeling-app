@@ -2729,6 +2729,17 @@ fn ty(i: &mut TokenSlice) -> PResult<Token> {
     keyword(i, "type")
 }
 
+fn any_keyword(i: &mut TokenSlice) -> PResult<Token> {
+    any.try_map(|token: Token| match token.token_type {
+        TokenType::Keyword => Ok(token),
+        _ => Err(CompilationError::fatal(
+            token.as_source_range(),
+            "expected some reserved keyword".to_owned(),
+        )),
+    })
+    .parse_next(i)
+}
+
 fn keyword(i: &mut TokenSlice, expected: &str) -> PResult<Token> {
     any.try_map(|token: Token| match token.token_type {
         TokenType::Keyword if token.value == expected => Ok(token),
@@ -3143,12 +3154,14 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         NonCode(Node<NonCodeNode>),
         LabeledArg(LabeledArg),
         UnlabeledArg(Expr),
+        Keyword(Token),
     }
     let initial_unlabeled_arg = opt((expression, comma, opt(whitespace)).map(|(arg, _, _)| arg)).parse_next(i)?;
     let args: Vec<_> = repeat(
         0..,
         alt((
             terminated(non_code_node.map(ArgPlace::NonCode), whitespace),
+            terminated(any_keyword.map(ArgPlace::Keyword), whitespace),
             terminated(labeled_argument, labeled_arg_separator).map(ArgPlace::LabeledArg),
             expression.map(ArgPlace::UnlabeledArg),
         )),
@@ -3163,6 +3176,18 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::LabeledArg(x) => {
                     args.push(x);
+                }
+                ArgPlace::Keyword(kw) => {
+                    return Err(ErrMode::Cut(
+                        CompilationError::fatal(
+                            SourceRange::from(kw.clone()),
+                            format!(
+                                "'{}' is not the name of an argument (it's a reserved keyword)",
+                                kw.value
+                            ),
+                        )
+                        .into(),
+                    ));
                 }
                 ArgPlace::UnlabeledArg(arg) => {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
@@ -5050,6 +5075,30 @@ bar = 1
             assert_eq!(
                 cause.source_range.start(),
                 program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_using_keyword_as_arg_label() {
+        for (i, program) in ["pow(2, fn = 8)"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = match fn_call_kw.parse(tokens.as_slice()) {
+                Err(e) => e,
+                Ok(ast) => {
+                    eprintln!("{ast:#?}");
+                    panic!("Expected this to error but it didn't");
+                }
+            };
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "'fn' is not the name of an argument (it's a reserved keyword)",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.find("fn").unwrap(),
                 "failed test {i}: {program}"
             );
         }
