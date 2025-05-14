@@ -618,6 +618,7 @@ clonedCube = clone(cube)
     // references.
     // WITH TAGS AND EDGE CUTS.
     #[tokio::test(flavor = "multi_thread")]
+    #[ignore] // until https://github.com/KittyCAD/engine/pull/3380 lands
     async fn kcl_test_clone_solid_with_edge_cuts() {
         let code = r#"cube = startSketchOn(XY)
     |> startProfile(at = [0,0]) // tag this one
