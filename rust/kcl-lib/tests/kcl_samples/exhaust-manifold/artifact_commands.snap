@@ -1597,7 +1597,8 @@ description: Artifact commands exhaust-manifold.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "sketch_plane"
     }
   },
   {
@@ -1608,7 +1609,8 @@ description: Artifact commands exhaust-manifold.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "sketch_plane"
     }
   },
   {
@@ -1619,7 +1621,8 @@ description: Artifact commands exhaust-manifold.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "sketch_plane"
     }
   },
   {
@@ -1630,7 +1633,8 @@ description: Artifact commands exhaust-manifold.kcl
       "target": "[uuid]",
       "trajectory": "[uuid]",
       "sectional": false,
-      "tolerance": 0.0000001
+      "tolerance": 0.0000001,
+      "relative_to": "sketch_plane"
     }
   },
   {

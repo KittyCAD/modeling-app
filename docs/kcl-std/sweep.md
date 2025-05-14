@@ -13,6 +13,7 @@ sweep(
   path: Sketch | Helix,
   sectional?: bool,
   tolerance?: number,
+  relativeTo?: string,
   tagStart?: TagDeclarator,
   tagEnd?: TagDeclarator,
 ): [Solid]
@@ -30,6 +31,7 @@ You can provide more than one sketch to sweep, and they will all be swept along 
 | `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) | The path to sweep the sketch along | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number`](/docs/kcl-std/types/std-types-number) | Tolerance for this operation | No |
+| `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. Defaults to sketchPlane. | No |
 | `tagStart` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the start of the sweep, i.e. the original sketch | No |
 | `tagEnd` | [`TagDeclarator`](/docs/kcl-lang/types#TagDeclarator) | A named tag for the face at the end of the sweep | No |
 
