@@ -74,7 +74,7 @@
         LIBCLANG_PATH = "${pkgs.libclang.lib}/lib";
         ELECTRON_OVERRIDE_DIST_PATH =
           if pkgs.stdenv.isDarwin
-          then "${pkgs.electron}/Applications"
+          then "${pkgs.electron}/Applications/Electron.app/Contents/MacOS/"
           else "${pkgs.electron}/bin";
         PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = true;
         PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH = "${pkgs.playwright-driver.browsers}/chromium-1091/chrome-linux/chrome";
