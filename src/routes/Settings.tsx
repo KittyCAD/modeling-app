@@ -33,9 +33,6 @@ export const Settings = () => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const dotDotSlash = useDotDotSlash()
 
-  // Does this ever run?
-  useHotkeys('esc', () => navigate(dotDotSlash()))
-
   // Scroll to the hash on load if it exists
   useEffect(() => {
     console.log('hash', location.hash)
