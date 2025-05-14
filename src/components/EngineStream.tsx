@@ -399,7 +399,7 @@ export const EngineStream = (props: {
     window.document.addEventListener('mouseup', onAnyInput)
     window.document.addEventListener('scroll', onAnyInput)
     window.document.addEventListener('touchstart', onAnyInput)
-    window.document.addEventListener('touchstop', onAnyInput)
+    window.document.addEventListener('touchend', onAnyInput)
 
     return () => {
       timeoutStart.current = null
@@ -410,7 +410,7 @@ export const EngineStream = (props: {
       window.document.removeEventListener('mouseup', onAnyInput)
       window.document.removeEventListener('scroll', onAnyInput)
       window.document.removeEventListener('touchstart', onAnyInput)
-      window.document.removeEventListener('touchstop', onAnyInput)
+      window.document.removeEventListener('touchend', onAnyInput)
     }
   }, [streamIdleMode, engineStreamState.value])
 
@@ -428,13 +428,13 @@ export const EngineStream = (props: {
     window.document.addEventListener('keyup', onInput)
     window.document.addEventListener('mouseup', onInput)
     window.document.addEventListener('scroll', onInput)
-    window.document.addEventListener('touchstop', onInput)
+    window.document.addEventListener('touchend', onInput)
 
     return () => {
       window.document.removeEventListener('keyup', onInput)
       window.document.removeEventListener('mouseup', onInput)
       window.document.removeEventListener('scroll', onInput)
-      window.document.removeEventListener('touchstop', onInput)
+      window.document.removeEventListener('touchend', onInput)
     }
   }, [])
 

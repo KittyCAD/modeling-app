@@ -321,7 +321,7 @@ export const engineStreamMachine = setup({
         // We actually failed inbetween needing to play and sending commands.
         [EngineStreamTransition.StartOrReconfigureEngine]: {
           target: EngineStreamState.WaitingForMediaStream,
-          renter: true,
+          reenter: true,
         },
       },
     },

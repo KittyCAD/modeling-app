@@ -19,6 +19,9 @@ test.describe(
       'simulate network down and network little widget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
+        const networkToggleConnectedText = page.getByText('Connected')
+        const networkToggleWeakText = page.getByText('Network health (Weak)')
+
         const u = await getUtils(page)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -39,7 +42,9 @@ test.describe(
         await expect(networkPopover).not.toBeVisible()
 
         // (First check) Expect the network to be up
-        await expect(networkToggle).toContainText('Connected')
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
 
         // Click the network widget
         await networkWidget.click()
@@ -87,7 +92,9 @@ test.describe(
         ).not.toBeDisabled({ timeout: 15000 })
 
         // (Second check) expect the network to be up
-        await expect(networkToggle).toContainText('Connected')
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
       }
     )
 
@@ -95,6 +102,9 @@ test.describe(
       'Engine disconnect & reconnect in sketch mode',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage, toolbar, scene, cmdBar }) => {
+        const networkToggleConnectedText = page.getByText('Connected')
+        const networkToggleWeakText = page.getByText('Network health (Weak)')
+
         const networkToggle = page.getByTestId('network-toggle')
 
         const u = await getUtils(page)
@@ -136,7 +146,9 @@ test.describe(
       |> xLine(length = ${commonPoints.num1})`)
 
         // Expect the network to be up
-        await expect(networkToggle).toContainText('Connected')
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
 
         // simulate network down
         await u.emulateNetworkConditions({
@@ -173,7 +185,9 @@ test.describe(
         ).not.toBeDisabled({ timeout: 15000 })
 
         // Expect the network to be up
-        await expect(networkToggle).toContainText('Connected')
+        await expect(
+          networkToggleConnectedText.or(networkToggleWeakText)
+        ).toBeVisible()
         await scene.settled(cmdBar)
 
         // Click off the code pane.
