@@ -90,7 +90,7 @@ export const settingsMachine = setup({
         toastCallback?: () => void
         rootContext: any
       }
-    >(async ({ input, ...rest }) => {
+    >(async ({ input }) => {
       // Without this, when a user changes the file, it'd
       // create a detection loop with the file-system watcher.
       if (input.doNotPersist) return
