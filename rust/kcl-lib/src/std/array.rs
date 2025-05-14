@@ -48,7 +48,7 @@ async fn call_map_closure(
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
     let kw_args = KwArgs {
-        unlabeled: Some(Arg::new(input, source_range)),
+        unlabeled: Some((None, Arg::new(input, source_range))),
         labeled: Default::default(),
         errors: Vec::new(),
     };
@@ -104,7 +104,7 @@ async fn call_reduce_closure(
     let mut labeled = IndexMap::with_capacity(1);
     labeled.insert("accum".to_string(), Arg::new(accum, source_range));
     let kw_args = KwArgs {
-        unlabeled: Some(Arg::new(elem, source_range)),
+        unlabeled: Some((None, Arg::new(elem, source_range))),
         labeled,
         errors: Vec::new(),
     };
