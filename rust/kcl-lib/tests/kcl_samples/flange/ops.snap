@@ -137,7 +137,7 @@ description: Operations executed flange.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.1279999999999999,
+          "value": 0.128,
           "ty": {
             "type": "Default",
             "len": {

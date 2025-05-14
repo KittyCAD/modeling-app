@@ -2,15 +2,23 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[565, 614, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[620, 644, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     4["Segment<br>[650, 688, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     5["Segment<br>[694, 719, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     6["Segment<br>[725, 764, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7["Segment<br>[770, 777, 0]"]
+      %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     8[Solid2d]
   end
   1["Plane<br>[542, 559, 0]"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   9["Sweep Extrusion<br>[806, 924, 0]"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10[Wall]
   11[Wall]
   12[Wall]
@@ -36,19 +44,19 @@ flowchart LR
   3 --- 13
   3 x--> 14
   3 --- 16
-  3 --- 23
+  3 --- 20
   4 --- 11
   4 x--> 14
-  4 --- 19
-  4 --- 22
+  4 --- 17
+  4 --- 21
   5 --- 10
   5 x--> 14
   5 --- 18
-  5 --- 21
+  5 --- 22
   6 --- 12
   6 x--> 14
-  6 --- 17
-  6 --- 20
+  6 --- 19
+  6 --- 23
   9 --- 10
   9 --- 11
   9 --- 12
@@ -63,13 +71,17 @@ flowchart LR
   9 --- 21
   9 --- 22
   9 --- 23
-  18 <--x 10
+  10 --- 18
   21 <--x 10
-  19 <--x 11
-  23 <--x 11
-  17 <--x 12
-  21 <--x 12
-  16 <--x 13
+  10 --- 22
+  11 --- 17
+  20 <--x 11
+  11 --- 21
+  12 --- 19
+  22 <--x 12
+  12 --- 23
+  13 --- 16
+  13 --- 20
   23 <--x 13
   16 <--x 15
   17 <--x 15

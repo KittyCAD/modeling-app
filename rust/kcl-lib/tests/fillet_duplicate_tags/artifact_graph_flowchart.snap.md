@@ -2,14 +2,21 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[0, 44, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
     3["Segment<br>[50, 84, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
     4["Segment<br>[90, 124, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     5["Segment<br>[130, 183, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
     6["Segment<br>[189, 210, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
     7[Solid2d]
   end
   1["Plane<br>[13, 30, 0]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
   8["Sweep Extrusion<br>[216, 236, 0]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -33,20 +40,20 @@ flowchart LR
   2 ---- 8
   3 --- 12
   3 x--> 13
-  3 --- 16
-  3 --- 21
+  3 --- 15
+  3 --- 19
   4 --- 10
   4 x--> 13
-  4 --- 15
-  4 --- 22
+  4 --- 16
+  4 --- 20
   5 --- 9
   5 x--> 13
-  5 --- 18
-  5 --- 20
+  5 --- 17
+  5 --- 21
   6 --- 11
   6 x--> 13
-  6 --- 17
-  6 --- 19
+  6 --- 18
+  6 --- 22
   8 --- 9
   8 --- 10
   8 --- 11
@@ -61,16 +68,18 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
-  18 <--x 9
+  9 --- 17
   20 <--x 9
-  22 <--x 9
-  15 <--x 10
-  22 <--x 10
-  17 <--x 11
-  19 <--x 11
-  20 <--x 11
-  16 <--x 12
-  19 <--x 12
+  9 --- 21
+  10 --- 16
+  19 <--x 10
+  10 --- 20
+  11 --- 18
+  21 <--x 11
+  11 --- 22
+  12 --- 15
+  12 --- 19
+  22 <--x 12
   15 <--x 14
   16 <--x 14
   17 <--x 14

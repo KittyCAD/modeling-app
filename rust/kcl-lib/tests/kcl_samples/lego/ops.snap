@@ -76,7 +76,7 @@ description: Operations executed lego.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -1.7000000000000002,
+          "value": -1.7,
           "ty": {
             "type": "Default",
             "len": {
