@@ -2,40 +2,25 @@
 flowchart LR
   subgraph path3 [Path]
     3["Path<br>[88, 132, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     5["Segment<br>[138, 162, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     6["Segment<br>[168, 186, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     7["Segment<br>[192, 215, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     8["Segment<br>[221, 252, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     9["Segment<br>[258, 282, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     10["Segment<br>[288, 320, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     11["Segment<br>[326, 333, 0]"]
-      %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
-    13[Solid2d]
+    14[Solid2d]
   end
   subgraph path4 [Path]
     4["Path<br>[454, 511, 0]"]
-      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     12["Segment<br>[454, 511, 0]"]
-      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    14[Solid2d]
+    13[Solid2d]
   end
   1["Plane<br>[47, 64, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   2["Plane<br>[413, 430, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   15["Sweep Revolve<br>[348, 399, 0]"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16["Sweep Extrusion<br>[529, 600, 0]"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   17["CompositeSolid Subtract<br>[611, 654, 0]"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   18[Wall]
   19[Wall]
   20[Wall]
@@ -61,28 +46,28 @@ flowchart LR
   3 --- 9
   3 --- 10
   3 --- 11
-  3 --- 13
+  3 --- 14
   3 ---- 15
   3 --- 17
   4 --- 12
-  4 --- 14
+  4 --- 13
   4 ---- 16
   4 --- 17
   15 <--x 5
   5 --- 24
-  5 x--> 30
+  5 x--> 29
   15 <--x 6
   6 --- 22
-  6 --- 30
+  6 --- 29
   15 <--x 7
   7 --- 21
-  7 --- 32
+  7 --- 30
   15 <--x 8
   8 --- 23
-  8 --- 29
+  8 --- 31
   15 <--x 9
   9 --- 20
-  9 --- 31
+  9 --- 32
   15 <--x 10
   10 --- 19
   10 --- 33
@@ -106,17 +91,17 @@ flowchart LR
   16 --- 26
   16 --- 27
   16 --- 28
-  27 <--x 18
-  28 <--x 18
-  31 <--x 19
-  33 <--x 19
-  29 <--x 20
+  18 --- 27
+  18 --- 28
+  32 <--x 19
+  19 --- 33
   31 <--x 20
-  32 <--x 21
-  30 <--x 22
-  29 <--x 23
-  32 <--x 23
-  30 <--x 24
+  20 --- 32
+  21 --- 30
+  22 --- 29
+  30 <--x 23
+  23 --- 31
+  24 --- 29
   33 <--x 24
   27 <--x 26
 ```

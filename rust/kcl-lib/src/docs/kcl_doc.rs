@@ -1262,8 +1262,6 @@ mod test {
                     &result,
                     0.99,
                 );
-                // yield to allow other tests to run
-                tokio::task::yield_now().await;
             }
         }
 
