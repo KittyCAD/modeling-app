@@ -3496,6 +3496,73 @@ profile001 = startProfile(sketch001, at = [-102.72, 237.44])
     ).toBeVisible()
   })
 
+  // Ensure feature tree is not showing previous file's content when switching to a file with KCL errors.
+  test('Feature tree shows correct sketch count per file', async ({
+    context,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    page,
+  }) => {
+    const u = await getUtils(page)
+
+    // Setup project with files.
+    const GOOD_KCL = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [220.81, 253.8])
+  |> line(end = [132.84, -151.31])
+  |> line(end = [25.51, 167.15])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [158.35, -70.82])
+  |> line(end = [73.9, -152.19])
+  |> line(end = [85.33, 135.48])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()`
+
+    const ERROR_KCL = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [127.56, 179.02])
+  |> line(end = [132.84, -112.6])
+  |> line(end = [85.33, 234.01])
+  |> line(enfd = [-137.23, -54.55])`
+
+    await context.folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, 'multi-file-sketch-test')
+      await fs.mkdir(projectDir, { recursive: true })
+      await Promise.all([
+        fs.writeFile(path.join(projectDir, 'good.kcl'), GOOD_KCL, 'utf-8'),
+        fs.writeFile(path.join(projectDir, 'error.kcl'), ERROR_KCL, 'utf-8'),
+      ])
+    })
+
+    await page.setBodyDimensions({ width: 1000, height: 800 })
+
+    await homePage.openProject('multi-file-sketch-test')
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+
+    await u.closeDebugPanel()
+
+    await toolbar.openFeatureTreePane()
+    await toolbar.openPane('files')
+
+    await toolbar.openFile('good.kcl')
+
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(2)
+
+    await toolbar.openFile('error.kcl')
+
+    // Ensure filetree is populate
+    await page.waitForTimeout(1000)
+
+    await expect(
+      toolbar.featureTreePane.getByRole('button', { name: 'Sketch' })
+    ).toHaveCount(0)
+  })
+
   test('adding a syntax error, recovers after fixing', async ({
     page,
     homePage,
