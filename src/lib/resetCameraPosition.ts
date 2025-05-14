@@ -1,12 +1,11 @@
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from './constants'
-import { isPlaywright } from './isPlaywright'
-import { createThumbnailPNGOnDesktop } from './screenshot'
-import { engineCommandManager, kclManager } from './singletons'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import { engineCommandManager, kclManager } from '@src/lib/singletons'
 import {
   engineStreamZoomToFit,
   engineViewIsometricWithoutGeometryPresent,
   engineViewIsometricWithGeometryPresent,
-} from './utils'
+} from '@src/lib/utils'
 
 /**
  * Reset the camera position to a baseline, which is isometric for

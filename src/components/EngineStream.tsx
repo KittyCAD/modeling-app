@@ -29,13 +29,6 @@ import { useSelector } from '@xstate/react'
 import type { MouseEventHandler } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useRouteLoaderData } from 'react-router-dom'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometricWithGeometryPresent,
-  engineViewIsometricWithoutGeometryPresent,
-} from '@src/lib/utils'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'

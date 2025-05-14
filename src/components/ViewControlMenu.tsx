@@ -9,23 +9,10 @@ import {
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { AxisNames } from '@src/lib/constants'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  VIEW_NAMES_SEMANTIC,
-} from '@src/lib/constants'
-import {
-  engineCommandManager,
-  kclManager,
-  sceneInfra,
-} from '@src/lib/singletons'
+import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
+import { sceneInfra } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import { useSettings } from '@src/lib/singletons'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  engineStreamZoomToFit,
-  engineViewIsometricWithoutGeometryPresent,
-  engineViewIsometricWithGeometryPresent,
-} from '@src/lib/utils'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 
 export function useViewControlMenuItems() {
