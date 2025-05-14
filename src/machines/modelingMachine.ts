@@ -582,7 +582,6 @@ export const modelingMachine = setup({
     'is-error-free': () => false,
     'no kcl errors': () => {
       const hasErrors = kclManager.hasErrors()
-      if (hasErrors) toast.error(KCL_ERRORS_MESSAGE)
       return !hasErrors
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>

@@ -579,24 +579,23 @@ export const ModelingMachineProvider = ({
             selectionRanges
           )
         },
-        'Has exportable geometry': () => {
-          if (!kclManager.hasErrors() && kclManager.ast.body.length > 0)
-            return true
-          else {
-            let errorMessage = 'Unable to Export '
-            if (kclManager.hasErrors()) errorMessage += 'due to KCL Errors'
-            else if (kclManager.ast.body.length === 0)
-              errorMessage += 'due to Empty Scene'
-            console.error(errorMessage)
-            toast.error(errorMessage)
-            return false
-          }
-        },
+        'Has exportable geometry': () =>
+          !kclManager.hasErrors() && kclManager.ast.body.length > 0,
       },
       actors: {
         exportFromEngine: fromPromise(
           async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
-            if (!input) {
+            if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
+              let errorMessage = 'Unable to Export '
+              if (kclManager.hasErrors()) {
+                errorMessage += 'due to KCL Errors'
+              } else if (kclManager.ast.body.length === 0) {
+                errorMessage += 'due to Empty Scene'
+              }
+              console.error(errorMessage)
+              toast.error(errorMessage)
+              return new Error(errorMessage)
+            } else if (!input) {
               return new Error('No input provided')
             }
 
