@@ -300,13 +300,6 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         }));
     }
 
-    if tools.len() > 1 {
-        return Err(KclError::UndefinedValue(KclErrorDetails {
-            message: "Only one tool is allowed for a subtract operation, currently.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
     let tolerance: Option<TyF64> = args.get_kw_arg_opt_typed("tolerance", &RuntimeType::length(), exec_state)?;
 
     let solids = inner_subtract(solids, tools, tolerance, exec_state, args).await?;
