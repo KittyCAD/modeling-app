@@ -75,6 +75,7 @@ import {
   MAKE_TOAST_MESSAGES,
   EXECUTION_TYPE_MOCK,
   FILE_EXT,
+  KCL_ERRORS_MESSAGE,
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
@@ -829,6 +830,11 @@ export const ModelingMachineProvider = ({
             kclManager.ast,
             input.plane
           )
+
+          if (kclManager.hasErrors()) {
+            return Promise.reject(new Error(KCL_ERRORS_MESSAGE))
+          }
+
           await kclManager.updateAst(modifiedAst, false)
           sceneInfra.camControls.enableRotate =
             sceneInfra.camControls._setting_allowOrbitInSketchMode

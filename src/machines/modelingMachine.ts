@@ -114,7 +114,10 @@ import type {
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_REAL,
+  NO_INPUT_PROVIDED_MESSAGE,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type {
   Axis,
@@ -566,9 +569,6 @@ export const modelingMachineDefaultContext: ModelingMachineContext = {
   planesInitialized: false,
 }
 
-const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
-const KCL_ERRORS_MESSAGE = 'KCL errors detected, please fix them first'
-
 export const modelingMachine = setup({
   types: {
     context: {} as ModelingMachineContext,
@@ -581,9 +581,7 @@ export const modelingMachine = setup({
     'has valid selection for deletion': () => false,
     'is-error-free': () => false,
     'no kcl errors': () => {
-      const hasErrors = kclManager.hasErrors()
-      if (hasErrors) toast.error(KCL_ERRORS_MESSAGE)
-      return !hasErrors
+      return !kclManager.hasErrors()
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
@@ -1363,7 +1361,7 @@ export const modelingMachine = setup({
   // end actions
   actors: {
     /* Below are all the do-constrain sketch actors,
-     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
+     * which aren't using updateModelingState yet */
     'do-constrain-remove-constraint': fromPromise(
       async ({
         input: { selectionRanges, sketchDetails, data },
@@ -1703,7 +1701,7 @@ export const modelingMachine = setup({
     ),
 
     /* Below are actors being defined in src/components/ModelingMachineProvider.tsx
-     * which aren't using updateModelingState and don't have the 'no kcl errors' guard yet */
+     * which aren't using updateModelingState yet */
     'Get vertical info': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'selectionRanges' | 'sketchDetails'>
@@ -1859,8 +1857,8 @@ export const modelingMachine = setup({
       }) => {}
     ),
 
-    /* Below are recent modeling codemods that are using updateModelinState,
-     * trigger toastError on Error, and have the 'no kcl errors' guard yet */
+    /* Below are recent modeling codemods that are using updateModelinState
+     * and trigger toastError on Error */
     extrudeAstMod: fromPromise(
       async ({
         input,
@@ -3174,72 +3172,55 @@ export const modelingMachine = setup({
           },
           {
             target: 'Sketch no face',
-            guard: 'no kcl errors',
           },
         ],
 
         Extrude: {
           target: 'Applying extrude',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Sweep: {
           target: 'Applying sweep',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Loft: {
           target: 'Applying loft',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Revolve: {
           target: 'Applying revolve',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         'Offset plane': {
           target: 'Applying offset plane',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Helix: {
           target: 'Applying helix',
           reenter: true,
-          guard: 'no kcl errors',
-        },
-
-        Shell: {
-          target: 'Applying shell',
-          reenter: true,
-          guard: 'no kcl errors',
         },
 
         Fillet: {
           target: 'Applying fillet',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         'event.parameter.create': {
           target: '#Modeling.parameter.creating',
-          guard: 'no kcl errors',
         },
 
         'event.parameter.edit': {
           target: '#Modeling.parameter.editing',
-          guard: 'no kcl errors',
         },
 
         Export: {
@@ -3269,38 +3250,31 @@ export const modelingMachine = setup({
         Appearance: {
           target: 'Applying appearance',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Translate: {
           target: 'Applying translate',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Rotate: {
           target: 'Applying rotate',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         Clone: {
           target: 'Applying clone',
           reenter: true,
-          guard: 'no kcl errors',
         },
 
         'Boolean Subtract': {
           target: 'Boolean subtracting',
-          guard: 'no kcl errors',
         },
         'Boolean Union': {
           target: 'Boolean uniting',
-          guard: 'no kcl errors',
         },
         'Boolean Intersect': {
           target: 'Boolean intersecting',
-          guard: 'no kcl errors',
         },
       },
 
@@ -4475,7 +4449,10 @@ export const modelingMachine = setup({
           actions: 'set new sketch metadata',
         },
 
-        onError: 'Sketch no face',
+        onError: {
+          target: 'Sketch no face',
+          actions: 'toastError',
+        },
       },
     },
 

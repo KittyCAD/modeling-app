@@ -4969,6 +4969,7 @@ extrude001 = extrude(profile001 length = 1)`
       await page.mouse.click(700, 200) // default plane
       await expect(page.getByText('KCL errors detected')).toBeVisible()
       await editor.expectEditor.toContain(badCode, { shouldNormalise: true })
+      await toolbar.exitSketchBtn.click()
     })
 
     await test.step(`Running the Helix command doesn't clear the bad code and we see an error`, async () => {
