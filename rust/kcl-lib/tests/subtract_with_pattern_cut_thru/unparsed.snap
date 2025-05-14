@@ -25,5 +25,5 @@ myPatterns = patternLinear3d(
   axis = [0, 0, 1],
 )
 
-subtract([extrude001], tools = [myPatterns])
+results = subtract([extrude001], tools = [myPatterns])
   |> rotate(angle = 90, axis = [0, 1, 0]) // we do this to ensure the id is okay after the subtract
