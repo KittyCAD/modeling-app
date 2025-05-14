@@ -2,18 +2,27 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[133, 158, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
   end
   subgraph path3 [Path]
     3["Path<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     4["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     5["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     6["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     7["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     8["Segment<br>[164, 270, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     9[Solid2d]
   end
   1["Plane<br>[110, 127, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   10["Sweep Extrusion<br>[276, 295, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
   11[Wall]
   12[Wall]
   13[Wall]
@@ -39,20 +48,20 @@ flowchart LR
   3 ---- 10
   4 --- 11
   4 x--> 15
-  4 --- 19
-  4 --- 23
+  4 --- 18
+  4 --- 22
   5 --- 12
   5 x--> 15
   5 --- 17
-  5 --- 24
+  5 --- 21
   6 --- 13
   6 x--> 15
-  6 --- 18
-  6 --- 21
+  6 --- 19
+  6 --- 23
   8 --- 14
   8 x--> 15
   8 --- 20
-  8 --- 22
+  8 --- 24
   10 --- 11
   10 --- 12
   10 --- 13
@@ -67,18 +76,18 @@ flowchart LR
   10 --- 22
   10 --- 23
   10 --- 24
-  19 <--x 11
-  23 <--x 11
-  24 <--x 11
-  17 <--x 12
-  22 <--x 12
+  11 --- 18
+  21 <--x 11
+  11 --- 22
+  12 --- 17
+  12 --- 21
   24 <--x 12
-  18 <--x 13
-  21 <--x 13
-  23 <--x 13
-  20 <--x 14
-  21 <--x 14
-  22 <--x 14
+  13 --- 19
+  22 <--x 13
+  13 --- 23
+  14 --- 20
+  23 <--x 14
+  14 --- 24
   17 <--x 16
   18 <--x 16
   19 <--x 16

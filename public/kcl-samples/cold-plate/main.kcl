@@ -1,0 +1,67 @@
+// Cold Plate
+// A cold plate is a thermal management device used to remove heat from a device or component, typically by transferring heat to a liquid coolant that flows through the plate. It's a conductive cooling solution, commonly made of materials like aluminum or copper, with internal channels or tubes for the coolant
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+tubeDiameter = 5 / 8
+wallThickness = 0.080
+bendRadius = 1
+
+// Create the cold plate with indentions to secure each pass of the brazed copper tube
+coldPlate = startSketchOn(YZ)
+  |> startProfile(at = [0, tubeDiameter * 2])
+  |> xLine(length = bendRadius - (tubeDiameter / 2))
+  |> yLine(length = -tubeDiameter)
+  |> tangentialArc(angle = 180, radius = tubeDiameter / 2)
+  |> yLine(length = tubeDiameter)
+  |> xLine(length = bendRadius * 2 - tubeDiameter, tag = $seg07)
+  |> yLine(length = -tubeDiameter, tag = $seg09)
+  |> tangentialArc(angle = 180, radius = tubeDiameter / 2)
+  |> yLine(length = tubeDiameter, tag = $seg08)
+  |> xLine(length = bendRadius - (tubeDiameter / 2))
+  |> angledLine(angle = -77, length = tubeDiameter / 3)
+  |> tangentialArc(angle = 77, radius = tubeDiameter, tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = 1)
+  |> yLine(endAbsolute = 0)
+  |> xLine(endAbsolute = 0)
+  |> mirror2d(axis = Y)
+  |> close()
+  |> extrude(length = 10, symmetric = true)
+
+// Sketch the path for the copper tube to follow
+copperTubePath = startSketchOn(offsetPlane(XY, offset = tubeDiameter))
+  |> startProfile(at = [-7.35, -bendRadius * 3])
+  |> xLine(length = 14.13, tag = $seg05)
+  |> tangentialArc(angle = 180, radius = bendRadius, tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), length = 13.02, tag = $seg06)
+  |> tangentialArc(angle = -180, radius = bendRadius, tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg03), length = segLen(seg06))
+  |> tangentialArc(angle = 180, radius = bendRadius, tag = $seg04)
+  |> angledLine(angle = tangentToEnd(seg04), length = segLen(seg05))
+
+// Create the profile for the inner and outer diameter of the hollow copper tube
+tubeWall = startSketchOn(offsetPlane(YZ, offset = -7.35))
+  |> circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2)
+  |> subtract2d(%, tool = circle(center = [-bendRadius * 3, tubeDiameter], radius = tubeDiameter / 2 - wallThickness))
+  |> sweep(path = copperTubePath)
+  |> appearance(color = "#b81b0a")
+
+// Model a brazed cap to cover each tube. Constrain the caps using the walls of the plate
+brazedCap = startSketchOn(YZ)
+  |> startProfile(at = segEnd(seg07))
+  |> arc(interiorAbsolute = [bendRadius * 3, tubeDiameter * 1.85], endAbsolute = segEnd(seg08))
+  |> yLine(endAbsolute = segStartY(seg08))
+  |> arc(
+       interiorAbsolute = [
+         bendRadius * 3,
+         segEndY(seg09) + tubeDiameter / 2
+       ],
+       endAbsolute = segEnd(seg09),
+     )
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10, symmetric = true)
+  |> patternLinear3d(instances = 4, distance = bendRadius * 2, axis = [0, -1, 0])
+  |> appearance(color = "#6b261e")

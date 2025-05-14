@@ -125,7 +125,7 @@ description: Operations executed rotate_after_fillet.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -0.46875,
+          "value": -0.4688,
           "ty": {
             "type": "Default",
             "len": {

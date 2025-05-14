@@ -1,0 +1,56 @@
+// Pillow Block Bearing
+// The machined block for the pillow block bearing assembly. The block is dimensioned using the bolt pattern spacing, and each bolt hole includes a counterbore
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Import Parameters
+import * from "parameters.kcl"
+
+// Calculate the dimensions of the block using the specified bolt spacing. The size of the block can be defined by adding a multiple of the counterbore diameter to the bolt spacing
+blockLength = boltSpacingX + counterboreDiameter + boltDiameter
+blockWidth = boltSpacingY + counterboreDiameter + boltDiameter
+
+// Draw the base plate
+plateSketch = startSketchOn(XY)
+  |> startProfile(at = [-blockLength / 2, -blockWidth / 2])
+  |> angledLine(angle = 0, length = blockLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = blockWidth, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+  |> subtract2d(tool = circle(center = [0, 0], radius = bearingOuterDiameter / 2))
+plateBody = extrude(plateSketch, length = stockThickness)
+  |> appearance(%, color = "#1e62eb")
+  |> fillet(
+       radius = boltDiameter * 1 / 3,
+       tags = [
+         getNextAdjacentEdge(rectangleSegmentB001),
+         getNextAdjacentEdge(rectangleSegmentA001),
+         getNextAdjacentEdge(rectangleSegmentC001),
+         getNextAdjacentEdge(rectangleSegmentD001)
+       ],
+     )
+
+// Define hole positions
+holePositions = [
+  [-boltSpacingX / 2, -boltSpacingY / 2],
+  [-boltSpacingX / 2, boltSpacingY / 2],
+  [boltSpacingX / 2, -boltSpacingY / 2],
+  [boltSpacingX / 2, boltSpacingY / 2]
+]
+
+// Function to create a counterbored hole
+fn counterbore(@holePosition) {
+  cbBore = startSketchOn(plateBody, face = END)
+    |> circle(center = holePosition, radius = counterboreDiameter / 2)
+    |> extrude(length = -counterboreDepth)
+  cbBolt = startSketchOn(cbBore, face = START)
+    |> circle(center = holePosition, radius = boltDiameter / 2, tag = $hole01)
+    |> extrude(length = -stockThickness + counterboreDepth)
+
+  return {  }
+}
+
+// Place a counterbored hole at each bolt hole position
+map(holePositions, f = counterbore)

@@ -1,0 +1,55 @@
+// Bone Plate
+// A bone plate is a medical device used in orthopedics to stabilize and fix bone fractures during the healing process. They are typically made of stainless steel or titanium and are secured to the bone with screws. Bone plates come in various types, including locking, compression, and bridge plates, each with specific applications
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+boltSize = 4.5
+
+// Revolve the profile of a compression plate designed to fit a bone
+plateRevolve = startSketchOn(YZ)
+  |> startProfile(at = [22.9, 0])
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 176, radius = 120)
+  |> arc(angleStart = -60, angleEnd = 54, radius = 5)
+  |> arc(angleStart = 180, angleEnd = 174, radius = 170)
+  |> tangentialArc(endAbsolute = [41.8, 91.88])
+  |> tangentialArc(endAbsolute = [56.92, 117.08], tag = $seg01)
+  |> angledLine(angle = tangentToEnd(seg01), length = 23.16)
+  |> tangentialArc(endAbsolute = [60.93, 140.44], tag = $seg02)
+  |> angledLine(angle = tangentToEnd(seg02), length = 25.65)
+  |> tangentialArc(endAbsolute = [48.35, 85.53])
+  |> tangentialArc(endAbsolute = [35.2, 67.73], tag = $seg03)
+  |> angledLine(angle = tangentToEnd(seg03), length = 49.06)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> revolve(axis = Y, angle = 65, symmetric = true)
+
+// Create a hole sketch with the size and location of each bolt hole
+holeSketch = startSketchOn(XZ)
+hole01 = circle(holeSketch, center = [0, 12.25], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole02 = circle(holeSketch, center = [0, 29.5], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole03 = circle(holeSketch, center = [0, 46.25], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole04 = circle(holeSketch, center = [0, 77], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole05 = circle(holeSketch, center = [0, 100], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole06 = circle(holeSketch, center = [0, 130], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole07 = circle(holeSketch, center = [-20, 130], radius = boltSize / 2)
+  |> extrude(length = -100)
+hole08 = circle(holeSketch, center = [20, 130], radius = boltSize / 2)
+  |> extrude(length = -100)
+
+// Cut each guiding clearance hole from the bone plate
+solid001 = subtract([plateRevolve], tools = union([hole01, hole02]))
+solid002 = subtract([solid001], tools = union([hole03, hole04]))
+solid003 = subtract([solid002], tools = union([hole05, hole06]))
+solid004 = subtract([solid003], tools = union([hole07, hole08]))

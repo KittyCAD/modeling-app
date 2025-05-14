@@ -2,16 +2,25 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[33, 65, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[71, 95, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     4["Segment<br>[101, 140, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     5["Segment<br>[146, 172, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     6["Segment<br>[178, 227, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7["Segment<br>[233, 260, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
     8["Segment<br>[266, 273, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
     9[Solid2d]
   end
   1["Plane<br>[10, 27, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   10["Sweep Extrusion<br>[279, 298, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
   11[Wall]
   12[Wall]
   13[Wall]
@@ -43,28 +52,28 @@ flowchart LR
   2 ---- 10
   3 --- 16
   3 x--> 17
-  3 --- 23
-  3 --- 25
+  3 --- 24
+  3 --- 30
   4 --- 14
   4 x--> 17
-  4 --- 21
-  4 --- 27
+  4 --- 23
+  4 --- 29
   5 --- 13
   5 x--> 17
-  5 --- 19
-  5 --- 29
+  5 --- 22
+  5 --- 28
   6 --- 15
   6 x--> 17
-  6 --- 22
-  6 --- 26
+  6 --- 21
+  6 --- 27
   7 --- 12
   7 x--> 17
   7 --- 20
-  7 --- 30
+  7 --- 26
   8 --- 11
   8 x--> 17
-  8 --- 24
-  8 --- 28
+  8 --- 19
+  8 --- 25
   10 --- 11
   10 --- 12
   10 --- 13
@@ -85,24 +94,24 @@ flowchart LR
   10 --- 28
   10 --- 29
   10 --- 30
-  24 <--x 11
-  28 <--x 11
-  30 <--x 11
-  20 <--x 12
-  26 <--x 12
-  30 <--x 12
-  19 <--x 13
-  27 <--x 13
+  11 --- 19
+  11 --- 25
+  26 <--x 11
+  12 --- 20
+  12 --- 26
+  27 <--x 12
+  13 --- 22
+  13 --- 28
   29 <--x 13
-  21 <--x 14
-  25 <--x 14
-  27 <--x 14
-  22 <--x 15
-  26 <--x 15
-  29 <--x 15
-  23 <--x 16
+  14 --- 23
+  14 --- 29
+  30 <--x 14
+  15 --- 21
+  15 --- 27
+  28 <--x 15
+  16 --- 24
   25 <--x 16
-  28 <--x 16
+  16 --- 30
   19 <--x 18
   20 <--x 18
   21 <--x 18

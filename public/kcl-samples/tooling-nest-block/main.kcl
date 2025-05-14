@@ -1,0 +1,167 @@
+// Tooling Nest Block
+// A tooling nest block is a block-shaped tool made from high-carbon steel. It features an assortment of conical or hemispherical indentions, which are used to form or shape metal, particularly in crafting bells or jewelry
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define parameters
+sideLength = 50
+size01 = 15
+size02 = 10
+size03 = 6
+size04 = 0.375in
+size05 = 0.25in
+size06 = 0.5in
+size07 = 0.75in
+size08 = 5
+size09 = 4.5
+size10 = 4
+size11 = 3.5
+size12 = 3
+size13 = 2.5
+size14 = 2
+size15 = 1
+
+// Sketch and extrude the base cube
+cubeSketch = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> angledLine(angle = 0, length = sideLength, tag = $rectangleSegmentA001)
+  |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = sideLength, tag = $rectangleSegmentB001)
+  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $rectangleSegmentD001)
+  |> close()
+cubeExtrude = extrude(cubeSketch, length = sideLength)
+
+// Write a function to create a hemispherical nest in a given cube side
+fn nest(cubeFace, xPos, yPos, nestSize) {
+  nestFn = startSketchOn(cubeExtrude, face = cubeFace)
+    |> circle(center = [xPos * sideLength, yPos * sideLength], radius = nestSize, tag = $seg01)
+    |> extrude(length = -nestSize, tagStart = $capStart001)
+    |> fillet(
+         radius = nestSize * .99,
+         tags = [
+           getCommonEdge(faces = [seg01, capStart001])
+         ],
+       )
+  return {  }
+}
+
+// Model each nest on the top face
+nest(
+  cubeFace = END,
+  xPos = 0.5,
+  yPos = 0.5,
+  nestSize = size01,
+)
+
+// Model each nest on side 1
+nest(
+  cubeFace = rectangleSegmentA001,
+  xPos = 0.65,
+  yPos = 0.5,
+  nestSize = size02,
+)
+nest(
+  cubeFace = rectangleSegmentA001,
+  xPos = 0.25,
+  yPos = 0.25,
+  nestSize = size03,
+)
+nest(
+  cubeFace = rectangleSegmentA001,
+  xPos = 0.25,
+  yPos = 0.75,
+  nestSize = size03,
+)
+
+// Model each nest on side 2
+nest(
+  cubeFace = rectangleSegmentB001,
+  xPos = 0.7,
+  yPos = 0.3,
+  nestSize = size04,
+)
+nest(
+  cubeFace = rectangleSegmentB001,
+  xPos = 0.25,
+  yPos = 0.3,
+  nestSize = size05,
+)
+nest(
+  cubeFace = rectangleSegmentB001,
+  xPos = 0.25,
+  yPos = 0.7,
+  nestSize = size05,
+)
+nest(
+  cubeFace = rectangleSegmentB001,
+  xPos = 0.7,
+  yPos = 0.7,
+  nestSize = size05,
+)
+
+// Model each nest on side 3
+nest(
+  cubeFace = rectangleSegmentC001,
+  xPos = -0.5,
+  yPos = 0.5,
+  nestSize = size06,
+)
+
+// Model each nest on side 4
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.2,
+  yPos = 0.2,
+  nestSize = size15,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.2,
+  yPos = 0.5,
+  nestSize = size14,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.2,
+  yPos = 0.8,
+  nestSize = size13,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.8,
+  yPos = 0.2,
+  nestSize = size12,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.8,
+  yPos = 0.5,
+  nestSize = size10,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.8,
+  yPos = 0.8,
+  nestSize = size08,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.5,
+  yPos = 0.33,
+  nestSize = size09,
+)
+nest(
+  cubeFace = rectangleSegmentD001,
+  xPos = -0.5,
+  yPos = 0.67,
+  nestSize = size11,
+)
+
+// Model each nest on the bottom face
+nest(
+  cubeFace = START,
+  xPos = -0.5,
+  yPos = 0.5,
+  nestSize = size07,
+)

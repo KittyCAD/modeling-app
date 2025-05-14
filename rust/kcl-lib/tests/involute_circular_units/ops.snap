@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 282
 description: Operations executed involute_circular_units.kcl
 ---
 [
@@ -28,7 +27,7 @@ description: Operations executed involute_circular_units.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 17.142857142857142,
+            "value": 17.1429,
             "ty": {
               "type": "Default",
               "len": {
@@ -44,7 +43,7 @@ description: Operations executed involute_circular_units.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 4.933386259126019,
+            "value": 4.9334,
             "ty": {
               "type": "Default",
               "len": {
