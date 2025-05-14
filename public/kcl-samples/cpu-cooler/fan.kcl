@@ -8,28 +8,10 @@
 import * from "parameters.kcl"
 
 // Model the center of the fan
-fanCenter = startSketchOn(XY)
-  |> startProfile(at = [fanHeight, 0])
-  |> yLine(endAbsolute = -15 + 1.5)
-  |> tangentialArc(radius = 1.5, angle = -90)
-  |> xLine(endAbsolute = 4.5)
-  |> yLine(endAbsolute = -13)
-  |> xLine(endAbsolute = profileStartX(%) - 5)
-  |> tangentialArc(radius = 1, angle = 90)
-  |> yLine(endAbsolute = -1)
-  |> xLine(length = 2)
-  |> yLine(length = -0.15)
-  |> line(endAbsolute = [
-       profileStartX(%) - 1.4,
-       profileStartY(%) - 1
-     ])
-  |> yLine(endAbsolute = profileStartY(%))
-  |> xLine(endAbsolute = profileStartX(%))
-  |> close()
-  |> revolve(axis = {
-       direction = [1.0, 0.0],
-       origin = [0.0, 0.0]
-     })
+fanCenter = startSketchOn(YZ)
+  |> circle(center = [0, 0], radius = fanHeight / 2, tag = $centerBend)
+  |> extrude(%, length = fanHeight)
+  |> fillet(radius = 1.5, tags = [getOppositeEdge(centerBend)])
 
 // Create a function for a lofted fan blade cross section that rotates about the center hub of the fan
 fn fanBlade(offsetHeight, startAngle) {

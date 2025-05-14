@@ -368,7 +368,7 @@ impl ArtifactGraph {
                 writeln!(output, "{prefix}{}[\"Cap {:?}\"]", id, cap.sub_type)?;
             }
             Artifact::SweepEdge(sweep_edge) => {
-                writeln!(output, "{prefix}{}[\"SweepEdge {:?}\"]", id, sweep_edge.sub_type)?;
+                writeln!(output, "{prefix}{}[\"SweepEdge {:?}\"]", id, sweep_edge.sub_type,)?;
             }
             Artifact::EdgeCut(edge_cut) => {
                 writeln!(
