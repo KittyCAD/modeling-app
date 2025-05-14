@@ -51,8 +51,11 @@ test.describe('Regression tests', () => {
     // the close doesn't work
     // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
     // this test will need updating
-    const crypticErrorText = `ApiError`
+    const crypticErrorText = `Cannot close a path that is non-planar or with duplicate vertices.
+Internal engine error on request`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+    // Ensure we didn't nest the json.
+    expect(page.getByText('ApiError')).not.toBeVisible()
   })
   test('user should not have to press down twice in cmdbar', async ({
     page,

@@ -807,7 +807,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
                         })
                     })?;
                     return Err(KclError::Engine(KclErrorDetails {
-                        message: format!("Modeling command failed: {:?}", errors),
+                        message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
                         source_ranges: vec![source_range],
                     }));
                 }
