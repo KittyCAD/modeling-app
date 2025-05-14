@@ -155,6 +155,12 @@ export class CmdBarFixture {
     }
   }
 
+  closeCmdBar = async () => {
+    const cmdBarCloseBtn = this.page.getByTestId('command-bar-close-button')
+    await cmdBarCloseBtn.click()
+    await expect(this.cmdBarElement).not.toBeVisible()
+  }
+
   get cmdSearchInput() {
     return this.page.getByTestId('cmd-bar-search')
   }
@@ -297,5 +303,28 @@ export class CmdBarFixture {
     console.log(
       `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
     )
+  }
+
+  async toBeOpened() {
+    // Check that the command bar is opened
+    await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
+  }
+
+  async expectArgValue(value: string) {
+    // Check the placeholder project name exists
+    const actualArgument = await this.cmdBarElement
+      .getByTestId('cmd-bar-arg-value')
+      .inputValue()
+    const expectedArgument = value
+    expect(actualArgument).toBe(expectedArgument)
+  }
+
+  async expectCommandName(value: string) {
+    // Check the placeholder project name exists
+    const actual = await this.cmdBarElement
+      .getByTestId('command-name')
+      .textContent()
+    const expected = value
+    expect(actual).toBe(expected)
   }
 }

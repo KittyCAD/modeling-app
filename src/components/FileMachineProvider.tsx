@@ -29,7 +29,7 @@ import { kclCommands } from '@src/lib/kclCommands'
 import { BROWSER_PATH, PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import { codeManager, kclManager } from '@src/lib/singletons'
-import { err, reportRejection } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import { type IndexLoaderData } from '@src/lib/types'
 import { useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
@@ -59,12 +59,6 @@ export const FileMachineProvider = ({
   const { project, file } = projectData
 
   const filePath = useAbsoluteFilePath()
-  // Only create the native file menus on desktop
-  useEffect(() => {
-    if (isDesktop()) {
-      window.electron.createModelingPageMenu().catch(reportRejection)
-    }
-  }, [])
 
   useEffect(() => {
     const {
