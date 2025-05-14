@@ -3182,7 +3182,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                         CompilationError::fatal(
                             SourceRange::from(kw.clone()),
                             format!(
-                                "'{}' is not the name of an argument (it's a reserved keyword)",
+                                "`{}` is not the name of an argument (it's a reserved keyword)",
                                 kw.value
                             ),
                         )
@@ -5093,7 +5093,7 @@ bar = 1
             };
             let cause = err.inner().cause.as_ref().unwrap();
             assert_eq!(
-                cause.message, "'fn' is not the name of an argument (it's a reserved keyword)",
+                cause.message, "`fn` is not the name of an argument (it's a reserved keyword)",
                 "failed test {i}: {program}"
             );
             assert_eq!(
