@@ -16,7 +16,7 @@ test.describe(
   },
   () => {
     test(
-      'simulate network down and network little w1dget',
+      'simulate network down and network little widget',
       { tag: '@skipLocalEngine' },
       async ({ page, homePage }) => {
         const u = await getUtils(page)
@@ -114,7 +114,7 @@ test.describe(
         await page.mouse.click(700, 200)
 
         await expect(page.locator('.cm-content')).toHaveText(
-          `sketch001 = startSketchOn(XZ)`
+          `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)`
         )
         await u.closeDebugPanel()
 
@@ -123,7 +123,7 @@ test.describe(
         const startXPx = 600
         await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
         await expect(page.locator('.cm-content')).toHaveText(
-          `sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
+          `@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})`
         )
         await page.waitForTimeout(100)
 
@@ -132,7 +132,7 @@ test.describe(
 
         await expect(
           page.locator('.cm-content')
-        ).toHaveText(`sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
+        ).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn(XZ)profile001 = startProfile(sketch001, at = ${commonPoints.startAt})
       |> xLine(length = ${commonPoints.num1})`)
 
         // Expect the network to be up
@@ -224,7 +224,10 @@ test.describe(
         await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
         await expect
           .poll(u.normalisedEditorCode)
-          .toBe(`sketch001 = startSketchOn(XZ)
+          .toBe(`@settings(defaultLengthUnit = in)
+
+
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
@@ -235,7 +238,10 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
 
         await expect
           .poll(u.normalisedEditorCode)
-          .toBe(`sketch001 = startSketchOn(XZ)
+          .toBe(`@settings(defaultLengthUnit = in)
+
+
+sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [12.34, -12.34])
   |> xLine(length = 12.34)
   |> line(end = [-12.34, 12.34])
@@ -264,13 +270,18 @@ profile001 = startProfile(sketch001, at = [12.34, -12.34])
     test(
       'Paused stream freezes view frame, unpause reconnect is seamless to user',
       { tag: '@skipLocalEngine' },
-      async ({ page, homePage, scene, cmdBar, toolbar }) => {
+      async ({ page, homePage, scene, cmdBar, toolbar, tronApp }) => {
         const networkToggle = page.getByTestId('network-toggle')
         const networkToggleConnectedText = page.getByText('Connected')
         const networkToggleWeakText = page.getByText('Network health (Weak)')
-        const userSettingsTab = page.getByRole('radio', { name: 'User' })
-        const appStreamIdleModeSetting = page.getByTestId('app-streamIdleMode')
-        const settingsCloseButton = page.getByTestId('settings-close-button')
+
+        await tronApp.cleanProjectDir({
+          app: {
+            appearance: {
+              streamIdleMode: 5000,
+            },
+          },
+        })
 
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -289,20 +300,6 @@ profile001 = startProfile(sketch001, at = [0.0, 0.0])
         await test.step('Go to modeling scene', async () => {
           await homePage.goToModelingScene()
           await scene.settled(cmdBar)
-        })
-
-        await test.step('Set stream idle pause time to 5s', async () => {
-          await page.getByRole('link', { name: 'Settings' }).last().click()
-          await expect(
-            page.getByRole('heading', { name: 'Settings', exact: true })
-          ).toBeVisible()
-          await userSettingsTab.click()
-          await appStreamIdleModeSetting.click()
-          await appStreamIdleModeSetting.selectOption('5000')
-          await settingsCloseButton.click()
-          await expect(
-            page.getByText('Set stream idle mode to "5000" as a user default')
-          ).toBeVisible()
         })
 
         await test.step('Verify pausing behavior', async () => {

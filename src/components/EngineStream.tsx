@@ -52,8 +52,6 @@ export const EngineStream = (props: {
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
 
-  const engineStreamState = useSelector(engineStreamActor, (state) => state)
-
   const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
 
