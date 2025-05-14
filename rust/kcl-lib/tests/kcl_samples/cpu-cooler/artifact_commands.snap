@@ -4483,8 +4483,8 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.64181414529809,
-        "y": 11.49066664678467,
+        "x": 9.6418,
+        "y": 11.4907,
         "z": 0.0
       }
     }
@@ -4496,8 +4496,8 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 12.99038105676658,
-        "y": 7.499999999999999,
+        "x": 12.9904,
+        "y": 7.5,
         "z": 0.0
       }
     }
@@ -5661,7 +5661,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 44.943820224719104,
+        "x": 44.9438,
         "y": 158.0,
         "z": 0.0
       }
@@ -5935,7 +5935,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -1.0,
-        "y": 44.943820224719104,
+        "y": 44.9438,
         "z": 0.0
       }
     }
@@ -6038,7 +6038,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -1.5,
-        "y": 44.943820224719104,
+        "y": 44.9438,
         "z": 0.0
       }
     }
@@ -6598,7 +6598,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 3.6666666666666665
+              "z": 3.6667
             },
             "scale": {
               "x": 1.0,
@@ -6627,7 +6627,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 7.333333333333333
+              "z": 7.3333
             },
             "scale": {
               "x": 1.0,
@@ -6685,7 +6685,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 14.666666666666666
+              "z": 14.6667
             },
             "scale": {
               "x": 1.0,
@@ -6714,7 +6714,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 18.333333333333332
+              "z": 18.3333
             },
             "scale": {
               "x": 1.0,
@@ -6772,7 +6772,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 25.666666666666664
+              "z": 25.6667
             },
             "scale": {
               "x": 1.0,
@@ -6801,7 +6801,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 29.333333333333332
+              "z": 29.3333
             },
             "scale": {
               "x": 1.0,
@@ -6859,7 +6859,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 36.666666666666664
+              "z": 36.6667
             },
             "scale": {
               "x": 1.0,
@@ -6888,7 +6888,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 40.33333333333333
+              "z": 40.3333
             },
             "scale": {
               "x": 1.0,
@@ -6946,7 +6946,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 47.666666666666664
+              "z": 47.6667
             },
             "scale": {
               "x": 1.0,
@@ -6975,7 +6975,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 51.33333333333333
+              "z": 51.3333
             },
             "scale": {
               "x": 1.0,
@@ -7033,7 +7033,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 58.666666666666664
+              "z": 58.6667
             },
             "scale": {
               "x": 1.0,
@@ -7062,7 +7062,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 62.33333333333333
+              "z": 62.3333
             },
             "scale": {
               "x": 1.0,
@@ -7120,7 +7120,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 69.66666666666666
+              "z": 69.6667
             },
             "scale": {
               "x": 1.0,
@@ -7149,7 +7149,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 73.33333333333333
+              "z": 73.3333
             },
             "scale": {
               "x": 1.0,
@@ -7207,7 +7207,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 80.66666666666666
+              "z": 80.6667
             },
             "scale": {
               "x": 1.0,
@@ -7236,7 +7236,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 84.33333333333333
+              "z": 84.3333
             },
             "scale": {
               "x": 1.0,
@@ -7294,7 +7294,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 91.66666666666666
+              "z": 91.6667
             },
             "scale": {
               "x": 1.0,
@@ -7323,7 +7323,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 95.33333333333333
+              "z": 95.3333
             },
             "scale": {
               "x": 1.0,
@@ -7381,7 +7381,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 102.66666666666666
+              "z": 102.6667
             },
             "scale": {
               "x": 1.0,
@@ -7410,7 +7410,7 @@ description: Artifact commands cpu-cooler.kcl
             "translate": {
               "x": 0.0,
               "y": 0.0,
-              "z": 106.33333333333333
+              "z": 106.3333
             },
             "scale": {
               "x": 1.0,
@@ -9608,7 +9608,7 @@ description: Artifact commands cpu-cooler.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 152.65270364466613
+        "z": 152.6527
       },
       "x_axis": {
         "x": 1.0,
@@ -9662,7 +9662,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -43.87966230538214,
+        "x": -43.8797,
         "y": -62.0,
         "z": 0.0
       }
@@ -9782,7 +9782,7 @@ description: Artifact commands cpu-cooler.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 47.34729635533386
+        "z": 47.3473
       },
       "x_axis": {
         "x": 1.0,
@@ -9836,7 +9836,7 @@ description: Artifact commands cpu-cooler.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -43.87966230538214,
+        "x": -43.8797,
         "y": -62.0,
         "z": 0.0
       }
@@ -9954,7 +9954,7 @@ description: Artifact commands cpu-cooler.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": -43.87966230538214,
+        "x": -43.8797,
         "y": 0.0,
         "z": 0.0
       },
@@ -10044,7 +10044,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -61.0,
-        "y": 152.65270364466613,
+        "y": 152.6527,
         "z": 0.0
       }
     }
@@ -10175,7 +10175,7 @@ description: Artifact commands cpu-cooler.kcl
       "path": "[uuid]",
       "to": {
         "x": -61.0,
-        "y": 47.34729635533386,
+        "y": 47.3473,
         "z": 0.0
       }
     }

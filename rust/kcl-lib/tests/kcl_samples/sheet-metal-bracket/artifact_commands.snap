@@ -77,7 +77,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -107.94999999999999,
+        "x": -107.95,
         "y": 0.0,
         "z": 0.0
       }
@@ -672,7 +672,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "path": "[uuid]",
       "to": {
         "x": -85.725,
-        "y": 19.049999999999997,
+        "y": 19.05,
         "z": 0.0
       }
     }
@@ -895,8 +895,8 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 92.07499999999999,
-        "y": 19.049999999999997,
+        "x": 92.075,
+        "y": 19.05,
         "z": 0.0
       }
     }
@@ -1119,7 +1119,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -23.018749999999997,
+        "x": -23.0187,
         "y": 31.75,
         "z": 0.0
       }
@@ -1191,7 +1191,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 76.19999999999999,
+              "y": 76.2,
               "z": 0.0
             },
             "scale": {
@@ -1231,7 +1231,7 @@ description: Artifact commands sheet-metal-bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 76.19999999999999,
+              "y": 76.2,
               "z": 0.0
             },
             "scale": {
@@ -1535,7 +1535,7 @@ description: Artifact commands sheet-metal-bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 19.049999999999997,
+        "x": 19.05,
         "y": 69.85,
         "z": 0.0
       }

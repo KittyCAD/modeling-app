@@ -319,8 +319,8 @@ description: Artifact commands bracket.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -19.049999999999997,
-        "y": 19.049999999999997,
+        "x": -19.05,
+        "y": 19.05,
         "z": 0.0
       }
     }
@@ -350,7 +350,7 @@ description: Artifact commands bracket.kcl
         [
           {
             "translate": {
-              "x": -72.77465281581115,
+              "x": -72.7747,
               "y": 0.0,
               "z": 0.0
             },
@@ -391,7 +391,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 88.89999999999999,
+              "y": 88.9,
               "z": 0.0
             },
             "scale": {
@@ -431,7 +431,7 @@ description: Artifact commands bracket.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": 88.89999999999999,
+              "y": 88.9,
               "z": 0.0
             },
             "scale": {

@@ -77,7 +77,7 @@ description: Artifact commands poopy-shoe.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 38.099999999999994,
+        "x": 38.1,
         "y": 0.0,
         "z": 0.0
       }
@@ -325,7 +325,7 @@ description: Artifact commands poopy-shoe.kcl
       "target": "[uuid]",
       "origin": {
         "x": 0.0,
-        "y": 130.17754,
+        "y": 130.1775,
         "z": 0.0
       },
       "axis": {
@@ -408,7 +408,7 @@ description: Artifact commands poopy-shoe.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 38.099999999999994,
+        "x": 38.1,
         "y": 0.0,
         "z": 0.0
       }
@@ -707,7 +707,7 @@ description: Artifact commands poopy-shoe.kcl
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": -36.512499999999996,
+        "y": -36.5125,
         "z": 0.0
       },
       "x_axis": {
@@ -1418,7 +1418,7 @@ description: Artifact commands poopy-shoe.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": -22.224999999999998,
+        "y": -22.225,
         "z": 0.0
       }
     }

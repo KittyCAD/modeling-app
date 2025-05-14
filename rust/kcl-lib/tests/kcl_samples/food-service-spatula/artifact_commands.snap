@@ -109,8 +109,8 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -24.833425848836807,
-        "y": 22.99722453489577,
+        "x": -24.8334,
+        "y": 22.9972,
         "z": 0.0
       }
     }
@@ -122,8 +122,8 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -25.16657415116319,
-        "y": -13.002775465104229,
+        "x": -25.1666,
+        "y": -13.0028,
         "z": 0.0
       }
     }
@@ -631,11 +631,11 @@ description: Artifact commands food-service-spatula.kcl
         "radius": 110.0,
         "start": {
           "unit": "degrees",
-          "value": 163.08761
+          "value": 163.0876
         },
         "end": {
           "unit": "degrees",
-          "value": 196.91239
+          "value": 196.9124
         },
         "relative": false
       }
@@ -1138,14 +1138,14 @@ description: Artifact commands food-service-spatula.kcl
     "command": {
       "type": "make_plane",
       "origin": {
-        "x": 208.593833,
+        "x": 208.5938,
         "y": 0.0,
-        "z": 75.921946
+        "z": 75.9219
       },
       "x_axis": {
-        "x": 0.342019894888923,
+        "x": 0.342,
         "y": -0.0,
-        "z": -0.9396927112094517
+        "z": -0.9397
       },
       "y_axis": {
         "x": 0.0,
@@ -1167,9 +1167,9 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.9396927112094517,
+        "x": 0.9397,
         "y": -0.0,
-        "z": 0.342019894888923
+        "z": 0.342
       }
     }
   },
@@ -1180,7 +1180,7 @@ description: Artifact commands food-service-spatula.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -26.806746,
+        "x": -26.8067,
         "y": -10.0,
         "z": 0.0
       }
@@ -1395,9 +1395,9 @@ description: Artifact commands food-service-spatula.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.9396927112094517,
+        "x": 0.9397,
         "y": -0.0,
-        "z": 0.342019894888923
+        "z": 0.342
       }
     }
   },

@@ -415,9 +415,9 @@ description: Artifact commands prosthetic-hip.kcl
         "z": 110.0
       },
       "x_axis": {
-        "x": 0.9063077870366499,
+        "x": 0.9063,
         "y": 0.0,
-        "z": 0.42261826174069944
+        "z": 0.4226
       },
       "y_axis": {
         "x": 0.0,
@@ -439,9 +439,9 @@ description: Artifact commands prosthetic-hip.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.42261826174069944,
+        "x": -0.4226,
         "y": 0.0,
-        "z": 0.9063077870366499
+        "z": 0.9063
       }
     }
   },
@@ -600,9 +600,9 @@ description: Artifact commands prosthetic-hip.kcl
         "z": 130.0
       },
       "x_axis": {
-        "x": 0.8038568606172174,
+        "x": 0.8039,
         "y": 0.0,
-        "z": 0.5948227867513414
+        "z": 0.5948
       },
       "y_axis": {
         "x": 0.0,
@@ -624,9 +624,9 @@ description: Artifact commands prosthetic-hip.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.5948227867513414,
+        "x": -0.5948,
         "y": 0.0,
-        "z": 0.8038568606172174
+        "z": 0.8039
       }
     }
   },
@@ -785,9 +785,9 @@ description: Artifact commands prosthetic-hip.kcl
         "z": 140.0
       },
       "x_axis": {
-        "x": 0.8038568606172174,
+        "x": 0.8039,
         "y": 0.0,
-        "z": 0.5948227867513414
+        "z": 0.5948
       },
       "y_axis": {
         "x": 0.0,
@@ -809,9 +809,9 @@ description: Artifact commands prosthetic-hip.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.5948227867513414,
+        "x": -0.5948,
         "y": 0.0,
-        "z": 0.8038568606172174
+        "z": 0.8039
       }
     }
   },
@@ -970,9 +970,9 @@ description: Artifact commands prosthetic-hip.kcl
         "z": 145.0
       },
       "x_axis": {
-        "x": 0.8038568606172174,
+        "x": 0.8039,
         "y": 0.0,
-        "z": 0.5948227867513414
+        "z": 0.5948
       },
       "y_axis": {
         "x": 0.0,
@@ -994,9 +994,9 @@ description: Artifact commands prosthetic-hip.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.5948227867513414,
+        "x": -0.5948,
         "y": 0.0,
-        "z": 0.8038568606172174
+        "z": 0.8039
       }
     }
   },
@@ -1178,9 +1178,9 @@ description: Artifact commands prosthetic-hip.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": -0.5948227867513414,
+        "x": -0.5948,
         "y": 0.0,
-        "z": 0.8038568606172174
+        "z": 0.8039
       }
     }
   },

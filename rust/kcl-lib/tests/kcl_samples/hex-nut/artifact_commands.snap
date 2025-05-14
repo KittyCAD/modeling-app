@@ -264,7 +264,7 @@ description: Artifact commands hex-nut.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.96875,
+        "x": 3.9688,
         "y": 0.0,
         "z": 0.0
       }

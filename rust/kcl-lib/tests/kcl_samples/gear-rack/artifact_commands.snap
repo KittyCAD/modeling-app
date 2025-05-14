@@ -264,7 +264,7 @@ description: Artifact commands gear-rack.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -49.432328,
+        "x": -49.4323,
         "y": 10.875,
         "z": 0.0
       }
@@ -482,7 +482,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 1.570796,
+              "x": 1.5708,
               "y": 0.0,
               "z": 0.0
             },
@@ -511,7 +511,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 3.141592,
+              "x": 3.1416,
               "y": 0.0,
               "z": 0.0
             },
@@ -540,7 +540,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 4.712388000000001,
+              "x": 4.7124,
               "y": 0.0,
               "z": 0.0
             },
@@ -569,7 +569,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 6.283184,
+              "x": 6.2832,
               "y": 0.0,
               "z": 0.0
             },
@@ -598,7 +598,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 7.85398,
+              "x": 7.854,
               "y": 0.0,
               "z": 0.0
             },
@@ -627,7 +627,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 9.424776000000001,
+              "x": 9.4248,
               "y": 0.0,
               "z": 0.0
             },
@@ -656,7 +656,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 10.995572000000001,
+              "x": 10.9956,
               "y": 0.0,
               "z": 0.0
             },
@@ -685,7 +685,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 12.566368,
+              "x": 12.5664,
               "y": 0.0,
               "z": 0.0
             },
@@ -714,7 +714,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 14.137164,
+              "x": 14.1372,
               "y": 0.0,
               "z": 0.0
             },
@@ -743,7 +743,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 15.70796,
+              "x": 15.708,
               "y": 0.0,
               "z": 0.0
             },
@@ -772,7 +772,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 17.278756,
+              "x": 17.2788,
               "y": 0.0,
               "z": 0.0
             },
@@ -801,7 +801,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 18.849552000000003,
+              "x": 18.8496,
               "y": 0.0,
               "z": 0.0
             },
@@ -830,7 +830,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 20.420348,
+              "x": 20.4203,
               "y": 0.0,
               "z": 0.0
             },
@@ -859,7 +859,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 21.991144000000002,
+              "x": 21.9911,
               "y": 0.0,
               "z": 0.0
             },
@@ -888,7 +888,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 23.56194,
+              "x": 23.5619,
               "y": 0.0,
               "z": 0.0
             },
@@ -917,7 +917,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 25.132736,
+              "x": 25.1327,
               "y": 0.0,
               "z": 0.0
             },
@@ -946,7 +946,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 26.703532000000003,
+              "x": 26.7035,
               "y": 0.0,
               "z": 0.0
             },
@@ -975,7 +975,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 28.274328,
+              "x": 28.2743,
               "y": 0.0,
               "z": 0.0
             },
@@ -1004,7 +1004,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 29.845124000000002,
+              "x": 29.8451,
               "y": 0.0,
               "z": 0.0
             },
@@ -1033,7 +1033,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 31.41592,
+              "x": 31.4159,
               "y": 0.0,
               "z": 0.0
             },
@@ -1062,7 +1062,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 32.986716,
+              "x": 32.9867,
               "y": 0.0,
               "z": 0.0
             },
@@ -1091,7 +1091,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 34.557512,
+              "x": 34.5575,
               "y": 0.0,
               "z": 0.0
             },
@@ -1120,7 +1120,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 36.128308000000004,
+              "x": 36.1283,
               "y": 0.0,
               "z": 0.0
             },
@@ -1149,7 +1149,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 37.699104000000005,
+              "x": 37.6991,
               "y": 0.0,
               "z": 0.0
             },
@@ -1207,7 +1207,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 40.840696,
+              "x": 40.8407,
               "y": 0.0,
               "z": 0.0
             },
@@ -1236,7 +1236,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 42.411492,
+              "x": 42.4115,
               "y": 0.0,
               "z": 0.0
             },
@@ -1265,7 +1265,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 43.982288000000004,
+              "x": 43.9823,
               "y": 0.0,
               "z": 0.0
             },
@@ -1294,7 +1294,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 45.553084000000005,
+              "x": 45.5531,
               "y": 0.0,
               "z": 0.0
             },
@@ -1323,7 +1323,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 47.12388,
+              "x": 47.1239,
               "y": 0.0,
               "z": 0.0
             },
@@ -1352,7 +1352,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 48.694676,
+              "x": 48.6947,
               "y": 0.0,
               "z": 0.0
             },
@@ -1381,7 +1381,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 50.265472,
+              "x": 50.2655,
               "y": 0.0,
               "z": 0.0
             },
@@ -1410,7 +1410,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 51.836268000000004,
+              "x": 51.8363,
               "y": 0.0,
               "z": 0.0
             },
@@ -1439,7 +1439,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 53.407064000000005,
+              "x": 53.4071,
               "y": 0.0,
               "z": 0.0
             },
@@ -1468,7 +1468,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 54.97786,
+              "x": 54.9779,
               "y": 0.0,
               "z": 0.0
             },
@@ -1497,7 +1497,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 56.548656,
+              "x": 56.5487,
               "y": 0.0,
               "z": 0.0
             },
@@ -1526,7 +1526,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 58.119452,
+              "x": 58.1195,
               "y": 0.0,
               "z": 0.0
             },
@@ -1555,7 +1555,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 59.690248000000004,
+              "x": 59.6902,
               "y": 0.0,
               "z": 0.0
             },
@@ -1584,7 +1584,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 61.261044000000005,
+              "x": 61.261,
               "y": 0.0,
               "z": 0.0
             },
@@ -1613,7 +1613,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 62.83184,
+              "x": 62.8318,
               "y": 0.0,
               "z": 0.0
             },
@@ -1642,7 +1642,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 64.402636,
+              "x": 64.4026,
               "y": 0.0,
               "z": 0.0
             },
@@ -1671,7 +1671,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 65.973432,
+              "x": 65.9734,
               "y": 0.0,
               "z": 0.0
             },
@@ -1700,7 +1700,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 67.544228,
+              "x": 67.5442,
               "y": 0.0,
               "z": 0.0
             },
@@ -1729,7 +1729,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 69.115024,
+              "x": 69.115,
               "y": 0.0,
               "z": 0.0
             },
@@ -1758,7 +1758,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 70.68582,
+              "x": 70.6858,
               "y": 0.0,
               "z": 0.0
             },
@@ -1787,7 +1787,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 72.25661600000001,
+              "x": 72.2566,
               "y": 0.0,
               "z": 0.0
             },
@@ -1816,7 +1816,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 73.82741200000001,
+              "x": 73.8274,
               "y": 0.0,
               "z": 0.0
             },
@@ -1845,7 +1845,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 75.39820800000001,
+              "x": 75.3982,
               "y": 0.0,
               "z": 0.0
             },
@@ -1874,7 +1874,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 76.969004,
+              "x": 76.969,
               "y": 0.0,
               "z": 0.0
             },
@@ -1932,7 +1932,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 80.110596,
+              "x": 80.1106,
               "y": 0.0,
               "z": 0.0
             },
@@ -1961,7 +1961,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 81.681392,
+              "x": 81.6814,
               "y": 0.0,
               "z": 0.0
             },
@@ -1990,7 +1990,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 83.252188,
+              "x": 83.2522,
               "y": 0.0,
               "z": 0.0
             },
@@ -2019,7 +2019,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 84.822984,
+              "x": 84.823,
               "y": 0.0,
               "z": 0.0
             },
@@ -2048,7 +2048,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 86.39378,
+              "x": 86.3938,
               "y": 0.0,
               "z": 0.0
             },
@@ -2077,7 +2077,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 87.96457600000001,
+              "x": 87.9646,
               "y": 0.0,
               "z": 0.0
             },
@@ -2106,7 +2106,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 89.53537200000001,
+              "x": 89.5354,
               "y": 0.0,
               "z": 0.0
             },
@@ -2135,7 +2135,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 91.10616800000001,
+              "x": 91.1062,
               "y": 0.0,
               "z": 0.0
             },
@@ -2164,7 +2164,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 92.676964,
+              "x": 92.677,
               "y": 0.0,
               "z": 0.0
             },
@@ -2193,7 +2193,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 94.24776,
+              "x": 94.2478,
               "y": 0.0,
               "z": 0.0
             },
@@ -2222,7 +2222,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 95.818556,
+              "x": 95.8186,
               "y": 0.0,
               "z": 0.0
             },
@@ -2251,7 +2251,7 @@ description: Artifact commands gear-rack.kcl
         [
           {
             "translate": {
-              "x": 97.389352,
+              "x": 97.3894,
               "y": 0.0,
               "z": 0.0
             },
@@ -2329,7 +2329,7 @@ description: Artifact commands gear-rack.kcl
       "path": "[uuid]",
       "to": {
         "x": -50.0,
-        "y": 11.849525,
+        "y": 11.8495,
         "z": 0.0
       }
     }
@@ -2516,7 +2516,7 @@ description: Artifact commands gear-rack.kcl
       "path": "[uuid]",
       "to": {
         "x": 50.0,
-        "y": 11.849525,
+        "y": 11.8495,
         "z": 0.0
       }
     }

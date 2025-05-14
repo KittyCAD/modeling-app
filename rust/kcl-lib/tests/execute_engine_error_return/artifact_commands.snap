@@ -78,7 +78,7 @@ description: Artifact commands execute_engine_error_return.kcl
       "path": "[uuid]",
       "to": {
         "x": 5.5229,
-        "y": 5.25217,
+        "y": 5.2522,
         "z": 0.0
       }
     }

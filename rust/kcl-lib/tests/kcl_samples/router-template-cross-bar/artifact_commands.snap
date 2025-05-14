@@ -78,7 +78,7 @@ description: Artifact commands router-template-cross-bar.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 31.88125,
+        "y": 31.8813,
         "z": 0.0
       }
     }
@@ -540,7 +540,7 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 32.63125,
+        "x": 32.6313,
         "y": 0.0,
         "z": 0.0
       }
@@ -711,7 +711,7 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -32.63125,
+        "x": -32.6313,
         "y": 0.0,
         "z": 0.0
       }
@@ -882,7 +882,7 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -32.63125,
+        "x": -32.6313,
         "y": 0.0,
         "z": 0.0
       }

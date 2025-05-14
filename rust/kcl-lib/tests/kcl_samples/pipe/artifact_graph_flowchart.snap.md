@@ -2,18 +2,26 @@
 flowchart LR
   subgraph path3 [Path]
     3["Path<br>[259, 317, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     5["Segment<br>[259, 317, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     8[Solid2d]
   end
   subgraph path4 [Path]
     4["Path<br>[453, 508, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     6["Segment<br>[453, 508, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     7[Solid2d]
   end
   1["Plane<br>[236, 253, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   2["StartSketchOnFace<br>[412, 447, 0]"]
+    %% Missing NodePath
   9["Sweep Extrusion<br>[323, 354, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   10["Sweep Extrusion<br>[514, 546, 0]"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   11[Wall]
   12[Wall]
   13["Cap Start"]

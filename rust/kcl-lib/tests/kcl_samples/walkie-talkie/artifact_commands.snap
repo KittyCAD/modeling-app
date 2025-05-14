@@ -39,7 +39,7 @@ description: Artifact commands walkie-talkie.kcl
         {
           "translate": {
             "property": {
-              "x": -16.509999999999998,
+              "x": -16.51,
               "y": -5.08,
               "z": 50.8
             },
@@ -161,7 +161,7 @@ description: Artifact commands walkie-talkie.kcl
             "property": {
               "x": -22.733,
               "y": -25.4,
-              "z": 18.541999999999998
+              "z": 18.542
             },
             "set": false,
             "is_local": true
@@ -257,7 +257,7 @@ description: Artifact commands walkie-talkie.kcl
             "property": {
               "x": 22.733,
               "y": -25.4,
-              "z": 6.350000000000001
+              "z": 6.35
             },
             "set": false,
             "is_local": false
@@ -584,7 +584,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": -28.575,
-        "y": 41.42246798486635,
+        "y": 41.4225,
         "z": 0.0
       }
     }
@@ -805,7 +805,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -22.224999999999998,
+        "x": -22.225,
         "y": 31.75,
         "z": 0.0
       }
@@ -1176,7 +1176,7 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -22.224999999999998,
+        "x": -22.225,
         "y": 31.75,
         "z": 0.0
       }
@@ -1468,7 +1468,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 9.524999999999999,
+              "x": 9.525,
               "y": 0.0,
               "z": 0.0
             },
@@ -1555,7 +1555,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 19.049999999999997,
+              "x": 19.05,
               "y": 0.0,
               "z": 0.0
             },
@@ -1584,7 +1584,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 22.224999999999998,
+              "x": 22.225,
               "y": 0.0,
               "z": 0.0
             },
@@ -1729,7 +1729,7 @@ description: Artifact commands walkie-talkie.kcl
         [
           {
             "translate": {
-              "x": 38.099999999999994,
+              "x": 38.1,
               "y": 0.0,
               "z": 0.0
             },
@@ -1828,7 +1828,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -1915,7 +1915,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -1944,7 +1944,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -2129,7 +2129,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -2216,7 +2216,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -2245,7 +2245,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -2430,7 +2430,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -2517,7 +2517,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -2546,7 +2546,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -2731,7 +2731,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -2818,7 +2818,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -2847,7 +2847,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -3032,7 +3032,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -3119,7 +3119,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -3148,7 +3148,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -3333,7 +3333,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -3420,7 +3420,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -3449,7 +3449,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -3634,7 +3634,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -3721,7 +3721,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -3750,7 +3750,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -3935,7 +3935,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -4022,7 +4022,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -4051,7 +4051,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -4236,7 +4236,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -4323,7 +4323,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -4352,7 +4352,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -4537,7 +4537,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -4624,7 +4624,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -4653,7 +4653,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -4838,7 +4838,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -4925,7 +4925,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -4954,7 +4954,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -5139,7 +5139,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -5226,7 +5226,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -5255,7 +5255,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -5440,7 +5440,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -9.524999999999999,
+              "y": -9.525,
               "z": 0.0
             },
             "scale": {
@@ -5527,7 +5527,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -19.049999999999997,
+              "y": -19.05,
               "z": 0.0
             },
             "scale": {
@@ -5556,7 +5556,7 @@ description: Artifact commands walkie-talkie.kcl
           {
             "translate": {
               "x": 0.0,
-              "y": -22.224999999999998,
+              "y": -22.225,
               "z": 0.0
             },
             "scale": {
@@ -5719,8 +5719,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -28.320999999999998,
-        "y": 41.33266542365566,
+        "x": -28.321,
+        "y": 41.3327,
         "z": 0.0
       }
     }
@@ -8773,8 +8773,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -7.619999999999999,
-        "y": -45.592999999999996,
+        "x": -7.62,
+        "y": -45.593,
         "z": 0.0
       }
     }
@@ -9095,8 +9095,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.0980400000000006,
-        "y": -41.67632,
+        "x": 2.098,
+        "y": -41.6763,
         "z": 0.0
       }
     }
@@ -9108,8 +9108,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 8.448039999999999,
-        "y": -41.67632,
+        "x": 8.448,
+        "y": -41.6763,
         "z": 0.0
       }
     }
@@ -9331,8 +9331,8 @@ description: Artifact commands walkie-talkie.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.0921999999999998,
-        "y": -45.95368,
+        "x": -1.0922,
+        "y": -45.9537,
         "z": 0.0
       }
     }
@@ -9345,7 +9345,7 @@ description: Artifact commands walkie-talkie.kcl
       "path": "[uuid]",
       "to": {
         "x": 5.2578,
-        "y": -45.95368,
+        "y": -45.9537,
         "z": 0.0
       }
     }

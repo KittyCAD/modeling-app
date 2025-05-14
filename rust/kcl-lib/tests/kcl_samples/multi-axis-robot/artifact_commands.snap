@@ -993,7 +993,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -53.339999999999996,
+        "x": -53.34,
         "y": -101.6,
         "z": 0.0
       }
@@ -1407,7 +1407,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 99.05999999999999,
+        "x": 99.06,
         "y": 0.0,
         "z": 0.0
       }
@@ -1551,8 +1551,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.9848077530122081,
-        "y": 0.17364817766693044,
+        "x": 0.9848,
+        "y": 0.1736,
         "z": 0.0
       },
       "y_axis": {
@@ -1575,8 +1575,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -1588,7 +1588,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 88.89999999999999,
+        "x": 88.9,
         "y": 127.0,
         "z": 0.0
       }
@@ -1711,8 +1711,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -1968,7 +1968,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 49.52999999999999,
+        "x": 49.53,
         "y": 171.45,
         "z": 0.0
       }
@@ -2000,7 +2000,7 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": 44.44999999999999,
+        "x": 44.45,
         "y": 203.2,
         "z": 0.0
       },
@@ -2416,8 +2416,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.9848077530122081,
-        "y": 0.17364817766693044,
+        "x": 0.9848,
+        "y": 0.1736,
         "z": 0.0
       },
       "y_axis": {
@@ -2448,8 +2448,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -2486,7 +2486,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 52.06999999999999,
+        "x": 52.07,
         "y": 203.2,
         "z": 0.0
       }
@@ -2525,8 +2525,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -2586,8 +2586,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.9848077530122081,
-        "y": 0.17364817766693044,
+        "x": 0.9848,
+        "y": 0.1736,
         "z": 0.0
       },
       "y_axis": {
@@ -2610,8 +2610,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -2623,8 +2623,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -3.286385135924148,
-        "y": 185.825376719056,
+        "x": -3.2864,
+        "y": 185.8254,
         "z": 0.0
       }
     }
@@ -2754,8 +2754,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -2856,7 +2856,7 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.8099999999999974,
+        "x": 3.81,
         "y": 203.2,
         "z": 0.0
       }
@@ -3011,8 +3011,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 273.1166608546315,
-        "y": 943.1139696068243,
+        "x": 273.1167,
+        "y": 943.114,
         "z": 0.0
       }
     }
@@ -3198,7 +3198,7 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": -44.449999999999996,
+        "x": -44.45,
         "y": 203.2,
         "z": 0.0
       },
@@ -3707,8 +3707,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 221.24934921415954,
-        "y": 907.3116807548812,
+        "x": 221.2493,
+        "y": 907.3117,
         "z": 0.0
       }
     }
@@ -3739,8 +3739,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": 224.8566608546315,
-        "y": 943.1139696068243,
+        "x": 224.8567,
+        "y": 943.114,
         "z": 0.0
       },
       "num_repetitions": 3,
@@ -4024,8 +4024,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -217.2366608546315,
-        "y": 943.1139696068243,
+        "x": -217.2367,
+        "y": 943.114,
         "z": 0.0
       }
     }
@@ -4128,8 +4128,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.9848077530122081,
-        "y": 0.17364817766693044,
+        "x": 0.9848,
+        "y": 0.1736,
         "z": 0.0
       },
       "y_axis": {
@@ -4152,8 +4152,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -4165,8 +4165,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -216.58666639324395,
-        "y": 990.0154388440308,
+        "x": -216.5867,
+        "y": 990.0154,
         "z": 0.0
       }
     }
@@ -4296,8 +4296,8 @@ description: Artifact commands multi-axis-robot.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.17364817766693044,
-        "y": -0.9848077530122081,
+        "x": 0.1736,
+        "y": -0.9848,
         "z": 0.0
       }
     }
@@ -4398,8 +4398,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -177.86666085463153,
-        "y": 943.1139696068243,
+        "x": -177.8667,
+        "y": 943.114,
         "z": 0.0
       }
     }
@@ -4553,8 +4553,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -211.08934921415957,
-        "y": 907.3116807548812,
+        "x": -211.0893,
+        "y": 907.3117,
         "z": 0.0
       }
     }
@@ -4585,8 +4585,8 @@ description: Artifact commands multi-axis-robot.kcl
         "z": 0.0
       },
       "center": {
-        "x": -224.8566608546315,
-        "y": 943.1139696068243,
+        "x": -224.8567,
+        "y": 943.114,
         "z": 0.0
       },
       "num_repetitions": 7,
@@ -5094,8 +5094,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -227.80067767557009,
-        "y": 854.9006953520237,
+        "x": -227.8007,
+        "y": 854.9007,
         "z": 0.0
       }
     }
@@ -5222,8 +5222,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 322.81373737706264,
-        "y": 854.9006953520237,
+        "x": 322.8137,
+        "y": 854.9007,
         "z": 0.0
       }
     }
@@ -5445,8 +5445,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 275.4256776755701,
-        "y": 854.9006953520237,
+        "x": 275.4257,
+        "y": 854.9007,
         "z": 0.0
       }
     }
@@ -5675,8 +5675,8 @@ description: Artifact commands multi-axis-robot.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 275.4256776755701,
-        "y": 854.9006953520237,
+        "x": 275.4257,
+        "y": 854.9007,
         "z": 0.0
       }
     }

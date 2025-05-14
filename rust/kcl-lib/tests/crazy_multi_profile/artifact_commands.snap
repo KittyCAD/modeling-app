@@ -554,7 +554,7 @@ description: Artifact commands crazy_multi_profile.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 6.8100000000000005,
+        "x": 6.81,
         "y": 4.34,
         "z": 0.0
       }

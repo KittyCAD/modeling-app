@@ -325,7 +325,7 @@ description: Artifact commands poop_chute.kcl
       "target": "[uuid]",
       "origin": {
         "x": 0.0,
-        "y": 5.5000001,
+        "y": 5.5,
         "z": 0.0
       },
       "axis": {

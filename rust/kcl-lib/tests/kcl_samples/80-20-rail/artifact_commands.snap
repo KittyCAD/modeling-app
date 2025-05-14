@@ -78,7 +78,7 @@ description: Artifact commands 80-20-rail.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 3.8100000000000005,
+        "y": 3.81,
         "z": 0.0
       }
     }
@@ -1427,8 +1427,8 @@ description: Artifact commands 80-20-rail.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 22.95525,
-        "y": 19.049999999999997,
+        "x": 22.9553,
+        "y": 19.05,
         "z": 0.0
       }
     }

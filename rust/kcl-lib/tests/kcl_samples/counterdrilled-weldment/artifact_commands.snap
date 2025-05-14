@@ -622,8 +622,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -57.943749999999994,
-        "y": -38.099999999999994,
+        "x": -57.9438,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -635,8 +635,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -57.943749999999994,
-        "y": 38.099999999999994,
+        "x": -57.9438,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -648,8 +648,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 69.05624999999999,
-        "y": -38.099999999999994,
+        "x": 69.0562,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -661,8 +661,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 69.05624999999999,
-        "y": 38.099999999999994,
+        "x": 69.0562,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -1134,8 +1134,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -60.324999999999996,
-        "y": -38.099999999999994,
+        "x": -60.325,
+        "y": -38.1,
         "z": 0.0
       }
     }
@@ -1147,21 +1147,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -60.324999999999996,
-        "y": 38.099999999999994,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": 66.675,
-        "y": -38.099999999999994,
+        "x": -60.325,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -1174,7 +1161,20 @@ description: Artifact commands counterdrilled-weldment.kcl
       "path": "[uuid]",
       "to": {
         "x": 66.675,
-        "y": 38.099999999999994,
+        "y": -38.1,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 66.675,
+        "y": 38.1,
         "z": 0.0
       }
     }
@@ -2000,8 +2000,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.8574929257125441,
-        "y": 0.5144957554275265,
+        "x": 0.8575,
+        "y": 0.5145,
         "z": 0.0
       },
       "y_axis": {
@@ -2025,8 +2025,8 @@ description: Artifact commands counterdrilled-weldment.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": -0.8574929257125441,
-        "y": 0.5144957554275265,
+        "x": -0.8575,
+        "y": 0.5145,
         "z": 0.0
       },
       "y_axis": {
@@ -2049,8 +2049,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.5144957554275265,
-        "y": -0.8574929257125441,
+        "x": 0.5145,
+        "y": -0.8575,
         "z": 0.0
       }
     }
@@ -2065,8 +2065,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.5144957554275265,
-        "y": 0.8574929257125441,
+        "x": 0.5145,
+        "y": 0.8575,
         "z": -0.0
       }
     }
@@ -2339,8 +2339,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.5144957554275265,
-        "y": -0.8574929257125441,
+        "x": 0.5145,
+        "y": -0.8575,
         "z": 0.0
       }
     }
@@ -2355,8 +2355,8 @@ description: Artifact commands counterdrilled-weldment.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.5144957554275265,
-        "y": 0.8574929257125441,
+        "x": 0.5145,
+        "y": 0.8575,
         "z": -0.0
       }
     }

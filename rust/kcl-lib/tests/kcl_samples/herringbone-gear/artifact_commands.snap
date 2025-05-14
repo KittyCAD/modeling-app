@@ -146,8 +146,8 @@ description: Artifact commands herringbone-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 0.0000000000000007426684721314096,
-        "y": 12.128696578449956,
+        "x": 0.0,
+        "y": 12.1287,
         "z": 0.0
       }
     }
@@ -159,8 +159,8 @@ description: Artifact commands herringbone-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.015462170559555,
-        "y": 11.747862298734521,
+        "x": 3.0155,
+        "y": 11.7479,
         "z": 0.0
       }
     }
@@ -241,7 +241,7 @@ description: Artifact commands herringbone-gear.kcl
         "end_radius": 13.5,
         "angle": {
           "unit": "degrees",
-          "value": 75.60400909518157
+          "value": 75.604
         },
         "reverse": false
       }
@@ -293,7 +293,7 @@ description: Artifact commands herringbone-gear.kcl
         "end_radius": 13.5,
         "angle": {
           "unit": "degrees",
-          "value": 622.1735910904937
+          "value": 622.1736
         },
         "reverse": true
       }
@@ -311,7 +311,7 @@ description: Artifact commands herringbone-gear.kcl
         "end_radius": 13.5,
         "angle": {
           "unit": "degrees",
-          "value": -83.43041800468791
+          "value": -83.4304
         },
         "reverse": true
       }

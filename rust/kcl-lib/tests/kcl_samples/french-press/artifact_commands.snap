@@ -235,8 +235,8 @@ description: Artifact commands french-press.kcl
         "z": 0.0
       },
       "x_axis": {
-        "x": 0.7071067811865475,
-        "y": 0.7071067811865475,
+        "x": 0.7071,
+        "y": 0.7071,
         "z": 0.0
       },
       "y_axis": {
@@ -259,8 +259,8 @@ description: Artifact commands french-press.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.7071067811865475,
-        "y": -0.7071067811865475,
+        "x": 0.7071,
+        "y": -0.7071,
         "z": 0.0
       }
     }
@@ -639,8 +639,8 @@ description: Artifact commands french-press.kcl
       "animated": false,
       "adjust_camera": false,
       "planar_normal": {
-        "x": 0.7071067811865475,
-        "y": -0.7071067811865475,
+        "x": 0.7071,
+        "y": -0.7071,
         "z": 0.0
       }
     }
@@ -913,8 +913,8 @@ description: Artifact commands french-press.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 7.619999999999999,
-        "y": 4.3180000000000005,
+        "x": 7.62,
+        "y": 4.318,
         "z": 0.0
       }
     }
@@ -1237,8 +1237,8 @@ description: Artifact commands french-press.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.8099999999999996,
-        "y": 28.194000000000003,
+        "x": 3.81,
+        "y": 28.194,
         "z": 0.0
       }
     }
@@ -1861,7 +1861,7 @@ description: Artifact commands french-press.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.8099999999999996,
+        "x": 3.81,
         "y": 0.0,
         "z": 0.0
       }
@@ -3245,7 +3245,7 @@ description: Artifact commands french-press.kcl
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": -8.254999999999999,
+        "y": -8.255,
         "z": 0.0
       },
       "x_axis": {
@@ -3300,7 +3300,7 @@ description: Artifact commands french-press.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 58.419999999999995,
+        "x": 58.42,
         "y": 162.56,
         "z": 0.0
       }

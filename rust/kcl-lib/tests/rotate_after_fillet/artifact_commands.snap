@@ -254,7 +254,7 @@ description: Artifact commands rotate_after_fillet.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.25,
-        "y": 0.14433756729740643,
+        "y": 0.1443,
         "z": 0.0
       }
     }

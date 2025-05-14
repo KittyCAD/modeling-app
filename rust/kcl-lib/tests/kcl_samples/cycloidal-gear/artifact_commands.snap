@@ -62,7 +62,7 @@ description: Artifact commands cycloidal-gear.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 19.049999999999997
+        "z": 19.05
       },
       "x_axis": {
         "x": 1.0,
@@ -87,7 +87,7 @@ description: Artifact commands cycloidal-gear.kcl
       "origin": {
         "x": 0.0,
         "y": 0.0,
-        "z": 38.099999999999994
+        "z": 38.1
       },
       "x_axis": {
         "x": 1.0,
@@ -201,8 +201,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 11.810999999999998,
-        "y": 7.619999999999999,
+        "x": 11.811,
+        "y": 7.62,
         "z": 0.0
       }
     }
@@ -214,8 +214,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 13.94579250348968,
-        "y": -1.7547058014411026,
+        "x": 13.9458,
+        "y": -1.7547,
         "z": 0.0
       }
     }
@@ -227,8 +227,8 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 9.555193704377139,
-        "y": -10.308365257005178,
+        "x": 9.5552,
+        "y": -10.3084,
         "z": 0.0
       }
     }
@@ -852,7 +852,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.7718999999999996,
+        "x": 3.7719,
         "y": 0.0,
         "z": 0.0
       }
@@ -865,7 +865,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.7718999999999996,
+        "x": 3.7719,
         "y": 0.0,
         "z": 0.0
       }
@@ -878,7 +878,7 @@ description: Artifact commands cycloidal-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 3.7718999999999996,
+        "x": 3.7719,
         "y": 0.0,
         "z": 0.0
       }

@@ -78,7 +78,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.0,
-        "y": 28.118750000000002,
+        "y": 28.1188,
         "z": 0.0
       }
     }
@@ -405,7 +405,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": -20.75,
-        "y": -12.49375,
+        "y": -12.4938,
         "z": 0.0
       }
     }
@@ -576,7 +576,7 @@ description: Artifact commands router-template-slate.kcl
       "path": "[uuid]",
       "to": {
         "x": 20.75,
-        "y": -12.49375,
+        "y": -12.4938,
         "z": 0.0
       }
     }

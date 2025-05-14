@@ -302,7 +302,7 @@ description: Artifact commands ssi_pattern.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -0.6800000000000002,
+        "x": -0.68,
         "y": 47.7,
         "z": 0.0
       }

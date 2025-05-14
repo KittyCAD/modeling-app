@@ -77,7 +77,7 @@ description: Artifact commands spur-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 2.29128784747792,
+        "x": 2.2913,
         "y": 1.0,
         "z": 0.0
       }
@@ -163,7 +163,7 @@ description: Artifact commands spur-gear.kcl
         "radius": 2.5,
         "start": {
           "unit": "degrees",
-          "value": 336.42182152179817
+          "value": 336.4218
         },
         "end": {
           "unit": "degrees",
@@ -192,7 +192,7 @@ description: Artifact commands spur-gear.kcl
         },
         "end": {
           "unit": "degrees",
-          "value": 23.578178478201835
+          "value": 23.5782
         },
         "relative": false
       }
@@ -254,7 +254,7 @@ description: Artifact commands spur-gear.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": 15.282157688846944,
+        "x": 15.2822,
         "y": 0.0,
         "z": 0.0
       }
@@ -321,7 +321,7 @@ description: Artifact commands spur-gear.kcl
         "end_radius": 17.25,
         "angle": {
           "unit": "degrees",
-          "value": -10.934457859443263
+          "value": -10.9345
         },
         "reverse": true
       }

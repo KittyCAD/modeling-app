@@ -165,7 +165,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5707963267948966,
+            "value": 1.5708,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -177,7 +177,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {
@@ -205,7 +205,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.4640403411278755,
+            "value": 1.464,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -217,7 +217,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {
@@ -245,7 +245,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.3560427808151838,
+            "value": 1.356,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -257,7 +257,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {
@@ -285,7 +285,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.7037737936135122,
+            "value": 1.7038,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -325,7 +325,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.5970178079464912,
+            "value": 1.597,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -365,7 +365,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.4890202476337995,
+            "value": 1.489,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -405,7 +405,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.8699956271367815,
+            "value": 1.87,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -417,7 +417,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {
@@ -445,7 +445,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.7632396414697604,
+            "value": 1.7632,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -457,7 +457,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {
@@ -485,7 +485,7 @@ description: Operations executed import_async.kcl
         "angle": {
           "value": {
             "type": "Number",
-            "value": 1.655242081157069,
+            "value": 1.6552,
             "ty": {
               "type": "Known",
               "type": "Angle",
@@ -497,7 +497,7 @@ description: Operations executed import_async.kcl
         "length": {
           "value": {
             "type": "Number",
-            "value": 19.733545036504076,
+            "value": 19.7335,
             "ty": {
               "type": "Default",
               "len": {

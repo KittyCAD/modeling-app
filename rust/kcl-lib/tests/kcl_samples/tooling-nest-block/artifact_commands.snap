@@ -1271,7 +1271,7 @@ description: Artifact commands tooling-nest-block.kcl
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -5.950000000000003,
+        "x": -5.95,
         "y": 25.0,
         "z": 0.0
       }
