@@ -195,7 +195,7 @@ async fn inner_sweep(
         Some(_) => {
             return Err(KclError::Syntax(crate::errors::KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: format!("If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'"),
+                message: "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
             }))
         }
         None => RelativeTo::default(),
