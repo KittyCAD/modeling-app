@@ -4,8 +4,7 @@ description: Error from executing argument_error.kcl
 ---
 KCL Semantic error
 
-  × semantic: f requires a value with type `fn(any): any`, but found array
-  │ (list)
+  × semantic: f requires a value with type `fn(any): any`, but found [any; 2]
    ╭─[5:1]
  4 │ 
  5 │ map(f, f = [0, 1])
@@ -16,7 +15,7 @@ KCL Semantic error
   ╰─▶ KCL Semantic error
       
         × semantic: f requires a value with type `fn(any): any`, but found
-        │ array (list)
+        │ [any; 2]
          ╭─[5:12]
        4 │
        5 │ map(f, f = [0, 1])
