@@ -72,7 +72,6 @@ export const EngineStream = (props: {
   const { overallState } = useNetworkContext()
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
-  const settingsEngine = {
   /**
    * We omit `pool` here because `engineStreamMachine` will override it anyway
    * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
