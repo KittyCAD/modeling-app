@@ -352,8 +352,8 @@ impl KclValue {
     pub(crate) fn from_default_param(param: DefaultParamVal, exec_state: &mut ExecState) -> Self {
         match param {
             DefaultParamVal::Literal(lit) => Self::from_literal(lit, exec_state),
-            DefaultParamVal::KclNone(none) => KclValue::KclNone {
-                value: none,
+            DefaultParamVal::KclNone(value) => KclValue::KclNone {
+                value,
                 meta: Default::default(),
             },
         }

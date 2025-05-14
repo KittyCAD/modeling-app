@@ -17,11 +17,12 @@ use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
 use super::args::TyF64;
-#[cfg(feature = "artifact-graph")]
-use crate::execution::ArtifactId;
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{types::RuntimeType, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface, Solid},
+    execution::{
+        types::RuntimeType, ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSurface,
+        Solid,
+    },
     parsing::ast::types::TagNode,
     std::Args,
 };
@@ -210,7 +211,6 @@ async fn inner_extrude(
         solids.push(
             do_post_extrude(
                 sketch,
-                #[cfg(feature = "artifact-graph")]
                 id.into(),
                 length.clone(),
                 false,
@@ -236,7 +236,7 @@ pub(crate) struct NamedCapTags<'a> {
 
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
-    #[cfg(feature = "artifact-graph")] solid_id: ArtifactId,
+    solid_id: ArtifactId,
     length: TyF64,
     sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
@@ -426,7 +426,6 @@ pub(crate) async fn do_post_extrude<'a>(
         // that we passed in to the function, but it's actually the id of the
         // sketch.
         id: sketch.id,
-        #[cfg(feature = "artifact-graph")]
         artifact_id: solid_id,
         value: new_value,
         meta: sketch.meta.clone(),

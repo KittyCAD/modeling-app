@@ -133,7 +133,7 @@ export fn reduce(
   initial: any,
   /// Run once per item in the input `array`. This function takes an item from the array, and the previous output from `f` (or `initial` on the very first run). The final time `f` is run, its output is returned as the final output from `reduce`.
   f: fn(any, accum: any): any,
-): [any] {}
+): any {}
 
 /// Append an element to the end of an array.
 ///

@@ -3374,6 +3374,13 @@ impl DefaultParamVal {
     pub(crate) fn none() -> Self {
         Self::KclNone(KclNone::default())
     }
+
+    pub(crate) fn source_range(&self) -> SourceRange {
+        match self {
+            DefaultParamVal::Literal(l) => l.as_source_range(),
+            DefaultParamVal::KclNone(_) => SourceRange::default(),
+        }
+    }
 }
 
 /// Parameter of a KCL function.

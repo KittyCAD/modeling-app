@@ -9,11 +9,12 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, Operation};
+use crate::execution::{Artifact, ArtifactCommand, ArtifactGraph, ArtifactId};
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
         annotations,
+        cad_op::Operation,
         id_generator::IdGenerator,
         memory::{ProgramMemory, Stack},
         types,

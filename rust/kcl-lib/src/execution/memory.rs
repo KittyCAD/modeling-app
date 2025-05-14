@@ -820,7 +820,7 @@ impl PartialEq for Stack {
 pub struct EnvironmentRef(usize, usize);
 
 impl EnvironmentRef {
-    fn dummy() -> Self {
+    pub fn dummy() -> Self {
         Self(usize::MAX, 0)
     }
 
