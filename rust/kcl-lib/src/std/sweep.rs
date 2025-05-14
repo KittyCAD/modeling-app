@@ -191,14 +191,13 @@ async fn inner_sweep(
     };
     let relative_to = match relative_to.as_deref() {
         Some("sketchPlane") => RelativeTo::SketchPlane,
-        Some("trajectoryCurve") => RelativeTo::TrajectoryCurve,
+        Some("trajectoryCurve") | None => RelativeTo::TrajectoryCurve,
         Some(_) => {
             return Err(KclError::Syntax(crate::errors::KclErrorDetails {
                 source_ranges: vec![args.source_range],
                 message: "If you provide relativeTo, it must either be 'sketchPlane' or 'trajectoryCurve'".to_owned(),
             }))
         }
-        None => RelativeTo::default(),
     };
 
     let mut solids = Vec::new();
