@@ -913,11 +913,9 @@ impl Node<MemberExpression> {
             }),
             (being_indexed, _, _) => {
                 let t = being_indexed.human_friendly_type();
-                let article = article_for(t);
+                let article = article_for(&t);
                 Err(KclError::Semantic(KclErrorDetails {
-                    message: format!(
-                        "Only arrays and objects can be indexed, but you're trying to index {article} {t}"
-                    ),
+                    message: format!("Only arrays can be indexed, but you're trying to index {article} {t}"),
                     source_ranges: vec![self.clone().into()],
                 }))
             }
@@ -1698,8 +1696,9 @@ impl Node<ObjectExpression> {
     }
 }
 
-fn article_for(s: &str) -> &'static str {
-    if s.starts_with(['a', 'e', 'i', 'o', 'u']) {
+fn article_for<S: AsRef<str>>(s: S) -> &'static str {
+    // '[' is included since it's an array.
+    if s.as_ref().starts_with(['a', 'e', 'i', 'o', 'u', '[']) {
         "an"
     } else {
         "a"
@@ -1709,10 +1708,9 @@ fn article_for(s: &str) -> &'static str {
 fn number_as_f64(v: &KclValue, source_range: SourceRange) -> Result<TyF64, KclError> {
     v.as_ty_f64().ok_or_else(|| {
         let actual_type = v.human_friendly_type();
-        let article = article_for(actual_type);
         KclError::Semantic(KclErrorDetails {
             source_ranges: vec![source_range],
-            message: format!("Expected a number, but found {article} {actual_type}",),
+            message: format!("Expected a number, but found {actual_type}",),
         })
     })
 }
@@ -2446,19 +2444,23 @@ arr1 = [42]: [number(cm)]
 a = 42: string
 "#;
         let result = parse_execute(program).await;
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("could not coerce number value to type string"));
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce number(default units) value to type string"),
+            "Expected error but found {err:?}"
+        );
 
         let program = r#"
 a = 42: Plane
 "#;
         let result = parse_execute(program).await;
-        assert!(result
-            .unwrap_err()
-            .to_string()
-            .contains("could not coerce number value to type Plane"));
+        let err = result.unwrap_err();
+        assert!(
+            err.to_string()
+                .contains("could not coerce number(default units) value to type Plane"),
+            "Expected error but found {err:?}"
+        );
 
         let program = r#"
 arr = [0]: [string]
@@ -2467,7 +2469,7 @@ arr = [0]: [string]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce array (list) value to type [string]"),
+                .contains("could not coerce [any; 1] value to type [string]"),
             "Expected error but found {err:?}"
         );
 
@@ -2478,7 +2480,7 @@ mixedArr = [0, "a"]: [number(mm)]
         let err = result.unwrap_err();
         assert!(
             err.to_string()
-                .contains("could not coerce array (list) value to type [number(mm)]"),
+                .contains("could not coerce [any; 2] value to type [number(mm)]"),
             "Expected error but found {err:?}"
         );
     }

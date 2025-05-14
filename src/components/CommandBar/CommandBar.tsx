@@ -169,6 +169,7 @@ export const CommandBar = () => {
             )}
             <div className="flex flex-col gap-2 !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent">
               <button
+                data-testid="command-bar-close-button"
                 onClick={() => commandBarActor.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
               >

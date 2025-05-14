@@ -1,5 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -70,13 +70,20 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = useToken()
 
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
-      window.electron.createHomePageMenu().catch(reportRejection)
+      window.electron
+        .createHomePageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
     }
     billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
@@ -94,7 +101,6 @@ const Home = () => {
   })
 
   const location = useLocation()
-  const navigate = useNavigate()
   const settings = useSettings()
   const onboardingStatus = settings.app.onboardingStatus.current
 
@@ -217,7 +223,10 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
-      <AppHeader showToolbar={false} />
+      <AppHeader
+        nativeFileMenuCreated={nativeFileMenuCreated}
+        showToolbar={false}
+      />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}

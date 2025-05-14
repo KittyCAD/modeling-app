@@ -234,10 +234,16 @@ jobs:
             shardTotal: 8
           - os: namespace-profile-macos-8-cores
             shardIndex: 1
-            shardTotal: 1
+            shardTotal: 2
+          - os: namespace-profile-macos-8-cores
+            shardIndex: 2
+            shardTotal: 2
           - os: windows-latest-8-cores
             shardIndex: 1
-            shardTotal: 1
+            shardTotal: 2
+          - os: windows-latest-8-cores
+            shardIndex: 2
+            shardTotal: 2
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

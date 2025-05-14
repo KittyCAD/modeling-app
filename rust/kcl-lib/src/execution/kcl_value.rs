@@ -280,7 +280,10 @@ impl KclValue {
 
     /// Human readable type name used in error messages.  Should not be relied
     /// on for program logic.
-    pub(crate) fn human_friendly_type(&self) -> &'static str {
+    pub(crate) fn human_friendly_type(&self) -> String {
+        if let Some(t) = self.principal_type() {
+            return t.to_string();
+        }
         match self {
             KclValue::Uuid { .. } => "Unique ID (uuid)",
             KclValue::TagDeclarator(_) => "TagDeclarator",
@@ -314,6 +317,7 @@ impl KclValue {
             KclValue::Type { .. } => "type",
             KclValue::KclNone { .. } => "None",
         }
+        .to_owned()
     }
 
     pub(crate) fn from_literal(literal: Node<Literal>, exec_state: &mut ExecState) -> Self {

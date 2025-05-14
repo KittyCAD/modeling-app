@@ -4,7 +4,7 @@ description: Error from executing comparisons_multiple.kcl
 ---
 KCL Semantic error
 
-  × semantic: Expected a number, but found a boolean (true/false value)
+  × semantic: Expected a number, but found bool
    ╭────
  1 │ assert(3 == 3 == 3, error = "this should not compile")
    ·        ───┬──

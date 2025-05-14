@@ -257,14 +257,22 @@ impl Args {
         };
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(t, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **t == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,
@@ -381,14 +389,22 @@ impl Args {
             }))?;
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(ty, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **ty == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,

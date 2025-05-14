@@ -5,7 +5,7 @@ description: Error from executing error_inside_fn_also_has_source_range_of_call_
 KCL Semantic error
 
   × semantic: This function expected the input argument to be Solid or Plane
-  │ but it's actually of type string (text)
+  │ but it's actually of type string
    ╭─[3:23]
  2 │     fn someNestedFunction(@something2) {
  3 │         startSketchOn(something2)
@@ -25,7 +25,7 @@ KCL Semantic error
   ├─▶ KCL Semantic error
   │   
   │     × semantic: This function expected the input argument to be Solid or
-  │     │ Plane but it's actually of type string (text)
+  │     │ Plane but it's actually of type string
   │      ╭─[3:23]
   │    2 │     fn someNestedFunction(@something2) {
   │    3 │         startSketchOn(something2)
@@ -37,7 +37,7 @@ KCL Semantic error
   ╰─▶ KCL Semantic error
       
         × semantic: This function expected the input argument to be Solid or
-        │ Plane but it's actually of type string (text)
+        │ Plane but it's actually of type string
          ╭─[6:5]
        5 │
        6 │     someNestedFunction(something)
