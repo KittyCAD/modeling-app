@@ -608,6 +608,7 @@ pub trait GeometryTrait: Clone {
         source_ranges: Vec<SourceRange>,
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError>;
+    #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
 }
 
