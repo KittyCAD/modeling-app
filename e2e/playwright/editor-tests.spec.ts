@@ -1589,4 +1589,38 @@ sketch001 = startSketchOn(XZ)
       await expect(page.getByTestId('center-rectangle')).toBeVisible()
     })
   })
+
+  test('Autocomplete for offsetPlane inserts a default plane value', async ({
+    page,
+    scene,
+    homePage,
+  }) => {
+    const u = await getUtils(page)
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await u.closeDebugPanel()
+
+    // Focus the editor.
+    await u.codeLocator.click()
+
+    await page.keyboard.type('plane001 = offsetP')
+
+    // Wait for the completion list to appear and make sure our function is present.
+    //await expect(page.locator('.cm-completionLabel')).toContainText('offsetPlane')
+
+    await page.waitForTimeout(500)
+
+    // Accept the completion by hitting Enter.
+    await page.keyboard.press('Enter')
+
+    await expect
+      .poll(async () => {
+        const text = await u.codeLocator.textContent()
+        return text?.replace(/\s+/g, ' ')
+      })
+      .toContain('offsetPlane(XZ, offset = 3.14)')
+  })
 })
