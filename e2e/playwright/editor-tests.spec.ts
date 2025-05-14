@@ -1603,17 +1603,12 @@ sketch001 = startSketchOn(XZ)
     await scene.connectionEstablished()
     await u.closeDebugPanel()
 
-    // Focus the editor.
     await u.codeLocator.click()
-
     await page.keyboard.type('plane001 = offsetP')
-
-    // Wait for the completion list to appear and make sure our function is present.
-    //await expect(page.locator('.cm-completionLabel')).toContainText('offsetPlane')
 
     await page.waitForTimeout(500)
 
-    // Accept the completion by hitting Enter.
+    // Accept the completion
     await page.keyboard.press('Enter')
 
     await expect
