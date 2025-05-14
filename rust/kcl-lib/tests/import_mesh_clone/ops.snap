@@ -23,8 +23,7 @@ description: Operations executed import_mesh_clone.kcl
       "sourceRange": []
     },
     "labeledArgs": {},
-    "sourceRange": [],
-    "isError": true
+    "sourceRange": []
   },
   {
     "type": "GroupEnd"
