@@ -1,0 +1,61 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_on_face_union.kcl
+---
+@settings(defaultLengthUnit = in)
+
+// Define parameters
+trussSupportAngle = 15
+height = 120
+thickness = 4
+
+sketch001 = startSketchOn(YZ)
+profile001 = startProfile(sketch001, at = [60, 0])
+  |> xLine(length = -120, tag = $bottomFace)
+  |> yLine(length = 12)
+  |> angledLine(angle = 25, endAbsoluteX = 0, tag = $tag001)
+  |> angledLine(angle = -25, endAbsoluteX = 60)
+  |> close()
+
+profile002 = startProfile(sketch001, at = [60 - thickness, thickness])
+  |> xLine(endAbsolute = thickness / 2)
+  |> yLine(endAbsolute = segEndY(tag001) - thickness) // update
+  |> angledLine(endAbsoluteX = profileStartX(%), angle = -25)
+  |> close(%)
+
+profile003 = startProfile(sketch001, at = [-60 + thickness, thickness])
+  |> xLine(endAbsolute = -thickness / 2)
+  |> yLine(endAbsolute = segEndY(tag001) - thickness) // update
+  |> angledLine(endAbsoluteX = profileStartX(%), angle = 205)
+  |> close(%)
+
+profile004 = subtract2d(profile001, tool = profile002)
+subtract2d(profile001, tool = profile003)
+
+body001 = extrude(profile001, length = 2)
+
+sketch002 = startSketchOn(offsetPlane(YZ, offset = .1))
+profile006 = startProfile(sketch002, at = [thickness / 2 - 1, 14])
+  |> angledLine(angle = 30, length = 25)
+  |> angledLine(angle = -25, length = 5)
+  |> angledLine(angle = 210, endAbsoluteX = profileStartX(%))
+  |> close(%)
+  |> extrude(%, length = 1.8)
+
+profile007 = startProfile(sketch002, at = [-thickness / 2 + 1, 14])
+  |> angledLine(angle = 150, length = 25)
+  |> angledLine(angle = 205, length = 5)
+  |> angledLine(angle = -30, endAbsoluteX = profileStartX(%))
+  |> close(%)
+  |> extrude(%, length = 1.8)
+
+newSketch = body001 + profile006 + profile007
+
+leg001Sketch = startSketchOn(newSketch, face = bottomFace)
+legProfile001 = startProfile(leg001Sketch, at = [-60, 0])
+  |> xLine(%, length = 4)
+  |> yLine(%, length = 2)
+  |> xLine(%, endAbsolute = profileStartX(%))
+  |> close(%)
+
+leg001 = extrude(legProfile001, length = 48)

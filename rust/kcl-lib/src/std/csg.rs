@@ -124,6 +124,7 @@ pub(crate) async fn inner_union(
 
     let mut solid = solids[0].clone();
     solid.id = solid_out_id;
+    solid.sketch.id = solid_out_id;
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -156,6 +157,7 @@ pub(crate) async fn inner_union(
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
         solid.id = extra_solid_ids[0];
+        solid.sketch.id = extra_solid_ids[0];
         new_solids.push(solid.clone());
     }
 
@@ -250,6 +252,7 @@ pub(crate) async fn inner_intersect(
 
     let mut solid = solids[0].clone();
     solid.id = solid_out_id;
+    solid.sketch.id = solid_out_id;
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -282,6 +285,7 @@ pub(crate) async fn inner_intersect(
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
         solid.id = extra_solid_ids[0];
+        solid.sketch.id = extra_solid_ids[0];
         new_solids.push(solid.clone());
     }
 
@@ -386,6 +390,7 @@ pub(crate) async fn inner_subtract(
 
     let mut solid = solids[0].clone();
     solid.id = solid_out_id;
+    solid.sketch.id = solid_out_id;
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
@@ -420,6 +425,7 @@ pub(crate) async fn inner_subtract(
     // If we have more solids, set those as well.
     if !extra_solid_ids.is_empty() {
         solid.id = extra_solid_ids[0];
+        solid.sketch.id = extra_solid_ids[0];
         new_solids.push(solid.clone());
     }
 
