@@ -62,6 +62,7 @@ pub struct KwArgs {
     pub unlabeled: Option<Arg>,
     /// Labeled args.
     pub labeled: IndexMap<String, Arg>,
+    pub errors: Vec<Arg>,
 }
 
 impl KwArgs {
@@ -160,7 +161,7 @@ pub struct Args {
     pub ctx: ExecutorContext,
     /// If this call happens inside a pipe (|>) expression, this holds the LHS of that |>.
     /// Otherwise it's None.
-    pipe_value: Option<Arg>,
+    pub pipe_value: Option<Arg>,
 }
 
 impl Args {
@@ -256,14 +257,22 @@ impl Args {
         };
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(t, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **t == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,
@@ -380,14 +389,22 @@ impl Args {
             }))?;
 
         let arg = arg.value.coerce(ty, exec_state).map_err(|_| {
-            let actual_type_name = arg.value.human_friendly_type();
+            let actual_type = arg.value.principal_type();
+            let actual_type_name = actual_type
+                .as_ref()
+                .map(|t| t.to_string())
+                .unwrap_or_else(|| arg.value.human_friendly_type().to_owned());
             let msg_base = format!(
                 "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
                 ty.human_friendly_type(),
             );
-            let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER),
-                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => {
+            let suggestion = match (ty, actual_type) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), Some(RuntimeType::Primitive(PrimitiveType::Sketch))) => {
+                    Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
+                }
+                (RuntimeType::Array(ty, _), Some(RuntimeType::Primitive(PrimitiveType::Sketch)))
+                    if **ty == RuntimeType::Primitive(PrimitiveType::Solid) =>
+                {
                     Some(ERROR_STRING_SKETCH_TO_SOLID_HELPER)
                 }
                 _ => None,
@@ -406,8 +423,12 @@ impl Args {
             })
         })?;
 
-        // TODO unnecessary cloning
-        Ok(T::from_kcl_val(&arg).unwrap())
+        T::from_kcl_val(&arg).ok_or_else(|| {
+            KclError::Internal(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: "Mismatch between type coercion and value extraction (this isn't your fault).\nTo assist in bug-reporting, expected type: {ty:?}; actual value: {arg:?}".to_owned(),
+           })
+        })
     }
 
     // Add a modeling command to the batch but don't fire it right away.
@@ -552,24 +573,23 @@ impl Args {
         Ok(())
     }
 
-    pub(crate) fn make_user_val_from_point(&self, p: [TyF64; 2]) -> Result<KclValue, KclError> {
+    pub(crate) fn make_kcl_val_from_point(&self, p: [f64; 2], ty: NumericType) -> Result<KclValue, KclError> {
         let meta = Metadata {
             source_range: self.source_range,
         };
         let x = KclValue::Number {
-            value: p[0].n,
+            value: p[0],
             meta: vec![meta],
-            ty: p[0].ty.clone(),
+            ty: ty.clone(),
         };
         let y = KclValue::Number {
-            value: p[1].n,
+            value: p[1],
             meta: vec![meta],
-            ty: p[1].ty.clone(),
+            ty: ty.clone(),
         };
-        Ok(KclValue::MixedArray {
-            value: vec![x, y],
-            meta: vec![meta],
-        })
+        let ty = RuntimeType::Primitive(PrimitiveType::Number(ty));
+
+        Ok(KclValue::HomArray { value: vec![x, y], ty })
     }
 
     pub(super) fn make_user_val_from_f64_with_type(&self, f: TyF64) -> KclValue {
@@ -791,7 +811,7 @@ impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
-            KclValue::MixedArray { value, .. } => {
+            KclValue::Tuple { value, .. } => {
                 let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
                 Some(tags)
             }
@@ -1131,8 +1151,11 @@ impl_from_kcl_for_vec!(TyF64);
 
 impl<'a> FromKclValue<'a> for SourceRange {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let KclValue::MixedArray { value, meta: _ } = arg else {
-            return None;
+        let value = match arg {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
+            _ => {
+                return None;
+            }
         };
         if value.len() != 3 {
             return None;
@@ -1329,7 +1352,7 @@ impl<'a> FromKclValue<'a> for TyF64 {
 impl<'a> FromKclValue<'a> for [TyF64; 2] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 2 {
                     return None;
                 }
@@ -1346,7 +1369,7 @@ impl<'a> FromKclValue<'a> for [TyF64; 2] {
 impl<'a> FromKclValue<'a> for [TyF64; 3] {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
-            KclValue::MixedArray { value, meta: _ } | KclValue::HomArray { value, .. } => {
+            KclValue::Tuple { value, meta: _ } | KclValue::HomArray { value, .. } => {
                 if value.len() != 3 {
                     return None;
                 }

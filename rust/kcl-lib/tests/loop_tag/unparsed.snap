@@ -34,8 +34,8 @@ initialSketch = startSketchOn(XY)
 finalSketch = reduce(
   [1 .. numSides - 1],
   initial = initialSketch,
-  f = fn(index, sketch) {
-    return line(sketch, end =     calculatePoint(index), tag = $problematicTag)
+  f = fn(@index, accum) {
+    return line(accum, end =     calculatePoint(index), tag = $problematicTag)
   },
 )
 

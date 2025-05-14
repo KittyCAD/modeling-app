@@ -29,7 +29,10 @@ const save_ = async (file: ModelingAppFile, toastId: string) => {
           window.electron.join(downloadDir, file.name),
           new Uint8Array(file.contents)
         )
-        toast.success(EXPORT_TOAST_MESSAGES.SUCCESS, { id: toastId })
+        toast.success(EXPORT_TOAST_MESSAGES.SUCCESS + ' [TEST]', {
+          id: toastId,
+          duration: 5_000,
+        })
         return
       }
 

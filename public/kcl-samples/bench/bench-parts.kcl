@@ -2,7 +2,7 @@
 // The following file describes various functions to build the 3D boaty. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 export dividerThickness = 4
 

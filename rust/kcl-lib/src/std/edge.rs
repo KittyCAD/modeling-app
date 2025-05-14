@@ -14,7 +14,7 @@ use crate::{
 
 /// Get the opposite edge to the edge given.
 pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_opposite_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -57,7 +57,8 @@ pub async fn get_opposite_edge(exec_state: &mut ExecState, args: Args) -> Result
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the opposite edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_opposite_edge(
     edge: TagIdentifier,
@@ -97,7 +98,7 @@ async fn inner_get_opposite_edge(
 
 /// Get the next adjacent edge to the edge given.
 pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_next_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -140,7 +141,8 @@ pub async fn get_next_adjacent_edge(exec_state: &mut ExecState, args: Args) -> R
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the next adjacent edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_next_adjacent_edge(
     edge: TagIdentifier,
@@ -189,7 +191,7 @@ async fn inner_get_next_adjacent_edge(
 
 /// Get the previous adjacent edge to the edge given.
 pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::edge(), exec_state)?;
+    let input_edge = args.get_unlabeled_kw_arg_typed("edge", &RuntimeType::tag_identifier(), exec_state)?;
 
     let edge = inner_get_previous_adjacent_edge(input_edge, exec_state, args.clone()).await?;
     Ok(KclValue::Uuid {
@@ -232,7 +234,8 @@ pub async fn get_previous_adjacent_edge(exec_state: &mut ExecState, args: Args) 
     unlabeled_first = true,
     args = {
         edge = { docs = "The tag of the edge you want to find the previous adjacent edge of." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_get_previous_adjacent_edge(
     edge: TagIdentifier,
@@ -320,6 +323,7 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
     args = {
         faces = { docs = "The tags of the faces you want to find the common edge between" },
     },
+    tags = ["sketch"]
 }]
 async fn inner_get_common_edge(
     faces: Vec<TagIdentifier>,

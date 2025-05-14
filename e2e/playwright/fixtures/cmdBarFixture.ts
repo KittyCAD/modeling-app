@@ -147,12 +147,18 @@ export class CmdBarFixture {
     await expect(this.page.getByPlaceholder('Search commands')).toBeVisible()
     if (selectCmd === 'promptToEdit') {
       const promptEditCommand = this.page.getByText(
-        'Use Zoo AI to edit your kcl'
+        'Use Zoo AI to edit your parts and code.'
       )
       await expect(promptEditCommand.first()).toBeVisible()
       await promptEditCommand.first().scrollIntoViewIfNeeded()
       await promptEditCommand.first().click()
     }
+  }
+
+  closeCmdBar = async () => {
+    const cmdBarCloseBtn = this.page.getByTestId('command-bar-close-button')
+    await cmdBarCloseBtn.click()
+    await expect(this.cmdBarElement).not.toBeVisible()
   }
 
   get cmdSearchInput() {
@@ -224,7 +230,51 @@ export class CmdBarFixture {
     // Create a handler function that saves request bodies to a file
     const requestHandler = (route: Route, request: Request) => {
       try {
-        const requestBody = request.postDataJSON()
+        // Get the raw post data
+        const postData = request.postData()
+        if (!postData) {
+          console.error('No post data found in request')
+          return
+        }
+
+        // Extract all parts from the multipart form data
+        const boundary = postData.match(/------WebKitFormBoundary[^\r\n]*/)?.[0]
+        if (!boundary) {
+          console.error('Could not find form boundary')
+          return
+        }
+
+        const parts = postData.split(boundary).filter((part) => part.trim())
+        const files: Record<string, string> = {}
+        let eventData = null
+
+        for (const part of parts) {
+          // Skip the final boundary marker
+          if (part.startsWith('--')) continue
+
+          const nameMatch = part.match(/name="([^"]+)"/)
+          if (!nameMatch) continue
+
+          const name = nameMatch[1]
+          const content = part.split(/\r?\n\r?\n/)[1]?.trim()
+          if (!content) continue
+
+          if (name === 'event') {
+            eventData = JSON.parse(content)
+          } else {
+            files[name] = content
+          }
+        }
+
+        if (!eventData) {
+          console.error('Could not find event JSON in multipart form data')
+          return
+        }
+
+        const requestBody = {
+          ...eventData,
+          files,
+        }
 
         // Ensure directory exists
         const dir = path.dirname(outputPath)
@@ -245,10 +295,36 @@ export class CmdBarFixture {
     }
 
     // Start monitoring requests
-    await this.page.route('**/ml/text-to-cad/iteration', requestHandler)
+    await this.page.route(
+      '**/ml/text-to-cad/multi-file/iteration',
+      requestHandler
+    )
 
     console.log(
       `Monitoring text-to-cad API requests. Output will be saved to: ${outputPath}`
     )
+  }
+
+  async toBeOpened() {
+    // Check that the command bar is opened
+    await expect(this.cmdBarElement).toBeVisible({ timeout: 10_000 })
+  }
+
+  async expectArgValue(value: string) {
+    // Check the placeholder project name exists
+    const actualArgument = await this.cmdBarElement
+      .getByTestId('cmd-bar-arg-value')
+      .inputValue()
+    const expectedArgument = value
+    expect(actualArgument).toBe(expectedArgument)
+  }
+
+  async expectCommandName(value: string) {
+    // Check the placeholder project name exists
+    const actual = await this.cmdBarElement
+      .getByTestId('command-name')
+      .textContent()
+    const expected = value
+    expect(actual).toBe(expected)
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
@@ -6,12 +6,10 @@ import {
   useLoaderData,
   useLocation,
   useNavigate,
-  useRouteLoaderData,
   useSearchParams,
 } from 'react-router-dom'
 
 import { AppHeader } from '@src/components/AppHeader'
-import { useEngineCommands } from '@src/components/EngineCommands'
 import { EngineStream } from '@src/components/EngineStream'
 import Gizmo from '@src/components/Gizmo'
 import { LowerRightControls } from '@src/components/LowerRightControls'
@@ -22,17 +20,21 @@ import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
-import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { takeScreenshotOfVideoStreamCanvas } from '@src/lib/screenshot'
-import { sceneInfra, codeManager, kclManager } from '@src/lib/singletons'
+import {
+  billingActor,
+  sceneInfra,
+  codeManager,
+  kclManager,
+} from '@src/lib/singletons'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import type { IndexLoaderData } from '@src/lib/types'
 import { engineStreamActor, useSettings, useToken } from '@src/lib/singletons'
 import { commandBarActor } from '@src/lib/singletons'
 import { EngineStreamTransition } from '@src/machines/engineStreamMachine'
+import { BillingTransition } from '@src/machines/billingMachine'
 import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { ShareButton } from '@src/components/ShareButton'
 import {
@@ -40,7 +42,7 @@ import {
   ONBOARDING_TOAST_ID,
   TutorialRequestToast,
 } from '@src/routes/Onboarding/utils'
-import { ONBOARDING_SUBPATHS } from '@src/lib/onboardingPaths'
+import { reportRejection } from '@src/lib/trap'
 
 // CYCLIC REF
 sceneInfra.camControls.engineStreamActor = engineStreamActor
@@ -51,6 +53,7 @@ maybeWriteToDisk()
 
 export function App() {
   const { project, file } = useLoaderData() as IndexLoaderData
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -79,10 +82,6 @@ export function App() {
   const projectName = project?.name || null
   const projectPath = project?.path || null
 
-  const [commands] = useEngineCommands()
-  const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
-  const lastCommandType = commands[commands.length - 1]?.type
-
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     onProjectOpen({ name: projectName, path: projectPath }, file || null)
@@ -92,10 +91,6 @@ export function App() {
 
   const settings = useSettings()
   const authToken = useToken()
-
-  const {
-    app: { onboardingStatus },
-  } = settings
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -112,38 +107,15 @@ export function App() {
     toast.success('Your work is auto-saved in real-time')
   })
 
-  const paneOpacity = [
-    ONBOARDING_SUBPATHS.CAMERA,
-    ONBOARDING_SUBPATHS.STREAMING,
-  ].some((p) => p === onboardingStatus.current)
-    ? 'opacity-20'
-    : ''
-
   useEngineConnectionSubscriptions()
 
-  // Generate thumbnail.png when loading the app
   useEffect(() => {
-    if (isDesktop() && lastCommandType === 'execution-done') {
-      setTimeout(() => {
-        const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
-        if (!projectDirectoryWithoutEndingSlash) {
-          return
-        }
-        const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
-        // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-        writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-          .then(() => {})
-          .catch((e) => {
-            console.error(
-              `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`
-            )
-            console.error(e)
-          })
-      }, 500)
-    }
-  }, [lastCommandType, loaderData?.project?.path])
+    // Not too useful for regular flows but on modeling view refresh,
+    // fetch the token count. The regular flow is the count is initialized
+    // by the Projects view.
+    billingActor.send({ type: BillingTransition.Update, apiToken: authToken })
 
-  useEffect(() => {
+    // When leaving the modeling scene, cut the engine stream.
     return () => {
       // When leaving the modeling scene, cut the engine stream.
       // Stop is more serious than Pause
@@ -177,18 +149,31 @@ export function App() {
     }
   }, [location, settings.app.onboardingStatus, navigate])
 
+  // Only create the native file menus on desktop
+  useEffect(() => {
+    if (isDesktop()) {
+      window.electron
+        .createModelingPageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
+    }
+  }, [])
+
   return (
     <div className="relative h-full flex flex-col" ref={ref}>
       <AppHeader
-        className={`transition-opacity transition-duration-75 ${paneOpacity}`}
+        className="transition-opacity transition-duration-75"
         project={{ project, file }}
         enableMenu={true}
+        nativeFileMenuCreated={nativeFileMenuCreated}
       >
         <CommandBarOpenButton />
         <ShareButton />
       </AppHeader>
       <ModalContainer />
-      <ModelingSidebar paneOpacity={paneOpacity} />
+      <ModelingSidebar />
       <EngineStream pool={pool} authToken={authToken} />
       {/* <CamToggle /> */}
       <LowerRightControls navigate={navigate}>

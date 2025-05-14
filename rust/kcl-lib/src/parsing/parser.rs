@@ -25,11 +25,11 @@ use crate::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,
             BoxNode, CallExpressionKw, CommentStyle, DefaultParamVal, ElseIf, Expr, ExpressionStatement,
-            FunctionExpression, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement, ItemVisibility,
-            LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name, Node, NodeList,
-            NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter, PipeExpression,
-            PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type, TypeDeclaration,
-            UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
+            FunctionExpression, FunctionType, Identifier, IfExpression, ImportItem, ImportSelector, ImportStatement,
+            ItemVisibility, LabeledArg, Literal, LiteralIdentifier, LiteralValue, MemberExpression, MemberObject, Name,
+            Node, NodeList, NonCodeMeta, NonCodeNode, NonCodeValue, ObjectExpression, ObjectProperty, Parameter,
+            PipeExpression, PipeSubstitution, PrimitiveType, Program, ReturnStatement, Shebang, TagDeclarator, Type,
+            TypeDeclaration, UnaryExpression, UnaryOperator, VariableDeclaration, VariableDeclarator, VariableKind,
         },
         math::BinaryExpressionToken,
         token::{Token, TokenSlice, TokenType},
@@ -529,10 +529,15 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> PResult<Node<Litera
                     CompilationError::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
                 })?;
 
+                let suffix = token.numeric_suffix();
+                if let NumericSuffix::Unknown = suffix {
+                    ParseContext::warn(CompilationError::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
+                }
+
                 Ok((
                     LiteralValue::Number {
                         value,
-                        suffix: token.numeric_suffix(),
+                        suffix,
                     },
                     token,
                 ))
@@ -577,6 +582,26 @@ fn binary_operator(i: &mut TokenSlice) -> PResult<BinaryOperator> {
             "<=" => BinaryOperator::Lte,
             "|" => BinaryOperator::Or,
             "&" => BinaryOperator::And,
+            "||" => {
+                ParseContext::err(
+                    CompilationError::err(
+                        token.as_source_range(),
+                        "`||` is not an operator, did you mean to use `|`?",
+                    )
+                    .with_suggestion("Replace `||` with `|`", "|", None, Tag::None),
+                );
+                BinaryOperator::Or
+            }
+            "&&" => {
+                ParseContext::err(
+                    CompilationError::err(
+                        token.as_source_range(),
+                        "`&&` is not an operator, did you mean to use `&`?",
+                    )
+                    .with_suggestion("Replace `&&` with `&`", "&", None, Tag::None),
+                );
+                BinaryOperator::And
+            }
             _ => {
                 return Err(CompilationError::fatal(
                     token.as_source_range(),
@@ -606,8 +631,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 | Expr::ArrayExpression(_)
                 | Expr::ArrayRangeExpression(_)
                 | Expr::ObjectExpression(_)
-                | Expr::LabelledExpression(..)
-                | Expr::AscribedExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
+                | Expr::LabelledExpression(..) => return Err(CompilationError::fatal(source_range, TODO_783)),
                 Expr::None(_) => {
                     return Err(CompilationError::fatal(
                         source_range,
@@ -633,6 +657,7 @@ fn operand(i: &mut TokenSlice) -> PResult<BinaryPart> {
                 Expr::CallExpressionKw(x) => BinaryPart::CallExpressionKw(x),
                 Expr::MemberExpression(x) => BinaryPart::MemberExpression(x),
                 Expr::IfExpression(x) => BinaryPart::IfExpression(x),
+                Expr::AscribedExpression(x) => BinaryPart::AscribedExpression(x),
             };
             Ok(expr)
         })
@@ -1236,7 +1261,7 @@ fn function_decl(i: &mut TokenSlice) -> PResult<Node<FunctionExpression>> {
     fn return_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
         colon(i)?;
         ignore_whitespace(i);
-        argument_type(i)
+        type_(i)
     }
 
     let open = open_paren(i)?;
@@ -1988,7 +2013,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected("a KCL value"))
     .parse_next(i)?;
 
-    let ty = opt((colon, opt(whitespace), argument_type)).parse_next(i)?;
+    let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
         expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
     }
@@ -2043,7 +2068,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> PResult<Expr> {
 }
 
 fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
-    alt((
+    let mut expr = alt((
         unary_expression.map(Box::new).map(Expr::UnaryExpression),
         bool_value.map(Expr::Literal),
         member_expression.map(Box::new).map(Expr::MemberExpression),
@@ -2056,7 +2081,14 @@ fn possible_operands(i: &mut TokenSlice) -> PResult<Expr> {
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
     ))
-    .parse_next(i)
+    .parse_next(i)?;
+
+    let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
+    if let Some((_, _, ty)) = ty {
+        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+    }
+
+    Ok(expr)
 }
 
 /// Parse an item visibility specifier, e.g. export.
@@ -2201,7 +2233,21 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
     let start = visibility_token.map(|t| t.start).unwrap_or_else(|| decl_token.start);
     whitespace(i)?;
 
-    let name = identifier(i)?;
+    let name = alt((
+        fun.map(|t| {
+            Node::new(
+                Identifier {
+                    name: "fn".to_owned(),
+                    digest: None,
+                },
+                t.start,
+                t.end,
+                t.module_id,
+            )
+        }),
+        identifier,
+    ))
+    .parse_next(i)?;
     let mut end = name.end;
 
     let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
@@ -2221,7 +2267,7 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         ignore_whitespace(i);
         equals(i)?;
         ignore_whitespace(i);
-        let ty = argument_type(i)?;
+        let ty = type_(i)?;
 
         ParseContext::warn(CompilationError::err(
             ty.as_source_range(),
@@ -2709,21 +2755,22 @@ fn pipe_sep(i: &mut TokenSlice) -> PResult<()> {
 }
 
 fn labeled_argument(i: &mut TokenSlice) -> PResult<LabeledArg> {
-    separated_pair(
-        terminated(nameable_identifier, opt(whitespace)),
-        terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+    (
+        opt((
+            terminated(nameable_identifier, opt(whitespace)),
+            terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
+        )),
         expression,
     )
-    .map(|(label, arg)| LabeledArg { label, arg })
-    .parse_next(i)
+        .map(|(label, arg)| LabeledArg {
+            label: label.map(|(l, _)| l),
+            arg,
+        })
+        .parse_next(i)
 }
 
-/// A type of a function argument.
-/// This can be:
-/// - a primitive type, e.g. 'number' or 'string' or 'bool'
-/// - an array type, e.g. 'number[]' or 'string[]' or 'bool[]'
-/// - an object type, e.g. '{x: number, y: number}' or '{name: string, age: number}'
-fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
+/// Parse a type in various positions.
+fn type_(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
@@ -2763,14 +2810,69 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
 }
 
 fn primitive_type(i: &mut TokenSlice) -> PResult<Node<PrimitiveType>> {
-    let ident = identifier(i)?;
+    alt((
+        // A function type: `fn` (`(` type?, (id: type,)* `)` (`:` type)?)?
+        (
+            fun,
+            opt((
+                // `(` type?, (id: type,)* `)`
+                delimited(
+                    open_paren,
+                    opt(alt((
+                        // type, (id: type,)+
+                        (
+                            type_,
+                            comma,
+                            opt(whitespace),
+                            separated(
+                                1..,
+                                (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                                comma_sep,
+                            ),
+                        )
+                            .map(|(t, _, _, args)| (Some(t), args)),
+                        // (id: type,)+
+                        separated(
+                            1..,
+                            (identifier, colon, opt(whitespace), type_).map(|(id, _, _, ty)| (id, ty)),
+                            comma_sep,
+                        )
+                        .map(|args| (None, args)),
+                        // type
+                        type_.map(|t| (Some(t), Vec::new())),
+                    ))),
+                    close_paren,
+                ),
+                // `:` type
+                opt((colon, opt(whitespace), type_)),
+            )),
+        )
+            .map(|(t, tys)| {
+                let mut ft = FunctionType::empty_fn_type();
 
-    let suffix = opt(delimited(open_paren, uom_for_type, close_paren)).parse_next(i)?;
+                if let Some((args, ret)) = tys {
+                    if let Some((unnamed, named)) = args {
+                        if let Some(unnamed) = unnamed {
+                            ft.unnamed_arg = Some(Box::new(unnamed));
+                        }
+                        ft.named_args = named;
+                    }
+                    if let Some((_, _, ty)) = ret {
+                        ft.return_type = Some(Box::new(ty));
+                    }
+                }
 
-    let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
-    result.inner = PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
-
-    Ok(result)
+                Node::new(PrimitiveType::Function(ft), t.start, t.end, t.module_id)
+            }),
+        // A named type, possibly with a numeric suffix.
+        (identifier, opt(delimited(open_paren, uom_for_type, close_paren))).map(|(ident, suffix)| {
+            let mut result = Node::new(PrimitiveType::Boolean, ident.start, ident.end, ident.module_id);
+            result.inner =
+                PrimitiveType::primitive_from_str(&ident.name, suffix).unwrap_or(PrimitiveType::Named(ident));
+            result
+        }),
+    ))
+    .parse_next(i)
 }
 
 fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
@@ -2780,7 +2882,7 @@ fn array_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     }
 
     open_bracket(i)?;
-    let ty = argument_type(i)?;
+    let ty = type_(i)?;
     let len = opt((
         semi_colon,
         opt_whitespace,
@@ -2868,7 +2970,7 @@ fn parameter(i: &mut TokenSlice) -> PResult<ParamDescription> {
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
-        opt((colon, opt(whitespace), argument_type).map(|tup| tup.2)),
+        opt((colon, opt(whitespace), type_).map(|tup| tup.2)),
         opt(whitespace),
         opt((equals, opt(whitespace), literal).map(|(_, _, literal)| literal)),
     )
@@ -3035,6 +3137,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         return Ok(result);
     }
 
+    #[derive(Debug)]
     #[allow(clippy::large_enum_variant)]
     enum ArgPlace {
         NonCode(Node<NonCodeNode>),
@@ -3063,24 +3166,17 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
                 }
                 ArgPlace::UnlabeledArg(arg) => {
                     let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
-                    let err = if followed_by_equals {
-                        ErrMode::Cut(
+                    if followed_by_equals {
+                        return Err(ErrMode::Cut(
                             CompilationError::fatal(
                                 SourceRange::from(arg),
                                 "This argument has a label, but no value. Put some value after the equals sign",
                             )
                             .into(),
-                        )
+                        ));
                     } else {
-                        ErrMode::Cut(
-                            CompilationError::fatal(
-                                SourceRange::from(arg),
-                                "This argument needs a label, but it doesn't have one",
-                            )
-                            .into(),
-                        )
-                    };
-                    return Err(err);
+                        args.push(LabeledArg { label: None, arg });
+                    }
                 }
             }
             Ok((args, non_code_nodes))
@@ -3093,7 +3189,9 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     // Validate there aren't any duplicate labels.
     let mut counted_labels = IndexMap::with_capacity(args.len());
     for arg in &args {
-        *counted_labels.entry(&arg.label.inner.name).or_insert(0) += 1;
+        if let Some(l) = &arg.label {
+            *counted_labels.entry(&l.inner.name).or_insert(0) += 1;
+        }
     }
     if let Some((duplicated, n)) = counted_labels.iter().find(|(_label, n)| n > &&1) {
         let msg = format!(
@@ -4485,6 +4583,14 @@ export fn cos(num: number(rad)): number(_) {}"#;
     }
 
     #[test]
+    fn warn_unknown_suffix() {
+        let some_program_string = r#"foo = 42_?
+"#;
+        let (_, errs) = assert_no_err(some_program_string);
+        assert_eq!(errs.len(), 1, "{errs:#?}");
+    }
+
+    #[test]
     fn fn_decl_uom_ty() {
         let some_program_string = r#"fn foo(x: number(mm)): number(_) { return 1 }"#;
         let (_, errs) = assert_no_fatal(some_program_string);
@@ -4495,6 +4601,13 @@ export fn cos(num: number(rad)): number(_) {}"#;
     fn error_underscore() {
         let (_, errs) = assert_no_fatal("_foo(a=_blah, b=_)");
         assert_eq!(errs.len(), 3, "found: {errs:#?}");
+    }
+
+    #[test]
+    fn error_double_and() {
+        let (_, errs) = assert_no_fatal("foo = true && false");
+        assert_eq!(errs.len(), 1, "found: {errs:#?}");
+        assert!(errs[0].message.contains("`&&`") && errs[0].message.contains("`&`") && errs[0].suggestion.is_some());
     }
 
     #[test]
@@ -4729,6 +4842,20 @@ let myBox = box(p=[0,0], h=-3, l=-16, w=-10)
         assert_no_err(some_program_string);
     }
     #[test]
+    fn parse_function_types() {
+        let code = r#"foo = x: fn
+foo = x: fn(number)
+fn foo(x: fn(): number): fn { return 0 }
+fn foo(x: fn(a, b: number(mm), c: d): number(Angle)): fn { return 0 }
+type fn
+type foo = fn
+type foo = fn(a: string, b: { f: fn(): any })
+type foo = fn([fn])
+type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
+    "#;
+        assert_no_err(code);
+    }
+    #[test]
     fn test_parse_tag_starting_with_bang() {
         let some_program_string = r#"startSketchOn(XY)
     |> startProfile(at = [0, 0])
@@ -4908,27 +5035,6 @@ bar = 1
         };
         assert_eq!(actual.operator, UnaryOperator::Not);
         crate::parsing::top_level_parse(some_program_string).unwrap(); // Updated import path
-    }
-
-    #[test]
-    fn test_sensible_error_when_missing_equals_in_kwarg() {
-        for (i, program) in ["f(x=1,y)", "f(x=1,y,z)", "f(x=1,y,z=1)", "f(x=1, y, z=1)"]
-            .into_iter()
-            .enumerate()
-        {
-            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
-            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
-            let cause = err.inner().cause.as_ref().unwrap();
-            assert_eq!(
-                cause.message, "This argument needs a label, but it doesn't have one",
-                "failed test {i}: {program}"
-            );
-            assert_eq!(
-                cause.source_range.start(),
-                program.find("y").unwrap(),
-                "failed test {i}: {program}"
-            );
-        }
     }
 
     #[test]

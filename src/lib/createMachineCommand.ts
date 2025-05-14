@@ -29,6 +29,7 @@ interface CreateMachineCommandProps<
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
+  forceDisable?: boolean
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
@@ -44,6 +45,7 @@ export function createMachineCommand<
   actor,
   commandBarConfig,
   onCancel,
+  forceDisable = false,
 }: CreateMachineCommandProps<T, S>):
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
@@ -71,6 +73,7 @@ export function createMachineCommand<
           actor,
           commandBarConfig: recursiveCommandBarConfig,
           onCancel,
+          forceDisable,
         })
       })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
@@ -105,6 +108,7 @@ export function createMachineCommand<
         send({ type })
       }
     },
+    disabled: forceDisable,
   }
 
   if (commandConfig.args) {
@@ -122,6 +126,9 @@ export function createMachineCommand<
   }
   if ('reviewMessage' in commandConfig) {
     command.reviewMessage = commandConfig.reviewMessage
+  }
+  if ('status' in commandConfig) {
+    command.status = commandConfig.status
   }
 
   return command

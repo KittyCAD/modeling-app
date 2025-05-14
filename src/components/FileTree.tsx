@@ -24,7 +24,7 @@ import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { codeManager, kclManager, rustContext } from '@src/lib/singletons'
+import { codeManager, kclManager } from '@src/lib/singletons'
 import { reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 
@@ -32,7 +32,6 @@ import { ToastInsert } from '@src/components/ToastInsert'
 import { commandBarActor } from '@src/lib/singletons'
 import toast from 'react-hot-toast'
 import styles from './FileTree.module.css'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 
 function getIndentationCSS(level: number) {
   return `calc(1rem * ${level + 1})`
@@ -70,37 +69,57 @@ function TreeEntryInput(props: {
 
 function RenameForm({
   fileOrDir,
+  parentDir,
   onSubmit,
   level = 0,
 }: {
   fileOrDir: FileEntry
+  parentDir: FileEntry | undefined
   onSubmit: () => void
   level?: number
 }) {
   const { send } = useFileContext()
   const inputRef = useRef<HTMLInputElement>(null)
+  const fileContext = useFileContext()
 
-  function handleRenameSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
+  function handleRenameSubmit(e: React.KeyboardEvent<HTMLElement>) {
+    if (e.key !== 'Enter') {
+      return
+    }
+
     send({
       type: 'Rename file',
       data: {
         oldName: fileOrDir.name || '',
         newName: inputRef.current?.value || fileOrDir.name || '',
         isDir: fileOrDir.children !== null,
+        parentDirectory: parentDir ?? fileContext.context.project,
       },
     })
+
+    // To get out of the renaming state, without this the current file is still in renaming mode
+    onSubmit()
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Escape') {
       e.stopPropagation()
       onSubmit()
+    } else if (e.key === 'Enter') {
+      // This is needed to prevent events to bubble up and the form to be submitted.
+      // (Alternatively the form could be changed into a div.)
+      // Bug without this:
+      // - open a parent folder (close and open if it's already open)
+      // - right click -> rename one of its children
+      // - give new name and press enter
+      // -> new name is not applied, old name is reverted
+      e.preventDefault()
+      e.stopPropagation()
     }
   }
 
   return (
-    <form onSubmit={handleRenameSubmit}>
+    <form onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
@@ -157,7 +176,6 @@ const FileTreeItem = ({
   parentDir,
   project,
   currentFile,
-  lastDirectoryClicked,
   fileOrDir,
   onNavigateToFile,
   onClickDirectory,
@@ -174,7 +192,6 @@ const FileTreeItem = ({
   parentDir: FileEntry | undefined
   project?: IndexLoaderData['project']
   currentFile?: IndexLoaderData['file']
-  lastDirectoryClicked?: FileEntry
   fileOrDir: FileEntry
   onNavigateToFile?: () => void
   onClickDirectory: (
@@ -229,10 +246,6 @@ const FileTreeItem = ({
         code = normalizeLineEndings(code)
         codeManager.updateCodeStateEditor(code)
       } else if (isImportedInCurrentFile && eventType === 'change') {
-        await rustContext.clearSceneAndBustCache(
-          await jsAppSettings(),
-          codeManager?.currentFilePath || undefined
-        )
         await kclManager.executeAst()
       }
       fileSend({ type: 'Refresh' })
@@ -360,6 +373,7 @@ const FileTreeItem = ({
           ) : (
             <RenameForm
               fileOrDir={fileOrDir}
+              parentDir={parentDir}
               onSubmit={removeCurrentItemFromRenaming}
               level={level}
             />
@@ -406,6 +420,7 @@ const FileTreeItem = ({
                   />
                   <RenameForm
                     fileOrDir={fileOrDir}
+                    parentDir={parentDir}
                     onSubmit={removeCurrentItemFromRenaming}
                     level={-1}
                   />
@@ -459,7 +474,6 @@ const FileTreeItem = ({
                         onCloneFileOrFolder={onCloneFileOrFolder}
                         onOpenInNewWindow={onOpenInNewWindow}
                         newTreeEntry={newTreeEntry}
-                        lastDirectoryClicked={lastDirectoryClicked}
                         onClickDirectory={onClickDirectory}
                         onNavigateToFile={onNavigateToFile}
                         level={level + 1}
@@ -695,10 +709,6 @@ export const FileTreeInner = ({
   const { errors } = useKclContext()
   const runtimeErrors = kclErrorsByFilename(errors)
 
-  const [lastDirectoryClicked, setLastDirectoryClicked] = useState<
-    FileEntry | undefined
-  >(undefined)
-
   const [treeSelection, setTreeSelection] = useState<FileEntry | undefined>(
     loaderData.file
   )
@@ -756,7 +766,6 @@ export const FileTreeInner = ({
     if (!target) return
 
     setTreeSelection(target)
-    setLastDirectoryClicked(target)
     fileSend({
       type: 'Set selected directory',
       directory: target,
@@ -792,7 +801,6 @@ export const FileTreeInner = ({
                 parentDir={fileContext.project}
                 project={fileContext.project}
                 currentFile={loaderData?.file}
-                lastDirectoryClicked={lastDirectoryClicked}
                 fileOrDir={fileOrDir}
                 onCreateFile={onCreateFile}
                 onCreateFolder={onCreateFolder}

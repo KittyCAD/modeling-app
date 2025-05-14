@@ -52,6 +52,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.module_id,
             BinaryPart::MemberExpression(member_expression) => member_expression.module_id,
             BinaryPart::IfExpression(e) => e.module_id,
+            BinaryPart::AscribedExpression(e) => e.module_id,
         }
     }
 }

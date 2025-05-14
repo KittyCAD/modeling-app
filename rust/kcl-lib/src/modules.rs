@@ -1,4 +1,4 @@
-use std::{fmt, path::PathBuf};
+use std::fmt;
 
 use anyhow::Result;
 use schemars::JsonSchema;
@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     exec::KclValue,
-    execution::{EnvironmentRef, PreImportedGeometry},
+    execution::{typed_path::TypedPath, EnvironmentRef, PreImportedGeometry},
     fs::{FileManager, FileSystem},
     parsing::ast::types::{ImportPath, Node, Program},
     source_range::SourceRange,
@@ -46,7 +46,7 @@ impl std::fmt::Display for ModuleId {
 pub(crate) struct ModuleLoader {
     /// The stack of import statements for detecting circular module imports.
     /// If this is empty, we're not currently executing an import statement.
-    pub import_stack: Vec<PathBuf>,
+    pub import_stack: Vec<TypedPath>,
 }
 
 impl ModuleLoader {
@@ -63,7 +63,7 @@ impl ModuleLoader {
                 "circular import of modules is not allowed: {} -> {}",
                 self.import_stack
                     .iter()
-                    .map(|p| p.as_path().to_string_lossy())
+                    .map(|p| p.to_string_lossy())
                     .collect::<Vec<_>>()
                     .join(" -> "),
                 path,
@@ -95,6 +95,8 @@ pub(crate) fn read_std(mod_name: &str) -> Option<&'static str> {
         "types" => Some(include_str!("../std/types.kcl")),
         "solid" => Some(include_str!("../std/solid.kcl")),
         "units" => Some(include_str!("../std/units.kcl")),
+        "array" => Some(include_str!("../std/array.kcl")),
+        "transform" => Some(include_str!("../std/transform.kcl")),
         _ => None,
     }
 }
@@ -138,12 +140,12 @@ pub enum ModuleRepr {
 pub enum ModulePath {
     // The main file of the project.
     Main,
-    Local { value: PathBuf },
+    Local { value: TypedPath },
     Std { value: String },
 }
 
 impl ModulePath {
-    pub(crate) fn expect_path(&self) -> &PathBuf {
+    pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p } => p,
             _ => unreachable!(),
@@ -178,13 +180,13 @@ impl ModulePath {
         }
     }
 
-    pub(crate) fn from_import_path(path: &ImportPath, project_directory: &Option<PathBuf>) -> Self {
+    pub(crate) fn from_import_path(path: &ImportPath, project_directory: &Option<TypedPath>) -> Self {
         match path {
             ImportPath::Kcl { filename: path } | ImportPath::Foreign { path } => {
                 let resolved_path = if let Some(project_dir) = project_directory {
                     project_dir.join(path)
                 } else {
-                    std::path::PathBuf::from(path)
+                    TypedPath::from(path)
                 };
                 ModulePath::Local { value: resolved_path }
             }
@@ -203,7 +205,7 @@ impl fmt::Display for ModulePath {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             ModulePath::Main => write!(f, "main"),
-            ModulePath::Local { value: path } => path.display().fmt(f),
+            ModulePath::Local { value: path } => path.fmt(f),
             ModulePath::Std { value: s } => write!(f, "std::{s}"),
         }
     }

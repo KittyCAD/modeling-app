@@ -275,13 +275,17 @@ impl ExecState {
                     .mod_loader
                     .import_stack
                     .iter()
-                    .map(|p| p.as_path().to_string_lossy())
+                    .map(|p| p.to_string_lossy())
                     .collect::<Vec<_>>()
                     .join(" -> "),
                 path,
             ),
             source_ranges: vec![source_range],
         })
+    }
+
+    pub(crate) fn pipe_value(&self) -> Option<&KclValue> {
+        self.mod_local.pipe_value.as_ref()
     }
 }
 
@@ -336,6 +340,7 @@ impl ModuleState {
             settings: MetaSettings {
                 default_length_units: Default::default(),
                 default_angle_units: Default::default(),
+                kcl_version: "0.1".to_owned(),
             },
         }
     }
@@ -347,6 +352,7 @@ impl ModuleState {
 pub struct MetaSettings {
     pub default_length_units: types::UnitLen,
     pub default_angle_units: types::UnitAngle,
+    pub kcl_version: String,
 }
 
 impl MetaSettings {
@@ -369,6 +375,10 @@ impl MetaSettings {
                     let value = annotations::expect_ident(&p.inner.value)?;
                     let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
+                }
+                annotations::SETTINGS_VERSION => {
+                    let value = annotations::expect_number(&p.inner.value)?;
+                    self.kcl_version = value;
                 }
                 name => {
                     return Err(KclError::Semantic(KclErrorDetails {

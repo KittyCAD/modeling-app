@@ -1,0 +1,76 @@
+// Spur Gear
+// A rotating machine part having cut teeth or, in the case of a cogwheel, inserted teeth (called cogs), which mesh with another toothed part to transmit torque. Geared devices can change the speed, torque, and direction of a power source. The two elements that define a gear are its circular shape and the teeth that are integrated into its outer edge, which are designed to fit into the teeth of another gear.
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define a function to create a spur gear
+fn spurGear(nTeeth, module, pressureAngle, gearHeight) {
+  // Define gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Define the constants of the keyway and the bore hole
+  keywayWidth = 2
+  keywayDepth = keywayWidth / 2
+  holeDiam = 5
+  holeRadius = holeDiam / 2
+  startAngle = asin(keywayWidth / 2 / holeRadius)
+
+  // Sketch the keyway and center hole
+  holeWithKeyway = startSketchOn(XY)
+    |> startProfile(at = [
+         holeRadius * cos(startAngle),
+         holeRadius * sin(startAngle)
+       ])
+    |> xLine(length = keywayDepth)
+    |> yLine(length = -keywayWidth)
+    |> xLine(length = -keywayDepth)
+    |> arc(angleStart = -1 * startAngle + 360, angleEnd = 180, radius = holeRadius)
+    |> arc(angleStart = 180, angleEnd = startAngle, radius = holeRadius)
+    |> close()
+
+  // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+  gearSketch = startSketchOn(XY)
+    |> startProfile(at = polar(angle = 0, length = baseDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = 0,
+         tag = $seg01,
+       )
+    |> line(endAbsolute = polar(angle = 160 / nTeeth, length = tipDiameter / 2))
+    |> involuteCircular(
+         startRadius = baseDiameter / 2,
+         endRadius = tipDiameter / 2,
+         angle = -atan(segEndY(seg01) / segEndX(seg01)) - (180 / nTeeth),
+         reverse = true,
+       )
+    // Position the end line of the sketch at the start of the next tooth
+    |> line(endAbsolute = polar(angle = 360 / nTeeth, length = baseDiameter / 2))
+    // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+    |> patternCircular2d(
+         %,
+         instances = nTeeth,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = true,
+       )
+    |> close()
+    // Subtract the keyway sketch from the gear sketch
+    |> subtract2d(tool = holeWithKeyway)
+    // Extrude the gear to the specified height
+    |> extrude(length = gearHeight)
+
+  return gearSketch
+}
+
+spurGear(
+  nTeeth = 21,
+  module = 1.5,
+  pressureAngle = 14,
+  gearHeight = 6,
+)

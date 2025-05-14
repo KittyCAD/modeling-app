@@ -12,7 +12,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [41.125163, -79.516435], control2 = [35.794902, -82.039475], end = [35.794902, -82.039475]) // CubicBezierRelative
 |> bezierCurve(control1 = [49.687663, -72.766435], control2 = [45.867323, -76.907555], end = [45.867323, -76.907555]) // CubicBezierRelative
 |> line(endAbsolute = [50.687663, -69.766435]) // LineRelative
-|> line(endAbsolute = [50.687663, -62.766435]) // VerticalLineHorizonal
+|> line(endAbsolute = [50.687663, -62.766435]) // VerticalLineHorizontal
 |> line(endAbsolute = [48.687663, -57.891435]) // LineRelative
 |> bezierCurve(control1 = [46.351725, -31.692225], control2 = [46.191183, -48.997725], end = [46.295503000000004, -40.884555000000006]) // CubicBezierRelative
 |> bezierCurve(control1 = [47.7736, -20.934404999999998], control2 = [46.687663, -25.766435], end = [46.687663, -25.766435]) // CubicBezierRelative
@@ -35,7 +35,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [150.68767, -36.766435], control2 = [149.97673, -41.121905], end = [149.97673, -41.121905]) // CubicBezierRelative
 |> bezierCurve(control1 = [158.68767, -30.766435], control2 = [154.62517, -32.891435], end = [154.62517, -32.891435]) // CubicBezierRelative
 |> line(endAbsolute = [160.68767, -26.766435]) // LineRelative
-|> line(endAbsolute = [160.68767, -20.766435]) // VerticalLineHorizonal
+|> line(endAbsolute = [160.68767, -20.766435]) // VerticalLineHorizontal
 |> bezierCurve(control1 = [149.68767, -9.8289351], control2 = [157.40521999999999, -16.321455], end = [154.13992, -13.098555000000001]) // CubicBezierRelative
 |> bezierCurve(control1 = [145.68767, -7.766435100000001], control2 = [148.36767, -9.148315100000001], end = [147.04767, -8.4676851]) // CubicBezierRelative
 |> bezierCurve(control1 = [116.68767, -9.7664351], control2 = [135.27527, -6.278955100000001], end = [126.6914, -6.2357151]) // CubicBezierRelative
@@ -50,7 +50,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [69.562663, -67.203935], control2 = [64.985029, -67.361225], end = [64.985029, -67.361225]) // CubicBezierRelative
 |> bezierCurve(control1 = [74.17985, -67.199935], control2 = [71.84817100000001, -67.201935], end = [71.84817100000001, -67.201935]) // CubicBezierRelative
 |> bezierCurve(control1 = [86.687663, -63.766335], control2 = [78.823333, -66.75328499999999], end = [82.418032, -65.599655]) // CubicBezierRelative
-|> line(endAbsolute = [86.687663, -61.766335]) // VerticalLineHorizonal
+|> line(endAbsolute = [86.687663, -61.766335]) // VerticalLineHorizontal
 |> line(endAbsolute = [90.687663, -60.766335]) // LineRelative
 |> line(endAbsolute = [95.687663, -56.766335]) // LineRelative
 |> line(endAbsolute = [98.687663, -49.766335]) // LineRelative
@@ -71,7 +71,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [234.31267000000003, -52.578935], control2 = [239.46591, -50.966755], end = [236.92775, -51.760815]) // CubicBezierRelative
 |> bezierCurve(control1 = [227.28923000000003, -54.785975], control2 = [231.99494, -53.307255], end = [229.67720000000003, -54.035585000000005]) // CubicBezierRelative
 |> bezierCurve(control1 = [208.68767000000003, -59.766435], control2 = [221.12295000000003, -56.635855], end = [214.94597000000005, -58.261215]) // CubicBezierRelative
-|> line(endAbsolute = [208.68767000000003, -57.766435]) // VerticalLineHorizonal
+|> line(endAbsolute = [208.68767000000003, -57.766435]) // VerticalLineHorizontal
 |> line(endAbsolute = [212.68767000000003, -55.766435]) // LineRelative
 |> bezierCurve(control1 = [217.68767000000003, -48.766435], control2 = [215.57281000000003, -52.830805], end = [215.57281000000003, -52.830805]) // CubicBezierRelative
 |> bezierCurve(control1 = [218.68767000000003, -37.766435], control2 = [218.84802000000002, -43.253935], end = [218.84802000000002, -43.253935]) // CubicBezierRelative
@@ -106,19 +106,19 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [68.68766300000003, -102.76643], control2 = [78.56377900000003, -99.248045], end = [73.64162800000003, -100.78485]) // CubicBezierRelative
 |> bezierCurve(control1 = [52.68766300000003, -101.76643], control2 = [63.09091200000003, -102.95723], end = [58.18407400000003, -102.86573]) // CubicBezierRelative
 |> line(endAbsolute = [48.68766300000003, -106.76643]) // LineRelative
-|> line(endAbsolute = [48.68766300000003, -114.76643]) // VerticalLineHorizonal
+|> line(endAbsolute = [48.68766300000003, -114.76643]) // VerticalLineHorizontal
 |> line(endAbsolute = [51.68766300000003, -121.76643]) // LineRelative
 |> line(endAbsolute = [56.68766300000003, -123.76643]) // LineRelative
 |> line(endAbsolute = [61.68766300000003, -123.76643]) // HorizontalLineRelative
 |> line(endAbsolute = [64.68766300000003, -118.76643]) // LineRelative
 |> line(endAbsolute = [69.68766300000003, -115.76643]) // LineRelative
-|> line(endAbsolute = [69.68766300000003, -113.76643]) // VerticalLineHorizonal
+|> line(endAbsolute = [69.68766300000003, -113.76643]) // VerticalLineHorizontal
 |> line(endAbsolute = [75.68766300000003, -113.76643]) // HorizontalLineRelative
 |> line(endAbsolute = [79.68766300000003, -110.76643]) // LineRelative
-|> line(endAbsolute = [79.68766300000003, -108.76643]) // VerticalLineHorizonal
+|> line(endAbsolute = [79.68766300000003, -108.76643]) // VerticalLineHorizontal
 |> line(endAbsolute = [85.68766300000003, -109.76643]) // LineRelative
 |> line(endAbsolute = [88.68766300000003, -106.76643]) // LineRelative
-|> line(endAbsolute = [88.68766300000003, -102.76643]) // VerticalLineHorizonal
+|> line(endAbsolute = [88.68766300000003, -102.76643]) // VerticalLineHorizontal
 |> bezierCurve(control1 = [99.68766300000003, -101.76643], control2 = [93.93766300000003, -102.01643], end = [93.93766300000003, -102.01643]) // CubicBezierRelative
 |> line(endAbsolute = [103.68767000000003, -105.76643]) // LineRelative
 |> line(endAbsolute = [106.68767000000003, -106.76643]) // LineRelative
@@ -127,7 +127,7 @@ svg =  startSketchOn(XY)
 |> line(endAbsolute = [113.68767000000003, -108.76643]) // LineRelative
 |> bezierCurve(control1 = [101.68767000000003, -114.76643], control2 = [109.73020000000002, -110.84932], end = [105.72846000000003, -112.85018]) // CubicBezierRelative
 |> line(endAbsolute = [97.68766300000003, -118.76643]) // LineRelative
-|> line(endAbsolute = [97.68766300000003, -125.76643]) // VerticalLineHorizonal
+|> line(endAbsolute = [97.68766300000003, -125.76643]) // VerticalLineHorizontal
 |> line(endAbsolute = [101.68767000000003, -128.76643]) // LineRelative
 |> bezierCurve(control1 = [115.75017000000003, -126.57893000000001], control2 = [106.58566000000002, -128.61801000000003], end = [110.98125000000003, -127.69757000000001]) // CubicBezierRelative
 |> bezierCurve(control1 = [124.93767000000003, -122.01643000000001], control2 = [120.74370000000002, -124.95192000000002], end = [120.74370000000002, -124.95192000000002]) // CubicBezierRelative
@@ -135,7 +135,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [136.68767000000003, -96.76643500000002], control2 = [137.05397000000002, -104.69775000000001], end = [137.05397000000002, -104.69775000000001]) // CubicBezierRelative
 |> line(endAbsolute = [135.68767000000003, -95.76643500000002]) // LineRelative
 |> line(endAbsolute = [144.68767000000003, -91.76643500000002]) // LineRelative
-|> line(endAbsolute = [144.68767000000003, -89.76643500000002]) // VerticalLineHorizonal
+|> line(endAbsolute = [144.68767000000003, -89.76643500000002]) // VerticalLineHorizontal
 |> bezierCurve(control1 = [149.18767000000003, -88.95393500000002], control2 = [146.91517000000002, -89.36425500000001], end = [146.91517000000002, -89.36425500000001]) // CubicBezierRelative
 |> bezierCurve(control1 = [158.81267000000003, -86.20393500000002], control2 = [154.52930000000003, -87.94347500000002], end = [154.52930000000003, -87.94347500000002]) // CubicBezierRelative
 |> bezierCurve(control1 = [170.68767000000003, -83.76643500000002], control2 = [162.68767000000003, -84.76643500000002], end = [162.68767000000003, -84.76643500000002]) // CubicBezierRelative
@@ -152,7 +152,7 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [214.68767000000003, -85.76643500000002], control2 = [216.67209000000003, -98.33796500000001], end = [216.17402, -92.15775500000001]) // CubicBezierRelative
 |> line(endAbsolute = [210.68767000000003, -78.76643500000002]) // LineRelative
 |> line(endAbsolute = [207.68767000000003, -78.76643500000002]) // HorizontalLineRelative
-|> line(endAbsolute = [207.68767000000003, -75.76643500000002]) // VerticalLineHorizonal
+|> line(endAbsolute = [207.68767000000003, -75.76643500000002]) // VerticalLineHorizontal
 |> line(endAbsolute = [203.68767000000003, -74.76643500000002]) // LineRelative
 |> line(endAbsolute = [204.68767000000003, -70.76643500000002]) // LineRelative
 |> line(endAbsolute = [209.50017000000003, -70.01643500000002]) // LineRelative
@@ -160,10 +160,10 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [247.31267000000003, -58.578935000000016], control2 = [233.53624000000002, -62.60005500000001], end = [240.40800000000002, -60.55978500000002]) // CubicBezierRelative
 |> bezierCurve(control1 = [277.21111, -48.92659500000001], control2 = [257.37096, -55.63882500000002], end = [267.2794, -52.26503500000001]) // CubicBezierRelative
 |> bezierCurve(control1 = [299.68767, -41.766435000000016], control2 = [284.67443000000003, -46.437325000000016], end = [292.16675000000004, -44.07484500000001]) // CubicBezierRelative
-|> line(endAbsolute = [299.68767, -39.766435000000016]) // VerticalLineHorizonal
+|> line(endAbsolute = [299.68767, -39.766435000000016]) // VerticalLineHorizontal
 |> bezierCurve(control1 = [306.50017, -39.328935000000016], control2 = [301.93580000000003, -39.62206500000001], end = [304.18392, -39.477685000000015]) // CubicBezierRelative
 |> bezierCurve(control1 = [316.68767, -37.766435000000016], control2 = [313.07319, -39.10529500000001], end = [313.07319, -39.10529500000001]) // CubicBezierRelative
-|> line(endAbsolute = [316.68767, -35.766435000000016]) // VerticalLineHorizonal
+|> line(endAbsolute = [316.68767, -35.766435000000016]) // VerticalLineHorizontal
 |> line(endAbsolute = [320.56267, -35.016435000000016]) // LineRelative
 |> bezierCurve(control1 = [335.68767, -29.766435000000016], control2 = [325.89187000000004, -33.71663500000002], end = [330.60815, -31.833685000000017]) // CubicBezierRelative
 |> bezierCurve(control1 = [343.56267, -27.266435000000016], control2 = [339.5858, -28.528935000000015], end = [339.5858, -28.528935000000015]) // CubicBezierRelative
@@ -201,15 +201,15 @@ svg =  startSketchOn(XY)
 |> bezierCurve(control1 = [249.75017000000003, -138.07893], control2 = [241.08415000000005, -137.88476], end = [244.90570000000002, -138.13253]) // CubicBezierRelative
 |> bezierCurve(control1 = [254.34783000000002, -138.06723000000002], control2 = [251.26740000000004, -138.07493000000002], end = [252.78463000000002, -138.07093]) // CubicBezierRelative
 |> bezierCurve(control1 = [265.68767, -135.76644000000002], control2 = [259.20097000000004, -137.88174000000004], end = [259.20097000000004, -137.88174000000004]) // CubicBezierRelative
-|> line(endAbsolute = [265.68767, -132.76644000000002]) // VerticalLineHorizonal
+|> line(endAbsolute = [265.68767, -132.76644000000002]) // VerticalLineHorizontal
 |> line(endAbsolute = [267.68767, -132.76644000000002]) // HorizontalLineRelative
 |> bezierCurve(control1 = [268.56267, -122.32894000000002], control2 = [268.96128000000004, -128.41242000000003], end = [268.96128000000004, -128.41242000000003]) // CubicBezierRelative
 |> line(endAbsolute = [267.68767, -115.76644000000002]) // LineRelative
 |> line(endAbsolute = [262.68767, -110.76644000000002]) // LineRelative
 |> line(endAbsolute = [259.68767, -104.76644000000002]) // LineRelative
-|> line(endAbsolute = [259.68767, -96.76644500000002]) // VerticalLineHorizonal
+|> line(endAbsolute = [259.68767, -96.76644500000002]) // VerticalLineHorizontal
 |> line(endAbsolute = [263.68767, -91.76644500000002]) // LineRelative
-|> line(endAbsolute = [263.68767, -88.76644500000002]) // VerticalLineHorizonal
+|> line(endAbsolute = [263.68767, -88.76644500000002]) // VerticalLineHorizontal
 |> line(endAbsolute = [265.68767, -88.76644500000002]) // HorizontalLineRelative
 |> bezierCurve(control1 = [265.68767, -74.76644500000002], control2 = [265.77327, -84.10056500000002], end = [265.76887000000005, -79.43241500000002]) // CubicBezierRelative
 |> line(endAbsolute = [263.68767, -71.76644500000002]) // LineRelative

@@ -16,7 +16,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use super::{
-    args::Arg,
+    args::{Arg, KwArgs},
     utils::{point_3d_to_mm, point_to_mm},
 };
 use crate::{
@@ -247,7 +247,8 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_transform<'a>(
     solids: Vec<Solid>,
@@ -300,7 +301,8 @@ async fn inner_pattern_transform<'a>(
         instances = { docs = "The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect." },
         transform = { docs = "How each replica should be transformed. The transform function takes a single parameter: an integer representing which number replication the transform is for. E.g. the first replica to be transformed will be passed the argument `1`. This simplifies your math: the transform function can rely on id `0` being the original instance passed into the `patternTransform`. See the examples." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_pattern_transform_2d<'a>(
     sketches: Vec<Sketch>,
@@ -385,7 +387,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         modeling_response: OkModelingCmdResponse::EntityLinearPatternTransform(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_ids
+        &pattern_info.entity_face_edge_ids.iter().map(|x| x.object_id).collect()
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(extra_instances);
         for _ in 0..extra_instances {
@@ -421,9 +423,19 @@ async fn make_transform<T: GeometryTrait>(
         ty: NumericType::count(),
         meta: vec![source_range.into()],
     };
-    let transform_fn_args = vec![Arg::synthetic(repetition_num)];
+    let kw_args = KwArgs {
+        unlabeled: Some(Arg::new(repetition_num, source_range)),
+        labeled: Default::default(),
+        errors: Vec::new(),
+    };
+    let transform_fn_args = Args::new_kw(
+        kw_args,
+        source_range,
+        ctxt.clone(),
+        exec_state.pipe_value().map(|v| Arg::new(v.clone(), source_range)),
+    );
     let transform_fn_return = transform
-        .call(None, exec_state, ctxt, transform_fn_args, source_range)
+        .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
@@ -436,7 +448,7 @@ async fn make_transform<T: GeometryTrait>(
     })?;
     let transforms = match transform_fn_return {
         KclValue::Object { value, meta: _ } => vec![value],
-        KclValue::MixedArray { value, meta: _ } => {
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             let transforms: Vec<_> = value
                 .into_iter()
                 .map(|val| {
@@ -655,12 +667,44 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::types::NumericType;
+    use crate::execution::types::{NumericType, PrimitiveType};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
         let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
-        let input = KclValue::MixedArray {
+        let input = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 1.1,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 2.2,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+                KclValue::Number {
+                    value: 3.3,
+                    meta: Default::default(),
+                    ty: NumericType::mm(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::mm())),
+        };
+        let expected = [
+            TyF64::new(1.1, NumericType::mm()),
+            TyF64::new(2.2, NumericType::mm()),
+            TyF64::new(3.3, NumericType::mm()),
+        ];
+        let actual = array_to_point3d(&input, Vec::new(), &mut exec_state);
+        assert_eq!(actual.unwrap(), expected);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tuple_to_point3d() {
+        let mut exec_state = ExecState::new(&ExecutorContext::new_mock().await);
+        let input = KclValue::Tuple {
             value: vec![
                 KclValue::Number {
                     value: 1.1,
@@ -872,7 +916,8 @@ pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result
         distance = { docs = "Distance between each repetition. Also known as 'spacing'."},
         axis = { docs = "The axis of the pattern. A 2D vector." },
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false." },
-    }
+    },
+    tags = ["solid"]
 }]
 async fn inner_pattern_linear_3d(
     solids: Vec<Solid>,
@@ -1039,7 +1084,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 2-dimensional sketch some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
@@ -1069,7 +1114,8 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates= { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original= { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_2d(
@@ -1155,7 +1201,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
 
 /// Repeat a 3-dimensional solid some number of times along a partial or
 /// complete circle some specified number of times. Each object may
-/// additionally be rotated along the circle, ensuring orentation of the
+/// additionally be rotated along the circle, ensuring orientation of the
 /// solid with respect to the center of the circle is maintained.
 ///
 /// ```no_run
@@ -1184,7 +1230,8 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
         arc_degrees = { docs = "The arc angle (in degrees) to place the repetitions. Must be greater than 0."},
         rotate_duplicates = { docs = "Whether or not to rotate the duplicates as they are copied."},
         use_original = { docs = "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid. Defaults to false."},
-    }
+    },
+    tags = ["solid"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_pattern_circular_3d(
@@ -1290,7 +1337,7 @@ async fn pattern_circular(
         modeling_response: OkModelingCmdResponse::EntityCircularPattern(pattern_info),
     } = &resp
     {
-        &pattern_info.entity_ids
+        &pattern_info.entity_face_edge_ids.iter().map(|e| e.object_id).collect()
     } else if args.ctx.no_engine_commands().await {
         mock_ids.reserve(num_repetitions as usize);
         for _ in 0..num_repetitions {

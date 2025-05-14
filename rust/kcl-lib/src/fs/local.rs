@@ -4,6 +4,7 @@ use anyhow::Result;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
+    execution::typed_path::TypedPath,
     fs::FileSystem,
     SourceRange,
 };
@@ -25,56 +26,44 @@ impl Default for FileManager {
 
 #[async_trait::async_trait]
 impl FileSystem for FileManager {
-    async fn read<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<Vec<u8>, KclError> {
-        tokio::fs::read(&path).await.map_err(|e| {
+    async fn read(&self, path: &TypedPath, source_range: SourceRange) -> Result<Vec<u8>, KclError> {
+        tokio::fs::read(&path.0).await.map_err(|e| {
             KclError::Io(KclErrorDetails {
-                message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
+                message: format!("Failed to read file `{}`: {}", path.display(), e),
                 source_ranges: vec![source_range],
             })
         })
     }
 
-    async fn read_to_string<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<String, KclError> {
-        tokio::fs::read_to_string(&path).await.map_err(|e| {
+    async fn read_to_string(&self, path: &TypedPath, source_range: SourceRange) -> Result<String, KclError> {
+        tokio::fs::read_to_string(&path.0).await.map_err(|e| {
             KclError::Io(KclErrorDetails {
-                message: format!("Failed to read file `{}`: {}", path.as_ref().display(), e),
+                message: format!("Failed to read file `{}`: {}", path.display(), e),
                 source_ranges: vec![source_range],
             })
         })
     }
 
-    async fn exists<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
-        &self,
-        path: P,
-        source_range: SourceRange,
-    ) -> Result<bool, crate::errors::KclError> {
-        tokio::fs::metadata(&path).await.map(|_| true).or_else(|e| {
+    async fn exists(&self, path: &TypedPath, source_range: SourceRange) -> Result<bool, crate::errors::KclError> {
+        tokio::fs::metadata(&path.0).await.map(|_| true).or_else(|e| {
             if e.kind() == std::io::ErrorKind::NotFound {
                 Ok(false)
             } else {
                 Err(KclError::Io(KclErrorDetails {
-                    message: format!("Failed to check if file `{}` exists: {}", path.as_ref().display(), e),
+                    message: format!("Failed to check if file `{}` exists: {}", path.display(), e),
                     source_ranges: vec![source_range],
                 }))
             }
         })
     }
 
-    async fn get_all_files<P: AsRef<std::path::Path> + std::marker::Send + std::marker::Sync>(
+    async fn get_all_files(
         &self,
-        path: P,
+        path: &TypedPath,
         source_range: SourceRange,
-    ) -> Result<Vec<std::path::PathBuf>, crate::errors::KclError> {
+    ) -> Result<Vec<TypedPath>, crate::errors::KclError> {
         let mut files = vec![];
-        let mut stack = vec![path.as_ref().to_path_buf()];
+        let mut stack = vec![path.0.to_path_buf()];
 
         while let Some(path) = stack.pop() {
             if !path.is_dir() {
@@ -94,7 +83,7 @@ impl FileSystem for FileManager {
                     // Iterate over the directory.
                     stack.push(path);
                 } else {
-                    files.push(path);
+                    files.push(TypedPath(path));
                 }
             }
         }

@@ -4,11 +4,14 @@ import * as fsp from 'fs/promises'
 
 import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { expectPixelColor } from '@e2e/playwright/fixtures/sceneFixture'
 
 test.describe('Command bar tests', () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,
     homePage,
+    toolbar,
+    cmdBar,
   }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -34,20 +37,35 @@ test.describe('Command bar tests', () => {
 
     // Click the line of code for xLine.
     await page.getByText(`close()`).click() // TODO remove this and reinstate // await topHorzSegmentClick()
-    await page.waitForTimeout(100)
 
-    await page.getByRole('button', { name: 'Extrude' }).click()
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
-    await page.keyboard.press('Enter')
-    await page.waitForTimeout(200)
+    await toolbar.extrudeButton.click()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'sketches',
+      currentArgValue: '',
+      headerArguments: {
+        Sketches: '',
+        Length: '',
+      },
+      highlightedHeaderArg: 'sketches',
+    })
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      commandName: 'Extrude',
+      headerArguments: {
+        Sketches: '1 segment',
+        Length: '5',
+      },
+    })
+    await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
       `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
     )
   })
 
-  // TODO: fix this test after the electron migration
   test('Fillet from command bar', async ({ page, homePage }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -268,21 +286,22 @@ test.describe('Command bar tests', () => {
     await cmdBar.cmdOptions.getByText('Extrude').click()
 
     // Assert that we're on the selection step
-    await expect(page.getByRole('button', { name: 'selection' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'sketches' })).toBeDisabled()
     // Select a face
     await page.mouse.move(700, 200)
     await page.mouse.click(700, 200)
+    await cmdBar.progressCmdBar()
 
     // Assert that we're on the distance step
     await expect(
-      page.getByRole('button', { name: 'distance', exact: false })
+      page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
     // Assert that the an alternative variable name is chosen,
     // since the default variable name is already in use (distance)
     await page.getByRole('button', { name: 'Create new variable' }).click()
     await expect(page.getByPlaceholder('Variable name')).toHaveValue(
-      'distance001'
+      'length001'
     )
 
     const continueButton = page.getByRole('button', { name: 'Continue' })
@@ -296,7 +315,7 @@ test.describe('Command bar tests', () => {
 
     // Assert we're back on the distance step
     await expect(
-      page.getByRole('button', { name: 'distance', exact: false })
+      page.getByRole('button', { name: 'length', exact: false })
     ).toBeDisabled()
 
     await continueButton.click()
@@ -305,7 +324,7 @@ test.describe('Command bar tests', () => {
     await u.waitForCmdReceive('extrude')
 
     await expect(page.locator('.cm-content')).toContainText(
-      'extrude001 = extrude(sketch001, length = distance001)'
+      'extrude001 = extrude(sketch001, length = length001)'
     )
   })
 
@@ -494,6 +513,47 @@ test.describe('Command bar tests', () => {
       await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
     })
   })
+
+  test(
+    `Zoom to fit to shared model on web`,
+    { tag: ['@web'] },
+    async ({ page, scene }) => {
+      if (process.env.PLATFORM !== 'web') {
+        // This test is web-only
+        // TODO: re-enable on CI as part of a new @web test suite
+        return
+      }
+      await test.step(`Prepare and navigate to home page with query params`, async () => {
+        // a quad in the top left corner of the XZ plane (which is out of the current view)
+        const code = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-484.34, 484.95])
+  |> yLine(length = -69.1)
+  |> xLine(length = 66.84)
+  |> yLine(length = 71.37)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+`
+        const targetURL = `?create-file&name=test&units=mm&code=${encodeURIComponent(btoa(code))}&ask-open-desktop`
+        await page.goto(page.url() + targetURL)
+        expect(page.url()).toContain(targetURL)
+      })
+
+      await test.step(`Submit the command`, async () => {
+        await page.getByTestId('continue-to-web-app-button').click()
+
+        await scene.connectionEstablished()
+
+        // This makes SystemIOMachineActors.createKCLFile run after EngineStream/firstPlay
+        await page.waitForTimeout(3000)
+
+        await page.getByTestId('command-bar-submit').click()
+      })
+
+      await test.step(`Ensure we created the project and are in the modeling scene`, async () => {
+        await expectPixelColor(page, [252, 252, 252], { x: 600, y: 260 }, 8)
+      })
+    }
+  )
 
   test(`Can add and edit a named parameter or constant`, async ({
     page,

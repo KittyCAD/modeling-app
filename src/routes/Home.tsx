@@ -1,5 +1,5 @@
 import type { FormEvent, HTMLProps } from 'react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
@@ -18,21 +18,30 @@ import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
+import { BillingDialog } from '@src/components/BillingDialog'
 import { useCreateFileLinkQuery } from '@src/hooks/useCreateFileLinkQueryWatcher'
 import { useMenuListener } from '@src/hooks/useMenu'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { Project } from '@src/lib/project'
-import { codeManager, kclManager } from '@src/lib/singletons'
 import {
   getNextSearchParams,
   getSortFunction,
   getSortIcon,
 } from '@src/lib/sorting'
 import { reportRejection } from '@src/lib/trap'
-import { authActor, systemIOActor, useSettings } from '@src/lib/singletons'
-import { commandBarActor } from '@src/lib/singletons'
+import {
+  useToken,
+  commandBarActor,
+  codeManager,
+  kclManager,
+  authActor,
+  billingActor,
+  systemIOActor,
+  useSettings,
+} from '@src/lib/singletons'
+import { BillingTransition } from '@src/machines/billingMachine'
 import {
   useCanReadWriteProjectDirectory,
   useFolders,
@@ -49,7 +58,9 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -59,13 +70,22 @@ type ReadWriteProjectState = {
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
+  const navigate = useNavigate()
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
+  const apiToken = useToken()
 
   // Only create the native file menus on desktop
   useEffect(() => {
     if (isDesktop()) {
-      window.electron.createHomePageMenu().catch(reportRejection)
+      window.electron
+        .createHomePageMenu()
+        .then(() => {
+          setNativeFileMenuCreated(true)
+        })
+        .catch(reportRejection)
     }
+    billingActor.send({ type: BillingTransition.Update, apiToken })
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
@@ -81,7 +101,6 @@ const Home = () => {
   })
 
   const location = useLocation()
-  const navigate = useNavigate()
   const settings = useSettings()
   const onboardingStatus = settings.app.onboardingStatus.current
 
@@ -204,7 +223,10 @@ const Home = () => {
 
   return (
     <div className="relative flex flex-col items-stretch h-screen w-screen overflow-hidden">
-      <AppHeader showToolbar={false} />
+      <AppHeader
+        nativeFileMenuCreated={nativeFileMenuCreated}
+        showToolbar={false}
+      />
       <div className="overflow-hidden self-stretch w-full flex-1 home-layout max-w-4xl lg:max-w-5xl xl:max-w-7xl mb-12 px-4 mx-auto mt-8 lg:mt-24 lg:px-0">
         <HomeHeader
           setQuery={setQuery}
@@ -299,6 +321,15 @@ const Home = () => {
                 data-testid="home-text-to-cad"
               >
                 Generate with Text-to-CAD
+                <Tooltip position="bottom-left">
+                  <div className="text-sm flex flex-col max-w-xs">
+                    <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+                      <CustomIcon name="beaker" className="w-4 h-4" />
+                      <span>Experimental</span>
+                    </div>
+                    <p className="pt-2 text-left">{ML_EXPERIMENTAL_MESSAGE}</p>
+                  </div>
+                </Tooltip>
               </ActionButton>
             </li>
             <li className="contents">
@@ -309,12 +340,9 @@ const Home = () => {
                     type: 'Find and select command',
                     data: {
                       groupId: 'application',
-                      name: 'add-kcl-file-to-project',
+                      name: 'create-a-sample',
                       argDefaultValues: {
                         source: 'kcl-samples',
-                        method: 'newProject',
-                        newProjectName:
-                          settings.projects.defaultProjectName.current,
                       },
                     },
                   })
@@ -331,6 +359,11 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
+            <li className="contents">
+              <div className="my-2">
+                <BillingDialog billingActor={billingActor} />
+              </div>
+            </li>
             <li className="contents">
               <ActionButton
                 Element="externalLink"

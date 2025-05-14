@@ -122,7 +122,10 @@ import {
   updateSketchNodePathsWithInsertIndex,
 } from '@src/lang/modifyAst'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/addEdgeTreatment'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import {
+  getNodeFromPath,
+  getPathNormalisedForTruncatedAst,
+} from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   codeRefFromRange,
@@ -218,7 +221,7 @@ export class SceneEntities {
   onCamChange = () => {
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
-    Object.values(this.activeSegments).forEach((segment, index) => {
+    Object.values(this.activeSegments).forEach((segment, _index) => {
       const factor =
         (this.sceneInfra.camControls.camera instanceof OrthographicCamera
           ? orthoFactor
@@ -321,6 +324,18 @@ export class SceneEntities {
       callBack && !err(callBack) && callbacks.push(callBack)
       if (segment.name === PROFILE_START) {
         segment.scale.set(factor, factor, factor)
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: segment,
+            group: segment,
+            isHandlesVisible: true,
+            from: segment.userData.from,
+            to: segment.userData.to,
+            hasThreeDotMenu: false,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
     })
     if (this.axisGroup) {
@@ -354,7 +369,6 @@ export class SceneEntities {
   }
 
   createSketchAxis(
-    sketchPathToNode: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchPosition?: [number, number, number]
@@ -623,7 +637,6 @@ export class SceneEntities {
 
         const inserted = insertNewStartProfileAt(
           this.kclManager.ast,
-          sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           [snappedClickPoint.x, snappedClickPoint.y],
@@ -679,7 +692,6 @@ export class SceneEntities {
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
-      ast: maybeModdedAst,
       variables: execState.variables,
       kclManager: this.kclManager,
     })
@@ -705,10 +717,7 @@ export class SceneEntities {
         maybeModdedAst,
         sourceRangeFromRust(sketch.start.__geoMeta.sourceRange)
       )
-      if (
-        ['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type) ===
-        false
-      ) {
+      if (!['Circle', 'CircleThreePoint'].includes(sketch?.paths?.[0]?.type)) {
         const _profileStart = createProfileStartHandle({
           from: sketch.start.from,
           id: sketch.start.__geoMeta.id,
@@ -726,6 +735,18 @@ export class SceneEntities {
         }
         group.add(_profileStart)
         this.activeSegments[JSON.stringify(segPathToNode)] = _profileStart
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: _profileStart,
+            group: _profileStart,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+
+        callbacks.push(startProfileCallBack)
       }
       sketch.paths.forEach((segment, index) => {
         const isLastInProfile =
@@ -926,8 +947,7 @@ export class SceneEntities {
     forward: [number, number, number],
     up: [number, number, number],
     origin: [number, number, number],
-    segmentName: 'line' | 'tangentialArc' = 'line',
-    shouldTearDown = true
+    segmentName: 'line' | 'tangentialArc' = 'line'
   ) => {
     const _ast = structuredClone(this.kclManager.ast)
 
@@ -1001,7 +1021,6 @@ export class SceneEntities {
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
-          ast: this.kclManager.ast,
           variables: this.kclManager.variables,
           kclManager: this.kclManager,
         })
@@ -1091,8 +1110,8 @@ export class SceneEntities {
             resolvedFunctionName = 'tangentialArc'
           } else if (snappedToTangent) {
             // Generate tag for previous arc segment and use it for the angle of angledLine:
-            //   |> tangentialArcTo([5, -10], %, $arc001)
-            //   |> angledLine({ angle = tangentToEnd(arc001), length = 12 }, %)
+            //   |> tangentialArc(endAbsolute = [5, -10], tag = $arc001)
+            //   |> angledLine(angle = tangentToEnd(arc001), length = 12)
 
             const previousSegmentPathToNode = getNodePathFromSourceRange(
               modifiedAst,
@@ -1185,7 +1204,6 @@ export class SceneEntities {
     })
   }
   setupDraftRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1256,7 +1274,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
 
     const code = recast(_ast)
@@ -1280,11 +1298,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1395,7 +1412,6 @@ export class SceneEntities {
     }
   }
   setupDraftCenterRectangle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1465,7 +1481,7 @@ export class SceneEntities {
     // as draft segments
     startProfileAt.init = createPipeExpression([
       startProfileAt?.init,
-      ...getRectangleCallExpressions(rectangleOrigin, tag),
+      ...getRectangleCallExpressions(tag),
     ])
     const code = recast(_ast)
     __recastAst = parse(code)
@@ -1488,11 +1504,10 @@ export class SceneEntities {
         // Update the width and height of the draft rectangle
 
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
 
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
@@ -1602,7 +1617,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircleThreePoint = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -1665,13 +1679,11 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(updatedSketchNodePaths[0][1][0])
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1789,7 +1801,6 @@ export class SceneEntities {
   setupDraftArc = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -1866,14 +1877,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -1942,14 +1947,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2026,7 +2023,6 @@ export class SceneEntities {
   setupDraftArcThreePoint = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
-    planeNodePath: PathToNode,
     forward: [number, number, number],
     up: [number, number, number],
     sketchOrigin: [number, number, number],
@@ -2098,14 +2094,8 @@ export class SceneEntities {
 
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
+        const nodePathWithCorrectedIndexForTruncatedAst =
+          getPathNormalisedForTruncatedAst(mod.pathToNode, sketchNodePaths)
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2174,14 +2164,6 @@ export class SceneEntities {
         )
       },
       onClick: async (args) => {
-        const firstProfileIndex = Number(sketchNodePaths[0][1][0])
-        const nodePathWithCorrectedIndexForTruncatedAst = structuredClone(
-          mod.pathToNode
-        )
-
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          firstProfileIndex
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent
@@ -2286,7 +2268,6 @@ export class SceneEntities {
     }
   }
   setupDraftCircle = async (
-    sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
     planeNodePath: PathToNode,
     forward: [number, number, number],
@@ -2355,11 +2336,10 @@ export class SceneEntities {
     this.sceneInfra.setCallbacks({
       onMove: async (args) => {
         const nodePathWithCorrectedIndexForTruncatedAst =
-          structuredClone(updatedEntryNodePath)
-        nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-          Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-          Number(planeNodePath[1][0]) -
-          1
+          getPathNormalisedForTruncatedAst(
+            updatedEntryNodePath,
+            updatedSketchNodePaths
+          )
         const _node = getNodeFromPath<VariableDeclaration>(
           truncatedAst,
           nodePathWithCorrectedIndexForTruncatedAst,
@@ -2541,7 +2521,6 @@ export class SceneEntities {
 
           const sketch = sketchFromPathToNode({
             pathToNode,
-            ast: this.kclManager.ast,
             variables: this.kclManager.variables,
             kclManager: this.kclManager,
           })
@@ -2892,10 +2871,7 @@ export class SceneEntities {
       : { ...this.kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =
-      structuredClone(pathToNode)
-    nodePathWithCorrectedIndexForTruncatedAst[1][0] =
-      Number(nodePathWithCorrectedIndexForTruncatedAst[1][0]) -
-      Number(sketchNodePaths[0][1][0])
+      getPathNormalisedForTruncatedAst(pathToNode, sketchNodePaths)
 
     const _node = getNodeFromPath<Node<CallExpressionKw>>(
       modifiedAst,
@@ -3095,11 +3071,10 @@ export class SceneEntities {
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({
         sketchNodePaths,
-        ast: truncatedAst,
         variables,
         kclManager: this.kclManager,
       })
-      const callBacks: (() => SegmentOverlayPayload | null)[] = []
+      const callbacks: (() => SegmentOverlayPayload | null)[] = []
       for (const sketchInfo of sketchesInfo) {
         const { sketch, pathToNode: _pathToNode } = sketchInfo
         const varDecIndex = Number(_pathToNode[1][0])
@@ -3119,7 +3094,19 @@ export class SceneEntities {
           snappedToTangent
         )
 
-        callBacks.push(
+        const startProfileCallBack: () => SegmentOverlayPayload | null = () => {
+          return this.sceneInfra.updateOverlayDetails({
+            handle: group,
+            group: group,
+            isHandlesVisible: true,
+            from: sketch.start.from,
+            to: sketch.start.to,
+            hasThreeDotMenu: true,
+          })
+        }
+        callbacks.push(startProfileCallBack)
+
+        callbacks.push(
           ...sgPaths.map((group, index) =>
             this.updateSegment(
               group,
@@ -3133,7 +3120,7 @@ export class SceneEntities {
           )
         )
       }
-      this.sceneInfra.overlayCallbacks(callBacks)
+      this.sceneInfra.overlayCallbacks(callbacks)
     })().catch(reportRejection)
   }
 
@@ -3418,7 +3405,7 @@ export class SceneEntities {
         }
         this.editorManager.setHighlightRange([defaultSourceRange()])
       },
-      onMouseLeave: ({ selected, ...rest }: OnMouseEnterLeaveArgs) => {
+      onMouseLeave: ({ selected }: OnMouseEnterLeaveArgs) => {
         this.editorManager.setHighlightRange([defaultSourceRange()])
         const parent = getParentGroup(
           selected,
@@ -3782,12 +3769,10 @@ function prepareTruncatedAst(
 
 function sketchFromPathToNode({
   pathToNode,
-  ast,
   variables,
   kclManager,
 }: {
   pathToNode: PathToNode
-  ast: Program
   variables: VariableMap
   kclManager: KclManager
 }): Sketch | null | Error {
@@ -3837,7 +3822,6 @@ export function getSketchQuaternion(
 ): Quaternion | Error {
   const sketch = sketchFromPathToNode({
     pathToNode: sketchPathToNode,
-    ast: kclManager.ast,
     variables: kclManager.variables,
     kclManager,
   })
@@ -3879,12 +3863,10 @@ function massageFormats(
 
 function getSketchesInfo({
   sketchNodePaths,
-  ast,
   variables,
   kclManager,
 }: {
   sketchNodePaths: PathToNode[]
-  ast: Node<Program>
   variables: VariableMap
   kclManager: KclManager
 }): {
@@ -3898,7 +3880,6 @@ function getSketchesInfo({
   for (const path of sketchNodePaths) {
     const sketch = sketchFromPathToNode({
       pathToNode: path,
-      ast,
       variables,
       kclManager,
     })

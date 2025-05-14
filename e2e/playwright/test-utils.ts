@@ -13,11 +13,16 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import dotenv from 'dotenv'
+
+const NODE_ENV = process.env.NODE_ENV || 'development'
+dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
+export const token = process.env.token || ''
 
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
-import { secrets } from '@e2e/playwright/secrets'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
 
@@ -31,8 +36,9 @@ export const headerMasks = (page: Page) => [
   page.locator('#sidebar-bottom-ribbon'),
 ]
 
-export const networkingMasks = (page: Page) => [
+export const lowerRightMasks = (page: Page) => [
   page.getByTestId('network-toggle'),
+  page.getByTestId('billing-remaining-bar'),
 ]
 
 export type TestColor = [number, number, number]
@@ -806,8 +812,6 @@ export const doExport = async (
 
   await page.getByRole('button', { name: 'Submit command' }).click()
 
-  // This usually happens immediately after. If we're too slow we don't
-  // catch it.
   await expect(page.getByText('Exported successfully')).toBeVisible()
 
   if (exportFrom === 'sidebarButton' || exportFrom === 'commandBar') {
@@ -892,7 +896,7 @@ export async function setup(
       localStorage.setItem('PLAYWRIGHT_TEST_DIR', PLAYWRIGHT_TEST_DIR)
     },
     {
-      token: secrets.token,
+      token,
       settingsKey: TEST_SETTINGS_KEY,
       settings: settingsToToml({
         settings: {
@@ -920,7 +924,7 @@ export async function setup(
   await context.addCookies([
     {
       name: COOKIE_NAME,
-      value: secrets.token,
+      value: token,
       path: '/',
       domain: 'localhost',
       secure: true,
@@ -1147,4 +1151,78 @@ export function perProjectSettingsToToml(
 ) {
   // eslint-disable-next-line no-restricted-syntax
   return TOML.stringify(settings as any)
+}
+
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const clickWasTriggered = await tronApp.electron.evaluate(
+    async ({ app }, menuId) => {
+      if (!app || !app.applicationMenu) {
+        return false
+      }
+      const menu = app.applicationMenu.getMenuItemById(menuId)
+      if (!menu) return false
+      menu.click()
+      return true
+    },
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
+    if (!app || !app.applicationMenu) {
+      return false
+    }
+    const menu = app.applicationMenu.getMenuItemById(menuId)
+    if (!menu) return false
+    return true
+  }, menuId)
+  expect(found).toBe(true)
+}
+
+export async function openSettingsExpectText(page: Page, text: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the user tab
+  const actualText = settings.getByText(text)
+  await expect(actualText).toBeVisible()
+}
+
+export async function openSettingsExpectLocator(page: Page, selector: string) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  // You are viewing the keybindings tab
+  const settingsLocator = settings.locator(selector)
+  await expect(settingsLocator).toBeVisible()
+}
+
+/**
+ * A developer helper function to make playwright send all the console logs to stdout
+ * Call this within your E2E test and pass in the page or the tronApp to get as many
+ * logs piped to stdout for debugging
+ */
+export async function enableConsoleLogEverything({
+  page,
+  tronApp,
+}: { page?: Page; tronApp?: ElectronZoo }) {
+  page?.on('console', (msg) => {
+    console.log(`[Page-log]: ${msg.text()}`)
+  })
+
+  tronApp?.electron.on('window', async (electronPage) => {
+    electronPage.on('console', (msg) => {
+      console.log(`[Renderer] ${msg.type()}: ${msg.text()}`)
+    })
+  })
+
+  tronApp?.electron.on('console', (msg) => {
+    console.log(`[Main] ${msg.type()}: ${msg.text()}`)
+  })
 }

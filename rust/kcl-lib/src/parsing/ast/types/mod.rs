@@ -27,7 +27,11 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
+    execution::{
+        annotations,
+        types::{ArrayLen, UnitAngle, UnitLen},
+        KclValue, Metadata, TagIdentifier,
+    },
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -354,12 +358,28 @@ impl Node<Program> {
         Ok(None)
     }
 
-    pub fn change_meta_settings(&self, settings: crate::execution::MetaSettings) -> Result<Self, KclError> {
+    pub fn change_default_units(
+        &self,
+        length_units: Option<UnitLen>,
+        angle_units: Option<UnitAngle>,
+    ) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         let mut found = false;
         for node in &mut new_program.inner_attrs {
             if node.name() == Some(annotations::SETTINGS) {
-                node.inner = Annotation::new_from_meta_settings(&settings);
+                if let Some(len) = length_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_LENGTH,
+                        Expr::Name(Box::new(Name::new(&len.to_string()))),
+                    );
+                }
+                if let Some(angle) = angle_units {
+                    node.inner.add_or_update(
+                        annotations::SETTINGS_UNIT_ANGLE,
+                        Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                    );
+                }
+
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -369,9 +389,21 @@ impl Node<Program> {
         }
 
         if !found {
-            new_program
-                .inner_attrs
-                .push(Node::no_src(Annotation::new_from_meta_settings(&settings)));
+            let mut settings = Annotation::new(annotations::SETTINGS);
+            if let Some(len) = length_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_LENGTH,
+                    Expr::Name(Box::new(Name::new(&len.to_string()))),
+                );
+            }
+            if let Some(angle) = angle_units {
+                settings.inner.add_or_update(
+                    annotations::SETTINGS_UNIT_ANGLE,
+                    Expr::Name(Box::new(Name::new(&angle.to_string()))),
+                );
+            }
+
+            new_program.inner_attrs.push(settings);
         }
 
         Ok(new_program)
@@ -428,10 +460,12 @@ impl Node<Program> {
                 crate::walk::Node::CallExpressionKw(call) => {
                     if call.inner.callee.inner.name.inner.name == "appearance" {
                         for arg in &call.arguments {
-                            if arg.label.inner.name == "color" {
-                                // Get the value of the argument.
-                                if let Expr::Literal(literal) = &arg.arg {
-                                    add_color(literal);
+                            if let Some(l) = &arg.label {
+                                if l.inner.name == "color" {
+                                    // Get the value of the argument.
+                                    if let Expr::Literal(literal) = &arg.arg {
+                                        add_color(literal);
+                                    }
                                 }
                             }
                         }
@@ -1181,6 +1215,7 @@ impl From<&BinaryPart> for Expr {
             BinaryPart::UnaryExpression(unary_expression) => Expr::UnaryExpression(unary_expression.clone()),
             BinaryPart::MemberExpression(member_expression) => Expr::MemberExpression(member_expression.clone()),
             BinaryPart::IfExpression(e) => Expr::IfExpression(e.clone()),
+            BinaryPart::AscribedExpression(e) => Expr::AscribedExpression(e.clone()),
         }
     }
 }
@@ -1247,6 +1282,7 @@ pub enum BinaryPart {
     UnaryExpression(BoxNode<UnaryExpression>),
     MemberExpression(BoxNode<MemberExpression>),
     IfExpression(BoxNode<IfExpression>),
+    AscribedExpression(BoxNode<AscribedExpression>),
 }
 
 impl From<BinaryPart> for SourceRange {
@@ -1272,6 +1308,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_constraint_level(),
             BinaryPart::MemberExpression(member_expression) => member_expression.get_constraint_level(),
             BinaryPart::IfExpression(e) => e.get_constraint_level(),
+            BinaryPart::AscribedExpression(e) => e.expr.get_constraint_level(),
         }
     }
 
@@ -1290,6 +1327,7 @@ impl BinaryPart {
             }
             BinaryPart::MemberExpression(_) => {}
             BinaryPart::IfExpression(e) => e.replace_value(source_range, new_value),
+            BinaryPart::AscribedExpression(e) => e.expr.replace_value(source_range, new_value),
         }
     }
 
@@ -1302,6 +1340,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.start,
             BinaryPart::MemberExpression(member_expression) => member_expression.start,
             BinaryPart::IfExpression(e) => e.start,
+            BinaryPart::AscribedExpression(e) => e.start,
         }
     }
 
@@ -1314,6 +1353,7 @@ impl BinaryPart {
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.end,
             BinaryPart::MemberExpression(member_expression) => member_expression.end,
             BinaryPart::IfExpression(e) => e.end,
+            BinaryPart::AscribedExpression(e) => e.end,
         }
     }
 
@@ -1335,6 +1375,7 @@ impl BinaryPart {
                 member_expression.rename_identifiers(old_name, new_name)
             }
             BinaryPart::IfExpression(ref mut if_expression) => if_expression.rename_identifiers(old_name, new_name),
+            BinaryPart::AscribedExpression(ref mut e) => e.expr.rename_identifiers(old_name, new_name),
         }
     }
 }
@@ -1536,6 +1577,15 @@ pub struct Annotation {
 }
 
 impl Annotation {
+    // Creates a named annotation with an empty (but present) property list, `@name()`.
+    pub fn new(name: &str) -> Node<Self> {
+        Node::no_src(Annotation {
+            name: Some(Identifier::new(name)),
+            properties: Some(vec![]),
+            digest: None,
+        })
+    }
+
     pub fn is_inner(&self) -> bool {
         self.name.is_some()
     }
@@ -1544,22 +1594,16 @@ impl Annotation {
         self.name.as_ref().map(|n| &*n.name)
     }
 
-    pub fn new_from_meta_settings(settings: &crate::execution::MetaSettings) -> Annotation {
-        let mut properties: Vec<Node<ObjectProperty>> = vec![ObjectProperty::new(
-            Identifier::new(annotations::SETTINGS_UNIT_LENGTH),
-            Expr::Name(Box::new(Name::new(&settings.default_length_units.to_string()))),
-        )];
-
-        if settings.default_angle_units != Default::default() {
-            properties.push(ObjectProperty::new(
-                Identifier::new(annotations::SETTINGS_UNIT_ANGLE),
-                Expr::Name(Box::new(Name::new(&settings.default_angle_units.to_string()))),
-            ));
-        }
-        Annotation {
-            name: Some(Identifier::new(annotations::SETTINGS)),
-            properties: Some(properties),
-            digest: None,
+    pub(crate) fn add_or_update(&mut self, label: &str, value: Expr) {
+        match &mut self.properties {
+            Some(props) => match props.iter_mut().find(|p| p.key.name == label) {
+                Some(p) => {
+                    p.value = value;
+                    p.digest = None;
+                }
+                None => props.push(ObjectProperty::new(Identifier::new(label), value)),
+            },
+            None => self.properties = Some(vec![ObjectProperty::new(Identifier::new(label), value)]),
         }
     }
 }
@@ -1837,7 +1881,7 @@ pub struct CallExpressionKw {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct LabeledArg {
-    pub label: Node<Identifier>,
+    pub label: Option<Node<Identifier>>,
     pub arg: Expr,
 }
 
@@ -1882,7 +1926,7 @@ impl CallExpressionKw {
         self.unlabeled
             .iter()
             .map(|e| (None, e))
-            .chain(self.arguments.iter().map(|arg| (Some(&arg.label), &arg.arg)))
+            .chain(self.arguments.iter().map(|arg| (arg.label.as_ref(), &arg.arg)))
     }
 
     pub fn replace_value(&mut self, source_range: SourceRange, new_value: Expr) {
@@ -3142,6 +3186,8 @@ impl PipeExpression {
 #[ts(export)]
 #[serde(tag = "p_type")]
 pub enum PrimitiveType {
+    /// The super type of all other types.
+    Any,
     /// A string type.
     String,
     /// A number type.
@@ -3151,6 +3197,10 @@ pub enum PrimitiveType {
     Boolean,
     /// A tag.
     Tag,
+    /// Imported from other CAD system.
+    ImportedGeometry,
+    /// `fn`, type of functions.
+    Function(FunctionType),
     /// An identifier used as a type (not really a primitive type, but whatever).
     Named(Node<Identifier>),
 }
@@ -3158,11 +3208,13 @@ pub enum PrimitiveType {
 impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
+            ("any", None) => Some(PrimitiveType::Any),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
             ("tag", None) => Some(PrimitiveType::Tag),
             ("number", None) => Some(PrimitiveType::Number(NumericSuffix::None)),
             ("number", Some(s)) => Some(PrimitiveType::Number(s)),
+            ("ImportedGeometry", None) => Some(PrimitiveType::ImportedGeometry),
             _ => None,
         }
     }
@@ -3171,6 +3223,7 @@ impl PrimitiveType {
 impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            PrimitiveType::Any => write!(f, "any"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
                 if *suffix != NumericSuffix::None {
@@ -3181,7 +3234,54 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
             PrimitiveType::Tag => write!(f, "tag"),
+            PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
+            PrimitiveType::Function(t) => {
+                write!(f, "fn")?;
+                if t.unnamed_arg.is_some() || !t.named_args.is_empty() || t.return_type.is_some() {
+                    write!(f, "(")?;
+                    if let Some(u) = &t.unnamed_arg {
+                        write!(f, "{u}")?;
+                        if !t.named_args.is_empty() {
+                            write!(f, ", ")?;
+                        }
+                    }
+                    for (i, (a, t)) in t.named_args.iter().enumerate() {
+                        if i != 0 {
+                            write!(f, ", ")?;
+                        }
+                        write!(f, "{}: {t}", a.name)?;
+                    }
+                    write!(f, ")")?;
+                    if let Some(r) = &t.return_type {
+                        write!(f, ": {r}")?;
+                    }
+                }
+                Ok(())
+            }
             PrimitiveType::Named(n) => write!(f, "{}", n.name),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
+#[ts(export)]
+pub struct FunctionType {
+    pub unnamed_arg: Option<BoxNode<Type>>,
+    pub named_args: Vec<(Node<Identifier>, Node<Type>)>,
+    pub return_type: Option<BoxNode<Type>>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub digest: Option<Digest>,
+}
+
+impl FunctionType {
+    pub fn empty_fn_type() -> Self {
+        FunctionType {
+            unnamed_arg: None,
+            named_args: Vec::new(),
+            return_type: None,
+            digest: None,
         }
     }
 }
@@ -3237,7 +3337,7 @@ impl fmt::Display for Type {
                     } else {
                         write!(f, ",")?;
                     }
-                    write!(f, "{}: ", p.identifier.name)?;
+                    write!(f, " {}:", p.identifier.name)?;
                     if let Some(ty) = &p.type_ {
                         write!(f, " {}", ty.inner)?;
                     }
@@ -4136,10 +4236,7 @@ startSketchOn(XY)"#;
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4168,10 +4265,7 @@ startSketchOn(XY)
 
         // Edit the ast.
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Mm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Mm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();
@@ -4206,10 +4300,7 @@ startSketchOn(XY)
         let program = crate::parsing::top_level_parse(code).unwrap();
 
         let new_program = program
-            .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::types::UnitLen::Cm,
-                ..Default::default()
-            })
+            .change_default_units(Some(crate::execution::types::UnitLen::Cm), None)
             .unwrap();
 
         let result = new_program.meta_settings().unwrap();

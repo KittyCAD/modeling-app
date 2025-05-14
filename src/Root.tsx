@@ -8,7 +8,9 @@ import { RouteProvider } from '@src/components/RouteProvider'
 import { KclContextProvider } from '@src/lang/KclProvider'
 import { Outlet } from 'react-router-dom'
 import { isDesktop } from '@src/lib/isDesktop'
+
 // Root component will live for the entire applications runtime
+// This is a great place to add polling code.
 function RootLayout() {
   return (
     <OpenInDesktopAppHandler>

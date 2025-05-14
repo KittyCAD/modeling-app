@@ -1,6 +1,6 @@
 //! The executor for the AST.
 
-use std::{path::PathBuf, sync::Arc};
+use std::sync::Arc;
 
 use anyhow::Result;
 #[cfg(feature = "artifact-graph")]
@@ -35,6 +35,7 @@ use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
         cache::{CacheInformation, CacheResult},
+        typed_path::TypedPath,
         types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
@@ -59,10 +60,11 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub mod typed_path;
 pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
-#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq)]
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
@@ -287,10 +289,10 @@ pub struct ExecutorSettings {
     pub replay: Option<String>,
     /// The directory of the current project.  This is used for resolving import
     /// paths.  If None is given, the current working directory is used.
-    pub project_directory: Option<PathBuf>,
+    pub project_directory: Option<TypedPath>,
     /// This is the path to the current file being executed.
     /// We use this for preventing cyclic imports.
-    pub current_file: Option<PathBuf>,
+    pub current_file: Option<TypedPath>,
 }
 
 impl Default for ExecutorSettings {
@@ -360,15 +362,15 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
 
 impl ExecutorSettings {
     /// Add the current file path to the executor settings.
-    pub fn with_current_file(&mut self, current_file: PathBuf) {
+    pub fn with_current_file(&mut self, current_file: TypedPath) {
         // We want the parent directory of the file.
-        if current_file.extension() == Some(std::ffi::OsStr::new("kcl")) {
+        if current_file.extension() == Some("kcl") {
             self.current_file = Some(current_file.clone());
             // Get the parent directory.
             if let Some(parent) = current_file.parent() {
-                self.project_directory = Some(parent.to_path_buf());
+                self.project_directory = Some(parent);
             } else {
-                self.project_directory = Some(std::path::PathBuf::from(""));
+                self.project_directory = Some(TypedPath::from(""));
             }
         } else {
             self.project_directory = Some(current_file.clone());
@@ -383,6 +385,7 @@ impl ExecutorContext {
         let (ws, _headers) = client
             .modeling()
             .commands_ws(
+                None,
                 None,
                 None,
                 if settings.enable_ssao {
@@ -651,12 +654,20 @@ impl ExecutorContext {
                         keys.sort();
                         for key in keys {
                             let (_, id, _, _) = &new_universe[key];
-                            let old_source = old_state.get_source(*id);
-                            let new_source = new_exec_state.get_source(*id);
-                            if old_source != new_source {
-                                clear_scene = true;
-                                break;
+                            if let (Some(source0), Some(source1)) =
+                                (old_state.get_source(*id), new_exec_state.get_source(*id))
+                            {
+                                if source0.source != source1.source {
+                                    clear_scene = true;
+                                    break;
+                                }
                             }
+                        }
+
+                        if !clear_scene {
+                            // Return early we don't need to clear the scene.
+                            let outcome = old_state.to_exec_outcome(result_env).await;
+                            return Ok(outcome);
                         }
 
                         (
@@ -856,7 +867,7 @@ impl ExecutorContext {
                         if universe_map.contains_key(value) {
                             exec_state.global.operations.push(Operation::GroupBegin {
                                 group: Group::ModuleInstance {
-                                    name: value.file_name().unwrap_or_default().to_string_lossy().into_owned(),
+                                    name: value.file_name().unwrap_or_default(),
                                     module_id,
                                 },
                                 source_range,
@@ -1306,7 +1317,7 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
 #[cfg(test)]
 pub(crate) async fn parse_execute_with_project_dir(
     code: &str,
-    project_directory: Option<std::path::PathBuf>,
+    project_directory: Option<TypedPath>,
 ) -> Result<ExecTestResults, KclError> {
     let program = crate::Program::parse_no_errs(code)?;
 
@@ -1739,7 +1750,7 @@ foo
     #[tokio::test(flavor = "multi_thread")]
     async fn test_pattern_transform_function_cannot_access_future_definitions() {
         let ast = r#"
-fn transform(replicaId) {
+fn transform(@replicaId) {
   // x shouldn't be defined yet.
   scale = x
   return {
@@ -1899,13 +1910,13 @@ notNull = !myNull
 "#;
         assert_eq!(
             parse_execute(code1).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: number(default units)",
         );
 
         let code2 = "notZero = !0";
         assert_eq!(
             parse_execute(code2).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: number(default units)",
         );
 
         let code3 = r#"
@@ -1913,7 +1924,7 @@ notEmptyString = !""
 "#;
         assert_eq!(
             parse_execute(code3).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: string (text)",
+            "Cannot apply unary operator ! to non-boolean value: string",
         );
 
         let code4 = r#"
@@ -1922,7 +1933,7 @@ notMember = !obj.a
 "#;
         assert_eq!(
             parse_execute(code4).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: number",
+            "Cannot apply unary operator ! to non-boolean value: number(default units)",
         );
 
         let code5 = "
@@ -1930,7 +1941,7 @@ a = []
 notArray = !a";
         assert_eq!(
             parse_execute(code5).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: array (list)",
+            "Cannot apply unary operator ! to non-boolean value: [any; 0]",
         );
 
         let code6 = "
@@ -1938,7 +1949,7 @@ x = {}
 notObject = !x";
         assert_eq!(
             parse_execute(code6).await.unwrap_err().message(),
-            "Cannot apply unary operator ! to non-boolean value: object",
+            "Cannot apply unary operator ! to non-boolean value: {  }",
         );
 
         let code7 = "
@@ -1964,7 +1975,7 @@ notTagDeclarator = !myTagDeclarator";
         assert!(
             tag_declarator_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: TagDeclarator"),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: tag"),
             "Actual error: {:?}",
             tag_declarator_err
         );
@@ -1978,7 +1989,7 @@ notTagIdentifier = !myTag";
         assert!(
             tag_identifier_err
                 .message()
-                .starts_with("Cannot apply unary operator ! to non-boolean value: TagIdentifier"),
+                .starts_with("Cannot apply unary operator ! to non-boolean value: tag"),
             "Actual error: {:?}",
             tag_identifier_err
         );
@@ -2242,7 +2253,7 @@ w = f() + f()
     |> line(end = [0, 0])
     |> close()
 }
-  
+
 sketch = startSketchOn(XY)
   |> startProfile(at = [0,0])
   |> line(end = [0, 10])

@@ -34,7 +34,7 @@ The 3D view in Design Studio is just a video stream from our hosted geometry eng
   - WebSockets (via [KittyCAD TS client](https://github.com/KittyCAD/kittycad.ts))
 - Code Editor
   - [CodeMirror](https://codemirror.net/)
-  - Custom WASM LSP Server
+  - [Custom WASM LSP Server](https://github.com/KittyCAD/modeling-app/tree/main/rust/kcl-lib/src/lsp/kcl)
 - Modeling
   - [KittyCAD TypeScript client](https://github.com/KittyCAD/kittycad.ts)
 

@@ -2249,7 +2249,8 @@ description: Result of parsing dodecahedron.kcl
                         "name": "rotation",
                         "start": 0,
                         "type": "Identifier"
-                      }
+                      },
+                      "labeled": false
                     }
                   ],
                   "start": 0,
@@ -2372,7 +2373,7 @@ description: Result of parsing dodecahedron.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "accumulator",
+                                      "name": "accum",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -2420,14 +2421,15 @@ description: Result of parsing dodecahedron.kcl
                                 "name": "item",
                                 "start": 0,
                                 "type": "Identifier"
-                              }
+                              },
+                              "labeled": false
                             },
                             {
                               "type": "Parameter",
                               "identifier": {
                                 "commentStart": 0,
                                 "end": 0,
-                                "name": "accumulator",
+                                "name": "accum",
                                 "start": 0,
                                 "type": "Identifier"
                               }
@@ -2593,7 +2595,7 @@ description: Result of parsing dodecahedron.kcl
                                     "name": {
                                       "commentStart": 0,
                                       "end": 0,
-                                      "name": "current",
+                                      "name": "accum",
                                       "start": 0,
                                       "type": "Identifier"
                                     },
@@ -2631,14 +2633,15 @@ description: Result of parsing dodecahedron.kcl
                             "name": "previous",
                             "start": 0,
                             "type": "Identifier"
-                          }
+                          },
+                          "labeled": false
                         },
                         {
                           "type": "Parameter",
                           "identifier": {
                             "commentStart": 0,
                             "end": 0,
-                            "name": "current",
+                            "name": "accum",
                             "start": 0,
                             "type": "Identifier"
                           }
@@ -3071,6 +3074,31 @@ description: Result of parsing dodecahedron.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "raw": "1.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
             }
           }
         ],

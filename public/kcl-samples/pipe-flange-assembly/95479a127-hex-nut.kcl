@@ -2,7 +2,7 @@
 // Hex nut for the screws in the pipe flange assembly.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import hexNutDiameter, hexNutFlatToFlat, hexNutThickness, hexNutFlatLength from "parameters.kcl"

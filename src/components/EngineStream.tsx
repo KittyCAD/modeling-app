@@ -40,6 +40,8 @@ import {
   engineViewIsometricWithoutGeometryPresent,
 } from '@src/lib/utils'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 
 export const EngineStream = (props: {
   pool: string | null
@@ -49,7 +51,10 @@ export const EngineStream = (props: {
   const settings = useSettings()
   const { state: modelingMachineState, send: modelingMachineActorSend } =
     useModelingContext()
-  const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
+
+  const { file, project } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
 
   const [firstPlay, setFirstPlay] = useState(true)
@@ -68,11 +73,17 @@ export const EngineStream = (props: {
   const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
   const settingsEngine = {
+  /**
+   * We omit `pool` here because `engineStreamMachine` will override it anyway
+   * within the `EngineStreamTransition.StartOrReconfigureEngine` Promise actor.
+   */
+  const settingsEngine: Omit<SettingsViaQueryString, 'pool'> = {
     theme: settings.app.theme.current,
     enableSSAO: settings.modeling.enableSSAO.current,
     highlightEdges: settings.modeling.highlightEdges.current,
     showScaleGrid: settings.modeling.showScaleGrid.current,
     cameraProjection: settings.modeling.cameraProjection.current,
+    cameraOrbit: settings.modeling.cameraOrbit.current,
   }
 
   const streamIdleMode = settings.app.streamIdleMode.current
@@ -191,6 +202,12 @@ export const EngineStream = (props: {
               padding,
             })
           }
+        }
+
+        if (project && project.path) {
+          createThumbnailPNGOnDesktop({
+            projectDirectoryWithoutEndingSlash: project.path,
+          })
         }
       })
       .catch(trap)
@@ -313,7 +330,14 @@ export const EngineStream = (props: {
         )
         .catch(trap)
     }
-  }, [file?.path])
+    /**
+     * Watch file not file?.path. Watching the object allows us to send the same file.path back to back
+     * and still trigger the executeCode() function. JS should not be doing a cache check on the file path
+     * we should be putting the cache check in Rust.
+     * e.g. We can call `navigate(/file/<>)` or `navigate(/file/<>/settings)` as much as we want and it will
+     * trigger this workflow.
+     */
+  }, [file])
 
   const IDLE_TIME_MS = Number(streamIdleMode)
 

@@ -107,17 +107,8 @@ pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result
     let angle: TyF64 = args.get_kw_arg_typed("angle", &RuntimeType::angle(), exec_state)?;
     let reverse = args.get_kw_arg_opt("reverse")?;
     let tag = args.get_kw_arg_opt(NEW_TAG_KW)?;
-    let new_sketch = inner_involute_circular(
-        sketch,
-        start_radius.n,
-        end_radius.n,
-        angle.n,
-        reverse,
-        tag,
-        exec_state,
-        args,
-    )
-    .await?;
+    let new_sketch =
+        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
     Ok(KclValue::Sketch {
         value: Box::new(new_sketch),
     })
@@ -151,38 +142,41 @@ fn involute_curve(radius: f64, angle: f64) -> (f64, f64) {
         angle  = { docs = "The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve."},
         reverse  = { docs = "If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. Defaults to false."},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_involute_circular(
     sketch: Sketch,
-    start_radius: f64,
-    end_radius: f64,
-    angle: f64,
+    start_radius: TyF64,
+    end_radius: TyF64,
+    angle: TyF64,
     reverse: Option<bool>,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
-    let angle = Angle::from_degrees(angle);
-    let segment = PathSegment::CircularInvolute {
-        start_radius: LengthUnit(start_radius),
-        end_radius: LengthUnit(end_radius),
-        angle,
-        reverse: reverse.unwrap_or_default(),
-    };
 
     args.batch_modeling_cmd(
         id,
         ModelingCmd::from(mcmd::ExtendPath {
             path: sketch.id.into(),
-            segment,
+            segment: PathSegment::CircularInvolute {
+                start_radius: LengthUnit(start_radius.to_mm()),
+                end_radius: LengthUnit(end_radius.to_mm()),
+                angle: Angle::from_degrees(angle.to_degrees()),
+                reverse: reverse.unwrap_or_default(),
+            },
         }),
     )
     .await?;
 
     let from = sketch.current_pen_position()?;
+
+    let start_radius = start_radius.to_length_units(from.units);
+    let end_radius = end_radius.to_length_units(from.units);
+
     let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
     let (x, y) = involute_curve(start_radius, theta);
@@ -267,7 +261,8 @@ pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         end_absolute = { docs = "Which absolute point should this line go to? Incompatible with `end`."},
         end = { docs = "How far away (along the X and Y axes) should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_line(
     sketch: Sketch,
@@ -283,6 +278,7 @@ async fn inner_line(
             end_absolute,
             end,
             tag,
+            relative_name: "end",
         },
         exec_state,
         args,
@@ -295,6 +291,7 @@ struct StraightLineParams {
     end_absolute: Option<[TyF64; 2]>,
     end: Option<[TyF64; 2]>,
     tag: Option<TagNode>,
+    relative_name: &'static str,
 }
 
 impl StraightLineParams {
@@ -304,6 +301,7 @@ impl StraightLineParams {
             tag,
             end: Some(p),
             end_absolute: None,
+            relative_name: "end",
         }
     }
     fn absolute(p: [TyF64; 2], sketch: Sketch, tag: Option<TagNode>) -> Self {
@@ -312,6 +310,7 @@ impl StraightLineParams {
             tag,
             end: None,
             end_absolute: Some(p),
+            relative_name: "end",
         }
     }
 }
@@ -322,6 +321,7 @@ async fn straight_line(
         end,
         end_absolute,
         tag,
+        relative_name,
     }: StraightLineParams,
     exec_state: &mut ExecState,
     args: Args,
@@ -340,7 +340,7 @@ async fn straight_line(
         (None, None) => {
             return Err(KclError::Semantic(KclErrorDetails {
                 source_ranges: vec![args.source_range],
-                message: "You must supply either `end` or `endAbsolute` arguments".to_owned(),
+                message: format!("You must supply either `{relative_name}` or `endAbsolute` arguments"),
             }));
         }
     };
@@ -434,7 +434,8 @@ pub async fn x_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         length = { docs = "How far away along the X axis should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
         end_absolute = { docs = "Which absolute X value should this line go to? Incompatible with `length`."},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_x_line(
     sketch: Sketch,
@@ -451,6 +452,7 @@ async fn inner_x_line(
             end_absolute: end_absolute.map(|x| [x, from.into_y()]),
             end: length.map(|x| [x, TyF64::new(0.0, NumericType::mm())]),
             tag,
+            relative_name: "length",
         },
         exec_state,
         args,
@@ -498,7 +500,8 @@ pub async fn y_line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         length = { docs = "How far away along the Y axis should this line go? Incompatible with `endAbsolute`.", include_in_snippet = true},
         end_absolute = { docs = "Which absolute Y value should this line go to? Incompatible with `length`."},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_y_line(
     sketch: Sketch,
@@ -515,6 +518,7 @@ async fn inner_y_line(
             end_absolute: end_absolute.map(|y| [from.into_x(), y]),
             end: length.map(|y| [TyF64::new(0.0, NumericType::mm()), y]),
             tag,
+            relative_name: "length",
         },
         exec_state,
         args,
@@ -583,7 +587,8 @@ pub async fn angled_line(exec_state: &mut ExecState, args: Args) -> Result<KclVa
         end_absolute_x = { docs = "Draw the line along the given angle until it reaches this point along the X axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
         end_absolute_y = { docs = "Draw the line along the given angle until it reaches this point along the Y axis. Only one of `length`, `lengthX`, `lengthY`, `endAbsoluteX`, `endAbsoluteY` can be given."},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_angled_line(
@@ -879,7 +884,8 @@ pub async fn angled_line_that_intersects(exec_state: &mut ExecState, args: Args)
         intersect_tag = { docs = "The tag of the line to intersect with" },
         offset = { docs = "The offset from the intersecting line. Defaults to 0." },
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 pub async fn inner_angled_line_that_intersects(
     sketch: Sketch,
@@ -1153,7 +1159,8 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
     args = {
         plane_or_solid = { docs = "The plane or solid to sketch on"},
         face = { docs = "Identify a face of a solid if a solid is specified as the input argument (`plane_or_solid`)"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_start_sketch_on(
     plane_or_solid: SketchData,
@@ -1320,7 +1327,8 @@ pub async fn start_profile(exec_state: &mut ExecState, args: Args) -> Result<Kcl
         sketch_surface = { docs = "What to start the profile on" },
         at = { docs = "Where to start the profile. An absolute point." },
         tag = { docs = "Tag this first starting point" },
-    }
+    },
+    tags = ["sketch"]
 }]
 pub(crate) async fn inner_start_profile(
     sketch_surface: SketchSurface,
@@ -1459,7 +1467,8 @@ pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
-    }
+    },
+    tags = ["sketch"]
 }]
 pub(crate) fn inner_profile_start_x(profile: Sketch) -> Result<f64, KclError> {
     Ok(profile.start.to[0])
@@ -1488,7 +1497,8 @@ pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
-    }
+    },
+    tags = ["sketch"]
 }]
 pub(crate) fn inner_profile_start_y(profile: Sketch) -> Result<f64, KclError> {
     Ok(profile.start.to[1])
@@ -1520,7 +1530,8 @@ pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         profile = {docs = "Profile whose start is being used"},
-    }
+    },
+    tags = ["sketch"]
 }]
 pub(crate) fn inner_profile_start(profile: Sketch) -> Result<[f64; 2], KclError> {
     Ok(profile.start.to)
@@ -1565,7 +1576,8 @@ pub async fn close(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     args = {
         sketch = { docs = "The sketch you want to close"},
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 pub(crate) async fn inner_close(
     sketch: Sketch,
@@ -1679,7 +1691,8 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         interior_absolute = { docs = "Any point between the arc's start and end? Requires `endAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         end_absolute = { docs = "Where should this arc end? Requires `interiorAbsolute`. Incompatible with `angleStart` or `angleEnd`" },
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn inner_arc(
@@ -1922,7 +1935,8 @@ pub async fn tangential_arc(exec_state: &mut ExecState, args: Args) -> Result<Kc
         radius = { docs = "Radius of the imaginary circle. `angle` must be given. Incompatible with `end` and `endAbsolute`."},
         angle = { docs = "Offset of the arc in degrees. `radius` must be given. Incompatible with `end` and `endAbsolute`."},
         tag = { docs = "Create a new tag which refers to this arc"},
-    }
+    },
+    tags = ["sketch"]
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_tangential_arc(
@@ -2200,7 +2214,8 @@ pub async fn bezier_curve(exec_state: &mut ExecState, args: Args) -> Result<KclV
         control1 = { docs = "First control point for the cubic" },
         control2 = { docs = "Second control point for the cubic" },
         tag = { docs = "Create a new tag which refers to this line"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_bezier_curve(
     sketch: Sketch,
@@ -2318,7 +2333,8 @@ pub async fn subtract_2d(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     args = {
         sketch = { docs = "Which sketch should this path be added to?" },
         tool  = { docs = "The shape(s) which should be cut out of the sketch." },
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_subtract_2d(
     sketch: Sketch,

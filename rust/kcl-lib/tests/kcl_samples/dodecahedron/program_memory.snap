@@ -4,13 +4,16 @@ description: Variables in memory after executing dodecahedron.kcl
 ---
 {
   "calculateArrayLength": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "createFaceTemplate": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "createIntersection": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "dihedral": {
     "type": "Number",
@@ -26,7 +29,7 @@ description: Variables in memory after executing dodecahedron.kcl
     }
   },
   "dodecFaces": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Solid",
@@ -2191,10 +2194,10 @@ description: Variables in memory after executing dodecahedron.kcl
     ]
   },
   "faceRotations": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2251,7 +2254,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2308,7 +2311,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2365,7 +2368,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2422,7 +2425,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2479,7 +2482,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2536,7 +2539,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2593,7 +2596,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2650,7 +2653,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2707,7 +2710,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2764,7 +2767,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -2821,7 +2824,7 @@ description: Variables in memory after executing dodecahedron.kcl
         ]
       },
       {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",

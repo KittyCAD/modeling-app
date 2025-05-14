@@ -2,7 +2,7 @@
 // A component of a disc brake system. It provides a surface for brake pads to press against, generating the friction needed to slow or stop the vehicle.
 
 // Set units
-@settings(defaultLengthUnit = in)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import rotorDiameter, rotorInnerDiameter, rotorSinglePlateThickness, rotorInnerDiameterThickness, lugHolePatternDia, lugSpacing, rotorTotalThickness, spacerPatternDiameter, spacerDiameter, spacerLength, spacerCount, wheelDiameter, lugCount, yAxisOffset, drillAndSlotCount from "parameters.kcl"
@@ -37,7 +37,7 @@ secondaryRotorSketch = startSketchOn(centerSpacer, face = END)
 secondRotor = extrude(secondaryRotorSketch, length = rotorSinglePlateThickness)
 
 lugHoles2 = startSketchOn(secondRotor, face = END)
-  |> circle(center = [-lugSpacing / 2, 0], radius = 0.315)
+  |> circle(center = [lugSpacing / 2, 0], radius = 0.315)
   |> patternCircular2d(
        arcDegrees = 360,
        center = [0, 0],

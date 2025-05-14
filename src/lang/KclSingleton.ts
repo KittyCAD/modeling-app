@@ -147,6 +147,10 @@ export class KclManager {
 
   set switchedFiles(switchedFiles: boolean) {
     this._switchedFiles = switchedFiles
+
+    // These belonged to the previous file
+    this.lastSuccessfulOperations = []
+    this.lastSuccessfulVariables = {}
   }
 
   get variables() {
@@ -426,6 +430,7 @@ export class KclManager {
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
       )
       // Exit early if we are already executing.
+
       return
     }
 
@@ -437,6 +442,7 @@ export class KclManager {
 
     this.isExecuting = true
     await this.ensureWasmInit()
+
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: this.singletons.codeManager.currentFilePath || undefined,

@@ -1,6 +1,16 @@
-@no_std
+/// This module contains a few handy constants for defining turns.
 
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// No turn, zero degrees/radians.
 export ZERO = 0
+
+/// A quarter turn, 90 degrees or π/2 radians.
 export QUARTER_TURN = 90deg
+
+/// A half turn, 180 degrees or π radians.
 export HALF_TURN = 180deg
+
+/// Three quarters of a turn, 270 degrees or 1.5*π radians.
 export THREE_QUARTER_TURN = 270deg

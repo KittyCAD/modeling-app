@@ -3,14 +3,11 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import {
-  changeKclSettings,
+  changeDefaultUnits,
   unitAngleToUnitAng,
   unitLengthToUnitLen,
 } from '@src/lang/wasm'
-import {
-  DEFAULT_DEFAULT_ANGLE_UNIT,
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-} from '@src/lib/constants'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { codeManager, kclManager } from '@src/lib/singletons'
 import { err, reportRejection } from '@src/lib/trap'
@@ -49,13 +46,11 @@ export function UnitsMenu() {
                   <button
                     className="flex items-center gap-2 m-0 py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left"
                     onClick={() => {
-                      const newCode = changeKclSettings(codeManager.code, {
-                        defaultLengthUnits: unitLengthToUnitLen(unit),
-                        defaultAngleUnits: unitAngleToUnitAng(
-                          fileSettings.defaultAngleUnit ??
-                            DEFAULT_DEFAULT_ANGLE_UNIT
-                        ),
-                      })
+                      const newCode = changeDefaultUnits(
+                        codeManager.code,
+                        unitLengthToUnitLen(unit),
+                        unitAngleToUnitAng(undefined)
+                      )
                       if (err(newCode)) {
                         toast.error(
                           `Failed to set per-file units: ${newCode.message}`

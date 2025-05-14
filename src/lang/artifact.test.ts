@@ -14,7 +14,7 @@ mySketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)`
+  // |> rx(45)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
     expect(sketch001).toEqual({
@@ -72,7 +72,7 @@ mySketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [-1.59, -1.54])
   |> line(endAbsolute = [0.46, -5.82])
-  // |> rx(45, %)
+  // |> rx(45)
   |> extrude(length = 2)`
     const execState = await enginelessExecutor(assertParse(code))
     const sketch001 = execState.variables['mySketch001']
@@ -152,9 +152,9 @@ sk1 = startSketchOn(XY)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 10], tag = $p)
   |> line(endAbsolute = [2.5, 0])
-  // |> rx(45, %)
-  // |> translate([1,0,1], %)
-  // |> ry(5, %)
+  // |> rx(45)
+  // |> translate(x = 1, y = 0, z = 1)
+  // |> ry(5)
 theExtrude = extrude(sk1, length = 2)
 // theTransf = getExtrudeWallTransform('p', theExtrude)
 sk2 = startSketchOn(XY)
@@ -162,7 +162,7 @@ sk2 = startSketchOn(XY)
   |> line(endAbsolute = [-2.5, 0])
   |> line(endAbsolute = [0, 3], tag = $o)
   |> line(endAbsolute = [2.5, 0])
-  // |> transform(theTransf, %)
+  // |> transform(theTransf)
   |> extrude(length = 2)
 
 `

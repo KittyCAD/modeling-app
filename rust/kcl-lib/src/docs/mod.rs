@@ -10,6 +10,8 @@ use std::{
 };
 
 use anyhow::Result;
+use kcl_doc::ModData;
+use parse_display::Display;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 use tower_lsp::lsp_types::{
@@ -17,10 +19,28 @@ use tower_lsp::lsp_types::{
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
 };
 
-use crate::{
-    execution::{types::NumericType, Sketch},
-    std::Primitive,
-};
+use crate::execution::{types::NumericType, Sketch};
+
+// These types are declared in (KCL) std.
+const DECLARED_TYPES: [&str; 17] = [
+    "any",
+    "number",
+    "string",
+    "tag",
+    "bool",
+    "Sketch",
+    "Solid",
+    "Plane",
+    "Helix",
+    "Face",
+    "Edge",
+    "Point2d",
+    "Point3d",
+    "Axis2d",
+    "Axis3d",
+    "ImportedGeometry",
+    "fn",
+];
 
 lazy_static::lazy_static! {
     static ref NUMERIC_TYPE_SCHEMA: schemars::schema::SchemaObject = {
@@ -29,6 +49,21 @@ lazy_static::lazy_static! {
         let mut generator = schemars::gen::SchemaGenerator::new(settings);
         generator.root_schema_for::<NumericType>().schema
     };
+}
+
+/// The primitive types that can be used in a KCL file.
+#[derive(Debug, Clone, PartialEq, Serialize, JsonSchema, Display)]
+#[serde(rename_all = "lowercase")]
+#[display(style = "lowercase")]
+enum Primitive {
+    /// A boolean value.
+    Bool,
+    /// A number value.
+    Number,
+    /// A string value.
+    String,
+    /// A uuid value.
+    Uuid,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, JsonSchema, ts_rs::TS)]
@@ -53,9 +88,9 @@ pub struct StdLibFnData {
     pub unpublished: bool,
     /// If the function is deprecated.
     pub deprecated: bool,
-    /// Code examples.
+    /// Code examples. The bool is whether the example is `norun``
     /// These are tested and we know they compile and execute.
-    pub examples: Vec<String>,
+    pub examples: Vec<(String, bool)>,
 }
 
 /// This struct defines a single argument to a stdlib function.
@@ -94,6 +129,9 @@ pub struct StdLibFnArg {
 
 impl fmt::Display for StdLibFnArg {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if !self.label_required {
+            f.write_char('@')?;
+        }
         f.write_str(&self.name)?;
         if !self.required {
             f.write_char('?')?;
@@ -154,11 +192,19 @@ impl StdLibFnArg {
             .map(|maybe| maybe.map(|(index, snippet)| (index, format!("{label}{snippet}"))))
     }
 
-    pub fn description(&self) -> Option<String> {
+    pub fn description(&self, kcl_std: Option<&ModData>) -> Option<String> {
         // Check if we explicitly gave this stdlib arg a description.
         if !self.description.is_empty() {
+            assert!(!self.description.contains('\n'), "Arg docs will get truncated");
             return Some(self.description.clone());
         }
+
+        if let Some(kcl_std) = kcl_std {
+            if let Some(t) = docs_for_type(&self.type_, kcl_std) {
+                return Some(t);
+            }
+        }
+
         // If not, then try to get something meaningful from the schema.
         get_description_string_from_schema(&self.schema.clone())
     }
@@ -370,7 +416,7 @@ impl From<StdLibFnArg> for ParameterInformation {
     fn from(arg: StdLibFnArg) -> Self {
         ParameterInformation {
             label: ParameterLabel::Simple(arg.name.to_string()),
-            documentation: arg.description().map(|description| {
+            documentation: arg.description(None).map(|description| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
                     value: description,
@@ -378,6 +424,18 @@ impl From<StdLibFnArg> for ParameterInformation {
             }),
         }
     }
+}
+
+fn docs_for_type(ty: &str, kcl_std: &ModData) -> Option<String> {
+    let key = if ty.starts_with("number") { "number" } else { ty };
+
+    if DECLARED_TYPES.contains(&key) {
+        if let Some(data) = kcl_std.find_by_name(key) {
+            return data.summary().cloned();
+        }
+    }
+
+    None
 }
 
 /// This trait defines functions called upon stdlib functions to generate
@@ -414,7 +472,7 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn feature_tree_operation(&self) -> bool;
 
     /// Any example code blocks.
-    fn examples(&self) -> Vec<String>;
+    fn examples(&self) -> Vec<(String, bool)>;
 
     /// The function itself.
     fn std_lib_fn(&self) -> crate::std::StdFn;
@@ -504,8 +562,6 @@ pub trait StdLibFn: std::fmt::Debug + Send + Sync {
     fn to_autocomplete_snippet(&self) -> Result<String> {
         if self.name() == "loft" {
             return Ok("loft([${0:sketch000}, ${1:sketch001}])".to_string());
-        } else if self.name() == "clone" {
-            return Ok("clone(${0:part001})".to_string());
         } else if self.name() == "union" {
             return Ok("union([${0:extrude001}, ${1:extrude002}])".to_string());
         } else if self.name() == "subtract" {
@@ -672,7 +728,7 @@ pub fn get_description_string_from_schema(schema: &schemars::schema::RootSchema)
     None
 }
 
-pub fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
+fn is_primitive(schema: &schemars::schema::Schema) -> Result<Option<Primitive>> {
     match schema {
         schemars::schema::Schema::Object(o) => {
             if o.enum_values.is_some() {
@@ -918,7 +974,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_fillet() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(fillet_fn) = data.into_iter().find(|d| d.name() == "fillet").unwrap() else {
+        let DocData::Fn(fillet_fn) = data.find_by_name("fillet").unwrap() else {
             panic!();
         };
         let snippet = fillet_fn.to_autocomplete_snippet();
@@ -946,7 +1002,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_revolve() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(revolve_fn) = data.into_iter().find(|d| d.name() == "revolve").unwrap() else {
+        let DocData::Fn(revolve_fn) = data.find_by_name("revolve").unwrap() else {
             panic!();
         };
         let snippet = revolve_fn.to_autocomplete_snippet();
@@ -956,7 +1012,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_circle() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(circle_fn) = data.into_iter().find(|d| d.name() == "circle").unwrap() else {
+        let DocData::Fn(circle_fn) = data.find_by_name("circle").unwrap() else {
             panic!();
         };
         let snippet = circle_fn.to_autocomplete_snippet();
@@ -978,9 +1034,12 @@ mod tests {
 
     #[test]
     fn get_autocomplete_snippet_map() {
-        let map_fn: Box<dyn StdLibFn> = Box::new(crate::std::array::Map);
-        let snippet = map_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(snippet, r#"map(${0:[0..9]})"#);
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(map_fn) = data.find_by_name("map").unwrap() else {
+            panic!();
+        };
+        let snippet = map_fn.to_autocomplete_snippet();
+        assert_eq!(snippet, r#"map()"#);
     }
 
     #[test]
@@ -1027,7 +1086,7 @@ mod tests {
     #[test]
     fn get_autocomplete_snippet_helix() {
         let data = kcl_doc::walk_prelude();
-        let DocData::Fn(helix_fn) = data.into_iter().find(|d| d.name() == "helix").unwrap() else {
+        let DocData::Fn(helix_fn) = data.find_by_name("helix").unwrap() else {
             panic!();
         };
         let snippet = helix_fn.to_autocomplete_snippet();
@@ -1100,8 +1159,11 @@ mod tests {
     #[test]
     #[allow(clippy::literal_string_with_formatting_args)]
     fn get_autocomplete_snippet_clone() {
-        let clone_fn: Box<dyn StdLibFn> = Box::new(crate::std::clone::Clone);
-        let snippet = clone_fn.to_autocomplete_snippet().unwrap();
+        let data = kcl_doc::walk_prelude();
+        let DocData::Fn(clone_fn) = data.find_by_name("clone").unwrap() else {
+            panic!();
+        };
+        let snippet = clone_fn.to_autocomplete_snippet();
         assert_eq!(snippet, r#"clone(${0:part001})"#);
     }
 
@@ -1128,7 +1190,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  sketches: [Sketch],
+  @sketches: [Sketch],
   length: number,
   symmetric?: bool,
   bidirectionalLength?: number,

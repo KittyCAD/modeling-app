@@ -4,10 +4,12 @@ description: Variables in memory after executing bench.kcl
 ---
 {
   "armRest": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "backSlats": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "benchLength": {
     "type": "Number",
@@ -23,10 +25,12 @@ description: Variables in memory after executing bench.kcl
     }
   },
   "connector": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "divider": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "dividerThickness": {
     "type": "Number",
@@ -42,6 +46,7 @@ description: Variables in memory after executing bench.kcl
     }
   },
   "seatSlats": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   }
 }

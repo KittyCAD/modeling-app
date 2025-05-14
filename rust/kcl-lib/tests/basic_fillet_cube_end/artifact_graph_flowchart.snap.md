@@ -2,14 +2,21 @@
 flowchart LR
   subgraph path2 [Path]
     2["Path<br>[33, 58, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[64, 97, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     4["Segment<br>[103, 122, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     5["Segment<br>[128, 163, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     6["Segment<br>[169, 177, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7[Solid2d]
   end
   1["Plane<br>[10, 27, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   8["Sweep Extrusion<br>[183, 203, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
   9[Wall]
   10[Wall]
   11[Wall]
@@ -25,7 +32,9 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Adjacent"]
   23["EdgeCut Fillet<br>[209, 267, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   24["EdgeCut Fillet<br>[209, 267, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -36,7 +45,7 @@ flowchart LR
   3 --- 12
   3 x--> 13
   3 --- 18
-  3 --- 20
+  3 --- 22
   3 --- 24
   4 --- 10
   4 x--> 13
@@ -44,11 +53,11 @@ flowchart LR
   4 --- 21
   5 --- 9
   5 x--> 13
-  5 --- 15
-  5 --- 22
+  5 --- 16
+  5 --- 20
   6 --- 11
   6 x--> 13
-  6 --- 16
+  6 --- 15
   6 --- 19
   8 --- 9
   8 --- 10
@@ -64,19 +73,21 @@ flowchart LR
   8 --- 20
   8 --- 21
   8 --- 22
-  15 <--x 9
+  9 --- 16
+  9 --- 20
   21 <--x 9
-  22 <--x 9
-  17 <--x 10
-  20 <--x 10
-  21 <--x 10
-  16 <--x 11
-  19 <--x 11
-  22 <--x 11
+  10 --- 17
+  10 --- 21
+  22 <--x 10
+  11 --- 15
+  11 --- 19
+  20 <--x 11
+  12 --- 18
   19 <--x 12
-  20 <--x 12
+  12 --- 22
   15 <--x 14
   16 <--x 14
   17 <--x 14
+  18 <--x 14
   18 <--x 23
 ```

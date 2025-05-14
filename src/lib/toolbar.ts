@@ -10,6 +10,7 @@ import {
   isEditingExistingSketch,
   pipeHasCircle,
 } from '@src/machines/modelingMachine'
+import { IS_ML_EXPERIMENTAL } from '@src/lib/constants'
 
 export type ToolbarModeName = 'modeling' | 'sketching'
 
@@ -36,7 +37,7 @@ export type ToolbarItem = {
   icon?: CustomIconName
   iconColor?: string
   alwaysDark?: true
-  status: 'available' | 'unavailable' | 'kcl-only'
+  status: 'available' | 'unavailable' | 'kcl-only' | 'experimental'
   disabled?: (state: StateFrom<typeof modelingMachine>) => boolean
   disableHotkey?: (state: StateFrom<typeof modelingMachine>) => boolean
   title: string | ((props: ToolbarItemCallbackProps) => string)
@@ -237,7 +238,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanUnion',
             status: 'available',
             title: 'Union',
-            hotkey: 'Shift + B U',
             description: 'Combine two or more solids into a single solid.',
             links: [
               {
@@ -256,7 +256,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanSubtract',
             status: 'available',
             title: 'Subtract',
-            hotkey: 'Shift + B S',
             description: 'Subtract one solid from another.',
             links: [
               {
@@ -275,7 +274,6 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'booleanIntersect',
             status: 'available',
             title: 'Intersect',
-            hotkey: 'Shift + B I',
             description: 'Create a solid from the intersection of two solids.',
             links: [
               {
@@ -440,7 +438,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'sparkles',
             iconColor: '#29FFA4',
             alwaysDark: true,
-            status: 'available',
+            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
             title: 'Create with Zoo Text-to-CAD',
             description: 'Create geometry with AI / ML.',
             links: [
@@ -460,7 +458,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             icon: 'sparkles',
             iconColor: '#29FFA4',
             alwaysDark: true,
-            status: 'available',
+            status: IS_ML_EXPERIMENTAL ? 'experimental' : 'available',
             title: 'Modify with Zoo Text-to-CAD',
             description: 'Edit geometry with AI / ML.',
             links: [],
@@ -630,7 +628,9 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             isActive: (state) =>
               state.matches({ Sketch: 'Circle three point tool' }),
             hotkey: (state) =>
-              state.matches({ Sketch: 'Circle three point tool' }) ? 'Esc' : [],
+              state.matches({ Sketch: 'Circle three point tool' })
+                ? ['Alt+C', 'Esc']
+                : 'Alt+C',
             showTitle: false,
             description: 'Draw a circle defined by three points',
             links: [],
@@ -680,6 +680,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             title: 'Center rectangle',
             description: 'Start drawing a rectangle from its center',
             links: [],
+            hotkey: (state) =>
+              state.matches({ Sketch: 'Center Rectangle tool' })
+                ? ['Alt+R', 'Esc']
+                : 'Alt+R',
             isActive: (state) => {
               return state.matches({ Sketch: 'Center Rectangle tool' })
             },

@@ -1,6 +1,5 @@
 use std::{
     collections::HashMap,
-    path::PathBuf,
     sync::{Arc, Mutex},
 };
 
@@ -8,6 +7,7 @@ use anyhow::Result;
 
 use crate::{
     errors::KclErrorDetails,
+    execution::typed_path::TypedPath,
     modules::{ModulePath, ModuleRepr},
     parsing::ast::types::{ImportPath, ImportStatement, Node as AstNode},
     walk::{Node, Visitable},
@@ -22,7 +22,7 @@ type Dependency = (String, String);
 type Graph = Vec<Dependency>;
 
 pub(crate) type DependencyInfo = (AstNode<ImportStatement>, ModuleId, ModulePath, ModuleRepr);
-pub(crate) type UniverseMap = HashMap<PathBuf, AstNode<ImportStatement>>;
+pub(crate) type UniverseMap = HashMap<TypedPath, AstNode<ImportStatement>>;
 pub(crate) type Universe = HashMap<String, DependencyInfo>;
 
 /// Process a number of programs, returning the graph of dependencies.

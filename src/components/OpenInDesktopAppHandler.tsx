@@ -9,6 +9,8 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { Themes, getSystemTheme } from '@src/lib/theme'
+import toast from 'react-hot-toast'
+import { platform } from '@src/lib/utils'
 
 /**
  * This component is a handler that checks if a certain query parameter
@@ -35,11 +37,24 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
    */
   function onOpenInDesktopApp() {
     const newSearchParams = new URLSearchParams(globalThis.location.search)
-    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
     )}${searchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
+
+    // TODO: find a way to workaround this limitation, modeling-app#6200
+    // Electron issue: https://github.com/electron/electron/issues/40776
+    // This 2046 value comes from https://issues.chromium.org/issues/41322340#comment3
+    // and empirical testing on Chrome and Windows 11
+    const MAX_URL_LENGTH = 2046
+    if (platform() === 'windows' && newURL.length > MAX_URL_LENGTH) {
+      toast.error(
+        'The URL is too long to open in the desktop app on Windows. Try another platform or use the web app.'
+      )
+      return
+    }
+
+    newSearchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
     globalThis.location.href = newURL
   }
 
@@ -116,6 +131,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
             className={buttonClasses + ' -order-1 !text-base'}
             onClick={continueToWebApp}
             iconStart={{ icon: 'arrowLeft' }}
+            data-testid="continue-to-web-app-button"
           >
             Continue to web app
           </ActionButton>

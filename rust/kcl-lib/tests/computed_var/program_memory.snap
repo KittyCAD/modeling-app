@@ -4,7 +4,7 @@ description: Variables in memory after executing computed_var.kcl
 ---
 {
   "arr": {
-    "type": "MixedArray",
+    "type": "HomArray",
     "value": [
       {
         "type": "Number",

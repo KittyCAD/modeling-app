@@ -23,10 +23,13 @@ export const CommandBar = () => {
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
-  const isSelectionArgument =
+  const isArgumentThatShouldBeHardToDismiss =
     currentArgument?.inputType === 'selection' ||
-    currentArgument?.inputType === 'selectionMixed'
-  const WrapperComponent = isSelectionArgument ? Popover : Dialog
+    currentArgument?.inputType === 'selectionMixed' ||
+    currentArgument?.inputType === 'text'
+  const WrapperComponent = isArgumentThatShouldBeHardToDismiss
+    ? Popover
+    : Dialog
 
   // Close the command bar when navigating
   useEffect(() => {
@@ -120,13 +123,16 @@ export const CommandBar = () => {
       as={Fragment}
     >
       <WrapperComponent
-        open={!commandBarState.matches('Closed') || isSelectionArgument}
+        open={
+          !commandBarState.matches('Closed') ||
+          isArgumentThatShouldBeHardToDismiss
+        }
         onClose={() => {
           commandBarActor.send({ type: 'Close' })
         }}
         className={
           'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
-          (isSelectionArgument ? 'pointer-events-none' : '')
+          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
         }
         data-testid="command-bar-wrapper"
       >
@@ -163,6 +169,7 @@ export const CommandBar = () => {
             )}
             <div className="flex flex-col gap-2 !absolute left-auto right-full top-[-3px] m-2.5 p-0 border-none bg-transparent hover:bg-transparent">
               <button
+                data-testid="command-bar-close-button"
                 onClick={() => commandBarActor.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
               >

@@ -1,43 +1,61 @@
+/// The KCL standard library
+///
+/// Contains frequently used constants, functions for interacting with the KittyCAD servers to
+/// create sketches and geometry, and utility functions.
+///
+/// The standard library is organised into modules (listed below), but most things are always available
+/// in KCL programs.
+///
+/// You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL guide]().
+
 @no_std
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 // Note that everything in the prelude is treated as exported.
 
 export import * from "std::types"
 export import "std::units"
+export import * from "std::array"
 export import * from "std::math"
 export import * from "std::sketch"
 export import * from "std::solid"
+export import * from "std::transform"
 export import "std::turns"
 
+/// An abstract 3d plane aligned with the X and Y axes. Its normal is the positive Z axis.
 export XY = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 1, z = 0 },
 }: Plane
 
+/// An abstract 3d plane aligned with the X and Z axes. Its normal is the negative Y axis.
 export XZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 1, y = 0, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
+/// An abstract 3d plane aligned with the Y and Z axes. Its normal is the positive X axis.
 export YZ = {
   origin = { x = 0, y = 0, z = 0 },
   xAxis = { x = 0, y = 1, z = 0 },
   yAxis = { x = 0, y = 0, z = 1 },
 }: Plane
 
+/// The X-axis (can be used in both 2d and 3d contexts).
 export X = {
   origin = [0, 0, 0],
   direction = [1, 0, 0],
 }: Axis3d
 
+/// The Y-axis (can be used in both 2d and 3d contexts).
 export Y = {
   origin = [0, 0, 0],
   direction = [0, 1, 0],
 }: Axis3d
 
+/// The 3D Z-axis.
 export Z = {
   origin = [0, 0, 0],
   direction = [0, 0, 1],
@@ -144,245 +162,6 @@ export fn helix(
   cylinder?: Solid,
 ): Helix {}
 
-/// Rotate a sketch around some provided axis, creating a solid from its extent.
-///
-/// This, like extrude, is able to create a 3-dimensional solid from a
-/// 2-dimensional sketch. However, unlike extrude, this creates a solid
-/// by using the extent of the sketch as its revolved around an axis rather
-/// than using the extent of the sketch linearly translated through a third
-/// dimension.
-///
-/// Revolve occurs around a local sketch axis rather than a global axis.
-///
-/// You can provide more than one sketch to revolve, and they will all be
-/// revolved around the same axis.
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y) // default angle is 360
-/// ```
-///
-/// ```
-/// // A donut shape.
-/// sketch001 = startSketchOn(XY)
-///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve(
-///         angle = 360,
-///         axis = Y,
-///     )
-/// ```
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y, angle = 180)
-/// ```
-///
-/// ```
-/// part001 = startSketchOn(XY)
-///     |> startProfile(at = [4, 12])
-///     |> line(end = [2, 0])
-///     |> line(end = [0, -6])
-///     |> line(end = [4, -6])
-///     |> line(end = [0, -6])
-///     |> line(end = [-3.75, -4.5])
-///     |> line(end = [0, -5.5])
-///     |> line(end = [-2, 0])
-///     |> close()
-///     |> revolve(axis = Y, angle = 180)
-///
-/// part002 = startSketchOn(part001, face = END)
-///     |> startProfile(at = [4.5, -5])
-///     |> line(end = [0, 5])
-///     |> line(end = [5, 0])
-///     |> line(end = [0, -5])
-///     |> close()
-///     |> extrude(length = 5)
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20])
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = -90,
-///         axis = Y
-///     )
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20], tag = $revolveAxis)
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = 90,
-///         axis = getOppositeEdge(revolveAxis)
-///     )
-/// ```
-///
-/// ```
-/// box = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20])
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20], tag = $revolveAxis)
-///     |> close()
-///     |> extrude(length = 20)
-///
-/// sketch001 = startSketchOn(box, face = END)
-///     |> circle( center = [10,10], radius = 4 )
-///     |> revolve(
-///         angle = 90,
-///         axis = getOppositeEdge(revolveAxis),
-///         tolerance = 0.0001
-///     )
-/// ```
-///
-/// ```
-/// sketch001 = startSketchOn(XY)
-///   |> startProfile(at = [10, 0])
-///   |> line(end = [5, -5])
-///   |> line(end = [5, 5])
-///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///   |> close()
-///
-/// part001 = revolve(
-///    sketch001,
-///    axis = {
-///      direction = [0.0, 1.0],
-///      origin = [0.0, 0.0]
-///   }
-/// )
-/// ```
-///
-/// ```
-/// // Revolve two sketches around the same axis.
-///
-/// sketch001 = startSketchOn(XY)
-/// profile001 = startProfile(sketch001, at = [4, 8])
-///     |> xLine(length = 3)
-///     |> yLine(length = -3)
-///     |> xLine(length = -3)
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// profile002 = startProfile(sketch001, at = [-5, 8])
-///     |> xLine(length = 3)
-///     |> yLine(length = -3)
-///     |> xLine(length = -3)
-///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-///     |> close()
-///
-/// revolve(
-///     [profile001, profile002],
-///     axis = X,
-/// )
-/// ```
-///
-/// ```
-/// // Revolve around a path that has not been extruded.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///     |> line(end = [0, -20])
-///     |> close(%)
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
-/// ```
-///
-/// ```
-/// // Revolve around a path that has not been extruded or closed.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis)
-/// ```
-///
-/// ```
-/// // Symmetrically revolve around a path.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, symmetric = true)
-/// ```
-///
-/// ```
-/// // Bidirectional revolve around a path.
-///
-/// profile001 = startSketchOn(XY)
-///     |> startProfile(at = [0, 0])
-///     |> line(end = [0, 20], tag = $revolveAxis)
-///     |> line(end = [20, 0])
-///
-/// sketch001 = startSketchOn(XY)
-///     |> circle(center = [-10, 10], radius = 4)
-///     |> revolve(angle = 90, axis = revolveAxis, bidirectionalAngle = 50)
-/// ```
-@(impl = std_rust)
-export fn revolve(
-  /// The sketch or set of sketches that should be revolved
-  @sketches: [Sketch; 1+],
-  /// Axis of revolution.
-  axis: Axis2d | Edge,
-  /// Angle to revolve (in degrees). Default is 360.
-  angle?: number(Angle),
-  /// Tolerance for the revolve operation.
-  tolerance?: number(Length),
-  /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
-  symmetric?: bool,
-  /// If specified, will also revolve in the opposite direction to 'angle' to the specified angle. If 'symmetric' is true, this value is ignored.
-  bidirectionalAngle?: number(Angle),
-  /// A named tag for the face at the start of the revolve, i.e. the original sketch.
-  tagStart?: tag,
-  /// A named tag for the face at the end of the revolve.
-  tagEnd?: tag,
-): Solid {}
-
 /// Offset a plane by a distance along its normal.
 ///
 /// For example, if you offset the `XZ` plane by 10, the new plane will be parallel to the `XZ`
@@ -472,3 +251,234 @@ export fn offsetPlane(
   /// Distance from the standard plane this new plane will be created at.
   offset: number(Length),
 ): Plane {}
+
+/// Clone a sketch or solid.
+///
+/// This works essentially like a copy-paste operation. It creates a perfect replica
+/// at that point in time that you can manipulate individually afterwards.
+///
+/// This doesn't really have much utility unless you need the equivalent of a double
+/// instance pattern with zero transformations.
+///
+/// Really only use this function if YOU ARE SURE you need it. In most cases you
+/// do not need clone and using a pattern with `instance = 2` is more appropriate.
+///
+/// ```kcl
+/// // Clone a basic sketch and move it and extrude it.
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// clonedSketch = clone(exampleSketch)
+///     |> scale(
+///     x = 1.0,
+///     y = 1.0,
+///     z = 2.5,
+///     )
+///     |> translate(
+///         x = 15.0,
+///         y = 0,
+///         z = 0,
+///     )
+///     |> extrude(length = 5)
+/// ```
+///
+/// ```kcl
+/// // Clone a basic solid and move it.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// myPart = extrude(exampleSketch, length = 5)
+/// clonedPart = clone(myPart)
+///     |> translate(
+///         x = 25.0,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Translate and rotate a cloned sketch to create a loft.
+///
+/// sketch001 = startSketchOn(XY)
+///         |> startProfile(at = [-10, 10])
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> close()
+///
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 0, y = 0, z = 20)
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([sketch001, sketch002])
+/// ```
+///
+/// ```kcl
+/// // Translate a cloned solid. Fillet only the clone.
+///
+/// sketch001 = startSketchOn(XY)
+///         |> startProfile(at = [-10, 10])
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20, tag = $filletTag)
+///         |> close()
+///         |> extrude(length = 5)
+///
+///
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 0, y = 0, z = 20)
+///     |> fillet(
+///     radius = 2,
+///     tags = [getNextAdjacentEdge(filletTag)],
+///     )
+/// ```
+///
+/// ```kcl
+/// // You can reuse the tags from the original geometry with the cloned geometry.
+///
+/// sketch001 = startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10], tag = $sketchingFace)
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// sketch002 = clone(sketch001)
+///     |> translate(x = 10, y = 20, z = 0)
+///     |> extrude(length = 5)
+///
+/// startSketchOn(sketch002, face = sketchingFace)
+///   |> startProfile(at = [1, 1])
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close(tag = $sketchingFace002)
+///   |> extrude(length = 10)
+/// ```
+///
+/// ```kcl
+/// // You can also use the tags from the original geometry to fillet the cloned geometry.
+///
+/// width = 20
+/// length = 10
+/// thickness = 1
+/// filletRadius = 2
+///
+/// mountingPlateSketch = startSketchOn(XY)
+///   |> startProfile(at = [-width/2, -length/2])
+///   |> line(endAbsolute = [width/2, -length/2], tag = $edge1)
+///   |> line(endAbsolute = [width/2, length/2], tag = $edge2)
+///   |> line(endAbsolute = [-width/2, length/2], tag = $edge3)
+///   |> close(tag = $edge4)
+///
+/// mountingPlate = extrude(mountingPlateSketch, length = thickness)
+///
+/// clonedMountingPlate = clone(mountingPlate)
+///   |> fillet(
+///     radius = filletRadius,
+///     tags = [
+///       getNextAdjacentEdge(edge1),
+///       getNextAdjacentEdge(edge2),
+///       getNextAdjacentEdge(edge3),
+///       getNextAdjacentEdge(edge4)
+///     ],
+///   )
+///   |> translate(x = 0, y = 50, z = 0)
+/// ```
+///
+/// ```kcl
+/// // Create a spring by sweeping around a helix path from a cloned sketch.
+///
+/// // Create a helix around the Z axis.
+/// helixPath = helix(
+///     angleStart = 0,
+///     ccw = true,
+///     revolutions = 4,
+///     length = 10,
+///     radius = 5,
+///     axis = Z,
+///  )
+///
+///
+/// springSketch = startSketchOn(YZ)
+///     |> circle( center = [0, 0], radius = 1)
+///
+/// // Create a spring by sweeping around the helix path.
+/// sweepedSpring = clone(springSketch)
+///     |> translate(x=100)
+///     |> sweep(path = helixPath)
+/// ```
+///
+/// ```kcl
+/// // A donut shape from a cloned sketch.
+/// sketch001 = startSketchOn(XY)
+///     |> circle( center = [15, 0], radius = 5 )
+///
+/// sketch002 = clone(sketch001)
+///    |> translate( z = 30)
+///     |> revolve(
+///         angle = 360,
+///         axis = Y,
+///     )
+/// ```
+///
+/// ```kcl
+/// // Sketch on the end of a revolved face by tagging the end face.
+/// // This shows the cloned geometry will have the same tags as the original geometry.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfile(at = [4, 12])
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example001 = revolve(exampleSketch, axis = Y, angle = 180, tagEnd = $end01)
+///
+/// // example002 = clone(example001)
+/// // |> translate(x = 0, y = 20, z = 0)
+///
+/// // Sketch on the cloned face.
+/// // exampleSketch002 = startSketchOn(example002, face = end01)
+/// //  |> startProfile(at = [4.5, -5])
+/// //  |> line(end = [0, 5])
+/// //  |> line(end = [5, 0])
+/// //  |> line(end = [0, -5])
+/// //  |> close()
+///
+/// // example003 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```kcl
+/// // Clone an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// myCube = cube
+///
+/// clonedCube = clone(myCube)
+///    |> translate(
+///    x = 1020,
+///    )
+///    |> appearance(
+///        color = "#ff0000",
+///        metalness = 50,
+///        roughness = 50
+///    )
+/// ```
+@(impl = std_rust)
+export fn clone(
+  /// The sketch, solid, or imported geometry to be cloned.
+  @geometry: Sketch | Solid | ImportedGeometry,
+): Sketch | Solid | ImportedGeometry {}

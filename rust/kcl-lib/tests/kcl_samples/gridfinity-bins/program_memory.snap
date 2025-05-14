@@ -7,7 +7,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -38,7 +38,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -5503,9 +5503,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -5516,9 +5516,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -5529,9 +5529,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -5542,9 +5542,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -5565,9 +5565,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -5590,9 +5590,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -5615,9 +5615,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -5640,9 +5640,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -5823,9 +5823,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -5836,9 +5836,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -5849,9 +5849,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -5862,9 +5862,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -5885,9 +5885,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -5910,9 +5910,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -5935,9 +5935,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -5960,9 +5960,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6143,9 +6143,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6156,9 +6156,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6169,9 +6169,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6182,9 +6182,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6205,9 +6205,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6230,9 +6230,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6255,9 +6255,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6280,9 +6280,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6463,9 +6463,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6476,9 +6476,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6489,9 +6489,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6502,9 +6502,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6525,9 +6525,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6550,9 +6550,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6575,9 +6575,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6600,9 +6600,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6783,9 +6783,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6796,9 +6796,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6809,9 +6809,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6822,9 +6822,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6845,9 +6845,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6870,9 +6870,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6895,9 +6895,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6920,9 +6920,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7103,9 +7103,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2387,
-                "end": 2395,
-                "start": 2387,
+                "commentStart": 2405,
+                "end": 2413,
+                "start": 2405,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7116,9 +7116,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2457,
-                "end": 2465,
-                "start": 2457,
+                "commentStart": 2475,
+                "end": 2483,
+                "start": 2475,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7129,9 +7129,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2516,
-                "end": 2524,
-                "start": 2516,
+                "commentStart": 2534,
+                "end": 2542,
+                "start": 2534,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7142,9 +7142,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 2543,
-                "end": 2551,
-                "start": 2543,
+                "commentStart": 2561,
+                "end": 2569,
+                "start": 2561,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7165,9 +7165,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2387,
-                  "end": 2395,
-                  "start": 2387,
+                  "commentStart": 2405,
+                  "end": 2413,
+                  "start": 2405,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7190,9 +7190,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "commentStart": 2457,
-                  "end": 2465,
-                  "start": 2457,
+                  "commentStart": 2475,
+                  "end": 2483,
+                  "start": 2475,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7215,9 +7215,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2516,
-                  "end": 2524,
-                  "start": 2516,
+                  "commentStart": 2534,
+                  "end": 2542,
+                  "start": 2534,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7240,9 +7240,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "commentStart": 2543,
-                  "end": 2551,
-                  "start": 2543,
+                  "commentStart": 2561,
+                  "end": 2569,
+                  "start": 2561,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -12882,9 +12882,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4456,
-            "end": 4464,
-            "start": 4456,
+            "commentStart": 4474,
+            "end": 4482,
+            "start": 4474,
             "type": "TagDeclarator",
             "value": "line010"
           },
@@ -12895,9 +12895,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4535,
-            "end": 4543,
-            "start": 4535,
+            "commentStart": 4553,
+            "end": 4561,
+            "start": 4553,
             "type": "TagDeclarator",
             "value": "line011"
           },
@@ -12908,9 +12908,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4594,
-            "end": 4602,
-            "start": 4594,
+            "commentStart": 4612,
+            "end": 4620,
+            "start": 4612,
             "type": "TagDeclarator",
             "value": "line012"
           },
@@ -12921,9 +12921,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4621,
-            "end": 4629,
-            "start": 4621,
+            "commentStart": 4639,
+            "end": 4647,
+            "start": 4639,
             "type": "TagDeclarator",
             "value": "line013"
           },
@@ -12944,9 +12944,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4456,
-              "end": 4464,
-              "start": 4456,
+              "commentStart": 4474,
+              "end": 4482,
+              "start": 4474,
               "type": "TagDeclarator",
               "value": "line010"
             },
@@ -12969,9 +12969,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 4535,
-              "end": 4543,
-              "start": 4535,
+              "commentStart": 4553,
+              "end": 4561,
+              "start": 4553,
               "type": "TagDeclarator",
               "value": "line011"
             },
@@ -12994,9 +12994,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4594,
-              "end": 4602,
-              "start": 4594,
+              "commentStart": 4612,
+              "end": 4620,
+              "start": 4612,
               "type": "TagDeclarator",
               "value": "line012"
             },
@@ -13019,9 +13019,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "commentStart": 4621,
-              "end": 4629,
-              "start": 4621,
+              "commentStart": 4639,
+              "end": 4647,
+              "start": 4639,
               "type": "TagDeclarator",
               "value": "line013"
             },
@@ -14148,7 +14148,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",
@@ -14295,9 +14296,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2387,
-                      "end": 2395,
-                      "start": 2387,
+                      "commentStart": 2405,
+                      "end": 2413,
+                      "start": 2405,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -14308,9 +14309,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2457,
-                      "end": 2465,
-                      "start": 2457,
+                      "commentStart": 2475,
+                      "end": 2483,
+                      "start": 2475,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -14321,9 +14322,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2516,
-                      "end": 2524,
-                      "start": 2516,
+                      "commentStart": 2534,
+                      "end": 2542,
+                      "start": 2534,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -14334,9 +14335,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2543,
-                      "end": 2551,
-                      "start": 2543,
+                      "commentStart": 2561,
+                      "end": 2569,
+                      "start": 2561,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -14357,9 +14358,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2387,
-                        "end": 2395,
-                        "start": 2387,
+                        "commentStart": 2405,
+                        "end": 2413,
+                        "start": 2405,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -14382,9 +14383,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2457,
-                        "end": 2465,
-                        "start": 2457,
+                        "commentStart": 2475,
+                        "end": 2483,
+                        "start": 2475,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -14407,9 +14408,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2516,
-                        "end": 2524,
-                        "start": 2516,
+                        "commentStart": 2534,
+                        "end": 2542,
+                        "start": 2534,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -14432,9 +14433,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2543,
-                        "end": 2551,
-                        "start": 2543,
+                        "commentStart": 2561,
+                        "end": 2569,
+                        "start": 2561,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -14715,9 +14716,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2387,
-                      "end": 2395,
-                      "start": 2387,
+                      "commentStart": 2405,
+                      "end": 2413,
+                      "start": 2405,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -14728,9 +14729,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2457,
-                      "end": 2465,
-                      "start": 2457,
+                      "commentStart": 2475,
+                      "end": 2483,
+                      "start": 2475,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -14741,9 +14742,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2516,
-                      "end": 2524,
-                      "start": 2516,
+                      "commentStart": 2534,
+                      "end": 2542,
+                      "start": 2534,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -14754,9 +14755,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2543,
-                      "end": 2551,
-                      "start": 2543,
+                      "commentStart": 2561,
+                      "end": 2569,
+                      "start": 2561,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -14777,9 +14778,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2387,
-                        "end": 2395,
-                        "start": 2387,
+                        "commentStart": 2405,
+                        "end": 2413,
+                        "start": 2405,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -14802,9 +14803,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2457,
-                        "end": 2465,
-                        "start": 2457,
+                        "commentStart": 2475,
+                        "end": 2483,
+                        "start": 2475,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -14827,9 +14828,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2516,
-                        "end": 2524,
-                        "start": 2516,
+                        "commentStart": 2534,
+                        "end": 2542,
+                        "start": 2534,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -14852,9 +14853,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2543,
-                        "end": 2551,
-                        "start": 2543,
+                        "commentStart": 2561,
+                        "end": 2569,
+                        "start": 2561,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -15135,9 +15136,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2387,
-                      "end": 2395,
-                      "start": 2387,
+                      "commentStart": 2405,
+                      "end": 2413,
+                      "start": 2405,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -15148,9 +15149,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2457,
-                      "end": 2465,
-                      "start": 2457,
+                      "commentStart": 2475,
+                      "end": 2483,
+                      "start": 2475,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -15161,9 +15162,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2516,
-                      "end": 2524,
-                      "start": 2516,
+                      "commentStart": 2534,
+                      "end": 2542,
+                      "start": 2534,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -15174,9 +15175,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2543,
-                      "end": 2551,
-                      "start": 2543,
+                      "commentStart": 2561,
+                      "end": 2569,
+                      "start": 2561,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -15197,9 +15198,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2387,
-                        "end": 2395,
-                        "start": 2387,
+                        "commentStart": 2405,
+                        "end": 2413,
+                        "start": 2405,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -15222,9 +15223,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2457,
-                        "end": 2465,
-                        "start": 2457,
+                        "commentStart": 2475,
+                        "end": 2483,
+                        "start": 2475,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -15247,9 +15248,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2516,
-                        "end": 2524,
-                        "start": 2516,
+                        "commentStart": 2534,
+                        "end": 2542,
+                        "start": 2534,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -15272,9 +15273,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2543,
-                        "end": 2551,
-                        "start": 2543,
+                        "commentStart": 2561,
+                        "end": 2569,
+                        "start": 2561,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -15555,9 +15556,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2387,
-                      "end": 2395,
-                      "start": 2387,
+                      "commentStart": 2405,
+                      "end": 2413,
+                      "start": 2405,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -15568,9 +15569,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2457,
-                      "end": 2465,
-                      "start": 2457,
+                      "commentStart": 2475,
+                      "end": 2483,
+                      "start": 2475,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -15581,9 +15582,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2516,
-                      "end": 2524,
-                      "start": 2516,
+                      "commentStart": 2534,
+                      "end": 2542,
+                      "start": 2534,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -15594,9 +15595,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
-                      "commentStart": 2543,
-                      "end": 2551,
-                      "start": 2543,
+                      "commentStart": 2561,
+                      "end": 2569,
+                      "start": 2561,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -15617,9 +15618,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2387,
-                        "end": 2395,
-                        "start": 2387,
+                        "commentStart": 2405,
+                        "end": 2413,
+                        "start": 2405,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -15642,9 +15643,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "commentStart": 2457,
-                        "end": 2465,
-                        "start": 2457,
+                        "commentStart": 2475,
+                        "end": 2483,
+                        "start": 2475,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -15667,9 +15668,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2516,
-                        "end": 2524,
-                        "start": 2516,
+                        "commentStart": 2534,
+                        "end": 2542,
+                        "start": 2534,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -15692,9 +15693,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "commentStart": 2543,
-                        "end": 2551,
-                        "start": 2543,
+                        "commentStart": 2561,
+                        "end": 2569,
+                        "start": 2561,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -16870,9 +16871,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2387,
-            "end": 2395,
-            "start": 2387,
+            "commentStart": 2405,
+            "end": 2413,
+            "start": 2405,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -16883,9 +16884,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2457,
-            "end": 2465,
-            "start": 2457,
+            "commentStart": 2475,
+            "end": 2483,
+            "start": 2475,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -16896,9 +16897,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2516,
-            "end": 2524,
-            "start": 2516,
+            "commentStart": 2534,
+            "end": 2542,
+            "start": 2534,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -16909,9 +16910,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2543,
-            "end": 2551,
-            "start": 2543,
+            "commentStart": 2561,
+            "end": 2569,
+            "start": 2561,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -16932,9 +16933,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "commentStart": 2387,
-              "end": 2395,
-              "start": 2387,
+              "commentStart": 2405,
+              "end": 2413,
+              "start": 2405,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -16957,9 +16958,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "commentStart": 2457,
-              "end": 2465,
-              "start": 2457,
+              "commentStart": 2475,
+              "end": 2483,
+              "start": 2475,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -16982,9 +16983,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "commentStart": 2516,
-              "end": 2524,
-              "start": 2516,
+              "commentStart": 2534,
+              "end": 2542,
+              "start": 2534,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -17007,9 +17008,9 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "commentStart": 2543,
-              "end": 2551,
-              "start": 2543,
+              "commentStart": 2561,
+              "end": 2569,
+              "start": 2561,
               "type": "TagDeclarator",
               "value": "line003"
             },

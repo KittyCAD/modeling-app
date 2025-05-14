@@ -1,0 +1,197 @@
+// Helical Planetary Gearset
+// A helical planetary gearset is a type of planetary gear system where the teeth of the sun gear, planet gears, and/or ring gear are helical rather than straight. This design allows for smoother, quieter operation, greater load-carrying capacity, and more flexible shaft alignment.
+
+// Set units
+@settings(defaultLengthUnit = mm)
+
+// Define a function to create a helical gear
+fn helicalGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Define the constants of the keyway and the bore hole
+  keywayWidth = 1
+  keywayDepth = keywayWidth / 2
+  holeDiam = 7
+  holeRadius = holeDiam / 2
+  startAngle = asin(keywayWidth / 2 / holeRadius)
+
+  // Sketch the keyway and center hole
+  holeWithKeyway = startSketchOn(XY)
+    |> startProfile(at = [
+         holeRadius * cos(startAngle),
+         holeRadius * sin(startAngle)
+       ])
+    |> xLine(length = keywayDepth)
+    |> yLine(length = -keywayWidth)
+    |> xLine(length = -keywayDepth)
+    |> arc(angleStart = -1 * startAngle + 360, angleEnd = 180, radius = holeRadius)
+    |> arc(angleStart = 180, angleEnd = startAngle, radius = holeRadius)
+    |> close()
+
+  // Define a function to create a rotated gear sketch on an offset plane
+  fn helicalGearSketch(offsetHeight) {
+    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
+    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+    helicalGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = helixCalc,
+           tag = $seg01,
+         )
+      |> line(endAbsolute = polar(angle = 160 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           reverse = true,
+         )
+
+      // Position the end line of the sketch at the start of the next tooth
+      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+
+      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+      |> patternCircular2d(
+           %,
+           instances = nTeeth,
+           center = [0, 0],
+           arcDegrees = 360,
+           rotateDuplicates = true,
+         )
+      |> close()
+      |> subtract2d(tool = holeWithKeyway)
+    return helicalGearSketch
+  }
+
+  // Draw a gear sketch on the base plane
+  gearSketch001 = helicalGearSketch(offsetHeight = 0)
+
+  // Draw a rotated gear sketch on a middle interstitial plane
+  gearSketch002 = helicalGearSketch(offsetHeight = gearHeight / 2)
+
+  // Draw a rotated gear sketch at the gear height offset plane
+  gearSketch003 = helicalGearSketch(offsetHeight = gearHeight)
+
+  // Loft each rotated gear sketch together to form a helical gear
+  helicalGear = loft([
+    gearSketch001,
+    gearSketch002,
+    gearSketch003
+  ])
+
+  return helicalGear
+}
+
+// Define a function to create a ring gear
+fn ringGear(nTeeth, module, pressureAngle, helixAngle, gearHeight) {
+  // Calculate gear parameters
+  pitchDiameter = module * nTeeth
+  addendum = module
+  deddendum = 1.25 * module
+  baseDiameter = pitchDiameter * cos(pressureAngle)
+  tipDiameter = pitchDiameter + 2 * module
+
+  // Define a function to create a rotated gear sketch on an offset plane
+  fn ringGearSketch(offsetHeight) {
+    // Calculate the amount to rotate each planar sketch of the gear given the gear helix angle and total gear height
+    helixCalc = acos(offsetHeight * tan(helixAngle) / (tipDiameter / 2))
+
+    // Using the gear parameters, sketch an involute tooth spanning from the base diameter to the tip diameter
+    ringTeeth = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> startProfile(at = polar(angle = helixCalc, length = baseDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = helixCalc,
+           tag = $seg01,
+         )
+      |> line(endAbsolute = polar(angle = 200 / nTeeth + helixCalc, length = tipDiameter / 2))
+      |> involuteCircular(
+           startRadius = baseDiameter / 2,
+           endRadius = tipDiameter / 2,
+           angle = -(4 * atan(segEndY(seg01) / segEndX(seg01)) - (3 * helixCalc)),
+           reverse = true,
+         )
+
+      // Position the end line of the sketch at the start of the next tooth
+      |> line(endAbsolute = polar(angle = 360 / nTeeth + helixCalc, length = baseDiameter / 2))
+
+      // Pattern the sketch about the center by the specified number of teeth, then close the sketch
+      |> patternCircular2d(
+           %,
+           instances = nTeeth,
+           center = [0, 0],
+           arcDegrees = 360,
+           rotateDuplicates = true,
+         )
+      |> close()
+
+    // Create a circular body that is larger than the tip diameter of the gear, then subtract the gear profile from the body
+    ringGearSketch = startSketchOn(offsetPlane(XY, offset = offsetHeight))
+      |> circle(center = [0, 0], radius = tipDiameter / 1.85)
+      |> subtract2d(tool = ringTeeth)
+    return ringGearSketch
+  }
+
+  // Draw a gear sketch on the base plane
+  gearSketch001 = ringGearSketch(offsetHeight = 0)
+
+  // Draw a rotated gear sketch on a middle interstitial plane
+  gearSketch002 = ringGearSketch(offsetHeight = gearHeight / 2)
+
+  // Draw a rotated gear sketch at the gear height offset plane
+  gearSketch003 = ringGearSketch(offsetHeight = gearHeight)
+
+  // Loft each rotated gear sketch together to form a ring gear
+  ringGear = loft([
+    gearSketch001,
+    gearSketch002,
+    gearSketch003
+  ])
+
+  return ringGear
+}
+
+// Create the outer ring gear for the planetary gearset
+ringGear(
+  nTeeth = 42,
+  module = 1.5,
+  pressureAngle = 14,
+  helixAngle = -25,
+  gearHeight = 5,
+)
+
+// Create a central sun gear using a small helical gear
+helicalGear(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14,
+  helixAngle = 25,
+  gearHeight = 5,
+)
+
+// Create the helical planet gears
+numPlanetGears = 3
+helicalGear(
+       nTeeth = 12,
+       module = 1.5,
+       pressureAngle = 14,
+       helixAngle = -25,
+       gearHeight = 5,
+     )
+  |> translate(y = (12 + 12) / 2 * 1.5 + 2.7)
+  |> patternCircular3d(
+       instances = numPlanetGears,
+       axis = [0, 0, 1],
+       center = [0, 0, 0],
+       arcDegrees = 360,
+       rotateDuplicates = false,
+     )

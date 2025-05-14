@@ -1002,9 +1002,14 @@ class EngineConnection extends EventTarget {
               })
               .join('\n')
             if (message.request_id) {
+              const pendingCommand =
+                this.engineCommandManager.pendingCommands[message.request_id]
               console.error(
-                `Error in response to request ${message.request_id}:\n${errorsString}
-    failed`
+                `Error in response to request ${message.request_id}:\n${errorsString}\n\nPending command:\n${JSON.stringify(
+                  pendingCommand,
+                  null,
+                  2
+                )}`
               )
             } else {
               console.error(`Error from server:\n${errorsString}`)
@@ -1704,6 +1709,21 @@ export class EngineCommandManager extends EventTarget {
     )
 
     return
+  }
+
+  async startFromWasm(token: string): Promise<boolean> {
+    return await new Promise((resolve) => {
+      this.start({
+        token,
+        width: 256,
+        height: 256,
+        setMediaStream: () => {},
+        setIsStreamReady: () => {},
+        callbackOnEngineLiteConnect: () => {
+          resolve(true)
+        },
+      })
+    })
   }
 
   handleMessage(event: MessageEvent) {

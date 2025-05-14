@@ -118,7 +118,6 @@ pub(super) async fn get_changed_program(old: CacheInformation<'_>, new: CacheInf
         // We know they have the same imports because the ast is the same.
         // If we have no imports, we can skip this.
         if !old.ast.has_import_statements() {
-            println!("No imports, no need to check.");
             return CacheResult::NoAction(reapply_settings);
         }
 
@@ -489,7 +488,7 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
 
     // Changing the edge visibility settings with the exact same file should NOT bust the cache.
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_get_changed_program_same_code_but_different_edge_visiblity_setting() {
+    async fn test_get_changed_program_same_code_but_different_edge_visibility_setting() {
         let new = r#"// Remove the end face for the extrusion.
 firstSketch = startSketchOn(XY)
   |> startProfile(at = [-12, 12])
@@ -676,7 +675,9 @@ extrude(profile001, length = 100)"#
         std::fs::write(tmp_file, other_file.1).unwrap();
 
         let ExecTestResults { program, exec_ctxt, .. } =
-            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+            parse_execute_with_project_dir(code, Some(crate::TypedPath(tmp_dir)))
+                .await
+                .unwrap();
 
         let mut new_program = crate::Program::parse_no_errs(code).unwrap();
         new_program.compute_digest();
@@ -755,7 +756,9 @@ extrude(profile001, length = 100)
         std::fs::write(&tmp_file, other_file.1).unwrap();
 
         let ExecTestResults { program, exec_ctxt, .. } =
-            parse_execute_with_project_dir(code, Some(tmp_dir)).await.unwrap();
+            parse_execute_with_project_dir(code, Some(crate::TypedPath(tmp_dir)))
+                .await
+                .unwrap();
 
         // Change the other file.
         std::fs::write(tmp_file, other_file2.1).unwrap();

@@ -40,7 +40,7 @@ export interface KclExpressionWithVariable extends KclExpression {
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
 export type CommandInputType = INPUT_TYPE[number]
-
+type CommandStatus = 'active' | 'development' | 'inactive' | 'experimental'
 export type FileFilter = {
   name: string
   extensions: string[]
@@ -103,6 +103,8 @@ export type Command<
   icon?: Icon
   hide?: PLATFORM[number]
   hideFromSearch?: boolean
+  disabled?: boolean
+  status?: CommandStatus
 }
 
 export type CommandConfig<
@@ -115,7 +117,7 @@ export type CommandConfig<
   'name' | 'groupId' | 'onSubmit' | 'onCancel' | 'args' | 'needsReview'
 > & {
   needsReview?: boolean
-  status?: 'active' | 'development' | 'inactive'
+  status?: CommandStatus
   args?: {
     [ArgName in keyof CommandSchema]: CommandArgumentConfig<
       CommandSchema[ArgName],

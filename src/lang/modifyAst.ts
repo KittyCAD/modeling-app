@@ -31,8 +31,6 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
@@ -46,7 +44,6 @@ import {
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type {
   ArrayExpression,
-  ArtifactGraph,
   CallExpressionKw,
   Expr,
   Literal,
@@ -67,7 +64,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { err, trap } from '@src/lib/trap'
-import { isOverlap, roundOff } from '@src/lib/utils'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ExtrudeFacePlane } from '@src/machines/modelingMachine'
 import { ARG_AT } from '@src/lang/constants'
 
@@ -106,7 +103,6 @@ export function startSketchOnDefault(
 
 export function insertNewStartProfileAt(
   node: Node<Program>,
-  sketchEntryNodePath: PathToNode,
   sketchNodePaths: PathToNode[],
   planeNodePath: PathToNode,
   at: [number, number],
@@ -227,7 +223,7 @@ export function mutateKwArg(
 ): boolean | 'no-mutate' {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       if (isLiteralArrayOrStatic(val) && isLiteralArrayOrStatic(arg.arg)) {
         node.arguments[i].arg = val
         return true
@@ -263,7 +259,7 @@ export function mutateKwArgOnly(
 ): boolean {
   for (let i = 0; i < node.arguments.length; i++) {
     const arg = node.arguments[i]
-    if (arg.label.name === label) {
+    if (arg.label?.name === label) {
       node.arguments[i].arg = val
       return true
     }
@@ -277,7 +273,7 @@ Mutates the given node by removing the labeled arguments.
 */
 export function removeKwArgs(labels: string[], node: CallExpressionKw) {
   for (const label of labels) {
-    const i = node.arguments.findIndex((la) => la.label.name === label)
+    const i = node.arguments.findIndex((la) => la.label?.name === label)
     if (i == -1) {
       continue
     }
@@ -340,122 +336,6 @@ export function mutateObjExpProp(
   return false
 }
 
-export function extrudeSketch({
-  node,
-  pathToNode,
-  distance = createLiteral(4),
-  extrudeName,
-  artifact,
-  artifactGraph,
-}: {
-  node: Node<Program>
-  pathToNode: PathToNode
-  distance: Expr
-  extrudeName?: string
-  artifactGraph: ArtifactGraph
-  artifact?: Artifact
-}):
-  | {
-      modifiedAst: Node<Program>
-      pathToNode: PathToNode
-      pathToExtrudeArg: PathToNode
-    }
-  | Error {
-  const orderedSketchNodePaths = getPathsFromArtifact({
-    artifact: artifact,
-    sketchPathToNode: pathToNode,
-    artifactGraph,
-    ast: node,
-  })
-  if (err(orderedSketchNodePaths)) return orderedSketchNodePaths
-  const _node = structuredClone(node)
-  const _node1 = getNodeFromPath(_node, pathToNode)
-  if (err(_node1)) return _node1
-
-  // determine if sketchExpression is in a pipeExpression or not
-  const _node2 = getNodeFromPath<PipeExpression>(
-    _node,
-    pathToNode,
-    'PipeExpression'
-  )
-  if (err(_node2)) return _node2
-
-  const _node3 = getNodeFromPath<VariableDeclarator>(
-    _node,
-    pathToNode,
-    'VariableDeclarator'
-  )
-  if (err(_node3)) return _node3
-  const { node: variableDeclarator } = _node3
-
-  const extrudeCall = createCallExpressionStdLibKw(
-    'extrude',
-    createLocalName(variableDeclarator.id.name),
-    [createLabeledArg('length', distance)]
-  )
-  // index of the 'length' arg above. If you reorder the labeled args above,
-  // make sure to update this too.
-  const argIndex = 0
-
-  // We're not creating a pipe expression,
-  // but rather a separate constant for the extrusion
-  const name =
-    extrudeName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE)
-  const VariableDeclaration = createVariableDeclaration(name, extrudeCall)
-
-  const lastSketchNodePath =
-    orderedSketchNodePaths[orderedSketchNodePaths.length - 1]
-
-  const sketchIndexInBody = Number(lastSketchNodePath[1][0])
-  _node.body.splice(sketchIndexInBody + 1, 0, VariableDeclaration)
-
-  const pathToExtrudeArg: PathToNode = [
-    ['body', ''],
-    [sketchIndexInBody + 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-  return {
-    modifiedAst: _node,
-    pathToNode: [...pathToNode.slice(0, -1), [-1, 'index']],
-    pathToExtrudeArg,
-  }
-}
-
-export function loftSketches(
-  node: Node<Program>,
-  declarators: VariableDeclarator[]
-): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name = findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.LOFT)
-  const elements = declarators.map((d) => createLocalName(d.id.name))
-  const loft = createCallExpressionStdLibKw(
-    'loft',
-    createArrayExpression(elements),
-    []
-  )
-  const declaration = createVariableDeclaration(name, loft)
-  modifiedAst.body.push(declaration)
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [modifiedAst.body.length - 1, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['unlabeled', UNLABELED_ARG],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
 export function addShell({
   node,
   sweepName,
@@ -497,63 +377,6 @@ export function addShell({
     modifiedAst.body.push(variable)
   }
 
-  const argIndex = 0
-  const pathToNode: PathToNode = [
-    ['body', ''],
-    [insertAt, 'index'],
-    ['declaration', 'VariableDeclaration'],
-    ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpressionKw'],
-    [argIndex, ARG_INDEX_FIELD],
-    ['arg', LABELED_ARG_FIELD],
-  ]
-
-  return {
-    modifiedAst,
-    pathToNode,
-  }
-}
-
-export function addSweep({
-  node,
-  targetDeclarator,
-  trajectoryDeclarator,
-  sectional,
-  variableName,
-  insertIndex,
-}: {
-  node: Node<Program>
-  targetDeclarator: VariableDeclarator
-  trajectoryDeclarator: VariableDeclarator
-  sectional: boolean
-  variableName?: string
-  insertIndex?: number
-}): {
-  modifiedAst: Node<Program>
-  pathToNode: PathToNode
-} {
-  const modifiedAst = structuredClone(node)
-  const name =
-    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SWEEP)
-  const call = createCallExpressionStdLibKw(
-    'sweep',
-    createLocalName(targetDeclarator.id.name),
-    [
-      createLabeledArg('path', createLocalName(trajectoryDeclarator.id.name)),
-      createLabeledArg('sectional', createLiteral(sectional)),
-    ]
-  )
-  const variable = createVariableDeclaration(name, call)
-  const insertAt =
-    insertIndex !== undefined
-      ? insertIndex
-      : modifiedAst.body.length
-        ? modifiedAst.body.length
-        : 0
-
-  modifiedAst.body.length
-    ? modifiedAst.body.splice(insertAt, 0, variable)
-    : modifiedAst.body.push(variable)
   const argIndex = 0
   const pathToNode: PathToNode = [
     ['body', ''],
@@ -637,7 +460,8 @@ export function sketchOnExtrudedFace(
 
   const expressionIndex = Math.max(
     sketchPathToNode[1][0] as number,
-    extrudePathToNode[1][0] as number
+    extrudePathToNode[1][0] as number,
+    node.body.length - 1
   )
   _node.body.splice(expressionIndex + 1, 0, newSketch)
   const newpathToNode: PathToNode = [
@@ -1125,6 +949,27 @@ export function deleteSegmentFromPipeExpression(
   return _modifiedAst
 }
 
+/**
+ * Deletes a standalone top level statement from the AST
+ * Used for removing both unassigned statements and variable declarations
+ *
+ * @param ast The AST to modify
+ * @param pathToNode The path to the node to delete
+ */
+export function deleteTopLevelStatement(
+  ast: Node<Program>,
+  pathToNode: PathToNode
+): Error | void {
+  const pathStep = pathToNode[1]
+  if (!isArray(pathStep) || typeof pathStep[0] !== 'number') {
+    return new Error(
+      'Invalid pathToNode structure: expected a number at path[1][0]'
+    )
+  }
+  const statementIndex: number = pathStep[0]
+  ast.body.splice(statementIndex, 1)
+}
+
 export function removeSingleConstraintInfo(
   pathToCallExp: PathToNode,
   argDetails: SimplifiedArgDetails,
@@ -1215,19 +1060,19 @@ export function updateSketchNodePathsWithInsertIndex({
  * ```ts
  * part001 = startSketchOn(XZ)
   |> startProfile(at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 into
 ```ts
 sketch001 = startSketchOn(XZ)
 part001 = startProfile(sketch001, at = [1, 2])
-  |> line([3, 4], %)
-  |> line([5, 6], %)
-  |> close(%)
-extrude001 = extrude(5, part001)
+  |> line(end = [3, 4])
+  |> line(end = [5, 6])
+  |> close()
+extrude001 = extrude(part001, length = 5)
 ```
 Notice that the `startSketchOn` is what gets the new variable name, this is so part001 still has the same data as before
 making it safe for later code that uses part001 (the extrude in this example)
@@ -1345,7 +1190,7 @@ export function createNodeFromExprSnippet(
 export function insertVariableAndOffsetPathToNode(
   variable: KclCommandValue,
   modifiedAst: Node<Program>,
-  pathToNode: PathToNode
+  pathToNode?: PathToNode
 ) {
   if ('variableName' in variable && variable.variableName) {
     modifiedAst.body.splice(
@@ -1353,7 +1198,7 @@ export function insertVariableAndOffsetPathToNode(
       0,
       variable.variableDeclarationAst
     )
-    if (typeof pathToNode[1][0] === 'number') {
+    if (pathToNode && pathToNode[1] && typeof pathToNode[1][0] === 'number') {
       pathToNode[1][0]++
     }
   }

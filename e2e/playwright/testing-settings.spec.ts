@@ -20,7 +20,7 @@ import {
   createProject,
   executorInputPath,
   getUtils,
-  networkingMasks,
+  lowerRightMasks,
   settingsToToml,
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
@@ -652,7 +652,7 @@ test.describe(
               `Set default unit to "${unitOfMeasure}" for this project`
             )
 
-            // Assert visibility and disapperance
+            // Assert visibility and disappearance
             await expect(toastMessage).toBeVisible()
             await expect(toastMessage).not.toBeVisible()
           })
@@ -797,7 +797,7 @@ test.describe(
 
         // We use the line tool as a proxy for sketch mode
         await expect(lineToolButton).toBeVisible()
-        await expect(segmentOverlays).toHaveCount(4)
+        await expect(segmentOverlays).toHaveCount(5)
         // but we allow more time to pass for animating to the sketch
         await page.waitForTimeout(1000)
       })
@@ -1061,7 +1061,7 @@ fn cube`
         'toggle-settings-initial.png',
         {
           maxDiffPixels: 15,
-          mask: networkingMasks(page),
+          mask: lowerRightMasks(page),
         }
       )
 
@@ -1078,7 +1078,7 @@ fn cube`
         'toggle-settings-initial.png',
         {
           maxDiffPixels: 15,
-          mask: networkingMasks(page),
+          mask: lowerRightMasks(page),
         }
       )
     })

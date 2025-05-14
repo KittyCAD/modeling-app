@@ -17,9 +17,9 @@ use crate::{
 /// Returns the point at the end of the given segment.
 pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_end(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_end(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the ending point of the provided line segment.
@@ -53,7 +53,8 @@ pub async fn segment_end(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -63,8 +64,11 @@ fn inner_segment_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.end_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_to().clone())
+    Ok(point)
 }
 
 /// Returns the segment end of x.
@@ -94,7 +98,8 @@ pub async fn segment_end_x(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -136,7 +141,8 @@ pub async fn segment_end_y(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -153,9 +159,9 @@ fn inner_segment_end_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
 /// Returns the point at the start of the given segment.
 pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let tag: TagIdentifier = args.get_unlabeled_kw_arg("tag")?;
-    let result = inner_segment_start(&tag, exec_state, args.clone())?;
+    let pt = inner_segment_start(&tag, exec_state, args.clone())?;
 
-    args.make_user_val_from_point(result)
+    args.make_kcl_val_from_point([pt[0].n, pt[1].n], pt[0].ty.clone())
 }
 
 /// Compute the starting point of the provided line segment.
@@ -189,7 +195,8 @@ pub async fn segment_start(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<[TyF64; 2], KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -199,8 +206,11 @@ fn inner_segment_start(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
             source_ranges: vec![args.source_range],
         })
     })?;
+    let (p, ty) = path.start_point_components();
+    // Docs generation isn't smart enough to handle ([f64; 2], NumericType).
+    let point = [TyF64::new(p[0], ty.clone()), TyF64::new(p[1], ty)];
 
-    Ok(path.get_from().to_owned())
+    Ok(point)
 }
 
 /// Returns the segment start of x.
@@ -230,7 +240,8 @@ pub async fn segment_start_x(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -272,7 +283,8 @@ pub async fn segment_start_y(exec_state: &mut ExecState, args: Args) -> Result<K
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_start_y(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -314,7 +326,8 @@ pub async fn last_segment_x(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
@@ -360,7 +373,8 @@ pub async fn last_segment_y(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         sketch = { docs = "The sketch whose line segment is being queried"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
     let last_line = sketch
@@ -409,7 +423,8 @@ pub async fn segment_length(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_length(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<TyF64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -452,7 +467,8 @@ pub async fn segment_angle(exec_state: &mut ExecState, args: Args) -> Result<Kcl
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 fn inner_segment_angle(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;
@@ -553,7 +569,8 @@ pub async fn tangent_to_end(exec_state: &mut ExecState, args: Args) -> Result<Kc
     unlabeled_first = true,
     args = {
         tag = { docs = "The line segment being queried by its tag"},
-    }
+    },
+    tags = ["sketch"]
 }]
 async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, args: Args) -> Result<f64, KclError> {
     let line = args.get_tag_engine_info(exec_state, tag)?;

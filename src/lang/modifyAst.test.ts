@@ -4,6 +4,7 @@ import {
   createArrayExpression,
   createIdentifier,
   createLiteral,
+  createLiteralMaybeSuffix,
   createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
@@ -35,6 +36,7 @@ import { initPromise } from '@src/lang/wasmUtils'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
+import { assertNotErr } from '@src/unitTestUtils'
 
 beforeAll(async () => {
   await initPromise
@@ -50,7 +52,8 @@ describe('Testing createLiteral', () => {
   })
   it('should create a literal number with units', () => {
     const lit: LiteralValue = { value: 5, suffix: 'Mm' }
-    const result = createLiteral(lit)
+    const result = createLiteralMaybeSuffix(lit)
+    assertNotErr(result)
     expect(result.type).toBe('Literal')
     expect((result as any).value.value).toBe(5)
     expect((result as any).value.suffix).toBe('Mm')
@@ -1002,7 +1005,7 @@ sketch003 = startSketchOn(XZ)
   ] as const
   test.each(cases)(
     '%s',
-    async (name, { codeBefore, codeAfter, lineOfInterest, type }) => {
+    async (_name, { codeBefore, codeAfter, lineOfInterest, type }) => {
       // const lineOfInterest = 'line(end = [-2.94, 2.7])'
       const ast = assertParse(codeBefore)
       const execState = await enginelessExecutor(ast)

@@ -7,7 +7,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     "type": "Object",
     "value": {
       "direction": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -38,7 +38,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
         ]
       },
       "origin": {
-        "type": "MixedArray",
+        "type": "HomArray",
         "value": [
           {
             "type": "Number",
@@ -10850,7 +10850,8 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
     }
   },
   "face": {
-    "type": "Function"
+    "type": "Function",
+    "value": null
   },
   "firstStep": {
     "type": "Number",

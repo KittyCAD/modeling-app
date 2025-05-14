@@ -1,14 +1,100 @@
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { ActorRefFrom } from 'xstate'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { isDesktop } from '@src/lib/isDesktop'
-import { kclSamplesManifestWithNoMultipleFiles } from '@src/lib/kclSamples'
+import {
+  everyKclSample,
+  findKclSample,
+  kclSamplesManifestWithNoMultipleFiles,
+} from '@src/lib/kclSamples'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
-import { FILE_EXT } from '@src/lib/constants'
+import { IS_ML_EXPERIMENTAL, ML_EXPERIMENTAL_MESSAGE } from '@src/lib/constants'
 import toast from 'react-hot-toast'
 import { reportRejection } from '@src/lib/trap'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { getStringAfterLastSeparator, webSafePathSplit } from '@src/lib/paths'
+import { FILE_EXT } from '@src/lib/constants'
+
+function onSubmitKCLSampleCreation({
+  sample,
+  kclSample,
+  uniqueNameIfNeeded,
+  systemIOActor,
+}: {
+  sample: any
+  kclSample: ReturnType<typeof findKclSample>
+  uniqueNameIfNeeded: any
+  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+}) {
+  if (!kclSample) {
+    toast.error('The command could not be submitted, unable to find Zoo sample')
+    return
+  }
+  const pathParts = webSafePathSplit(sample)
+  const projectPathPart = pathParts[0]
+  const files = kclSample.files
+
+  const filePromises = files.map((file) => {
+    const sampleCodeUrl =
+      (isDesktop() ? '.' : '') +
+      `/kcl-samples/${encodeURIComponent(
+        projectPathPart
+      )}/${encodeURIComponent(file)}`
+    return fetch(sampleCodeUrl).then((response) => {
+      return {
+        response,
+        file,
+        projectName: projectPathPart,
+      }
+    })
+  })
+
+  const requestedFiles: RequestedKCLFile[] = []
+  // If any fetches fail from the KCL Code download we will instantly reject
+  // No cleanup required since the fetch response is in memory
+  // TODO: Try to catch if there is a failure then delete the root folder and show error
+  Promise.all(filePromises)
+    .then(async (responses) => {
+      for (let i = 0; i < responses.length; i++) {
+        const response = responses[i]
+        const code = await response.response.text()
+        requestedFiles.push({
+          requestedCode: code,
+          requestedFileName: response.file,
+          requestedProjectName: uniqueNameIfNeeded,
+        })
+      }
+
+      if (requestedFiles.length === 1) {
+        /**
+         * Navigates to the single file that could be renamed on disk for duplicates
+         */
+        const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
+        systemIOActor.send({
+          type: SystemIOMachineEvents.importFileFromURL,
+          data: {
+            requestedProjectName: requestedFiles[0].requestedProjectName,
+            requestedFileNameWithExtension: folderNameBecomesKCLFileName,
+            requestedCode: requestedFiles[0].requestedCode,
+          },
+        })
+      } else {
+        /**
+         * Bulk create the assembly and navigate to the project
+         */
+        systemIOActor.send({
+          type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
+          data: {
+            files: requestedFiles,
+            requestedProjectName: uniqueNameIfNeeded,
+          },
+        })
+      }
+    })
+    .catch(reportError)
+}
 
 export function createApplicationCommands({
   systemIOActor,
@@ -17,10 +103,11 @@ export function createApplicationCommands({
 }) {
   const textToCADCommand: Command = {
     name: 'Text-to-CAD',
-    description: 'Use the Zoo Text-to-CAD API to generate part starters.',
-    displayName: `Text to CAD`,
+    description: 'Generate parts from text prompts.',
+    displayName: 'Text to CAD',
     groupId: 'application',
     needsReview: false,
+    status: IS_ML_EXPERIMENTAL ? 'experimental' : 'active',
     icon: 'sparkles',
     onSubmit: (record) => {
       if (record) {
@@ -58,7 +145,7 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, context) => {
+        options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
           folders.forEach((folder) => {
@@ -81,6 +168,7 @@ export function createApplicationCommands({
       prompt: {
         inputType: 'text',
         required: true,
+        warningMessage: ML_EXPERIMENTAL_MESSAGE,
       },
     },
   }
@@ -108,48 +196,28 @@ export function createApplicationCommands({
           ? getUniqueProjectName(requestedProjectName, folders)
           : requestedProjectName
 
-        if (data.source === 'kcl-samples' && data.sample) {
-          const pathParts = data.sample.split('/')
-          const projectPathPart = pathParts[0]
-          const primaryKclFile = pathParts[1]
-          const folderNameBecomesKCLFileName = projectPathPart + FILE_EXT
-
-          const sampleCodeUrl =
-            (isDesktop() ? '.' : '') +
-            `/kcl-samples/${encodeURIComponent(
-              projectPathPart
-            )}/${encodeURIComponent(primaryKclFile)}`
-
-          fetch(sampleCodeUrl)
-            .then(async (codeResponse) => {
-              if (!codeResponse.ok) {
-                console.error(
-                  'Failed to fetch sample code:',
-                  codeResponse.statusText
-                )
-                return Promise.reject(new Error('Failed to fetch sample code'))
-              }
-              const code = await codeResponse.text()
-              systemIOActor.send({
-                type: SystemIOMachineEvents.importFileFromURL,
-                data: {
-                  requestedProjectName: uniqueNameIfNeeded,
-                  requestedFileName: folderNameBecomesKCLFileName,
-                  requestedCode: code,
-                },
-              })
-            })
-            .catch(reportError)
+        const kclSample = findKclSample(data.sample)
+        if (
+          data.source === 'kcl-samples' &&
+          kclSample &&
+          kclSample.files.length >= 1
+        ) {
+          onSubmitKCLSampleCreation({
+            sample: data.sample,
+            kclSample,
+            uniqueNameIfNeeded,
+            systemIOActor,
+          })
         } else if (data.source === 'local' && data.path) {
           const clonePath = data.path
-          const fileWithExtension = clonePath.split('/').pop()
+          const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
           const readFileContentsAndCreateNewFile = async () => {
             const text = await window.electron.readFile(clonePath, 'utf8')
             systemIOActor.send({
               type: SystemIOMachineEvents.importFileFromURL,
               data: {
                 requestedProjectName: uniqueNameIfNeeded,
-                requestedFileName: fileWithExtension,
+                requestedFileNameWithExtension: fileNameWithExtension,
                 requestedCode: text,
               },
             })
@@ -185,16 +253,57 @@ export function createApplicationCommands({
           ]
         },
       },
+      sample: {
+        inputType: 'options',
+        required: (commandContext) =>
+          !['local'].includes(
+            commandContext.argumentsToSubmit.source as string
+          ),
+        hidden: (commandContext) =>
+          ['local'].includes(commandContext.argumentsToSubmit.source as string),
+        valueSummary(value) {
+          const MAX_LENGTH = 12
+          if (typeof value === 'string') {
+            return value.length > MAX_LENGTH
+              ? value.substring(0, MAX_LENGTH) + '...'
+              : value
+          }
+          return value
+        },
+        options: ({ argumentsToSubmit }) => {
+          const samples =
+            isDesktop() && argumentsToSubmit.method !== 'existingProject'
+              ? everyKclSample
+              : kclSamplesManifestWithNoMultipleFiles
+          return samples.map((sample) => {
+            return {
+              value: sample.pathFromProjectDirectoryToFirstFile,
+              name: sample.title,
+            }
+          })
+        },
+      },
       method: {
         inputType: 'options',
         required: true,
         skip: true,
-        options: isDesktop()
-          ? [
-              { name: 'New project', value: 'newProject', isCurrent: true },
-              { name: 'Existing project', value: 'existingProject' },
-            ]
-          : [{ name: 'Overwrite', value: 'existingProject' }],
+        options: ({ argumentsToSubmit }, _) => {
+          if (isDesktop() && typeof argumentsToSubmit.sample === 'string') {
+            const kclSample = findKclSample(argumentsToSubmit.sample)
+            if (kclSample && kclSample.files.length > 1) {
+              return [
+                { name: 'New project', value: 'newProject', isCurrent: true },
+              ]
+            } else {
+              return [
+                { name: 'New project', value: 'newProject', isCurrent: true },
+                { name: 'Existing project', value: 'existingProject' },
+              ]
+            }
+          } else {
+            return [{ name: 'Overwrite', value: 'existingProject' }]
+          }
+        },
         valueSummary(value) {
           return isDesktop()
             ? value === 'newProject'
@@ -209,7 +318,7 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, context) => {
+        options: (_, _context) => {
           const { folders } = systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
           folders.forEach((folder) => {
@@ -228,30 +337,6 @@ export function createApplicationCommands({
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
-      },
-      sample: {
-        inputType: 'options',
-        required: (commandContext) =>
-          !['local'].includes(
-            commandContext.argumentsToSubmit.source as string
-          ),
-        hidden: (commandContext) =>
-          ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        valueSummary(value) {
-          const MAX_LENGTH = 12
-          if (typeof value === 'string') {
-            return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
-              : value
-          }
-          return value
-        },
-        options: kclSamplesManifestWithNoMultipleFiles.map((sample) => {
-          return {
-            value: sample.pathFromProjectDirectoryToFirstFile,
-            name: sample.title,
-          }
-        }),
       },
       path: {
         inputType: 'path',
@@ -274,7 +359,78 @@ export function createApplicationCommands({
     },
   }
 
+  /**
+   * Looks similar to Add file to project but more data is hard coded for the home page button
+   * to direct the user in a more seamless method.
+   *
+   * This will always create a new folder on disk does not import into existing projects.
+   * Desktop only command for now!
+   */
+  const createASampleDesktopOnly: Command = {
+    name: 'create-a-sample',
+    displayName: 'Create a sample',
+    description: 'Create a new project from a Zoo Sample',
+    needsReview: false,
+    icon: 'importFile',
+    groupId: 'application',
+    hideFromSearch: true,
+    onSubmit: (data) => {
+      if (data) {
+        const folders = systemIOActor.getSnapshot().context.folders
+        const kclSample = findKclSample(data.sample)
+        if (!kclSample) {
+          toast.error(
+            'The command could not be submitted, unable to find Zoo sample'
+          )
+          return
+        }
+        const pathParts = webSafePathSplit(
+          kclSample.pathFromProjectDirectoryToFirstFile
+        )
+        const folderNameBecomesSampleName = pathParts[0]
+        const uniqueNameIfNeeded = getUniqueProjectName(
+          folderNameBecomesSampleName,
+          folders
+        )
+        onSubmitKCLSampleCreation({
+          sample: data.sample,
+          kclSample,
+          uniqueNameIfNeeded,
+          systemIOActor,
+        })
+      }
+    },
+    args: {
+      source: {
+        inputType: 'text',
+        required: true,
+        skip: false,
+        defaultValue: 'kcl-samples',
+        hidden: true,
+      },
+      sample: {
+        inputType: 'options',
+        required: true,
+        valueSummary(value) {
+          const MAX_LENGTH = 12
+          if (typeof value === 'string') {
+            return value.length > MAX_LENGTH
+              ? value.substring(0, MAX_LENGTH) + '...'
+              : value
+          }
+          return value
+        },
+        options: everyKclSample.map((sample) => {
+          return {
+            value: sample.pathFromProjectDirectoryToFirstFile,
+            name: sample.title,
+          }
+        }),
+      },
+    },
+  }
+
   return isDesktop()
-    ? [textToCADCommand, addKCLFileToProject]
+    ? [textToCADCommand, addKCLFileToProject, createASampleDesktopOnly]
     : [textToCADCommand, addKCLFileToProject]
 }

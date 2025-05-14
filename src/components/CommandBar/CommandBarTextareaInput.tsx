@@ -36,8 +36,13 @@ function CommandBarTextareaInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} ref={formRef}>
-      <label className="flex items-start rounded mx-4 my-4 border border-chalkboard-100 dark:border-chalkboard-80">
+    <form
+      id="arg-form"
+      className="flex flex-col items-stretch gap-2 mx-4 my-4 "
+      onSubmit={handleSubmit}
+      ref={formRef}
+    >
+      <label className="flex items-start rounded border border-chalkboard-100 dark:border-chalkboard-80">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize px-2 py-1 rounded-br bg-chalkboard-100 dark:bg-chalkboard-80 text-chalkboard-10 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
@@ -86,6 +91,11 @@ function CommandBarTextareaInput({
           autoFocus
         />
       </label>
+      {arg.warningMessage && (
+        <p className="text-warn-80 bg-warn-10 px-2 py-1 rounded-sm mt-3 mr-2 -mb-2 w-full text-sm cursor-default">
+          {arg.warningMessage}
+        </p>
+      )}
     </form>
   )
 }
