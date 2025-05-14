@@ -152,9 +152,10 @@ export function addSweep({
 
   // Extra labeled args expressions
   const pathExpr = createLocalName(pathDeclaration.node.declaration.id.name)
-  const sectionalExpr = sectional
-    ? [createLabeledArg('sectional', createLiteral(sectional))]
-    : []
+  const sectionalExpr =
+    sectional == false
+      ? [createLabeledArg('sectional', createLiteral(sectional))]
+      : []
 
   const sketchesExpr = createSketchExpression(sketchesExprList)
   const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [

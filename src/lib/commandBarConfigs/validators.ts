@@ -290,7 +290,7 @@ export const sweepValidator = async ({
   const command = async () => {
     // TODO: second look on defaults here
     const DEFAULT_TOLERANCE: Models['LengthUnit_type'] = 1e-7
-    const DEFAULT_SECTIONAL = false
+    const DEFAULT_SECTIONAL = false // the more permissive for validation
     const cmdArgs = {
       target,
       trajectory,

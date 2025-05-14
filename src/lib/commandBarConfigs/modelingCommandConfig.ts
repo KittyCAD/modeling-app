@@ -434,7 +434,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       sectional: {
         inputType: 'options',
         skip: true,
-        defaultValue: false,
+        defaultValue: true,
         hidden: false,
         required: true,
         options: [
